@@ -62,7 +62,7 @@ jobs:
 
             echo "Checking if backend started correctly..."
             sleep 5
-            curl --fail http://localhost:5094 || (echo "Backend failed to start!" && exit 1)
+            curl --fail http://3.80.91.121:5094 || (echo "Backend failed to start!" && exit 1)
 
             cd ../../LMS_CMS_Frontend/
 

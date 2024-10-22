@@ -3,12 +3,12 @@ name: Sync .NET LMSERP with AWS
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
+      - main
 
   schedule:
     - cron: '0 6 * * *'  # Daily at 9 AM UTC
 
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   deploy:
@@ -33,6 +33,10 @@ jobs:
           echo "Connecting to AWS instance..."
           ssh -i erp-lms-dotnet.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@44.220.164.68 << 'EOF'
             cd /var/www/html/lmserp/erp_lms_dotnet/
+
+            echo "Setting permissions..."
+            sudo chown -R ubuntu:ubuntu .  # Ensure correct ownership
+            sudo chmod -R u+rwX .          # Grant necessary permissions
 
             echo "Marking directory as safe for Git..."
             git config --global --add safe.directory /var/www/html/lmserp/erp_lms_dotnet

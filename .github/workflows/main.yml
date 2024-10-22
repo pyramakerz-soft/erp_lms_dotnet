@@ -31,14 +31,9 @@ jobs:
           set -e  # Stop on error
 
           echo "Connecting to AWS instance..."
-          ssh -i erp-lms-dotnet.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@3.80.91.121 << 'EOF'
-            sudo -i
+          ssh -t -i erp-lms-dotnet.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@3.80.91.121 << 'EOF'
+            sudo chown -R ubuntu:ubuntu /var/www/html/lmserp/erp_lms_dotnet/
             cd /var/www/html/lmserp/erp_lms_dotnet/
-
-            echo "Setting permissions..."
-            
-            sudo chown -R ubuntu:ubuntu .
-            sudo chmod -R u+rwX .
 
             echo "Pulling latest changes from GitHub..."
             git stash || true
@@ -60,8 +55,10 @@ jobs:
             echo "Starting backend as a background service..."
             nohup dotnet run --urls "http://0.0.0.0:5094" > backend.log 2>&1 &
 
+            echo "Waiting for backend to initialize..."
+            sleep 15
+
             echo "Checking if backend started correctly..."
-            sleep 5
             curl --fail http://3.80.91.121:5094 || (echo "Backend failed to start!" && exit 1)
 
             cd ../../LMS_CMS_Frontend/
@@ -71,7 +68,8 @@ jobs:
             npm run build --prod || exit 1
 
             echo "Syncing frontend to public directory..."
-            rsync -av --delete dist/ /var/www/html/lmserp/frontend/ || exit 1
+            sudo mkdir -p /var/www/html/lmserp/frontend
+            sudo rsync -av --delete dist/ /var/www/html/lmserp/frontend/ || exit 1
 
             echo "Deployment successful!"
 
@@ -94,7 +92,7 @@ jobs:
           DISK=${{ env.DISK }}
           STATUS="❌ Failed"
           COLOR="danger"
-          if [ "${{ env.RESPONSE }}" == "200" ]; then
+          if curl --fail http://3.80.91.121:5094; then
             STATUS="✅ Successful"
             COLOR="good"
           fi
@@ -106,7 +104,6 @@ jobs:
                 "fields": [
                   { "title": "Environment", "value": "Production", "short": true },
                   { "title": "Status", "value": "'"$STATUS"'", "short": true },
-                  { "title": "Admin Response", "value": "'"${{ env.RESPONSE }}"'", "short": true },
                   { "title": "CPU Usage (%)", "value": "'"$CPU"'", "short": true },
                   { "title": "Memory Usage (%)", "value": "'"$MEM"'", "short": true },
                   { "title": "Disk Usage (%)", "value": "'"$DISK"'", "short": true }
@@ -114,6 +111,7 @@ jobs:
               }
             ]
           }' $SLACK_WEBHOOK
+
       - name: Send Monitoring Data to Slack
         if: success() || failure()
         env:
@@ -125,7 +123,6 @@ jobs:
           CPU=${{ env.CPU }}
           MEM=${{ env.MEM }}
           DISK=${{ env.DISK }}
-          RESPONSE=${{ env.RESPONSE }}
           COMMIT_MSG="${{ github.event.head_commit.message }}"
           COMMIT_HASH="${{ github.event.head_commit.id }}"
           curl -X POST -H "Content-type: application/json" --data '{

@@ -58,7 +58,7 @@ jobs:
             pkill -f "dotnet" || echo "No previous instance found."
 
             echo "Starting backend as a background service..."
-            nohup dotnet run --urls "http://3.80.91.121:5094" > backend.log 2>&1 &
+            nohup dotnet run --urls "http://0.0.0.0:5094" > backend.log 2>&1 &
 
             echo "Checking if backend started correctly..."
             sleep 5

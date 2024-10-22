@@ -21,6 +21,9 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
+      - name: Adjust Private Key Permissions
+        run: chmod 600 erp-lms-dotnet.pem
+
       - name: Deploy to AWS via SSH
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

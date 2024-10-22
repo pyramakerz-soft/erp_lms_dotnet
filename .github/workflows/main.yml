@@ -28,7 +28,7 @@ jobs:
           set -e  # Stop on error
 
           echo "Connecting to AWS instance..."
-          ssh -i /.github/workflows/erp-lms-dotnet.pem ubuntu@44.220.164.68 << 'EOF'
+          ssh -i erp-lms-dotnet.pem ubuntu@44.220.164.68 << 'EOF'
             cd /var/www/html/lmserp/erp_lms_dotnet/
 
             echo "Pulling latest changes from GitHub..."

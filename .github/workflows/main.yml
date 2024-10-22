@@ -38,9 +38,6 @@ jobs:
             sudo chown -R ubuntu:ubuntu .  
             sudo chmod -R u+rwX .
 
-            echo "Switching Git remote to SSH..."
-            git remote set-url origin https://github.com/pyramakerz-soft/erp_lms_dotnet.git
-
             echo "Marking directory as safe for Git..."
             git config --global --add safe.directory /var/www/html/lmserp/erp_lms_dotnet
 

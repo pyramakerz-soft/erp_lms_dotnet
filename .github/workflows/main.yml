@@ -1,4 +1,4 @@
-name: Sync .NET LMSERP with Hostinger
+name: Sync .NET LMSERP with AWS
 
 on:
   push:
@@ -17,42 +17,55 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-        with:
-          submodules: false  # Disable submodule handling
 
-      - name: Install SSH Client
+      - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Sync Files via SSH and Deploy .NET Application
+      - name: Deploy to AWS via SSH
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: |
-          set -e  # Stop on any error
+          set -e  # Stop on error
 
-          METRICS=$(sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no \
-          -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd domains/pyramakerz-artifacts.com/public_html/LMSERP/
+          echo "Connecting to AWS instance..."
+          ssh -i erp-lms-dotnet.pem ubuntu@44.220.164.68 << 'EOF'
+            cd /var/www/html/lmserp/erp_lms_dotnet/
 
-            echo "Starting deployment at $(date)..."
-
+            echo "Pulling latest changes from GitHub..."
             git stash || true
             git fetch origin main || exit 1
             git reset --hard origin/main || echo "Reset failed, trying pull..."
             git pull origin main || exit 1
 
-            # Build and publish the .NET project
+            echo "Checking project structure..."
+            cd LMS_CMS_Backend/LMS_CMS/
+
+            echo "Building .NET backend project..."
             dotnet clean || echo "Clean failed"
-            dotnet restore || echo "Restore failed"
+            dotnet restore || exit 1
             dotnet build --configuration Release || exit 1
-            dotnet publish --configuration Release --output ./publish || exit 1
 
-            # Move published files to the correct location
-            rsync -av --delete ./publish/ /var/www/html/LMSERP/ || exit 1
+            echo "Stopping any running instances..."
+            pkill -f "dotnet" || echo "No previous instance found."
 
-            # Restart the application (if running with systemd or similar)
-            sudo systemctl restart kestrel-LMSERP.service || echo "Failed to restart Kestrel"
+            echo "Starting backend as a background service..."
+            nohup dotnet run --urls "http://0.0.0.0:5094" &
 
-            # Capture system metrics
+            echo "Checking if backend started correctly..."
+            sleep 5
+            curl --fail http://localhost:5094 || (echo "Backend failed to start!" && exit 1)
+
+            cd ../../LMS_CMS_Frontend/
+
+            echo "Building Angular frontend..."
+            npm install
+            npm run build --prod || exit 1
+
+            echo "Syncing frontend to public directory..."
+            rsync -av --delete dist/ /var/www/html/lmserp/frontend/ || exit 1
+
+            echo "Deployment successful!"
+
             CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}')
             MEM=$(free -m | awk 'NR==2{printf "%.2f", $3*100/$2 }')
             DISK=$(df -h / | awk '$NF=="/"{printf "%d", $5}')
@@ -61,39 +74,14 @@ jobs:
             echo "MEM=$MEM"
             echo "DISK=$DISK"
           EOF
-          )
-
-          echo "Captured Metrics: $METRICS"
-
-          CPU=$(echo "$METRICS" | grep "CPU=" | cut -d'=' -f2)
-          MEM=$(echo "$METRICS" | grep "MEM=" | cut -d'=' -f2)
-          DISK=$(echo "$METRICS" | grep "DISK=" | cut -d'=' -f2)
-
-          echo "Parsed CPU=$CPU, MEM=$MEM, DISK=$DISK"
-
-          if [ -z "$CPU" ] || [ -z "$MEM" ] || [ -z "$DISK" ]; then
-            echo "Failed to capture valid metrics"
-            exit 1
-          fi
-
-          echo "CPU=$CPU" >> $GITHUB_ENV
-          echo "MEM=$MEM" >> $GITHUB_ENV
-          echo "DISK=$DISK" >> $GITHUB_ENV
 
       - name: Send Slack Notification
-        if: always()  # Run on both success and failure
+        if: always()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          CPU: ${{ env.CPU }}
-          MEM: ${{ env.MEM }}
-          DISK: ${{ env.DISK }}
         run: |
           STATUS=$(if [ $? -eq 0 ]; then echo '✅ Successful'; else echo '❌ Failed'; fi)
           COLOR=$(if [ $? -eq 0 ]; then echo 'good'; else echo 'danger'; fi)
-
-          DEPLOYER="@${{ github.actor }}"
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          COMMIT_HASH="${{ github.event.head_commit.id }}"
 
           curl -X POST -H 'Content-type: application/json' --data '{
             "blocks": [
@@ -101,7 +89,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "*Health Check Report:* '"$STATUS"'"
+                  "text": "*Deployment Status:* '"$STATUS"'"
                 }
               },
               {
@@ -110,23 +98,9 @@ jobs:
               {
                 "type": "section",
                 "fields": [
-                  { "type": "mrkdwn", "text": "*Environment:* Production" },
-                  { "type": "mrkdwn", "text": "*Status:* '"$STATUS"'" },
                   { "type": "mrkdwn", "text": "*CPU Usage (%):* '"$CPU"'" },
                   { "type": "mrkdwn", "text": "*Memory Usage (%):* '"$MEM"'" },
                   { "type": "mrkdwn", "text": "*Disk Usage (%):* '"$DISK"'" }
-                ]
-              },
-              {
-                "type": "divider"
-              },
-              {
-                "type": "section",
-                "fields": [
-                  { "type": "mrkdwn", "text": "*Branch:* main" },
-                  { "type": "mrkdwn", "text": "*User:* '"$DEPLOYER"'" },
-                  { "type": "mrkdwn", "text": "*Commit:* '"${COMMIT_HASH:0:7}"'" },
-                  { "type": "mrkdwn", "text": "*Commit Message: Automation | * '"$COMMIT_MSG"'"  |}
                 ]
               },
               {

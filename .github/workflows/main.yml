@@ -32,12 +32,13 @@ jobs:
 
           echo "Connecting to AWS instance..."
           ssh -i erp-lms-dotnet.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@44.220.164.68 << 'EOF'
+            sudo -i
             cd /var/www/html/lmserp/erp_lms_dotnet/
 
             echo "Setting permissions..."
-            sudo chown -R ubuntu:ubuntu .  
+            
+            sudo chown -R ubuntu:ubuntu .
             sudo chmod -R u+rwX .
-
 
             echo "Pulling latest changes from GitHub..."
             git stash || true
@@ -57,7 +58,7 @@ jobs:
             pkill -f "dotnet" || echo "No previous instance found."
 
             echo "Starting backend as a background service..."
-            nohup dotnet run --urls "http://0.0.0.0:5094" &
+            nohup dotnet run --urls "http://0.0.0.0:5094" > backend.log 2>&1 &
 
             echo "Checking if backend started correctly..."
             sleep 5
@@ -90,6 +91,10 @@ jobs:
         run: |
           STATUS=$(if [ $? -eq 0 ]; then echo '✅ Successful'; else echo '❌ Failed'; fi)
           COLOR=$(if [ $? -eq 0 ]; then echo 'good'; else echo 'danger'; fi)
+
+          CPU=$(grep 'CPU=' backend.log | cut -d'=' -f2)
+          MEM=$(grep 'MEM=' backend.log | cut -d'=' -f2)
+          DISK=$(grep 'DISK=' backend.log | cut -d'=' -f2)
 
           curl -X POST -H 'Content-type: application/json' --data '{
             "blocks": [

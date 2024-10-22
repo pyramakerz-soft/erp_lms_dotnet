@@ -35,8 +35,11 @@ jobs:
             cd /var/www/html/lmserp/erp_lms_dotnet/
 
             echo "Setting permissions..."
-            sudo chown -R ubuntu:ubuntu .  # Ensure correct ownership
-            sudo chmod -R u+rwX .          # Grant necessary permissions
+            sudo chown -R ubuntu:ubuntu .  
+            sudo chmod -R u+rwX .
+
+            echo "Switching Git remote to SSH..."
+            git remote set-url origin git@github.com:<your-username>/<your-repository>.git
 
             echo "Marking directory as safe for Git..."
             git config --global --add safe.directory /var/www/html/lmserp/erp_lms_dotnet

@@ -34,6 +34,9 @@ jobs:
           ssh -i erp-lms-dotnet.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@44.220.164.68 << 'EOF'
             cd /var/www/html/lmserp/erp_lms_dotnet/
 
+            echo "Marking directory as safe for Git..."
+            git config --global --add safe.directory /var/www/html/lmserp/erp_lms_dotnet
+
             echo "Pulling latest changes from GitHub..."
             git stash || true
             git fetch origin main || exit 1

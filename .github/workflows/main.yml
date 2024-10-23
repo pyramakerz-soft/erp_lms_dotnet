@@ -40,11 +40,6 @@ jobs:
           cd LMS_CMS_Backend
           dotnet restore
 
-          echo "Step 5: Restarting backend service..."
-          sudo systemctl restart dotnet-app || {
-            echo "Error restarting backend service" && exit 1;
-          }
-
           echo "Backend deployment completed successfully."
         EOF
 

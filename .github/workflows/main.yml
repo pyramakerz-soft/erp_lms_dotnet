@@ -6,7 +6,6 @@ on:
       - main
 
 jobs:
-
   deploy-backend:
     name: Deploy Backend to AWS
     runs-on: ubuntu-latest
@@ -19,7 +18,7 @@ jobs:
       run: |
         echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
         chmod 400 aws.pem
-        
+
     - name: Fix Permissions on AWS EC2
       run: |
         ssh -tt -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
@@ -53,36 +52,28 @@ jobs:
 
     - name: Deploy Frontend to Hostinger
       run: |
-        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no \
+        sshpass -p "${{ secrets.HOSTINGER_PASS }}" ssh -T -o StrictHostKeyChecking=no \
         -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd /home/u413666390/domains/dev-pyramakerz.cloud/public_html/lmserp/erp_lms_dotnet/LMS_CMS_Frontend
 
-          # Pull the latest code from the repository
           git fetch origin main
           git reset --hard origin/main
 
-          # Install dependencies and build the project
           npm install
           npm run build --prod
 
-          # Copy the build files to public_html without removing other content
           cp -r dist/lms-cms-frontend/browser/* /home/u413666390/domains/dev-pyramakerz.cloud/public_html/
 
-          # Verify the frontend is accessible
-          FRONTEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud)
-          echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE"
+          FRONTEND_RESPONSE=\$(curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud)
+          echo "FRONTEND_RESPONSE=\$FRONTEND_RESPONSE"
 
-          # Check if the deployment was successful
-          if [ "$FRONTEND_RESPONSE" != "200" ]; then
-            echo "Frontend deployment failed with status $FRONTEND_RESPONSE"
+          if [ "\$FRONTEND_RESPONSE" != "200" ]; then
+            echo "Frontend deployment failed with status \$FRONTEND_RESPONSE"
             exit 1
           fi
 
           echo "Frontend deployed successfully!"
         EOF
-
-
-
 
   health-check:
     name: Health Check
@@ -90,8 +81,19 @@ jobs:
     needs: [deploy-backend, deploy-frontend]
 
     steps:
+    - name: Setup SSH Key for Backend Health Check
+      run: |
+        echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
+        chmod 400 aws.pem
+
+    - name: Collect Backend Metrics
+      run: |
+        BACKEND_API=\$(ssh -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} \
+        'curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api/health')
+
+        echo "BACKEND_API=\$BACKEND_API" >> $GITHUB_ENV
+
     - name: Send Detailed Slack Notification
-      if: always()
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       run: |
@@ -99,16 +101,13 @@ jobs:
         COMMIT_MSG="${{ github.event.head_commit.message }}"
         COMMIT_HASH="${{ github.event.head_commit.id }}"
         COMMIT_DATE="${{ github.event.head_commit.timestamp }}"
-        
-        BACKEND_CPU=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $CPU')
-        BACKEND_MEM=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $MEM')
-        BACKEND_DISK=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $DISK')
-        BACKEND_API=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $API_RESPONSE')
-        
-        FRONTEND_STATUS=$(sshpass -p "${{ secrets.HOSTINGER_PASS }}" ssh -o StrictHostKeyChecking=no ${HOSTINGER_USER}@${{ secrets.HOSTINGER_HOST }} 'echo $FRONTEND_RESPONSE')
+
+        BACKEND_API=${{ env.BACKEND_API }}
+        FRONTEND_RESPONSE=$(sshpass -p "${{ secrets.HOSTINGER_PASS }}" ssh -o StrictHostKeyChecking=no \
+          ${HOSTINGER_USER}@${{ secrets.SSH_HOST }} 'curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud')
 
         DEPLOY_STATUS="✅ Successful"
-        if [ "$BACKEND_API" != "200" ] || [ "$FRONTEND_STATUS" != "200" ]; then
+        if [ "$BACKEND_API" != "200" ] || [ "$FRONTEND_RESPONSE" != "200" ]; then
           DEPLOY_STATUS="❌ Failed"
         fi
 
@@ -136,16 +135,8 @@ jobs:
             {
               "type": "section",
               "fields": [
-                { "type": "mrkdwn", "text": "*Backend CPU Usage (%):* '"$BACKEND_CPU"'" },
-                { "type": "mrkdwn", "text": "*Backend Memory Usage (%):* '"$BACKEND_MEM"'" },
-                { "type": "mrkdwn", "text": "*Backend Disk Usage (%):* '"$BACKEND_DISK"'" },
-                { "type": "mrkdwn", "text": "*Backend API Status:* '"$BACKEND_API"'" }
-              ]
-            },
-            {
-              "type": "section",
-              "fields": [
-                { "type": "mrkdwn", "text": "*Frontend HTTP Status:* '"$FRONTEND_STATUS"'" }
+                { "type": "mrkdwn", "text": "*Backend API Status:* '"$BACKEND_API"'" },
+                { "type": "mrkdwn", "text": "*Frontend HTTP Status:* '"$FRONTEND_RESPONSE"'" }
               ]
             },
             {

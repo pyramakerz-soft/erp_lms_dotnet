@@ -51,7 +51,7 @@ jobs:
           }
 
           echo "Step 7: Checking backend health endpoint..."
-          BACKEND_API=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/WeatherForecast)
+          BACKEND_API=$(curl -s -o /dev/null -w "%{http_code}" https://3.214.27.32/WeatherForecast)
           echo "Backend API Response: $BACKEND_API"
 
           if [ "$BACKEND_API" != "200" ]; then

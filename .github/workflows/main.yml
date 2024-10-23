@@ -41,16 +41,30 @@ jobs:
           dotnet restore
 
           echo "Step 5: Restarting backend service..."
-          sudo systemctl restart dotnet-app
+          sudo systemctl restart dotnet-app || {
+            echo "Error restarting backend service" && exit 1;
+          }
 
           echo "Step 6: Checking backend service status..."
-          sudo systemctl status dotnet-app --no-pager
+          sudo systemctl status dotnet-app --no-pager || {
+            echo "Error fetching backend service status" && exit 1;
+          }
 
-          echo "Backend deployment completed."
+          echo "Step 7: Checking backend health endpoint..."
+          BACKEND_API=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/WeatherForecast)
+          echo "Backend API Response: $BACKEND_API"
+
+          if [ "$BACKEND_API" != "200" ]; then
+            echo "Backend health check failed with status: $BACKEND_API"
+            exit 1
+          fi
+
+          echo "Backend deployment completed successfully."
         EOF
 
     - name: Capture Deployment Logs
       run: cat backend-deploy.log
+
 
 
 

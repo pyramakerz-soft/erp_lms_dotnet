@@ -14,6 +14,7 @@ export class TestService {
   }
 
   getData() {
+    console.log(`${this.baseurl}WeatherForecast`)
     return this.http.get<any>(`${this.baseurl}WeatherForecast`);
   }
 }

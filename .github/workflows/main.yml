@@ -1,147 +1,136 @@
-name: Sync .NET LMSERP with Hostinger
+name: Deploy .NET and Angular Projects
 
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
+      - main
 
   schedule:
-    - cron: '0 6 * * *'  # Daily at 9 AM UTC
+    - cron: '0 9 * * *'
 
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-backend:
+    name: Deploy Backend to AWS
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-        with:
-          submodules: false  # Disable submodule handling
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-      - name: Install SSH Client
-        run: sudo apt-get update && sudo apt-get install -y sshpass
+    - name: Setup SSH for AWS
+      run: |
+        echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
+        chmod 600 aws.pem
 
-      - name: Sync Files via SSH and Deploy .NET Application
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        run: |
-          set -e  # Stop on any error
+    - name: Deploy Backend to AWS EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
+          cd /var/www/erp_lms_dotnet/LMS_CMS_Backend
+          git fetch origin main
+          git reset --hard origin/main
+          dotnet restore
+          sudo systemctl restart dotnet-app
+          CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}')
+          MEM=$(free -m | awk 'NR==2{printf "%.2f", $3*100/$2 }')
+          DISK=$(df -h / | awk '$NF=="/"{print $5}')
+          API_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api/health)
+          echo "CPU=$CPU MEM=$MEM DISK=$DISK API_RESPONSE=$API_RESPONSE"
+        EOF
 
-          METRICS=$(sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no \
-          -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd domains/pyramakerz-artifacts.com/public_html/LMSERP/
+  deploy-frontend:
+    name: Deploy Frontend to Hostinger
+    runs-on: ubuntu-latest
 
-            echo "Starting deployment at $(date)..."
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-            git stash || true
-            git fetch origin main || exit 1
-            git reset --hard origin/main || echo "Reset failed, trying pull..."
-            git pull origin main || exit 1
+    - name: Install SSH Client
+      run: sudo apt-get install -y sshpass
 
-            # Build and publish the .NET project
-            dotnet clean || echo "Clean failed"
-            dotnet restore || echo "Restore failed"
-            dotnet build --configuration Release || exit 1
-            dotnet publish --configuration Release --output ./publish || exit 1
+    - name: Deploy Frontend to Hostinger
+      run: |
+        sshpass -p "${{ secrets.HOSTINGER_PASS }}" ssh -o StrictHostKeyChecking=no ${HOSTINGER_USER}@${{ secrets.HOSTINGER_HOST }} << 'EOF'
+          cd /home/u413666390/domains/dev-pyramakerz.cloud/public_html/lmserp/erp_lms_dotnet/LMS_CMS_Frontend
+          git fetch origin main
+          git reset --hard origin/main
+          npm install
+          npm run build --prod
+          FRONTEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud)
+          echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE"
+        EOF
 
-            # Move published files to the correct location
-            rsync -av --delete ./publish/ /var/www/html/LMSERP/ || exit 1
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
 
-            # Restart the application (if running with systemd or similar)
-            sudo systemctl restart kestrel-LMSERP.service || echo "Failed to restart Kestrel"
+    steps:
+    - name: Send Detailed Slack Notification
+      if: always()
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      run: |
+        DEPLOYER="@${{ github.actor }}"
+        COMMIT_MSG="${{ github.event.head_commit.message }}"
+        COMMIT_HASH="${{ github.event.head_commit.id }}"
+        COMMIT_DATE="${{ github.event.head_commit.timestamp }}"
+        
+        BACKEND_CPU=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $CPU')
+        BACKEND_MEM=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $MEM')
+        BACKEND_DISK=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $DISK')
+        BACKEND_API=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $API_RESPONSE')
+        
+        FRONTEND_STATUS=$(sshpass -p "${{ secrets.HOSTINGER_PASS }}" ssh -o StrictHostKeyChecking=no ${HOSTINGER_USER}@${{ secrets.HOSTINGER_HOST }} 'echo $FRONTEND_RESPONSE')
 
-            # Capture system metrics
-            CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}')
-            MEM=$(free -m | awk 'NR==2{printf "%.2f", $3*100/$2 }')
-            DISK=$(df -h / | awk '$NF=="/"{printf "%d", $5}')
+        DEPLOY_STATUS="✅ Successful"
+        if [ "$BACKEND_API" != "200" ] || [ "$FRONTEND_STATUS" != "200" ]; then
+          DEPLOY_STATUS="❌ Failed"
+        fi
 
-            echo "CPU=$CPU"
-            echo "MEM=$MEM"
-            echo "DISK=$DISK"
-          EOF
-          )
-
-          echo "Captured Metrics: $METRICS"
-
-          CPU=$(echo "$METRICS" | grep "CPU=" | cut -d'=' -f2)
-          MEM=$(echo "$METRICS" | grep "MEM=" | cut -d'=' -f2)
-          DISK=$(echo "$METRICS" | grep "DISK=" | cut -d'=' -f2)
-
-          echo "Parsed CPU=$CPU, MEM=$MEM, DISK=$DISK"
-
-          if [ -z "$CPU" ] || [ -z "$MEM" ] || [ -z "$DISK" ]; then
-            echo "Failed to capture valid metrics"
-            exit 1
-          fi
-
-          echo "CPU=$CPU" >> $GITHUB_ENV
-          echo "MEM=$MEM" >> $GITHUB_ENV
-          echo "DISK=$DISK" >> $GITHUB_ENV
-
-      - name: Send Slack Notification
-        if: always()  # Run on both success and failure
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          CPU: ${{ env.CPU }}
-          MEM: ${{ env.MEM }}
-          DISK: ${{ env.DISK }}
-        run: |
-          STATUS=$(if [ $? -eq 0 ]; then echo '✅ Successful'; else echo '❌ Failed'; fi)
-          COLOR=$(if [ $? -eq 0 ]; then echo 'good'; else echo 'danger'; fi)
-
-          DEPLOYER="@${{ github.actor }}"
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          COMMIT_HASH="${{ github.event.head_commit.id }}"
-
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*Health Check Report:* '"$STATUS"'"
-                }
-              },
-              {
-                "type": "divider"
-              },
-              {
-                "type": "section",
-                "fields": [
-                  { "type": "mrkdwn", "text": "*Environment:* Production" },
-                  { "type": "mrkdwn", "text": "*Status:* '"$STATUS"'" },
-                  { "type": "mrkdwn", "text": "*CPU Usage (%):* '"$CPU"'" },
-                  { "type": "mrkdwn", "text": "*Memory Usage (%):* '"$MEM"'" },
-                  { "type": "mrkdwn", "text": "*Disk Usage (%):* '"$DISK"'" }
-                ]
-              },
-              {
-                "type": "divider"
-              },
-              {
-                "type": "section",
-                "fields": [
-                  { "type": "mrkdwn", "text": "*Branch:* main" },
-                  { "type": "mrkdwn", "text": "*User:* '"$DEPLOYER"'" },
-                  { "type": "mrkdwn", "text": "*Commit:* '"${COMMIT_HASH:0:7}"'" },
-                  { "type": "mrkdwn", "text": "*Commit Message: Automation | * '"$COMMIT_MSG"'"  |}
-                ]
-              },
-              {
-                "type": "context",
-                "elements": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "Deployment completed on: '"$(date)"'"
-                  }
-                ]
-              }
-            ],
-            "attachments": [
-              {
-                "color": "'"$COLOR"'"
-              }
-            ]
-          }' $SLACK_WEBHOOK
+        curl -X POST -H 'Content-type: application/json' --data '{
+          "blocks": [
+            {
+              "type": "section",
+              "text": { "type": "mrkdwn", "text": "*Deployment Status:* '"$DEPLOY_STATUS"'" }
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "type": "section",
+              "fields": [
+                { "type": "mrkdwn", "text": "*Deployer:* '"$DEPLOYER"'" },
+                { "type": "mrkdwn", "text": "*Commit Hash:* '"${COMMIT_HASH:0:7}"'" },
+                { "type": "mrkdwn", "text": "*Commit Message:* '"$COMMIT_MSG"'" },
+                { "type": "mrkdwn", "text": "*Commit Date:* '"$COMMIT_DATE"'" }
+              ]
+            },
+            {
+              "type": "divider"
+            },
+            {
+              "type": "section",
+              "fields": [
+                { "type": "mrkdwn", "text": "*Backend CPU Usage (%):* '"$BACKEND_CPU"'" },
+                { "type": "mrkdwn", "text": "*Backend Memory Usage (%):* '"$BACKEND_MEM"'" },
+                { "type": "mrkdwn", "text": "*Backend Disk Usage (%):* '"$BACKEND_DISK"'" },
+                { "type": "mrkdwn", "text": "*Backend API Status:* '"$BACKEND_API"'" }
+              ]
+            },
+            {
+              "type": "section",
+              "fields": [
+                { "type": "mrkdwn", "text": "*Frontend HTTP Status:* '"$FRONTEND_STATUS"'" }
+              ]
+            },
+            {
+              "type": "context",
+              "elements": [
+                { "type": "mrkdwn", "text": "Deployment completed on: '"$(date)"'" }
+              ]
+            }
+          ]
+        }' $SLACK_WEBHOOK

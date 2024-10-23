@@ -14,13 +14,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Setup SSH Key for AWS
-      run: |
-        echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
-        chmod 400 aws.pem
-        mkdir -p ~/.ssh
-        mv aws.pem ~/.ssh/aws.pem
-
     - name: Deploy Backend to AWS EC2
       run: |
         ssh -tt -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
@@ -28,17 +21,6 @@ jobs:
 
           # Fix permissions on the project directory
           chown -R ubuntu:ubuntu /var/www/erp_lms_dotnet
-
-          # Add GitHub to known hosts (to avoid SSH prompt issues)
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-          # Configure GitHub credentials if the repo is private
-          git config --global user.name "pyramakerz-soft"
-          git config --global user.email "pyramakerzgit@gmail.com"
-
-          # Start SSH agent and add the AWS SSH key
-          eval "\$(ssh-agent -s)"
-          ssh-add ~/.ssh/aws.pem
 
           # Navigate to the backend project directory
           cd /var/www/erp_lms_dotnet/erp_lms_dotnet

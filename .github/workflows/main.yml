@@ -34,43 +34,44 @@ jobs:
   deploy-frontend:
     name: Deploy Frontend to Hostinger
     runs-on: ubuntu-latest
-  
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-  
+
     - name: Install SSH Client
       run: sudo apt-get install -y sshpass
-  
+
     - name: Deploy Frontend to Hostinger
       run: |
-         METRICS=$(sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no \
-          -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no \
+        -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd /home/u413666390/domains/dev-pyramakerz.cloud/public_html/lmserp/erp_lms_dotnet/LMS_CMS_Frontend
-  
+
           # Pull the latest code from the repository
           git fetch origin main
           git reset --hard origin/main
-  
+
           # Install dependencies and build the project
           npm install
           npm run build --prod
-  
+
           # Copy the build files to public_html without removing other content
           cp -r dist/lms-cms-frontend/browser/* /home/u413666390/domains/dev-pyramakerz.cloud/public_html/
-  
+
           # Verify the frontend is accessible
           FRONTEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud)
           echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE"
-  
+
           # Check if the deployment was successful
           if [ "$FRONTEND_RESPONSE" != "200" ]; then
             echo "Frontend deployment failed with status $FRONTEND_RESPONSE"
             exit 1
           fi
-  
+
           echo "Frontend deployed successfully!"
         EOF
+
 
 
 

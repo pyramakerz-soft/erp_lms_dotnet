@@ -113,10 +113,12 @@ jobs:
   
     - name: Collect Frontend Metrics
       run: |
-        FRONTEND_RESPONSE=$(ssh -tt -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem -p ${{ secrets.SSH_PORT }} \
-          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-          'curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud')
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem -p ${{ secrets.SSH_PORT }} \
+        ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF' > frontend_response.txt
+          curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud
+        EOF
   
+        FRONTEND_RESPONSE=$(cat frontend_response.txt)
         echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE" >> $GITHUB_ENV
   
     - name: Send Detailed Slack Notification

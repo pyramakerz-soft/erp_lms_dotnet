@@ -5,12 +5,8 @@ on:
     branches:
       - main
 
-  schedule:
-    - cron: '0 9 * * *'
-
-  workflow_dispatch:
-
 jobs:
+
   deploy-backend:
     name: Deploy Backend to AWS
     runs-on: ubuntu-latest
@@ -22,45 +18,63 @@ jobs:
     - name: Setup SSH for AWS
       run: |
         echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
-        chmod 600 aws.pem
+        chmod 400 aws.pem
 
     - name: Deploy Backend to AWS EC2
       run: |
-        ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
+        ssh -tt -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
           cd /var/www/erp_lms_dotnet/LMS_CMS_Backend
           git fetch origin main
           git reset --hard origin/main
           dotnet restore
           sudo systemctl restart dotnet-app
-          CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}')
-          MEM=$(free -m | awk 'NR==2{printf "%.2f", $3*100/$2 }')
-          DISK=$(df -h / | awk '$NF=="/"{print $5}')
-          API_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api/health)
-          echo "CPU=$CPU MEM=$MEM DISK=$DISK API_RESPONSE=$API_RESPONSE"
+          echo "Backend deployment completed."
         EOF
 
   deploy-frontend:
     name: Deploy Frontend to Hostinger
     runs-on: ubuntu-latest
-
+  
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-
+  
     - name: Install SSH Client
       run: sudo apt-get install -y sshpass
-
+  
     - name: Deploy Frontend to Hostinger
       run: |
-        sshpass -p "${{ secrets.HOSTINGER_PASS }}" ssh -o StrictHostKeyChecking=no ${HOSTINGER_USER}@${{ secrets.HOSTINGER_HOST }} << 'EOF'
+        sshpass -p "${{ secrets.HOSTINGER_PASS }}" \
+          ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR \
+          "${{ secrets.HOSTINGER_USER }}"@${{ secrets.HOSTINGER_HOST }} << 'EOF'
+          # Navigate to the frontend project directory
           cd /home/u413666390/domains/dev-pyramakerz.cloud/public_html/lmserp/erp_lms_dotnet/LMS_CMS_Frontend
+  
+          # Pull the latest code from the repository
           git fetch origin main
           git reset --hard origin/main
+  
+          # Install dependencies and build the project
           npm install
           npm run build --prod
+  
+          # Copy the build files to public_html without removing other content
+          cp -r dist/lms-cms-frontend/browser/* /home/u413666390/domains/dev-pyramakerz.cloud/public_html/
+  
+          # Verify the frontend is accessible
           FRONTEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud)
           echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE"
+  
+          # Check if the deployment was successful
+          if [ "$FRONTEND_RESPONSE" != "200" ]; then
+            echo "Frontend deployment failed with status $FRONTEND_RESPONSE"
+            exit 1
+          fi
+  
+          echo "Frontend deployed successfully!"
         EOF
+
+
 
   health-check:
     name: Health Check

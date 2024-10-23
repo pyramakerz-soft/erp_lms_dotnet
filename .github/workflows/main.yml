@@ -23,14 +23,38 @@ jobs:
       run: |
         ssh -tt -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
           sudo -i  # Switch to root user
+
+          # Fix permissions on the project directory
+          chown -R ubuntu:ubuntu /var/www/erp_lms_dotnet
+
+          # Add GitHub to known hosts (to avoid SSH prompt issues)
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+          # Configure GitHub credentials if the repo is private
+          git config --global user.name "pyramakerz-soft"
+          git config --global user.email "pyramakerzgit@gmail.com"
+
+          # Use SSH key for GitHub authentication
+          eval "$(ssh-agent -s)"
+          ssh-add /root/.ssh/aws.pem
+
+          # Navigate to the backend project directory
           cd /var/www/erp_lms_dotnet/erp_lms_dotnet
+
+          # Pull latest changes from GitHub
           git fetch origin main
           git reset --hard origin/main
+
+          # Navigate to the backend folder and restore dependencies
           cd LMS_CMS_Backend
           dotnet restore
+
+          # Restart the backend service
           sudo systemctl restart dotnet-app
+
           echo "Backend deployment completed."
         EOF
+
 
 
   deploy-frontend:

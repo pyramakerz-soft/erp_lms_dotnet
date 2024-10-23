@@ -25,33 +25,32 @@ jobs:
       run: |
         ssh -tt -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF' | tee backend-deploy.log
           sudo -i  # Switch to root user
-
           echo "Step 1: Fixing permissions..."
           chown -R ubuntu:ubuntu /var/www/erp_lms_dotnet
-
           echo "Step 2: Navigating to project directory..."
           cd /var/www/erp_lms_dotnet/erp_lms_dotnet
-
           echo "Step 3: Fetching latest code from GitHub..."
           git fetch origin main
           git reset --hard origin/main
-
-          echo "Step 4: Building the .NET project..."
+          echo "Step 4: Stopping the running .NET service..."
+          sudo systemctl stop dotnet-app || true  # Ignore errors if the service isn't running
+          echo "Step 5: Cleaning previous builds..."
           cd LMS_CMS_Backend/LMS_CMS
-          dotnet build
-
-          echo "Step 5: Restarting backend service with the built DLL..."
-          sudo systemctl stop dotnet-app
+          dotnet clean
+          echo "Step 6: Restoring and building the project..."
+          dotnet restore
+          dotnet build --configuration Release
+          echo "Step 7: Running the .NET application..."
           sudo systemctl start dotnet-app
-
-          echo "Step 6: Checking backend service status..."
+          echo "Step 8: Checking backend service status..."
           sudo systemctl status dotnet-app --no-pager
-
           echo "Backend deployment completed successfully."
         EOF
 
     - name: Capture Deployment Logs
       run: cat backend-deploy.log
+
+
 
   deploy-frontend:
     name: Deploy Frontend to Hostinger

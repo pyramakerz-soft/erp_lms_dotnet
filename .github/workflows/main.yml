@@ -45,7 +45,6 @@ jobs:
           echo "Step 8: Checking backend service status..."
           sudo systemctl status dotnet-app --no-pager
           echo "Backend deployment completed successfully."
-        EOF
 
     - name: Capture Deployment Logs
       run: cat backend-deploy.log

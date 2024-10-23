@@ -36,20 +36,22 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-          echo "Step 4: Restoring .NET dependencies..."
-          cd LMS_CMS_Backend
-          dotnet restore
+          echo "Step 4: Building the .NET project..."
+          cd LMS_CMS_Backend/LMS_CMS
+          dotnet build
+
+          echo "Step 5: Restarting backend service with the built DLL..."
+          sudo systemctl stop dotnet-app
+          sudo systemctl start dotnet-app
+
+          echo "Step 6: Checking backend service status..."
+          sudo systemctl status dotnet-app --no-pager
 
           echo "Backend deployment completed successfully."
         EOF
 
     - name: Capture Deployment Logs
       run: cat backend-deploy.log
-
-
-
-
-
 
   deploy-frontend:
     name: Deploy Frontend to Hostinger
@@ -68,22 +70,21 @@ jobs:
         -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd /home/u413666390/domains/dev-pyramakerz.cloud/public_html/lmserp/erp_lms_dotnet/LMS_CMS_Frontend
 
-          # Pull the latest code from the repository
+          echo "Step 1: Pulling latest code..."
           git fetch origin main
           git reset --hard origin/main
 
-          # Install dependencies and build the project
+          echo "Step 2: Installing dependencies and building the frontend..."
           npm install
           npm run build --prod
 
-          # Copy the build files to public_html without removing other content
+          echo "Step 3: Copying build files to public_html..."
           cp -r dist/lms-cms-frontend/browser/* /home/u413666390/domains/dev-pyramakerz.cloud/public_html/
 
-          # Verify the frontend is accessible
+          echo "Step 4: Verifying frontend availability..."
           FRONTEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud)
           echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE"
 
-          # Check if the deployment was successful
           if [ "$FRONTEND_RESPONSE" != "200" ]; then
             echo "Frontend deployment failed with status $FRONTEND_RESPONSE"
             exit 1
@@ -105,10 +106,10 @@ jobs:
 
     - name: Collect Backend Metrics
       run: |
-        BACKEND_API=\$(ssh -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} \
-        'curl -s -o /dev/null -w "%{http_code}" https://3.214.27.32/WeatherForecast')
+        BACKEND_API=$(ssh -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} \
+        'curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/WeatherForecast')
 
-        echo "BACKEND_API=\$BACKEND_API" >> $GITHUB_ENV
+        echo "BACKEND_API=$BACKEND_API" >> $GITHUB_ENV
 
     - name: Send Detailed Slack Notification
       env:

@@ -13,37 +13,45 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
+
     - name: Setup SSH Key for AWS
       run: |
         echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
         chmod 400 aws.pem
         mkdir -p ~/.ssh
         mv aws.pem ~/.ssh/aws.pem
-    
+
     - name: Deploy Backend to AWS EC2
       run: |
-        ssh -tt -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
+        ssh -tt -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF' | tee backend-deploy.log
           sudo -i  # Switch to root user
 
-          # Fix permissions on the project directory
+          echo "Step 1: Fixing permissions..."
           chown -R ubuntu:ubuntu /var/www/erp_lms_dotnet
 
-          # Navigate to the backend project directory
+          echo "Step 2: Navigating to project directory..."
           cd /var/www/erp_lms_dotnet/erp_lms_dotnet
 
-          # Pull latest changes from GitHub
+          echo "Step 3: Fetching latest code from GitHub..."
           git fetch origin main
           git reset --hard origin/main
 
-          # Navigate to the backend folder and restore dependencies
+          echo "Step 4: Restoring .NET dependencies..."
           cd LMS_CMS_Backend
           dotnet restore
 
-          # Restart the backend service
+          echo "Step 5: Restarting backend service..."
           sudo systemctl restart dotnet-app
+
+          echo "Step 6: Checking backend service status..."
+          sudo systemctl status dotnet-app --no-pager
 
           echo "Backend deployment completed."
         EOF
+
+    - name: Capture Deployment Logs
+      run: cat backend-deploy.log
+
 
 
 

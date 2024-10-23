@@ -44,10 +44,8 @@ jobs:
   
     - name: Deploy Frontend to Hostinger
       run: |
-        sshpass -p "${{ secrets.HOSTINGER_PASS }}" \
-          ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR \
-          "${{ secrets.HOSTINGER_USER }}"@${{ secrets.HOSTINGER_HOST }} << 'EOF'
-          # Navigate to the frontend project directory
+         METRICS=$(sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no \
+          -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd /home/u413666390/domains/dev-pyramakerz.cloud/public_html/lmserp/erp_lms_dotnet/LMS_CMS_Frontend
   
           # Pull the latest code from the repository

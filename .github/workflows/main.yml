@@ -112,7 +112,7 @@ jobs:
     - name: Collect Backend Metrics
       run: |
         BACKEND_API=\$(ssh -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} \
-        'curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api/health')
+        'curl -s -o /dev/null -w "%{http_code}" https://3.214.27.32/WeatherForecast')
 
         echo "BACKEND_API=\$BACKEND_API" >> $GITHUB_ENV
 

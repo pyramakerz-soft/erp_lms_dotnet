@@ -23,9 +23,9 @@ jobs:
     - name: Fix Permissions on AWS EC2
       run: |
         ssh -tt -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
-        sudo chown -R ubuntu:ubuntu /var/www/erp_lms_dotnet
-        sudo chmod -R 755 /var/www/erp_lms_dotnet
-        echo "Permissions fixed."
+          sudo chown -R ubuntu:ubuntu /var/www/erp_lms_dotnet
+          sudo chmod -R 755 /var/www/erp_lms_dotnet
+          echo "Permissions fixed."
         EOF
 
     - name: Deploy Backend to AWS EC2

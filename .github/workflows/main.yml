@@ -97,22 +97,24 @@ jobs:
     needs: [deploy-backend, deploy-frontend]
   
     steps:
-    - name: Setup SSH Key for Backend Health Check
+    - name: Setup SSH Key for Health Check
       run: |
         echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
         chmod 400 aws.pem
+        mkdir -p ~/.ssh
+        mv aws.pem ~/.ssh/aws.pem
   
     - name: Collect Backend Metrics
       run: |
-        BACKEND_API=$(ssh -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} \
+        BACKEND_API=$(ssh -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} \
         'curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/WeatherForecast')
   
         echo "BACKEND_API=$BACKEND_API" >> $GITHUB_ENV
   
     - name: Collect Frontend Metrics
       run: |
-        FRONTEND_RESPONSE=$(ssh -tt -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} \
-          -i ~/.ssh/aws.pem ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+        FRONTEND_RESPONSE=$(ssh -tt -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem -p ${{ secrets.SSH_PORT }} \
+          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
           'curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud')
   
         echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE" >> $GITHUB_ENV
@@ -170,4 +172,3 @@ jobs:
             }
           ]
         }' $SLACK_WEBHOOK
-

@@ -21,7 +21,7 @@ jobs:
 
     - name: Deploy Backend to AWS EC2
       run: |
-        ssh -tt -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
+        ssh -tt -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
           cd /var/www/erp_lms_dotnet/LMS_CMS_Backend
           git fetch origin main
           git reset --hard origin/main

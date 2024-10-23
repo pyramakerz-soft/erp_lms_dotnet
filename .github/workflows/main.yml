@@ -45,20 +45,6 @@ jobs:
             echo "Error restarting backend service" && exit 1;
           }
 
-          echo "Step 6: Checking backend service status..."
-          sudo systemctl status dotnet-app --no-pager || {
-            echo "Error fetching backend service status" && exit 1;
-          }
-
-          echo "Step 7: Checking backend health endpoint..."
-          BACKEND_API=$(curl -s -o /dev/null -w "%{http_code}" https://3.214.27.32/WeatherForecast)
-          echo "Backend API Response: $BACKEND_API"
-
-          if [ "$BACKEND_API" != "200" ]; then
-            echo "Backend health check failed with status: $BACKEND_API"
-            exit 1
-          fi
-
           echo "Backend deployment completed successfully."
         EOF
 

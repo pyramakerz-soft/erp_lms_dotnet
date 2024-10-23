@@ -6,6 +6,7 @@ on:
       - main
 
 jobs:
+
   deploy-backend:
     name: Deploy Backend to AWS
     runs-on: ubuntu-latest
@@ -43,7 +44,9 @@ jobs:
   
     - name: Deploy Frontend to Hostinger
       run: |
-        sshpass -p "${{ secrets.HOSTINGER_PASS }}" ssh -o StrictHostKeyChecking=no ${HOSTINGER_USER}@${{ secrets.HOSTINGER_HOST }} << 'EOF'
+        sshpass -p "${{ secrets.HOSTINGER_PASS }}" \
+          ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR \
+          "${{ secrets.HOSTINGER_USER }}"@${{ secrets.HOSTINGER_HOST }} << 'EOF'
           # Navigate to the frontend project directory
           cd /home/u413666390/domains/dev-pyramakerz.cloud/public_html/lmserp/erp_lms_dotnet/LMS_CMS_Frontend
   

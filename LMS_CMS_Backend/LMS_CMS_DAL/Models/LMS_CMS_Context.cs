@@ -39,11 +39,23 @@ namespace LMS_CMS_DAL.Models
                 .IsUnique();
 
             modelBuilder.Entity<Parent>()
+                .HasIndex(p => p.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Parent>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
 
             modelBuilder.Entity<Student>()
+                .HasIndex(p => p.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Student>()
                 .HasIndex(p => p.User_Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Employee>()
+                .HasIndex(p => p.Email)
                 .IsUnique();
 
             modelBuilder.Entity<Employee>()

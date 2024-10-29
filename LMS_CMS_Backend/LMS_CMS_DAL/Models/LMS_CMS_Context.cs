@@ -16,6 +16,8 @@ namespace LMS_CMS_DAL.Models
         public DbSet<Master_Permissions> Master_Permissions { get; set; }
         public DbSet<Detailed_Permissions> Detailed_Permissions { get; set; }
         public DbSet<Role_Detailed_Permissions> Role_Detailed_Permissions { get; set; }
+        public DbSet<Employee_Role> Employee_Roles { get; set; }
+
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -88,11 +90,26 @@ namespace LMS_CMS_DAL.Models
                 .HasForeignKey(rp => rp.Detailed_Permissions_ID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Employee_Role>()
+                .HasOne(rp => rp.Role)
+                .WithMany(dp => dp.Employee_Roles)
+                .HasForeignKey(rp => rp.Role_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Employee_Role>()
+                .HasOne(rp => rp.Employee)
+                .WithMany(dp => dp.Employee_Roles)
+                .HasForeignKey(rp => rp.Employee_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             ///////////////////////// Composite primary key: /////////////////////////
             modelBuilder.Entity<Role_Detailed_Permissions>()
                 .HasKey(rp => new { rp.Role_ID, rp.Detailed_Permissions_ID });
-            
+
+            modelBuilder.Entity<Employee_Role>()
+                .HasKey(rp => new { rp.Employee_Id, rp.Role_Id });
+
 
             base.OnModelCreating(modelBuilder);
         }

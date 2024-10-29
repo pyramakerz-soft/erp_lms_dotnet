@@ -24,5 +24,7 @@ namespace LMS_CMS_DAL.Models
         [EmailAddress]
         public string Email { get; set; }
 
+        public  ICollection<Employee_Role> Employee_Roles { get; set; } = new HashSet<Employee_Role>();
+
     }
 }

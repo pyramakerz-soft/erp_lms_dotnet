@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using LMS_CMS_DAL.Models;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_BL.Config;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace LMS_CMS
 {
@@ -22,6 +26,28 @@ namespace LMS_CMS
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+
+            //////// JWT (Token)
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(option =>
+                {
+                    option.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = builder.Configuration["JWT:Issuer"],
+                        ValidAudience = builder.Configuration["JWT:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+                    };
+                });
+
 
             //////// DB
             builder.Services.AddDbContext<LMS_CMS_Context>(
@@ -46,6 +72,11 @@ namespace LMS_CMS
             builder.Services.AddAutoMapper(typeof(AutoMapConfig).Assembly);
 
             var app = builder.Build();
+
+            
+            //////// Authentication
+            app.UseAuthentication();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

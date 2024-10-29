@@ -6,7 +6,6 @@ on:
       - main
 
 jobs:
-
   deploy-backend:
     name: Deploy Backend to AWS
     runs-on: ubuntu-latest
@@ -15,136 +14,161 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Setup SSH for AWS
+    - name: Setup SSH Key for AWS
       run: |
         echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
         chmod 400 aws.pem
-
+        mkdir -p ~/.ssh
+        mv aws.pem ~/.ssh/aws.pem
     - name: Deploy Backend to AWS EC2
       run: |
-        ssh -tt -o StrictHostKeyChecking=no -i aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
-          cd /var/www/erp_lms_dotnet/LMS_CMS_Backend
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} << 'EOF'
+          sudo -i
+          echo "Step 1: Fixing permissions..."
+          chown -R ubuntu:ubuntu /var/www/erp_lms_dotnet
+          echo "Step 2: Navigating to project directory..."
+          cd /var/www/erp_lms_dotnet/erp_lms_dotnet
+          echo "Step 3: Fetching latest code from GitHub..."
           git fetch origin main
           git reset --hard origin/main
+          echo "Step 4: Stopping the running .NET service..."
+          sudo systemctl stop dotnet-app || true 
+          echo "Step 5: Cleaning previous builds..."
+          cd LMS_CMS_Backend/LMS_CMS
+          dotnet clean
+          echo "Step 6: Restoring and building the project..."
           dotnet restore
-          sudo systemctl restart dotnet-app
-          echo "Backend deployment completed."
+          dotnet build --configuration Release
+          echo "Step 7: Restarting the .NET application..."
+          sudo systemctl start dotnet-app
+          echo "Step 8: Checking backend service status..."
+          sudo systemctl status dotnet-app --no-pager
+
+          echo "Backend deployment completed successfully."
         EOF
+
+
+
+
 
   deploy-frontend:
     name: Deploy Frontend to Hostinger
     runs-on: ubuntu-latest
-  
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
-  
+
     - name: Install SSH Client
       run: sudo apt-get install -y sshpass
-  
+
     - name: Deploy Frontend to Hostinger
       run: |
-        sshpass -p "${{ secrets.HOSTINGER_PASS }}" \
-          ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR \
-          "${{ secrets.HOSTINGER_USER }}"@${{ secrets.HOSTINGER_HOST }} << 'EOF'
-          # Navigate to the frontend project directory
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no \
+        -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd /home/u413666390/domains/dev-pyramakerz.cloud/public_html/lmserp/erp_lms_dotnet/LMS_CMS_Frontend
-  
-          # Pull the latest code from the repository
+
+          echo "Step 1: Pulling latest code..."
           git fetch origin main
           git reset --hard origin/main
-  
-          # Install dependencies and build the project
+
+          echo "Step 2: Installing dependencies and building the frontend..."
           npm install
           npm run build --prod
-  
-          # Copy the build files to public_html without removing other content
+
+          echo "Step 3: Copying build files to public_html..."
           cp -r dist/lms-cms-frontend/browser/* /home/u413666390/domains/dev-pyramakerz.cloud/public_html/
-  
-          # Verify the frontend is accessible
+
+          echo "Step 4: Verifying frontend availability..."
           FRONTEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud)
           echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE"
-  
-          # Check if the deployment was successful
+
           if [ "$FRONTEND_RESPONSE" != "200" ]; then
             echo "Frontend deployment failed with status $FRONTEND_RESPONSE"
             exit 1
           fi
-  
+
           echo "Frontend deployed successfully!"
         EOF
 
-
-
   health-check:
-    name: Health Check
-    runs-on: ubuntu-latest
-    needs: [deploy-backend, deploy-frontend]
-
-    steps:
-    - name: Send Detailed Slack Notification
-      if: always()
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      run: |
-        DEPLOYER="@${{ github.actor }}"
-        COMMIT_MSG="${{ github.event.head_commit.message }}"
-        COMMIT_HASH="${{ github.event.head_commit.id }}"
-        COMMIT_DATE="${{ github.event.head_commit.timestamp }}"
-        
-        BACKEND_CPU=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $CPU')
-        BACKEND_MEM=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $MEM')
-        BACKEND_DISK=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $DISK')
-        BACKEND_API=$(ssh -o StrictHostKeyChecking=no -i aws.pem ec2-user@${{ secrets.AWS_BACKEND_IP }} 'echo $API_RESPONSE')
-        
-        FRONTEND_STATUS=$(sshpass -p "${{ secrets.HOSTINGER_PASS }}" ssh -o StrictHostKeyChecking=no ${HOSTINGER_USER}@${{ secrets.HOSTINGER_HOST }} 'echo $FRONTEND_RESPONSE')
-
-        DEPLOY_STATUS="✅ Successful"
-        if [ "$BACKEND_API" != "200" ] || [ "$FRONTEND_STATUS" != "200" ]; then
-          DEPLOY_STATUS="❌ Failed"
-        fi
-
-        curl -X POST -H 'Content-type: application/json' --data '{
-          "blocks": [
-            {
-              "type": "section",
-              "text": { "type": "mrkdwn", "text": "*Deployment Status:* '"$DEPLOY_STATUS"'" }
-            },
-            {
-              "type": "divider"
-            },
-            {
-              "type": "section",
-              "fields": [
-                { "type": "mrkdwn", "text": "*Deployer:* '"$DEPLOYER"'" },
-                { "type": "mrkdwn", "text": "*Commit Hash:* '"${COMMIT_HASH:0:7}"'" },
-                { "type": "mrkdwn", "text": "*Commit Message:* '"$COMMIT_MSG"'" },
-                { "type": "mrkdwn", "text": "*Commit Date:* '"$COMMIT_DATE"'" }
-              ]
-            },
-            {
-              "type": "divider"
-            },
-            {
-              "type": "section",
-              "fields": [
-                { "type": "mrkdwn", "text": "*Backend CPU Usage (%):* '"$BACKEND_CPU"'" },
-                { "type": "mrkdwn", "text": "*Backend Memory Usage (%):* '"$BACKEND_MEM"'" },
-                { "type": "mrkdwn", "text": "*Backend Disk Usage (%):* '"$BACKEND_DISK"'" },
-                { "type": "mrkdwn", "text": "*Backend API Status:* '"$BACKEND_API"'" }
-              ]
-            },
-            {
-              "type": "section",
-              "fields": [
-                { "type": "mrkdwn", "text": "*Frontend HTTP Status:* '"$FRONTEND_STATUS"'" }
-              ]
-            },
-            {
-              "type": "context",
-              "elements": [
-                { "type": "mrkdwn", "text": "Deployment completed on: '"$(date)"'" }
-              ]
-            }
-          ]
-        }' $SLACK_WEBHOOK
+      name: Health Check
+      runs-on: ubuntu-latest
+      needs: [deploy-backend, deploy-frontend]
+  
+      steps:
+      - name: Setup SSH Key for Health Check
+        run: |
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
+          chmod 400 aws.pem
+          mkdir -p ~/.ssh
+          mv aws.pem ~/.ssh/aws.pem
+  
+      - name: Collect Backend Metrics
+        run: |
+          BACKEND_API=$(ssh -T -o StrictHostKeyChecking=no -i ~/.ssh/aws.pem ubuntu@${{ secrets.AWS_BACKEND_IP }} \
+            'curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/WeatherForecast')
+  
+          echo "BACKEND_API=$BACKEND_API" >> $GITHUB_ENV
+  
+      - name: Collect Frontend Metrics
+        run: |
+          FRONTEND_RESPONSE=$(sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no \
+            -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            'curl -s -o /dev/null -w "%{http_code}" https://dev-pyramakerz.cloud')
+  
+          echo "FRONTEND_RESPONSE=$FRONTEND_RESPONSE" >> $GITHUB_ENV
+  
+      - name: Send Detailed Slack Notification
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          DEPLOYER="@${{ github.actor }}"
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          COMMIT_HASH="${{ github.event.head_commit.id }}"
+          COMMIT_DATE="${{ github.event.head_commit.timestamp }}"
+  
+          BACKEND_API=${{ env.BACKEND_API }}
+          FRONTEND_RESPONSE=${{ env.FRONTEND_RESPONSE }}
+  
+          DEPLOY_STATUS="✅ Successful"
+          if [ "$BACKEND_API" != "200" ] || [ "$FRONTEND_RESPONSE" != "200" ]; then
+            DEPLOY_STATUS="❌ Failed"
+          fi
+  
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "blocks": [
+              {
+                "type": "section",
+                "text": { "type": "mrkdwn", "text": "*Deployment Status:* '"$DEPLOY_STATUS"'" }
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "type": "section",
+                "fields": [
+                  { "type": "mrkdwn", "text": "*Deployer:* '"$DEPLOYER"'" },
+                  { "type": "mrkdwn", "text": "*Commit Hash:* '"${COMMIT_HASH:0:7}"'" },
+                  { "type": "mrkdwn", "text": "*Commit Message:* '"$COMMIT_MSG"'" },
+                  { "type": "mrkdwn", "text": "*Commit Date:* '"$COMMIT_DATE"'" }
+                ]
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "type": "section",
+                "fields": [
+                  { "type": "mrkdwn", "text": "*Backend API Status:* '"$BACKEND_API"'" },
+                  { "type": "mrkdwn", "text": "*Frontend HTTP Status:* '"$FRONTEND_RESPONSE"'" }
+                ]
+              },
+              {
+                "type": "context",
+                "elements": [
+                  { "type": "mrkdwn", "text": "Deployment completed on: '"$(date)"'" }
+                ]
+              }
+            ]
+          }' $SLACK_WEBHOOK

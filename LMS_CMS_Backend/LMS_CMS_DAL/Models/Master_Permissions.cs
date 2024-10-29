@@ -13,7 +13,7 @@ namespace LMS_CMS_DAL.Models
         [Key]
         public int ID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Master_Permissions cannot be longer than 100 characters.")]
         [Unicode(false)]
         public string Name { get; set; }

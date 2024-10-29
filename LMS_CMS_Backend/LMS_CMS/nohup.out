@@ -1,0 +1,9 @@
+Building...
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /var/www/erp_lms_dotnet/erp_lms_dotnet/LMS_CMS_Backend/LMS_CMS

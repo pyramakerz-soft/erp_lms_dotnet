@@ -56,9 +56,9 @@ namespace LMS_CMS_PL.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, _configuration["JWT:Subject"]),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("User_Name", username),
-                new Claim("ID", userId),
-                new Claim("Type", type),
+                new Claim("user_Name", username),
+                new Claim("id", userId),
+                new Claim("type", type),
 
 
             };

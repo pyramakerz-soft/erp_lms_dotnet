@@ -20,6 +20,11 @@ namespace LMS_CMS
 
             var builder = WebApplication.CreateBuilder(args);
 
+
+            //////// To make the localhost runs in this localhost number always
+            //builder.WebHost.UseUrls("http://localhost:7205");
+
+
             // Add services to the container.
 
             builder.Services.AddControllers();

@@ -15,21 +15,24 @@ import { FormsModule } from '@angular/forms';
 })
 export class LoginComponent {
 
-  userInfo:Login =new Login(
-    "", "", "");
+  userInfo:Login =new Login("", "", "", "");
 
-  constructor(private router: Router , public accountService:AccountService ){  }
+  constructor(private router:Router, public accountService:AccountService){  }
 
   SignIN(){
-    console.log(this.userInfo)
     this.accountService.Login(this.userInfo).subscribe(
       (d: any) => {
-        console.log(d)
         this.accountService.isAuthenticated = true;
         localStorage.setItem("token", d.token);
-          this.accountService.User = jwtDecode(d);
-          console.log("user :",this.accountService.User);
-
+        this.accountService.User = jwtDecode(d);
+        if(this.accountService.User.type == "parent"){
+          console.log("hehe")
+          this.router.navigateByUrl("/ParentHome")
+        } else if(this.accountService.User.type == "student"){
+          this.router.navigateByUrl("/StudentHome")
+        } else if(this.accountService.User.type == "employee"){
+          this.router.navigateByUrl("/EmployeeHome")
+        }
       },(error)=>{
         console.log(error)
       }

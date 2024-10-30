@@ -13,11 +13,10 @@ export class AccountService {
   
    baseUrl=""
    isAuthenticated = !!localStorage.getItem("token"); 
-   User: Login =new Login("", "", "");
+   User: Login =new Login("", "", "", "");
 
   constructor(public http: HttpClient ,private router: Router , public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
-
   }
 
   Login(UserInfo:Login){

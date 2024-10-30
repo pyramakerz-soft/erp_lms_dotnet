@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LMS_CMS_DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace LMS_CMS_BL.Repository
 {
@@ -19,12 +20,27 @@ namespace LMS_CMS_BL.Repository
             this.db = db;
         }
 
+        public LMS_CMS_Context Database()
+        {
+            return this.db;
+        }
+
         public List<TEntity> Select_All()
         {
             return db.Set<TEntity>().ToList();
         }
 
+        public List<TEntity> Select_All_With_Includes(params Expression<Func<TEntity, object>>[] includes)
+        {
+            IQueryable<TEntity> query = db.Set<TEntity>();
 
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return query.ToList();
+        }
 
         public TEntity Select_By_Id(params object[] keyValues)
         {
@@ -52,7 +68,5 @@ namespace LMS_CMS_BL.Repository
         {
             return db.Set<TEntity>().FirstOrDefault(predicate);
         }
-
-
     }
 }

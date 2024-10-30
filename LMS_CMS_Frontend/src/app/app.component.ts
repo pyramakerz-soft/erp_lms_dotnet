@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { TestService } from './Services/test.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -12,20 +11,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'LMS_CMS_Frontend';
-  data = null
+  title = 'ERP_System';
 
-  constructor(private testService: TestService) { }
+  constructor() { }
 
-  ngOnInit(): void {
-    this.getData()
-  }
-
-  getData(): void {
-    this.testService.getData().subscribe(
-      data => {
-        this.data = data
-        console.log(data)
-    });
-  }
 }

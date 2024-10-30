@@ -5,6 +5,7 @@ import { Login } from '../../../Models/login';
 import { jwtDecode } from 'jwt-decode';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TokenData } from '../../../Models/token-data';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class LoginComponent {
 
-  userInfo:Login =new Login("", "", "", "");
+  userInfo:Login = new Login("", "", "", "");
+  User_Data_After_Login = new TokenData("", 0, "", "", "", "", "", "")
 
   constructor(private router:Router, public accountService:AccountService){  }
 
@@ -23,14 +25,15 @@ export class LoginComponent {
     this.accountService.Login(this.userInfo).subscribe(
       (d: any) => {
         this.accountService.isAuthenticated = true;
-        localStorage.setItem("token", d.token);
-        this.accountService.User = jwtDecode(d);
-        if(this.accountService.User.type == "parent"){
-          console.log("hehe")
+        localStorage.setItem("token", JSON.parse(d).token);
+        
+        this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
+
+        if(this.User_Data_After_Login.type == "parent"){
           this.router.navigateByUrl("/ParentHome")
-        } else if(this.accountService.User.type == "student"){
+        } else if(this.User_Data_After_Login.type == "student"){
           this.router.navigateByUrl("/StudentHome")
-        } else if(this.accountService.User.type == "employee"){
+        } else if(this.User_Data_After_Login.type == "employee"){
           this.router.navigateByUrl("/EmployeeHome")
         }
       },(error)=>{

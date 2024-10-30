@@ -4,6 +4,7 @@ import { ApiService } from './api.service';
 import { Login } from '../Models/login';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
+import { TokenData } from '../Models/token-data';
 
 
 @Injectable({
@@ -12,29 +13,24 @@ import { jwtDecode } from 'jwt-decode';
 export class AccountService {
   
    baseUrl=""
-   isAuthenticated = !!localStorage.getItem("token"); 
-   User: Login =new Login("", "", "", "");
+   isAuthenticated = !!localStorage.getItem("token");
 
   constructor(public http: HttpClient ,private router: Router , public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
   }
 
   Login(UserInfo:Login){
-    let body = {User_Name:UserInfo.user_Name ,Password:UserInfo.password , Type :UserInfo.type};
-    console.log(body)
-    return this.http.post(`${this.baseUrl}/Account`, body, { responseType: 'text' })
+    return this.http.post(`${this.baseUrl}/Account`, UserInfo, { responseType: 'text' })
   }
-   
 
-  private CheckToken(): void {
-    const token = localStorage.getItem("token");
-    if (token) {
-      this.isAuthenticated = true;
-      this.User = jwtDecode(token);
-    } else {
-      this.isAuthenticated = false;
+  Get_Data_Form_Token(){
+    let User_Data_After_Login = new TokenData("", 0, "", "", "", "", "", "")
+    let token = localStorage.getItem("token")
+    if(token){
+      User_Data_After_Login = jwtDecode(token)
+      return User_Data_After_Login
+    } else{
+      return User_Data_After_Login
     }
   }
-
-
 }

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AccountService } from '../../../Services/account.service';
 
 @Component({
   selector: 'app-home-parent',
@@ -8,5 +9,4 @@ import { Component } from '@angular/core';
   styleUrl: './home-parent.component.css'
 })
 export class HomeParentComponent {
-
 }

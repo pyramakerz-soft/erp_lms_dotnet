@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models;
 using Microsoft.AspNetCore.Http;
@@ -14,12 +15,15 @@ namespace LMS_CMS_PL.Controllers
     {
         UOW unitOfWork;
         private readonly LMS_CMS_Context _context;
+        IMapper mapper;
 
-        public EmployeeController(LMS_CMS_Context context, UOW unitOfWork)
+
+        public EmployeeController(LMS_CMS_Context context, UOW unitOfWork , IMapper mapper)
         {
             _context = context;
             this.unitOfWork = unitOfWork;
-        }
+            this.mapper = mapper;
+        }   
 
         [HttpGet]
         public IActionResult Get()
@@ -33,48 +37,27 @@ namespace LMS_CMS_PL.Controllers
             return Ok(Employees);
         }
 
+       
         [HttpGet("Employee_With_Role_Permission/{empID}")]
         public async Task<IActionResult> Employee_With_Role_Permission(int empID)
         {
-            var employee = await _context.Employees
-                .Include(e => e.Employee_Roles)
-                    .ThenInclude(er => er.Role)
-                        .ThenInclude(r => r.Role_Detailed_Permissions)
-                            .ThenInclude(rdp => rdp.Detailed_Permissions)
-                                .ThenInclude(dp => dp.Master_Permissions)
-                .FirstOrDefaultAsync(e => e.ID == empID);
+            var employee = await unitOfWork.employee_Repository.FindByIncludesAsync(
+                e => e.ID == empID,
+                query => query.Include(e => e.Employee_Roles)
+                              .ThenInclude(er => er.Role)
+                              .ThenInclude(r => r.Role_Detailed_Permissions)
+                              .ThenInclude(rdp => rdp.Detailed_Permissions)
+                              .ThenInclude(dp => dp.Master_Permissions)
+            );
 
             if (employee == null)
             {
                 return NotFound();
             }
 
-            var result = new
-            {
-                Employee = new
-                {
-                    employee.ID,
-                    employee.User_Name,
-                    employee.Email,
-                    Roles = employee.Employee_Roles.Select(er => new
-                    {
-                        er.Role.ID,
-                        er.Role.Name,
-                        DetailedPermissions = er.Role.Role_Detailed_Permissions.Select(rdp => new
-                        {
-                            rdp.Detailed_Permissions.ID,
-                            rdp.Detailed_Permissions.Name,
-                            MasterPermission = new
-                            {
-                                rdp.Detailed_Permissions.Master_Permissions.ID,
-                                rdp.Detailed_Permissions.Master_Permissions.Name
-                            }
-                        })
-                    })
-                }
-            };
-
-            return Ok(result);
+            var employeeDTO = mapper.Map<EmployeeDTO>(employee);
+            return Ok(employeeDTO);
         }
+
     }
 }

@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO
 {
-    public class EmployeeDTO
+    public class RoleDTO
     {
         public int id { get; set; }
-        public string user_Name { get; set; }
-        public string email { get; set; }
-        public List<RoleDTO> Roles { get; set; }
+        public string name { get; set; }
+        public List<DetailedPermissionDTO> DetailedPermissions { get; set; }
     }
 }

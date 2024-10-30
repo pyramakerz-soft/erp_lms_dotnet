@@ -1,0 +1,29 @@
+<p>login works!</p>
+
+<div>
+  <label for="user_name">Username:</label>
+  <input id="user_name" type="text" [(ngModel)]="userInfo.user_Name" />
+</div>
+
+<div>
+  <label for="password">Password:</label>
+  <input id="password" type="password" [(ngModel)]="userInfo.password" />
+</div>
+
+<div>
+  <label>Type:</label>
+  <label>
+    <input type="radio" name="Type" [(ngModel)]="userInfo.type" value="parent" />
+    Parent
+  </label>
+  <label>
+    <input Type="radio" name="Type" [(ngModel)]="userInfo.type" value="student" />
+    Student
+  </label>
+  <label>
+    <input Type="radio" name="Type" [(ngModel)]="userInfo.type" value="employee" />
+    Employee
+  </label>
+</div>
+
+<button (click)="SignIN()">save</button>

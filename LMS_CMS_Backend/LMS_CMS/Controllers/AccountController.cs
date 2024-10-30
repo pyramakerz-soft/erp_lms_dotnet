@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -30,13 +31,13 @@ namespace LMS_CMS_PL.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string User_Name, string Password, string Type)
+        public IActionResult Login([FromBody] LoginDTO UserInfo)
         {
-            dynamic user = Type switch
+            dynamic user = UserInfo.Type switch
             {
-                "Emp" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == User_Name && emp.Password == Password),
-                "Stu" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == User_Name && stu.Password == Password),
-                "Par" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == User_Name && par.Password == Password),
+                "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password),
+                "student" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == UserInfo.User_Name && stu.Password == UserInfo.Password),
+                "parent" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password),
                 _ => null
             };
 
@@ -45,18 +46,21 @@ namespace LMS_CMS_PL.Controllers
                 return NotFound();
             }
 
-            var token = Generate_Jwt_Token(user.User_Name, user.ID.ToString());
+            var token = Generate_Jwt_Token(user.User_Name, user.ID.ToString() , UserInfo.Type);
             return Ok(new { Token = token });
         }
 
-        private string Generate_Jwt_Token(string username, string userId)
+        private string Generate_Jwt_Token(string username, string userId ,string type)
         {
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, _configuration["JWT:Subject"]),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("User_Name", username),
-                new Claim("ID", userId)
+                new Claim("ID", userId),
+                new Claim("Type", type),
+
+
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));

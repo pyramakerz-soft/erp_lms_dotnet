@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LMS_CMS_DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace LMS_CMS_BL.Repository
@@ -67,6 +68,20 @@ namespace LMS_CMS_BL.Repository
         public TEntity First_Or_Default(Expression<Func<TEntity, bool>> predicate)
         {
             return db.Set<TEntity>().FirstOrDefault(predicate);
+        }
+
+        public async Task<TEntity> FindByIncludesAsync(
+            Expression<Func<TEntity, bool>> predicate,
+            params Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>[] includes)
+        {
+            IQueryable<TEntity> query = db.Set<TEntity>();
+
+            foreach (var include in includes)
+            {
+                query = include(query);
+            }
+
+            return await query.FirstOrDefaultAsync(predicate);
         }
     }
 }

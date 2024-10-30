@@ -9,22 +9,22 @@ namespace LMS_CMS_PL.Controllers
     [ApiController]
     public class RoleDetailedPermissionsController : ControllerBase
     {
-        //UOW unitOfWork;
-        //public RoleDetailedPermissionsController(UOW unitOfWork)
-        //{
-        //    this.unitOfWork = unitOfWork;
-        //}
+        UOW unitOfWork;
+        public RoleDetailedPermissionsController(UOW unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
 
-        //[HttpGet]
-        //public IActionResult Get()
-        //{
-        //    List<RoleDetailedPermissionsController> RoleDetailedPermissionsController = unitOfWork.role_Detailed_Permissions_Repository.Select_All();
-        //    if (RoleDetailedPermissionsController == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpGet]
+        public IActionResult Get()
+        {
+            List<Role_Detailed_Permissions> Role_Detailed_Permissions = unitOfWork.role_Detailed_Permissions_Repository.Select_All();
+            if (Role_Detailed_Permissions == null)
+            {
+                return NotFound();
+            }
 
-        //    return Ok(RoleDetailedPermissionsController);
-        //}
+            return Ok(Role_Detailed_Permissions);
+        }
     }
 }

@@ -39,11 +39,11 @@ export class LoginComponent {
         this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
 
         if(this.User_Data_After_Login.type == "parent"){
-          this.router.navigateByUrl("/ParentHome")
+          this.router.navigateByUrl("/Parent")
         } else if(this.User_Data_After_Login.type == "student"){
-          this.router.navigateByUrl("/StudentHome")
+          this.router.navigateByUrl("/Student")
         } else if(this.User_Data_After_Login.type == "employee"){
-          this.router.navigateByUrl("/EmployeeHome")
+          this.router.navigateByUrl("/Employee")
         }
       },(error)=>{
         console.log(error)

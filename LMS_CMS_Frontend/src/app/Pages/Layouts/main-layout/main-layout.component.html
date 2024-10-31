@@ -1,1 +1,8 @@
-<p>main-layout works!</p>
+<div class="flex min-h-screen">
+    <div class="min-w-[20%]">
+        <app-side-menu [menuItems]="menuItems"></app-side-menu>
+    </div>
+    <div class="">
+        <router-outlet></router-outlet>
+    </div>
+</div>

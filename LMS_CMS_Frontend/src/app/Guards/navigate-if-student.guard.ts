@@ -14,10 +14,10 @@ export const navigateIfStudentGuard: CanActivateFn = (route, state) => {
   if(User_Type!="student"){
 
     if(User_Type=="parent"){
-      router.navigateByUrl('ParentHome');
+      router.navigateByUrl('Parent');
       return false;
     }else if(User_Type=="employee"){
-      router.navigateByUrl('EmployeeHome');
+      router.navigateByUrl('Employee');
       return false;
     }
   }

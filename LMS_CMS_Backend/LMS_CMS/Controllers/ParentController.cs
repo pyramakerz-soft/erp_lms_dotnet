@@ -26,5 +26,17 @@ namespace LMS_CMS_PL.Controllers
 
             return Ok(parents);
         }
+
+        [HttpGet("{parID}")]
+        public IActionResult GetById(int parID)
+        {
+            Parent parent = unitOfWork.parent_Repository.Select_By_Id(parID);
+            if (parent == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(parent);
+        }
     }
 }

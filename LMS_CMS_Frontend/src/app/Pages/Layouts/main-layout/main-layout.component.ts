@@ -16,7 +16,7 @@ export class MainLayoutComponent {
   menuItems: { label: string; route?: string; subItems?: { label: string; route: string }[] }[] = [];
 
   Employee_With_Permission = null
-  User_Data_After_Login = new TokenData("", 0, "", "", "", "", "", "")
+  User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
 
   constructor(public employeeService:EmployeeService, public accountService:AccountService){}
 

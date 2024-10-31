@@ -25,7 +25,7 @@ export class AccountService {
   }
 
   Get_Data_Form_Token(){
-    let User_Data_After_Login = new TokenData("", 0, "", "", "", "", "", "")
+    let User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
     let token = localStorage.getItem("token")
     if(token){
       User_Data_After_Login = jwtDecode(token)

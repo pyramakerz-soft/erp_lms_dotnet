@@ -2,7 +2,7 @@ export class TokenData {
     constructor(
         public aud: string, 
         public exp: number,
-        public id: string, 
+        public id: number, 
         public iss: string,   
         public jti: string, 
         public sub: string, 

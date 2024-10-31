@@ -2,6 +2,7 @@
 using LMS_CMS_DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace LMS_CMS_PL.Controllers
 {
@@ -25,6 +26,19 @@ namespace LMS_CMS_PL.Controllers
             }
 
             return Ok(students);
+        }
+
+
+        [HttpGet("{parID}")]
+        public IActionResult GetById(int parID)
+        {
+            Student student = unitOfWork.student_Repository.Select_By_Id(parID);
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(student);
         }
 
     }

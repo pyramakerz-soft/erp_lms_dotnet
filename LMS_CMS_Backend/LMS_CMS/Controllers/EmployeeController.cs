@@ -37,7 +37,18 @@ namespace LMS_CMS_PL.Controllers
             return Ok(Employees);
         }
 
-       
+        [HttpGet("{empID}")]
+        public IActionResult GetById(int empID)
+        {
+            Employee Employee = unitOfWork.employee_Repository.Select_By_Id(empID);
+            if (Employee == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(Employee);
+        }
+
         [HttpGet("Employee_With_Role_Permission/{empID}")]
         public async Task<IActionResult> Employee_With_Role_Permission(int empID)
         {

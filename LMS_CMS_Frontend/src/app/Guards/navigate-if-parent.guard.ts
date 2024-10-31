@@ -7,7 +7,7 @@ export const navigateIfParentGuard: CanActivateFn = (route, state) => {
   let token = localStorage.getItem("token")
   const router = inject(Router);
   const account = inject(AccountService);
-  let User_Data_After_Login = new TokenData("", 0, "", "", "", "", "", "")
+  let User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
   User_Data_After_Login = account.Get_Data_Form_Token()
   let User_Type = User_Data_After_Login.type
 

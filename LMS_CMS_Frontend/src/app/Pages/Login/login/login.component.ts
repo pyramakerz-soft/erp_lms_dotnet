@@ -17,7 +17,7 @@ import { TokenData } from '../../../Models/token-data';
 export class LoginComponent {
 
   userInfo:Login = new Login("", "", "", "");
-  User_Data_After_Login = new TokenData("", 0, "", "", "", "", "", "")
+  User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
 
     // Initialize the image states
     employeeImage = 'Images/employee.png';
@@ -31,6 +31,7 @@ export class LoginComponent {
   constructor(private router:Router, public accountService:AccountService){  }
 
   SignIN(){
+    console.log(this.userInfo)
     this.accountService.Login(this.userInfo).subscribe(
       (d: any) => {
         this.accountService.isAuthenticated = true;

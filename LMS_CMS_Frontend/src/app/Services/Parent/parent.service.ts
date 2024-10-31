@@ -5,18 +5,16 @@ import { ApiService } from '../api.service';
 @Injectable({
   providedIn: 'root'
 })
-export class EmployeeService {
+export class ParentService {
+
   baseUrl=""
 
   constructor(public http: HttpClient, public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
   }
 
-  Get_Employee_With_Role_Permission(Id:number){
-    return this.http.get(`${this.baseUrl}/Employee/Employee_With_Role_Permission/${Id}`)
+  Get_Parent_By_Id(Id:number){
+    return this.http.get(`${this.baseUrl}/Parent/${Id}`)
   }
 
-  Get_Employee_By_Id(Id:number){
-    return this.http.get(`${this.baseUrl}/employee/${Id}`)
-  }
 }

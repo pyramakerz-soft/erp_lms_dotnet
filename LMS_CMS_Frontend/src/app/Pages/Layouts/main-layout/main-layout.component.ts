@@ -4,11 +4,12 @@ import { TokenData } from '../../../Models/token-data';
 import { EmployeeService } from '../../../Services/Employee/employee.service';
 import { AccountService } from '../../../Services/account.service';
 import { RouterOutlet } from '@angular/router';
+import { NavMenuComponent } from '../../../Component/nav-menu/nav-menu.component';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [SideMenuComponent, RouterOutlet],
+  imports: [SideMenuComponent, RouterOutlet, NavMenuComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css'
 })

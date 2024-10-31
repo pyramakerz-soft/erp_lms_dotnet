@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.poppins {
+    font-family: "Poppins", sans-serif;
+}
+
+.primary{
+    background-color: #2E3646;
+    color: #2E3646;
+}
+
+.secondary{
+    background-color: #FF7519;
+    color: #FF7519;
+}
+
+/* .Primary{
+    background-color: var(--bg-color);
+    color: var(--text-color);
+} */
+
+/*
+    NOTE ==> How to write it i the TS
+    document.documentElement.style.setProperty('--bg-color', backgroundColor);
+    document.documentElement.style.setProperty('--text-color', textColor);
+*/

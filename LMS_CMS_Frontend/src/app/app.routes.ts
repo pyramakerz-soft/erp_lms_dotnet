@@ -8,11 +8,13 @@ import { noNavigateToLoginIfLoginGuard } from './Guards/no-navigate-to-login-if-
 import { navigateIfParentGuard } from './Guards/navigate-if-parent.guard';
 import { navigateIfStudentGuard } from './Guards/navigate-if-student.guard';
 import { navigateIfEmployeeGuard } from './Guards/navigate-if-employee.guard';
+import { SideMenuComponent } from './Component/side-menu/side-menu.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
     { path: "ParentHome", component: HomeParentComponent, title: "Home", canActivate:[noNavigateWithoutLoginGuard,navigateIfParentGuard] },
     { path: "StudentHome", component: StudentHomeComponent, title: "Home", canActivate:[noNavigateWithoutLoginGuard,navigateIfStudentGuard] },
     { path: "EmployeeHome", component: EmployeeHomeComponent, title: "Home", canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard] },
+    { path: "side", component: SideMenuComponent, title: "Home" },
     {path: '**', redirectTo: '/'}
 ];

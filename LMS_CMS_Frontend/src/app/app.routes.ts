@@ -8,15 +8,11 @@ import { noNavigateToLoginIfLoginGuard } from './Guards/no-navigate-to-login-if-
 import { navigateIfParentGuard } from './Guards/navigate-if-parent.guard';
 import { navigateIfStudentGuard } from './Guards/navigate-if-student.guard';
 import { navigateIfEmployeeGuard } from './Guards/navigate-if-employee.guard';
+import { NavMenuComponent } from './Component/nav-menu/nav-menu.component';
 import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
-    // { path: "ParentHome", component: HomeParentComponent, title: "Home", canActivate:[noNavigateWithoutLoginGuard,navigateIfParentGuard] },
-    // { path: "StudentHome", component: StudentHomeComponent, title: "Home", canActivate:[noNavigateWithoutLoginGuard,navigateIfStudentGuard] },
-    // { path: "EmployeeHome", component: EmployeeHomeComponent, title: "Home", canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard] },
-    // { path: "side", component: MainLayoutComponent, title: "Home", canActivate:[noNavigateWithoutLoginGuard] },
-    
     
     { 
         path: "Employee", 
@@ -45,6 +41,7 @@ export const routes: Routes = [
             { path: "", component: StudentHomeComponent, title: "StudentHome" }
         ]
     },
-
+    
+    { path: "nav", component: NavMenuComponent, title: "Home" },
     { path: '**', redirectTo: '/' }
 ];

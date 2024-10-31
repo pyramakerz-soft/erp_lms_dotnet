@@ -13,13 +13,13 @@ export const noNavigateToLoginIfLoginGuard: CanActivateFn = (route, state) => {
 
   if(token != null && User_Type == "parent"){
     account.Get_Data_Form_Token()
-    router.navigateByUrl('/ParentHome');
+    router.navigateByUrl('/Parent');
     return false;
   } else if(token != null && User_Type == "student"){
-    router.navigateByUrl('/StudentHome');
+    router.navigateByUrl('/Student');
     return false;
   } else if(token != null && User_Type == "employee"){
-    router.navigateByUrl('/EmployeeHome');
+    router.navigateByUrl('/Employee');
     return false;
   }
   

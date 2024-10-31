@@ -10,10 +10,11 @@ import { TokenData } from '../Models/token-data';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AccountService {
   
-   baseUrl=""
-   isAuthenticated = !!localStorage.getItem("token");
+  baseUrl=""
+  isAuthenticated = !!localStorage.getItem("token");
 
   constructor(public http: HttpClient ,private router: Router , public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
@@ -32,5 +33,11 @@ export class AccountService {
     } else{
       return User_Data_After_Login
     }
+  }
+
+  SignOut(){
+    this.isAuthenticated = false;
+    localStorage.removeItem("token");
+    this.router.navigateByUrl("");
   }
 }

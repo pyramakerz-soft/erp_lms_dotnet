@@ -1,10 +1,25 @@
-<diV class="primaryBg w-[20%] min-h-[100vh] py-5 px-12 flex flex-col justify-between">
+<diV class="primaryBg text-white h-full px-5 py-12 flex flex-col justify-between text-xl">
+    <section>
+        <div>
+            <p class="uppercase p-4 text-lg font-semibold">Main Menu</p>
+        </div>
+        <div class="text-xl">
+            <details *ngFor="let item of menuItems; let i = index">
+                <summary [routerLink]="item.route" class="p-4 flex items-center space-x-3 hover:bg-[rgba(255,255,255,0.1)] hover:rounded-r-lg hover:border-l-4 cursor-pointer">
+                    <img *ngIf="item.subItems" src="Icons/Drop-Down.png">
+                    <img *ngIf="item.route" src="Icons/Dashboard.png">
+                    <p>{{ item.label }}</p>
+                </summary>
+                <div *ngIf="item.subItems"  class="pl-8 py-4 flex flex-col space-y-3">
+                    <a *ngFor="let subItem of item.subItems; let i = index" class="cursor-pointer hover:opacity-30" [routerLink]="subItem.route">{{ subItem.label }}</a>
+                </div>
+            </details>
+        </div>
+    </section>
     <div>
-        <p class="text-white uppercase ">Main Menu</p>
-    </div>
-    <div>
-        <a class="secondaryTxt">
-            Sign Out
+        <a class="secondaryTxt hover:opacity-65 flex items-center space-x-3 p-4 cursor-pointer" (click)="SignOut()">
+            <img src="Icons/Sign-out-orange.png">
+            <p>Sign Out</p>
         </a>
     </div>
 </diV>

@@ -10,6 +10,7 @@ import { navigateIfStudentGuard } from './Guards/navigate-if-student.guard';
 import { navigateIfEmployeeGuard } from './Guards/navigate-if-employee.guard';
 import { NavMenuComponent } from './Component/nav-menu/nav-menu.component';
 import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.component';
+import { UserManagementComponent } from './Pages/Employee/user-management/user-management.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -20,7 +21,8 @@ export const routes: Routes = [
         title: "Employee Home", 
         canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard], 
         children: [
-            { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }
+            { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },
+            { path: "Admin-Module/User-Management", component: UserManagementComponent, title: "EmployeeUserManagement" }
         ]
     },
     { 

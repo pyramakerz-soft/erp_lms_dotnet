@@ -18,6 +18,10 @@ namespace LMS_CMS_DAL.Models
         public DbSet<Role_Permissions> Role_Detailed_Permissions { get; set; }
         public DbSet<Employee_Role> Employee_Roles { get; set; }
         public DbSet<Employee_With_Role_Permission_View> Employee_With_Role_Permission_View { get; set; }
+        public DbSet<Domain> Domains { get; set; }
+        public DbSet<School> Schools { get; set; }
+        public DbSet<School_Roles> School_Roles { get; set; }
+
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -65,6 +69,10 @@ namespace LMS_CMS_DAL.Models
                 .IsUnique();
 
             modelBuilder.Entity<Modules>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Domain>()
                 .HasIndex(p => p.Name)
                 .IsUnique();
 
@@ -124,7 +132,29 @@ namespace LMS_CMS_DAL.Models
                 .HasForeignKey(rp => rp.Employee_Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<School_Roles>()
+                .HasOne(rp => rp.School)
+                .WithMany(dp => dp.School_Roles)
+                .HasForeignKey(rp => rp.School_Id)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<School_Roles>()
+                .HasOne(rp => rp.Role)
+                .WithMany(dp => dp.School_Roles)
+                .HasForeignKey(rp => rp.Role_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(rp => rp.School)
+                .WithMany(dp => dp.Employees)
+                .HasForeignKey(rp => rp.School_id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<School>()
+                .HasOne(rp => rp.Domain)
+                .WithMany(dp => dp.Schools)
+                .HasForeignKey(rp => rp.Domain_id)
+                .OnDelete(DeleteBehavior.Cascade);
 
             ///////////////////////// View: /////////////////////////
             modelBuilder.Entity<Employee_With_Role_Permission_View>()

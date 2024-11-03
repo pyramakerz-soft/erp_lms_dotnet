@@ -43,6 +43,23 @@ namespace LMS_CMS_DAL.Migrations
                     b.ToTable("Detailed_Permissions");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domain", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Domains");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Employee", b =>
                 {
                     b.Property<int>("ID")
@@ -60,6 +77,9 @@ namespace LMS_CMS_DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("School_id")
+                        .HasColumnType("int");
+
                     b.Property<string>("User_Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -69,6 +89,8 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("School_id");
 
                     b.HasIndex("User_Name")
                         .IsUnique();
@@ -97,6 +119,52 @@ namespace LMS_CMS_DAL.Migrations
                     b.HasIndex("Role_Id");
 
                     b.ToTable("Employee_Roles");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Employee_With_Role_Permission_View", b =>
+                {
+                    b.Property<int>("DetailedPermissionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DetailedPermissionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MasterPermissionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MasterPermissionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ModuleID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModuleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User_Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("Employee_With_Role_Permission_View", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Master_Detailes_Permissions", b =>
@@ -266,6 +334,51 @@ namespace LMS_CMS_DAL.Migrations
                     b.ToTable("Role_Detailed_Permissions");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.School", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Domain_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Domain_id");
+
+                    b.ToTable("Schools");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.School_Roles", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("Role_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("School_Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Role_Id");
+
+                    b.HasIndex("School_Id");
+
+                    b.ToTable("School_Roles");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Student", b =>
                 {
                     b.Property<int>("ID")
@@ -302,6 +415,17 @@ namespace LMS_CMS_DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Employee", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.School", "School")
+                        .WithMany("Employees")
+                        .HasForeignKey("School_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("School");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Employee_Role", b =>
@@ -380,6 +504,36 @@ namespace LMS_CMS_DAL.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.School", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
+                        .WithMany("Schools")
+                        .HasForeignKey("Domain_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Domain");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.School_Roles", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Role", "Role")
+                        .WithMany("School_Roles")
+                        .HasForeignKey("Role_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.School", "School")
+                        .WithMany("School_Roles")
+                        .HasForeignKey("School_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("School");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Student", b =>
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Parent", "Parent")
@@ -394,6 +548,11 @@ namespace LMS_CMS_DAL.Migrations
             modelBuilder.Entity("LMS_CMS_DAL.Models.Detailed_Permissions", b =>
                 {
                     b.Navigation("Master_Detailes_Permissions");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domain", b =>
+                {
+                    b.Navigation("Schools");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Employee", b =>
@@ -428,6 +587,15 @@ namespace LMS_CMS_DAL.Migrations
                     b.Navigation("Employee_Roles");
 
                     b.Navigation("Role_Permissions");
+
+                    b.Navigation("School_Roles");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.School", b =>
+                {
+                    b.Navigation("Employees");
+
+                    b.Navigation("School_Roles");
                 });
 #pragma warning restore 612, 618
         }

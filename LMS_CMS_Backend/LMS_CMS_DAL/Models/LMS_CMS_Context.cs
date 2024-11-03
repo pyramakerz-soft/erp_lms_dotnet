@@ -17,7 +17,7 @@ namespace LMS_CMS_DAL.Models
         public DbSet<Detailed_Permissions> Detailed_Permissions { get; set; }
         public DbSet<Role_Permissions> Role_Detailed_Permissions { get; set; }
         public DbSet<Employee_Role> Employee_Roles { get; set; }
-
+        public DbSet<Employee_With_Role_Permission_View> Employee_With_Role_Permission_View { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -124,6 +124,12 @@ namespace LMS_CMS_DAL.Models
                 .HasForeignKey(rp => rp.Employee_Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
+
+            ///////////////////////// View: /////////////////////////
+            modelBuilder.Entity<Employee_With_Role_Permission_View>()
+            .HasNoKey() // Since it's a view and not a table
+            .ToView("Employee_With_Role_Permission_View");
 
 
             base.OnModelCreating(modelBuilder);

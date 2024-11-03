@@ -19,7 +19,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Detailed_Permissions> Detailed_Permissions_Repository;
         GenericRepo<Master_Permissions> Master_Permissions_Repository;
         GenericRepo<Employee_Role> Employee_Role_Repository;
-        GenericRepo<Role_Detailed_Permissions> Role_Detailed_Permissions_Repository;
+        GenericRepo<Role_Permissions> Role_Detailed_Permissions_Repository;
 
 
 
@@ -108,13 +108,13 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
-        public GenericRepo<Role_Detailed_Permissions> role_Detailed_Permissions_Repository
+        public GenericRepo<Role_Permissions> role_Detailed_Permissions_Repository
         {
             get
             {
                 if (Role_Detailed_Permissions_Repository == null)
                 {
-                    Role_Detailed_Permissions_Repository = new GenericRepo<Role_Detailed_Permissions>(db);
+                    Role_Detailed_Permissions_Repository = new GenericRepo<Role_Permissions>(db);
                 }
                 return Role_Detailed_Permissions_Repository;
             }

@@ -18,7 +18,7 @@ namespace LMS_CMS_DAL.Models
         [Unicode(false)]
         public string Name { get; set; }
 
-        public ICollection<Role_Detailed_Permissions> Role_Detailed_Permissions { get; set; } = new HashSet<Role_Detailed_Permissions>(); // Navigation property
+        public ICollection<Role_Permissions> Role_Permissions { get; set; } = new HashSet<Role_Permissions>(); // Navigation property
 
         public ICollection<Employee_Role> Employee_Roles { get; set; } = new HashSet<Employee_Role>();
 

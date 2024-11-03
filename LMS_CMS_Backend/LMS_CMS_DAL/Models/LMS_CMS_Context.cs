@@ -15,7 +15,7 @@ namespace LMS_CMS_DAL.Models
         public DbSet<Role> Roles { get; set; }
         public DbSet<Master_Permissions> Master_Permissions { get; set; }
         public DbSet<Detailed_Permissions> Detailed_Permissions { get; set; }
-        public DbSet<Role_Detailed_Permissions> Role_Detailed_Permissions { get; set; }
+        public DbSet<Role_Permissions> Role_Detailed_Permissions { get; set; }
         public DbSet<Employee_Role> Employee_Roles { get; set; }
 
 
@@ -64,12 +64,34 @@ namespace LMS_CMS_DAL.Models
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
 
+            modelBuilder.Entity<Modules>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+
 
             ///////////////////////// On Delete Cascade: /////////////////////////
-            modelBuilder.Entity<Detailed_Permissions>()
-                .HasOne(d => d.Master_Permissions)
-                .WithMany(m => m.Detailed_Permissions)
-                .HasForeignKey(d => d.Master_Permission_ID)
+            modelBuilder.Entity<Master_Detailes_Permissions>()
+                .HasOne(d => d.Detailed_Permission)
+                .WithMany(m => m.Master_Detailes_Permissions)
+                .HasForeignKey(d => d.Details_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Modules_Master_permissions>()
+                .HasOne(d => d.Module)
+                .WithMany(m => m.Modules_Master_permissions)
+                .HasForeignKey(d => d.Module_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Modules_Master_permissions>()
+                .HasOne(d => d.Master_Permission)
+                .WithMany(m => m.Modules_Master_permissions)
+                .HasForeignKey(d => d.Master_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Master_Detailes_Permissions>()
+                .HasOne(d => d.Master_Permission)
+                .WithMany(m => m.Master_Detailes_Permissions)
+                .HasForeignKey(d => d.Master_Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Student>()
@@ -78,16 +100,16 @@ namespace LMS_CMS_DAL.Models
                 .HasForeignKey(s => s.Parent_Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Role_Detailed_Permissions>()
+            modelBuilder.Entity<Role_Permissions>()
                 .HasOne(rp => rp.Role)
-                .WithMany(r => r.Role_Detailed_Permissions)
+                .WithMany(r => r.Role_Permissions)
                 .HasForeignKey(rp => rp.Role_ID)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Role_Detailed_Permissions>()
-                .HasOne(rp => rp.Detailed_Permissions)
-                .WithMany(dp => dp.Role_Detailed_Permissions)
-                .HasForeignKey(rp => rp.Detailed_Permissions_ID)
+            modelBuilder.Entity<Role_Permissions>()
+                .HasOne(rp => rp.Master_Detailes_Permissions)
+                .WithMany(dp => dp.Role_Permissions)
+                .HasForeignKey(rp => rp.Master_Detailed_Permissions_ID)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Employee_Role>()
@@ -102,13 +124,6 @@ namespace LMS_CMS_DAL.Models
                 .HasForeignKey(rp => rp.Employee_Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
-            ///////////////////////// Composite primary key: /////////////////////////
-            modelBuilder.Entity<Role_Detailed_Permissions>()
-                .HasKey(rp => new { rp.Role_ID, rp.Detailed_Permissions_ID });
-
-            modelBuilder.Entity<Employee_Role>()
-                .HasKey(rp => new { rp.Employee_Id, rp.Role_Id });
 
 
             base.OnModelCreating(modelBuilder);

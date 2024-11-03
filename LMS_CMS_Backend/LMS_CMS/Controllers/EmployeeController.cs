@@ -5,6 +5,7 @@ using LMS_CMS_DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.Intrinsics.Arm;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LMS_CMS_PL.Controllers
@@ -49,26 +50,75 @@ namespace LMS_CMS_PL.Controllers
             return Ok(Employee);
         }
 
-        [HttpGet("Employee_With_Role_Permission/{empID}")]
-        public async Task<IActionResult> Employee_With_Role_Permission(int empID)
-        {
-            var employee = await unitOfWork.employee_Repository.FindByIncludesAsync(
-                e => e.ID == empID,
-                query => query.Include(e => e.Employee_Roles)
-                              .ThenInclude(er => er.Role)
-                              .ThenInclude(r => r.Role_Detailed_Permissions)
-                              .ThenInclude(rdp => rdp.Detailed_Permissions)
-                              .ThenInclude(dp => dp.Master_Permissions)
-            );
+        //[HttpGet("Employee_With_Role_Permission/{empID}")]
+        //public async Task<IActionResult> Employee_With_Role_Permission(int empID)
+        //{
+        //    var employee = await unitOfWork.employee_Repository.FindByIncludesAsync(
+        //        e => e.ID == empID,
+        //        query => query.Include(e => e.Employee_Roles)
+        //                      .ThenInclude(er => er.Role)
+        //                      .ThenInclude(r => r.Role_Detailed_Permissions)
+        //                      .ThenInclude(rdp => rdp.Detailed_Permissions)
+        //                      .ThenInclude(dp => dp.Master_Permissions)
+        //    );
 
-            if (employee == null)
-            {
-                return NotFound();
-            }
+        //    if (employee == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var employeeDTO = mapper.Map<EmployeeDTO>(employee);
-            return Ok(employeeDTO);
-        }
+        //    var employeeDTO = mapper.Map<EmployeeDTO>(employee);
+        //    return Ok(employeeDTO);
+        //}
+
+        //[HttpGet("Employee_With_Role_Permission/{empID}")]
+        //public async Task<IActionResult> Employee_With_Role_Permission(int empID)
+        //{
+        //    var employee = await _context.Employees
+        //        .Include(e => e.Employee_Roles)
+        //            .ThenInclude(er => er.Role)
+        //                .ThenInclude(r => r.Role_Permissions)
+        //                    .ThenInclude(rdp => rdp.Master_Detailes_Permissions)
+        //                        .ThenInclude(dp => dp.Master_Permission)
+        //                            .ThenInclude(d => d.Modules_Master_permissions)
+        //                              .ThenInclude(p => p.Module)
+
+
+
+        //        .FirstOrDefaultAsync(e => e.ID == empID);
+
+        //    if (employee == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var result = new
+        //    {
+        //        Employee = new
+        //        {
+        //            employee.ID,
+        //            employee.User_Name,
+        //            employee.Email,
+        //            Roles = employee.Employee_Roles.Select(er => new
+        //            {
+        //                er.Role.ID,
+        //                er.Role.Name,
+        //                DetailedPermissions = er.Role.Role_Detailed_Permissions.Select(rdp => new
+        //                {
+        //                    rdp.Detailed_Permissions.ID,
+        //                    rdp.Detailed_Permissions.Name,
+        //                    MasterPermission = new
+        //                    {
+        //                        rdp.Detailed_Permissions.Master_Permissions.ID,
+        //                        rdp.Detailed_Permissions.Master_Permissions.Name
+        //                    }
+        //                })
+        //            })
+        //        }
+        //    };
+
+        //    return Ok(result);
+        //}
 
     }
 }

@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public partial class Role_Detailed_Permissions
+    public partial class Role_Permissions
     {
         // NOTE ==> Both said to be ForeignKey and PrimaryKey in context
+        public int Id { get; set; }
         public int Role_ID { get; set; }
-        public int Detailed_Permissions_ID { get; set; }
+        public int Master_Detailed_Permissions_ID { get; set; }
 
         public Role Role { get; set; }
-        public Detailed_Permissions Detailed_Permissions { get; set; }
+        public Master_Detailes_Permissions Master_Detailes_Permissions { get; set; }
     }
 }

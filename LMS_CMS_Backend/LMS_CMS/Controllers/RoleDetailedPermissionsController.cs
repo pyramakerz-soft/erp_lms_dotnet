@@ -18,7 +18,7 @@ namespace LMS_CMS_PL.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            List<Role_Detailed_Permissions> Role_Detailed_Permissions = unitOfWork.role_Detailed_Permissions_Repository.Select_All();
+            List<Role_Permissions> Role_Detailed_Permissions = unitOfWork.role_Detailed_Permissions_Repository.Select_All();
             if (Role_Detailed_Permissions == null)
             {
                 return NotFound();

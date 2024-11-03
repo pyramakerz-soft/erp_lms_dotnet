@@ -19,12 +19,9 @@ namespace LMS_CMS_DAL.Models
         [Unicode(false)]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Master_Permission_ID is required")]
-        [ForeignKey("Master_Permissions")]
-        public int Master_Permission_ID {  get; set; }
 
-        public Master_Permissions Master_Permissions { get; set; }
-        public ICollection<Role_Detailed_Permissions> Role_Detailed_Permissions { get; set; } = new HashSet<Role_Detailed_Permissions>(); // Navigation property
+
+        public ICollection<Master_Detailes_Permissions> Master_Detailes_Permissions { get; set; } = new HashSet<Master_Detailes_Permissions>();
 
     }
 }

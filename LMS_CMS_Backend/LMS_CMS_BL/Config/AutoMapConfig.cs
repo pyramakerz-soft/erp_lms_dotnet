@@ -22,16 +22,16 @@ namespace LMS_CMS_BL.Config
             CreateMap<Employee_Role, RoleDTO>()
                 .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Role.ID))
                 .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Role.Name))
-                .ForMember(dest => dest.DetailedPermissions, opt => opt.MapFrom(src => src.Role.Role_Detailed_Permissions));
+                .ForMember(dest => dest.DetailedPermissions, opt => opt.MapFrom(src => src.Role.Role_Permissions));
 
-            CreateMap<Role_Detailed_Permissions, DetailedPermissionDTO>()
-                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Detailed_Permissions.ID))
-                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Detailed_Permissions.Name))
-                .ForMember(dest => dest.MasterPermission, opt => opt.MapFrom(src => src.Detailed_Permissions.Master_Permissions));
+            //CreateMap<Role_Permissions, Master_Detailes_Permissions>()
+            //    .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Detailed_Permissions.ID))
+            //    .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Detailed_Permissions.Name))
+            //    .ForMember(dest => dest.MasterPermission, opt => opt.MapFrom(src => src.Detailed_Permissions.Master_Permissions));
 
-            CreateMap<Master_Permissions, MasterPermissionDTO>()
-                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.ID))
-                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name));
+            //CreateMap<Master_Permissions, MasterPermissionDTO>()
+            //    .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.ID))
+            //    .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name));
         }
     }
 }

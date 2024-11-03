@@ -18,6 +18,8 @@ namespace LMS_CMS_DAL.Models
         [Unicode(false)]
         public string Name { get; set; }
 
-        public ICollection<Detailed_Permissions> Detailed_Permissions { get; set; } = new HashSet<Detailed_Permissions>();
+        public ICollection<Master_Detailes_Permissions> Master_Detailes_Permissions { get; set; } = new HashSet<Master_Detailes_Permissions>();
+        public ICollection<Modules_Master_permissions> Modules_Master_permissions { get; set; } = new HashSet<Modules_Master_permissions>(); 
+
     }
 }

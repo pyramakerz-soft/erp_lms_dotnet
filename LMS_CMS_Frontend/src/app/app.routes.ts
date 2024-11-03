@@ -11,6 +11,7 @@ import { navigateIfEmployeeGuard } from './Guards/navigate-if-employee.guard';
 import { NavMenuComponent } from './Component/nav-menu/nav-menu.component';
 import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.component';
 import { UserManagementComponent } from './Pages/Employee/user-management/user-management.component';
+import { navigateIfRoleHasPermissionGuard } from './Guards/navigate-if-role-has-permission.guard';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -22,7 +23,7 @@ export const routes: Routes = [
         canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard], 
         children: [
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },
-            { path: "Admin-Module/User-Management", component: UserManagementComponent, title: "EmployeeUserManagement" }
+            { path: "Admin-Module/User-Management", component: UserManagementComponent, title: "EmployeeUserManagement" ,canActivate:[navigateIfRoleHasPermissionGuard]}
         ]
     },
     { 

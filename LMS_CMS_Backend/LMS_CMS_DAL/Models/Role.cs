@@ -22,5 +22,8 @@ namespace LMS_CMS_DAL.Models
 
         public ICollection<Employee_Role> Employee_Roles { get; set; } = new HashSet<Employee_Role>();
 
+        public ICollection<School_Roles> School_Roles { get; set; } = new HashSet<School_Roles>();
+
+
     }
 }

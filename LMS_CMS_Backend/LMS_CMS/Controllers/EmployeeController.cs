@@ -168,7 +168,5 @@ namespace LMS_CMS_PL.Controllers
             return Ok(groupedResult);
         }
 
-
-
     }
 }

@@ -10,7 +10,6 @@ namespace LMS_CMS_DAL.Models
 {
     public partial class Role_Permissions
     {
-        // NOTE ==> Both said to be ForeignKey and PrimaryKey in context
         public int Id { get; set; }
         public int Role_ID { get; set; }
         public int Master_Detailed_Permissions_ID { get; set; }

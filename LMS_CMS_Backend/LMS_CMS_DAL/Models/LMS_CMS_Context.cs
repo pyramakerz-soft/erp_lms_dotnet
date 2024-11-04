@@ -14,7 +14,7 @@ namespace LMS_CMS_DAL.Models
         public DbSet<Role> Roles { get; set; }
         public DbSet<Master_Permissions> Master_Permissions { get; set; }
         public DbSet<Detailed_Permissions> Detailed_Permissions { get; set; }
-        public DbSet<Role_Permissions> Role_Detailed_Permissions { get; set; }
+        public DbSet<Role_Permissions> Role_Permissions { get; set; }
         public DbSet<Employee_Role> Employee_Roles { get; set; }
         public DbSet<Employee_With_Role_Permission_View> Employee_With_Role_Permission_View { get; set; }
         public DbSet<School> Schools { get; set; }
@@ -65,6 +65,7 @@ namespace LMS_CMS_DAL.Models
             modelBuilder.Entity<Modules>()
                 .HasIndex(p => p.Name)
                 .IsUnique();
+
             ///////////////////////// On Delete Cascade: /////////////////////////
             modelBuilder.Entity<Master_Detailes_Permissions>()
                 .HasOne(d => d.Detailed_Permission)
@@ -131,6 +132,7 @@ namespace LMS_CMS_DAL.Models
                 .WithMany(dp => dp.Schools)
                 .HasForeignKey(rp => rp.Domain_id)
                 .OnDelete(DeleteBehavior.Cascade);
+
             ///////////////////////// View: /////////////////////////
             modelBuilder.Entity<Employee_With_Role_Permission_View>()
             .HasNoKey() // Since it's a view and not a table

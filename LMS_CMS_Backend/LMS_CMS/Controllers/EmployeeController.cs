@@ -37,14 +37,18 @@ namespace LMS_CMS_PL.Controllers
         }
 
         [HttpGet("{Id}")]
-        public IActionResult Get_By_Id(int Id)
+        public async Task<IActionResult> Get_By_Id(int Id)
         {
             if (Id == 0)
             {
                 return BadRequest("Employee ID cannot be null.");
             }
 
-            Employee employee = unitOfWork.employee_Repository.Select_By_Id(Id);
+            var employee = await unitOfWork.employee_Repository.FindByIncludesAsync(
+                emp => emp.ID == Id,
+                query => query.Include(e => e.School),
+                query => query.Include(e => e.School.Domain)
+            );
 
             if (employee == null)
             {
@@ -132,6 +136,11 @@ namespace LMS_CMS_PL.Controllers
                 return BadRequest("Employee cannot be null.");
             }
 
+            School school = unitOfWork.school_Repository.Select_By_Id(employeeDTO.School_id);
+            if (school == null)
+            {
+                return BadRequest("No School with this ID");
+            }
             Employee employee = mapper.Map<Employee>(employeeDTO);
             unitOfWork.employee_Repository.Add(employee);
             unitOfWork.SaveChanges();
@@ -140,7 +149,7 @@ namespace LMS_CMS_PL.Controllers
         }
 
         [HttpPut]
-        public ActionResult Edit(Employee_GetDTO employeeDTO)
+        public ActionResult Edit(Employee_PutDTO employeeDTO)
         {
             if (employeeDTO == null)
             {
@@ -154,6 +163,11 @@ namespace LMS_CMS_PL.Controllers
             }
             else
             {
+                School school = unitOfWork.school_Repository.Select_By_Id(employeeDTO.School_id);
+                if (school == null)
+                {
+                    return BadRequest("No School with this ID");
+                }
                 mapper.Map(employeeDTO, existingEmployee);
                 unitOfWork.employee_Repository.Update(existingEmployee);
                 unitOfWork.SaveChanges();

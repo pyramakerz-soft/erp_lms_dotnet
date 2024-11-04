@@ -25,26 +25,34 @@ namespace LMS_CMS_BL.Config
             CreateMap<Role_AddDTO, Role>();
             CreateMap<Role, Role_AddDTO>();
 
-            //CreateMap<Role_Permissions, Master_Detailes_Permissions>()
-            //    .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Detailed_Permissions.ID))
-            //    .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Detailed_Permissions.Name))
-            //    .ForMember(dest => dest.MasterPermission, opt => opt.MapFrom(src => src.Detailed_Permissions.Master_Permissions));
-
-            //CreateMap<Master_Permissions, MasterPermissionDTO>()
-            //    .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.ID))
-            //    .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name));
-
-
             CreateMap<Domain, DomainDTO>()
           .ForMember(dest => dest.Schools, opt => opt.MapFrom(src => src.Schools));
 
             CreateMap<DomainDTO, Domain>()
                 .ForMember(dest => dest.Schools, opt => opt.MapFrom(src => src.Schools));
 
-            // Mapping School to SchoolDTO
             CreateMap<School, SchoolDTO>();
-            // Mapping School to SchoolDTO
+
             CreateMap<SchoolDTO, School>();
+
+            CreateMap<DomainUpdateDTO, Domain>();
+
+            CreateMap<Domain, DomainUpdateDTO>();
+
+            CreateMap<Domain, DomainAddDTO>();
+
+            CreateMap<DomainAddDTO, Domain>();
+
+            CreateMap<SchoolAddDTO, School>()
+              .ForMember(dest => dest.Domain_id, opt => opt.MapFrom(src => src.DomainId));
+
+            CreateMap<School, SchoolAddDTO>();
+
+            CreateMap<SchoolDTO, School>()
+                .ForMember(dest => dest.Domain_id, opt => opt.MapFrom(src => src.DomainId));
+
+            CreateMap<School, SchoolDTO>();
+
         }
     }
 }

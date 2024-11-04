@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Migrations;
 using LMS_CMS_DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,8 @@ namespace LMS_CMS_PL.Controllers
             _mapper = mapper;
         }
 
+        //----------Get Domains ----------//
+
         [HttpGet]
         public IActionResult Get()
         {
@@ -32,58 +35,58 @@ namespace LMS_CMS_PL.Controllers
             }
             List<DomainDTO> domainDtos = _mapper.Map<List<DomainDTO>>(domains);
 
-            // Return the mapped DTOs
             return Ok(domainDtos);
         }
 
-        //----------Get Client by id----------//
+        //----------Get Domain by id----------//
         [HttpGet("{domainId}")]
-        public async Task<IActionResult> GetDomain(int domainId)
+        public IActionResult GetById(int domainId)
         {
-            var domain = await unitOfWork.domain_Repository.FindByIncludesAsync(
-                e => e.Id == domainId, 
-                query => query.Include(d => d.Schools) 
-                              .ThenInclude(s => s.Employees) 
-            );
+            Domain domain = unitOfWork.domain_Repository.Select_By_Id(domainId);
 
             if (domain == null)
             {
                 return NotFound();
             }
-
+            
             return Ok(domain);
         }
 
-        ////----------Update Client----------//
+        //----------add Domain by id----------//
+        [HttpPost]
+        public IActionResult addDomain(DomainAddDTO newDomain)
+        {
+            if (newDomain == null) { return BadRequest(); }
+            Domain domain = _mapper.Map<Domain>(newDomain);
+            unitOfWork.domain_Repository.Add(domain);
+            unitOfWork.SaveChanges();
+            return Ok(newDomain);
+        }
 
-        //[HttpPut]
+        ////----------Update Domain----------//
 
-        //public IActionResult EditBreed(BreedGetDTO newBreed)
-        //{
-        //    if (newBreed == null) { BadRequest(); }
-        //    Breed breed = mapper.Map<Breed>(newBreed);
-        //    unitOfWork.breedRepository.update(breed);
-        //    unitOfWork.SaveChanges();
-        //    return Ok(newBreed);
-        //}
+        [HttpPut]
 
-        ////----------Delete Client----------//
+        public IActionResult EditBreed(DomainUpdateDTO newDomian)
+        {
+            if (newDomian == null) { BadRequest(); }
+            Domain domain = _mapper.Map<Domain>(newDomian);
+            unitOfWork.domain_Repository.Update(domain);
+            unitOfWork.SaveChanges();
+            return Ok(newDomian);
+        }
 
-        //[HttpDelete]
+        ////----------Delete Domain----------//
 
-        //public IActionResult deleteBreed(int id)
-        //{
-        //    List<Pet_Breed> PetBreeds = unitOfWork.pet_BreedRepository.FindBy(p => p.BreedID == id);
-        //    foreach (var item in PetBreeds)
-        //    {
-        //        unitOfWork.pet_BreedRepository.deleteEntity(item);
-        //    }
-        //    unitOfWork.SaveChanges();
-        //    unitOfWork.breedRepository.delete(id);
-        //    unitOfWork.SaveChanges();
-        //    return Ok();
+        [HttpDelete]
 
-        //}
+        public IActionResult deletDomain(int id)
+        {
+            unitOfWork.domain_Repository.Delete(id);
+            unitOfWork.SaveChanges();
+            return Ok();
+
+        }
 
 
     }

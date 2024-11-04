@@ -14,33 +14,47 @@ namespace LMS_CMS_PL.Controllers
     public class EmployeeController : ControllerBase
     {
         UOW unitOfWork;
-        private readonly LMS_CMS_Context _context;
         IMapper mapper;
+        private readonly LMS_CMS_Context _context;
         public EmployeeController(LMS_CMS_Context context, UOW unitOfWork, IMapper mapper)
         {
-            _context = context;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this._context = context;
         }
+
         [HttpGet]
         public IActionResult Get()
         {
-            List<Employee> Employees = unitOfWork.employee_Repository.Select_All();
-            if (Employees == null)
+            List<Employee> employees = unitOfWork.employee_Repository.Select_All_With_Includes(s => s.School, d => d.School.Domain);
+            if (employees == null)
             {
                 return NotFound();
             }
-            return Ok(Employees);
+            List<Employee_GetDTO> employeeDTOs = mapper.Map<List<Employee_GetDTO>>(employees);
+
+            return Ok(employeeDTOs);
         }
-        [HttpGet("{empID}")]
-        public IActionResult GetById(int empID)
+
+        [HttpGet("{Id}")]
+        public IActionResult Get_By_Id(int Id)
         {
-            Employee Employee = unitOfWork.employee_Repository.Select_By_Id(empID);
-            if (Employee == null)
+            if (Id == 0)
+            {
+                return BadRequest("Employee ID cannot be null.");
+            }
+
+            Employee employee = unitOfWork.employee_Repository.Select_By_Id(Id);
+
+            if (employee == null)
             {
                 return NotFound();
             }
-            return Ok(Employee);
+            else
+            {
+                Employee_GetDTO employeeDTO = mapper.Map<Employee_GetDTO>(employee);
+                return Ok(employeeDTO);
+            }
         }
        
 
@@ -108,6 +122,65 @@ namespace LMS_CMS_PL.Controllers
                     }
                 }).ToList();
             return Ok(groupedResult);
+        }
+
+        [HttpPost]
+        public ActionResult Add(Employee_AddDTO employeeDTO)
+        {
+            if (employeeDTO == null)
+            {
+                return BadRequest("Employee cannot be null.");
+            }
+
+            Employee employee = mapper.Map<Employee>(employeeDTO);
+            unitOfWork.employee_Repository.Add(employee);
+            unitOfWork.SaveChanges();
+
+            return CreatedAtAction(nameof(Get_By_Id), new { id = employee.ID }, employeeDTO);
+        }
+
+        [HttpPut]
+        public ActionResult Edit(Employee_GetDTO employeeDTO)
+        {
+            if (employeeDTO == null)
+            {
+                return BadRequest("Employee cannot be null.");
+            }
+
+            Employee existingEmployee = unitOfWork.employee_Repository.Select_By_Id(employeeDTO.ID);
+            if (existingEmployee == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                mapper.Map(employeeDTO, existingEmployee);
+                unitOfWork.employee_Repository.Update(existingEmployee);
+                unitOfWork.SaveChanges();
+
+                return Ok(employeeDTO);
+            }
+        }
+
+        [HttpDelete("{Id}")]
+        public IActionResult Delete(int Id)
+        {
+            if (Id == 0)
+            {
+                return BadRequest("Employee ID cannot be null.");
+            }
+
+            Employee employee = unitOfWork.employee_Repository.Select_By_Id(Id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                unitOfWork.employee_Repository.Delete(Id);
+                unitOfWork.SaveChanges();
+                return Ok("Employee has Successfully been deleted");
+            }
         }
     }
 }

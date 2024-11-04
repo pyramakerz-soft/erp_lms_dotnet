@@ -27,8 +27,9 @@ namespace LMS_CMS_PL.Controllers
             {
                 return NotFound();
             }
+            List<Role_GetDTO> roleDTOs = mapper.Map<List<Role_GetDTO>>(roles);
 
-            return Ok(roles);
+            return Ok(roleDTOs);
         }
 
         [HttpGet("{Id}")]

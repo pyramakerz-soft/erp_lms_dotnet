@@ -13,11 +13,14 @@ namespace LMS_CMS_BL.Config
     {
         public AutoMapConfig()
         {
-            CreateMap<Employee, EmployeeDTO>()
-            .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.ID))
-            .ForMember(dest => dest.user_Name, opt => opt.MapFrom(src => src.User_Name))
-            .ForMember(dest => dest.email, opt => opt.MapFrom(src => src.Email))
-            .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Employee_Roles));
+            CreateMap<Employee_AddDTO, Employee>()
+                .ForPath(dest => dest.School.Id, opt => opt.MapFrom(src => src.School_id));
+
+            CreateMap<Employee, Employee_GetDTO>()
+                .ForMember(dest => dest.School_Id, opt => opt.MapFrom(src => src.School.Id))
+                .ForMember(dest => dest.School_Name, opt => opt.MapFrom(src => src.School.Name))
+                .ForMember(dest => dest.Domain_id, opt => opt.MapFrom(src => src.School.Domain.Id))
+                .ForMember(dest => dest.Domain_Name, opt => opt.MapFrom(src => src.School.Domain.Name));
 
             CreateMap<Role_GetDTO, Role>();
             CreateMap<Role, Role_GetDTO>();

@@ -1,13 +1,14 @@
-﻿using System;
+﻿using LMS_CMS_DAL.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models
+namespace LMS_CMS_BL.DTO
 {
-    public class Domain
+    public class DomainDTO
     {
         [Key]
         public int Id { get; set; }
@@ -20,8 +21,6 @@ namespace LMS_CMS_DAL.Models
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters.")]
         public string Password { get; set; }
 
-        public ICollection<School> Schools { get; set; } = new HashSet<School>();
-
-
+        public ICollection<SchoolDTO> Schools { get; set; } = new HashSet<SchoolDTO>();
     }
 }

@@ -32,6 +32,18 @@ namespace LMS_CMS_BL.Config
             //CreateMap<Master_Permissions, MasterPermissionDTO>()
             //    .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.ID))
             //    .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name));
+
+
+            CreateMap<Domain, DomainDTO>()
+          .ForMember(dest => dest.Schools, opt => opt.MapFrom(src => src.Schools));
+
+            CreateMap<DomainDTO, Domain>()
+                .ForMember(dest => dest.Schools, opt => opt.MapFrom(src => src.Schools));
+
+            // Mapping School to SchoolDTO
+            CreateMap<School, SchoolDTO>();
+            // Mapping School to SchoolDTO
+            CreateMap<SchoolDTO, School>();
         }
     }
 }

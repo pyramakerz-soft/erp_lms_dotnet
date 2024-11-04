@@ -21,6 +21,8 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Employee_Role> Employee_Role_Repository;
         GenericRepo<Role_Permissions> Role_Detailed_Permissions_Repository;
         GenericRepo<Employee_With_Role_Permission_View> Employee_With_Role_Permission_View_Repository;
+        GenericRepo<Domain> Domain_Repository;
+        GenericRepo<School> School_Repository;
 
 
         public UOW(LMS_CMS_Context db)
@@ -128,6 +130,30 @@ namespace LMS_CMS_BL.UOW
                     Employee_With_Role_Permission_View_Repository = new GenericRepo<Employee_With_Role_Permission_View>(db);
                 }
                 return Employee_With_Role_Permission_View_Repository;
+            }
+        }
+
+        public GenericRepo<Domain> domain_Repository
+        {
+            get
+            {
+                if (Domain_Repository == null)
+                {
+                    Domain_Repository = new GenericRepo<Domain>(db);
+                }
+                return Domain_Repository;
+            }
+        }
+
+        public GenericRepo<School> school_Repository
+        {
+            get
+            {
+                if (School_Repository == null)
+                {
+                    School_Repository = new GenericRepo<School>(db);
+                }
+                return School_Repository;
             }
         }
 

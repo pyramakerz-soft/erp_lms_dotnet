@@ -84,7 +84,9 @@ export class LoginComponent {
             this.router.navigateByUrl("/Employee")
           }
         },(error)=>{
-          console.log(error)
+          if(error.status == 404){
+            this.somthingError = "Username, Password or Type maybe wrong"
+          }
         }
       );
     }

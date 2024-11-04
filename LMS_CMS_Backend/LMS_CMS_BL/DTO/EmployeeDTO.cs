@@ -11,6 +11,6 @@ namespace LMS_CMS_BL.DTO
         public int id { get; set; }
         public string user_Name { get; set; }
         public string email { get; set; }
-        public List<RoleDTO> Roles { get; set; }
+        public List<Role_GetDTO> Roles { get; set; }
     }
 }

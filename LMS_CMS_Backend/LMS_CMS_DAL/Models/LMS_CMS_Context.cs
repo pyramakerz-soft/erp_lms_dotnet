@@ -20,6 +20,8 @@ namespace LMS_CMS_DAL.Models
         public DbSet<School> Schools { get; set; }
         public DbSet<School_Roles> School_Roles { get; set; }
         public DbSet<Domain> Domains { get; set; }
+        public DbSet<Pyramakerz> Pyramakerz { get; set; }
+
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
             : base(options)
         {
@@ -46,6 +48,12 @@ namespace LMS_CMS_DAL.Models
                 .HasIndex(p => p.Email)
                 .IsUnique();
             modelBuilder.Entity<Student>()
+                .HasIndex(p => p.User_Name)
+                .IsUnique();
+            modelBuilder.Entity<Pyramakerz>()
+               .HasIndex(p => p.Email)
+               .IsUnique();
+            modelBuilder.Entity<Pyramakerz>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
             modelBuilder.Entity<Employee>()

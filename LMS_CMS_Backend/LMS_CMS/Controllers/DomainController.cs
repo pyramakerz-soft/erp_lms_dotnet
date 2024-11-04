@@ -40,18 +40,22 @@ namespace LMS_CMS_PL.Controllers
 
         //----------Get Domain by id----------//
         [HttpGet("{domainId}")]
-        public IActionResult GetById(int domainId)
+        public async Task<IActionResult> GetById(int domainId)
         {
-            Domain domain = unitOfWork.domain_Repository.Select_By_Id(domainId);
+            Domain domain = await unitOfWork.domain_Repository.FindByIncludesAsync(
+                e => e.ID == domainId,
+                query => query.Include(e => e.Schools)); 
 
             if (domain == null)
             {
                 return NotFound();
             }
-            
-            return Ok(domain);
-        }
 
+            DomainDTO domainDto = _mapper.Map<DomainDTO>(domain);
+
+
+            return Ok(domainDto);
+        }
         //----------add Domain by id----------//
         [HttpPost]
         public IActionResult addDomain(DomainAddDTO newDomain)
@@ -88,6 +92,5 @@ namespace LMS_CMS_PL.Controllers
 
         }
 
-
-    }
+      }
 }

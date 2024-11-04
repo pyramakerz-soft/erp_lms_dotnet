@@ -4,6 +4,7 @@ import { AccountService } from '../../../Services/account.service';
 import { Login } from '../../../Models/login';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TokenData } from '../../../Models/token-data';
 
 @Component({
   selector: 'app-domain-login',
@@ -15,9 +16,25 @@ import { FormsModule } from '@angular/forms';
 export class DomainLoginComponent {
   
   userInfo:Login = new Login("", "", "", "");
+  User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
 
   constructor(private router:Router, public accountService:AccountService){  }
 
 
-  SignIN(){}
-}
+  SignIN(){
+    this.userInfo.type="domain";
+      this.accountService.Login(this.userInfo).subscribe(
+        (d: any) => {
+          this.accountService.isAuthenticated = true;
+          localStorage.setItem("token", JSON.parse(d).token);
+          
+          this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
+  
+          this.router.navigateByUrl("Domain/Home")
+
+        },(error)=>{
+          
+        }
+      );
+    }
+  }

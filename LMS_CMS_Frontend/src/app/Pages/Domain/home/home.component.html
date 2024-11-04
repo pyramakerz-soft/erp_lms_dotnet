@@ -1,0 +1,47 @@
+<div class="p-6">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-800">Domain Information</h2>
+    
+    <!-- Domain Info Table -->
+    <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-300 mb-6">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="py-3 px-4 border-b text-left text-gray-700">Domain ID</th>
+                <th class="py-3 px-4 border-b text-left text-gray-700">Name</th>
+                <th class="py-3 px-4 border-b text-left text-gray-700">Username</th>
+                <th class="py-3 px-4 border-b text-left text-gray-700">Password</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-600">
+            <tr class="hover:bg-gray-100 ">
+                <td class="py-3 px-4 border-b">{{ domain.id }}</td>
+                <td class="py-3 px-4 border-b">{{ domain.name }}</td>
+                <td class="py-3 px-4 border-b">{{ domain.user_Name }}</td>
+                <td class="py-3 px-4 border-b">{{ domain.password }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Schools Table -->
+    <h3 class="text-xl font-semibold mb-4 mt-4 text-gray-800">Associated Schools</h3>
+    <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-300 mt-4">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="py-3 px-4 border-b text-left text-gray-700">School ID</th>
+                <th class="py-3 px-4 border-b text-left text-gray-700">School Name</th>
+                <th class="py-3 px-4 border-b text-left text-gray-700">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-600">
+            <tr *ngFor="let school of domain.schools" class="hover:bg-gray-100">
+                <td class="py-3 px-4 border-b">{{ school.id }}</td>
+                <td class="py-3 px-4 border-b">{{ school.name }}</td>
+
+                <td class="py-3 px-4 border-b flex space-x-2">
+                    <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" >Edit</button>
+                    <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" >Delete</button>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>

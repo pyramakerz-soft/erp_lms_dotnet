@@ -15,9 +15,13 @@ import { navigateIfRoleHasPermissionGuard } from './Guards/navigate-if-role-has-
 import { PyramakerzLoginComponent } from './Pages/Login/pyramakerz-login/pyramakerz-login.component';
 import { DomainLoginComponent } from './Pages/Login/domain-login/domain-login.component';
 import { DomainComponent } from './Pages/Pyramakerz/domain/domain.component';
+import { HomeComponent } from './Pages/Domain/home/home.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
+    { path: "Domain/login", component: DomainLoginComponent, title: "login" },
+    { path: "Pyramakerz/login", component: PyramakerzLoginComponent, title: "login" },
+
     
     { 
         path: "Employee", 
@@ -47,12 +51,26 @@ export const routes: Routes = [
             { path: "", component: StudentHomeComponent, title: "StudentHome" }
         ]
     },
+    { 
+        path: "Pyramakerz", 
+        component: MainLayoutComponent, 
+        title: "Pyramakerz Home",
+        canActivate:[], 
+        children: [
+            { path: "Home", component: DomainComponent, title: "Domain" },
+        ]
+    },
+    { 
+        path: "Domain", 
+        component: MainLayoutComponent, 
+        title: "Domain Home",
+        canActivate:[], 
+        children: [
+            { path: "Home", component: HomeComponent, title: "Domain" },
+        ]
+    },
     
     { path: "nav", component: NavMenuComponent, title: "Home" },
-    { path: "Pyramakerz/login", component: PyramakerzLoginComponent, title: "login" },
-    { path: "Domain/login", component: DomainLoginComponent, title: "login" },
-    { path: "Domain/Home", component: DomainComponent, title: "Domain" },
-
 
 
     { path: '**', redirectTo: '/' }

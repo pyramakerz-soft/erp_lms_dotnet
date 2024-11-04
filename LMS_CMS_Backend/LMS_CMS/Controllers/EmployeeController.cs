@@ -166,7 +166,7 @@ namespace LMS_CMS_PL.Controllers
                 School school = unitOfWork.school_Repository.Select_By_Id(employeeDTO.School_id);
                 if (school == null)
                 {
-                    return BadRequest("No School with this ID");
+                    return NotFound("No School with this ID");
                 }
                 mapper.Map(employeeDTO, existingEmployee);
                 unitOfWork.employee_Repository.Update(existingEmployee);

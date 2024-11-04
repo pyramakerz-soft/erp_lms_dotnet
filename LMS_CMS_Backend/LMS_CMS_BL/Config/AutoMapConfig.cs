@@ -61,6 +61,7 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<School, SchoolDTO>();
 
+            CreateMap<Role_Permissions_AddDTO, Role_Permissions>();
         }
     }
 }

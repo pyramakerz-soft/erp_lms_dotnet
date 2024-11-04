@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models
+namespace LMS_CMS_BL.DTO
 {
-    public class Domain
+    public class DomainUpdateDTO
     {
         [Key]
         public int Id { get; set; }
@@ -19,9 +19,5 @@ namespace LMS_CMS_DAL.Models
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters.")]
         public string Password { get; set; }
-
-        public ICollection<School> Schools { get; set; } = new HashSet<School>();
-
-
     }
 }

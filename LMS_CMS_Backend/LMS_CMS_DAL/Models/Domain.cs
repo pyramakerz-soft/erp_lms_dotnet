@@ -13,5 +13,6 @@ namespace LMS_CMS_DAL.Models
 
         public ICollection<School> Schools { get; set; } = new HashSet<School>();
 
+
     }
 }

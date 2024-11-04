@@ -12,12 +12,17 @@ export const navigateIfParentGuard: CanActivateFn = (route, state) => {
   let User_Type = User_Data_After_Login.type
 
   if(User_Type!="parent"){
-
     if(User_Type=="student"){
       router.navigateByUrl('Student');
       return false;
     }else if(User_Type=="employee"){
       router.navigateByUrl('Employee');
+      return false;
+    }else if(User_Type=="pyramakerz"){
+      router.navigateByUrl('Pyramakerz');
+      return false;
+    }else if(User_Type=="domain"){
+      router.navigateByUrl('Domain');
       return false;
     }
   }

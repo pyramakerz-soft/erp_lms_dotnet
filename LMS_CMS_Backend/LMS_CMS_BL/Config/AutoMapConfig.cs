@@ -19,10 +19,11 @@ namespace LMS_CMS_BL.Config
             .ForMember(dest => dest.email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Employee_Roles));
 
-            CreateMap<Employee_Role, RoleDTO>()
-                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Role.ID))
-                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Role.Name))
-                .ForMember(dest => dest.DetailedPermissions, opt => opt.MapFrom(src => src.Role.Role_Permissions));
+            CreateMap<Role_GetDTO, Role>();
+            CreateMap<Role, Role_GetDTO>();
+
+            CreateMap<Role_AddDTO, Role>();
+            CreateMap<Role, Role_AddDTO>();
 
             //CreateMap<Role_Permissions, Master_Detailes_Permissions>()
             //    .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Detailed_Permissions.ID))

@@ -12,6 +12,9 @@ import { NavMenuComponent } from './Component/nav-menu/nav-menu.component';
 import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.component';
 import { UserManagementComponent } from './Pages/Employee/user-management/user-management.component';
 import { navigateIfRoleHasPermissionGuard } from './Guards/navigate-if-role-has-permission.guard';
+import { PyramakerzLoginComponent } from './Pages/Login/pyramakerz-login/pyramakerz-login.component';
+import { DomainLoginComponent } from './Pages/Login/domain-login/domain-login.component';
+import { DomainComponent } from './Pages/Pyramakerz/domain/domain.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -46,5 +49,12 @@ export const routes: Routes = [
     },
     
     { path: "nav", component: NavMenuComponent, title: "Home" },
+    { path: "Pyramakerz/login", component: PyramakerzLoginComponent, title: "login" },
+    { path: "Domain/login", component: DomainLoginComponent, title: "login" },
+    { path: "Domain/Home", component: DomainComponent, title: "Domain" },
+
+
+
     { path: '**', redirectTo: '/' }
 ];
+

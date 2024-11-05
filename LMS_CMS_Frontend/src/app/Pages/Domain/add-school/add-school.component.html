@@ -16,10 +16,51 @@
     <input 
         class="h-[56px] rounded-[8px] border px-2"  
         type="text" 
-        [(ngModel)]="roles[i]"  
+        [(ngModel)]="roles[i+1]"  
         placeholder="Enter role name"
     />
     <button class="m-2 secondaryBg text-white p-2 rounded" (click)="deleteRole(i)">Delete</button>
+    <!-- add checkBox here -->
+    <div *ngFor="let module of DomainModule">
+        <!-- Checkbox for each DomainModule -->
+        <label class="ml-2">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="selectedModules[module.moduleID]" 
+          /> 
+          {{ module.moduleName }}
+        </label>
+      
+        <!-- Show master permissions if module is selected -->
+        <div *ngIf="selectedModules[module.moduleID]" class="ml-4">
+          <div *ngFor="let permission of module.permissions">
+            <label class="ml-2">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="selectedMasterPermissions[permission.masterPermissionID]" 
+              /> 
+              {{ permission.masterPermissionName }}
+            </label>
+      
+            <!-- Show detailed permissions if master permission is selected -->
+            <div *ngIf="selectedMasterPermissions[permission.masterPermissionID]" class="ml-6">
+              <div *ngFor="let detail of permission.detailedPermissions">
+                <label class="ml-2">
+                  <input 
+                    type="checkbox" 
+                    [(ngModel)]="selectedDetailedPermissions[detail.detailedPermissionID]" 
+                    (change)="toggleDetailedPermission(detail.detailedPermissionID)"
+                  /> 
+                  {{ detail.detailedPermissionName }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+    
 </div>
 
 <!-- Save button -->

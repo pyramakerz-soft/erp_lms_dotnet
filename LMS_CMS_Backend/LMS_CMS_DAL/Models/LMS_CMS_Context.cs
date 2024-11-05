@@ -21,6 +21,8 @@ namespace LMS_CMS_DAL.Models
         public DbSet<School_Roles> School_Roles { get; set; }
         public DbSet<Domain> Domains { get; set; }
         public DbSet<Pyramakerz> Pyramakerz { get; set; }
+        public DbSet<Domain_Modules> Domain_Modules { get; set; }
+        public DbSet<Domain_Modules_Permission_View> Domain_Modules_Permission_View { get; set; }
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
             : base(options)
@@ -29,9 +31,6 @@ namespace LMS_CMS_DAL.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             ///////////////////////// Unique Values: /////////////////////////
-            modelBuilder.Entity<Role>()
-                .HasIndex(r => r.Name)
-                .IsUnique();
             modelBuilder.Entity<Master_Permissions>()
                 .HasIndex(MP => MP.Name)
                 .IsUnique();
@@ -132,11 +131,26 @@ namespace LMS_CMS_DAL.Models
                 .WithMany(dp => dp.Schools)
                 .HasForeignKey(rp => rp.Domain_id)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Domain_Modules>()
+                .HasOne(dm => dm.Domain)
+                .WithMany(d => d.Domain_Modules)
+                .HasForeignKey(dm => dm.Domain_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Domain_Modules>()
+                .HasOne(dm => dm.Module)
+                .WithMany(m => m.Domain_Modules)
+                .HasForeignKey(dm => dm.Module_Id)
+                .OnDelete(DeleteBehavior.Cascade);
 
             ///////////////////////// View: /////////////////////////
             modelBuilder.Entity<Employee_With_Role_Permission_View>()
             .HasNoKey() // Since it's a view and not a table
             .ToView("Employee_With_Role_Permission_View");
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Domain_Modules_Permission_View>()
+            .HasNoKey() // Since it's a view and not a table
+            .ToView("Domain_Modules_Permission_View");
             base.OnModelCreating(modelBuilder);
         }
     }

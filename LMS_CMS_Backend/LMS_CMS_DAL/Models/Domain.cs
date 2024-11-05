@@ -21,7 +21,6 @@ namespace LMS_CMS_DAL.Models
         public string Password { get; set; }
 
         public ICollection<School> Schools { get; set; } = new HashSet<School>();
-
-
+        public ICollection<Domain_Modules> Domain_Modules { get; set; } = new HashSet<Domain_Modules>();
     }
 }

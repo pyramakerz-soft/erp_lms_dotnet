@@ -80,6 +80,11 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<Employee_Role_AddDTO, Employee_Role>();
             CreateMap<Employee_Role_PutDTO, Employee_Role>();
+
+            CreateMap<Domain_Modules, Domain_Modules_GetDTO>()
+                .ForMember(dest => dest.Domain_Name, opt => opt.MapFrom(src => src.Domain.Name))
+                .ForMember(dest => dest.Module_Name, opt => opt.MapFrom(src => src.Module.Name));
+
         }
     }
 }

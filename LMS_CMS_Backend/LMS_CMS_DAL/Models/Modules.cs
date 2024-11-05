@@ -17,6 +17,7 @@ namespace LMS_CMS_DAL.Models
         public string Name { get; set; }
 
         public ICollection<Modules_Master_permissions> Modules_Master_permissions { get; set; } = new HashSet<Modules_Master_permissions>(); // Navigation property
+        public ICollection<Domain_Modules> Domain_Modules { get; set; } = new HashSet<Domain_Modules>();
 
     }
 }

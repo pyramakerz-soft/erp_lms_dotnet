@@ -1,0 +1,28 @@
+<div class="m-2">
+    <label for="schoolName" class="py-6">School Name:</label>
+    <input 
+        class="h-[56px] rounded-[8px] border px-2"  
+        type="text" 
+        [(ngModel)]="newSchool.name" 
+    />
+</div>
+
+<!-- Button to add a new role input field -->
+<button class="m-2 secondaryBg text-white p-2 rounded"  (click)="addRole()">Add ROLE</button>
+
+<!-- Display dynamic role input fields -->
+<div *ngFor="let role of roles; let i = index" class="m-2">
+    <label for="role[i]" class="py-6">Role {{ i + 1 }}:</label>
+    <input 
+        class="h-[56px] rounded-[8px] border px-2"  
+        type="text" 
+        [(ngModel)]="roles[i]"  
+        placeholder="Enter role name"
+    />
+    <button class="m-2 secondaryBg text-white p-2 rounded" (click)="deleteRole(i)">Delete</button>
+</div>
+
+<!-- Save button -->
+<button class="m-2 secondaryBg text-white p-2 rounded" (click)="addSchool()">
+    Save
+</button>

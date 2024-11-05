@@ -61,7 +61,7 @@ namespace LMS_CMS_PL.Controllers
             School school = _mapper.Map<School>(newSchool);
             unitOfWork.school_Repository.Add(school);
             unitOfWork.SaveChanges();
-            return Ok(newSchool);
+            return Ok(school.Id);
         }
 
         ////----------Update School----------//

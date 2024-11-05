@@ -37,4 +37,8 @@ export class HomeComponent {
       });
   }
 
+  add(){
+    this.router.navigateByUrl("Domain/AddSchool")
+  }
+
 }

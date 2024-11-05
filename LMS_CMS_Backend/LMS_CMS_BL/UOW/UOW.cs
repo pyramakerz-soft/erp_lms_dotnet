@@ -25,6 +25,8 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Domain> Domain_Repository;
         GenericRepo<School> School_Repository;
         GenericRepo<Pyramakerz> Pyramakerz_Repository;
+        GenericRepo<School_Roles> School_Roles_Repository;
+
 
 
         public UOW(LMS_CMS_Context db)
@@ -180,6 +182,18 @@ namespace LMS_CMS_BL.UOW
                     Pyramakerz_Repository = new GenericRepo<Pyramakerz>(db);
                 }
                 return Pyramakerz_Repository;
+            }
+        }
+
+        public GenericRepo<School_Roles> school_Roles_Repository
+        {
+            get
+            {
+                if (School_Roles_Repository == null)
+                {
+                    School_Roles_Repository = new GenericRepo<School_Roles>(db);
+                }
+                return School_Roles_Repository;
             }
         }
 

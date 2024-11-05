@@ -18,7 +18,7 @@ namespace LMS_CMS_BL.Config
             CreateMap<Employee, Employee_GetDTO>()
                 .ForMember(dest => dest.School_Id, opt => opt.MapFrom(src => src.School.Id))
                 .ForMember(dest => dest.School_Name, opt => opt.MapFrom(src => src.School.Name))
-                .ForMember(dest => dest.Domain_id, opt => opt.MapFrom(src => src.School.Domain.Id))
+                .ForMember(dest => dest.Domain_id, opt => opt.MapFrom(src => src.School.Domain.ID))
                 .ForMember(dest => dest.Domain_Name, opt => opt.MapFrom(src => src.School.Domain.Name));
 
             CreateMap<Employee_GetDTO, Employee>()
@@ -62,6 +62,16 @@ namespace LMS_CMS_BL.Config
             CreateMap<School, SchoolDTO>();
 
             CreateMap<Role_Permissions_AddDTO, Role_Permissions>();
+
+
+            CreateMap<School_Roles, schoolRoleDTO>()
+                .ForMember(dest => dest.Role_Name, opt => opt.MapFrom(src => src.Role.Name))
+                .ForMember(dest => dest.School_Name, opt => opt.MapFrom(src => src.School.Name));
+
+
+
+            CreateMap<schoolRoleDTO, School_Roles>();
+
         }
     }
 }

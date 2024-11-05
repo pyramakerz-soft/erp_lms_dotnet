@@ -83,5 +83,20 @@ namespace LMS_CMS_BL.Repository
 
             return await query.FirstOrDefaultAsync(predicate);
         }
+
+        public List<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate)
+        {
+            return db.Set<TEntity>().Where(predicate).ToList();
+        }
+
+        public async Task<List<TEntity>> Select_All_With_Includesbyid<TProperty>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, TProperty>> include)
+        {
+            return await db.Set<TEntity>()
+                .Where(predicate)
+                .Include(include)
+                .ToListAsync();
+        }
     }
 }

@@ -23,13 +23,13 @@
 
     <!-- Schools Table -->
     <h3 class="text-xl font-semibold mb-4 mt-4 text-gray-800">Associated Schools</h3>
-    <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" (click)="add()">Add School</button>
+    <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" (click)="addSchool()">Add School</button>
     <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-300 mt-4">
         <thead class="bg-gray-200">
             <tr>
                 <th class="py-3 px-4 border-b text-left text-gray-700">School ID</th>
                 <th class="py-3 px-4 border-b text-left text-gray-700">School Name</th>
-                <!-- <th class="py-3 px-4 border-b text-left text-gray-700">Actions</th> -->
+                <th class="py-3 px-4 border-b text-left text-gray-700">Actions</th>
             </tr>
         </thead>
         <tbody class="text-gray-600">
@@ -37,10 +37,11 @@
                 <td class="py-3 px-4 border-b">{{ school.id }}</td>
                 <td class="py-3 px-4 border-b">{{ school.name }}</td>
 
-                <!-- <td class="py-3 px-4 border-b flex space-x-2">
-                    <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" >Edit</button>
-                    <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" >Delete</button>
-                </td> -->
+                <td class="py-3 px-4 border-b flex space-x-2">
+                    <!-- <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" >Edit</button>
+                    <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" >Delete</button> -->
+                    <button class="mt-2 ml-2 secondaryBg text-white p-2 rounded" (click)="Employees(school.id)">Employees</button>
+                </td>
 
             </tr>
         </tbody>

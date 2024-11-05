@@ -1,0 +1,12 @@
+<div class="m-2">
+    <label for="schoolName" class="">UserName:</label>
+    <input class="h-[56px] rounded-[8px] border px-2 mr-5" type="text" [(ngModel)]="employee.user_Name"  />
+    <label for="schoolName" class="">Email:</label>
+    <input class="h-[56px] rounded-[8px] border px-2 mr-5" type="text" [(ngModel)]="employee.email"  />
+    <label for="schoolName" class="">Password:</label>
+    <input class="h-[56px] rounded-[8px] border px-2 mr-5" type="password" [(ngModel)]="employee.password" />
+</div>
+
+<button class="m-2 secondaryBg text-white p-2 rounded" (click)="addEmployee()">
+    Save
+</button>

@@ -17,13 +17,12 @@ import { FormsModule } from '@angular/forms';
 export class HomeComponent {
 
   domain:Domain=new Domain(0,"","","",[]);
-   User_Data_After_Login :TokenData= new TokenData("", 0, 0, "", "", "", "", "")
+  User_Data_After_Login :TokenData= new TokenData("", 0, 0, "", "", "", "", "")
 
 
   constructor(private router:Router, public domainServ:DomainService ,public account:AccountService){  }
 
   ngOnInit(){
-    // this.getDomainInfo();
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.getDomainInfo(this.User_Data_After_Login.id)
   }
@@ -31,14 +30,16 @@ export class HomeComponent {
   getDomainInfo(id:number){
     this.domainServ.Get_Domain_By_Id(id).subscribe(
       (d: any) => {
-        console.log(d);
         this.domain=d;
-        console.log(this.domain);
       });
   }
 
-  add(){
+  addSchool(){
     this.router.navigateByUrl("Domain/AddSchool")
+  }
+  
+  Employees(id:number){
+    this.router.navigateByUrl(`Domain/Employees/${id}`)
   }
 
 }

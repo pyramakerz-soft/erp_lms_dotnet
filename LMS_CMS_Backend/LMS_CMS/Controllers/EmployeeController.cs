@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Migrations;
 using LMS_CMS_DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -60,7 +61,28 @@ namespace LMS_CMS_PL.Controllers
                 return Ok(employeeDTO);
             }
         }
-       
+
+        [HttpGet("Employees_In_School/{Id}")]
+        public IActionResult Get_By_School_Id(int Id)
+        {
+            if (Id == 0)
+            {
+                return BadRequest("School ID cannot be null.");
+            }
+
+            var employees = unitOfWork.employee_Repository.FindBy(emp => emp.School_id == Id );
+
+            if (employees == null || employees.Count == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var employeeDTOs = mapper.Map<List<Employee_GetDTO>>(employees);
+
+                return Ok(employeeDTOs);
+            }
+        }
 
         [HttpGet("Employee_With_Role_Permission/{empID}")]
         public async Task<IActionResult> Employee_With_Role_Permission(int empID)
@@ -145,7 +167,7 @@ namespace LMS_CMS_PL.Controllers
             unitOfWork.employee_Repository.Add(employee);
             unitOfWork.SaveChanges();
 
-            return CreatedAtAction(nameof(Get_By_Id), new { id = employee.ID }, employeeDTO);
+            return CreatedAtAction(nameof(Get_By_Id), new { Id = employee.ID }, employeeDTO);
         }
 
         [HttpPut]

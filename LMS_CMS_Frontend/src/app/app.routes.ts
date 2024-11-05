@@ -21,6 +21,8 @@ import { navigateIfPyramakerzGuard } from './Guards/navigate-if-pyramakerz.guard
 import { noNavigateWithoutPyramakerzLoginGuard } from './Guards/no-navigate-without-pyramakerz-login.guard';
 import { noNavigateWithoutDomainLoginGuard } from './Guards/no-navigate-without-domain-login.guard';
 import { AddSchoolComponent } from './Pages/Domain/add-school/add-school.component';
+import { EmployeeComponent } from './Pages/Domain/employee/employee.component';
+import { AddEmployeeComponent } from './Pages/Domain/add-employee/add-employee.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -75,7 +77,8 @@ export const routes: Routes = [
             { path: "", component: HomeComponent, title: "Domain" },
             { path: "Home", component: HomeComponent, title: "Domain" },
             { path: "AddSchool", component: AddSchoolComponent, title: "AddSchool" },
-
+            { path: "Employees/:SchoolId", component: EmployeeComponent, title: "Employees" },
+            { path: "AddEmployee/:SchoolId", component: AddEmployeeComponent, title: "Employees" },
         ]
     },
 

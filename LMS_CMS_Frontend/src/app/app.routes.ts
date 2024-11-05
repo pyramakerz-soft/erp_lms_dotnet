@@ -18,6 +18,8 @@ import { DomainComponent } from './Pages/Pyramakerz/domain/domain.component';
 import { HomeComponent } from './Pages/Domain/home/home.component';
 import { navigateIfDomainGuard } from './Guards/navigate-if-domain.guard';
 import { navigateIfPyramakerzGuard } from './Guards/navigate-if-pyramakerz.guard';
+import { noNavigateWithoutPyramakerzLoginGuard } from './Guards/no-navigate-without-pyramakerz-login.guard';
+import { noNavigateWithoutDomainLoginGuard } from './Guards/no-navigate-without-domain-login.guard';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -57,7 +59,7 @@ export const routes: Routes = [
         path: "Pyramakerz", 
         component: MainLayoutComponent, 
         title: "Pyramakerz Home",
-        canActivate:[noNavigateWithoutLoginGuard, navigateIfPyramakerzGuard], 
+        canActivate:[noNavigateWithoutPyramakerzLoginGuard, navigateIfPyramakerzGuard], 
         children: [
             { path: "", component: DomainComponent, title: "StudentHome" },
             { path: "Home", component: DomainComponent, title: "Domain" },
@@ -67,7 +69,7 @@ export const routes: Routes = [
         path: "Domain", 
         component: MainLayoutComponent, 
         title: "Domain Home",
-        canActivate:[noNavigateWithoutLoginGuard, navigateIfDomainGuard], 
+        canActivate:[noNavigateWithoutDomainLoginGuard, navigateIfDomainGuard], 
         children: [
             { path: "", component: HomeComponent, title: "Domain" },
             { path: "Home", component: HomeComponent, title: "Domain" },

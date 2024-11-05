@@ -18,8 +18,11 @@ export const noNavigateToLoginIfLoginGuard: CanActivateFn = (route, state) => {
   } else if(token != null && User_Type == "student"){
     router.navigateByUrl('/Student');
     return false;
-  } else if(token != null && User_Type == "employee"){
-    router.navigateByUrl('/Employee');
+  } else if(token != null && User_Type == "pyramakerz"){
+    router.navigateByUrl('/Pyramakerz');
+    return false;
+  } else if(token != null && User_Type == "domain"){
+    router.navigateByUrl('/Domain');
     return false;
   }
   

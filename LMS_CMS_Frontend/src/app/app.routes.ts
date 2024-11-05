@@ -16,11 +16,15 @@ import { PyramakerzLoginComponent } from './Pages/Login/pyramakerz-login/pyramak
 import { DomainLoginComponent } from './Pages/Login/domain-login/domain-login.component';
 import { DomainComponent } from './Pages/Pyramakerz/domain/domain.component';
 import { HomeComponent } from './Pages/Domain/home/home.component';
+import { navigateIfDomainGuard } from './Guards/navigate-if-domain.guard';
+import { navigateIfPyramakerzGuard } from './Guards/navigate-if-pyramakerz.guard';
+import { noNavigateWithoutPyramakerzLoginGuard } from './Guards/no-navigate-without-pyramakerz-login.guard';
+import { noNavigateWithoutDomainLoginGuard } from './Guards/no-navigate-without-domain-login.guard';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
-    { path: "Domain/login", component: DomainLoginComponent, title: "login" },
-    { path: "Pyramakerz/login", component: PyramakerzLoginComponent, title: "login" },
+    { path: "Domain/login", component: DomainLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
+    { path: "Pyramakerz/login", component: PyramakerzLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
 
     
     { 
@@ -55,8 +59,9 @@ export const routes: Routes = [
         path: "Pyramakerz", 
         component: MainLayoutComponent, 
         title: "Pyramakerz Home",
-        canActivate:[], 
+        canActivate:[noNavigateWithoutPyramakerzLoginGuard, navigateIfPyramakerzGuard], 
         children: [
+            { path: "", component: DomainComponent, title: "StudentHome" },
             { path: "Home", component: DomainComponent, title: "Domain" },
         ]
     },
@@ -64,14 +69,12 @@ export const routes: Routes = [
         path: "Domain", 
         component: MainLayoutComponent, 
         title: "Domain Home",
-        canActivate:[], 
+        canActivate:[noNavigateWithoutDomainLoginGuard, navigateIfDomainGuard], 
         children: [
+            { path: "", component: HomeComponent, title: "Domain" },
             { path: "Home", component: HomeComponent, title: "Domain" },
         ]
     },
-    
-    { path: "nav", component: NavMenuComponent, title: "Home" },
-
 
     { path: '**', redirectTo: '/' }
 ];

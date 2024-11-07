@@ -16,18 +16,12 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Parent> Parent_Repository;
         GenericRepo<Student> Student_Repository;
         GenericRepo<Role> Role_Repository;
-        GenericRepo<Detailed_Permissions> Detailed_Permissions_Repository;
-        GenericRepo<Master_Permissions> Master_Permissions_Repository;
-        GenericRepo<Employee_Role> Employee_Role_Repository;
-        GenericRepo<Role_Permissions> Role_Permissions_Repository;
-        GenericRepo<Master_Detailes_Permissions> Master_Detailes_Permissions_Repository;
-        GenericRepo<Employee_With_Role_Permission_View> Employee_With_Role_Permission_View_Repository;
         GenericRepo<Domain> Domain_Repository;
         GenericRepo<School> School_Repository;
+        GenericRepo<Domain_Page_Detailes> Domain_Page_Detailes_Repository;
+        GenericRepo<Page> Page_Repository;
+        GenericRepo<Role_Detailes> Role_Detailes_Repository;
         GenericRepo<Pyramakerz> Pyramakerz_Repository;
-        GenericRepo<Domain_Modules> Domain_Modules_Repository;
-        GenericRepo<Domain_Modules_Permission_View> Domain_Modules_Permission_View_Repository;
-        GenericRepo<School_Roles> School_Roles_Repository;
 
         public UOW(LMS_CMS_Context db)
         {
@@ -79,75 +73,6 @@ namespace LMS_CMS_BL.UOW
                 return Role_Repository;
             }
         }
-        public GenericRepo<Detailed_Permissions> detailed_Permissions_Repository
-        {
-            get
-            {
-                if (Detailed_Permissions_Repository == null)
-                {
-                    Detailed_Permissions_Repository = new GenericRepo<Detailed_Permissions>(db);
-                }
-                return Detailed_Permissions_Repository;
-            }
-        }
-        public GenericRepo<Master_Permissions> master_Permissions_Repository
-        {
-            get
-            {
-                if (Master_Permissions_Repository == null)
-                {
-                    Master_Permissions_Repository = new GenericRepo<Master_Permissions>(db);
-                }
-                return Master_Permissions_Repository;
-            }
-        }
-        public GenericRepo<Employee_Role> employee_Role_Repository
-        {
-            get
-            {
-                if (Employee_Role_Repository == null)
-                {
-                    Employee_Role_Repository = new GenericRepo<Employee_Role>(db);
-                }
-                return Employee_Role_Repository;
-            }
-        }
-
-        public GenericRepo<Role_Permissions> role_Permissions_Repository
-        {
-            get
-            {
-                if (Role_Permissions_Repository == null)
-                {
-                    Role_Permissions_Repository = new GenericRepo<Role_Permissions>(db);
-                }
-                return Role_Permissions_Repository;
-            }
-        }
-
-        public GenericRepo<Master_Detailes_Permissions> master_Detailes_Permissions_Repository
-        {
-            get
-            {
-                if (Master_Detailes_Permissions_Repository == null)
-                {
-                    Master_Detailes_Permissions_Repository = new GenericRepo<Master_Detailes_Permissions>(db);
-                }
-                return Master_Detailes_Permissions_Repository;
-            }
-        }
-
-        public GenericRepo<Employee_With_Role_Permission_View> employee_With_Role_Permission_View_Repository
-        {
-            get
-            {
-                if (Employee_With_Role_Permission_View_Repository == null)
-                {
-                    Employee_With_Role_Permission_View_Repository = new GenericRepo<Employee_With_Role_Permission_View>(db);
-                }
-                return Employee_With_Role_Permission_View_Repository;
-            }
-        }
 
         public GenericRepo<Domain> domain_Repository
         {
@@ -185,38 +110,39 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
-        public GenericRepo<Domain_Modules> domain_Modules_Repository
+        public GenericRepo<Domain_Page_Detailes> domain_Page_Detailes_Repository
         {
             get
             {
-                if (Domain_Modules_Repository == null)
+                if (Domain_Page_Detailes_Repository == null)
                 {
-                    Domain_Modules_Repository = new GenericRepo<Domain_Modules>(db);
+                    Domain_Page_Detailes_Repository = new GenericRepo<Domain_Page_Detailes>(db);
                 }
-                return Domain_Modules_Repository;
+                return Domain_Page_Detailes_Repository;
             }
         }
 
-        public GenericRepo<Domain_Modules_Permission_View> domain_Modules_Permission_View_Repository
+        public GenericRepo<Page> page_Repository
         {
             get
             {
-                if (Domain_Modules_Permission_View_Repository == null)
+                if (Page_Repository == null)
                 {
-                    Domain_Modules_Permission_View_Repository = new GenericRepo<Domain_Modules_Permission_View>(db);
+                    Page_Repository = new GenericRepo<Page>(db);
                 }
-                return Domain_Modules_Permission_View_Repository;
+                return Page_Repository;
             }
         }
-        public GenericRepo<School_Roles> school_Roles_Repository
+
+        public GenericRepo<Role_Detailes> role_Detailes_Repository
         {
             get
             {
-                if (School_Roles_Repository == null)
+                if (Role_Detailes_Repository == null)
                 {
-                    School_Roles_Repository = new GenericRepo<School_Roles>(db);
+                    Role_Detailes_Repository = new GenericRepo<Role_Detailes>(db);
                 }
-                return School_Roles_Repository;
+                return Role_Detailes_Repository;
             }
         }
 

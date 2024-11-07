@@ -10,19 +10,15 @@ namespace LMS_CMS_DAL.Models
     {
         public DbSet<Parent> Parents { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<Pyramakerz> Pyramakerz { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Master_Permissions> Master_Permissions { get; set; }
-        public DbSet<Detailed_Permissions> Detailed_Permissions { get; set; }
-        public DbSet<Role_Permissions> Role_Permissions { get; set; }
-        public DbSet<Employee_Role> Employee_Roles { get; set; }
-        public DbSet<Employee_With_Role_Permission_View> Employee_With_Role_Permission_View { get; set; }
         public DbSet<School> Schools { get; set; }
-        public DbSet<School_Roles> School_Roles { get; set; }
         public DbSet<Domain> Domains { get; set; }
-        public DbSet<Pyramakerz> Pyramakerz { get; set; }
-        public DbSet<Domain_Modules> Domain_Modules { get; set; }
-        public DbSet<Domain_Modules_Permission_View> Domain_Modules_Permission_View { get; set; }
+        public DbSet<Domain_Page_Detailes> Domain_Page_Details { get; set; }
+        public DbSet<Page> Pages { get; set; }
+        public DbSet<Role_Detailes> Role_Detailes { get; set; }
+
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
             : base(options)
@@ -31,12 +27,6 @@ namespace LMS_CMS_DAL.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             ///////////////////////// Unique Values: /////////////////////////
-            modelBuilder.Entity<Master_Permissions>()
-                .HasIndex(MP => MP.Name)
-                .IsUnique();
-            modelBuilder.Entity<Detailed_Permissions>()
-                .HasIndex(DP => DP.Name)
-                .IsUnique();
             modelBuilder.Entity<Parent>()
                 .HasIndex(p => p.Email)
                 .IsUnique();
@@ -55,103 +45,79 @@ namespace LMS_CMS_DAL.Models
             modelBuilder.Entity<Pyramakerz>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
-            modelBuilder.Entity<Employee>()
-                .HasIndex(p => p.Email)
-                .IsUnique();
+
             modelBuilder.Entity<Employee>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
-            modelBuilder.Entity<Modules>()
+            modelBuilder.Entity<Domain>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+            modelBuilder.Entity<Page>()
                 .HasIndex(p => p.Name)
                 .IsUnique();
 
-            ///////////////////////// On Delete Cascade: /////////////////////////
-            modelBuilder.Entity<Master_Detailes_Permissions>()
-                .HasOne(d => d.Detailed_Permission)
-                .WithMany(m => m.Master_Detailes_Permissions)
-                .HasForeignKey(d => d.Details_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Modules_Master_permissions>()
-                .HasOne(d => d.Module)
-                .WithMany(m => m.Modules_Master_permissions)
-                .HasForeignKey(d => d.Module_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Modules_Master_permissions>()
-                .HasOne(d => d.Master_Permission)
-                .WithMany(m => m.Modules_Master_permissions)
-                .HasForeignKey(d => d.Master_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Master_Detailes_Permissions>()
-                .HasOne(d => d.Master_Permission)
-                .WithMany(m => m.Master_Detailes_Permissions)
-                .HasForeignKey(d => d.Master_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Student>()
-                .HasOne(s => s.Parent)
-                .WithMany(p => p.Students)
-                .HasForeignKey(s => s.Parent_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Role_Permissions>()
-                .HasOne(rp => rp.Role)
-                .WithMany(r => r.Role_Permissions)
-                .HasForeignKey(rp => rp.Role_ID)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Role_Permissions>()
-                .HasOne(rp => rp.Master_Detailes_Permissions)
-                .WithMany(dp => dp.Role_Permissions)
-                .HasForeignKey(rp => rp.Master_Detailed_Permissions_ID)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Employee_Role>()
-                .HasOne(rp => rp.Role)
-                .WithMany(dp => dp.Employee_Roles)
-                .HasForeignKey(rp => rp.Role_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Employee_Role>()
-                .HasOne(rp => rp.Employee)
-                .WithMany(dp => dp.Employee_Roles)
-                .HasForeignKey(rp => rp.Employee_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<School_Roles>()
-                .HasOne(rp => rp.School)
-                .WithMany(dp => dp.School_Roles)
-                .HasForeignKey(rp => rp.School_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<School_Roles>()
-                .HasOne(rp => rp.Role)
-                .WithMany(dp => dp.School_Roles)
-                .HasForeignKey(rp => rp.Role_Id)
-                .OnDelete(DeleteBehavior.Cascade);
+            ////////////////////////////////////
+            ///
+            modelBuilder.Entity<Page>()
+                 .HasOne(p => p.Parent)
+                 .WithMany(p => p.ChildPages)
+                 .HasForeignKey(p => p.Page_ID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Employee>()
-                .HasOne(rp => rp.School)
-                .WithMany(dp => dp.Employees)
-                .HasForeignKey(rp => rp.School_id)
-                .OnDelete(DeleteBehavior.Cascade);
+                 .HasOne(p => p.Role)
+                 .WithMany(p => p.Employess)
+                 .HasForeignKey(p => p.Role_ID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Domain_Page_Detailes>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.Domain_Page_Detailes)
+                 .HasForeignKey(p => p.Domain_ID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Domain_Page_Detailes>()
+                 .HasOne(p => p.Page)
+                 .WithMany(p => p.Domain_Page_Detailes)
+                 .HasForeignKey(p => p.Page_ID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Employee>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.Employess)
+                 .HasForeignKey(p => p.Domain_ID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Role>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.Roles)
+                 .HasForeignKey(p => p.Domain_ID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Role_Detailes>()
+                 .HasOne(p => p.Role)
+                 .WithMany(p => p.Role_Detailes)
+                 .HasForeignKey(p => p.Role_ID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Role_Detailes>()
+                 .HasOne(p => p.Page)
+                 .WithMany(p => p.Role_Detailes)
+                 .HasForeignKey(p => p.Page_ID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<School>()
-                .HasOne(rp => rp.Domain)
-                .WithMany(dp => dp.Schools)
-                .HasForeignKey(rp => rp.Domain_id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Domain_Modules>()
-                .HasOne(dm => dm.Domain)
-                .WithMany(d => d.Domain_Modules)
-                .HasForeignKey(dm => dm.Domain_Id)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Domain_Modules>()
-                .HasOne(dm => dm.Module)
-                .WithMany(m => m.Domain_Modules)
-                .HasForeignKey(dm => dm.Module_Id)
-                .OnDelete(DeleteBehavior.Cascade);
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.Schools)
+                 .HasForeignKey(p => p.Domain_id)
+                 .OnDelete(DeleteBehavior.Restrict);
 
-            ///////////////////////// View: /////////////////////////
-            modelBuilder.Entity<Employee_With_Role_Permission_View>()
-            .HasNoKey() // Since it's a view and not a table
-            .ToView("Employee_With_Role_Permission_View");
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Student>()
+                 .HasOne(p => p.Parent)
+                 .WithMany(p => p.Students)
+                 .HasForeignKey(p => p.Parent_Id)
+                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Domain_Modules_Permission_View>()
-            .HasNoKey() // Since it's a view and not a table
-            .ToView("Domain_Modules_Permission_View");
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

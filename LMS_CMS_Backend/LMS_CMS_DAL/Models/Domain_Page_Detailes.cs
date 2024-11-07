@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public class School : AuditableEntity
+    public class Domain_Page_Detailes : AuditableEntity
     {
         [Key]
-        public long Id { get; set; }
-        [Required(ErrorMessage = "Name is required")]
-        [StringLength(100, ErrorMessage = "School cannot be longer than 100 characters.")]
-        public string Name { get; set; }
-
-
+        public long ID { get; set; }
         [ForeignKey("Domain")]
         [Required]
-        public long Domain_id { get; set; }
+        public long Domain_ID { get; set; }
+        [ForeignKey("Page")]
+        [Required]
+        public long Page_ID { get; set; }
+
         public Domain Domain { get; set; }
+        public Page Page { get; set; }
     }
 }

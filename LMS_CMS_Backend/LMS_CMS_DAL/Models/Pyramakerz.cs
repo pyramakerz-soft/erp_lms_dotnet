@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public class Pyramakerz
+    public class Pyramakerz : AuditableEntity
     {
         [Key]
         public int ID { get; set; }

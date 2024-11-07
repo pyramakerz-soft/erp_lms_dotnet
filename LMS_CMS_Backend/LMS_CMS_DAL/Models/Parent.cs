@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public class Parent
+    public class Parent : AuditableEntity
     {
         [Key]
         public int ID { get; set; }

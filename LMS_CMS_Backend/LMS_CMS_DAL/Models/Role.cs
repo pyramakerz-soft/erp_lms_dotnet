@@ -2,27 +2,29 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public partial class Role
+    public partial class Role : AuditableEntity
     {
         [Key]
-        public int ID { get; set; }
+        public long ID { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Role cannot be longer than 100 characters.")]
-        [Unicode(false)]
         public string Name { get; set; }
+        [ForeignKey("Domain")]
+        [Required]
+        public long Domain_ID { get; set; }
 
-        public ICollection<Role_Permissions> Role_Permissions { get; set; } = new HashSet<Role_Permissions>(); // Navigation property
+        public Domain Domain { get; set; }
+        public ICollection<Employee> Employess { get; set; } = new HashSet<Employee>();
 
-        public ICollection<Employee_Role> Employee_Roles { get; set; } = new HashSet<Employee_Role>();
-
-        public ICollection<School_Roles> School_Roles { get; set; } = new HashSet<School_Roles>();
+        public ICollection<Role_Detailes> Role_Detailes { get; set; } = new HashSet<Role_Detailes>();
 
     }
 }

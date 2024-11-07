@@ -11,15 +11,15 @@ namespace LMS_CMS_DAL.Models
     public class School
     {
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "School cannot be longer than 100 characters.")]
         public string Name { get; set; }
 
 
         [ForeignKey("Domain")]
+        [Required]
         public int Domain_id { get; set; }
         public Domain Domain { get; set; }
-        public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();
-        public ICollection<School_Roles> School_Roles { get; set; } = new HashSet<School_Roles>();
-
     }
 }

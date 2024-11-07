@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LMS_CMS_BL\LMS_CMS_BL.csproj" />
-    <ProjectReference Include="..\LMS_CMS_DAL\LMS_CMS_DAL.csproj" />
   </ItemGroup>
 
 </Project>

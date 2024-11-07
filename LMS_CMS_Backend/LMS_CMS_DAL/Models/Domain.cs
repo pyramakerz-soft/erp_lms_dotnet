@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,17 +11,14 @@ namespace LMS_CMS_DAL.Models
     public class Domain
     {
         [Key]
-        public int ID { get; set; }
+        public long ID { get; set; }
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "User_Name is required")]
-        [StringLength(100, ErrorMessage = "Username cannot be longer than 100 characters.")]
-        public string User_Name { get; set; }
-        [Required(ErrorMessage = "Password is required")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters.")]
-        public string Password { get; set; }
-
         public ICollection<School> Schools { get; set; } = new HashSet<School>();
-        public ICollection<Domain_Modules> Domain_Modules { get; set; } = new HashSet<Domain_Modules>();
+        public ICollection<Role> Roles { get; set; } = new HashSet<Role>();
+        public ICollection<Employee> Employess { get; set; } = new HashSet<Employee>();
+        public ICollection<Domain_Page_Detailes> Domain_Page_Detailes { get; set; } = new HashSet<Domain_Page_Detailes>();
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,19 +8,18 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public partial class Role
+    public class Domain_Page_Detailes
     {
         [Key]
         public long ID { get; set; }
-
-        [Required(ErrorMessage = "Name is required")]
-        [StringLength(100, ErrorMessage = "Role cannot be longer than 100 characters.")]
-        public string Name { get; set; }
         [ForeignKey("Domain")]
         [Required]
         public long Domain_ID { get; set; }
+        [ForeignKey("Page")]
+        [Required]
+        public long Page_ID { get; set; }
 
         public Domain Domain { get; set; }
-        public ICollection<Employee> Employess { get; set; } = new HashSet<Employee>();
+        public Page Page { get; set; }
     }
 }

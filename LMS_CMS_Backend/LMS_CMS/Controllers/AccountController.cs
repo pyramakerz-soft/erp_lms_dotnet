@@ -10,12 +10,6 @@ using System.Text;
 
 namespace LMS_CMS_PL.Controllers
 {
-    public interface IUser
-    {
-        int Id { get; }
-        string User_Name { get; }
-        // Add other common properties here
-    }
 
     [Route("api/[controller]")]
     [ApiController]
@@ -38,7 +32,6 @@ namespace LMS_CMS_PL.Controllers
                 "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password),
                 "student" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == UserInfo.User_Name && stu.Password == UserInfo.Password),
                 "parent" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password),
-                "domain" => Unit_Of_Work.domain_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password),
                 "pyramakerz" => Unit_Of_Work.pyramakerz_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password),
                 _ => null
             };
@@ -47,23 +40,35 @@ namespace LMS_CMS_PL.Controllers
             {
                 return NotFound();
             }
+            if(UserInfo.Type == "employee")
+            {
+                var tokenEmp = Generate_Jwt_Token(user.User_Name, user.ID.ToString(), UserInfo.Type, user.Domain_ID, user.Role_ID);
+                return Ok(new { Token = tokenEmp });
+            }
 
             var token = Generate_Jwt_Token(user.User_Name, user.ID.ToString() , UserInfo.Type);
             return Ok(new { Token = token });
         }
 
-        private string Generate_Jwt_Token(string username, string userId ,string type)
+        private string Generate_Jwt_Token(string username, string userId ,string type, string? domainId = null, string? roleId = null)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, _configuration["JWT:Subject"]),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("user_Name", username),
                 new Claim("id", userId),
                 new Claim("type", type),
-
-
             };
+            if (!string.IsNullOrEmpty(domainId))
+            {
+                claims.Add(new Claim("domain", domainId));
+            }
+
+            if (!string.IsNullOrEmpty(roleId))
+            {
+                claims.Add(new Claim("role", roleId));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

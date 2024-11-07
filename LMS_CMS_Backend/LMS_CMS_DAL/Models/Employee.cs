@@ -11,25 +11,24 @@ namespace LMS_CMS_DAL.Models
     public class Employee
     {
         [Key]
-        public int ID { get; set; }
+        public long ID { get; set; }
         [Required(ErrorMessage = "User_Name is required")]
         [StringLength(100, ErrorMessage = "Username cannot be longer than 100 characters.")]
         public string User_Name { get; set; }
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
+        public string Name { get; set; }
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters.")]
         public string Password { get; set; }
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress]
-        public string Email { get; set; }
+        [ForeignKey("Domain")]
+        [Required]
+        public long Domain_ID { get; set; }
+        [ForeignKey("Role")]
+        [Required]
+        public long Role_ID { get; set; }
 
-
-        [ForeignKey("School")]
-        public int School_id { get; set; }
-
-        public School School { get; set; }
-
-        public  ICollection<Employee_Role> Employee_Roles { get; set; } = new HashSet<Employee_Role>();
-
-
+        public Domain Domain { get; set; }
+        public Role Role { get; set; }
     }
 }

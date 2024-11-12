@@ -27,6 +27,14 @@ namespace LMS_CMS_PL.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] LoginDTO UserInfo)
         {
+            if (UserInfo == null)
+            {
+                return BadRequest("User Can't be null");
+            }
+            if (UserInfo.Type == null)
+            {
+                return BadRequest("Type Can't be null");
+            }
             dynamic user = UserInfo.Type switch
             {
                 "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password),
@@ -38,7 +46,7 @@ namespace LMS_CMS_PL.Controllers
 
             if (user == null)
             {
-                return NotFound();
+                return BadRequest("Invalid user type or credentials.");
             }
             if(UserInfo.Type == "employee")
             {

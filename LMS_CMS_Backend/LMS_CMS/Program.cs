@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using LMS_CMS_PL.Middleware;
 
 namespace LMS_CMS
 {
@@ -16,13 +17,9 @@ namespace LMS_CMS
         {
             //////// TO Open The Cors for the other domains:
             /// 1)
-            string txt = "";
+            string txt = "AllowAllOrigins";
 
             var builder = WebApplication.CreateBuilder(args);
-
-
-            //////// To make the localhost runs in this localhost number always
-            //builder.WebHost.UseUrls("http://localhost:7205");
 
 
             // Add services to the container.
@@ -76,9 +73,14 @@ namespace LMS_CMS
             /// For Auto Mapper:
             builder.Services.AddAutoMapper(typeof(AutoMapConfig).Assembly);
 
+
             var app = builder.Build();
 
-            
+
+            /// 1) For DB Check
+            app.UseMiddleware<DbConnection_Check_Middleware>();
+
+
             //////// Authentication
             app.UseAuthentication();
 
@@ -97,6 +99,7 @@ namespace LMS_CMS
             /// 3)
             app.UseCors(txt);
 
+            app.UseHttpsRedirection();
             app.MapControllers();
 
             app.Run();

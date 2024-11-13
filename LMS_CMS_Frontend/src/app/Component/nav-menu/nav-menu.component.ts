@@ -6,6 +6,7 @@ import { AccountService } from '../../Services/account.service';
 import { EmployeeService } from '../../Services/Employee/employee.service';
 import { ParentService } from '../../Services/Parent/parent.service';
 import { StudentService } from '../../Services/Student/student.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-nav-menu',
@@ -17,23 +18,34 @@ import { StudentService } from '../../Services/Student/student.service';
 export class NavMenuComponent {
 
   dropdownOpen: boolean = false;
-  selectedLanguage: string | null = null;
+  selectedLanguage: string = "English";
   User_Type:string="";
   userName:string="";
-  constructor(public account:AccountService ,public empserv:EmployeeService ,public parentServ:ParentService , public studentserv:StudentService){
 
-  }
+  constructor(public account:AccountService ,public empserv:EmployeeService ,public parentServ:ParentService , public studentserv:StudentService, private translate: TranslateService){}
 
   ngOnInit(){
- this.GetUserInfo();
+    this.GetUserInfo();
+
+    const savedLanguage = localStorage.getItem('language') || 'en';
+    this.selectedLanguage = savedLanguage === 'ar' ? 'العربية' : 'English';
   }
+
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
   }
 
   selectLanguage(language: string) {
-    this.selectedLanguage = language;
-    this.dropdownOpen = false; // Close the dropdown after selecting
+    this.translate.use(language);
+    localStorage.setItem('language', language);
+    this.selectedLanguage = language === 'ar' ? 'العربية' : 'English';
+    this.updateDirection(language);
+    this.dropdownOpen = false;
+  }
+
+  updateDirection(language: string) {
+    const direction = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.setAttribute('dir', direction);
   }
 
   GetUserInfo(){

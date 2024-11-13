@@ -5,7 +5,7 @@
         </div>
         <div class="text-xl">
             <details *ngFor="let item of menuItems; let i = index">
-                <summary [routerLink]="item.route" class="p-3 lg:p-4 flex items-center space-x-3 hover:bg-[rgba(255,255,255,0.1)] hover:rounded-r-lg hover:border-l-4 cursor-pointer">
+                <summary [routerLink]="item.route" class="p-3 lg:p-4 flex items-center space-x-3 rtl:space-x-reverse hover:bg-[rgba(255,255,255,0.1)] ltr:hover:rounded-r-lg rtl:hover:rounded-l-lg ltr:hover:border-l-4 rtl:hover:border-r-4 cursor-pointer">
                     <img class="w-3 lg:w-fit" *ngIf="item.subItems" src="Icons/Drop-Down.png">
                     <img class="w-3 lg:w-fit" *ngIf="item.route" src="Icons/Dashboard.png">
                     <p>{{ item.label }}</p>
@@ -17,7 +17,7 @@
         </div>
     </section>
     <div>
-        <a class="secondaryTxt hover:opacity-65 flex items-center space-x-3 p-4 cursor-pointer" (click)="SignOut()">
+        <a class="secondaryTxt hover:opacity-65 flex items-center space-x-3 p-4 rtl:space-x-reverse cursor-pointer" (click)="SignOut()">
             <img class="w-3 lg:w-fit" src="Icons/Sign-out-orange.png">
             <p>Sign Out</p>
         </a>

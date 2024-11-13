@@ -14,7 +14,7 @@ import { TokenData } from '../Models/token-data';
 export class AccountService {
   
   baseUrl=""
-  isAuthenticated = !!localStorage.getItem("token");
+  isAuthenticated = !!localStorage.getItem("current_token");
 
   constructor(public http: HttpClient ,private router: Router , public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
@@ -26,7 +26,7 @@ export class AccountService {
 
   Get_Data_Form_Token(){
     let User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
-    let token = localStorage.getItem("token")
+    let token = localStorage.getItem("current_token")
     if(token){
       User_Data_After_Login = jwtDecode(token)
       return User_Data_After_Login
@@ -34,6 +34,8 @@ export class AccountService {
       return User_Data_After_Login
     }
   }
+
+  
 
   SignOut(){
     let User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")

@@ -4,7 +4,7 @@ import { inject } from '@angular/core';
 import { TokenData } from '../Models/token-data';
 
 export const navigateIfStudentGuard: CanActivateFn = (route, state) => {
-  let token = localStorage.getItem("token")
+  let token = localStorage.getItem("current_token")
   const router = inject(Router);
   const account = inject(AccountService);
   let User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")

@@ -30,9 +30,21 @@
             </div>
         </div>
         <div class="flex items-center justify-between space-x-3">
-            <div>
-                <img src="Images/Avatar.png" alt="Avatar">
-            </div>
+            <div class="relative">
+                <img src="Images/Avatar.png" (click)="togglePopup()" class="cursor-pointer" alt="Profile Photo">
+                <div *ngIf="isPopupOpen" class="absolute left-0 mt-2 w-60 max-w-xs bg-white rounded-lg shadow-lg p-4">
+                  <h3 class="font-semibold text-gray-700">Account Options</h3>
+                  <ul class="mt-2 space-y-2">
+                    <li *ngFor="let token of allTokens">
+                      <button (click)="ChangeAccount(token.key)" class="w-full text-left hover:bg-gray-100 p-2 rounded-md">
+                        {{ token.key }}
+                      </button>
+                    </li>
+                  </ul>
+                <button (click)="gotologin()" class="w-full text-left hover:bg-gray-100 p-2 rounded-md">Add New Account</button>
+                </div>
+              </div>
+              
             <div class=" font-semibold text-white flex flex-col space-y-2">
                 <div class="text-xl">
                     {{userName}}

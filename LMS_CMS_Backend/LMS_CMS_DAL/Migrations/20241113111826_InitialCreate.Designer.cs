@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20241107123904_addBaseClassForAll")]
-    partial class addBaseClassForAll
+    [Migration("20241113111826_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,11 +149,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -169,6 +164,16 @@ namespace LMS_CMS_DAL.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("User_Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ar_name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("en_name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -194,10 +199,7 @@ namespace LMS_CMS_DAL.Migrations
             modelBuilder.Entity("LMS_CMS_DAL.Models.Page", b =>
                 {
                     b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -214,12 +216,7 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<long>("Page_ID")
+                    b.Property<long?>("Page_ID")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -228,18 +225,31 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("ar_name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("en_name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("ID");
 
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("InsertedByUserId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.HasIndex("Page_ID");
 
                     b.HasIndex("UpdatedByUserId");
+
+                    b.HasIndex("ar_name")
+                        .IsUnique();
+
+                    b.HasIndex("en_name")
+                        .IsUnique();
 
                     b.ToTable("Pages");
                 });
@@ -283,6 +293,16 @@ namespace LMS_CMS_DAL.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("User_Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ar_name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("en_name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -566,6 +586,16 @@ namespace LMS_CMS_DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ar_name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("en_name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("ID");
 
                     b.HasIndex("DeletedByUserId");
@@ -693,8 +723,7 @@ namespace LMS_CMS_DAL.Migrations
                     b.HasOne("LMS_CMS_DAL.Models.Page", "Parent")
                         .WithMany("ChildPages")
                         .HasForeignKey("Page_ID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByUser")
                         .WithMany()

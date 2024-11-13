@@ -53,8 +53,15 @@ namespace LMS_CMS_DAL.Models
                 .HasIndex(p => p.Name)
                 .IsUnique();
             modelBuilder.Entity<Page>()
-                .HasIndex(p => p.Name)
+                .HasIndex(p => p.ar_name)
                 .IsUnique();
+            modelBuilder.Entity<Page>()
+                .HasIndex(p => p.en_name)
+                .IsUnique();
+            modelBuilder.Entity<Page>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
 
             ////////////////////////////////////
             ///

@@ -25,7 +25,7 @@ export class PyramakerzLoginComponent {
       this.accountService.Login(this.userInfo).subscribe(
         (d: any) => {
           this.accountService.isAuthenticated = true;
-          localStorage.setItem("token", JSON.parse(d).token);
+          localStorage.setItem("current_token", JSON.parse(d).token);
           
           this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
   

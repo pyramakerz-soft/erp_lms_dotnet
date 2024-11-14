@@ -1,11 +1,11 @@
-<div class="rounded-lg  py-3 px-6 primaryBg">
-    <div class="flex items-center justify-between space-x-7">
+<div class="rounded-lg py-2 lg:py-3 px-3 lg:px-6 primaryBg">
+    <div class="flex items-center justify-between">
         <div>
             <img src="Images/Logo.png">
         </div>
         <div>
-            <input type="text" class="w-[543px] h-[53px] rounded-[8px] border border-gray-300 px-4 py-3 gap-2"
-                placeholder="Enter Keyword" />
+            <input type="text" class="lg:w-[543px] lg:h-[53px] rounded-[8px] border border-gray-300 px-3 lg:px-4 py-2 lg:py-3"
+                placeholder="Enter Keyword..." />
         </div>
         <div class="relative">
             <i class="fa-solid fa-bell text-[#FF7519] text-2xl"></i>
@@ -17,8 +17,8 @@
                 <i class="fa-solid fa-globe text-white text-2xl"></i>
             </div>
             <div class="relative">
-                <button class="flex items-center space-x-2 rtl:space-x-reverse font-semibold text-white" (click)="toggleDropdown()">
-                    <p>{{ selectedLanguage }}</p>
+                <button class="lg:flex items-center lg:space-x-2 rtl:space-x-reverse font-semibold text-white" (click)="toggleDropdown()">
+                    <p class="hidden lg:block">{{ selectedLanguage }}</p>
                     <i class="fa-solid fa-caret-down"></i>
                 </button>
                 <div *ngIf="dropdownOpen" class="absolute mt-2 w-32 bg-white text-gray-700 rounded-md shadow-lg">
@@ -27,29 +27,32 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-between space-x-3">
+        <div>
             <div class="relative">
-                <img src="Images/Avatar.png" (click)="togglePopup()" class="cursor-pointer" alt="Profile Photo">
-                <div *ngIf="isPopupOpen" class="absolute left-0 mt-2 w-60 max-w-xs bg-white rounded-lg shadow-lg p-4">
-                  <h3 class="font-semibold text-gray-700">Account Options</h3>
-                  <ul class="mt-2 space-y-2">
-                    <li *ngFor="let token of allTokens">
-                      <button (click)="ChangeAccount(token.key)" class="w-full text-left hover:bg-gray-100 p-2 rounded-md">
-                        {{ token.key }}
-                      </button>
-                    </li>
-                  </ul>
-                <button (click)="gotologin()" class="w-full text-left hover:bg-gray-100 p-2 rounded-md">Add New Account</button>
+                <div class="flex items-center justify-between space-x-3 rtl:space-x-reverse" (click)="togglePopup()">
+                    <img src="Images/Avatar.png" class="cursor-pointer" alt="Profile Photo">
+                    <div class="hidden font-semibold text-white lg:flex flex-col space-y-2">
+                        <div class="text-xl">
+                            {{userName}}
+                        </div>
+                        <div class="text-sm">
+                            SchoolX
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="isPopupOpen" class="absolute ltr:right-0 rtl:left-0 mt-2 w-60 max-w-xs bg-white rounded-lg shadow-lg p-4">
+                    <h3 class="font-semibold text-gray-700">Account Options</h3>
+                    <ul class="mt-2">
+                        <li *ngFor="let token of allTokens">
+                        <button (click)="ChangeAccount(token.key)" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">
+                            {{ token.key }}
+                        </button>
+                        </li>
+                    </ul>
+                    <button (click)="gotologin()" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">Add New Account</button>
                 </div>
               </div>
               
-            <div class=" font-semibold text-white flex flex-col space-y-2">
-                <div class="text-xl">
-                    {{userName}}
-                </div>
-                <div class="text-sm">
-                    SchoolX</div>
-            </div>
         </div>
     </div>
 </div>

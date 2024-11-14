@@ -1,4 +1,4 @@
-<diV class="primaryBg text-white h-full px-3 lg:px-5 py-9 lg:py-12 flex flex-col justify-between text-sm lg:text-xl">
+<!-- <diV class="primaryBg text-white h-full px-3 lg:px-5 py-9 lg:py-12 flex flex-col justify-between text-sm lg:text-xl">
     <section>
         <div>
             <p class="uppercase p-3 lg:p-4 text-sm lg:text-lg font-semibold">Main Menu</p>
@@ -22,4 +22,23 @@
             <p>Sign Out</p>
         </a>
     </div>
-</diV>
+</diV> -->
+
+<div *ngIf="!IsMenuOpen" class="primaryBg rounded-lg text-white h-full min-h-[100vh] py-10 px-3 flex flex-col items-center text-sm lg:text-xl">
+    <img class="w-3 lg:w-fit" src="Images/logo-orange 1 1.png" (click)="toggleMenu()">
+</div>
+
+<div *ngIf="IsMenuOpen" class="primaryBg rounded-lg text-white h-full min-h-[100vh] py-10 px-3 flex flex-col items-center text-sm lg:text-xl">
+    <div class="px-7 text-base text-[#919191] flex space-x-4 rtl:space-x-reverse items-center" (click)="toggleMenu()">
+        <i class="fa-solid fa-angle-left"></i>
+        <p>Lookscout Dashboard</p>
+    </div>
+
+    <div class="px-7 mt-6 relative flex items-center">
+        <span class="absolute text-[#FFFFFF0D] ltr:ml-2 rtl:mr-2">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+        <input type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 text-sm rounded-md"
+            placeholder="Search here..." />
+    </div>
+</div>

@@ -13,9 +13,15 @@ import { AccountService } from '../../Services/account.service';
 export class SideMenuComponent {
   @Input() menuItems: { label: string; route?: string;  subItems?: { label: string; route: string }[]}[] = [];
 
+  IsMenuOpen = false
+  
   constructor(public accountService:AccountService){}
-
+  
   SignOut(){
     this.accountService.SignOut()
+  }
+  
+  toggleMenu() {
+    this.IsMenuOpen = !this.IsMenuOpen
   }
 }

@@ -29,12 +29,29 @@ namespace LMS_CMS_PL.Controllers
         {
             if (UserInfo == null)
             {
-                return BadRequest("User Can't be null");
+                return BadRequest("Data Can't be null");
             }
             if (UserInfo.Type == null)
             {
                 return BadRequest("Type Can't be null");
             }
+            if (UserInfo.User_Name.Length == 0)
+            {
+                return BadRequest("User_Name Can't be null");
+            }
+            if (UserInfo.Password.Length == 0)
+            {
+                return BadRequest("Password Can't be null");
+            }
+            if (UserInfo.Password.Length < 6 || UserInfo.Password.Length > 100)
+            {
+                return BadRequest("Password must be between 6 and 100 characters");
+            }
+            if (UserInfo.User_Name.Length >100)
+            {
+                return BadRequest("Use_Name cannot be longer than 100 characters");
+            }
+
             dynamic user = UserInfo.Type switch
             {
                 "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password),

@@ -24,7 +24,7 @@ export class NavMenuComponent {
   User_Type:string="";
   userName:string="";
   isPopupOpen = false;
-  allTokens: { key: string; value: string }[] = [];
+  allTokens: {id:number, key: string; value: string }[] = [];
   User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
 
   constructor(private cdr: ChangeDetectorRef ,private router: Router, public account: AccountService, public empserv: EmployeeService, public parentServ: ParentService, public studentserv: StudentService, private renderer: Renderer2, private translate: TranslateService) {}
@@ -37,6 +37,7 @@ export class NavMenuComponent {
   }
 
   getAllTokens(): void {
+    let count =0;
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key || '');
@@ -44,11 +45,12 @@ export class NavMenuComponent {
       if (key && key.includes('token') && key != "current_token") {
         if (value) {
           this.User_Data_After_Login = jwtDecode(value)
-          const existingToken = this.allTokens.find(token => token.key === this.User_Data_After_Login.user_Name);
+          // const existingToken = this.allTokens.find(token => token.key === this.User_Data_After_Login.user_Name);
 
-          if (!existingToken) {
-            this.allTokens.push({ key: this.User_Data_After_Login.user_Name, value: value || '' });
-          }
+          // if (!existingToken) {
+            this.allTokens.push({ id:count ,key: this.User_Data_After_Login.user_Name, value: value || '' });
+             count++; 
+            // }
         }
 
       }
@@ -127,9 +129,9 @@ export class NavMenuComponent {
   //   }
   // }
 
-  ChangeAccount(key: string): void {
+  ChangeAccount(id: number): void {
     // Find the token object by key
-    const tokenObject = this.allTokens.find(s => s.key === key);
+    const tokenObject = this.allTokens.find(s => s.id === id);
 
     // If the token is found, remove the current token and set the new one
     if (tokenObject) {

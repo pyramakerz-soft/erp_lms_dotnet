@@ -48,14 +48,29 @@ namespace LMS_CMS_PL.Controllers
             {
                 return BadRequest("Invalid user type or credentials.");
             }
-            if(UserInfo.Type == "employee")
+
+            if (UserInfo.Type == "employee" && user is Employee emp)
             {
-                var tokenEmp = Generate_Jwt_Token(user.User_Name, user.ID.ToString(), UserInfo.Type, user.Domain_ID, user.Role_ID);
+                var tokenEmp = Generate_Jwt_Token(emp.User_Name, emp.ID.ToString(), UserInfo.Type, emp.Domain_ID.ToString(), emp.Role_ID.ToString());
                 return Ok(new { Token = tokenEmp });
             }
+            else if (UserInfo.Type == "student" && user is Student stu)
+            {
+                var token = Generate_Jwt_Token(stu.User_Name, stu.ID.ToString(), UserInfo.Type);
+                return Ok(new { Token = token });
+            }
+            else if (UserInfo.Type == "parent" && user is Parent par)
+            {
+                var token = Generate_Jwt_Token(par.User_Name, par.ID.ToString(), UserInfo.Type);
+                return Ok(new { Token = token });
+            }
+            else if (UserInfo.Type == "pyramakerz" && user is Pyramakerz pym)
+            {
+                var token = Generate_Jwt_Token(pym.User_Name, pym.ID.ToString(), UserInfo.Type);
+                return Ok(new { Token = token });
+            }
 
-            var token = Generate_Jwt_Token(user.User_Name, user.ID.ToString() , UserInfo.Type);
-            return Ok(new { Token = token });
+            return BadRequest("Unexpected user type.");
         }
 
         private string Generate_Jwt_Token(string username, string userId ,string type, string? domainId = null, string? roleId = null)

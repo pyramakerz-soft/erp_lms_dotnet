@@ -120,6 +120,9 @@ export class LoginComponent {
             this.router.navigateByUrl("/Employee")
           }
         },(error)=>{
+          if(error.error==="UserName or Password is Invalid"){
+            this.somthingError = "UserName or Password is Invalid"
+          }
           if(error.status == 404){
             this.somthingError = "Username, Password or Type maybe wrong"
           }

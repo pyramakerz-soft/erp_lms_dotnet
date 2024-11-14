@@ -8,9 +8,7 @@ import { noNavigateToLoginIfLoginGuard } from './Guards/no-navigate-to-login-if-
 import { navigateIfParentGuard } from './Guards/navigate-if-parent.guard';
 import { navigateIfStudentGuard } from './Guards/navigate-if-student.guard';
 import { navigateIfEmployeeGuard } from './Guards/navigate-if-employee.guard';
-import { NavMenuComponent } from './Component/nav-menu/nav-menu.component';
 import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.component';
-import { UserManagementComponent } from './Pages/Employee/user-management/user-management.component';
 import { navigateIfRoleHasPermissionGuard } from './Guards/navigate-if-role-has-permission.guard';
 import { PyramakerzLoginComponent } from './Pages/Login/pyramakerz-login/pyramakerz-login.component';
 import { DomainLoginComponent } from './Pages/Login/domain-login/domain-login.component';
@@ -36,9 +34,7 @@ export const routes: Routes = [
         title: "Employee Home", 
         canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard], 
         children: [
-            { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },
-            { path: "Admin-Module/User-Management", component: UserManagementComponent, title: "EmployeeUserManagement" ,canActivate:[navigateIfRoleHasPermissionGuard]}
-        ]
+            { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },        ]
     },
     { 
         path: "Parent", 

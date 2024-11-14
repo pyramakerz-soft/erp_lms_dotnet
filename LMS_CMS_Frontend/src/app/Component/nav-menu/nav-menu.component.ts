@@ -6,7 +6,7 @@ import { AccountService } from '../../Services/account.service';
 import { EmployeeService } from '../../Services/Employee/employee.service';
 import { ParentService } from '../../Services/Parent/parent.service';
 import { StudentService } from '../../Services/Student/student.service';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 
@@ -120,15 +120,6 @@ export class NavMenuComponent {
   ngOnDestroy(): void {
     this.renderer.removeClass(document.body, 'overflow-hidden');
   }
-
-  // @HostListener('document:click', ['$event'])
-  // onClickOutside(event: Event) {
-  //   const targetElement = event.target as HTMLElement;
-  //   const clickedOutside = !targetElement.closest('.profile-photo');
-  //   if (clickedOutside) {
-  //     this.isPopupOpen = false;
-  //   }
-  // }
 
   ChangeAccount(id: number): void {
     // Find the token object by key

@@ -6,6 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TokenData } from '../../../Models/token-data';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -123,8 +124,19 @@ export class LoginComponent {
           if(error.error==="UserName or Password is Invalid"){
             this.somthingError = "UserName or Password is Invalid"
           }
-          if(error.status == 404){
+          if(error.status ==400){
             this.somthingError = "Username, Password or Type maybe wrong"
+          }
+          else{
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: {
+                confirmButton: 'secondaryBg' // Add your custom class here
+              }
+            });    
           }
         }
       );

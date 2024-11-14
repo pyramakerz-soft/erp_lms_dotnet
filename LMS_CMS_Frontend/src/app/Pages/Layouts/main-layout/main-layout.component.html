@@ -1,9 +1,16 @@
-<div class="flex min-h-screen">
+<!-- <div class="flex min-h-screen">
     <div class="min-w-[20%]">
         <app-side-menu [menuItems]="menuItems"></app-side-menu>
     </div>
     <div class="w-full p-4">
         <app-nav-menu></app-nav-menu>
+        <router-outlet></router-outlet>
+    </div>
+</div> -->
+<div class="min-h-screen p-4">
+    <app-nav-menu></app-nav-menu>
+    <div class="flex space-x-4 mt-4">
+        <app-side-menu [menuItems]="menuItems"></app-side-menu>
         <router-outlet></router-outlet>
     </div>
 </div>

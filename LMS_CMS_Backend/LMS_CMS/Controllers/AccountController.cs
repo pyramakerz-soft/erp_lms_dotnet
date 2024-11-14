@@ -43,14 +43,6 @@ namespace LMS_CMS_PL.Controllers
             {
                 return BadRequest("Password Can't be null");
             }
-            if (UserInfo.Password.Length < 6 || UserInfo.Password.Length > 100)
-            {
-                return BadRequest("Password must be between 6 and 100 characters");
-            }
-            if (UserInfo.User_Name.Length >100)
-            {
-                return BadRequest("Use_Name cannot be longer than 100 characters");
-            }
 
             dynamic user = UserInfo.Type switch
             {
@@ -63,7 +55,7 @@ namespace LMS_CMS_PL.Controllers
 
             if (user == null)
             {
-                return BadRequest("Invalid user type or credentials.");
+                return BadRequest("UserName or Password is Invalid");
             }
 
             if (UserInfo.Type == "employee" && user is Employee emp)

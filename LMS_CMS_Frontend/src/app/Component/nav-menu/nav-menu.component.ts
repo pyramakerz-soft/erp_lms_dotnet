@@ -55,6 +55,7 @@ export class NavMenuComponent {
 
       }
     }
+    console.log(this.allTokens)
   }
 
 
@@ -132,9 +133,10 @@ export class NavMenuComponent {
   ChangeAccount(id: number): void {
     // Find the token object by key
     const tokenObject = this.allTokens.find(s => s.id === id);
-
+    const token = localStorage.getItem("current_token")
+    
     // If the token is found, remove the current token and set the new one
-    if (tokenObject) {
+    if (tokenObject && token!=tokenObject.value) {
       localStorage.removeItem("current_token");
       localStorage.setItem("current_token", tokenObject.value);
       this.User_Data_After_Login = jwtDecode(tokenObject.value)

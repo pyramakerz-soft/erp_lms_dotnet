@@ -47,7 +47,6 @@ export class NavMenuComponent {
           const existingToken = this.allTokens.find(token => token.key === this.User_Data_After_Login.user_Name);
 
           if (!existingToken) {
-            // Only add the token if the userName is not already in the array
             this.allTokens.push({ key: this.User_Data_After_Login.user_Name, value: value || '' });
           }
         }
@@ -58,7 +57,7 @@ export class NavMenuComponent {
 
 
   gotologin() {
-    localStorage.removeItem("current_token");
+    localStorage.setItem("GoToLogin", "true");
     this.router.navigateByUrl('')
   }
 

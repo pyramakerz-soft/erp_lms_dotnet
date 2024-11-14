@@ -33,6 +33,10 @@ export class LoginComponent {
   passwordError: string = ""; 
   somthingError: string = ""
 
+  token1 = new TokenData("", 0, 0, "", "", "", "", "")
+  token2 = new TokenData("", 0, 0, "", "", "", "", "")
+
+
   constructor(private router:Router, public accountService:AccountService){  }
 
   ngOnInit(){
@@ -71,18 +75,40 @@ export class LoginComponent {
     if(this.isFormValid()){
       this.accountService.Login(this.userInfo).subscribe(
         (d: any) => {
+          localStorage.removeItem("current_token");
           this.accountService.isAuthenticated = true;
-          localStorage.setItem("current_token", JSON.parse(d).token);
           let count = localStorage.getItem("count")
-          if (count === null) {
-            localStorage.setItem("count", "1");
-           localStorage.setItem("token 1", JSON.parse(d).token);
-
-          } else {
-           let countNum = parseInt(count) + 1;
-           localStorage.setItem("count", countNum.toString());
-           localStorage.setItem("token "+countNum, JSON.parse(d).token);
+          let add= true;
+          
+          
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const value = localStorage.getItem(key || '');
+            
+            if (key&&value&&key.includes('token')) {
+              this.token1 = jwtDecode(value)
+              this.token2 = jwtDecode(JSON.parse(d).token);
+              if(this.token1.user_Name == this.token2.user_Name){
+                console.log(this.token1.user_Name,this.token2.user_Name)
+                add=false;
+              }
+            }
           }
+          
+          localStorage.setItem("current_token", JSON.parse(d).token);
+
+          if(add==true){
+            if (count === null) {
+              localStorage.setItem("count", "1");
+             localStorage.setItem("token 1", JSON.parse(d).token);
+  
+            } else {
+             let countNum = parseInt(count) + 1;
+             localStorage.setItem("count", countNum.toString());
+             localStorage.setItem("token "+countNum, JSON.parse(d).token);
+            }
+          }
+
           this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
 
 

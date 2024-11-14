@@ -71,28 +71,32 @@ export class LoginComponent {
   }
 
   SignIN(){
-    console.log(this.isFormValid())
     if(this.isFormValid()){
       this.accountService.Login(this.userInfo).subscribe(
         (d: any) => {
           localStorage.removeItem("current_token");
           this.accountService.isAuthenticated = true;
           let count = localStorage.getItem("count")
-          let add= true;
-          
+                    
+          const token = JSON.parse(d).token;  
+
+          let add = true;
           
           for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             const value = localStorage.getItem(key || '');
-            
-            if (value&&key&&key.includes('token') &&value===JSON.parse(d).token) {
-                add=false;
-            }
+            if (key && value && key.includes('token') &&key != "current_token" ) {
+                let decodedToken1: TokenData = jwtDecode(JSON.parse(d).token);
+                let decodedToken2 : TokenData= jwtDecode(value);
+                console.log(decodedToken1, decodedToken2);
+                  if(decodedToken1.user_Name=== decodedToken2.user_Name && decodedToken1.type === decodedToken2.type)
+                  add = false;
+              }
           }
           
           localStorage.setItem("current_token", JSON.parse(d).token);
 
-          if(add==true){
+          if(add===true){
             if (count === null) {
               localStorage.setItem("count", "1");
              localStorage.setItem("token 1", JSON.parse(d).token);

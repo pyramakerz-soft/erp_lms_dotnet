@@ -31,9 +31,9 @@ namespace LMS_CMS_PL.Controllers
             {
                 return BadRequest("Data Can't be null");
             }
-            if (UserInfo.Type == null)
+            if (UserInfo.Type == null || !new[] { "employee", "student", "parent", "pyramakerz" }.Contains(UserInfo.Type.ToLower()))
             {
-                return BadRequest("Type Can't be null");
+                return BadRequest("Invalid user type.");
             }
             if (UserInfo.User_Name.Length == 0)
             {

@@ -85,13 +85,8 @@ export class LoginComponent {
             const key = localStorage.key(i);
             const value = localStorage.getItem(key || '');
             
-            if (key&&value&&key.includes('token')) {
-              this.token1 = jwtDecode(value)
-              this.token2 = jwtDecode(JSON.parse(d).token);
-              if(this.token1.user_Name == this.token2.user_Name){
-                console.log(this.token1.user_Name,this.token2.user_Name)
+            if (value&&key&&key.includes('token') &&value===JSON.parse(d).token) {
                 add=false;
-              }
             }
           }
           

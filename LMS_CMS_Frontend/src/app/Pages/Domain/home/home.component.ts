@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 export class HomeComponent {
 
   domain:Domain=new Domain(0,"","","",[]);
-  User_Data_After_Login :TokenData= new TokenData("", 0, 0, "", "", "", "", "")
+  User_Data_After_Login :TokenData= new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
 
 
   constructor(private router:Router, public domainServ:DomainService ,public account:AccountService){  }

@@ -25,7 +25,7 @@ export class AccountService {
   }
 
   Get_Data_Form_Token(){
-    let User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
+    let User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
     let token = localStorage.getItem("current_token")
     if(token){
       User_Data_After_Login = jwtDecode(token)
@@ -38,7 +38,7 @@ export class AccountService {
   
 
   SignOut(){
-    let User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
+    let User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
     User_Data_After_Login = this.Get_Data_Form_Token()
     let User_Type = User_Data_After_Login.type
 

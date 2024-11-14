@@ -23,7 +23,7 @@ import { Module } from '../../../Models/module';
 })
 export class AddSchoolComponent {
   newSchool: SchoolAdd = new SchoolAdd("", 0);
-  User_Data_After_Login: TokenData = new TokenData("", 0, 0, "", "", "", "", "");
+  User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "");
   roles: string[] = [];
   School_id: number = 0;
   newRole: RoleAdd = new RoleAdd(0, "");

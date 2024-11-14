@@ -25,7 +25,7 @@ export class NavMenuComponent {
   userName:string="";
   isPopupOpen = false;
   allTokens: {id:number, key: string; value: string }[] = [];
-  User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
+  User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
 
   constructor(private cdr: ChangeDetectorRef ,private router: Router, public account: AccountService, public empserv: EmployeeService, public parentServ: ParentService, public studentserv: StudentService, private renderer: Renderer2, private translate: TranslateService) {}
 
@@ -83,7 +83,7 @@ export class NavMenuComponent {
 
   GetUserInfo() {
     let token = localStorage.getItem("current_token")
-    let User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
+    let User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
     User_Data_After_Login = this.account.Get_Data_Form_Token()
     this.User_Type = User_Data_After_Login.type
     this.userName = User_Data_After_Login.user_Name

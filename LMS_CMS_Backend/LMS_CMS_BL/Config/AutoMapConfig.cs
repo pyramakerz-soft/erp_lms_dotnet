@@ -14,11 +14,10 @@ namespace LMS_CMS_BL.Config
     {
         public AutoMapConfig()
         {
-            CreateMap<Page, PageDTO>();
-            CreateMap<PageDTO, Page>();
+            CreateMap<Page, Page_AddDTO>();
+            CreateMap<Page_AddDTO, Page>();
 
-
-
+            CreateMap<Page, Page_GetDTO>();
         }
     }
 }

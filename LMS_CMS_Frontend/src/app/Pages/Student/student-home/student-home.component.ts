@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 })
 export class StudentHomeComponent {
 
-  User_Data_After_Login :TokenData =new TokenData("", 0, 0, "", "", "", "", "")
+  User_Data_After_Login :TokenData =new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   name:string=""
   constructor(private router:Router, public domainServ:DomainService ,public account:AccountService){  }
 

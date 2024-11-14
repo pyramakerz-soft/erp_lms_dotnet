@@ -15,7 +15,7 @@ import { TokenData } from '../../../Models/token-data';
 })
 export class PyramakerzLoginComponent {
   userInfo:Login = new Login("", "", "", "");
-  User_Data_After_Login = new TokenData("", 0, 0, "", "", "", "", "")
+  User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
 
   constructor(private router:Router, public accountService:AccountService){  }
 

@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO
 {
-    public class PageDTO
+    public class Page_AddDTO
     {
-        public int ID { get; set; }
-
+        public long ID { get; set; }
         public string en_name { get; set; }
-
         public string ar_name { get; set; }
-
-
+        public long? Page_ID { get; set; }
     }
 }

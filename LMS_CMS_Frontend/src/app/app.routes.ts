@@ -10,14 +10,9 @@ import { navigateIfStudentGuard } from './Guards/navigate-if-student.guard';
 import { navigateIfEmployeeGuard } from './Guards/navigate-if-employee.guard';
 import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.component';
 import { PyramakerzLoginComponent } from './Pages/Login/pyramakerz-login/pyramakerz-login.component';
-import { DomainLoginComponent } from './Pages/Login/domain-login/domain-login.component';
-import { DomainComponent } from './Pages/Pyramakerz/domain/domain.component';
-import { HomeComponent } from './Pages/Domain/home/home.component';
 import { navigateIfPyramakerzGuard } from './Guards/navigate-if-pyramakerz.guard';
 import { noNavigateWithoutPyramakerzLoginGuard } from './Guards/no-navigate-without-pyramakerz-login.guard';
-import { AddSchoolComponent } from './Pages/Domain/add-school/add-school.component';
-import { EmployeeComponent } from './Pages/Domain/employee/employee.component';
-import { AddEmployeeComponent } from './Pages/Domain/add-employee/add-employee.component';
+
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -25,7 +20,7 @@ export const routes: Routes = [
 
     
     { 
-        path: "Employee", 
+        path: "Employee",     
         component: MainLayoutComponent, 
         title: "Employee Home", 
         canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard], 
@@ -56,23 +51,9 @@ export const routes: Routes = [
         title: "Pyramakerz Home",
         canActivate:[noNavigateWithoutPyramakerzLoginGuard, navigateIfPyramakerzGuard], 
         children: [
-            { path: "", component: DomainComponent, title: "StudentHome" },
-            { path: "Home", component: DomainComponent, title: "Domain" },
+           
         ]
     },
-    // { 
-    //     path: "Domain", 
-    //     component: MainLayoutComponent, 
-    //     title: "Domain Home",
-    //     canActivate:[noNavigateWithoutDomainLoginGuard, navigateIfDomainGuard], 
-    //     children: [
-    //         { path: "", component: HomeComponent, title: "Domain" },
-    //         { path: "Home", component: HomeComponent, title: "Domain" },
-    //         { path: "AddSchool", component: AddSchoolComponent, title: "AddSchool" },
-    //         { path: "Employees/:SchoolId", component: EmployeeComponent, title: "Employees" },
-    //         { path: "AddEmployee/:SchoolId", component: AddEmployeeComponent, title: "Employees" },
-    //     ]
-    // },
 
     { path: '**', redirectTo: '/' }
 ];

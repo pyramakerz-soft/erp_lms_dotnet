@@ -3,7 +3,6 @@ import { ChangeDetectorRef, Component, HostListener, Renderer2 } from '@angular/
 import { FormsModule } from '@angular/forms';
 import { TokenData } from '../../Models/token-data';
 import { AccountService } from '../../Services/account.service';
-import { EmployeeService } from '../../Services/Employee/employee.service';
 import { ParentService } from '../../Services/Parent/parent.service';
 import { StudentService } from '../../Services/Student/student.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,7 +26,7 @@ export class NavMenuComponent {
   allTokens: { id: number, key: string; KeyInLocal: string; value: string }[] = [];
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
 
-  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, public empserv: EmployeeService, public parentServ: ParentService, public studentserv: StudentService, private renderer: Renderer2, private translate: TranslateService) { }
+  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, public parentServ: ParentService, public studentserv: StudentService, private renderer: Renderer2, private translate: TranslateService) { }
 
   ngOnInit() {
     this.GetUserInfo();

@@ -35,7 +35,7 @@ namespace LMS_CMS_PL.Controllers
             return Ok(pageDTOs);
         }
 
-        [HttpGet("/Get_With_Group_By")]
+        [HttpGet("Get_With_Group_By")]
         public IActionResult Get_With_Group_By()
         {
             List<Page> pages = Unit_Of_Work.page_Repository.Select_All();

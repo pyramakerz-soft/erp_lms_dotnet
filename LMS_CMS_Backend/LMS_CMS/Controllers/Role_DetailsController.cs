@@ -22,7 +22,7 @@ namespace LMS_CMS_PL.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet("/Get_With_RoleID_Group_By/{roleId}")]
+        [HttpGet("Get_With_RoleID_Group_By/{roleId}")]
         public async Task<IActionResult> Get_With_RoleID_Group_By(long roleId)
         {
             var roleDetailsList = await Unit_Of_Work.role_Detailes_Repository.Database().Role_Detailes

@@ -1,7 +1,10 @@
 <div class="min-h-screen p-4">
     <app-nav-menu></app-nav-menu>
     <div class="flex space-x-4 mt-4">
-        <app-side-menu [menuItems]="menuItems"></app-side-menu>
+        
+        <app-side-menu *ngIf="this.User_Data_After_Login.type == 'employee'" [menuItemsForEmployee]="menuItemsForEmployee"></app-side-menu>
+        <app-side-menu *ngIf="this.User_Data_After_Login.type != 'employee'" [menuItems]="menuItems"></app-side-menu>
+
         <router-outlet></router-outlet>
     </div>
 </div>

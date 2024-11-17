@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace LMS_CMS_PL.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PagesController : ControllerBase
     {
         private UOW Unit_Of_Work;

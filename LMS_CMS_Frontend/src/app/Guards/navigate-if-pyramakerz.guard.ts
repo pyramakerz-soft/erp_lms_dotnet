@@ -20,9 +20,6 @@ export const navigateIfPyramakerzGuard: CanActivateFn = (route, state) => {
     }else if(User_Type=="student"){
       router.navigateByUrl('Student');
       return false;
-    }else if(User_Type=="domain"){
-      router.navigateByUrl('Domain');
-      return false;
     }
   }
   return true;

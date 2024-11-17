@@ -21,9 +21,6 @@ export const navigateIfStudentGuard: CanActivateFn = (route, state) => {
     }else if(User_Type=="pyramakerz"){
       router.navigateByUrl('Pyramakerz');
       return false;
-    }else if(User_Type=="domain"){
-      router.navigateByUrl('Domain');
-      return false;
     }
   }
   return true;

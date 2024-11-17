@@ -28,7 +28,6 @@ export class SchoolService {
   }  
 
   AddSchool(School:SchoolAdd){
-    console.log(School)
     return this.http.post<School>(`${this.baseUrl}/School`,School)
   }
 }

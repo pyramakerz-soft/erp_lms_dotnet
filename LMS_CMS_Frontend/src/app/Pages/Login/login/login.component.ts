@@ -89,7 +89,6 @@ export class LoginComponent {
             if (key && value && key.includes('token') &&key != "current_token" ) {
                 let decodedToken1: TokenData = jwtDecode(JSON.parse(d).token);
                 let decodedToken2 : TokenData= jwtDecode(value);
-                console.log(decodedToken1, decodedToken2);
                   if(decodedToken1.user_Name=== decodedToken2.user_Name && decodedToken1.type === decodedToken2.type)
                   add = false;
               }
@@ -111,8 +110,6 @@ export class LoginComponent {
 
           this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
 
-
-  
           if(this.User_Data_After_Login.type == "parent"){
             this.router.navigateByUrl("/Parent")
           } else if(this.User_Data_After_Login.type == "student"){

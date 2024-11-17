@@ -26,11 +26,9 @@ export class AddEmployeeComponent {
     this.employee.school_id = this.schoolId
     this.employeeService.Add_Employee(this.employee).subscribe(
       (d) => {
-        console.log(d)
         this.router.navigateByUrl(`Domain/Employees/${this.schoolId}`)
       },
       (error) => {
-        console.log(error)
       }
     )
   }

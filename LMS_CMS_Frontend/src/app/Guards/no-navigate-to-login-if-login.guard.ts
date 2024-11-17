@@ -27,6 +27,7 @@ export const noNavigateToLoginIfLoginGuard: CanActivateFn = (route, state) => {
   }else if(IsAllow=="false" && User_Type == "employee"){
     router.navigateByUrl('/Employee');
     return false;
+
   }
   
   localStorage.removeItem("GoToLogin");

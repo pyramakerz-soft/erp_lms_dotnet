@@ -9,7 +9,6 @@ import { navigateIfParentGuard } from './Guards/navigate-if-parent.guard';
 import { navigateIfStudentGuard } from './Guards/navigate-if-student.guard';
 import { navigateIfEmployeeGuard } from './Guards/navigate-if-employee.guard';
 import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.component';
-import { navigateIfRoleHasPermissionGuard } from './Guards/navigate-if-role-has-permission.guard';
 import { PyramakerzLoginComponent } from './Pages/Login/pyramakerz-login/pyramakerz-login.component';
 import { DomainLoginComponent } from './Pages/Login/domain-login/domain-login.component';
 import { DomainComponent } from './Pages/Pyramakerz/domain/domain.component';

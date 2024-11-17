@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +14,10 @@ namespace LMS_CMS_BL.Config
     {
         public AutoMapConfig()
         {
-            
+            CreateMap<Page, Page_AddDTO>();
+            CreateMap<Page_AddDTO, Page>();
 
+            CreateMap<Page, Page_GetDTO>();
         }
     }
 }

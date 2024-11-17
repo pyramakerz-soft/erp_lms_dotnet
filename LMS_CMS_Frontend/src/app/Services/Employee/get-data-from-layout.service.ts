@@ -19,7 +19,6 @@ export class GetDataFromLayoutService {
   }
 
   getData() {
-    console.log(this.sharedData);
     return this.sharedData;
   }
 }

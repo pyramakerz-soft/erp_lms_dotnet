@@ -31,16 +31,13 @@ export class DomainComponent {
   getAllDomains(){
     this.domainServ.Get_All_Domain().subscribe(
       (d: any) => {
-        console.log(d);
         this.domains=d;
-        console.log(this.domains[0].schools);
       });
   }
 
   deleteDomain(id:number){
     this.domainServ.Delete_Domain_By_Id(id).subscribe(
       (d: any) => {
-        console.log(d);
         this.getAllDomains();
       });
   }
@@ -56,8 +53,6 @@ export class DomainComponent {
   Save(){
     this.domainServ.AddDomain(this.DomainAdd).subscribe(
       (d: any) => {
-        console.log(d);
-        this.getAllDomains();
         this.isDisplayAddDomain=false;
 
       });
@@ -74,7 +69,6 @@ export class DomainComponent {
   update(){
     this.domainServ.Update_Domain(this.DomainEdit).subscribe(
       (d: any) => {
-        console.log(d);
         this.getAllDomains();
         this.isDisplayEditDomain=false;
 

@@ -29,12 +29,21 @@ namespace LMS_CMS_PL.Controllers
         {
             if (UserInfo == null)
             {
-                return BadRequest("User Can't be null");
+                return BadRequest("Data Can't be null");
             }
-            if (UserInfo.Type == null)
+            if (UserInfo.Type == null || !new[] { "employee", "student", "parent", "pyramakerz" }.Contains(UserInfo.Type.ToLower()))
             {
-                return BadRequest("Type Can't be null");
+                return BadRequest("Invalid user type.");
             }
+            if (UserInfo.User_Name.Length == 0)
+            {
+                return BadRequest("User_Name Can't be null");
+            }
+            if (UserInfo.Password.Length == 0)
+            {
+                return BadRequest("Password Can't be null");
+            }
+
             dynamic user = UserInfo.Type switch
             {
                 "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password),
@@ -46,16 +55,31 @@ namespace LMS_CMS_PL.Controllers
 
             if (user == null)
             {
-                return BadRequest("Invalid user type or credentials.");
-            }
-            if(UserInfo.Type == "employee")
-            {
-                var tokenEmp = Generate_Jwt_Token(user.User_Name, user.ID.ToString(), UserInfo.Type, user.Domain_ID, user.Role_ID);
-                return Ok(new { Token = tokenEmp });
+                return BadRequest("UserName or Password is Invalid");
             }
 
-            var token = Generate_Jwt_Token(user.User_Name, user.ID.ToString() , UserInfo.Type);
-            return Ok(new { Token = token });
+            if (UserInfo.Type == "employee" && user is Employee emp)
+            {
+                var tokenEmp = Generate_Jwt_Token(emp.User_Name, emp.ID.ToString(), UserInfo.Type, emp.Domain_ID.ToString(), emp.Role_ID.ToString());
+                return Ok(new { Token = tokenEmp });
+            }
+            else if (UserInfo.Type == "student" && user is Student stu)
+            {
+                var token = Generate_Jwt_Token(stu.User_Name, stu.ID.ToString(), UserInfo.Type);
+                return Ok(new { Token = token });
+            }
+            else if (UserInfo.Type == "parent" && user is Parent par)
+            {
+                var token = Generate_Jwt_Token(par.User_Name, par.ID.ToString(), UserInfo.Type);
+                return Ok(new { Token = token });
+            }
+            else if (UserInfo.Type == "pyramakerz" && user is Pyramakerz pym)
+            {
+                var token = Generate_Jwt_Token(pym.User_Name, pym.ID.ToString(), UserInfo.Type);
+                return Ok(new { Token = token });
+            }
+
+            return BadRequest("Unexpected user type.");
         }
 
         private string Generate_Jwt_Token(string username, string userId ,string type, string? domainId = null, string? roleId = null)

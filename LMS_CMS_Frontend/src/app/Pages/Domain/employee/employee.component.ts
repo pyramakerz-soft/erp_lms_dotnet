@@ -28,7 +28,6 @@ export class EmployeeComponent {
       (d: any) => {
         this.Employee_With_Permission = d
       }, (error) => {
-        console.log(error)
       }
     )
   }

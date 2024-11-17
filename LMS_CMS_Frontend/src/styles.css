@@ -32,3 +32,8 @@
     document.documentElement.style.setProperty('--bg-color', backgroundColor);
     document.documentElement.style.setProperty('--text-color', textColor);
 */
+
+html[dir='rtl'] {
+    direction: rtl;
+    text-align: right;
+}

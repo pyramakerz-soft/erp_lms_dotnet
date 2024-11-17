@@ -32,7 +32,6 @@ export class DomainService {
   }   
 
   AddDomain(domain:DomainAdd){
-    console.log(domain)
     return this.http.post<Domain>(`${this.baseUrl}/Domain`,domain)
   }
 }

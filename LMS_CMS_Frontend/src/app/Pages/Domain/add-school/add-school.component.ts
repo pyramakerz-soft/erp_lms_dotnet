@@ -23,7 +23,7 @@ import { Module } from '../../../Models/module';
 })
 export class AddSchoolComponent {
   newSchool: SchoolAdd = new SchoolAdd("", 0);
-  User_Data_After_Login: TokenData = new TokenData("", 0, 0, "", "", "", "", "");
+  User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "");
   roles: string[] = [];
   School_id: number = 0;
   newRole: RoleAdd = new RoleAdd(0, "");
@@ -48,7 +48,6 @@ export class AddSchoolComponent {
     this.permissionServ.Get_DomainModule_By_Id(this.User_Data_After_Login.id).subscribe(
       (d: any) => {
         this.DomainModule = d[0].modules; // Ensure it's an array
-        console.log(this.DomainModule);
         this.initializeSelections();
       }
     );
@@ -80,17 +79,14 @@ export class AddSchoolComponent {
   async addSchool() {
     this.schoolServ.AddSchool(this.newSchool).subscribe(
       (d: any) => {
-        console.log(d);
         this.School_id = d;
 
         this.roles.forEach(element => {
           if (element.trim()) { // Check for non-empty strings
             this.newRole.role_Name = element;
             this.newRole.school_id = this.School_id;
-            console.log(this.newRole);
             this.schoolRoleServ.AddSchoolRole(this.newRole).subscribe(
               (response: any) => {
-                console.log(response);
                 // Redirect to another page only after all roles are added
               }
             );

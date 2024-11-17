@@ -3,6 +3,8 @@ export class TokenData {
         public aud: string, 
         public exp: number,
         public id: number, 
+        public domain: number, 
+        public role: number, 
         public iss: string,   
         public jti: string, 
         public sub: string, 

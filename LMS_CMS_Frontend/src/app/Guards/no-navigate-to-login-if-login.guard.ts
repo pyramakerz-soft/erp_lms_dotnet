@@ -21,9 +21,6 @@ export const noNavigateToLoginIfLoginGuard: CanActivateFn = (route, state) => {
   } else if(token != null && User_Type == "pyramakerz"){
     router.navigateByUrl('/Pyramakerz');
     return false;
-  } else if(token != null && User_Type == "domain"){
-    router.navigateByUrl('/Domain');
-    return false;
   }
   
   return true;

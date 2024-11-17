@@ -43,7 +43,7 @@ export class AccountService {
     let User_Type = User_Data_After_Login.type
 
     this.isAuthenticated = false;
-    localStorage.removeItem("token");
+    localStorage.removeItem("current_token");
     if(User_Type=="pyramakerz"){
       this.router.navigateByUrl("Pyramakerz/login");
     }else if(User_Type=="domain"){

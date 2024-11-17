@@ -24,10 +24,22 @@ export class PyramakerzLoginComponent {
     this.userInfo.type="pyramakerz";
       this.accountService.Login(this.userInfo).subscribe(
         (d: any) => {
+   
           this.accountService.isAuthenticated = true;
           localStorage.setItem("current_token", JSON.parse(d).token);
-          
+          let count = localStorage.getItem("count")
+          if (count === null) {
+            localStorage.setItem("count", "1");
+           localStorage.setItem("token 1", JSON.parse(d).token);
+
+          } else {
+           let countNum = parseInt(count) + 1;
+           localStorage.setItem("count", countNum.toString());
+           localStorage.setItem("token "+countNum, JSON.parse(d).token);
+          }
           this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
+
+
   
           this.router.navigateByUrl("Pyramakerz/Home")
 

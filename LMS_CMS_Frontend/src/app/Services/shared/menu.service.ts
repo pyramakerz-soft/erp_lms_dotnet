@@ -25,6 +25,6 @@ export class MenuService {
         }
       }
     }
-    return null; // Return null if not found
+    return null;
   }
 }

@@ -20,12 +20,10 @@ export class LoginComponent {
   userInfo:Login = new Login("", "", "", "");
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
 
-  // Initialize the image states
   employeeImage = 'Images/employee.png';
   studentImage = 'Images/student.png';
   parentImage = 'Images/parent.png';
 
-  // Hover state
   isEmployeeHovered = false;
   isStudentHovered = false;
   isParentHovered = false;

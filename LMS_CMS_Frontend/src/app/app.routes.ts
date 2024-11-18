@@ -12,6 +12,8 @@ import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.com
 import { PyramakerzLoginComponent } from './Pages/Login/pyramakerz-login/pyramakerz-login.component';
 import { navigateIfPyramakerzGuard } from './Guards/navigate-if-pyramakerz.guard';
 import { noNavigateWithoutPyramakerzLoginGuard } from './Guards/no-navigate-without-pyramakerz-login.guard';
+import { SettingsComponent } from './Pages/Employee/settings/settings.component';
+import { navigateIfHaveSettingPageGuard } from './Guards/navigate-if-have-This-page.guard';
 
 
 export const routes: Routes = [
@@ -25,7 +27,11 @@ export const routes: Routes = [
         title: "Employee Home", 
         canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard], 
         children: [
-            { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },        ]
+            { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },    
+            { path: "Settings", component: SettingsComponent, title: "EmployeeHome" , canActivate:[navigateIfHaveSettingPageGuard]},    
+           
+        
+        ]
     },
     { 
         path: "Parent", 

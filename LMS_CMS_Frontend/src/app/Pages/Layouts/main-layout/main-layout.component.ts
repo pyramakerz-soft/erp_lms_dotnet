@@ -7,6 +7,8 @@ import { NavMenuComponent } from '../../../Component/nav-menu/nav-menu.component
 import { RoleDetailsService } from '../../../Services/Employee/role-details.service';
 import { CommonModule } from '@angular/common';
 import { PagesWithRoleId } from '../../../Models/pages-with-role-id';
+import { MenuService } from '../../../Services/shared/menu.service';
+import { NewTokenService } from '../../../Services/shared/new-token.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -21,9 +23,20 @@ export class MainLayoutComponent {
 
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
 
-  constructor(public accountService: AccountService, public roleDetailsService: RoleDetailsService) { }
+  constructor(public accountService: AccountService, public roleDetailsService: RoleDetailsService ,private menuService: MenuService ,private communicationService: NewTokenService) { }
 
   async ngOnInit() {
+   await this.GetInfo();
+    this.communicationService.action$.subscribe(async (state) => {
+      await this.GetInfo();
+
+    });
+  
+
+    
+  }
+
+  async GetInfo(){
     this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
     if (this.User_Data_After_Login.type == "employee") {
       await this.Get_Pages_With_RoleID()
@@ -42,11 +55,13 @@ export class MainLayoutComponent {
     }
   }
 
+
   Get_Pages_With_RoleID() {
     this.roleDetailsService.Get_Pages_With_RoleID(this.User_Data_After_Login.role).subscribe(
       (data:any) => {
         this.menuItemsForEmployee = data
-        console.log(this.menuItemsForEmployee)
+        this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
+
       } 
     )
     this.menuItems = [

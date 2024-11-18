@@ -6,6 +6,7 @@ import { AccountService } from '../../Services/account.service';
 import { TranslateService } from '@ngx-translate/core';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
+import { NewTokenService } from '../../Services/shared/new-token.service';
 
 @Component({
   selector: 'app-nav-menu',
@@ -24,7 +25,7 @@ export class NavMenuComponent {
   allTokens: { id: number, key: string; KeyInLocal: string; value: string }[] = [];
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
 
-  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, private renderer: Renderer2, private translate: TranslateService) { }
+  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, private renderer: Renderer2, private translate: TranslateService ,private communicationService: NewTokenService) { }
 
   ngOnInit() {
     this.GetUserInfo();
@@ -110,6 +111,7 @@ export class NavMenuComponent {
       localStorage.setItem("current_token", tokenObject.value);
       this.User_Data_After_Login = jwtDecode(tokenObject.value)
       this.userName = this.User_Data_After_Login.user_Name
+      this.communicationService.sendAction(true);
       this.router.navigateByUrl("")
     }
   }

@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models;
+using LMS_CMS_PL.Attribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,6 @@ namespace LMS_CMS_PL.Controllers
         private UOW Unit_Of_Work;
         IMapper mapper;
 
-
         public PagesController(UOW Unit_Of_Work, IMapper mapper)
         {
             this.Unit_Of_Work = Unit_Of_Work;
@@ -24,6 +24,11 @@ namespace LMS_CMS_PL.Controllers
         }
 
         [HttpGet]
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "employee", "parent" },
+            allowDelete:1,
+            pages: new[] { "Settings" }
+        )]
         public IActionResult Get()
         {
             List<Page> pages = Unit_Of_Work.page_Repository.Select_All();

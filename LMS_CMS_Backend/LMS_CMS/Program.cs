@@ -94,12 +94,16 @@ namespace LMS_CMS
 
             app.UseHttpsRedirection();
 
+            /// For Endpoint, to check if the user has access for this endpoint or not
+            /// Make sure to be here before UseAuthorization
+            app.UseMiddleware<Endpoint_Authorization_Middleware>();
+
+
             app.UseAuthorization();
 
             /// 3)
             app.UseCors(txt);
-
-            app.UseHttpsRedirection();
+             
             app.MapControllers();
 
             app.Run();

@@ -10,7 +10,7 @@ namespace LMS_CMS_DAL.Models.BusModule
 {
     public class BusStudent
     {
-        public long Id { get; set; }
+        public long ID { get; set; }
         [ForeignKey("Bus")]
         public long BusID { get; set; }
         [ForeignKey("Student")]

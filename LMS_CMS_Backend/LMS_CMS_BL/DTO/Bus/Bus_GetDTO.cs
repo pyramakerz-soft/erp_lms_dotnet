@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LMS_CMS_BL.DTO.Bus
+{
+    public class Bus_GetDTO
+    {
+        public long ID { get; set; }
+        public string Name { get; set; }
+        public long Capacity { get; set; }
+        public bool IsCapacityRestricted { get; set; }
+        public long? BusTypeName { get; set; }
+        public long? BusRestrictName { get; set; }
+        public long? BusStatusName { get; set; }
+        public long? DriverName { get; set; }
+        public long? DriverAssistantName { get; set; }
+    }
+}

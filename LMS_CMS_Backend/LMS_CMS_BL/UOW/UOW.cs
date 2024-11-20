@@ -23,13 +23,13 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Page> Page_Repository;
         GenericRepo<Role_Detailes> Role_Detailes_Repository;
         GenericRepo<Pyramakerz> Pyramakerz_Repository;
+        GenericRepo<Bus> Bus_Repository;
+        GenericRepo<BusStudent> BusStudent_Repository;
         GenericRepo<BusType> BusType_Repository;
         GenericRepo<BusRestrict> BusRestrict_Repository;
         GenericRepo<BusCategory> BusCategory_Repository;
         GenericRepo<BusStatus> BusStatus_Repository;
         GenericRepo<BusCompany> BusCompany_Repository;
-
-
 
         public UOW(LMS_CMS_Context db)
         {
@@ -151,6 +151,30 @@ namespace LMS_CMS_BL.UOW
                     Role_Detailes_Repository = new GenericRepo<Role_Detailes>(db);
                 }
                 return Role_Detailes_Repository;
+            }
+        }
+
+        public GenericRepo<Bus> bus_Repository
+        {
+            get
+            {
+                if (Bus_Repository == null)
+                {
+                    Bus_Repository = new GenericRepo<Bus>(db);
+                }
+                return Bus_Repository;
+            }
+        }
+
+        public GenericRepo<BusStudent> busStudent_Repository
+        {
+            get
+            {
+                if (BusStudent_Repository == null)
+                {
+                    BusStudent_Repository = new GenericRepo<BusStudent>(db);
+                }
+                return BusStudent_Repository;
             }
         }
 

@@ -11,7 +11,7 @@ namespace LMS_CMS_DAL.Models
     public class School : AuditableEntity
     {
         [Key]
-        public long Id { get; set; }
+        public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "School cannot be longer than 100 characters.")]
         public string Name { get; set; }

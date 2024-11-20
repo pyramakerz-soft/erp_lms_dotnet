@@ -1,5 +1,6 @@
 ﻿using LMS_CMS_BL.Repository;
 using LMS_CMS_DAL.Models;
+using LMS_CMS_DAL.Models.BusModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,13 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Page> Page_Repository;
         GenericRepo<Role_Detailes> Role_Detailes_Repository;
         GenericRepo<Pyramakerz> Pyramakerz_Repository;
+        GenericRepo<Bus> Bus_Repository;
+        GenericRepo<BusStudent> BusStudent_Repository;
+        GenericRepo<BusType> BusType_Repository;
+        GenericRepo<BusRestrict> BusRestrict_Repository;
+        GenericRepo<BusCategory> BusCategory_Repository;
+        GenericRepo<BusStatus> BusStatus_Repository;
+        GenericRepo<BusCompany> BusCompany_Repository;
 
         public UOW(LMS_CMS_Context db)
         {
@@ -143,6 +151,87 @@ namespace LMS_CMS_BL.UOW
                     Role_Detailes_Repository = new GenericRepo<Role_Detailes>(db);
                 }
                 return Role_Detailes_Repository;
+            }
+        }
+
+        public GenericRepo<Bus> bus_Repository
+        {
+            get
+            {
+                if (Bus_Repository == null)
+                {
+                    Bus_Repository = new GenericRepo<Bus>(db);
+                }
+                return Bus_Repository;
+            }
+        }
+
+        public GenericRepo<BusStudent> busStudent_Repository
+        {
+            get
+            {
+                if (BusStudent_Repository == null)
+                {
+                    BusStudent_Repository = new GenericRepo<BusStudent>(db);
+                }
+                return BusStudent_Repository;
+            }
+        }
+
+        public GenericRepo<BusType> busType_Repository
+        {
+            get
+            {
+                if (BusType_Repository == null)
+                {
+                    BusType_Repository = new GenericRepo<BusType>(db);
+                }
+                return BusType_Repository;
+            }
+        }
+
+        public GenericRepo<BusRestrict> busRestrict_Repository
+        {
+            get
+            {
+                if (BusRestrict_Repository == null)
+                {
+                    BusRestrict_Repository = new GenericRepo<BusRestrict>(db);
+                }
+                return BusRestrict_Repository;
+            }
+        }
+        public GenericRepo<BusCategory> busCategory_Repository
+        {
+            get
+            {
+                if (BusCategory_Repository == null)
+                {
+                    BusCategory_Repository = new GenericRepo<BusCategory>(db);
+                }
+                return BusCategory_Repository;
+            }
+        }
+        public GenericRepo<BusStatus> busStatus_Repository
+        {
+            get
+            {
+                if (BusStatus_Repository == null)
+                {
+                    BusStatus_Repository = new GenericRepo<BusStatus>(db);
+                }
+                return BusStatus_Repository;
+            }
+        }
+        public GenericRepo<BusCompany> busCompany_Repository
+        {
+            get
+            {
+                if (BusCompany_Repository == null)
+                {
+                    BusCompany_Repository = new GenericRepo<BusCompany>(db);
+                }
+                return BusCompany_Repository;
             }
         }
 

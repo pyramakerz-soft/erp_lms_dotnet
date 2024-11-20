@@ -27,6 +27,12 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.BusStatusName, opt => opt.MapFrom(src => src.BusStatus.Name))
                 .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.Driver.en_name))
                 .ForMember(dest => dest.DriverAssistantName, opt => opt.MapFrom(src => src.DriverAssistant.en_name));
+
+            CreateMap<BusType, BusTypeGetDTO>();
+            CreateMap<BusTypeGetDTO, BusType>();
+
+            CreateMap<BusType, BusTypeAddDTO>();
+            CreateMap<BusTypeAddDTO, BusType>();
         }
     }
 }

@@ -72,7 +72,6 @@ namespace LMS_CMS_PL.Controllers
         }
 
         [HttpPost]
-
         public IActionResult addPage(Page_AddDTO newPage)
         {
             if (newPage == null) { return BadRequest(); }

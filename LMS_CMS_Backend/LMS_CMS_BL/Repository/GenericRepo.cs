@@ -59,7 +59,7 @@ namespace LMS_CMS_BL.Repository
             db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
-        public void Delete(int id)
+        public void Delete(long id)
         {
             TEntity obj = db.Set<TEntity>().Find(id);
             db.Set<TEntity>().Remove(obj);

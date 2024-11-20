@@ -8,21 +8,19 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public class School : AuditableEntity
+    public class BusType
     {
         [Key]
-        public long Id { get; set; }
+        public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
-        [StringLength(100, ErrorMessage = "School cannot be longer than 100 characters.")]
+        [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
 
-
         [ForeignKey("Domain")]
-        [Required]
-        public long Domain_id { get; set; }
-        public Domain Domain { get; set; }
+        public long DomainId { get; set; }
 
-        public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();
+        public Domain Domain { get; set; }
+        public ICollection<Bus> Buses { get; set; } = new HashSet<Bus>();
 
     }
 }

@@ -20,5 +20,15 @@ namespace LMS_CMS_DAL.Models
         public ICollection<Role> Roles { get; set; } = new HashSet<Role>();
         public ICollection<Employee> Employess { get; set; } = new HashSet<Employee>();
         public ICollection<Domain_Page_Detailes> Domain_Page_Detailes { get; set; } = new HashSet<Domain_Page_Detailes>();
+        public ICollection<BusType> BusTypes { get; set; } = new HashSet<BusType>();
+        public ICollection<BusRestrict> BusRestricts { get; set; } = new HashSet<BusRestrict>();
+        public ICollection<BusStatus> BusStatus { get; set; } = new HashSet<BusStatus>();
+        public ICollection<BusCategory> BusCategories { get; set; } = new HashSet<BusCategory>();
+        public ICollection<BusCompany> BusCompanies { get; set; } = new HashSet<BusCompany>();
+        public ICollection<Bus> Buses { get; set; } = new HashSet<Bus>();
+
+
+
+
     }
 }

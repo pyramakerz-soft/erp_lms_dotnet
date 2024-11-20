@@ -33,7 +33,20 @@ namespace LMS_CMS_DAL.Models
         [Required]
         public long Role_ID { get; set; }
 
+        [ForeignKey("BusCompany")]
+        public long? BusCompanyID { get; set; }
+        [ForeignKey("EmployeeType")]
+        public long EmployeeTypeID { get; set; }
+
+        public BusCompany? BusCompany { get; set; }
+
+        public EmployeeType EmployeeType { get; set; }
+
         public Domain Domain { get; set; }
         public Role Role { get; set; }
+        public ICollection<Bus> DrivenBuses { get; set; } = new HashSet<Bus>();
+        public ICollection<Bus> DriverAssistant { get; set; } = new HashSet<Bus>();
+
+
     }
 }

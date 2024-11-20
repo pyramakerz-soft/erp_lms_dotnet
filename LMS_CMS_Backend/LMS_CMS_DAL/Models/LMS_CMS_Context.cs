@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LMS_CMS_DAL.Models.BusModule;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,20 @@ namespace LMS_CMS_DAL.Models
         public DbSet<Domain_Page_Detailes> Domain_Page_Details { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<Role_Detailes> Role_Detailes { get; set; }
+
+        public DbSet<EmployeeType> EmployeeType { get; set; }
+        public DbSet<AcademicYear> AcademicYear { get; set; }
+        public DbSet<Semester> Semester { get; set; }
+        public DbSet<BusType> BusType { get; set; }
+        public DbSet<BusRestrict> BusRestrict { get; set; }
+        public DbSet<BusStatus> BusStatus { get; set; }
+        public DbSet<BusCategory> BusCategory { get; set; }
+        public DbSet<BusCompany> BusCompany { get; set; }
+        public DbSet<Bus> Bus { get; set; }
+        public DbSet<BusStudent> BusStudent { get; set; }
+
+
+
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -70,6 +85,7 @@ namespace LMS_CMS_DAL.Models
                  .WithMany(p => p.ChildPages)
                  .HasForeignKey(p => p.Page_ID)
                  .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<Employee>()
                  .HasOne(p => p.Role)
@@ -125,6 +141,114 @@ namespace LMS_CMS_DAL.Models
                  .HasForeignKey(p => p.Parent_Id)
                  .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<AcademicYear>()
+                 .HasOne(p => p.School)
+                 .WithMany(p => p.AcademicYears)
+                 .HasForeignKey(p => p.SchoolID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Semester>()
+                 .HasOne(p => p.AcademicYear)
+                 .WithMany(p => p.Semesters)
+                 .HasForeignKey(p => p.AcademicYearID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BusType>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.BusTypes)
+                 .HasForeignKey(p => p.DomainId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BusRestrict>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.BusRestricts)
+                 .HasForeignKey(p => p.DomainId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BusStatus>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.BusStatus)
+                 .HasForeignKey(p => p.DomainId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BusCategory>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.BusCategories)
+                 .HasForeignKey(p => p.DomainId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BusCompany>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.BusCompanies)
+                 .HasForeignKey(p => p.DomainId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Bus>()
+                 .HasOne(p => p.Domain)
+                 .WithMany(p => p.Buses)
+                 .HasForeignKey(p => p.DomainID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Bus>()
+                 .HasOne(p => p.BusType)
+                 .WithMany(p => p.Buses)
+                 .HasForeignKey(p => p.BusTypeID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Bus>()
+                 .HasOne(p => p.BusRestrict)
+                 .WithMany(p => p.Buses)
+                 .HasForeignKey(p => p.BusRestrictID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Bus>()
+                 .HasOne(p => p.BusStatus)
+                 .WithMany(p => p.Buses)
+                 .HasForeignKey(p => p.BusStatusID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Bus>()
+                 .HasOne(p => p.Driver)
+                 .WithMany(p => p.DrivenBuses)
+                 .HasForeignKey(p => p.DriverID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Bus>()
+                 .HasOne(p => p.DriverAssistant)
+                 .WithMany(p => p.DriverAssistant)
+                 .HasForeignKey(p => p.DriverAssistantID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Bus>()
+                 .HasOne(p => p.BusCompany)
+                 .WithMany(p => p.Buses)
+                 .HasForeignKey(p => p.BusCompanyID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<BusStudent>()
+                 .HasOne(p => p.Bus)
+                 .WithMany(p => p.BusStudents)
+                 .HasForeignKey(p => p.BusID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BusStudent>()
+                 .HasOne(p => p.Student)
+                 .WithMany(p => p.BusStudents)
+                 .HasForeignKey(p => p.StudentID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BusStudent>()
+                 .HasOne(p => p.BusCategory)
+                 .WithMany(p => p.BusStudents)
+                 .HasForeignKey(p => p.BusCategoryID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BusStudent>()
+                 .HasOne(p => p.Semester)
+                 .WithMany(p => p.BusStudents)
+                 .HasForeignKey(p => p.SemseterID)
+                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

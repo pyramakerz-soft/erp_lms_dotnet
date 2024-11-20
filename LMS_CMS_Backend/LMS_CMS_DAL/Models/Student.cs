@@ -5,13 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LMS_CMS_DAL.Models.BusModule;
 
 namespace LMS_CMS_DAL.Models
 {
     public class Student : AuditableEntity
     {
         [Key]
-        public int ID { get; set; }
+        public long ID { get; set; }
 
         [Required(ErrorMessage = "User_Name is required")]
         [StringLength(100, ErrorMessage = "Username cannot be longer than 100 characters.")]
@@ -35,9 +36,12 @@ namespace LMS_CMS_DAL.Models
 
 
         [ForeignKey("Parent")] 
-        public int Parent_Id { get; set; }
+        public long Parent_Id { get; set; }
 
         public Parent Parent { get; set; }
+
+        public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
+
 
     }
 }

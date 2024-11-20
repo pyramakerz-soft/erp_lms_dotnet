@@ -12,6 +12,181 @@ namespace LMS_CMS_DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "EmployeeType",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeeType", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AcademicYear",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SchoolID = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AcademicYear", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Semester",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    AcademicYearID = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Semester", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Semester_AcademicYear_AcademicYearID",
+                        column: x => x.AcademicYearID,
+                        principalTable: "AcademicYear",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Bus",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Capacity = table.Column<long>(type: "bigint", nullable: false),
+                    DomainID = table.Column<long>(type: "bigint", nullable: false),
+                    BusTypeID = table.Column<long>(type: "bigint", nullable: true),
+                    BusRestrictID = table.Column<long>(type: "bigint", nullable: true),
+                    BusStatusID = table.Column<long>(type: "bigint", nullable: true),
+                    DriverID = table.Column<long>(type: "bigint", nullable: true),
+                    DriverAssistantID = table.Column<long>(type: "bigint", nullable: true),
+                    BusCompanyID = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bus", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusCategory",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DomainId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusCategory", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusCompany",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DomainId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusCompany", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusRestrict",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DomainId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusRestrict", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusStatus",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DomainId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusStatus", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusStudent",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BusID = table.Column<long>(type: "bigint", nullable: false),
+                    StudentID = table.Column<long>(type: "bigint", nullable: false),
+                    BusCategoryID = table.Column<long>(type: "bigint", nullable: true),
+                    SemseterID = table.Column<long>(type: "bigint", nullable: true),
+                    IsException = table.Column<bool>(type: "bit", nullable: false),
+                    ExceptionFromDate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExceptionToDate = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusStudent", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BusStudent_BusCategory_BusCategoryID",
+                        column: x => x.BusCategoryID,
+                        principalTable: "BusCategory",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BusStudent_Bus_BusID",
+                        column: x => x.BusID,
+                        principalTable: "Bus",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BusStudent_Semester_SemseterID",
+                        column: x => x.SemseterID,
+                        principalTable: "Semester",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusType",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DomainId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusType", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Domain_Page_Details",
                 columns: table => new
                 {
@@ -64,6 +239,8 @@ namespace LMS_CMS_DAL.Migrations
                     Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Domain_ID = table.Column<long>(type: "bigint", nullable: false),
                     Role_ID = table.Column<long>(type: "bigint", nullable: false),
+                    BusCompanyID = table.Column<long>(type: "bigint", nullable: true),
+                    EmployeeTypeID = table.Column<long>(type: "bigint", nullable: false),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
                     InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -76,11 +253,22 @@ namespace LMS_CMS_DAL.Migrations
                 {
                     table.PrimaryKey("PK_Employees", x => x.ID);
                     table.ForeignKey(
+                        name: "FK_Employees_BusCompany_BusCompanyID",
+                        column: x => x.BusCompanyID,
+                        principalTable: "BusCompany",
+                        principalColumn: "ID");
+                    table.ForeignKey(
                         name: "FK_Employees_Domains_Domain_ID",
                         column: x => x.Domain_ID,
                         principalTable: "Domains",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Employees_EmployeeType_EmployeeTypeID",
+                        column: x => x.EmployeeTypeID,
+                        principalTable: "EmployeeType",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Employees_Employees_DeletedByUserId",
                         column: x => x.DeletedByUserId,
@@ -144,7 +332,7 @@ namespace LMS_CMS_DAL.Migrations
                 name: "Parents",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     User_Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     en_name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -304,14 +492,14 @@ namespace LMS_CMS_DAL.Migrations
                 name: "Students",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     User_Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     en_name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ar_name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Parent_Id = table.Column<int>(type: "int", nullable: false),
+                    Parent_Id = table.Column<long>(type: "bigint", nullable: false),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
                     InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -354,6 +542,8 @@ namespace LMS_CMS_DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Allow_Edit = table.Column<bool>(type: "bit", nullable: false),
                     Allow_Delete = table.Column<bool>(type: "bit", nullable: false),
+                    Allow_Edit_For_Others = table.Column<bool>(type: "bit", nullable: false),
+                    Allow_Delete_For_Others = table.Column<bool>(type: "bit", nullable: false),
                     Role_ID = table.Column<long>(type: "bigint", nullable: false),
                     Page_ID = table.Column<long>(type: "bigint", nullable: false),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -395,6 +585,91 @@ namespace LMS_CMS_DAL.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AcademicYear_SchoolID",
+                table: "AcademicYear",
+                column: "SchoolID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bus_BusCompanyID",
+                table: "Bus",
+                column: "BusCompanyID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bus_BusRestrictID",
+                table: "Bus",
+                column: "BusRestrictID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bus_BusStatusID",
+                table: "Bus",
+                column: "BusStatusID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bus_BusTypeID",
+                table: "Bus",
+                column: "BusTypeID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bus_DomainID",
+                table: "Bus",
+                column: "DomainID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bus_DriverAssistantID",
+                table: "Bus",
+                column: "DriverAssistantID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bus_DriverID",
+                table: "Bus",
+                column: "DriverID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusCategory_DomainId",
+                table: "BusCategory",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusCompany_DomainId",
+                table: "BusCompany",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusRestrict_DomainId",
+                table: "BusRestrict",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusStatus_DomainId",
+                table: "BusStatus",
+                column: "DomainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusStudent_BusCategoryID",
+                table: "BusStudent",
+                column: "BusCategoryID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusStudent_BusID",
+                table: "BusStudent",
+                column: "BusID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusStudent_SemseterID",
+                table: "BusStudent",
+                column: "SemseterID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusStudent_StudentID",
+                table: "BusStudent",
+                column: "StudentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusType_DomainId",
+                table: "BusType",
+                column: "DomainId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Domain_Page_Details_DeletedByUserId",
@@ -443,6 +718,11 @@ namespace LMS_CMS_DAL.Migrations
                 column: "UpdatedByUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employees_BusCompanyID",
+                table: "Employees",
+                column: "BusCompanyID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_DeletedByUserId",
                 table: "Employees",
                 column: "DeletedByUserId");
@@ -451,6 +731,11 @@ namespace LMS_CMS_DAL.Migrations
                 name: "IX_Employees_Domain_ID",
                 table: "Employees",
                 column: "Domain_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_EmployeeTypeID",
+                table: "Employees",
+                column: "EmployeeTypeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_InsertedByUserId",
@@ -625,6 +910,11 @@ namespace LMS_CMS_DAL.Migrations
                 column: "UpdatedByUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Semester_AcademicYearID",
+                table: "Semester",
+                column: "AcademicYearID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Students_DeletedByUserId",
                 table: "Students",
                 column: "DeletedByUserId");
@@ -655,6 +945,118 @@ namespace LMS_CMS_DAL.Migrations
                 table: "Students",
                 column: "User_Name",
                 unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AcademicYear_Schools_SchoolID",
+                table: "AcademicYear",
+                column: "SchoolID",
+                principalTable: "Schools",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Bus_BusCompany_BusCompanyID",
+                table: "Bus",
+                column: "BusCompanyID",
+                principalTable: "BusCompany",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Bus_BusRestrict_BusRestrictID",
+                table: "Bus",
+                column: "BusRestrictID",
+                principalTable: "BusRestrict",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Bus_BusStatus_BusStatusID",
+                table: "Bus",
+                column: "BusStatusID",
+                principalTable: "BusStatus",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Bus_BusType_BusTypeID",
+                table: "Bus",
+                column: "BusTypeID",
+                principalTable: "BusType",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Bus_Domains_DomainID",
+                table: "Bus",
+                column: "DomainID",
+                principalTable: "Domains",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Bus_Employees_DriverAssistantID",
+                table: "Bus",
+                column: "DriverAssistantID",
+                principalTable: "Employees",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Bus_Employees_DriverID",
+                table: "Bus",
+                column: "DriverID",
+                principalTable: "Employees",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_BusCategory_Domains_DomainId",
+                table: "BusCategory",
+                column: "DomainId",
+                principalTable: "Domains",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_BusCompany_Domains_DomainId",
+                table: "BusCompany",
+                column: "DomainId",
+                principalTable: "Domains",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_BusRestrict_Domains_DomainId",
+                table: "BusRestrict",
+                column: "DomainId",
+                principalTable: "Domains",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_BusStatus_Domains_DomainId",
+                table: "BusStatus",
+                column: "DomainId",
+                principalTable: "Domains",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_BusStudent_Students_StudentID",
+                table: "BusStudent",
+                column: "StudentID",
+                principalTable: "Students",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_BusType_Domains_DomainId",
+                table: "BusType",
+                column: "DomainId",
+                principalTable: "Domains",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Domain_Page_Details_Domains_Domain_ID",
@@ -727,6 +1129,10 @@ namespace LMS_CMS_DAL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_Employees_BusCompany_BusCompanyID",
+                table: "Employees");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Employees_Domains_Domain_ID",
                 table: "Employees");
 
@@ -747,6 +1153,9 @@ namespace LMS_CMS_DAL.Migrations
                 table: "Roles");
 
             migrationBuilder.DropTable(
+                name: "BusStudent");
+
+            migrationBuilder.DropTable(
                 name: "Domain_Page_Details");
 
             migrationBuilder.DropTable(
@@ -756,7 +1165,13 @@ namespace LMS_CMS_DAL.Migrations
                 name: "Role_Detailes");
 
             migrationBuilder.DropTable(
-                name: "Schools");
+                name: "BusCategory");
+
+            migrationBuilder.DropTable(
+                name: "Bus");
+
+            migrationBuilder.DropTable(
+                name: "Semester");
 
             migrationBuilder.DropTable(
                 name: "Students");
@@ -765,13 +1180,34 @@ namespace LMS_CMS_DAL.Migrations
                 name: "Pages");
 
             migrationBuilder.DropTable(
+                name: "BusRestrict");
+
+            migrationBuilder.DropTable(
+                name: "BusStatus");
+
+            migrationBuilder.DropTable(
+                name: "BusType");
+
+            migrationBuilder.DropTable(
+                name: "AcademicYear");
+
+            migrationBuilder.DropTable(
                 name: "Parents");
+
+            migrationBuilder.DropTable(
+                name: "Schools");
+
+            migrationBuilder.DropTable(
+                name: "BusCompany");
 
             migrationBuilder.DropTable(
                 name: "Domains");
 
             migrationBuilder.DropTable(
                 name: "Employees");
+
+            migrationBuilder.DropTable(
+                name: "EmployeeType");
 
             migrationBuilder.DropTable(
                 name: "Roles");

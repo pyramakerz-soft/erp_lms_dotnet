@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20241118122639_PyramakerzTable")]
-    partial class PyramakerzTable
+    [Migration("20241120092820_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,244 @@ namespace LMS_CMS_DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.AcademicYear", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long>("SchoolID")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SchoolID");
+
+                    b.ToTable("AcademicYear");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Bus", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("BusCompanyID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("BusRestrictID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("BusStatusID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("BusTypeID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Capacity")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("DomainID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DriverAssistantID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DriverID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusCompanyID");
+
+                    b.HasIndex("BusRestrictID");
+
+                    b.HasIndex("BusStatusID");
+
+                    b.HasIndex("BusTypeID");
+
+                    b.HasIndex("DomainID");
+
+                    b.HasIndex("DriverAssistantID");
+
+                    b.HasIndex("DriverID");
+
+                    b.ToTable("Bus");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusCategory", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long>("DomainId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("BusCategory");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusCompany", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long>("DomainId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("BusCompany");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusRestrict", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long>("DomainId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("BusRestrict");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusStatus", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long>("DomainId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("BusStatus");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusStudent", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("BusCategoryID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("BusID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ExceptionFromDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExceptionToDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsException")
+                        .HasColumnType("bit");
+
+                    b.Property<long?>("SemseterID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StudentID")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusCategoryID");
+
+                    b.HasIndex("BusID");
+
+                    b.HasIndex("SemseterID");
+
+                    b.HasIndex("StudentID");
+
+                    b.ToTable("BusStudent");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusType", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long>("DomainId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DomainId");
+
+                    b.ToTable("BusType");
+                });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domain", b =>
                 {
@@ -131,6 +369,9 @@ namespace LMS_CMS_DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
+                    b.Property<long?>("BusCompanyID")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -138,6 +379,9 @@ namespace LMS_CMS_DAL.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<long>("Domain_ID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("EmployeeTypeID")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("InsertedAt")
@@ -180,9 +424,13 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("BusCompanyID");
+
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Domain_ID");
+
+                    b.HasIndex("EmployeeTypeID");
 
                     b.HasIndex("InsertedByUserId");
 
@@ -194,6 +442,24 @@ namespace LMS_CMS_DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.EmployeeType", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("EmployeeType");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Page", b =>
@@ -256,11 +522,11 @@ namespace LMS_CMS_DAL.Migrations
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Parent", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -445,7 +711,13 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<bool>("Allow_Delete")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("Allow_Delete_For_Others")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("Allow_Edit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Allow_Edit_For_Others")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -540,13 +812,36 @@ namespace LMS_CMS_DAL.Migrations
                     b.ToTable("Schools");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Semester", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long?>("AcademicYearID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AcademicYearID");
+
+                    b.ToTable("Semester");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Student", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -567,8 +862,8 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Parent_Id")
-                        .HasColumnType("int");
+                    b.Property<long>("Parent_Id")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -613,6 +908,158 @@ namespace LMS_CMS_DAL.Migrations
                         .IsUnique();
 
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.AcademicYear", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.School", "School")
+                        .WithMany("AcademicYears")
+                        .HasForeignKey("SchoolID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("School");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Bus", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.BusCompany", "BusCompany")
+                        .WithMany("Buses")
+                        .HasForeignKey("BusCompanyID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.BusRestrict", "BusRestrict")
+                        .WithMany("Buses")
+                        .HasForeignKey("BusRestrictID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.BusStatus", "BusStatus")
+                        .WithMany("Buses")
+                        .HasForeignKey("BusStatusID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.BusType", "BusType")
+                        .WithMany("Buses")
+                        .HasForeignKey("BusTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
+                        .WithMany("Buses")
+                        .HasForeignKey("DomainID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Employee", "DriverAssistant")
+                        .WithMany("DriverAssistant")
+                        .HasForeignKey("DriverAssistantID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Employee", "Driver")
+                        .WithMany("DrivenBuses")
+                        .HasForeignKey("DriverID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BusCompany");
+
+                    b.Navigation("BusRestrict");
+
+                    b.Navigation("BusStatus");
+
+                    b.Navigation("BusType");
+
+                    b.Navigation("Domain");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("DriverAssistant");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusCategory", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
+                        .WithMany("BusCategories")
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Domain");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusCompany", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
+                        .WithMany("BusCompanies")
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Domain");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusRestrict", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
+                        .WithMany("BusRestricts")
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Domain");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusStatus", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
+                        .WithMany("BusStatus")
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Domain");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusStudent", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.BusCategory", "BusCategory")
+                        .WithMany("BusStudents")
+                        .HasForeignKey("BusCategoryID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Bus", "Bus")
+                        .WithMany("BusStudents")
+                        .HasForeignKey("BusID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Semester", "Semester")
+                        .WithMany("BusStudents")
+                        .HasForeignKey("SemseterID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Student", "Student")
+                        .WithMany("BusStudents")
+                        .HasForeignKey("StudentID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Bus");
+
+                    b.Navigation("BusCategory");
+
+                    b.Navigation("Semester");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusType", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
+                        .WithMany("BusTypes")
+                        .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Domain");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domain", b =>
@@ -675,6 +1122,10 @@ namespace LMS_CMS_DAL.Migrations
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Employee", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.BusCompany", "BusCompany")
+                        .WithMany("Employees")
+                        .HasForeignKey("BusCompanyID");
+
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -683,6 +1134,12 @@ namespace LMS_CMS_DAL.Migrations
                         .WithMany("Employess")
                         .HasForeignKey("Domain_ID")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.EmployeeType", "EmployeeType")
+                        .WithMany("Employees")
+                        .HasForeignKey("EmployeeTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByUser")
@@ -699,9 +1156,13 @@ namespace LMS_CMS_DAL.Migrations
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
+                    b.Navigation("BusCompany");
+
                     b.Navigation("DeletedByUser");
 
                     b.Navigation("Domain");
+
+                    b.Navigation("EmployeeType");
 
                     b.Navigation("InsertedByUser");
 
@@ -875,6 +1336,16 @@ namespace LMS_CMS_DAL.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Semester", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.AcademicYear", "AcademicYear")
+                        .WithMany("Semesters")
+                        .HasForeignKey("AcademicYearID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AcademicYear");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Student", b =>
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
@@ -904,8 +1375,57 @@ namespace LMS_CMS_DAL.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.AcademicYear", b =>
+                {
+                    b.Navigation("Semesters");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Bus", b =>
+                {
+                    b.Navigation("BusStudents");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusCategory", b =>
+                {
+                    b.Navigation("BusStudents");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusCompany", b =>
+                {
+                    b.Navigation("Buses");
+
+                    b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusRestrict", b =>
+                {
+                    b.Navigation("Buses");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusStatus", b =>
+                {
+                    b.Navigation("Buses");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.BusType", b =>
+                {
+                    b.Navigation("Buses");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domain", b =>
                 {
+                    b.Navigation("BusCategories");
+
+                    b.Navigation("BusCompanies");
+
+                    b.Navigation("BusRestricts");
+
+                    b.Navigation("BusStatus");
+
+                    b.Navigation("BusTypes");
+
+                    b.Navigation("Buses");
+
                     b.Navigation("Domain_Page_Detailes");
 
                     b.Navigation("Employess");
@@ -913,6 +1433,18 @@ namespace LMS_CMS_DAL.Migrations
                     b.Navigation("Roles");
 
                     b.Navigation("Schools");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Employee", b =>
+                {
+                    b.Navigation("DrivenBuses");
+
+                    b.Navigation("DriverAssistant");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.EmployeeType", b =>
+                {
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Page", b =>
@@ -934,6 +1466,21 @@ namespace LMS_CMS_DAL.Migrations
                     b.Navigation("Employess");
 
                     b.Navigation("Role_Detailes");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.School", b =>
+                {
+                    b.Navigation("AcademicYears");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Semester", b =>
+                {
+                    b.Navigation("BusStudents");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Student", b =>
+                {
+                    b.Navigation("BusStudents");
                 });
 #pragma warning restore 612, 618
         }

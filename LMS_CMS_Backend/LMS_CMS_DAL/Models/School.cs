@@ -21,5 +21,8 @@ namespace LMS_CMS_DAL.Models
         [Required]
         public long Domain_id { get; set; }
         public Domain Domain { get; set; }
+
+        public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();
+
     }
 }

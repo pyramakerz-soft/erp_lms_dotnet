@@ -12,12 +12,13 @@ namespace LMS_CMS_DAL.Models.BusModule
     public class Bus
     {
         [Key]
-        public long Id { get; set; }
+        public long ID { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
         public long Capacity { get; set; }
+        public bool IsCapacityRestricted { get; set; }
         [ForeignKey("Domain")]
         public long DomainID { get; set; }
         [ForeignKey("BusType")]
@@ -43,9 +44,5 @@ namespace LMS_CMS_DAL.Models.BusModule
 
         public BusCompany? BusCompany { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
-
-
-
-
     }
 }

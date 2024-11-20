@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models
+namespace LMS_CMS_DAL.Models.BusModule
 {
     public class BusStudent
     {
@@ -25,7 +25,7 @@ namespace LMS_CMS_DAL.Models
 
         public Bus Bus { get; set; }
         public Student Student { get; set; }
-        public BusCategory? BusCategory { get; set; }   
+        public BusCategory? BusCategory { get; set; }
         public Semester? Semester { get; set; }
 
 

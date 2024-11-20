@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models
+namespace LMS_CMS_DAL.Models.BusModule
 {
     public class Bus
     {
@@ -34,7 +34,7 @@ namespace LMS_CMS_DAL.Models
         public long? BusCompanyID { get; set; }
 
         public Domain Domain { get; set; }
-        public BusType? BusType{ get; set; }
+        public BusType? BusType { get; set; }
         public BusRestrict? BusRestrict { get; set; }
         public BusStatus? BusStatus { get; set; }
 

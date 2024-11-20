@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models
+namespace LMS_CMS_DAL.Models.BusModule
 {
-    public class BusCompany
+    public class BusStatus
     {
         [Key]
         public long ID { get; set; }
@@ -21,8 +21,6 @@ namespace LMS_CMS_DAL.Models
 
         public Domain Domain { get; set; }
         public ICollection<Bus> Buses { get; set; } = new HashSet<Bus>();
-        public ICollection<Employee> Employees{ get; set; } = new HashSet<Employee>();
-
 
     }
 }

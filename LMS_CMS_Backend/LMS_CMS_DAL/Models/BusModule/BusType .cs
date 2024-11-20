@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models
+namespace LMS_CMS_DAL.Models.BusModule
 {
-    public  class BusStatus
+    public class BusType
     {
         [Key]
         public long ID { get; set; }

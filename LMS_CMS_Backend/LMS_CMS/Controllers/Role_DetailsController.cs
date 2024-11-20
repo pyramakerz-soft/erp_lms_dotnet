@@ -52,6 +52,8 @@ namespace LMS_CMS_PL.Controllers
                     ar_name = group.First().Page.ar_name,
                     Allow_Edit = group.First().Allow_Edit,
                     Allow_Delete = group.First().Allow_Delete,
+                    Allow_Edit_For_Others = group.First().Allow_Edit_For_Others,
+                    Allow_Delete_For_Others = group.First().Allow_Delete_For_Others,
                     Children = GetChildPagesRecursive(group.First().Page, roleDetails) // Use the optimized recursive method
                 })
                 .ToList();

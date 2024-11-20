@@ -14,6 +14,8 @@ namespace LMS_CMS_BL.DTO
         public long? Page_ID { get; set; }
         public bool Allow_Edit { get; set; }
         public bool Allow_Delete { get; set; }
+        public bool Allow_Edit_For_Others { get; set; }
+        public bool Allow_Delete_For_Others { get; set; }
 
         public List<Role_Details_GetDTO> Children { get; set; } = new List<Role_Details_GetDTO>();
     }

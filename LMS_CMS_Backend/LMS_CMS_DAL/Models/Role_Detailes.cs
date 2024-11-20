@@ -14,6 +14,8 @@ namespace LMS_CMS_DAL.Models
         public long ID { get; set; }
         public bool Allow_Edit { get; set; }
         public bool Allow_Delete { get; set; }
+        public bool Allow_Edit_For_Others { get; set; }
+        public bool Allow_Delete_For_Others { get; set; }
 
         [ForeignKey("Role")]
         [Required]
@@ -21,6 +23,8 @@ namespace LMS_CMS_DAL.Models
         [ForeignKey("Page")]
         [Required]
         public long Page_ID { get; set; }
+         
+
 
         public Role Role { get; set; }
         public Page Page { get; set; }

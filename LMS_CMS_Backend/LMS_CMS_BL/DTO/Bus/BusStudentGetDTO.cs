@@ -1,34 +1,25 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models.BusModule
+namespace LMS_CMS_BL.DTO.Bus
 {
-    public class BusStudent
+    public class BusStudentGetDTO
     {
         public long ID { get; set; }
-        [ForeignKey("Bus")]
         public long BusID { get; set; }
-        [ForeignKey("Student")]
+        public string BusName { get; set; }
         public long StudentID { get; set; }
-        [ForeignKey("BusCategory")]
+        public string StudentName { get; set; }
         public long? BusCategoryID { get; set; }
-        [ForeignKey("Semester")]
+        public string? BusCategoryName { get; set; }
         public long? SemseterID { get; set; }
+        public string? SemseterName { get; set; }
         public bool IsException { get; set; }
         public string ExceptionFromDate { get; set; }
         public string ExceptionToDate { get; set; }
-
-        public Bus Bus { get; set; }
-        public Student Student { get; set; }
-        public BusCategory? BusCategory { get; set; }
-        public Semester? Semester { get; set; }
-        
     }
 }
-
-

@@ -12,11 +12,18 @@ namespace LMS_CMS_BL.DTO.Bus
         public string Name { get; set; }
         public long Capacity { get; set; }
         public bool IsCapacityRestricted { get; set; }
+        public long DomainID { get; set; }
+        public long? BusTypeID { get; set; }
         public string? BusTypeName { get; set; }
+        public long? BusRestrictID { get; set; }
         public string? BusRestrictName { get; set; }
+        public long? BusStatusID { get; set; }
         public string? BusStatusName { get; set; }
+        public long? DriverID { get; set; }
         public string? DriverName { get; set; }
+        public long? DriverAssistantID { get; set; }
         public string? DriverAssistantName { get; set; }
+        public long? BusCompanyID { get; set; }
         public string? BusCompanyName { get; set; }
     }
 }

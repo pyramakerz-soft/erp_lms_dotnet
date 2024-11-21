@@ -59,6 +59,8 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult add(BusTypeAddDTO NewBus)
         {
             if (NewBus == null) { return BadRequest(); }
+            BusType ExsitType = Unit_Of_Work.busType_Repository.First_Or_Default(c => c.DomainId == NewBus.DomainId && c.Name == NewBus.Name);
+            if (ExsitType != null) { return BadRequest("this Type already exist"); }
             BusType bustType = mapper.Map<BusType>(NewBus);
             Unit_Of_Work.busType_Repository.Add(bustType);
             Unit_Of_Work.SaveChanges();

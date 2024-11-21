@@ -56,6 +56,8 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult add(BusRestrictAddDTO NewRestrict)
         {
             if (NewRestrict == null) { return BadRequest(); }
+            BusRestrict ExsitRestrict = Unit_Of_Work.busRestrict_Repository.First_Or_Default(c => c.DomainId == NewRestrict.DomainId && c.Name == NewRestrict.Name);
+            if (ExsitRestrict != null) { return BadRequest("this Restrict already exist"); }
             BusRestrict busRestrict = mapper.Map<BusRestrict>(NewRestrict);
             Unit_Of_Work.busRestrict_Repository.Add(busRestrict);
             Unit_Of_Work.SaveChanges();

@@ -48,7 +48,21 @@ namespace LMS_CMS_PL.Controllers.Bus
             BusStatusGetDTO StatusDTO = mapper.Map<BusStatusGetDTO>(busStatus);
             return Ok(StatusDTO);
         }
+        ///////////////////////////////////////////////////
 
+        [HttpGet("DomainId")]
+        public IActionResult GetByDomainId(long id)
+        {
+            List<BusStatus> BusStatus = Unit_Of_Work.busStatus_Repository.FindBy(s => s.DomainId == id);
+            if (BusStatus == null)
+            {
+                return NotFound();
+            }
+
+            List<BusStatusGetDTO> BusStatusDTO = mapper.Map<List<BusStatusGetDTO>>(BusStatus);
+
+            return Ok(BusStatusDTO);
+        }
         ///////////////////////////////////////////////////
 
         [HttpPost]

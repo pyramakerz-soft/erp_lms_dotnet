@@ -1,26 +1,26 @@
 <div class="">
     <div class="flex justify-between">
         <h1 class="font-poppins font-semibold text-2xl leading-9">Bus Type</h1>
-        <button data-modal-target="default-modal" data-modal-toggle="default-modal"
+        <button 
+        (click)="Create()"
             class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
             Create Bus Type
         </button>
     </div>
-
-    <div class="mt-5">
-        <form>
-            <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Domains</label>
-            <select id="countries"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option value="" disabled selected>Select a Domain</option>
-                <option *ngFor="let domain of DomainData" [value]="domain.id">
-                    {{ domain.name }}
-                </option>
-            </select>
-        </form>
-    </div>
     
+    
+    <div class="mt-5">
+        <label for="domains" class="block mb-2 text-sm font-medium text-gray-900">Domains</label>
+        <select id="domains" (change)="getBusDataByDomainId($event)"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+        <option value="" disabled selected hidden>Select a Domain</option>
+        <option *ngFor="let domain of DomainData" [value]="domain.id">
+            {{ domain.name }}
+        </option>
+    </select>
+</div>
 
+<div [ngClass]="{'hidden': !IsChoosenDomain}" >
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
         <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
             <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
@@ -71,12 +71,20 @@
         </table>
     </div>
 </div>
+</div>
 
 <!-- Modal -->
 <div id="default-modal" tabindex="-1" aria-hidden="true" 
     [ngClass]="{'hidden': !isModalVisible}" 
     class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
     <div class="relative bg-white w-[669px] h-[257px] rounded-2xl p-12 gap-4 shadow-md">
+        <!-- Close Icon -->
+        <button 
+            (click)="closeModal()"
+            class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+        </button>
+        
         <h1 class="font-poppins font-semibold text-2xl leading-9">Create Bus Type</h1>
         <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
             <h6 class="font-poppins font-medium text-base leading-6">Type Name</h6>
@@ -84,10 +92,11 @@
                 <input type="text" class="w-[404px] h-[45px] rounded-lg border border-solid border-gray-300 px-2" 
                     [(ngModel)]="newType" placeholder="Enter new type" />
                 <button class="secondaryBg text-white font-poppins font-medium px-4 py-2 rounded-lg" 
-                    (click)="AddNewType()">
+                    (click)="CreateOREdit()">
                     Create
                 </button>
             </div>
         </div>
     </div>
 </div>
+

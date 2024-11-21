@@ -48,7 +48,21 @@ namespace LMS_CMS_PL.Controllers.Bus
             BusCatigoryGetDTO busCategoryDto = mapper.Map<BusCatigoryGetDTO>(busCategory);
             return Ok(busCategoryDto);
         }
+        ///////////////////////////////////////////////////
 
+        [HttpGet("DomainId")]
+        public IActionResult GetByDomainId(long id)
+        {
+            List<BusCategory> BusCategory = Unit_Of_Work.busCategory_Repository.FindBy(s => s.DomainId == id);
+            if (BusCategory == null)
+            {
+                return NotFound();
+            }
+
+            List<BusCatigoryGetDTO> BusCategoryDTO = mapper.Map<List<BusCatigoryGetDTO>>(BusCategory);
+
+            return Ok(BusCategoryDTO);
+        }
         ///////////////////////////////////////////////////
 
         [HttpPost]

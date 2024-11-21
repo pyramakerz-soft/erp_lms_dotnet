@@ -13,7 +13,7 @@ import { Domain } from '../../../../Models/domain';
 @Component({
   selector: 'app-bus-types',
   standalone: true,
-  imports: [FormsModule, CommonModule],  // Make sure FormsModule is included here
+  imports: [FormsModule, CommonModule], 
   templateUrl: './bus-types.component.html',
   styleUrls: ['./bus-types.component.css']
 })
@@ -24,18 +24,19 @@ export class BusTypesComponent {
   AllowDelete: boolean = false;
   TableData: BusType[] = []
   DomainData: Domain[] = []
-  ChoosenDomain: number = 1;
+  IsChoosenDomain: boolean = false;
   newType: string = '';
-  isModalVisible: boolean = false; // Modal is visible by default
+  isModalVisible: boolean = false; 
   EditType:BusType=new BusType(0,"",0);
-
+  mode:string="";
+  DomainID:number=0;
 
 
   constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusTypeService, public DomainServ: DomainService) { }
 
   ngOnInit() {
     this.GetAllDomains();
-    this.GetTableData(1);
+    this.GetTableData(this.DomainID);
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -45,13 +46,16 @@ export class BusTypesComponent {
 
     });
   }
+  Create(){
+    this.mode="add";
+  this.openModal();
+  }
 
   AddNewType() {
-    this.BusTypeServ.Add(this.ChoosenDomain, this.newType).subscribe((data) => {
+    this.BusTypeServ.Add(this.DomainID, this.newType).subscribe((data) => {
       console.log(data);
-      this.GetTableData(1);
-      this.isModalVisible = false;
-
+      this.GetTableData(this.DomainID);
+      this.closeModal();
     });
   }
   GetAllDomains() {
@@ -62,9 +66,10 @@ export class BusTypesComponent {
   }
   GetTableData(id: number) {
     console.log("Domain selected:", id);
-    if (this.ChoosenDomain !== null) {
-      this.BusTypeServ.GetByDomainId(this.ChoosenDomain).subscribe((data) => {
+    if (this.DomainID !== null) {
+      this.BusTypeServ.GetByDomainId(id).subscribe((data) => {
         console.log("Fetched data:", data);
+        this.TableData=[];
         this.TableData = data;
       });
     } else {
@@ -76,16 +81,52 @@ export class BusTypesComponent {
     this.isModalVisible = true;
   }
 
-  // Optionally, you can have a method to close the modal
   closeModal() {
     this.isModalVisible = false;
   }
 
   Delete(id: number) {
     this.BusTypeServ.Delete(id).subscribe((data) => {
-      this.GetTableData(1);
+      this.GetTableData(this.DomainID);
     })
   }
-  Edit(id:number){
+  Edit(id: number) {
+    this.mode="edit";
+    const typeToEdit = this.TableData.find((t) => t.id === id);
+    if (typeToEdit) {
+      this.EditType={ ...typeToEdit };
+      this.newType = this.EditType.name;
+      console.log(this.newType)
+     this.openModal();
+    } else {
+      console.error("Type not found!");
+    }
+  }
+
+  Save(){
+    this.EditType.name=this.newType;
+    this.BusTypeServ.Edit(this.EditType).subscribe(()=>{
+      this.GetTableData(this.DomainID);
+      this.closeModal();
+      this.newType="";
+    })
+  }
+
+  CreateOREdit(){
+    console.log(this.mode)
+    if(this.mode==="add"){
+      this.AddNewType();
+    }
+    else if(this.mode==="edit"){
+      this.Save();
+    }
+  }
+
+  getBusDataByDomainId(event:Event){
+    this.IsChoosenDomain=true;
+    const selectedValue: number = Number((event.target as HTMLSelectElement).value);
+    this.DomainID=selectedValue;
+    console.log('Selected Domain ID:', selectedValue);
+    this.GetTableData(selectedValue);
   }
 }

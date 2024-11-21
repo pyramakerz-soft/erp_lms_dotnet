@@ -48,6 +48,21 @@ namespace LMS_CMS_PL.Controllers.Bus
             BusRestrictGetDTO busRestrictDto = mapper.Map<BusRestrictGetDTO>(busRestrict);
             return Ok(busRestrictDto);
         }
+        ///////////////////////////////////////////////////
+
+        [HttpGet("DomainId")]
+        public IActionResult GetByDomainId(long id)
+        {
+            List<BusRestrict> BusRestrict = Unit_Of_Work.busRestrict_Repository.FindBy(s => s.DomainId == id);
+            if (BusRestrict == null)
+            {
+                return NotFound();
+            }
+
+            List<BusRestrictGetDTO> BusRestrictDTO = mapper.Map<List<BusRestrictGetDTO>>(BusRestrict);
+
+            return Ok(BusRestrictDTO);
+        }
 
         ///////////////////////////////////////////////////
 

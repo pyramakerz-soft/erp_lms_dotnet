@@ -24,15 +24,19 @@ export class BusCompanyService {
   }
 
 
-  Edit(NewType:BusTypeAdd): Observable<BusTypeAdd> {
-    return this.http.put<BusTypeAdd>(`${this.baseUrl}/BusCompany`, NewType);
+  Edit(NewType:BusType): Observable<BusType> {
+    return this.http.put<BusType>(`${this.baseUrl}/BusCompany`, NewType);
   }
 
   Delete(id:number){
-    return this.http.delete(`${this.baseUrl}/BusCompany/${id}`)
+    return this.http.delete(`${this.baseUrl}/BusCompany?id=${id}`)
   }
 
   GetByID(id:number){
     return this.http.get(`${this.baseUrl}/BusCompany/${id}`)
+  }
+  GetByDomainId(id:number){
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusCompany/DomainId?id=${id}`)
+
   }
 }

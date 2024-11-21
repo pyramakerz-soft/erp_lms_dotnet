@@ -25,8 +25,8 @@ export class BusTypeService {
   }
 
 
-  Edit(NewType:BusTypeAdd): Observable<BusTypeAdd> {
-    return this.http.put<BusTypeAdd>(`${this.baseUrl}/BusType`, NewType);
+  Edit(NewType:BusType): Observable<BusType> {
+    return this.http.put<BusType>(`${this.baseUrl}/BusType`, NewType);
   }
 
   Delete(id:number){

@@ -25,15 +25,19 @@ export class BusRestrictService {
   }
 
 
-  Edit(NewType:BusTypeAdd): Observable<BusTypeAdd> {
-    return this.http.put<BusTypeAdd>(`${this.baseUrl}/BusRestrict`, NewType);
+  Edit(NewType:BusType): Observable<BusType> {
+    return this.http.put<BusType>(`${this.baseUrl}/BusRestrict`, NewType);
   }
 
   Delete(id:number){
-    return this.http.delete(`${this.baseUrl}/BusRestrict/${id}`)
+    return this.http.delete(`${this.baseUrl}/BusRestrict?id=${id}`)
   }
 
   GetByID(id:number){
     return this.http.get(`${this.baseUrl}/BusRestrict/${id}`)
+  }
+  GetByDomainId(id:number){
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusRestrict/DomainId?id=${id}`)
+
   }
 }

@@ -48,7 +48,21 @@ namespace LMS_CMS_PL.Controllers.Bus
             BusCompanyGetDTO CompanyDTO = mapper.Map<BusCompanyGetDTO>(busCompany);
             return Ok(CompanyDTO);
         }
+        ///////////////////////////////////////////////////
 
+        [HttpGet("DomainId")]
+        public IActionResult GetByDomainId(long id)
+        {
+            List<BusCompany> BusCompany = Unit_Of_Work.busCompany_Repository.FindBy(s => s.DomainId == id);
+            if (BusCompany == null)
+            {
+                return NotFound();
+            }
+
+            List<BusCompanyGetDTO> BusCompanyDTO = mapper.Map<List<BusCompanyGetDTO>>(BusCompany);
+
+            return Ok(BusCompanyDTO);
+        }
         ///////////////////////////////////////////////////
 
         [HttpPost]

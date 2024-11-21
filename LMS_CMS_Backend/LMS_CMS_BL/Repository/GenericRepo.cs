@@ -89,14 +89,18 @@ namespace LMS_CMS_BL.Repository
             return db.Set<TEntity>().Where(predicate).ToList();
         }
 
-        public async Task<List<TEntity>> Select_All_With_Includesbyid<TProperty>(
+        public async Task<List<TEntity>> Select_All_With_IncludesById<TProperty>(
             Expression<Func<TEntity, bool>> predicate,
-            Expression<Func<TEntity, TProperty>> include)
+            params Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>[] includes)
         {
-            return await db.Set<TEntity>()
-                .Where(predicate)
-                .Include(include)
-                .ToListAsync();
+            IQueryable<TEntity> query = db.Set<TEntity>();
+
+            foreach (var include in includes)
+            {
+                query = include(query);
+            }
+
+            return await query.Where(predicate).ToListAsync();
         }
     }
 }

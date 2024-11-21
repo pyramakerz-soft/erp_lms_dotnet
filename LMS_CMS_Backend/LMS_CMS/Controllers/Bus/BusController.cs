@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Migrations;
 using LMS_CMS_DAL.Models;
 using LMS_CMS_DAL.Models.BusModule;
 using LMS_CMS_PL.Attribute;
@@ -38,7 +39,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                 );
             if (buses == null)
             {
-                return NotFound();
+                return NotFound("No buses");
             }
 
             List<Bus_GetDTO> busDTOs = mapper.Map<List<Bus_GetDTO>>(buses);
@@ -66,12 +67,41 @@ namespace LMS_CMS_PL.Controllers.Bus
 
             if (bus == null)
             {
-                return NotFound();
+                return NotFound("No bus with this ID");
             }
 
             Bus_GetDTO busDTO = mapper.Map<Bus_GetDTO>(bus);
 
             return Ok(busDTO);
+        }
+
+        [HttpGet("GetByDomainID/{Id}")]
+        public async Task<IActionResult> GetByDomainIDAsync(long Id)
+        {
+            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(Id);
+            if (domain == null)
+            {
+                return NotFound("No Domain with this Id");
+            }
+
+            List<BusModel> buses = await Unit_Of_Work.bus_Repository.Select_All_With_IncludesById<BusModel>(
+                bus => bus.DomainID == Id,
+                query => query.Include(e => e.Driver),
+                query => query.Include(e => e.DriverAssistant),
+                query => query.Include(e => e.BusType),
+                query => query.Include(e => e.BusStatus),
+                query => query.Include(e => e.BusRestrict),
+                query => query.Include(e => e.BusCompany)
+            );
+
+            if (buses == null || buses.Count == 0)
+            {
+                return NotFound("There is no buses in this domian");
+            }
+
+            List<Bus_GetDTO> busDTOs = mapper.Map<List<Bus_GetDTO>>(buses);
+
+            return Ok(busDTOs);
         }
 
         [HttpPost]
@@ -82,7 +112,13 @@ namespace LMS_CMS_PL.Controllers.Bus
                 return BadRequest("Bus cannot be null.");
             }
 
-            if(busAddDTO.BusTypeID != null)
+            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(busAddDTO.DomainID);
+            if (domain == null)
+            {
+                return NotFound("No Domain with this Id");
+            }
+
+            if (busAddDTO.BusTypeID != null)
             {
 
                 BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(busAddDTO.BusTypeID);
@@ -151,6 +187,12 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busPutDTO == null)
             {
                 return BadRequest("Bus cannot be null.");
+            }
+
+            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(busPutDTO.DomainID);
+            if (domain == null)
+            {
+                return NotFound("No Domain with this Id");
             }
 
             if (busPutDTO.BusTypeID != null)
@@ -233,7 +275,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             BusModel bus = Unit_Of_Work.bus_Repository.Select_By_Id(Id);
             if (bus == null)
             {
-                return NotFound();
+                return NotFound("No Bus with this ID");
             }
             else
             {

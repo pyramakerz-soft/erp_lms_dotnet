@@ -56,6 +56,8 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult add(BusCatigoryAddDTO NewCategory)
         {
             if (NewCategory == null) { return BadRequest(); }
+            BusCategory ExsitCategory = Unit_Of_Work.busCategory_Repository.First_Or_Default(c => c.DomainId == NewCategory.DomainId && c.Name == NewCategory.Name);
+            if (ExsitCategory != null) { return BadRequest("this Category already exist"); }
             BusCategory busCategory = mapper.Map<BusCategory>(NewCategory);
             Unit_Of_Work.busCategory_Repository.Add(busCategory);
             Unit_Of_Work.SaveChanges();

@@ -54,6 +54,22 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         ///////////////////////////////////////////////////
 
+        [HttpGet("DomainId")]
+        public IActionResult GetByDomainId(long id)
+        {
+            List<BusType> BusType = Unit_Of_Work.busType_Repository.FindBy(s=>s.DomainId==id);
+            if (BusType == null)
+            {
+                return NotFound();
+            }
+
+            List<BusTypeGetDTO> BusTypeDTO = mapper.Map<List<BusTypeGetDTO>>(BusType);
+
+            return Ok(BusTypeDTO);
+        }
+
+        ///////////////////////////////////////////////////
+
         [HttpPost]
 
         public IActionResult add(BusTypeAddDTO NewBus)

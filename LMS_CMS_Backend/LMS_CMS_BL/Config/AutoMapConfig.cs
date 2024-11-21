@@ -69,6 +69,10 @@ namespace LMS_CMS_BL.Config
             CreateMap<BusCompany, BusCompanyGetDTO>();
             CreateMap<BusCompanyGetDTO, BusCompany>();
 
+            CreateMap<Domain, DomainGetDTO>();
+            CreateMap<DomainGetDTO, Domain>();
+
+
 
         }
     }

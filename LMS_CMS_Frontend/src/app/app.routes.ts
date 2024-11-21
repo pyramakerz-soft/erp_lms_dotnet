@@ -14,6 +14,7 @@ import { navigateIfPyramakerzGuard } from './Guards/navigate-if-pyramakerz.guard
 import { noNavigateWithoutPyramakerzLoginGuard } from './Guards/no-navigate-without-pyramakerz-login.guard';
 import { SettingsComponent } from './Pages/Employee/settings/settings.component';
 import { navigateIfHaveSettingPageGuard } from './Guards/navigate-if-have-This-page.guard';
+import { BusTypesComponent } from './Pages/Employee/Bus/bus-types/bus-types.component';
 
 
 export const routes: Routes = [
@@ -29,7 +30,7 @@ export const routes: Routes = [
         children: [
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },    
             { path: "Settings", component: SettingsComponent, title: "EmployeeHome" , canActivate:[navigateIfHaveSettingPageGuard]},    
-           
+            { path: "BusType", component: BusTypesComponent, title: "BusType" },    
         
         ]
     },

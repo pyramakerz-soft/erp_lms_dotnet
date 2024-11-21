@@ -21,13 +21,16 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<Page, Page_GetDTO>();
 
-
             CreateMap<Bus, Bus_GetDTO>()
                 .ForMember(dest => dest.BusTypeName, opt => opt.MapFrom(src => src.BusType.Name))
                 .ForMember(dest => dest.BusRestrictName, opt => opt.MapFrom(src => src.BusRestrict.Name))
                 .ForMember(dest => dest.BusStatusName, opt => opt.MapFrom(src => src.BusStatus.Name))
                 .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.Driver.en_name))
-                .ForMember(dest => dest.DriverAssistantName, opt => opt.MapFrom(src => src.DriverAssistant.en_name));
+                .ForMember(dest => dest.DriverAssistantName, opt => opt.MapFrom(src => src.DriverAssistant.en_name))
+                .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name));
+
+            CreateMap<Bus_AddDTO, Bus>();
+            CreateMap<Bus_PutDTO, Bus>();
 
             CreateMap<BusType, BusTypeGetDTO>();
             CreateMap<BusTypeGetDTO, BusType>();

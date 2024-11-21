@@ -36,4 +36,8 @@ export class BusTypeService {
   GetByID(id:number){
     return this.http.get(`${this.baseUrl}/BusType/${id}`)
   }
+  GetByDomainId(id:number){
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusType/DomainId?id=${id}`)
+
+  }
 }

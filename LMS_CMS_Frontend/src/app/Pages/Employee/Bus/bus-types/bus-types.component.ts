@@ -7,6 +7,8 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { BusType } from '../../../../Models/Bus/bus-type';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DomainService } from '../../../../Services/Employee/domain.service';
+import { Domain } from '../../../../Models/domain';
 
 @Component({
   selector: 'app-bus-types',
@@ -21,25 +23,42 @@ export class BusTypesComponent {
   AllowEdit:boolean=false;
   AllowDelete:boolean=false;
   TableData:BusType[]=[]
+  DomainData :Domain[]=[]
+  ChoosenDomain :number =0;
 
-  constructor(private router: Router ,private menuService: MenuService ,public account:AccountService , public BusTypeServ:BusTypeService) {}
+  constructor(private router: Router ,private menuService: MenuService ,public account:AccountService , public BusTypeServ:BusTypeService , public DomainServ:DomainService) {}
 
   ngOnInit() {
+    this.GetAllDomains();
+    this.GetTableData(1);
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
-     this.BusTypeServ.Get().subscribe((data)=>{
-        console.log(data)
-        this.TableData=data;
-     });
     
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName('BusType', items);
       this.AllowEdit=settingsPage.allow_Edit;
       this.AllowDelete=settingsPage.allow_Delete;
-
-
+      
     });
   }
-
-
-
+  
+  AddNewType(name:string){
+    
+  }
+  GetAllDomains(){
+    this.DomainServ.Get().subscribe((data)=>{
+      console.log(data)
+      this.DomainData=data;
+    })
+  }
+  GetTableData(id: number) {
+    console.log("Domain selected:", this.ChoosenDomain);  // Log ChoosenDomain value
+    if (this.ChoosenDomain !== null) {
+      this.BusTypeServ.GetByDomainId(this.ChoosenDomain).subscribe((data) => {
+        console.log("Fetched data:", data);
+        this.TableData = data;
+      });
+    } else {
+      console.log("No domain selected");
+    }
+  }
 }

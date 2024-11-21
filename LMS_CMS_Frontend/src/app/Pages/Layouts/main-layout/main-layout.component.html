@@ -5,6 +5,8 @@
         <app-side-menu *ngIf="this.User_Data_After_Login.type == 'employee'" [menuItemsForEmployee]="menuItemsForEmployee"></app-side-menu>
         <app-side-menu *ngIf="this.User_Data_After_Login.type != 'employee'" [menuItems]="menuItems"></app-side-menu>
 
-        <router-outlet></router-outlet>
+        <div class="w-full">
+            <router-outlet></router-outlet>
+        </div>
     </div>
 </div>

@@ -1,24 +1,22 @@
-<div>
-    <h1>Bus Type</h1>
-    <button>Create Bus Type</button>
-</div>
-
-
-
-<div class="mt-5 overflow-x-auto rounded-2xl border border-[#EAECF0]">
-    <table class="w-full tabe inset-0 bg-[#FFFFFF] text-left text-[#475467]">
-        <thead class="bg-[#F9FAFB] text-sm md:text-base">
+<div class="">
+    <div class="flex justify-between ">
+        <h1 class="font-poppins font-semibold text-2xl leading-9">Bus Type</h1>
+        <button>Create Bus Type</button>
+    </div>
+    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+        <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#475467]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
             <tr>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap">
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                     ID
                 </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap">
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
                     Type
                 </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap">
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                     Date
                 </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap">
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                     Actions
                 </th>
             </tr>
@@ -33,23 +31,24 @@
 
             <!-- Data Rows -->
             <tr *ngFor="let row of TableData; let i = index"
-                [ngClass]="{'bg-[#F4F4F4]': i % 2 === 0, 'bg-white': i % 2 !== 0}"
-                class="border-t border-gray-300 text-xs md:text-sm">
-
-                <td class="py-5 px-4">{{ row.id }}</td>
-                <td class="py-5 px-4">{{ row.name }}</td>
-                <td class="py-5 px-4">5555</td>
-                <td class="py-5 px-4">
-                    <div class="px-2">
-                        <button>
-                            <i class="fa fa-trash  ml-2 w-3 md:w-4"></i>
-                        </button>
-                        <button>
-                            <i class="fas fa-edit  w-3 md:w-4"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+            class="border-t border-gray-300 text-xs md:text-sm">
+            
+            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.id }}</td>
+            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
+            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">5555</td>
+            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                <div class="px-2 ">
+                    <button>
+                        <i class="fa fa-trash  ml-2 w-3 md:w-4"></i>
+                    </button>
+                    <button>
+                        <i class="fas fa-edit  w-3 md:w-4"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
 </div>

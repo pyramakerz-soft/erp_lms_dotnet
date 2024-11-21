@@ -87,7 +87,5 @@ export class BusTypesComponent {
     })
   }
   Edit(id:number){
-
-   thisthis.TableData.find(t=>t.id==id)
   }
 }

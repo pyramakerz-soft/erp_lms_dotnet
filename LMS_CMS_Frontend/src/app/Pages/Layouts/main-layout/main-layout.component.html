@@ -5,7 +5,7 @@
         <app-side-menu *ngIf="this.User_Data_After_Login.type == 'employee'" [menuItemsForEmployee]="menuItemsForEmployee"></app-side-menu>
         <app-side-menu *ngIf="this.User_Data_After_Login.type != 'employee'" [menuItems]="menuItems"></app-side-menu>
 
-        <div class="w-full">
+        <div class="w-full overflow-auto">
             <router-outlet></router-outlet>
         </div>
     </div>

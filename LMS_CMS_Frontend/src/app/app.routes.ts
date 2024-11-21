@@ -19,6 +19,7 @@ import { BusStatusComponent } from './Pages/Employee/Bus/bus-status/bus-status.c
 import { BusRestrictsComponent } from './Pages/Employee/Bus/bus-restricts/bus-restricts.component';
 import { BusCategoriesComponent } from './Pages/Employee/Bus/bus-categories/bus-categories.component';
 import { BusCompaniesComponent } from './Pages/Employee/Bus/bus-companies/bus-companies.component';
+import { BusDetailsComponent } from './Pages/Employee/Bus/bus-details/bus-details.component';
 
 
 export const routes: Routes = [
@@ -34,6 +35,7 @@ export const routes: Routes = [
         children: [
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },    
             { path: "Settings", component: SettingsComponent, title: "EmployeeHome" , canActivate:[navigateIfHaveSettingPageGuard]},    
+            { path: "Bus", component: BusDetailsComponent, title: "Bus" },    
             { path: "BusType", component: BusTypesComponent, title: "BusType" },    
             { path: "BusStatus", component: BusStatusComponent, title: "BusType" },    
             { path: "BusRestrict", component: BusRestrictsComponent, title: "BusType" },    

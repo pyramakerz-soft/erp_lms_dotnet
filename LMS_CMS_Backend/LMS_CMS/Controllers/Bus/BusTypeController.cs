@@ -42,9 +42,21 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         ///////////////////////////////////////////////////
 
+        [HttpGet("id")]
+        public IActionResult GetById(long id)
+        {
+            BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(id);
+            if (busType == null) return NotFound();
+
+            BusTypeGetDTO typeDTO = mapper.Map<BusTypeGetDTO>(busType);
+            return Ok(typeDTO);
+        }
+
+        ///////////////////////////////////////////////////
+
         [HttpPost]
 
-        public IActionResult addPage(BusTypeAddDTO NewBus)
+        public IActionResult add(BusTypeAddDTO NewBus)
         {
             if (NewBus == null) { return BadRequest(); }
             BusType bustType = mapper.Map<BusType>(NewBus);
@@ -58,7 +70,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         
         [HttpPut]
 
-        public IActionResult EditBreed(BusTypeGetDTO EditBusType)
+        public IActionResult Edit(BusTypeGetDTO EditBusType)
         {
             if (EditBusType == null) { BadRequest(); }
             BusType busType = mapper.Map<BusType>(EditBusType);
@@ -71,7 +83,7 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         [HttpDelete]
 
-        public IActionResult deleteBreed(int id)
+        public IActionResult delete(long id)
         {
 
             Unit_Of_Work.busType_Repository.Delete(id);

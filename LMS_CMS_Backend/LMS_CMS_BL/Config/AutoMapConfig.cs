@@ -21,6 +21,7 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<Page, Page_GetDTO>();
 
+
             CreateMap<Bus, Bus_GetDTO>()
                 .ForMember(dest => dest.BusTypeName, opt => opt.MapFrom(src => src.BusType.Name))
                 .ForMember(dest => dest.BusRestrictName, opt => opt.MapFrom(src => src.BusRestrict.Name))
@@ -33,9 +34,35 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<BusType, BusTypeGetDTO>();
             CreateMap<BusTypeGetDTO, BusType>();
-
             CreateMap<BusType, BusTypeAddDTO>();
             CreateMap<BusTypeAddDTO, BusType>();
+
+
+            CreateMap<BusRestrict, BusRestrictAddDTO>();
+            CreateMap<BusRestrictAddDTO, BusRestrict>();
+            CreateMap<BusRestrict, BusRestrictGetDTO>();
+            CreateMap<BusRestrictGetDTO, BusRestrict>();
+
+
+
+            CreateMap<BusCategory, BusCatigoryAddDTO>();
+            CreateMap<BusCatigoryAddDTO, BusCategory>();
+            CreateMap<BusCategory, BusCatigoryGetDTO>();
+            CreateMap<BusCatigoryGetDTO, BusCategory>();
+
+
+            CreateMap<BusStatus, BusStatusAddDTO>();
+            CreateMap<BusStatusAddDTO, BusStatus>();
+            CreateMap<BusStatus, BusStatusGetDTO>();
+            CreateMap<BusStatusGetDTO, BusStatus>();
+
+
+            CreateMap<BusCompany, BusCompanyAddDTO>();
+            CreateMap<BusCompanyAddDTO, BusCompany>();
+            CreateMap<BusCompany, BusCompanyGetDTO>();
+            CreateMap<BusCompanyGetDTO, BusCompany>();
+
+
         }
     }
 }

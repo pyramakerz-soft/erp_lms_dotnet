@@ -144,6 +144,84 @@ namespace LMS_CMS_PL.Controllers.Bus
             return CreatedAtAction(nameof(GetByID), new { Id = bus.ID }, busAddDTO);
         }
 
+
+        [HttpPut]
+        public ActionResult Edit(Bus_PutDTO busPutDTO)
+        {
+            if (busPutDTO == null)
+            {
+                return BadRequest("Bus cannot be null.");
+            }
+
+            if (busPutDTO.BusTypeID != null)
+            {
+
+                BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(busPutDTO.BusTypeID);
+                if (busType == null)
+                {
+                    return NotFound("No Bus Type with this ID");
+                }
+            }
+
+            if (busPutDTO.BusCompanyID != null)
+            {
+                BusCompany busCompany = Unit_Of_Work.busCompany_Repository.Select_By_Id(busPutDTO.BusCompanyID);
+                if (busCompany == null)
+                {
+                    return NotFound("No Bus Company with this ID");
+                }
+            }
+
+            if (busPutDTO.BusRestrictID != null)
+            {
+                BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(busPutDTO.BusRestrictID);
+                if (busRestrict == null)
+                {
+                    return NotFound("No Bus Restrict with this ID");
+                }
+            }
+            if (busPutDTO.BusStatusID != null)
+            {
+
+                BusStatus busStatus = Unit_Of_Work.busStatus_Repository.Select_By_Id(busPutDTO.BusStatusID);
+                if (busStatus == null)
+                {
+                    return NotFound("No Bus Status with this ID");
+                }
+            }
+
+            if (busPutDTO.DriverID != null)
+            {
+                Employee busDriver = Unit_Of_Work.employee_Repository.Select_By_Id(busPutDTO.DriverID);
+                if (busDriver == null)
+                {
+                    return NotFound("No Bus Driver with this ID");
+                }
+            }
+
+            if (busPutDTO.DriverAssistantID != null)
+            {
+                Employee busDriverAssisstant = Unit_Of_Work.employee_Repository.Select_By_Id(busPutDTO.DriverAssistantID);
+                if (busDriverAssisstant == null)
+                {
+                    return NotFound("No Bus Status Assisstant with this ID");
+                }
+            }
+
+
+            BusModel busExists = Unit_Of_Work.bus_Repository.Select_By_Id(busPutDTO.ID);
+            if (busExists == null)
+            {
+                return NotFound("No Bus with this ID");
+            }
+
+            mapper.Map(busPutDTO, busExists);
+            Unit_Of_Work.bus_Repository.Update(busExists);
+            Unit_Of_Work.SaveChanges();
+
+            return Ok(busPutDTO);
+        }
+
         [HttpDelete("{Id}")]
         public IActionResult Delete(long Id)
         {

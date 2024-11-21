@@ -30,6 +30,10 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<BusCategory> BusCategory_Repository;
         GenericRepo<BusStatus> BusStatus_Repository;
         GenericRepo<BusCompany> BusCompany_Repository;
+        GenericRepo<AcademicYear> AcademicYear_Repository;
+        GenericRepo<Semester> Semester_Repository;
+        GenericRepo<EmployeeType> EmployeeType_Repository;
+
 
         public UOW(LMS_CMS_Context db)
         {
@@ -232,6 +236,42 @@ namespace LMS_CMS_BL.UOW
                     BusCompany_Repository = new GenericRepo<BusCompany>(db);
                 }
                 return BusCompany_Repository;
+            }
+        }
+
+        public GenericRepo<AcademicYear> academicYear_Repository
+        {
+            get
+            {
+                if (AcademicYear_Repository == null)
+                {
+                    AcademicYear_Repository = new GenericRepo<AcademicYear>(db);
+                }
+                return AcademicYear_Repository;
+            }
+        }
+
+        public GenericRepo<Semester> semester_Repository
+        {
+            get
+            {
+                if (Semester_Repository == null)
+                {
+                    Semester_Repository = new GenericRepo<Semester>(db);
+                }
+                return Semester_Repository;
+            }
+        }
+
+        public GenericRepo<EmployeeType> employeeType_Repository
+        {
+            get
+            {
+                if (EmployeeType_Repository == null)
+                {
+                    EmployeeType_Repository = new GenericRepo<EmployeeType>(db);
+                }
+                return EmployeeType_Repository;
             }
         }
 

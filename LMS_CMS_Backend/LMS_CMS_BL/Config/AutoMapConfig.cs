@@ -28,9 +28,16 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.Driver.en_name))
                 .ForMember(dest => dest.DriverAssistantName, opt => opt.MapFrom(src => src.DriverAssistant.en_name))
                 .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name));
-
             CreateMap<Bus_AddDTO, Bus>();
             CreateMap<Bus_PutDTO, Bus>();
+
+            CreateMap<BusStudent, BusStudentGetDTO>()
+                .ForMember(dest => dest.BusName, opt => opt.MapFrom(src => src.Bus.Name))
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.en_name))
+                .ForMember(dest => dest.BusCategoryName, opt => opt.MapFrom(src => src.BusCategory.Name))
+                .ForMember(dest => dest.SemseterName, opt => opt.MapFrom(src => src.Semester.Name));
+            CreateMap<BusStudent_AddDTO, BusStudent>();
+            CreateMap<BusStudent_PutDTO, BusStudent>();
 
             CreateMap<BusType, BusTypeGetDTO>();
             CreateMap<BusTypeGetDTO, BusType>();

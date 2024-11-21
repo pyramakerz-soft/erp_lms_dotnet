@@ -30,7 +30,7 @@ export class BusTypeService {
   }
 
   Delete(id:number){
-    return this.http.delete(`${this.baseUrl}/BusType/${id}`)
+    return this.http.delete(`${this.baseUrl}/BusType?id=${id}`)
   }
 
   GetByID(id:number){

@@ -9,6 +9,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { AccountService } from '../../../../Services/account.service';
 import { BusCategoryService } from '../../../../Services/Employee/Bus/bus-category.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
+import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 
 @Component({
   selector: 'app-bus-categories',
@@ -23,6 +24,8 @@ export class BusCategoriesComponent {
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
+  AllowEditForOthers: boolean = false;
+  AllowDeleteForOthers: boolean = false;
   TableData: BusType[] = []
   DomainData: Domain[] = []
   IsChoosenDomain: boolean = false;
@@ -31,21 +34,22 @@ export class BusCategoriesComponent {
   EditType:BusType=new BusType(0,"",0);
   mode:string="";
   DomainID:number=0;
+  UserID:number=0;
 
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCategoryService, public DomainServ: DomainService) { }
+  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCategoryService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService) { }
 
   ngOnInit() {
     this.GetAllDomains();
     this.GetTableData(this.DomainID);
-
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
-
+    this.UserID=this.User_Data_After_Login.id;
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName('BusType', items);
+      const settingsPage = this.menuService.findByPageName('Bus Category', items);
       this.AllowEdit = settingsPage.allow_Edit;
       this.AllowDelete = settingsPage.allow_Delete;
-
+      this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
+      this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
     });
   }
   Create(){
@@ -130,5 +134,13 @@ export class BusCategoriesComponent {
     this.DomainID=selectedValue;
     console.log('Selected Domain ID:', selectedValue);
     this.GetTableData(selectedValue);
+  }
+  IsAllowDelete(InsertedByID:number){
+    const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
+    return IsAllow;
+  }
+  IsAllowEdit(InsertedByID:number){
+    const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
+    return IsAllow;
   }
 }

@@ -73,6 +73,8 @@ namespace LMS_CMS_PL.Controllers
                     ar_name = child.ar_name,
                     Allow_Edit = roleDetails[child.ID].Allow_Edit,
                     Allow_Delete = roleDetails[child.ID].Allow_Delete,
+                    Allow_Edit_For_Others = roleDetails[child.ID].Allow_Edit_For_Others,
+                    Allow_Delete_For_Others = roleDetails[child.ID].Allow_Delete_For_Others,
                     Children = GetChildPagesRecursive(child, roleDetails) // Recursively get children
                 })
                 .ToList();

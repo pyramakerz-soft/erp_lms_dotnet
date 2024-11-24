@@ -3,6 +3,9 @@ export class BusType {
         public id: number = 0,
         public name: string = '',
         public domainId: number = 0,
+        public deletedByUserId :number =0,
+        public updatedByUserId :number =0,
+        public insertedByUserId :number =0,
 
     ) {}
 

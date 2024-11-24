@@ -26,7 +26,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpGet]
         public IActionResult Get()
         {
-            List<BusCategory> BusCategories = Unit_Of_Work.busCategory_Repository.Select_All();
+            List<BusCategory> BusCategories = Unit_Of_Work.busCategory_Repository.FindBy(t => t.IsDeleted != true);
             if (BusCategories == null)
             {
                 return NotFound();
@@ -69,10 +69,23 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         public IActionResult add(BusCatigoryAddDTO NewCategory)
         {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
             if (NewCategory == null) { return BadRequest(); }
             BusCategory ExsitCategory = Unit_Of_Work.busCategory_Repository.First_Or_Default(c => c.DomainId == NewCategory.DomainId && c.Name == NewCategory.Name);
             if (ExsitCategory != null) { return BadRequest("this Category already exist"); }
             BusCategory busCategory = mapper.Map<BusCategory>(NewCategory);
+            busCategory.InsertedByUserId = userId;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busCategory.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             Unit_Of_Work.busCategory_Repository.Add(busCategory);
             Unit_Of_Work.SaveChanges();
             return Ok(NewCategory);
@@ -85,9 +98,25 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         public IActionResult Edit(BusCatigoryGetDTO EditBusCatigory)
         {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
             if (EditBusCatigory == null) { BadRequest(); }
-            BusCategory BusCatigory = mapper.Map<BusCategory>(EditBusCatigory);
-            Unit_Of_Work.busCategory_Repository.Update(BusCatigory);
+            //BusType busType = mapper.Map<BusType>(EditBusType);
+            BusCategory busCatigory = Unit_Of_Work.busCategory_Repository.Select_By_Id(EditBusCatigory.ID);
+            busCatigory.Name = EditBusCatigory.Name;
+            busCatigory.DomainId = EditBusCatigory.DomainId;
+            busCatigory.UpdatedByUserId = userId;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busCatigory.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            Unit_Of_Work.busCategory_Repository.Update(busCatigory);
             Unit_Of_Work.SaveChanges();
             return Ok(EditBusCatigory);
         }
@@ -96,10 +125,25 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         [HttpDelete]
 
-        public IActionResult delete(int id)
+        public IActionResult delete(long id)
         {
 
-            Unit_Of_Work.busCategory_Repository.Delete(id);
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
+            BusCategory busCategory = Unit_Of_Work.busCategory_Repository.Select_By_Id(id);
+            busCategory.IsDeleted = true;
+            busCategory.DeletedByUserId = userId;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busCategory.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            Unit_Of_Work.busCategory_Repository.Update(busCategory);
             Unit_Of_Work.SaveChanges();
             return Ok();
 

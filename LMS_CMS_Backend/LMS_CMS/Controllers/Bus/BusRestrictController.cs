@@ -26,7 +26,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpGet]
         public IActionResult Get()
         {
-            List<BusRestrict> busRestricts = Unit_Of_Work.busRestrict_Repository.Select_All();
+            List<BusRestrict> busRestricts = Unit_Of_Work.busRestrict_Repository.FindBy(t => t.IsDeleted != true);
             if (busRestricts == null)
             {
                 return NotFound();
@@ -70,10 +70,23 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         public IActionResult add(BusRestrictAddDTO NewRestrict)
         {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
             if (NewRestrict == null) { return BadRequest(); }
             BusRestrict ExsitRestrict = Unit_Of_Work.busRestrict_Repository.First_Or_Default(c => c.DomainId == NewRestrict.DomainId && c.Name == NewRestrict.Name);
             if (ExsitRestrict != null) { return BadRequest("this Restrict already exist"); }
             BusRestrict busRestrict = mapper.Map<BusRestrict>(NewRestrict);
+            busRestrict.InsertedByUserId = userId;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busRestrict.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             Unit_Of_Work.busRestrict_Repository.Add(busRestrict);
             Unit_Of_Work.SaveChanges();
             return Ok(NewRestrict);
@@ -86,9 +99,25 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         public IActionResult Edit(BusRestrictGetDTO EditBusrestrict)
         {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
             if (EditBusrestrict == null) { BadRequest(); }
-            BusRestrict Busrestrict = mapper.Map<BusRestrict>(EditBusrestrict);
-            Unit_Of_Work.busRestrict_Repository.Update(Busrestrict);
+            //BusType busType = mapper.Map<BusType>(EditBusType);
+            BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(EditBusrestrict.ID);
+            busRestrict.Name = EditBusrestrict.Name;
+            busRestrict.DomainId = EditBusrestrict.DomainId;
+            busRestrict.UpdatedByUserId = userId;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busRestrict.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            Unit_Of_Work.busRestrict_Repository.Update(busRestrict);
             Unit_Of_Work.SaveChanges();
             return Ok(EditBusrestrict);
         }
@@ -100,7 +129,22 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult delete(long id)
         {
 
-            Unit_Of_Work.busRestrict_Repository.Delete(id);
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
+            BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(id);
+            busRestrict.IsDeleted = true;
+            busRestrict.DeletedByUserId = userId;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busRestrict.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            Unit_Of_Work.busRestrict_Repository.Update(busRestrict);
             Unit_Of_Work.SaveChanges();
             return Ok();
 

@@ -35,12 +35,12 @@ export const routes: Routes = [
         children: [
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },    
             { path: "Settings", component: SettingsComponent, title: "EmployeeHome" , canActivate:[navigateIfHaveSettingPageGuard]},    
-            { path: "Bus", component: BusDetailsComponent, title: "Bus" },    
-            { path: "BusType", component: BusTypesComponent, title: "BusType" },    
-            { path: "BusStatus", component: BusStatusComponent, title: "BusType" },    
-            { path: "BusRestrict", component: BusRestrictsComponent, title: "BusType" },    
-            { path: "BusCategory", component: BusCategoriesComponent, title: "BusType" },    
-            { path: "BusCompany", component: BusCompaniesComponent, title: "BusType" },    
+            { path: "Bus", component: BusDetailsComponent, title: "Bus" , canActivate:[navigateIfHaveSettingPageGuard]},    
+            { path: "Bus Type", component: BusTypesComponent, title: "BusType" , canActivate:[navigateIfHaveSettingPageGuard]},    
+            { path: "Bus Status", component: BusStatusComponent, title: "BusType" , canActivate:[navigateIfHaveSettingPageGuard]},    
+            { path: "Bus Restrict", component: BusRestrictsComponent, title: "BusType" , canActivate:[navigateIfHaveSettingPageGuard]},    
+            { path: "Bus Category", component: BusCategoriesComponent, title: "BusType" , canActivate:[navigateIfHaveSettingPageGuard]},    
+            { path: "Bus Comapny", component: BusCompaniesComponent, title: "BusType" , canActivate:[navigateIfHaveSettingPageGuard]},    
         
         ]
     },

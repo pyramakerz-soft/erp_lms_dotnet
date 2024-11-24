@@ -11,7 +11,7 @@ namespace LMS_CMS_PL.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class PagesController : ControllerBase
     {
         private UOW Unit_Of_Work;
@@ -24,11 +24,11 @@ namespace LMS_CMS_PL.Controllers
         }
 
         [HttpGet]
-        [Authorize_Endpoint_Attribute(
-            allowedTypes: new[] { "employee", "parent" },
-            allowDelete:1,
-            pages: new[] { "Settings" }
-        )]
+        //[Authorize_Endpoint_Attribute(
+        //    allowedTypes: new[] { "employee", "parent" },
+        //    allowDelete:1,
+        //    pages: new[] { "Settings" }
+        //)]
         public IActionResult Get()
         {
             List<Page> pages = Unit_Of_Work.page_Repository.Select_All();

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.BusModule
 {
-    public class BusStudent
+    public class BusStudent : AuditableEntity
     {
         public long ID { get; set; }
         [ForeignKey("Bus")]

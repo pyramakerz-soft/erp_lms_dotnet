@@ -3,8 +3,9 @@
         <h1 class="font-poppins font-semibold text-2xl leading-9">Bus Type</h1>
         <button 
         (click)="Create()"
-            class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-            Create Bus Type
+        [disabled]="!IsChoosenDomain"
+        class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+        Create Bus Type
         </button>
     </div>
     
@@ -58,10 +59,12 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">5555</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
-                            <button (click)="Delete(row.id)">
+                            <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row.id)">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
-                            <button (click)="Edit(row.id)">
+                            <button 
+                            *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)"
+                                (click)="Edit(row.id)">
                                 <i class="fa-solid fa-pencil"></i>
                             </button>
                         </div>

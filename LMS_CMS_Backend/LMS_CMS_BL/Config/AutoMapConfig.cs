@@ -43,31 +43,39 @@ namespace LMS_CMS_BL.Config
             CreateMap<BusTypeGetDTO, BusType>();
             CreateMap<BusType, BusTypeAddDTO>();
             CreateMap<BusTypeAddDTO, BusType>();
+            CreateMap<BusTypeEditDTO, BusType>();
+            CreateMap<BusType, BusTypeEditDTO>();
+
 
 
             CreateMap<BusRestrict, BusRestrictAddDTO>();
             CreateMap<BusRestrictAddDTO, BusRestrict>();
             CreateMap<BusRestrict, BusRestrictGetDTO>();
             CreateMap<BusRestrictGetDTO, BusRestrict>();
-
+            CreateMap<BusRestrictEditDTO, BusRestrict>();
+            CreateMap<BusRestrict, BusRestrictEditDTO>();
 
 
             CreateMap<BusCategory, BusCatigoryAddDTO>();
             CreateMap<BusCatigoryAddDTO, BusCategory>();
             CreateMap<BusCategory, BusCatigoryGetDTO>();
             CreateMap<BusCatigoryGetDTO, BusCategory>();
-
+            CreateMap<BusCategory, BusCategoryEditDTO>();
+            CreateMap<BusCategoryEditDTO, BusCategory>();
 
             CreateMap<BusStatus, BusStatusAddDTO>();
             CreateMap<BusStatusAddDTO, BusStatus>();
             CreateMap<BusStatus, BusStatusGetDTO>();
             CreateMap<BusStatusGetDTO, BusStatus>();
-
+            CreateMap<BusStatus, BusStatusEditDTO>();
+            CreateMap<BusStatusEditDTO, BusStatus>();
 
             CreateMap<BusCompany, BusCompanyAddDTO>();
             CreateMap<BusCompanyAddDTO, BusCompany>();
             CreateMap<BusCompany, BusCompanyGetDTO>();
             CreateMap<BusCompanyGetDTO, BusCompany>();
+            CreateMap<BusCompany, BusCompanyEditDTO>();
+            CreateMap<BusCompanyEditDTO, BusCompany>();
 
             CreateMap<Domain, DomainGetDTO>();
             CreateMap<DomainGetDTO, Domain>();

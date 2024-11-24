@@ -10,6 +10,7 @@ import { BusStatusService } from '../../../../Services/Employee/Bus/bus-status.s
 import { compileComponentClassMetadata } from '@angular/compiler';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 
 @Component({
   selector: 'app-bus-status',
@@ -22,6 +23,8 @@ export class BusStatusComponent {
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
+  AllowEditForOthers: boolean = false;
+  AllowDeleteForOthers: boolean = false;
   TableData: BusType[] = []
   DomainData: Domain[] = []
   IsChoosenDomain: boolean = false;
@@ -30,20 +33,24 @@ export class BusStatusComponent {
   EditType:BusType=new BusType(0,"",0);
   mode:string="";
   DomainID:number=0;
+  UserID:number=0;
 
-
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService) { }
+  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService) { }
 
   ngOnInit() {
     this.GetAllDomains();
     this.GetTableData(this.DomainID);
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
+    this.UserID=this.User_Data_After_Login.id;
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName('BusType', items);
+      const settingsPage = this.menuService.findByPageName('Bus Status', items);
+      console.log(settingsPage)
       this.AllowEdit = settingsPage.allow_Edit;
       this.AllowDelete = settingsPage.allow_Delete;
-
+      this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
+      this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
+      console.log(this.AllowEditForOthers , this.AllowDeleteForOthers)
     });
   }
   Create(){
@@ -54,7 +61,6 @@ export class BusStatusComponent {
   AddNewType() {
     console.log(this.DomainID,this.newType)
     this.busStatusServ.Add(this.DomainID, this.newType).subscribe((data) => {
-      console.log(data);
       this.closeModal();
       this.newType="";
       this.GetTableData(this.DomainID);
@@ -63,7 +69,6 @@ export class BusStatusComponent {
   }
   GetAllDomains() {
     this.DomainServ.Get().subscribe((data) => {
-      console.log(data)
       this.DomainData = data;
     })
   }
@@ -71,7 +76,6 @@ export class BusStatusComponent {
     console.log("Domain selected:", id);
     if (this.DomainID !== null) {
       this.busStatusServ.GetByDomainId(id).subscribe((data) => {
-        console.log("Fetched data:", data);
         this.TableData=[];
         this.TableData = data;
       });
@@ -86,7 +90,6 @@ export class BusStatusComponent {
 
   closeModal() {
     this.isModalVisible = false;
-    console.log("close")
   }
 
   Delete(id: number) {
@@ -101,7 +104,6 @@ export class BusStatusComponent {
       this.EditType={ ...typeToEdit };
       this.newType = this.EditType.name;
       this.openModal();
-      console.log(this.newType)
     } else {
       console.error("Type not found!");
     }
@@ -130,7 +132,16 @@ export class BusStatusComponent {
     this.IsChoosenDomain=true;
     const selectedValue: number = Number((event.target as HTMLSelectElement).value);
     this.DomainID=selectedValue;
-    console.log('Selected Domain ID:', selectedValue);
     this.GetTableData(selectedValue);
   }
+
+  IsAllowDelete(InsertedByID:number){
+    const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
+    return IsAllow;
+  }
+  IsAllowEdit(InsertedByID:number){
+    const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
+    return IsAllow;
+  }
+
 }

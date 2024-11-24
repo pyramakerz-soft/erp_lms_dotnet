@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { Observable } from 'rxjs';
@@ -16,27 +16,43 @@ export class BusCategoryService {
   }
 
   Get(){
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusCategory`)
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusCategory` , { headers })
   }
 
   Add(domainId: number, name: string): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/BusCategory`, { DomainId:domainId,Name: name},{ responseType: 'text' as 'json' });
-  }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const body = { DomainId: domainId, Name: name };
 
+    return this.http.post<any>(`${this.baseUrl}/BusCategory`, body, {
+        headers,
+        responseType: 'text' as 'json' 
+    });
+}
 
   Edit(NewType:BusType): Observable<BusType> {
-    return this.http.put<BusType>(`${this.baseUrl}/BusCategory`, NewType);
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.put<BusType>(`${this.baseUrl}/BusCategory`, NewType , { headers });
   }
 
   Delete(id:number){
-    return this.http.delete(`${this.baseUrl}/BusCategory?id=${id}`)
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete(`${this.baseUrl}/BusCategory?id=${id}` , { headers })
   }
 
   GetByID(id:number){
-    return this.http.get(`${this.baseUrl}/BusCategory/${id}`)
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.baseUrl}/BusCategory/${id}`, { headers })
   }
   GetByDomainId(id:number){
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusCategory/DomainId?id=${id}`)
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusCategory/DomainId?id=${id}`, { headers })
 
   }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.BusModule
 {
-    public class BusCompany
+    public class BusCompany : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

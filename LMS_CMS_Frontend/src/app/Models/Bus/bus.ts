@@ -2,9 +2,9 @@ export class Bus {
     constructor(
         public id: number = 0,
         public name: string = '',
-        public capacity: number = 0,
+        public capacity: number | null = null,
         public isCapacityRestricted: boolean = false,
-        public domainId: number = 0,
+        public domainID: number = 0,
         public busTypeId: number | null = null,
         public busTypeName: string | null = null,
         public busRestrictId: number | null = null,

@@ -72,8 +72,7 @@ namespace LMS_CMS_BL.Config
             CreateMap<Domain, DomainGetDTO>();
             CreateMap<DomainGetDTO, Domain>();
 
-
-
+            CreateMap<Employee, Employee_GetDTO>();
         }
     }
 }

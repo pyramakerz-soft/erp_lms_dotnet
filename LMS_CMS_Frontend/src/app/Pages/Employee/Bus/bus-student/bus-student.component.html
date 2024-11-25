@@ -47,7 +47,7 @@
     <div class="flex justify-between my-8">
         <h1 class="primaryTxt font-semibold text-2xl leading-9 mb-5">Students</h1>
         <div>
-            <button class="secondaryBg rounded-lg py-3 px-4 text-white">Add Student</button>
+            <button class="secondaryBg rounded-lg py-3 px-4 text-white" (click)="OpenModal()">Add Student</button>
         </div>
     </div>
 
@@ -140,12 +140,83 @@
                                 <i class="fa-regular fa-trash-can" (click)="deleteBusStudent(row.id)"></i>
                             </button>
                             <button>
-                                <!-- <i class="fa-solid fa-pencil" (click)="openModal(row.id)"></i> -->
+                                <i class="fa-solid fa-pencil" (click)="OpenModal(row.id)"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-1/2">
+        <div class="flex justify-between items-center">
+            <h1 class="font-semibold text-2xl leading-9">Create Bus</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+
+        <div class="mt-6 mb-4 flex flex-wrap justify-between">
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="school">Choose School</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school">
+                    <!-- <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="grade">Choose Grade</label>
+                <select 
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" >
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="class">Choose Class</label>
+                <select 
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="class" >
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="student">Choose Student</label>
+                <select 
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student" >
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="categories">Bus Categories</label>
+                <select 
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="categories" >
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="semester">Semester</label>
+                <select 
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semester" >
+                </select>
+            </div>
+            <div class="flex w-full space-x-5 items-center mb-4">
+                <input type="checkbox" id="exception" class="w-5 h-5"
+                (change)="onIsExceptionChange($event)">
+                <label for="exception" class="text-sm">Exception</label>
+            </div>
+            <div *ngIf="exception" class="flex flex-col w-[49%]">
+                <label for="from" class="mb-2 primaryTxt">Date From</label>
+                <input id="from" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="From">
+            </div>
+            <div *ngIf="exception" class="flex flex-col w-[49%]">
+                <label for="to" class="mb-2 primaryTxt">Date To</label>
+                <input id="to" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="To">
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="SaveBusStudent()" >
+                Save Student
+            </button>
+        </div>
     </div>
 </div>

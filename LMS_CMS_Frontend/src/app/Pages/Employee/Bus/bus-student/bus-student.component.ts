@@ -19,8 +19,11 @@ import Swal from 'sweetalert2';
 export class BusStudentComponent {
   User_Data_After_Login :TokenData =new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   bus :Bus  = new Bus()
+  busStudent :BusStudent  = new BusStudent()
   busId: number = 0
   busStudentData :BusStudent[] = []
+  editBusStudent = false
+  exception = false
 
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute){}
 
@@ -61,5 +64,34 @@ export class BusStudentComponent {
         }
       );
     });
+  }
+
+  OpenModal(busStudentId?: number) {
+    if (busStudentId) {
+      this.editBusStudent = true;
+      this.GetStudentsByBusId(this.busId);
+    }
+    
+    document.getElementById("Add_Modal")?.classList.remove("hidden");
+    document.getElementById("Add_Modal")?.classList.add("flex");
+  }
+
+  closeModal() {
+    document.getElementById("Add_Modal")?.classList.remove("flex");
+    document.getElementById("Add_Modal")?.classList.add("hidden");
+    this.busStudent = new BusStudent()
+
+    if(this.editBusStudent){
+      this.editBusStudent = false
+    }
+  }
+
+  onIsExceptionChange(event: Event) {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.exception = isChecked
+  }
+
+  SaveBusStudent(){
+    
   }
 }

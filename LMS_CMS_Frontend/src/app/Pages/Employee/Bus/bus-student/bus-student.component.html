@@ -100,88 +100,44 @@
                     [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
                     class="border-t border-gray-300 text-xs md:text-sm">
 
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">Dummy</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">Dummy</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">Dummy</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div *ngIf="row.busTypeName; else emptybusTypeName">
-                            <div class="truncate" title="{{ row.busTypeName }}">
-                                {{ row.busTypeName }}
+                        <div *ngIf="row.busCategoryName; else emptybusCategoryName">
+                            <div class="truncate" title="{{ row.busCategoryName }}">
+                                {{ row.busCategoryName }}
                             </div>
                         </div>
-                        <ng-template #emptybusTypeName>
+                        <ng-template #emptybusCategoryName>
                             <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
                                 <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
                             </div>
                         </ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div *ngIf="row.busRestrictName; else emptyRestrict">
-                            <div class="truncate" title="{{ row.busRestrictName }}">
-                                {{ row.busRestrictName }}
+                        <div *ngIf="row.semseterName; else emptysemseterName">
+                            <div class="truncate" title="{{ row.semseterName }}">
+                                {{ row.semseterName }}
                             </div>
                         </div>
-                        <ng-template #emptyRestrict>
+                        <ng-template #emptysemseterName>
                             <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
                                 <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
                             </div>
                         </ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div *ngIf="row.busStatusName; else emptybusStatusName">
-                            <div class="truncate" title="{{ row.busStatusName }}">
-                                {{ row.busStatusName }}
-                            </div>
-                        </div>
-                        <ng-template #emptybusStatusName>
-                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
-                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
-                            </div>
-                        </ng-template>
+                        <i *ngIf="row.isException" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+                        <i *ngIf="!row.isException" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
                     </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.capacity }}</td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <i *ngIf="row.isCapacityRestricted" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
-                        <i *ngIf="!row.isCapacityRestricted" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div *ngIf="row.driverName; else emptydriverName">
-                            <div class="truncate" title="{{ row.driverName }}">
-                                {{ row.driverName }}
-                            </div>
-                        </div>
-                        <ng-template #emptydriverName>
-                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
-                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
-                            </div>
-                        </ng-template>
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div *ngIf="row.driverAssistantName; else emptydriverAssistantName">
-                            <div class="truncate" title="{{ row.driverAssistantName }}">
-                                {{ row.driverAssistantName }}
-                            </div>
-                        </div>
-                        <ng-template #emptydriverAssistantName>
-                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
-                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
-                            </div>
-                        </ng-template>
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div *ngIf="row.busCompanyName; else emptydriverbusCompanyName">
-                            <div class="truncate" title="{{ row.busCompanyName }}">
-                                {{ row.busCompanyName }}
-                            </div>
-                        </div>
-                        <ng-template #emptydriverbusCompanyName>
-                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
-                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
-                            </div>
-                        </ng-template>
-                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.exceptionFromDate }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.exceptionToDate }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
                             <button>
-                                <!-- <i class="fa-regular fa-trash-can" (click)="deleteBus(row.id)"></i> -->
+                                <i class="fa-regular fa-trash-can" (click)="deleteBusStudent(row.id)"></i>
                             </button>
                             <button>
                                 <!-- <i class="fa-solid fa-pencil" (click)="openModal(row.id)"></i> -->

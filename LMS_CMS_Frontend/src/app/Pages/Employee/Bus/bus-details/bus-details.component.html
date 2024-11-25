@@ -179,7 +179,8 @@
 <div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
     <div class="bg-white rounded-2xl p-12 w-1/2">
         <div class="flex justify-between items-center">
-            <h1 class="font-semibold text-2xl leading-9">Create Bus</h1>
+            <h1 *ngIf="!editBus" class="font-semibold text-2xl leading-9">Create Bus</h1>
+            <h1 *ngIf="editBus" class="font-semibold text-2xl leading-9">Edit Bus</h1>
             <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
 

@@ -160,10 +160,10 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
                             <button>
-                                <i class="fa-regular fa-trash-can" (click)="deleteBus(row.id)"></i>
+                                <i class="fa-regular fa-trash-can" *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="deleteBus(row.id)"></i>
                             </button>
                             <button>
-                                <i class="fa-solid fa-pencil" (click)="openModal(row.id)"></i>
+                                <i class="fa-solid fa-pencil" *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)"></i>
                             </button>
                         </div>
                     </td>

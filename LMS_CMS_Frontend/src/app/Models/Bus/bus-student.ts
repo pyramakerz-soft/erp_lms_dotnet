@@ -12,5 +12,9 @@ export class BusStudent {
         public isException: boolean = false,
         public exceptionFromDate: string | null = null,
         public exceptionToDate: string | null = null,
+        public deletedByUserId :number =0,
+        public updatedByUserId :number =0,
+        public insertedByUserId :number =0,
+
     ) {}
 }

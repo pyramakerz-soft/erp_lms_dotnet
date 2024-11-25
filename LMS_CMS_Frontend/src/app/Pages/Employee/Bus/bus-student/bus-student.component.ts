@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import { BusStudentService } from '../../../../Services/Employee/Bus/bus-student.service';
 import { BusStudent } from '../../../../Models/Bus/bus-student';
 import Swal from 'sweetalert2';
+import { MenuService } from '../../../../Services/shared/menu.service';
+import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 
 @Component({
   selector: 'app-bus-student',
@@ -24,14 +26,29 @@ export class BusStudentComponent {
   busStudentData :BusStudent[] = []
   editBusStudent = false
   exception = false
+  AllowEdit: boolean = false;
+  AllowDelete: boolean = false;
+  AllowEditForOthers: boolean = false;
+  AllowDeleteForOthers: boolean = false;
+  UserID:number=0; 
 
-  constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute){}
+
+  constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,public menuService :MenuService){}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
+    this.UserID=this.User_Data_After_Login.id;
     this.busId = Number(this.activeRoute.snapshot.paramMap.get('busId'))
     this.GetBusById(this.busId);
     this.GetStudentsByBusId(this.busId);
+    this.menuService.menuItemsForEmployee$.subscribe((items) => {
+      const settingsPage = this.menuService.findByPageName('Bus Student', items);
+      console.log("sp",settingsPage)
+      this.AllowEdit = settingsPage.allow_Edit;
+      this.AllowDelete = settingsPage.allow_Delete;
+      this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
+      this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
+    });
   }
 
   GetBusById(busId:number){
@@ -93,5 +110,13 @@ export class BusStudentComponent {
 
   SaveBusStudent(){
     
+  }
+  IsAllowDelete(InsertedByID:number){
+    const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
+    return IsAllow;
+  }
+  IsAllowEdit(InsertedByID:number){
+    const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
+    return IsAllow;
   }
 }

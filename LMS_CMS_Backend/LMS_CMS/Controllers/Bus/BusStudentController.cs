@@ -28,7 +28,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         public async Task<IActionResult> GetByBusID(long busId)
         {
             List<BusStudent> busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
-                bus => bus.BusID == busId && bus.IsDeleted!=true,
+                bus => bus.BusID == busId && bus.IsDeleted != true,
                 query => query.Include(bus => bus.Bus),
                 query => query.Include(stu => stu.Student),
                 query => query.Include(busCat => busCat.BusCategory),
@@ -54,7 +54,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             var busStudent = await Unit_Of_Work.busStudent_Repository.FindByIncludesAsync(
-                busStu => busStu.ID == Id&& busStu.IsDeleted!=true,
+                busStu => busStu.ID == Id && busStu.IsDeleted != true,
                 query => query.Include(e => e.Bus),
                 query => query.Include(e => e.Student),
                 query => query.Include(e => e.BusCategory),
@@ -90,13 +90,13 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             BusModel bus = Unit_Of_Work.bus_Repository.Select_By_Id(busStudentAddDTO.BusID);
-            if (bus == null)
+            if (bus == null || bus.IsDeleted == true)
             {
                 return NotFound("No Bus with this ID");
             }
 
             Student student = Unit_Of_Work.student_Repository.Select_By_Id(busStudentAddDTO.StudentID);
-            if (bus == null)
+            if (bus == null||bus.IsDeleted == true)
             {
                 return NotFound("No Student with this ID");
             }
@@ -104,7 +104,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busStudentAddDTO.SemseterID != null)
             {
                 Semester semester = Unit_Of_Work.semester_Repository.Select_By_Id(busStudentAddDTO.SemseterID);
-                if (semester == null)
+                if (semester == null||semester.IsDeleted == true)
                 {
                     return NotFound("No Semester with this ID");
                 }
@@ -113,7 +113,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busStudentAddDTO.BusCategoryID != null)
             {
                 BusCategory busCategory = Unit_Of_Work.busCategory_Repository.Select_By_Id(busStudentAddDTO.BusCategoryID);
-                if (busCategory == null)
+                if (busCategory == null || busCategory.IsDeleted == true)
                 {
                     return NotFound("No Bus Category with this ID");
                 }
@@ -148,13 +148,13 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             BusModel bus = Unit_Of_Work.bus_Repository.Select_By_Id(busStudentPutDTO.BusID);
-            if (bus == null)
+            if (bus == null||bus.IsDeleted == true)
             {
                 return NotFound("No Bus with this ID");
             }
 
             Student student = Unit_Of_Work.student_Repository.Select_By_Id(busStudentPutDTO.StudentID);
-            if (bus == null)
+            if (bus == null || bus.IsDeleted == true)
             {
                 return NotFound("No Student with this ID");
             }
@@ -162,7 +162,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busStudentPutDTO.SemseterID != null)
             {
                 Semester semester = Unit_Of_Work.semester_Repository.Select_By_Id(busStudentPutDTO.SemseterID);
-                if (semester == null)
+                if (semester == null||semester.IsDeleted == true)
                 {
                     return NotFound("No Semester with this ID");
                 }
@@ -171,14 +171,14 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busStudentPutDTO.BusCategoryID != null)
             {
                 BusCategory busCategory = Unit_Of_Work.busCategory_Repository.Select_By_Id(busStudentPutDTO.BusCategoryID);
-                if (busCategory == null)
+                if (busCategory == null || busCategory.IsDeleted == true)
                 {
                     return NotFound("No Bus Category with this ID");
                 }
             }
 
             BusStudent busStudentExists = Unit_Of_Work.busStudent_Repository.Select_By_Id(busStudentPutDTO.ID);
-            if (busStudentExists == null)
+            if (busStudentExists == null||busStudentExists.IsDeleted == true)
             {
                 return NotFound("No Bus Student with this ID");
             }

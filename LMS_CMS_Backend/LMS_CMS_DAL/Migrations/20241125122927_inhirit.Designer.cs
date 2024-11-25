@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20241125110444_empTypeinhirit")]
-    partial class empTypeinhirit
+    [Migration("20241125122927_inhirit")]
+    partial class inhirit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

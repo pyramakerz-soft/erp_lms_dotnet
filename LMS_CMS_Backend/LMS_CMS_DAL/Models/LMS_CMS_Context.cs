@@ -326,7 +326,7 @@ namespace LMS_CMS_DAL.Models
                 .HasOne(e => e.EmployeeType) // Navigation property
                 .WithMany() // If EmployeeType has a collection of Employees, use .WithMany(et => et.Employees)
                 .HasForeignKey(e => e.EmployeeTypeID); // Specify the foreign key property
-                base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

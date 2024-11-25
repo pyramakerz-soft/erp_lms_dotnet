@@ -43,7 +43,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult GetById(long id)
         {
             BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(id);
-            if (busRestrict == null) return NotFound();
+            if (busRestrict == null || busRestrict.IsDeleted == true) return NotFound();
 
             BusRestrictGetDTO busRestrictDto = mapper.Map<BusRestrictGetDTO>(busRestrict);
             return Ok(busRestrictDto);

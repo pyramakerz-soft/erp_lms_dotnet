@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMS_CMS_DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class empTypeinhirit : Migration
+    public partial class inhirit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

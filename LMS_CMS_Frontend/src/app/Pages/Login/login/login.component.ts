@@ -85,24 +85,39 @@ export class LoginComponent {
             const key = localStorage.key(i);
             const value = localStorage.getItem(key || '');
             if (key && value && key.includes('token') &&key != "current_token" ) {
-                let decodedToken1: TokenData = jwtDecode(JSON.parse(d).token);
+                let decodedToken1: TokenData = jwtDecode(token);
                 let decodedToken2 : TokenData= jwtDecode(value);
                   if(decodedToken1.user_Name=== decodedToken2.user_Name && decodedToken1.type === decodedToken2.type)
                   add = false;
               }
           }
           
-          localStorage.setItem("current_token", JSON.parse(d).token);
-
-          if(add===true){
+          localStorage.setItem("current_token", token);
+          console.log(add)
+          if(add==true){
             if (count === null) {
               localStorage.setItem("count", "1");
-             localStorage.setItem("token 1", JSON.parse(d).token);
+             localStorage.setItem("token 1", token);
   
             } else {
              let countNum = parseInt(count) + 1;
              localStorage.setItem("count", countNum.toString());
-             localStorage.setItem("token "+countNum, JSON.parse(d).token);
+             let T= localStorage.getItem("token "+countNum)
+             if(T!=null){
+              let i=countNum+1;
+              let Continue=true;
+              while(Continue){
+                let T2= localStorage.getItem("token "+i);
+                if(T2==null){
+               localStorage.setItem("token "+i, token);
+                  Continue=false;
+                }
+                i++;
+              }
+             }
+             else{
+               localStorage.setItem("token "+countNum, token);
+             }
             }
           }
 

@@ -52,7 +52,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult GetById(long id)
         {
             BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(id);
-            if (busType == null) return NotFound();
+            if (busType == null || busType.IsDeleted == true) return NotFound();
 
             BusTypeGetDTO typeDTO = mapper.Map<BusTypeGetDTO>(busType);
             return Ok(typeDTO);

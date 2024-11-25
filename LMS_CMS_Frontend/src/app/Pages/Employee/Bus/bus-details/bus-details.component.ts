@@ -16,6 +16,8 @@ import { Employee } from '../../../../Models/Employee/employee';
 import { EmployeeService } from '../../../../Services/Employee/employee.service'; 
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { MenuService } from '../../../../Services/shared/menu.service';
+import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 
 @Component({
   selector: 'app-bus-details',
@@ -38,16 +40,30 @@ export class BusDetailsComponent {
   BusCompany: BusType[] = []
   BusDriver: Employee[] = []
   BusDriverAssistant: Employee[] = []
+  UserID:number=0;
+  AllowEdit: boolean = false;
+  AllowDelete: boolean = false;
+  AllowEditForOthers: boolean = false;
+  AllowDeleteForOthers: boolean = false;
 
   validationErrors: { [key in keyof Bus]?: string } = {};
 
   constructor(public busService:BusService, public account:AccountService, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
-    public busRestrictServ: BusRestrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService,
-    public router:Router){}
+    public busRestrictServ: BusRestrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService, 
+    private menuService: MenuService,public EditDeleteServ:DeleteEditPermissionService, public router:Router){}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
+    this.UserID=this.User_Data_After_Login.id;
     this.getAllDomains();
+    this.menuService.menuItemsForEmployee$.subscribe((items) => {
+      const settingsPage = this.menuService.findByPageName('Bus', items);
+      console.log(settingsPage)
+      this.AllowEdit = settingsPage.allow_Edit;
+      this.AllowDelete = settingsPage.allow_Delete;
+      this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
+      this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
+    });
   }
 
   getAllDomains() {
@@ -64,6 +80,8 @@ export class BusDetailsComponent {
     this.busService.GetbyDomainId(this.domainId).subscribe(
       (data: any) => {
         this.busData = data;
+        console.log("nn",this.busData)
+
       }
     );
   }
@@ -255,5 +273,14 @@ export class BusDetailsComponent {
 
   MoveToBusStudent(busId:number){
     this.router.navigateByUrl('Employee/Bus Student/'+ busId);
+  }
+
+  IsAllowDelete(InsertedByID:number){
+    const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
+    return IsAllow;
+  }
+  IsAllowEdit(InsertedByID:number){
+    const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
+    return IsAllow;
   }
 }

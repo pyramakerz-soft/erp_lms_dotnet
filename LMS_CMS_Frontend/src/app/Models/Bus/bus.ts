@@ -16,6 +16,11 @@ export class Bus {
         public driverAssistantId: number | null = null,
         public driverAssistantName: string | null = null,
         public busCompanyId: number | null = null,
-        public busCompanyName: string | null = null
+        public busCompanyName: string | null = null,
+        public deletedByUserId :number =0,
+        public updatedByUserId :number =0,
+        public insertedByUserId :number =0,
+
+
     ) {}
 }

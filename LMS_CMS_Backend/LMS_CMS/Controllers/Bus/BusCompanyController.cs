@@ -43,7 +43,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult GetById(long id)
         {
             BusCompany busCompany = Unit_Of_Work.busCompany_Repository.Select_By_Id(id);
-            if (busCompany == null||busCompany.IsDeleted != true) return NotFound();
+            if (busCompany == null||busCompany.IsDeleted == true) return NotFound();
 
             BusCompanyGetDTO CompanyDTO = mapper.Map<BusCompanyGetDTO>(busCompany);
             return Ok(CompanyDTO);

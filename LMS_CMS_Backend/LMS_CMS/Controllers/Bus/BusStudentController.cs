@@ -28,8 +28,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         public async Task<IActionResult> GetByBusID(long busId)
         {
             List<BusStudent> busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
-                bus => bus.BusID == busId,
-                //b=>b.IsDeleted!=true,
+                bus => bus.BusID == busId && bus.IsDeleted!=true,
                 query => query.Include(bus => bus.Bus),
                 query => query.Include(stu => stu.Student),
                 query => query.Include(busCat => busCat.BusCategory),
@@ -121,7 +120,8 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             BusStudent busStudent = mapper.Map<BusStudent>(busStudentAddDTO);
-            busStudent.InsertedAt = DateTime.Now;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busStudent.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             busStudent.InsertedByUserId = userId;
             Unit_Of_Work.busStudent_Repository.Add(busStudent);
             Unit_Of_Work.SaveChanges();
@@ -211,7 +211,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                 var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
                 if (userIdClaim == null)
                 {
-                    return Unauthorized(new { message = "User ID not found in token." });
+                    return BadRequest(new { message = "User ID not found in token." });
                 }
                 int userId;
                 if (!int.TryParse(userIdClaim.Value, out userId))

@@ -27,15 +27,16 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAsync()
         {
-            List<BusModel> buses = Unit_Of_Work.bus_Repository.Select_All_With_Includes(
-                emp => emp.Driver,
-                assisstant => assisstant.DriverAssistant,
-                type => type.BusType,
-                restrict => restrict.BusRestrict,
-                StatusCode => StatusCode.BusStatus,
-                company => company.BusCompany
+            List<BusModel> buses = await Unit_Of_Work.bus_Repository.Select_All_With_IncludesById<BusModel>(
+                bus => bus.IsDeleted!=true, // Filtering here
+                query => query.Include(emp => emp.Driver),
+                query => query.Include(assisstant => assisstant.DriverAssistant),
+                query => query.Include(type => type.BusType),
+                query => query.Include(restrict => restrict.BusRestrict),
+                query => query.Include(StatusCode => StatusCode.BusStatus),
+                query => query.Include(company => company.BusCompany)
                 );
             if (buses == null)
             {
@@ -56,7 +57,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             var bus = await Unit_Of_Work.bus_Repository.FindByIncludesAsync(
-                bus => bus.ID == Id,
+                bus => bus.ID == Id&&bus.IsDeleted!=true,
                 query => query.Include(e => e.Driver),
                 query => query.Include(e => e.DriverAssistant),
                 query => query.Include(e => e.BusType),
@@ -85,7 +86,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             List<BusModel> buses = await Unit_Of_Work.bus_Repository.Select_All_With_IncludesById<BusModel>(
-                bus => bus.DomainID == Id,
+                bus => bus.DomainID == Id && bus.IsDeleted != true,
                 query => query.Include(e => e.Driver),
                 query => query.Include(e => e.DriverAssistant),
                 query => query.Include(e => e.BusType),
@@ -107,6 +108,16 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpPost]
         public ActionResult Add(Bus_AddDTO busAddDTO)
         {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
             if (busAddDTO == null)
             {
                 return BadRequest("Bus cannot be null.");
@@ -174,6 +185,9 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             BusModel bus = mapper.Map<BusModel>(busAddDTO);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            bus.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            bus.InsertedByUserId = userId;
             Unit_Of_Work.bus_Repository.Add(bus);
             Unit_Of_Work.SaveChanges();
 
@@ -184,6 +198,16 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpPut]
         public ActionResult Edit(Bus_PutDTO busPutDTO)
         {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
             if (busPutDTO == null)
             {
                 return BadRequest("Bus cannot be null.");
@@ -258,6 +282,9 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             mapper.Map(busPutDTO, busExists);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            busExists.UpdatedByUserId = userId;
             Unit_Of_Work.bus_Repository.Update(busExists);
             Unit_Of_Work.SaveChanges();
 
@@ -279,7 +306,21 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
             else
             {
-                Unit_Of_Work.bus_Repository.Delete(Id);
+                var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+                if (userIdClaim == null)
+                {
+                    return BadRequest(new { message = "User ID not found in token." });
+                }
+                int userId;
+                if (!int.TryParse(userIdClaim.Value, out userId))
+                {
+                    return BadRequest(new { message = "Invalid User ID in token." });
+                }
+                bus.IsDeleted = true;
+                bus.DeletedByUserId = userId;
+                TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+                bus.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                Unit_Of_Work.bus_Repository.Update(bus);
                 Unit_Of_Work.SaveChanges();
                 return Ok("Bus has Successfully been deleted");
             }

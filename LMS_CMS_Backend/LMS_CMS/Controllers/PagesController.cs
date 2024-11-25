@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers
         //)]
         public IActionResult Get()
         {
-            List<Page> pages = Unit_Of_Work.page_Repository.FindBy(t => t.IsDeleted != true);
+            List<Page> pages = Unit_Of_Work.page_Repository.Select_All();
             if (pages == null)
             {
                 return NotFound();
@@ -45,7 +45,7 @@ namespace LMS_CMS_PL.Controllers
         [HttpGet("Get_With_Group_By")]
         public IActionResult Get_With_Group_By()
         {
-            List<Page> pages = Unit_Of_Work.page_Repository.FindBy(t => t.IsDeleted != true);
+            List<Page> pages = Unit_Of_Work.page_Repository.Select_All();
             if (pages == null)
             {
                 return NotFound();
@@ -69,17 +69,6 @@ namespace LMS_CMS_PL.Controllers
             var topLevelPages = pageDTOs.Where(p => !p.Page_ID.HasValue).ToList();
 
             return Ok(topLevelPages);
-        }
-
-        [HttpPost]
-        public IActionResult addPage(Page_AddDTO newPage)
-        {
-            if (newPage == null) { return BadRequest(); }
-            Page page = mapper.Map<Page>(newPage);
-            Unit_Of_Work.page_Repository.Add(page);
-            Unit_Of_Work.SaveChanges();
-            return Ok(newPage);
-
         }
     }
 }

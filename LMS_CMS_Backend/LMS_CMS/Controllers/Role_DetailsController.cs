@@ -26,7 +26,7 @@ namespace LMS_CMS_PL.Controllers
         public async Task<IActionResult> Get_With_RoleID_Group_By(long roleId)
         {
             var roleDetailsList = await Unit_Of_Work.role_Detailes_Repository.Database().Role_Detailes
-                .Where(rd => rd.Role_ID == roleId)
+                .Where(rd => rd.Role_ID == roleId && rd.IsDeleted!=true)
                 .Include(rd => rd.Page)  // Include the related Page entity
                 .ThenInclude(p => p.ChildPages) // Include the child pages
                 .ToListAsync();
@@ -43,7 +43,7 @@ namespace LMS_CMS_PL.Controllers
 
             // Group role details by parent page
             var parentPages = roleDetailsList
-                .Where(rd => rd.Page.Page_ID == null)  // Only root-level pages
+                .Where(rd => rd.Page.Page_ID == null && rd.IsDeleted!=true)  // Only root-level pages
                 .GroupBy(rd => rd.Page.ID) // Group by parent page ID to avoid duplication
                 .Select(group => new Role_Details_GetDTO
                 {

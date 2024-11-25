@@ -14,7 +14,7 @@ namespace LMS_CMS_BL.DTO.Bus
         public long? BusCategoryID { get; set; }
         public long? SemseterID { get; set; }
         public bool IsException { get; set; }
-        public string ExceptionFromDate { get; set; }
-        public string ExceptionToDate { get; set; }
+        public string? ExceptionFromDate { get; set; }
+        public string? ExceptionToDate { get; set; }
     }
 }

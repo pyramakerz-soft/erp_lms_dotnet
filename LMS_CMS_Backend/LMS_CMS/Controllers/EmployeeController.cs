@@ -26,19 +26,19 @@ namespace LMS_CMS_PL.Controllers
         public IActionResult GetByTypeIDAsync(long TypeId, long DomainId)
         {
             EmployeeType type = Unit_Of_Work.employeeType_Repository.Select_By_Id(TypeId);
-            if (type == null)
+            if (type == null || type.IsDeleted!=true)
             {
                 return NotFound("No Type with this Id");
             }
 
             Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(DomainId);
-            if (domain == null)
+            if (domain == null || domain.IsDeleted!=true)
             {
                 return NotFound("No Domain with this Id");
             }
 
             List<Employee> employees = Unit_Of_Work.employee_Repository.FindBy(
-                emp => emp.EmployeeTypeID == TypeId && emp.Domain_ID == DomainId
+                emp => emp.EmployeeTypeID == TypeId && emp.Domain_ID == DomainId && emp.IsDeleted!=true
             );
 
             if (employees == null || employees.Count == 0)

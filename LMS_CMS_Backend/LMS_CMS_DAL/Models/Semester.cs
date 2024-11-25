@@ -9,7 +9,7 @@ using LMS_CMS_DAL.Models.BusModule;
 
 namespace LMS_CMS_DAL.Models
 {
-    public class Semester
+    public class Semester : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

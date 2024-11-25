@@ -25,5 +25,8 @@ namespace LMS_CMS_BL.DTO.Bus
         public string? DriverAssistantName { get; set; }
         public long? BusCompanyID { get; set; }
         public string? BusCompanyName { get; set; }
+        public long? DeletedByUserId { get; set; }
+        public long? InsertedByUserId { get; set; }
+        public long? UpdatedByUserId { get; set; }
     }
 }

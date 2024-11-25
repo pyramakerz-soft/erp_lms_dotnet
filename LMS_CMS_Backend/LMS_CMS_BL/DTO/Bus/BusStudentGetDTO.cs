@@ -21,6 +21,9 @@ namespace LMS_CMS_BL.DTO.Bus
         public bool IsException { get; set; }
         public string ExceptionFromDate { get; set; }
         public string ExceptionToDate { get; set; }
+        public long? DeletedByUserId { get; set; }
+        public long? InsertedByUserId { get; set; }
+        public long? UpdatedByUserId { get; set; }
         //public long? SchoolID { get; set; }
         //public string? SchoolName { get; set; }
         //public long? GradeID { get; set; }

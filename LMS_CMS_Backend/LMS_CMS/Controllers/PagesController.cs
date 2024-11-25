@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers
         //)]
         public IActionResult Get()
         {
-            List<Page> pages = Unit_Of_Work.page_Repository.Select_All();
+            List<Page> pages = Unit_Of_Work.page_Repository.FindBy(t => t.IsDeleted != true);
             if (pages == null)
             {
                 return NotFound();
@@ -45,7 +45,7 @@ namespace LMS_CMS_PL.Controllers
         [HttpGet("Get_With_Group_By")]
         public IActionResult Get_With_Group_By()
         {
-            List<Page> pages = Unit_Of_Work.page_Repository.Select_All();
+            List<Page> pages = Unit_Of_Work.page_Repository.FindBy(t => t.IsDeleted != true);
             if (pages == null)
             {
                 return NotFound();

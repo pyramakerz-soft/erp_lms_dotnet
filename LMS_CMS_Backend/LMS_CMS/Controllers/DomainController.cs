@@ -27,7 +27,7 @@ namespace LMS_CMS_PL.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            List<Domain> Domains = Unit_Of_Work.domain_Repository.Select_All();
+            List<Domain> Domains = Unit_Of_Work.domain_Repository.FindBy(t => t.IsDeleted != true);
             if (Domains == null)
             {
                 return NotFound();

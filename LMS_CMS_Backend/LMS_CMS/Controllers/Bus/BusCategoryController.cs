@@ -43,7 +43,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult GetById(long id)
         {
             BusCategory busCategory = Unit_Of_Work.busCategory_Repository.Select_By_Id(id);
-            if (busCategory == null) return NotFound();
+            if (busCategory == null||busCategory.IsDeleted!=true) return NotFound();
 
             BusCatigoryGetDTO busCategoryDto = mapper.Map<BusCatigoryGetDTO>(busCategory);
             return Ok(busCategoryDto);

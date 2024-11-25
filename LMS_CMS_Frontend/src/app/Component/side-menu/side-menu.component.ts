@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AccountService } from '../../Services/account.service';
 import { PagesWithRoleId } from '../../Models/pages-with-role-id';
 import { SideMenuItemComponent } from '../side-menu-item/side-menu-item.component';
 
@@ -17,12 +16,6 @@ export class SideMenuComponent {
   @Input() menuItemsForEmployee?: PagesWithRoleId[];
 
   IsMenuOpen = false
-  
-  constructor(public accountService:AccountService){}
-  
-  SignOut(){
-    this.accountService.SignOut()
-  }
   
   toggleMenu() {
     this.IsMenuOpen = !this.IsMenuOpen

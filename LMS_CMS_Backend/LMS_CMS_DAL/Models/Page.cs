@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public class Page : AuditableEntity
+    public class Page
     {
         public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
@@ -25,8 +25,5 @@ namespace LMS_CMS_DAL.Models
         public ICollection<Page> ChildPages { get; set; } = new List<Page>();
         public ICollection<Domain_Page_Detailes> Domain_Page_Detailes { get; set; } = new List<Domain_Page_Detailes>();
         public ICollection<Role_Detailes> Role_Detailes { get; set; } = new List<Role_Detailes>();
-
-
-
     }
 }

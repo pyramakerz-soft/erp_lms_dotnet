@@ -20,8 +20,8 @@ namespace LMS_CMS_DAL.Models.BusModule
         [ForeignKey("Semester")]
         public long? SemseterID { get; set; }
         public bool IsException { get; set; }
-        public string ExceptionFromDate { get; set; }
-        public string ExceptionToDate { get; set; }
+        public string? ExceptionFromDate { get; set; }
+        public string? ExceptionToDate { get; set; }
 
         public Bus Bus { get; set; }
         public Student Student { get; set; }

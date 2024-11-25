@@ -46,6 +46,7 @@ export class BusRestrictsComponent {
     this.UserID=this.User_Data_After_Login.id;
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName('Bus Restrict', items);
+      console.log(settingsPage)
       this.AllowEdit = settingsPage.allow_Edit;
       this.AllowDelete = settingsPage.allow_Delete;
       this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
@@ -65,6 +66,9 @@ export class BusRestrictsComponent {
       this.newType="";
       this.GetTableData(this.DomainID);
 
+    },
+    error => {
+      console.log(error)
     });
   }
   GetAllDomains() {

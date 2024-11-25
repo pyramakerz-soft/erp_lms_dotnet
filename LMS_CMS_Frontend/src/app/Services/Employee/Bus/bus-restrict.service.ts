@@ -27,7 +27,7 @@ export class BusRestrictService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     const body = { DomainId: domainId, Name: name };
 
-    return this.http.post<any>(`${this.baseUrl}/BusCompany`, body, {
+    return this.http.post<any>(`${this.baseUrl}/BusRestrict`, body, {
         headers,
         responseType: 'text' as 'json'
     });

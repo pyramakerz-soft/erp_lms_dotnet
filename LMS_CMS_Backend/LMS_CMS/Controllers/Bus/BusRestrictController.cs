@@ -53,7 +53,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpGet("DomainId")]
         public IActionResult GetByDomainId(long id)
         {
-            List<BusRestrict> BusRestrict = Unit_Of_Work.busRestrict_Repository.FindBy(s => s.DomainId == id);
+            List<BusRestrict> BusRestrict = Unit_Of_Work.busRestrict_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
             if (BusRestrict == null)
             {
                 return NotFound();

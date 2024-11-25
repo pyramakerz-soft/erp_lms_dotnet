@@ -93,6 +93,8 @@ export class BusStatusComponent {
   }
 
   Delete(id: number) {
+    console.log(id)
+
     this.busStatusServ.Delete(id).subscribe((data) => {
       this.GetTableData(this.DomainID);
     })

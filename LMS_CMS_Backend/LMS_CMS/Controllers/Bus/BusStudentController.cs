@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Migrations;
 using LMS_CMS_DAL.Models;
 using LMS_CMS_DAL.Models.BusModule;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +28,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         public IActionResult Get()
         {
             List<BusStudent> busStudents = Unit_Of_Work.busStudent_Repository.Select_All_With_Includes(
+                //b=>b.IsDeleted!=true,
                 bus => bus.Bus,
                 stu => stu.Student,
                 busCat => busCat.BusCategory,
@@ -52,7 +54,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             var busStudent = await Unit_Of_Work.busStudent_Repository.FindByIncludesAsync(
-                busStu => busStu.ID == Id,
+                busStu => busStu.ID == Id&& busStu.IsDeleted!=true,
                 query => query.Include(e => e.Bus),
                 query => query.Include(e => e.Student),
                 query => query.Include(e => e.BusCategory),
@@ -72,6 +74,16 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpPost]
         public ActionResult Add(BusStudent_AddDTO busStudentAddDTO)
         {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
             if (busStudentAddDTO == null)
             {
                 return BadRequest("Bus Student cannot be null.");
@@ -108,6 +120,8 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             BusStudent busStudent = mapper.Map<BusStudent>(busStudentAddDTO);
+            busStudent.InsertedAt = DateTime.Now;
+            busStudent.InsertedByUserId = userId;
             Unit_Of_Work.busStudent_Repository.Add(busStudent);
             Unit_Of_Work.SaveChanges();
 
@@ -117,6 +131,16 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpPut]
         public ActionResult Edit(BusStudent_PutDTO busStudentPutDTO)
         {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+            if (userIdClaim == null)
+            {
+                return Unauthorized(new { message = "User ID not found in token." });
+            }
+            int userId;
+            if (!int.TryParse(userIdClaim.Value, out userId))
+            {
+                return BadRequest(new { message = "Invalid User ID in token." });
+            }
             if (busStudentPutDTO == null)
             {
                 return BadRequest("Bus Student cannot be null.");
@@ -159,6 +183,9 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             mapper.Map(busStudentPutDTO, busStudentExists);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            busStudentExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            busStudentExists.UpdatedByUserId = userId;
             Unit_Of_Work.busStudent_Repository.Update(busStudentExists);
             Unit_Of_Work.SaveChanges();
 
@@ -180,7 +207,21 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
             else
             {
-                Unit_Of_Work.busStudent_Repository.Delete(Id);
+                var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
+                if (userIdClaim == null)
+                {
+                    return Unauthorized(new { message = "User ID not found in token." });
+                }
+                int userId;
+                if (!int.TryParse(userIdClaim.Value, out userId))
+                {
+                    return BadRequest(new { message = "Invalid User ID in token." });
+                }
+                busStudent.IsDeleted = true;
+                busStudent.DeletedByUserId = userId;
+                TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+                busStudent.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                Unit_Of_Work.busStudent_Repository.Update(busStudent);
                 Unit_Of_Work.SaveChanges();
                 return Ok("Bus Student has Successfully been deleted");
             }

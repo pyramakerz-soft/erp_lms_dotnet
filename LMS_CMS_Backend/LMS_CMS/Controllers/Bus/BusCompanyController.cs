@@ -53,7 +53,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpGet("DomainId")]
         public IActionResult GetByDomainId(long id)
         {
-            List<BusCompany> BusCompany = Unit_Of_Work.busCompany_Repository.FindBy(s => s.DomainId == id);
+            List<BusCompany> BusCompany = Unit_Of_Work.busCompany_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
             if (BusCompany == null)
             {
                 return NotFound();

@@ -1,0 +1,195 @@
+<div>
+    <h1 class="primaryTxt font-semibold text-2xl leading-9 mb-5">{{ bus.name }}</h1>
+    
+    <div class="flex flex-wrap justify-between">
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Name</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.name }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Type</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.busTypeName }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Restricts</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.busRestrictName }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Status</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.busStatusName }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Capacity</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.capacity }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Driver</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.driverName }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Driver Assistant</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.driverAssistantName }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Company</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.busCompanyName }}</p>
+        </div>
+        <div class="flex space-x-5 items-center w-[30%] mb-4">
+            <i *ngIf="bus.isCapacityRestricted" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+            <i *ngIf="!bus.isCapacityRestricted" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
+            <label for="Restricted" class="text-sm">Restricted Capacity</label>
+        </div>
+    </div>
+</div>
+
+
+<div>
+    <div class="flex justify-between my-8">
+        <h1 class="primaryTxt font-semibold text-2xl leading-9 mb-5">Students</h1>
+        <div>
+            <button class="secondaryBg rounded-lg py-3 px-4 text-white">Add Student</button>
+        </div>
+    </div>
+
+    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+            <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                <tr>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        School Name
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                        Grade
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Classes
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Student Name
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Categories
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Semester
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Exception
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Date From
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Date To
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- No Data Row -->
+                <tr *ngIf="busStudentData.length === 0">
+                    <td colspan="10" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                        No Data Found
+                    </td>
+                </tr>
+
+                <!-- Data Rows -->
+                <tr *ngFor="let row of busStudentData; let i = index"
+                    [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                    class="border-t border-gray-300 text-xs md:text-sm">
+
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.busTypeName; else emptybusTypeName">
+                            <div class="truncate" title="{{ row.busTypeName }}">
+                                {{ row.busTypeName }}
+                            </div>
+                        </div>
+                        <ng-template #emptybusTypeName>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.busRestrictName; else emptyRestrict">
+                            <div class="truncate" title="{{ row.busRestrictName }}">
+                                {{ row.busRestrictName }}
+                            </div>
+                        </div>
+                        <ng-template #emptyRestrict>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.busStatusName; else emptybusStatusName">
+                            <div class="truncate" title="{{ row.busStatusName }}">
+                                {{ row.busStatusName }}
+                            </div>
+                        </div>
+                        <ng-template #emptybusStatusName>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.capacity }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <i *ngIf="row.isCapacityRestricted" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+                        <i *ngIf="!row.isCapacityRestricted" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.driverName; else emptydriverName">
+                            <div class="truncate" title="{{ row.driverName }}">
+                                {{ row.driverName }}
+                            </div>
+                        </div>
+                        <ng-template #emptydriverName>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.driverAssistantName; else emptydriverAssistantName">
+                            <div class="truncate" title="{{ row.driverAssistantName }}">
+                                {{ row.driverAssistantName }}
+                            </div>
+                        </div>
+                        <ng-template #emptydriverAssistantName>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.busCompanyName; else emptydriverbusCompanyName">
+                            <div class="truncate" title="{{ row.busCompanyName }}">
+                                {{ row.busCompanyName }}
+                            </div>
+                        </div>
+                        <ng-template #emptydriverbusCompanyName>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div class="flex space-x-4">
+                            <button>
+                                <!-- <i class="fa-regular fa-trash-can" (click)="deleteBus(row.id)"></i> -->
+                            </button>
+                            <button>
+                                <!-- <i class="fa-solid fa-pencil" (click)="openModal(row.id)"></i> -->
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

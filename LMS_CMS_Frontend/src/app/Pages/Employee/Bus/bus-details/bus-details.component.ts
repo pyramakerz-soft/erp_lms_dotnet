@@ -15,6 +15,7 @@ import { BusCompanyService } from '../../../../Services/Employee/Bus/bus-company
 import { Employee } from '../../../../Models/Employee/employee';
 import { EmployeeService } from '../../../../Services/Employee/employee.service'; 
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-bus-details',
@@ -41,7 +42,8 @@ export class BusDetailsComponent {
   validationErrors: { [key in keyof Bus]?: string } = {};
 
   constructor(public busService:BusService, public account:AccountService, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
-    public busRestrictServ: BusRestrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService){}
+    public busRestrictServ: BusRestrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService,
+    public router:Router){}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -249,5 +251,9 @@ export class BusDetailsComponent {
         );
       }  
     }
+  }
+
+  MoveToBusStudent(busId:number){
+    this.router.navigateByUrl('Employee/Bus Student/'+ busId);
   }
 }

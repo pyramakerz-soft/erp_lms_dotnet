@@ -1,6 +1,6 @@
 <div class="">
     <div class="flex justify-between items-center">
-        <h1 class="font-poppins font-semibold text-2xl leading-9">Bus</h1>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Bus</h1>
         <button (click)="openModal()"
         [disabled]="domainId === 0"
         [ngClass]="{ 
@@ -78,7 +78,7 @@
                     [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
                     class="border-t border-gray-300 text-xs md:text-sm">
 
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e]">{{ row.id }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e] hover:bg-gray-200" (click)="MoveToBusStudent(row.id)">{{ row.id }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div *ngIf="row.busTypeName; else emptybusTypeName">

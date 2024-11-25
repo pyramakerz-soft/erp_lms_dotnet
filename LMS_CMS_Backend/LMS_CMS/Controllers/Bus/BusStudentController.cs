@@ -24,18 +24,19 @@ namespace LMS_CMS_PL.Controllers.Bus
             this.mapper = mapper;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("GetByBusId/{busId}")]
+        public async Task<IActionResult> GetByBusID(long busId)
         {
-            List<BusStudent> busStudents = Unit_Of_Work.busStudent_Repository.Select_All_With_Includes(
+            List<BusStudent> busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
+                bus => bus.BusID == busId,
                 //b=>b.IsDeleted!=true,
-                bus => bus.Bus,
-                stu => stu.Student,
-                busCat => busCat.BusCategory,
-                sem => sem.Semester
+                query => query.Include(bus => bus.Bus),
+                query => query.Include(stu => stu.Student),
+                query => query.Include(busCat => busCat.BusCategory),
+                query => query.Include(sem => sem.Semester)
                 );
 
-            if (busStudents == null)
+            if (busStudents == null || busStudents.Count == 0)
             {
                 return NotFound();
             }

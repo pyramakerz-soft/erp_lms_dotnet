@@ -47,7 +47,5 @@ namespace LMS_CMS_DAL.Models
         public Role Role { get; set; }
         public ICollection<Bus> DrivenBuses { get; set; } = new HashSet<Bus>();
         public ICollection<Bus> DriverAssistant { get; set; } = new HashSet<Bus>();
-
-
     }
 }

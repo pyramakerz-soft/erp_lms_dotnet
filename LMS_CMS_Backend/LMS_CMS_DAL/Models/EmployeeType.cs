@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
-    public class EmployeeType : AuditableEntity
+    public class EmployeeType
     {
         public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]

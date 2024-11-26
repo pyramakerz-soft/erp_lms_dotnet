@@ -26,7 +26,7 @@ namespace LMS_CMS_PL.Controllers
         public IActionResult GetByTypeIDAsync(long TypeId, long DomainId)
         {
             EmployeeType type = Unit_Of_Work.employeeType_Repository.Select_By_Id(TypeId);
-            if (type == null || type.IsDeleted==true)
+            if (type == null)
             {
                 return NotFound("No Type with this Id");
             }
@@ -54,9 +54,7 @@ namespace LMS_CMS_PL.Controllers
         [HttpGet("{empId}")]
         public IActionResult GetByID(long empId)
         {
-            Console.WriteLine("================================================================================================",empId);
             Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(empId);
-            Console.WriteLine("================================================================================================", employee);
 
             if (employee == null || employee.IsDeleted == true)
             {

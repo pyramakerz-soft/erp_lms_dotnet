@@ -114,6 +114,18 @@ namespace LMS_CMS_DAL.Models
                  .HasForeignKey(p => p.Domain_ID)
                  .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Employee>()
+                 .HasOne(p => p.EmployeeType)
+                 .WithMany(p => p.Employees)
+                 .HasForeignKey(p => p.EmployeeTypeID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Employee>()
+                 .HasOne(p => p.BusCompany)
+                 .WithMany(p => p.Employees)
+                 .HasForeignKey(p => p.BusCompanyID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Role>()
                  .HasOne(p => p.Domain)
                  .WithMany(p => p.Roles)
@@ -228,7 +240,6 @@ namespace LMS_CMS_DAL.Models
                  .HasForeignKey(p => p.BusCompanyID)
                  .OnDelete(DeleteBehavior.Restrict);
 
-
             modelBuilder.Entity<BusStudent>()
                  .HasOne(p => p.Bus)
                  .WithMany(p => p.BusStudents)
@@ -254,79 +265,10 @@ namespace LMS_CMS_DAL.Models
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Bus>()
-               .HasOne(b => b.DeletedByUser) // Specify the navigation property
-               .WithMany() // No reverse navigation
-               .HasForeignKey(b => b.DeletedByUserId) // Foreign key in the Bus table
-               .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<BusCompany>()
-               .HasOne(bc => bc.InsertedByUser)
-               .WithMany() // No reverse navigation
-               .HasForeignKey(bc => bc.InsertedByUserId)
-               .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
-
-            modelBuilder.Entity<BusCompany>()
-                .HasOne(bc => bc.UpdatedByUser)
+                .HasOne(b => b.DeletedByUser)
                 .WithMany()
-                .HasForeignKey(bc => bc.UpdatedByUserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<BusCompany>()
-                .HasOne(bc => bc.DeletedByUser)
-                .WithMany()
-                .HasForeignKey(bc => bc.DeletedByUserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Employees relationship for BusCompany
-            modelBuilder.Entity<BusCompany>()
-                .HasMany(bc => bc.Employees)
-                .WithOne(e => e.BusCompany)
-                .HasForeignKey(e => e.BusCompanyID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Other relationships in BusCompany
-            modelBuilder.Entity<BusCompany>()
-                .HasMany(bc => bc.Buses)
-                .WithOne(b => b.BusCompany)
-                .HasForeignKey(b => b.BusCompanyID)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Configure Domain relationship
-            modelBuilder.Entity<BusCompany>()
-                .HasOne(bc => bc.Domain)
-                .WithMany(d => d.BusCompanies)
-                .HasForeignKey(bc => bc.DomainId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<BusCategory>()
-               .HasOne(bc => bc.DeletedByUser) // Navigation property
-               .WithMany() // No reverse navigation
-               .HasForeignKey(bc => bc.DeletedByUserId) // Foreign key in BusCompany
-               .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
-
-            modelBuilder.Entity<BusRestrict>()
-               .HasOne(bc => bc.DeletedByUser) // Navigation property
-               .WithMany() // No reverse navigation
-               .HasForeignKey(bc => bc.DeletedByUserId) // Foreign key in BusCompany
-               .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
-
-            modelBuilder.Entity<BusType>()
-               .HasOne(bc => bc.DeletedByUser) // Navigation property
-               .WithMany() // No reverse navigation
-               .HasForeignKey(bc => bc.DeletedByUserId) // Foreign key in BusCompany
-               .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
-
-            modelBuilder.Entity<BusStatus>()
-               .HasOne(bc => bc.DeletedByUser) // Navigation property
-               .WithMany() // No reverse navigation
-               .HasForeignKey(bc => bc.DeletedByUserId) // Foreign key in BusCompany
-               .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete
-
-            modelBuilder.Entity<Employee>()
-                .HasOne(e => e.EmployeeType) // Navigation property
-                .WithMany() // If EmployeeType has a collection of Employees, use .WithMany(et => et.Employees)
-                .HasForeignKey(e => e.EmployeeTypeID); // Specify the foreign key property
-            base.OnModelCreating(modelBuilder);
+                .HasForeignKey(b => b.DeletedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

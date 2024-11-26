@@ -21,47 +21,60 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 export class BusRestrictsComponent {
 
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+  EditType: BusType = new BusType(0, "", 0);
+
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
+
   TableData: BusType[] = []
   DomainData: Domain[] = []
-  IsChoosenDomain: boolean = false;
-  newType: string = '';
-  isModalVisible: boolean = false; 
-  EditType:BusType=new BusType(0,"",0);
-  mode:string="";
-  DomainID:number=0;
-  UserID:number=0;
 
+  DomainID: number = 0;
+  UserID: number = 0;
+
+  IsChoosenDomain: boolean = false;
+  IsEmployee: boolean = true;
+  
+  newType: string = '';
+  isModalVisible: boolean = false;
+  mode: string = "";
 
 
   constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService) { }
 
   ngOnInit() {
-    this.GetAllDomains();
-    this.GetTableData(this.DomainID);
+
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
-    this.UserID=this.User_Data_After_Login.id;
-    this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName('Bus Restrict', items);
-      console.log(settingsPage)
-      this.AllowEdit = settingsPage.allow_Edit;
-      this.AllowDelete = settingsPage.allow_Delete;
-      this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
-      this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
-    });
+    this.UserID = this.User_Data_After_Login.id;
+
+    if (this.User_Data_After_Login.type === "employee") {
+      this.IsChoosenDomain = true;
+      this.DomainID = this.User_Data_After_Login.domain;
+      this.GetTableData(this.DomainID);
+      this.menuService.menuItemsForEmployee$.subscribe((items) => {
+        const settingsPage = this.menuService.findByPageName('Bus Type', items);
+        this.AllowEdit = settingsPage.allow_Edit;
+        this.AllowDelete = settingsPage.allow_Delete;
+        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+      });
+    } else if (this.User_Data_After_Login.type === "pyramakerz") {
+      this.GetAllDomains();
+      this.IsEmployee = false;
+      this.AllowEdit = true;
+      this.AllowDelete = true;
+    }
   }
+
   Create(){
     this.mode="add";
     this.openModal();
   }
 
   AddNewType() {
-    console.log(this.DomainID,this.newType)
     this.busRestrictServ.Add(this.DomainID, this.newType).subscribe((data) => {
-      console.log(data);
       this.closeModal();
       this.newType="";
       this.GetTableData(this.DomainID);
@@ -73,15 +86,12 @@ export class BusRestrictsComponent {
   }
   GetAllDomains() {
     this.DomainServ.Get().subscribe((data) => {
-      console.log(data)
       this.DomainData = data;
     })
   }
   GetTableData(id: number) {
-    console.log("Domain selected:", id);
     if (this.DomainID !== null) {
       this.busRestrictServ.GetByDomainId(id).subscribe((data) => {
-        console.log("Fetched data:", data);
         this.TableData=[];
         this.TableData = data;
       });
@@ -96,7 +106,6 @@ export class BusRestrictsComponent {
 
   closeModal() {
     this.isModalVisible = false;
-    console.log("close")
   }
 
   Delete(id: number) {
@@ -111,7 +120,6 @@ export class BusRestrictsComponent {
       this.EditType={ ...typeToEdit };
       this.newType = this.EditType.name;
       this.openModal();
-      console.log(this.newType)
     } else {
       console.error("Type not found!");
     }
@@ -127,7 +135,6 @@ export class BusRestrictsComponent {
   }
 
   CreateOREdit(){
-    console.log(this.mode)
     if(this.mode==="add"){
       this.AddNewType();
     }
@@ -140,16 +147,18 @@ export class BusRestrictsComponent {
     this.IsChoosenDomain=true;
     const selectedValue: number = Number((event.target as HTMLSelectElement).value);
     this.DomainID=selectedValue;
-    console.log('Selected Domain ID:', selectedValue);
     this.GetTableData(selectedValue);
   }
-  IsAllowDelete(InsertedByID:number){
-    const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
-    return IsAllow;
-  }
-  IsAllowEdit(InsertedByID:number){
-    const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
+
+  IsAllowDelete(InsertedByID: number) {
+    if (this.IsEmployee == false) { return true; }
+    const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
     return IsAllow;
   }
 
+  IsAllowEdit(InsertedByID: number) {
+    if (this.IsEmployee == false) { return true; }
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
+    return IsAllow;
+  }
 }

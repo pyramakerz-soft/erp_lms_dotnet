@@ -43,7 +43,6 @@ export class BusStudentComponent {
     this.GetStudentsByBusId(this.busId);
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName('Bus Student', items);
-      console.log("sp",settingsPage)
       this.AllowEdit = settingsPage.allow_Edit;
       this.AllowDelete = settingsPage.allow_Delete;
       this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
@@ -54,13 +53,11 @@ export class BusStudentComponent {
   GetBusById(busId:number){
     this.busService.GetbyBusId(busId).subscribe((data) => {
       this.bus = data;
-      console.log(this.bus)
     });
   }
   
   GetStudentsByBusId(busId:number){
     this.busStudentService.GetbyBusId(busId).subscribe((data) => {
-      console.log(data)
       this.busStudentData = data;
     });
   }

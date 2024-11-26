@@ -7,6 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 import { NewTokenService } from '../../Services/shared/new-token.service';
+import { LogOutService } from '../../Services/shared/log-out.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-nav-menu',
@@ -22,20 +24,25 @@ export class NavMenuComponent {
   User_Type: string = "";
   userName: string = "";
   isPopupOpen = false;
-  allTokens: { id: number, key: string; KeyInLocal: string; value: string }[] = [];
+  allTokens: { id: number, key: string; KeyInLocal: string; value: string; UserType:string}[] = [];
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+  subscription: Subscription | undefined;
 
-  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, private renderer: Renderer2, private translate: TranslateService ,private communicationService: NewTokenService) { }
+  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, private renderer: Renderer2, private translate: TranslateService ,private communicationService: NewTokenService ,private logOutService:LogOutService) { }
 
   ngOnInit() {
     this.GetUserInfo();
     const savedLanguage = localStorage.getItem('language') || 'en';
     this.selectedLanguage = savedLanguage === 'ar' ? 'العربية' : 'English';
     this.getAllTokens();
+    this.subscription = this.communicationService.action$.subscribe((state) => {
+      this.GetUserInfo();
+    });
   }
 
   getAllTokens(): void {
     let count = 0;
+    this.allTokens=[];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key || '');
@@ -44,7 +51,7 @@ export class NavMenuComponent {
         if (value) {
           this.User_Data_After_Login = jwtDecode(value)
 
-          this.allTokens.push({ id: count, key: this.User_Data_After_Login.user_Name, KeyInLocal: key, value: value || '' });
+          this.allTokens.push({ id: count, key: this.User_Data_After_Login.user_Name, KeyInLocal: key, value: value || '' ,UserType:this.User_Data_After_Login.type });
           count++;
         }
 
@@ -84,8 +91,9 @@ export class NavMenuComponent {
     this.userName = User_Data_After_Login.user_Name
   }
   togglePopup(): void {
+    this.getAllTokens();
     this.isPopupOpen = !this.isPopupOpen;
-
+    
     if (this.isPopupOpen) {
       this.renderer.addClass(document.body, 'overflow-hidden');
     } else {
@@ -126,32 +134,35 @@ export class NavMenuComponent {
 
   }
 
-  logOut() {
-    const count = parseInt(localStorage.getItem("count") ?? "0", 10);
-    let currentTokenn = localStorage.getItem("current_token") ?? "";
+   async logOut() {
+    // const count = parseInt(localStorage.getItem("count") ?? "0", 10);
+    // let currentTokenn = localStorage.getItem("current_token") ?? "";
 
-    const currentIndex = this.allTokens.findIndex(token => token.value === currentTokenn);
-    console.log(currentIndex)
+    // const currentIndex = this.allTokens.findIndex(token => token.value === currentTokenn);
+    // console.log(currentIndex)
 
-    if (currentIndex === -1) {
-      return;
-    }
+    // if (currentIndex === -1) {
+    //   return;
+    // }
   
-    const currentToken = this.allTokens[currentIndex];
-    localStorage.removeItem(currentToken.KeyInLocal);
+    // const currentToken = this.allTokens[currentIndex];
+    // localStorage.removeItem(currentToken.KeyInLocal);
   
-    this.allTokens.splice(currentIndex, 1);
+    // this.allTokens.splice(currentIndex, 1);
   
-    if (this.allTokens.length > 0) {
-      const newToken = this.allTokens[currentIndex] || this.allTokens[currentIndex - 1];
+    // if (this.allTokens.length > 0) {
+    //   const newToken = this.allTokens[currentIndex] || this.allTokens[currentIndex - 1];
   
-      localStorage.setItem("current_token", newToken.value);
-    } else {
-      localStorage.removeItem("current_token");
-    }
+    //   localStorage.setItem("current_token", newToken.value);
+    // } else {
+    //   localStorage.removeItem("current_token");
+    // }
   
-    localStorage.setItem("count", this.allTokens.length.toString());
+    // localStorage.setItem("count", this.allTokens.length.toString());
+    this.isPopupOpen=false
+   await this.logOutService.logOut();
     this.GetUserInfo();
+    this.getAllTokens();
     this.router.navigateByUrl(""); 
   }
 }

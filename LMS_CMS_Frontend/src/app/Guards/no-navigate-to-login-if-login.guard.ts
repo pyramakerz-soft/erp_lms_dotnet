@@ -27,8 +27,7 @@ export const noNavigateToLoginIfLoginGuard: CanActivateFn = (route, state) => {
 
   }
   
-  localStorage.removeItem("GoToLogin");
-  localStorage.setItem("GoToLogin", "false");
+
 
   return true;
 };

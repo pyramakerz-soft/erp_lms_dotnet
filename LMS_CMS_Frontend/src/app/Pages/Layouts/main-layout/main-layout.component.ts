@@ -31,9 +31,6 @@ export class MainLayoutComponent {
       await this.GetInfo();
 
     });
-  
-
-    
   }
 
   async GetInfo(){
@@ -62,8 +59,10 @@ export class MainLayoutComponent {
         this.menuItemsForEmployee = data
         this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
 
-      } 
-    )
+      } ,(error)=>{
+        this.menuItemsForEmployee = [];
+      });
+    
     this.menuItems = [
       {
         label: 'Dashboard Student', route: '#'

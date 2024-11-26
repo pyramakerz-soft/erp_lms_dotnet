@@ -46,6 +46,8 @@ export class BusDetailsComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
+  IsEmployee: boolean = true;
+
   validationErrors: { [key in keyof Bus]?: string } = {};
 
   constructor(public busService:BusService, public account:AccountService, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
@@ -55,15 +57,28 @@ export class BusDetailsComponent {
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID=this.User_Data_After_Login.id;
-    this.getAllDomains();
-    this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName('Bus', items);
-      console.log(settingsPage)
-      this.AllowEdit = settingsPage.allow_Edit;
-      this.AllowDelete = settingsPage.allow_Delete;
-      this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
-      this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
-    });
+    if (this.User_Data_After_Login.type === "employee") {
+      this.domainId = this.User_Data_After_Login.domain;
+
+      this.busService.GetbyDomainId(this.domainId).subscribe(
+        (data: any) => {
+          this.busData = data;
+  
+        }
+      );
+      this.menuService.menuItemsForEmployee$.subscribe((items) => {
+        const settingsPage = this.menuService.findByPageName('Bus Type', items);
+        this.AllowEdit = settingsPage.allow_Edit;
+        this.AllowDelete = settingsPage.allow_Delete;
+        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+      });
+    } else if (this.User_Data_After_Login.type === "pyramakerz") {
+      this.getAllDomains();
+      this.IsEmployee = false;
+      this.AllowEdit = true;
+      this.AllowDelete = true;
+    }
   }
 
   getAllDomains() {
@@ -80,7 +95,6 @@ export class BusDetailsComponent {
     this.busService.GetbyDomainId(this.domainId).subscribe(
       (data: any) => {
         this.busData = data;
-        console.log("nn",this.busData)
 
       }
     );
@@ -144,7 +158,6 @@ export class BusDetailsComponent {
   GetBusById(busId:number){
     this.busService.GetbyBusId(busId).subscribe((data) => {
       this.bus = data;
-      console.log(this.bus)
     });
   }
 
@@ -272,6 +285,7 @@ export class BusDetailsComponent {
   }
 
   MoveToBusStudent(busId:number){
+    console.log(busId)
     this.router.navigateByUrl('Employee/Bus Student/'+ busId);
   }
 

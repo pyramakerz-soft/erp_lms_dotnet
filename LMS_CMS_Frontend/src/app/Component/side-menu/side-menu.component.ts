@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PagesWithRoleId } from '../../Models/pages-with-role-id';
 import { SideMenuItemComponent } from '../side-menu-item/side-menu-item.component';
+import { NewTokenService } from '../../Services/shared/new-token.service';
 
 @Component({
   selector: 'app-side-menu',
@@ -16,7 +17,8 @@ export class SideMenuComponent {
   @Input() menuItemsForEmployee?: PagesWithRoleId[];
 
   IsMenuOpen = false
-  
+  constructor(private communicationService: NewTokenService) {}
+
   toggleMenu() {
     this.IsMenuOpen = !this.IsMenuOpen
   }

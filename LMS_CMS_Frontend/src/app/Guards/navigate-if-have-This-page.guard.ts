@@ -19,7 +19,11 @@ export const navigateIfHaveSettingPageGuard: CanActivateFn = (route, state) => {
   }
 
   const userData = accountService.Get_Data_Form_Token();
-  
+
+  if (userData.type==="pyramakerz") {
+    return true;  
+  }
+
   if (!userData || !userData.role) {
     router.navigateByUrl('');
     return false;

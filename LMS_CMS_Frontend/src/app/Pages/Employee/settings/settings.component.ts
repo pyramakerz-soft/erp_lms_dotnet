@@ -31,7 +31,6 @@ export class SettingsComponent {
     this.InsertedByUserId=this.User_Data_After_Login.id;
     
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      console.log(items)
       const settingsPage = this.menuService.findByPageName('Settings', items);
       // this.AllowDelete=(settingsPage.allow_Delete && InsertedByUserId==this.LoggedInUserId)||(settingsPage.allow_Delete_For_Others && this.InsertedByUserId!=this.LoggedInUserId);
       this.AllowEdit=settingsPage.allow_Edit;

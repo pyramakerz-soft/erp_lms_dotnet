@@ -11,17 +11,18 @@ export const navigateIfEmployeeGuard: CanActivateFn = (route, state) => {
   User_Data_After_Login = account.Get_Data_Form_Token()
   let User_Type = User_Data_After_Login.type
 
-  if(User_Type!="employee"){
+  if(User_Type!="employee" &&User_Type!="pyramakerz"){
     if(User_Type=="student"){
       router.navigateByUrl('Student');
       return false;
     }else if(User_Type=="parent"){
       router.navigateByUrl('Parent');
       return false;
-    }else if(User_Type=="pyramakerz"){
-      router.navigateByUrl('Pyramakerz');
-      return false;
     }
+    // else if(User_Type=="pyramakerz"){
+    //   router.navigateByUrl('Pyramakerz');
+    //   return false;
+    // }
   }
   return true;
 };

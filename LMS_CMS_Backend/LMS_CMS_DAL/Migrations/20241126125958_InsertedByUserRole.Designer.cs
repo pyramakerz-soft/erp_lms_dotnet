@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20241126125958_InsertedByUserRole")]
+    partial class InsertedByUserRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,9 +38,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
@@ -64,9 +64,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -110,9 +107,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("DomainID")
                         .HasColumnType("bigint");
 
@@ -147,9 +141,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -190,9 +181,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("DomainId")
                         .HasColumnType("bigint");
 
@@ -218,9 +206,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -249,9 +234,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("DomainId")
                         .HasColumnType("bigint");
 
@@ -277,9 +259,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -308,9 +287,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("DomainId")
                         .HasColumnType("bigint");
 
@@ -336,9 +312,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -367,9 +340,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("DomainId")
                         .HasColumnType("bigint");
 
@@ -395,9 +365,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -432,9 +399,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ExceptionFromDate")
                         .HasColumnType("nvarchar(max)");
 
@@ -467,9 +431,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -504,9 +465,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("DomainId")
                         .HasColumnType("bigint");
 
@@ -532,9 +490,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -563,9 +518,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -588,9 +540,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -620,9 +569,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("Domain_ID")
                         .HasColumnType("bigint");
 
@@ -646,9 +592,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -682,9 +625,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("Domain_ID")
                         .HasColumnType("bigint");
 
@@ -716,9 +656,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("User_Name")
                         .IsRequired()
@@ -817,9 +754,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -846,9 +780,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("User_Name")
                         .IsRequired()
@@ -929,9 +860,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("Domain_ID")
                         .HasColumnType("bigint");
 
@@ -957,9 +885,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -1000,9 +925,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -1026,9 +948,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -1059,9 +978,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("Domain_id")
                         .HasColumnType("bigint");
 
@@ -1087,9 +1003,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -1121,9 +1034,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -1146,9 +1056,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -1176,9 +1083,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("DeletedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -1209,9 +1113,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("UpdatedByUserRole")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("User_Name")
                         .IsRequired()

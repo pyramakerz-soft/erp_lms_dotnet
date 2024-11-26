@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20241125122927_inhirit")]
-    partial class inhirit
+    [Migration("20241126081018_Insert_Employee_Type_Data")]
+    partial class Insert_Employee_Type_Data
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -601,9 +601,6 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long>("EmployeeTypeID")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("EmployeeTypeID1")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -652,8 +649,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasIndex("EmployeeTypeID");
 
-                    b.HasIndex("EmployeeTypeID1");
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Role_ID");
@@ -671,39 +666,12 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long>("ID")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeletedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("InsertedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("InsertedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("UpdatedByUserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("ID");
-
-                    b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByUserId");
 
                     b.ToTable("EmployeeType");
                 });
@@ -713,28 +681,7 @@ namespace LMS_CMS_DAL.Migrations
                     b.Property<long>("ID")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeletedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("InsertedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("InsertedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<long?>("Page_ID")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("ar_name")
@@ -749,13 +696,7 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("InsertedByUserId");
-
                     b.HasIndex("Page_ID");
-
-                    b.HasIndex("UpdatedByUserId");
 
                     b.HasIndex("ar_name")
                         .IsUnique();
@@ -844,35 +785,14 @@ namespace LMS_CMS_DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeletedByUserId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("InsertedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("InsertedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("UpdatedByUserId")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("User_Name")
                         .IsRequired()
@@ -881,14 +801,8 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByUserId");
-
                     b.HasIndex("Email")
                         .IsUnique();
-
-                    b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByUserId");
 
                     b.HasIndex("User_Name")
                         .IsUnique();
@@ -1237,7 +1151,7 @@ namespace LMS_CMS_DAL.Migrations
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
                         .WithMany("Buses")
@@ -1288,8 +1202,7 @@ namespace LMS_CMS_DAL.Migrations
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
                         .WithMany()
-                        .HasForeignKey("DeletedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("DeletedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
                         .WithMany("BusCategories")
@@ -1318,24 +1231,21 @@ namespace LMS_CMS_DAL.Migrations
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
                         .WithMany()
-                        .HasForeignKey("DeletedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("DeletedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
                         .WithMany("BusCompanies")
                         .HasForeignKey("DomainId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByUser")
                         .WithMany()
-                        .HasForeignKey("InsertedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("InsertedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByUser")
                         .WithMany()
-                        .HasForeignKey("UpdatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByUser");
 
@@ -1350,8 +1260,7 @@ namespace LMS_CMS_DAL.Migrations
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
                         .WithMany()
-                        .HasForeignKey("DeletedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("DeletedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
                         .WithMany("BusRestricts")
@@ -1380,8 +1289,7 @@ namespace LMS_CMS_DAL.Migrations
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
                         .WithMany()
-                        .HasForeignKey("DeletedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("DeletedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
                         .WithMany("BusStatus")
@@ -1461,8 +1369,7 @@ namespace LMS_CMS_DAL.Migrations
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
                         .WithMany()
-                        .HasForeignKey("DeletedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("DeletedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domain", "Domain")
                         .WithMany("BusTypes")
@@ -1563,14 +1470,10 @@ namespace LMS_CMS_DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.EmployeeType", "EmployeeType")
-                        .WithMany()
-                        .HasForeignKey("EmployeeTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LMS_CMS_DAL.Models.EmployeeType", null)
                         .WithMany("Employees")
-                        .HasForeignKey("EmployeeTypeID1");
+                        .HasForeignKey("EmployeeTypeID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByUser")
                         .WithMany()
@@ -1601,77 +1504,17 @@ namespace LMS_CMS_DAL.Migrations
                     b.Navigation("UpdatedByUser");
                 });
 
-            modelBuilder.Entity("LMS_CMS_DAL.Models.EmployeeType", b =>
-                {
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByUser")
-                        .WithMany()
-                        .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByUserId");
-
-                    b.Navigation("DeletedByUser");
-
-                    b.Navigation("InsertedByUser");
-
-                    b.Navigation("UpdatedByUser");
-                });
-
             modelBuilder.Entity("LMS_CMS_DAL.Models.Page", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByUser")
-                        .WithMany()
-                        .HasForeignKey("InsertedByUserId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Page", "Parent")
                         .WithMany("ChildPages")
                         .HasForeignKey("Page_ID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByUserId");
-
-                    b.Navigation("DeletedByUser");
-
-                    b.Navigation("InsertedByUser");
-
                     b.Navigation("Parent");
-
-                    b.Navigation("UpdatedByUser");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Parent", b =>
-                {
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
-                        .WithMany()
-                        .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByUser")
-                        .WithMany()
-                        .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByUserId");
-
-                    b.Navigation("DeletedByUser");
-
-                    b.Navigation("InsertedByUser");
-
-                    b.Navigation("UpdatedByUser");
-                });
-
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Pyramakerz", b =>
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByUser")
                         .WithMany()

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { Bus } from '../../../Models/Bus/bus';
@@ -15,26 +15,44 @@ export class BusService {
   }
 
   Get(){
-    return this.http.get(`${this.baseUrl}/Bus`)
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.baseUrl}/Bus`,{ headers })
   }
   
   GetbyDomainId(domainId: number){
-    return this.http.get(`${this.baseUrl}/Bus/GetByDomainID/${domainId}`)
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.baseUrl}/Bus/GetByDomainID/${domainId}`,{ headers })
   }
   
   GetbyBusId(busId: number){
-    return this.http.get<Bus>(`${this.baseUrl}/Bus/${busId}`)
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<Bus>(`${this.baseUrl}/Bus/${busId}`,{ headers })
   }
 
   DeleteBus(busId:number){
-    return this.http.delete(`${this.baseUrl}/Bus/${busId}`, { responseType: 'text' })
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete(`${this.baseUrl}/Bus/${busId}`, {
+      headers: headers,
+      responseType: 'text' as 'json'
+  });
   }
 
   Add(bus:Bus){
-    return this.http.post<any>(`${this.baseUrl}/Bus`, bus,{ responseType: 'text' as 'json' });
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post<any>(`${this.baseUrl}/Bus`, bus,{
+      headers: headers,
+      responseType: 'text' as 'json'
+  });
   }
 
   Edit(bus:Bus){
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.put(`${this.baseUrl}/Bus`, bus,{ responseType: 'text' as 'json' });
   }
 }

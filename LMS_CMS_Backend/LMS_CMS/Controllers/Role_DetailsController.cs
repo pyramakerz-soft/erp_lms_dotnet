@@ -79,5 +79,44 @@ namespace LMS_CMS_PL.Controllers
                 })
                 .ToList();
         }
+
+        [HttpGet("Get_All_With_Group_By")]
+        public async Task<IActionResult> Get_All_With_Group_By()
+        {
+            var roleDetailsList = await Unit_Of_Work.role_Detailes_Repository.Database().Role_Detailes
+                .Where(rd => rd.IsDeleted != true)
+                .Include(rd => rd.Page)  // Include the related Page entity
+                .ThenInclude(p => p.ChildPages) // Include the child pages
+                .ToListAsync();
+
+            if (roleDetailsList == null || !roleDetailsList.Any())
+            {
+                return NotFound("No pages found for the specified role.");
+            }
+
+            // Convert roleDetailsList to a dictionary for fast lookup by Page_ID
+            var roleDetails = roleDetailsList
+                .GroupBy(rd => rd.Page_ID)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            // Group role details by parent page
+            var parentPages = roleDetailsList
+                .Where(rd => rd.Page.Page_ID == null && rd.IsDeleted != true)  // Only root-level pages
+                .GroupBy(rd => rd.Page.ID) // Group by parent page ID to avoid duplication
+                .Select(group => new Role_Details_GetDTO
+                {
+                    ID = group.Key,
+                    en_name = group.First().Page.en_name,
+                    ar_name = group.First().Page.ar_name,
+                    Allow_Edit = group.First().Allow_Edit,
+                    Allow_Delete = group.First().Allow_Delete,
+                    Allow_Edit_For_Others = group.First().Allow_Edit_For_Others,
+                    Allow_Delete_For_Others = group.First().Allow_Delete_For_Others,
+                    Children = GetChildPagesRecursive(group.First().Page, roleDetails) // Use the optimized recursive method
+                })
+                .ToList();
+
+            return Ok(parentPages);
+        }
     }
 }

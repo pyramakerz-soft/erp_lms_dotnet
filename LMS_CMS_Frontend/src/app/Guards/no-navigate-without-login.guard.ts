@@ -1,74 +1,73 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AccountService } from '../Services/account.service';
-import { TokenData } from '../Models/token-data';
 import { EmployeeService } from '../Services/Employee/employee.service';
+import { ParentService } from '../Services/parent.service';
 import { LogOutService } from '../Services/shared/log-out.service';
-import { NewTokenService } from '../Services/shared/new-token.service';
 import { catchError, map, of } from 'rxjs';
-
-// export const noNavigateWithoutLoginGuard: CanActivateFn = (route, state) => {
-//   let token = localStorage.getItem("current_token")
-//   const router = inject(Router);
-//   const account = inject(AccountService);
-//   const LogOutServ = inject(LogOutService);
-//   const employeeSer = inject(EmployeeService);
-//   const communicationService = inject(NewTokenService);
-//   let User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-//   let UserID = 0
-//   console.log("h3yt2")
-
-//   if(token == null){
-//     router.navigateByUrl('');
-//     return false;
-//   } 
-//   // return true;
-
-//   else{
-//     console.log("h3yt")
-//     User_Data_After_Login = account.Get_Data_Form_Token();
-//     UserID=User_Data_After_Login.id;
-//     employeeSer.GetByID(UserID).subscribe(
-//       (data) => {
-//         return true;
-//       },
-//       (error) => {
-//         console.error('Error:', error);
-//         LogOutServ.logOut();
-//         communicationService.sendAction(true);
-//         router.navigateByUrl('');
-//       }
-//     );
-//     return true;
-//   }
-// };
+import { StudentService } from '../Services/student.service';
 
 export const noNavigateWithoutLoginGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
-  const account = inject(AccountService);
-  const logOutService = inject(LogOutService);
+  const accountService = inject(AccountService);
   const employeeService = inject(EmployeeService);
+  const parentService = inject(ParentService);
+  const logOutService = inject(LogOutService);
+  const studentSer = inject(StudentService);
 
-  let token = localStorage.getItem("current_token");
-    console.log("h3yt")
+
+  const token = localStorage.getItem('current_token');
 
   if (!token) {
+    console.log('No token found. Redirecting to login.');
     router.navigateByUrl('');
     return false;
   }
 
-  const userData = account.Get_Data_Form_Token();
+  const userData = accountService.Get_Data_Form_Token();
   const userId = userData.id;
 
-  return employeeService.GetByID(userId).pipe(
-    map((data) => {
-      return true; // Allow navigation if user data is valid
-    }),
-    catchError((error) => {
-      console.error('Error fetching user:', error);
+  switch (userData.type) {
+
+    case 'pyramakerz':
+      return true;
+
+    case 'employee':
+      return employeeService.GetByID(userId).pipe(
+        map(() => true), 
+        catchError((error) => {
+          console.error('Error fetching employee data:', error);
+          logOutService.logOut();
+          router.navigateByUrl('');
+          return of(false); 
+        })
+      );
+
+    case 'parent':
+      return parentService.GetByID(userId).pipe(
+        map(() => true), 
+        catchError((error) => {
+          console.error('Error fetching parent data:', error);
+          logOutService.logOut();
+          router.navigateByUrl('');
+          return of(false);
+        })
+      );
+
+    case 'student':
+      return studentSer.GetByID(userId).pipe(
+        map(() => true), 
+        catchError((error) => {
+          console.error('Error fetching parent data:', error);
+          logOutService.logOut();
+          router.navigateByUrl('');
+          return of(false);
+        })
+      );
+
+    default:
       logOutService.logOut();
       router.navigateByUrl('');
-      return of(false); // Prevent navigation if an error occurs
-    })
-  );
+      return false; 
+  }
 };

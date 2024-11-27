@@ -13,6 +13,10 @@ export class RoleDetailsService {
   }
 
   Get_Pages_With_RoleID(roleId: number){
+    console.log(`${this.baseUrl}/Role_Details/Get_With_RoleID_Group_By/${roleId}`)
     return this.http.get(`${this.baseUrl}/Role_Details/Get_With_RoleID_Group_By/${roleId}`)
+  }
+  Get_All_With_Group_By(){
+    return this.http.get(`${this.baseUrl}/Role_Details/Get_All_With_Group_By`)
   }
 }

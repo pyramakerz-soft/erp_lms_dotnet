@@ -81,6 +81,15 @@ namespace LMS_CMS_BL.Config
             CreateMap<DomainGetDTO, Domain>();
 
             CreateMap<Employee, Employee_GetDTO>();
+
+            CreateMap<Parent, ParentGetDTO>();
+            CreateMap<ParentGetDTO, Parent>();
+
+            CreateMap<Student, StudentGetDTO>();
+            CreateMap<StudentGetDTO, Student>();
+
+
+
         }
     }
 }

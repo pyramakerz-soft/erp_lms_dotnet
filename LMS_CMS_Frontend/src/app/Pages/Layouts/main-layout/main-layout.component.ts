@@ -50,6 +50,9 @@ export class MainLayoutComponent {
         }
       ]
     }
+    else if (this.User_Data_After_Login.type == "pyramakerz") {
+      await this.Get_All_With_Group_By();
+    }
   }
 
 
@@ -58,15 +61,18 @@ export class MainLayoutComponent {
       (data:any) => {
         this.menuItemsForEmployee = data
         this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
-
       } ,(error)=>{
         this.menuItemsForEmployee = [];
       });
-    
-    this.menuItems = [
-      {
-        label: 'Dashboard Student', route: '#'
-      }
-    ]
+  }
+  Get_All_With_Group_By() {
+    this.roleDetailsService.Get_All_With_Group_By().subscribe(
+      (data:any) => {
+        this.menuItemsForEmployee = data
+        console.log(this.menuItemsForEmployee)
+        this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
+      } ,(error)=>{
+        this.menuItemsForEmployee = [];
+      });
   }
 }

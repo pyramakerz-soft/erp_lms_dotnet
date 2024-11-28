@@ -54,7 +54,7 @@ export class BusRestrictsComponent {
       this.DomainID = this.User_Data_After_Login.domain;
       this.GetTableData(this.DomainID);
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Type', items);
+        const settingsPage = this.menuService.findByPageName('Bus Restricts', items);
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
         this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others

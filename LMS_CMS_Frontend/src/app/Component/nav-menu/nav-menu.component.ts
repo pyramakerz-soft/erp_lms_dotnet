@@ -50,13 +50,14 @@ export class NavMenuComponent {
       if (key && key.includes('token') && key != "current_token") {
         if (value) {
           this.User_Data_After_Login = jwtDecode(value)
-
+          if(this.User_Data_After_Login.user_Name)
           this.allTokens.push({ id: count, key: this.User_Data_After_Login.user_Name, KeyInLocal: key, value: value || '' ,UserType:this.User_Data_After_Login.type });
           count++;
         }
 
       }
     }
+    console.log(this.allTokens)
   }
 
 

@@ -67,7 +67,7 @@ export class BusDetailsComponent {
         }
       );
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Type', items);
+        const settingsPage = this.menuService.findByPageName('Bus Details', items);
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
         this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others

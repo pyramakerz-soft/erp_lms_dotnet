@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpGet]
         [Authorize_Endpoint_Attribute(
             allowedTypes: new[] { "pyramakerz", "employee" },
-            pages: new[] { "Busses" }
+            pages: new[] { "Busses", "Bus Details" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -88,7 +88,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpGet("{Id}")]
         [Authorize_Endpoint_Attribute(
             allowedTypes: new[] { "pyramakerz", "employee"},
-            pages: new[] { "Busses" }
+            pages: new[] { "Busses", "Bus Details" }
         )]
         public async Task<IActionResult> GetByID(long Id)
         {
@@ -144,7 +144,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpGet("GetByDomainID/{Id}")]
         [Authorize_Endpoint_Attribute(
             allowedTypes: new[] { "pyramakerz", "employee" },
-            pages: new[] { "Busses" }
+            pages: new[] { "Busses", "Bus Details" }
         )]
         public async Task<IActionResult> GetByDomainIDAsync(long Id)
         {
@@ -187,7 +187,7 @@ namespace LMS_CMS_PL.Controllers.Bus
 
             if (buses == null || buses.Count == 0)
             {
-                return NotFound("There is no buses in this domian");
+                return NotFound("There are no buses in this domian");
             }
 
             List<Bus_GetDTO> busDTOs = mapper.Map<List<Bus_GetDTO>>(buses);
@@ -198,7 +198,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [HttpPost]
         [Authorize_Endpoint_Attribute(
             allowedTypes: new[] { "pyramakerz", "employee" },
-            pages: new[] { "Busses" }
+            pages: new[] { "Busses", "Bus Details" }
         )]
         public ActionResult Add(Bus_AddDTO busAddDTO)
         {
@@ -214,7 +214,7 @@ namespace LMS_CMS_PL.Controllers.Bus
 
             if (busAddDTO == null)
             {
-                return BadRequest("Bus cannot be null.");
+                return BadRequest("Bus cannot be null");
             }
 
             if (userTypeClaim == "employee")
@@ -314,7 +314,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [Authorize_Endpoint_Attribute(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowEdit: 1,
-            pages: new[] { "Busses" }
+            pages: new[] { "Busses", "Bus Details" }
         )]
         public ActionResult Edit(Bus_PutDTO busPutDTO)
         {
@@ -333,17 +333,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busPutDTO == null)
             {
                 return BadRequest("Bus cannot be null.");
-            }
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (busPutDTO.DomainID != employeeDomain)
-                {
-                    return Unauthorized();
-                }
             }
 
             Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(busPutDTO.DomainID);
@@ -414,9 +403,21 @@ namespace LMS_CMS_PL.Controllers.Bus
                 return NotFound("No Bus with this ID");
             }
 
-            if(userTypeClaim == "employee")
+
+            if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Busses");
+                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                long employeeDomain = employee.Domain_ID;
+
+                if (busPutDTO.DomainID != employeeDomain || busExists.DomainID != employeeDomain)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Details");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -456,7 +457,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         [Authorize_Endpoint_Attribute(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowDelete: 1,
-            pages: new[] { "Busses" }
+            pages: new[] { "Busses", "Bus Details" }
         )]
         public IActionResult Delete(long Id)
         {
@@ -478,7 +479,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             BusModel bus = Unit_Of_Work.bus_Repository.Select_By_Id(Id);
-            if (bus == null)
+            if (bus == null || bus.IsDeleted == true)
             {
                 return NotFound("No Bus with this ID");
             }
@@ -494,7 +495,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                         return Unauthorized();
                     }
 
-                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Busses");
+                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Details");
                     if (page != null)
                     {
                         Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);

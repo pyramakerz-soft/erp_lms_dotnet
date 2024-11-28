@@ -4,15 +4,19 @@ using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Migrations;
 using LMS_CMS_DAL.Models;
 using LMS_CMS_DAL.Models.BusModule;
+using LMS_CMS_PL.Attribute;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices.JavaScript;
 using BusModel = LMS_CMS_DAL.Models.BusModule.Bus;
 
 namespace LMS_CMS_PL.Controllers.Bus
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BusStudentController : ControllerBase
     {
         private UOW Unit_Of_Work;
@@ -25,15 +29,53 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpGet("GetByBusId/{busId}")]
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            pages: new[] { "Busses" }
+        )]
         public async Task<IActionResult> GetByBusID(long busId)
         {
-            List<BusStudent> busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
-                bus => bus.BusID == busId && bus.IsDeleted != true,
-                query => query.Include(bus => bus.Bus),
-                query => query.Include(stu => stu.Student),
-                query => query.Include(busCat => busCat.BusCategory),
-                query => query.Include(sem => sem.Semester)
-                );
+            List<BusStudent> busStudents;
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            BusModel bus = Unit_Of_Work.bus_Repository.Select_By_Id(busId);
+            if (bus == null)
+            {
+                return NotFound("No Bus with this Id");
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                long employeeDomain = employee.Domain_ID;
+
+                busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
+                    bus => bus.BusID == busId && bus.IsDeleted != true && bus.Bus.DomainID == employeeDomain,
+                    query => query.Include(bus => bus.Bus),
+                    query => query.Include(stu => stu.Student),
+                    query => query.Include(busCat => busCat.BusCategory),
+                    query => query.Include(sem => sem.Semester)
+                    );
+            }
+            else
+            {
+                busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
+                    bus => bus.BusID == busId && bus.IsDeleted != true,
+                    query => query.Include(bus => bus.Bus),
+                    query => query.Include(stu => stu.Student),
+                    query => query.Include(busCat => busCat.BusCategory),
+                    query => query.Include(sem => sem.Semester)
+                    );
+            }
 
             if (busStudents == null || busStudents.Count == 0)
             {
@@ -46,11 +88,25 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpGet("{Id}")]
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            pages: new[] { "Busses" }
+        )]
         public async Task<IActionResult> GetByID(long Id)
         {
             if (Id == 0)
             {
                 return BadRequest("Enter Bus Student ID");
+            }
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
             }
 
             var busStudent = await Unit_Of_Work.busStudent_Repository.FindByIncludesAsync(
@@ -59,11 +115,23 @@ namespace LMS_CMS_PL.Controllers.Bus
                 query => query.Include(e => e.Student),
                 query => query.Include(e => e.BusCategory),
                 query => query.Include(e => e.Semester)
-                );
+            );
 
-            if (busStudent == null)
+            if (busStudent == null || busStudent.IsDeleted == true)
             {
-                return NotFound();
+                return NotFound("No bus Student with this ID");
+            }
+            else
+            {
+                if (userTypeClaim == "employee")
+                {
+                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                    long employeeDomain = employee.Domain_ID;
+                    if (busStudent.Bus.DomainID != employeeDomain)
+                    {
+                        return Unauthorized();
+                    }
+                }
             }
 
             BusStudentGetDTO busStudentDTO = mapper.Map<BusStudentGetDTO>(busStudent);

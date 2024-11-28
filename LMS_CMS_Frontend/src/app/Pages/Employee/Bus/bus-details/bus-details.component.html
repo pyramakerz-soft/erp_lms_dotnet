@@ -194,7 +194,7 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="type">Type</label>
-                <select [(ngModel)]="bus.busTypeId"
+                <select [(ngModel)]="bus.busTypeID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="type">
                     <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
                     <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option>
@@ -202,7 +202,7 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="restrict">Restrict</label>
-                <select [(ngModel)]="bus.busRestrictId"
+                <select [(ngModel)]="bus.busRestrictID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="restrict" >
                     <option *ngFor="let restrict of BusRestrict" [value]="restrict.id">{{ restrict.name }}</option>
                     <option *ngIf="BusRestrict.length === 0" disabled selected>No Data Found</option>
@@ -210,7 +210,7 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="status">Status</label>
-                <select [(ngModel)]="bus.busStatusId"
+                <select [(ngModel)]="bus.busStatusID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="status" >
                     <option *ngFor="let status of BusStatus" [value]="status.id">{{ status.name }}</option>
                     <option *ngIf="BusStatus.length === 0" disabled selected>No Data Found</option>
@@ -226,7 +226,7 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="driver">Driver</label>
-                <select [(ngModel)]="bus.driverId"
+                <select [(ngModel)]="bus.driverID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="driver" >
                     <option *ngFor="let driver of BusDriver" [value]="driver.id">{{ driver.en_name }}</option>
                     <option *ngIf="BusDriver.length === 0" disabled selected>No Data Found</option>
@@ -234,7 +234,7 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="assistant">Driver Assistante</label>
-                <select [(ngModel)]="bus.driverAssistantId"
+                <select [(ngModel)]="bus.driverAssistantID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="assistant" >
                     <option *ngFor="let assistant of BusDriverAssistant" [value]="assistant.id">{{assistant.en_name}}</option>
                     <option *ngIf="BusDriverAssistant.length === 0" disabled selected>No Data Found</option>
@@ -242,13 +242,13 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="company">Company</label>
-                <select [(ngModel)]="bus.busCompanyId"
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="company" >
-                    <option *ngFor="let company of BusCompany" [value]="company.id">{{company.name}}</option>
-                    <option *ngIf="BusCompany.length === 0" disabled selected>No Data Found</option>
+                <select [(ngModel)]="bus.busCompanyID"
+                  class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="company" >
+                  <option *ngIf="!bus.busCompanyID" disabled selected>{{ bus.busCompanyName || 'Select Company' }}</option>  <!-- Placeholder -->
+                  <option *ngFor="let company of BusCompany" [value]="company.id">{{company.name}}</option>
+                  <option *ngIf="BusCompany.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
-
             <div class="flex w-full space-x-5 items-center">
                 <input type="checkbox" id="Restricted" class="w-5 h-5"
                 (change)="onIsRestrictedChange($event)"

@@ -324,8 +324,8 @@ namespace LMS_CMS_PL.Controllers.Bus
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
             var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
             long.TryParse(userRoleClaim, out long roleId);
-
-            if (userIdClaim == null || userTypeClaim == null || userRoleClaim == null)
+            Console.WriteLine("====================================================================>" + userClaims);
+            if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }

@@ -45,6 +45,7 @@ export class BusDetailsComponent {
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
+ 
 
   IsEmployee: boolean = true;
 
@@ -59,11 +60,9 @@ export class BusDetailsComponent {
     this.UserID=this.User_Data_After_Login.id;
     if (this.User_Data_After_Login.type === "employee") {
       this.domainId = this.User_Data_After_Login.domain;
-
       this.busService.GetbyDomainId(this.domainId).subscribe(
         (data: any) => {
           this.busData = data;
-  
         }
       );
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -78,6 +77,7 @@ export class BusDetailsComponent {
       this.IsEmployee = false;
       this.AllowEdit = true;
       this.AllowDelete = true;
+      console.log(this.AllowEdit,this.AllowDelete)
     }
   }
 
@@ -155,9 +155,10 @@ export class BusDetailsComponent {
     }
   }
 
-  GetBusById(busId:number){
+  GetBusById(busId: number) {
     this.busService.GetbyBusId(busId).subscribe((data) => {
       this.bus = data;
+      console.log(this.bus);
     });
   }
 
@@ -267,6 +268,7 @@ export class BusDetailsComponent {
           }
         );
       } else{
+        console.log(this.bus)
         this.busService.Edit(this.bus).subscribe(
           (result: any) => {
             this.closeModal()
@@ -289,12 +291,15 @@ export class BusDetailsComponent {
     this.router.navigateByUrl('Employee/Bus Student/'+ busId);
   }
 
-  IsAllowDelete(InsertedByID:number){
-    const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
+  IsAllowDelete(InsertedByID: number) {
+    if (this.IsEmployee == false) { return true; }
+    const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
     return IsAllow;
   }
-  IsAllowEdit(InsertedByID:number){
-    const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
+
+  IsAllowEdit(InsertedByID: number) {
+    if (this.IsEmployee == false) { return true; }
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
     return IsAllow;
   }
 }

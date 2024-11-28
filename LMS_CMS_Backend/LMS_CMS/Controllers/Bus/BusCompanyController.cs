@@ -235,7 +235,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
             long.TryParse(userRoleClaim, out long roleId);
 
-            if (userIdClaim == null || userTypeClaim == null || userRoleClaim == null)
+            if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
@@ -323,7 +323,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
             long.TryParse(userRoleClaim, out long roleId);
 
-            if (userIdClaim == null || userTypeClaim == null || userRoleClaim == null)
+            if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
@@ -355,7 +355,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                     if (page != null)
                     {
                         Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                        if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                        if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                         {
                             if (busCompany.InsertedByUserId != userId)
                             {

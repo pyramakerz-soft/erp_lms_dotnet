@@ -325,7 +325,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             allowDelete: 1,
             pages: new[] { "Busses", "Bus Types" }
         )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;

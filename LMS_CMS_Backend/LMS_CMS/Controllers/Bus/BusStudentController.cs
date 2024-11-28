@@ -140,18 +140,22 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpPost]
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            pages: new[] { "Busses" }
+        )]
         public ActionResult Add(BusStudent_AddDTO busStudentAddDTO)
         {
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
-            if (userIdClaim == null)
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
             {
-                return Unauthorized(new { message = "User ID not found in token." });
+                return Unauthorized("User ID or Type claim not found.");
             }
-            int userId;
-            if (!int.TryParse(userIdClaim.Value, out userId))
-            {
-                return BadRequest(new { message = "Invalid User ID in token." });
-            }
+
             if (busStudentAddDTO == null)
             {
                 return BadRequest("Bus Student cannot be null.");
@@ -167,6 +171,18 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (bus == null||bus.IsDeleted == true)
             {
                 return NotFound("No Student with this ID");
+            }
+
+
+            if (userTypeClaim == "employee")
+            {
+                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                long employeeDomain = employee.Domain_ID;
+
+                if (bus.DomainID != employeeDomain)
+                {
+                    return Unauthorized();
+                }
             }
 
             if (busStudentAddDTO.SemseterID != null)
@@ -191,6 +207,14 @@ namespace LMS_CMS_PL.Controllers.Bus
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busStudent.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             busStudent.InsertedByUserId = userId;
+            if (userTypeClaim == "pyramakerz")
+            {
+                busStudent.InsertedByUserRole = "pyramakerz";
+            }
+            else if (userTypeClaim == "employee")
+            {
+                busStudent.InsertedByUserRole = "employee";
+            }
             Unit_Of_Work.busStudent_Repository.Add(busStudent);
             Unit_Of_Work.SaveChanges();
 
@@ -262,8 +286,25 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpDelete("{Id}")]
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Busses" }
+        )]
         public IActionResult Delete(long Id)
         {
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
             if (Id == 0)
             {
                 return BadRequest("Bus Student ID cannot be null.");
@@ -276,20 +317,46 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
             else
             {
-                var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
-                if (userIdClaim == null)
+                if (userTypeClaim == "employee")
                 {
-                    return BadRequest(new { message = "User ID not found in token." });
+                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                    long employeeDomain = employee.Domain_ID;
+
+                    if (busStudent.Bus.DomainID != employeeDomain)
+                    {
+                        return Unauthorized();
+                    }
+
+                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Busses");
+                    if (page != null)
+                    {
+                        Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                        if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
+                        {
+                            if (busStudent.InsertedByUserId != userId)
+                            {
+                                return Unauthorized();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("Bus Types page doesn't exist");
+                    }
                 }
-                int userId;
-                if (!int.TryParse(userIdClaim.Value, out userId))
-                {
-                    return BadRequest(new { message = "Invalid User ID in token." });
-                }
+
                 busStudent.IsDeleted = true;
                 busStudent.DeletedByUserId = userId;
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
                 busStudent.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "pyramakerz")
+                {
+                    busStudent.DeletedByUserRole = "pyramakerz";
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    busStudent.DeletedByUserRole = "employee";
+                }
                 Unit_Of_Work.busStudent_Repository.Update(busStudent);
                 Unit_Of_Work.SaveChanges();
                 return Ok("Bus Student has Successfully been deleted");

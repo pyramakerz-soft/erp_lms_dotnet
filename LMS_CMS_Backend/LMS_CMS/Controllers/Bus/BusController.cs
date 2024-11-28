@@ -499,7 +499,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                     if (page != null)
                     {
                         Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                        if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                        if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                         {
                             if (bus.InsertedByUserId != userId)
                             {

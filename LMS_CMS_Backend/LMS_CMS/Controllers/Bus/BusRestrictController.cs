@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models;
 using LMS_CMS_DAL.Models.BusModule;
+using LMS_CMS_PL.Attribute;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +12,7 @@ namespace LMS_CMS_PL.Controllers.Bus
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BusRestrictController : ControllerBase
     {
         private UOW Unit_Of_Work;
@@ -24,10 +28,37 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////
 
         [HttpGet]
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            pages: new[] { "Busses", "Bus Restricts" }
+        )]
         public IActionResult Get()
         {
-            List<BusRestrict> busRestricts = Unit_Of_Work.busRestrict_Repository.FindBy(t => t.IsDeleted != true);
-            if (busRestricts == null)
+            List<BusRestrict> busRestricts;
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                long employeeDomain = employee.Domain_ID;
+
+                busRestricts = Unit_Of_Work.busRestrict_Repository.FindBy(t => t.IsDeleted != true && t.DomainId == employeeDomain);
+            }
+            else
+            {
+                busRestricts = Unit_Of_Work.busRestrict_Repository.FindBy(t => t.IsDeleted != true);
+            }
+
+            if (busRestricts == null || busRestricts.Count == 0)
             {
                 return NotFound();
             }
@@ -40,10 +71,45 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////////////
 
         [HttpGet("id")]
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            pages: new[] { "Busses", "Bus Restricts" }
+        )]
         public IActionResult GetById(long id)
         {
+            if (id == 0)
+            {
+                return BadRequest("Enter Bus Restrict ID");
+            }
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
             BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(id);
-            if (busRestrict == null || busRestrict.IsDeleted == true) return NotFound();
+
+            if (busRestrict == null || busRestrict.IsDeleted == true)
+            {
+                return NotFound("No bus restrict with this ID");
+            }
+            else
+            {
+                if (userTypeClaim == "employee")
+                {
+                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                    long employeeDomain = employee.Domain_ID;
+                    if (busRestrict.DomainId != employeeDomain)
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
 
             BusRestrictGetDTO busRestrictDto = mapper.Map<BusRestrictGetDTO>(busRestrict);
             return Ok(busRestrictDto);
@@ -51,12 +117,43 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////////////
 
         [HttpGet("DomainId")]
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            pages: new[] { "Busses", "Bus Restricts" }
+        )]
         public IActionResult GetByDomainId(long id)
         {
-            List<BusRestrict> BusRestrict = Unit_Of_Work.busRestrict_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-            if (BusRestrict == null)
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
             {
-                return NotFound();
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                long employeeDomain = employee.Domain_ID;
+
+                if (id != employeeDomain)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
+            if (domain == null)
+            {
+                return NotFound("No Domain with this Id");
+            }
+
+            List<BusRestrict> BusRestrict = Unit_Of_Work.busRestrict_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
+            if (BusRestrict == null || BusRestrict.Count == 0)
+            {
+                return NotFound("There are no bus Restricts in this domian");
             }
 
             List<BusRestrictGetDTO> BusRestrictDTO = mapper.Map<List<BusRestrictGetDTO>>(BusRestrict);
@@ -67,26 +164,57 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////////////
 
         [HttpPost]
-
-        public IActionResult add(BusRestrictAddDTO NewRestrict)
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            pages: new[] { "Busses", "Bus Restricts" }
+        )]
+        public IActionResult Add(BusRestrictAddDTO NewRestrict)
         {
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
-            if (userIdClaim == null)
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
             {
-                return Unauthorized(new { message = "User ID not found in token." });
+                return Unauthorized("User ID or Type claim not found.");
             }
-            int userId;
-            if (!int.TryParse(userIdClaim.Value, out userId))
+
+            if (NewRestrict == null) 
+            { 
+                return BadRequest("Bus Restrict cannot be null"); 
+            }
+
+            if (userTypeClaim == "employee")
             {
-                return BadRequest(new { message = "Invalid User ID in token." });
+                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                long employeeDomain = employee.Domain_ID;
+
+                if (NewRestrict.DomainId != employeeDomain)
+                {
+                    return Unauthorized();
+                }
             }
-            if (NewRestrict == null) { return BadRequest(); }
-            BusRestrict ExsitRestrict = Unit_Of_Work.busRestrict_Repository.First_Or_Default(c => c.DomainId == NewRestrict.DomainId && c.Name == NewRestrict.Name);
-            if (ExsitRestrict != null) { return BadRequest("this Restrict already exist"); }
+
+            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(NewRestrict.DomainId);
+            if (domain == null || domain.IsDeleted == true)
+            {
+                return NotFound("No Domain with this Id");
+            }
+
             BusRestrict busRestrict = mapper.Map<BusRestrict>(NewRestrict);
             busRestrict.InsertedByUserId = userId;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busRestrict.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "pyramakerz")
+            {
+                busRestrict.InsertedByUserRole = "pyramakerz";
+            }
+            else if (userTypeClaim == "employee")
+            {
+                busRestrict.InsertedByUserRole = "employee";
+            }
+
             Unit_Of_Work.busRestrict_Repository.Add(busRestrict);
             Unit_Of_Work.SaveChanges();
             return Ok(NewRestrict);
@@ -96,27 +224,86 @@ namespace LMS_CMS_PL.Controllers.Bus
         ////////////////////////////////////////////////////////
 
         [HttpPut]
-
-        public IActionResult Edit(BusRestrictGetDTO EditBusrestrict)
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Busses", "Bus Restricts" }
+        )]
+        public IActionResult Edit(BusRestrictEditDTO EditBusrestrict)
         {
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
-            if (userIdClaim == null)
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
+
+            if (userIdClaim == null || userTypeClaim == null)
             {
-                return Unauthorized(new { message = "User ID not found in token." });
+                return Unauthorized("User ID or Type claim not found.");
             }
-            int userId;
-            if (!int.TryParse(userIdClaim.Value, out userId))
+
+            if (EditBusrestrict == null)
             {
-                return BadRequest(new { message = "Invalid User ID in token." });
+                BadRequest();
             }
-            if (EditBusrestrict == null) { BadRequest(); }
-            //BusType busType = mapper.Map<BusType>(EditBusType);
+
+            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(EditBusrestrict.DomainId);
+            if (domain == null || domain.IsDeleted == true)
+            {
+                return NotFound("No Domain with this Id");
+            }
+
             BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(EditBusrestrict.ID);
-            busRestrict.Name = EditBusrestrict.Name;
-            busRestrict.DomainId = EditBusrestrict.DomainId;
+            if (busRestrict == null || busRestrict.IsDeleted == true)
+            {
+                return NotFound("No Bus Restrict with this ID");
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                long employeeDomain = employee.Domain_ID;
+
+                if (EditBusrestrict.DomainId != employeeDomain || busRestrict.DomainId != employeeDomain)
+                {
+                    return Unauthorized();
+                }
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Restricts");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (busRestrict.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Bus Restricts page doesn't exist");
+                }
+            }
+             
+            mapper.Map(EditBusrestrict, busRestrict);
             busRestrict.UpdatedByUserId = userId;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busRestrict.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "pyramakerz")
+            {
+                busRestrict.UpdatedByUserRole = "pyramakerz";
+            }
+            else if (userTypeClaim == "employee")
+            {
+                busRestrict.UpdatedByUserRole = "employee";
+            }
+
             Unit_Of_Work.busRestrict_Repository.Update(busRestrict);
             Unit_Of_Work.SaveChanges();
             return Ok(EditBusrestrict);
@@ -125,29 +312,82 @@ namespace LMS_CMS_PL.Controllers.Bus
         ////////////////////////////////////////////////////////
 
         [HttpDelete]
-
-        public IActionResult delete(long id)
+        [Authorize_Endpoint_Attribute(
+            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Busses", "Bus Restricts" }
+        )]
+        public IActionResult Delete(long id)
         {
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id");
-            if (userIdClaim == null)
+            if (userIdClaim == null || userTypeClaim == null)
             {
-                return Unauthorized(new { message = "User ID not found in token." });
+                return Unauthorized("User ID or Type claim not found.");
             }
-            int userId;
-            if (!int.TryParse(userIdClaim.Value, out userId))
+
+            if (id == 0)
             {
-                return BadRequest(new { message = "Invalid User ID in token." });
+                return BadRequest("Bus Restrict ID cannot be null.");
             }
+
             BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(id);
-            busRestrict.IsDeleted = true;
-            busRestrict.DeletedByUserId = userId;
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            busRestrict.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            Unit_Of_Work.busRestrict_Repository.Update(busRestrict);
-            Unit_Of_Work.SaveChanges();
-            return Ok();
+            if (busRestrict == null || busRestrict.IsDeleted == true)
+            {
+                return NotFound("No Bus Restrict with this ID");
+            }
+            else
+            {
+                if (userTypeClaim == "employee")
+                {
+                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+                    long employeeDomain = employee.Domain_ID;
 
+                    if (busRestrict.DomainId != employeeDomain)
+                    {
+                        return Unauthorized();
+                    }
+
+                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Restricts");
+                    if (page != null)
+                    {
+                        Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                        if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
+                        {
+                            if (busRestrict.InsertedByUserId != userId)
+                            {
+                                return Unauthorized();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("Bus Restricts page doesn't exist");
+                    }
+                }
+
+                busRestrict.IsDeleted = true;
+                busRestrict.DeletedByUserId = userId;
+                TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+                busRestrict.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "pyramakerz")
+                {
+                    busRestrict.DeletedByUserRole = "pyramakerz";
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    busRestrict.DeletedByUserRole = "employee";
+                }
+
+                Unit_Of_Work.busRestrict_Repository.Update(busRestrict);
+                Unit_Of_Work.SaveChanges();
+                return Ok();
+            }
         }
     }
 }

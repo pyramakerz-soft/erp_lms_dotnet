@@ -7,25 +7,31 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models
 {
+    [NotMapped]
     public class AuditableEntity
     {
-        [ForeignKey("InsertedByUser")]
+        [ForeignKey("InsertedByEmployee")] 
         public long? InsertedByUserId { get; set; }
-        public Employee? InsertedByUser { get; set; }
-        public string? InsertedByUserRole { get; set; }
+        //[ForeignKey("InsertedByPyramakerz")]
+        public long? InsertedByPyramakerzId { get; set; }
+        public Employee? InsertedByEmployee { get; set; }
+        //public Pyramakerz? InsertedByPyramakerz { get; set; } 
         public DateTime ? InsertedAt { get; set; }
 
-        [ForeignKey("UpdatedByUser")]
+        [ForeignKey("UpdatedByEmployee")]
         public long? UpdatedByUserId { get; set; }
-        public Employee? UpdatedByUser { get; set; }
-        public string? UpdatedByUserRole { get; set; }
+        //[ForeignKey("UpdatedByPyramakerz")]
+        public long? UpdatedByPyramakerzId { get; set; }
+        public Employee? UpdatedByEmployee { get; set; }
+        //public Pyramakerz? UpdatedByPyramakerz { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-
-        [ForeignKey("DeletedByUser")]
+        [ForeignKey("DeletedByEmployee")]
         public long? DeletedByUserId { get; set; }
-        public Employee? DeletedByUser { get; set; }
-        public string? DeletedByUserRole { get; set; }
+        //[ForeignKey("DeletedByPyramakerz")]
+        public long? DeletedByPyramakerzId { get; set; }
+        public Employee? DeletedByEmployee { get; set; }
+        //public Pyramakerz? DeletedByPyramakerz { get; set; }
         public DateTime? DeletedAt { get; set; }
 
         public bool? IsDeleted { get; set; }

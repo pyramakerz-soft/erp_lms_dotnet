@@ -81,8 +81,7 @@ namespace LMS_CMS_DAL.Models
                 .ValueGeneratedNever();
 
 
-            ////////////////////////////////////
-            ///
+            ///////////////////////// OnDelete: /////////////////////////
             modelBuilder.Entity<Page>()
                  .HasOne(p => p.Parent)
                  .WithMany(p => p.ChildPages)
@@ -265,10 +264,16 @@ namespace LMS_CMS_DAL.Models
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Bus>()
-                .HasOne(b => b.DeletedByUser)
+                .HasOne(b => b.DeletedByEmployee)
                 .WithMany()
                 .HasForeignKey(b => b.DeletedByUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            //modelBuilder.Entity<Bus>()
+            //    .HasOne(b => b.DeletedByPyramakerz)
+            //    .WithMany()
+            //    .HasForeignKey(b => b.DeletedByPyramakerzId)
+            //    .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

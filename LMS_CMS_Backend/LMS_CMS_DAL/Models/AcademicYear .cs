@@ -20,7 +20,5 @@ namespace LMS_CMS_DAL.Models
         public School School { get; set; }
 
         public ICollection<Semester> Semesters { get; set; } = new HashSet<Semester>();
-
-
     }
 }

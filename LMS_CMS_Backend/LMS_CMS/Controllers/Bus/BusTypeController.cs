@@ -209,16 +209,15 @@ namespace LMS_CMS_PL.Controllers.Bus
 
             BusType bustType = mapper.Map<BusType>(NewBus);
 
-            bustType.InsertedByUserId = userId;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             bustType.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "pyramakerz")
             {
-                bustType.InsertedByUserRole = "pyramakerz";
+                bustType.InsertedByPyramakerzId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                bustType.InsertedByUserRole = "employee";
+                bustType.InsertedByUserId= userId;
             }
 
             Unit_Of_Work.busType_Repository.Add(bustType);
@@ -300,16 +299,23 @@ namespace LMS_CMS_PL.Controllers.Bus
 
             mapper.Map(EditBusType, busType);
 
-            busType.UpdatedByUserId = userId;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busType.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "pyramakerz")
             {
-                busType.UpdatedByUserRole = "pyramakerz";
+                busType.UpdatedByPyramakerzId = userId;
+                if(busType.UpdatedByUserId != null) 
+                {
+                    busType.UpdatedByUserId = null;
+                }
             }
             else if (userTypeClaim == "employee")
             {
-                busType.UpdatedByUserRole = "employee";
+                busType.UpdatedByUserId = userId;
+                if (busType.UpdatedByPyramakerzId != null)
+                {
+                    busType.UpdatedByPyramakerzId = null;
+                }
             }
 
             Unit_Of_Work.busType_Repository.Update(busType);
@@ -380,17 +386,25 @@ namespace LMS_CMS_PL.Controllers.Bus
                 }
 
                 busType.IsDeleted = true;
-                busType.DeletedByUserId = userId;
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
                 busType.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
                 if (userTypeClaim == "pyramakerz")
                 {
-                    busType.DeletedByUserRole = "pyramakerz";
+                    busType.DeletedByPyramakerzId = userId;
+                    if (busType.DeletedByUserId != null)
+                    {
+                        busType.DeletedByUserId = null;
+                    }
                 }
                 else if (userTypeClaim == "employee")
                 {
-                    busType.DeletedByUserRole = "employee";
+                    busType.DeletedByUserId = userId;
+                    if (busType.DeletedByPyramakerzId != null)
+                    {
+                        busType.DeletedByPyramakerzId = null;
+                    }
                 }
+
                 Unit_Of_Work.busType_Repository.Update(busType);
                 Unit_Of_Work.SaveChanges();
                 return Ok();

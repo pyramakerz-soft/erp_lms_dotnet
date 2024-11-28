@@ -53,6 +53,6 @@ export class BusService {
   Edit(bus:Bus){
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.put(`${this.baseUrl}/Bus`, bus,{ responseType: 'text' as 'json' });
+    return this.http.put(`${this.baseUrl}/Bus`, bus,{ headers: headers, responseType: 'text' as 'json' });
   }
 }

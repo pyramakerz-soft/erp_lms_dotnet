@@ -158,7 +158,6 @@ export class BusDetailsComponent {
   GetBusById(busId: number) {
     this.busService.GetbyBusId(busId).subscribe((data) => {
       this.bus = data;
-      console.log(this.bus);
     });
   }
 
@@ -252,6 +251,7 @@ export class BusDetailsComponent {
 
   SaveBus(){
     this.bus.domainID = this.domainId
+    console.log(this.bus)
     if (this.isFormValid()) {
       if(this.editBus == false){
         this.busService.Add(this.bus).subscribe(
@@ -268,7 +268,6 @@ export class BusDetailsComponent {
           }
         );
       } else{
-        console.log(this.bus)
         this.busService.Edit(this.bus).subscribe(
           (result: any) => {
             this.closeModal()

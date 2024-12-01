@@ -10,7 +10,7 @@ namespace LMS_CMS_DAL.Models
     public class Pyramakerz
     {
         [Key]
-        public int ID { get; set; }
+        public long ID { get; set; }
 
         [Required(ErrorMessage = "User_Name is required")]
         [StringLength(100, ErrorMessage = "Username cannot be longer than 100 characters.")]

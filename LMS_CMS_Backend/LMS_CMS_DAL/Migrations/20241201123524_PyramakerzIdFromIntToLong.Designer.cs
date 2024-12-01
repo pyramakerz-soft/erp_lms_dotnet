@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20241201123524_PyramakerzIdFromIntToLong")]
+    partial class PyramakerzIdFromIntToLong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,17 +73,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("InsertedByPyramakerzId");
 
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("SchoolID");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -167,8 +164,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasIndex("BusTypeID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("DomainID");
@@ -177,11 +172,7 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasIndex("DriverID");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -236,17 +227,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("DomainId");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -301,17 +286,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("DomainId");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -366,17 +345,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("DomainId");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -431,17 +404,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("DomainId");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -513,19 +480,13 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasIndex("BusID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("InsertedByPyramakerzId");
 
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("SemseterID");
 
                     b.HasIndex("StudentID");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -580,17 +541,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("DomainId");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -642,18 +597,12 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("InsertedByPyramakerzId");
 
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -706,19 +655,13 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Domain_ID");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Page_ID");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -799,21 +742,15 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasIndex("BusCompanyID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Domain_ID");
 
                     b.HasIndex("EmployeeTypeID");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Role_ID");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -933,18 +870,12 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1035,17 +966,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Domain_ID");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1110,19 +1035,13 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("InsertedByPyramakerzId");
 
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Page_ID");
 
                     b.HasIndex("Role_ID");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1177,17 +1096,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Domain_id");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1244,15 +1157,9 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasIndex("AcademicYearID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1326,20 +1233,14 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByPyramakerzId");
-
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("InsertedByPyramakerzId");
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Parent_Id");
-
-                    b.HasIndex("UpdatedByPyramakerzId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1351,17 +1252,9 @@ namespace LMS_CMS_DAL.Migrations
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.AcademicYear", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -1373,27 +1266,17 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("InsertedByEmployee");
-
-                    b.Navigation("InsertedByPyramakerz");
 
                     b.Navigation("School");
 
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.BusModule.Bus", b =>
@@ -1418,11 +1301,6 @@ namespace LMS_CMS_DAL.Migrations
                         .HasForeignKey("BusTypeID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId")
@@ -1444,17 +1322,9 @@ namespace LMS_CMS_DAL.Migrations
                         .HasForeignKey("DriverID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1470,8 +1340,6 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("Driver");
@@ -1480,19 +1348,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.BusModule.BusCategory", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -1503,17 +1363,9 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1521,25 +1373,15 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.BusModule.BusCompany", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -1550,17 +1392,9 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1568,25 +1402,15 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.BusModule.BusRestrict", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -1597,17 +1421,9 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1615,25 +1431,15 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.BusModule.BusStatus", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -1644,17 +1450,9 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1662,17 +1460,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.BusModule.BusStudent", b =>
@@ -1688,17 +1480,9 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -1715,10 +1499,6 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
@@ -1729,27 +1509,17 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("InsertedByEmployee");
-
-                    b.Navigation("InsertedByPyramakerz");
 
                     b.Navigation("Semester");
 
                     b.Navigation("Student");
 
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.BusModule.BusType", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -1760,58 +1530,32 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
-
-                    b.Navigation("DeletedByPyramakerz");
 
                     b.Navigation("Domain");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domain", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1819,23 +1563,13 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domain_Page_Detailes", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -1845,10 +1579,6 @@ namespace LMS_CMS_DAL.Migrations
                         .HasForeignKey("Domain_ID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -1860,29 +1590,19 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("Page");
 
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Employee", b =>
@@ -1891,10 +1611,6 @@ namespace LMS_CMS_DAL.Migrations
                         .WithMany("Employees")
                         .HasForeignKey("BusCompanyID")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
@@ -1912,10 +1628,6 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
@@ -1926,10 +1638,6 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
@@ -1938,21 +1646,15 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("EmployeeType");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("Role");
 
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Page", b =>
@@ -1967,25 +1669,13 @@ namespace LMS_CMS_DAL.Migrations
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Parent", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1993,23 +1683,13 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Role", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -2020,17 +1700,9 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -2038,32 +1710,18 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Role_Detailes", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -2081,37 +1739,23 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("InsertedByEmployee");
-
-                    b.Navigation("InsertedByPyramakerz");
 
                     b.Navigation("Page");
 
                     b.Navigation("Role");
 
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.School", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -2122,17 +1766,9 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -2140,17 +1776,11 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("Domain");
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Semester", b =>
@@ -2160,25 +1790,13 @@ namespace LMS_CMS_DAL.Migrations
                         .HasForeignKey("AcademicYearID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -2188,30 +1806,16 @@ namespace LMS_CMS_DAL.Migrations
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InsertedByPyramakerz");
-
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Student", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "DeletedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("DeletedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "InsertedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("InsertedByPyramakerzId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -2223,27 +1827,17 @@ namespace LMS_CMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Pyramakerz", "UpdatedByPyramakerz")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByPyramakerzId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
 
-                    b.Navigation("DeletedByPyramakerz");
-
                     b.Navigation("InsertedByEmployee");
-
-                    b.Navigation("InsertedByPyramakerz");
 
                     b.Navigation("Parent");
 
                     b.Navigation("UpdatedByEmployee");
-
-                    b.Navigation("UpdatedByPyramakerz");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.AcademicYear", b =>

@@ -29,7 +29,7 @@ namespace LMS_CMS
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "LMS CMS API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ERP System API", Version = "v1" });
 
                 // Add JWT authentication
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

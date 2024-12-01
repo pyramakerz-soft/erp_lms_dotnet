@@ -269,11 +269,11 @@ namespace LMS_CMS_DAL.Models
                 .HasForeignKey(b => b.DeletedByUserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            //modelBuilder.Entity<Bus>()
-            //    .HasOne(b => b.DeletedByPyramakerz)
-            //    .WithMany()
-            //    .HasForeignKey(b => b.DeletedByPyramakerzId)
-            //    .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Bus>()
+                .HasOne(b => b.DeletedByPyramakerz)
+                .WithMany()
+                .HasForeignKey(b => b.DeletedByPyramakerzId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

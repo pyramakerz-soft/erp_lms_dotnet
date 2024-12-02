@@ -1,6 +1,5 @@
 
 using Microsoft.EntityFrameworkCore;
-using LMS_CMS_DAL.Models;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_BL.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using LMS_CMS_PL.Middleware;
+using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Octa;
+using LMS_CMS_PL.Services;
 
 namespace LMS_CMS
 {
@@ -81,8 +83,12 @@ namespace LMS_CMS
 
 
             //////// DB
-            builder.Services.AddDbContext<LMS_CMS_Context>(
+            builder.Services.AddDbContext<Octa_DbContext>(
                 op => op.UseSqlServer(builder.Configuration.GetConnectionString("con")));
+
+
+            builder.Services.AddScoped<DynamicDatabaseService>();
+            builder.Services.AddScoped<DbContextFactoryService>();
 
 
             /// 2)
@@ -108,11 +114,17 @@ namespace LMS_CMS
 
             /// 1) For DB Check
             app.UseMiddleware<DbConnection_Check_Middleware>();
-
+             
 
             //////// Authentication
             app.UseAuthentication();
 
+
+            //////// Get Connection String
+            app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/with-domain"), appBuilder =>
+            {
+                appBuilder.UseMiddleware<GetConnectionStringMiddleware>();
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -123,16 +135,18 @@ namespace LMS_CMS
 
             app.UseHttpsRedirection();
 
+
             /// For Endpoint, to check if the user has access for this endpoint or not
             /// Make sure to be here before UseAuthorization
             app.UseMiddleware<Endpoint_Authorization_Middleware>();
 
 
-            app.UseAuthorization();
-
             /// 3)
             app.UseCors(txt);
-             
+
+
+            app.UseAuthorization();
+
             app.MapControllers();
 
             app.Run();

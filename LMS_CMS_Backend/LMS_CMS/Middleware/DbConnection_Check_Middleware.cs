@@ -1,4 +1,5 @@
-﻿using LMS_CMS_DAL.Models;
+﻿using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Octa;
 
 namespace LMS_CMS_PL.Middleware
 {
@@ -17,7 +18,7 @@ namespace LMS_CMS_PL.Middleware
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<LMS_CMS_Context>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<Octa_DbContext>();
 
                 try
                 {

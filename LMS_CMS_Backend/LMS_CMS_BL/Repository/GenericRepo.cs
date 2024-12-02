@@ -4,7 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using LMS_CMS_DAL.Models;
+using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -13,12 +14,17 @@ namespace LMS_CMS_BL.Repository
 {
     public class GenericRepo<TEntity> where TEntity : class
     {
-        LMS_CMS_Context db;
-
+        LMS_CMS_Context? db;
+        Octa_DbContext? octa_db;
 
         public GenericRepo(LMS_CMS_Context db)
         {
             this.db = db;
+        }
+
+        public GenericRepo(Octa_DbContext octaDb)
+        {
+            this.octa_db = octaDb;
         }
 
         public LMS_CMS_Context Database()
@@ -51,7 +57,11 @@ namespace LMS_CMS_BL.Repository
         public void Add(TEntity entity)
         {
             db.Set<TEntity>().Add(entity);
+        }
 
+        public void Add_Octa(TEntity entity)
+        {
+            octa_db.Set<TEntity>().Add(entity);
         }
 
         public void Update(TEntity entity)
@@ -68,6 +78,11 @@ namespace LMS_CMS_BL.Repository
         public TEntity First_Or_Default(Expression<Func<TEntity, bool>> predicate)
         {
             return db.Set<TEntity>().FirstOrDefault(predicate);
+        }
+
+        public TEntity First_Or_Default_Octa(Expression<Func<TEntity, bool>> predicate)
+        {
+            return octa_db.Set<TEntity>().FirstOrDefault(predicate);
         }
 
         public async Task<TEntity> FindByIncludesAsync(

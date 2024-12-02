@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.UOW;
-using LMS_CMS_DAL.Models;
-using LMS_CMS_DAL.Models.BusModule;
+using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_PL.Attribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Bus;
-using LMS_CMS_DAL.Models;
-using LMS_CMS_DAL.Models.BusModule;
+using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -56,7 +56,11 @@ namespace LMS_CMS
                         Array.Empty<string>()
                     }
                 });
+
+                // Add custom header operation filter
+                c.OperationFilter<AddCustomHeaderOperationFilter>();
             });
+
 
 
             //////// JWT (Token)

@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_BL.Config;
@@ -10,6 +9,7 @@ using LMS_CMS_PL.Middleware;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Services;
+using LMS_CMS_DAL.Models;
 
 namespace LMS_CMS
 {
@@ -58,7 +58,11 @@ namespace LMS_CMS
                         Array.Empty<string>()
                     }
                 });
+
+                // Add custom header operation filter
+                c.OperationFilter<AddCustomHeaderOperationFilter>();
             });
+
 
 
             //////// JWT (Token)

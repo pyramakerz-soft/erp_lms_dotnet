@@ -2,31 +2,35 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace LMS_CMS_PL.Controllers
+namespace LMS_CMS_PL.Controllers.Domains
 {
 
-    [Route("api/[controller]")]
+    [Route("api/with-domain/[controller]")]
     [ApiController]
     public class AccountController : Controller
     {
-        private UOW Unit_Of_Work;
+        private readonly DbContextFactoryService _dbContextFactory;
         private readonly IConfiguration _configuration;
 
-        public AccountController(UOW Unit_Of_Work, IConfiguration configuration)
+        public AccountController(DbContextFactoryService dbContextFactory, IConfiguration configuration)
         {
-            this.Unit_Of_Work = Unit_Of_Work;
+            _dbContextFactory = dbContextFactory;
             _configuration = configuration;
         }
 
         [HttpPost]
         public IActionResult Login([FromBody] LoginDTO UserInfo)
         {
+            string connectionString = _dbContextFactory.CreateOneDbContext(HttpContext);
+            var Unit_Of_Work = new UOW(connectionString);
+
             if (UserInfo == null)
             {
                 return BadRequest("Data Can't be null");
@@ -46,7 +50,7 @@ namespace LMS_CMS_PL.Controllers
 
             dynamic user = UserInfo.Type switch
             {
-                "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password && emp.IsDeleted!=true),
+                "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password && emp.IsDeleted != true),
                 "student" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == UserInfo.User_Name && stu.Password == UserInfo.Password && stu.IsDeleted != true),
                 "parent" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password && par.IsDeleted != true),
                 "pyramakerz" => Unit_Of_Work.pyramakerz_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password),
@@ -82,7 +86,7 @@ namespace LMS_CMS_PL.Controllers
             return BadRequest("Unexpected user type.");
         }
 
-        private string Generate_Jwt_Token(string username, string userId ,string type, string? roleId = null)
+        private string Generate_Jwt_Token(string username, string userId, string type, string? roleId = null)
         {
             var claims = new List<Claim>
             {

@@ -7,7 +7,7 @@ namespace LMS_CMS_PL.Services
     {
         public string CreateOneDbContext(HttpContext httpContext)
         {
-            var connectionString = httpContext.Items["    "] as string;
+            var connectionString = httpContext.Items["ConnectionString"] as string;
 
             if (string.IsNullOrEmpty(connectionString))
             {

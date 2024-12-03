@@ -10,12 +10,10 @@ namespace LMS_CMS_PL.Controllers.Domains
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly UOW _Unit_Of_Work;
         private readonly DbContextFactoryService _dbContextFactory;
 
-        public EmployeeController(UOW Unit_Of_Work, DbContextFactoryService dbContextFactory)
+        public EmployeeController(DbContextFactoryService dbContextFactory)
         {
-            _Unit_Of_Work = Unit_Of_Work;
             _dbContextFactory = dbContextFactory;
         }
 

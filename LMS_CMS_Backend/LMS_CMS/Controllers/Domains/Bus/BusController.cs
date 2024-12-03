@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BusModel = LMS_CMS_DAL.Models.Domains.BusModule.Bus;
 
-namespace LMS_CMS_PL.Controllers.Bus
+namespace LMS_CMS_PL.Controllers.Domains.Bus
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -29,7 +29,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpGet]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Details" }
         )]
@@ -68,8 +68,8 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpGet("{Id}")]
-        [Authorize_Endpoint_Attribute(
-            allowedTypes: new[] { "pyramakerz", "employee"},
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Details" }
         )]
         public async Task<IActionResult> GetByID(long Id)
@@ -166,7 +166,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         //}
 
         [HttpPost]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Details" }
         )]
@@ -191,7 +191,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
 
                 BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(busAddDTO.BusTypeID);
-                if (busType == null||busType.IsDeleted == true)
+                if (busType == null || busType.IsDeleted == true)
                 {
                     return NotFound("No Bus Type with this ID");
                 }
@@ -218,7 +218,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
 
                 BusStatus busStatus = Unit_Of_Work.busStatus_Repository.Select_By_Id(busAddDTO.BusStatusID);
-                if (busStatus == null||busStatus.IsDeleted == true)
+                if (busStatus == null || busStatus.IsDeleted == true)
                 {
                     return NotFound("No Bus Status with this ID");
                 }
@@ -236,7 +236,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busAddDTO.DriverAssistantID != null)
             {
                 Employee busDriverAssisstant = Unit_Of_Work.employee_Repository.Select_By_Id(busAddDTO.DriverAssistantID);
-                if (busDriverAssisstant == null||busDriverAssisstant.IsDeleted == true)
+                if (busDriverAssisstant == null || busDriverAssisstant.IsDeleted == true)
                 {
                     return NotFound("No Bus Status Assisstant with this ID");
                 }
@@ -246,11 +246,11 @@ namespace LMS_CMS_PL.Controllers.Bus
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             bus.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if(userTypeClaim == "pyramakerz")
+            if (userTypeClaim == "pyramakerz")
             {
                 bus.InsertedByPyramakerzId = userId;
             }
-            else if (userTypeClaim == "employee") 
+            else if (userTypeClaim == "employee")
             {
                 bus.InsertedByUserId = userId;
             }
@@ -263,7 +263,7 @@ namespace LMS_CMS_PL.Controllers.Bus
 
 
         [HttpPut]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowEdit: 1,
             pages: new[] { "Busses", "Bus Details" }
@@ -281,7 +281,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-             
+
             if (busPutDTO == null)
             {
                 return BadRequest("Bus cannot be null.");
@@ -290,7 +290,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busPutDTO.BusTypeID != null)
             {
                 BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(busPutDTO.BusTypeID);
-                if (busType == null ||busType.IsDeleted == true)
+                if (busType == null || busType.IsDeleted == true)
                 {
                     return NotFound("No Bus Type with this ID");
                 }
@@ -308,7 +308,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busPutDTO.BusRestrictID != null)
             {
                 BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(busPutDTO.BusRestrictID);
-                if (busRestrict == null||busRestrict.IsDeleted == true)
+                if (busRestrict == null || busRestrict.IsDeleted == true)
                 {
                     return NotFound("No Bus Restrict with this ID");
                 }
@@ -326,7 +326,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busPutDTO.DriverID != null)
             {
                 Employee busDriver = Unit_Of_Work.employee_Repository.Select_By_Id(busPutDTO.DriverID);
-                if (busDriver == null||busDriver.IsDeleted == true)
+                if (busDriver == null || busDriver.IsDeleted == true)
                 {
                     return NotFound("No Bus Driver with this ID");
                 }
@@ -356,7 +356,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if(busExists.InsertedByUserId != userId)
+                        if (busExists.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -374,7 +374,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (userTypeClaim == "pyramakerz")
             {
                 busExists.UpdatedByPyramakerzId = userId;
-                if(busExists.UpdatedByUserId != null)
+                if (busExists.UpdatedByUserId != null)
                 {
                     busExists.UpdatedByUserId = null;
                 }
@@ -395,7 +395,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpDelete("{Id}")]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowDelete: 1,
             pages: new[] { "Busses", "Bus Details" }

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
 
-namespace LMS_CMS_PL.Controllers.Bus
+namespace LMS_CMS_PL.Controllers.Domains.Bus
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -31,9 +31,9 @@ namespace LMS_CMS_PL.Controllers.Bus
 
 
         ///////////////////////////////////////////
-        
+
         [HttpGet]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Types" }
         )]
@@ -66,7 +66,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////////////
 
         [HttpGet("id")]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Types" }
         )]
@@ -130,7 +130,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////////////
 
         [HttpPost]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Types" }
         )]
@@ -161,7 +161,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
             else if (userTypeClaim == "employee")
             {
-                bustType.InsertedByUserId= userId;
+                bustType.InsertedByUserId = userId;
             }
 
             Unit_Of_Work.busType_Repository.Add(bustType);
@@ -171,9 +171,9 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         ////////////////////////////////////////////////////////
-        
+
         [HttpPut]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowEdit: 1,
             pages: new[] { "Busses", "Bus Types" }
@@ -231,7 +231,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (userTypeClaim == "pyramakerz")
             {
                 busType.UpdatedByPyramakerzId = userId;
-                if(busType.UpdatedByUserId != null) 
+                if (busType.UpdatedByUserId != null)
                 {
                     busType.UpdatedByUserId = null;
                 }
@@ -253,7 +253,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         ////////////////////////////////////////////////////////
 
         [HttpDelete]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowDelete: 1,
             pages: new[] { "Busses", "Bus Types" }

@@ -38,11 +38,6 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<EmployeeType> EmployeeType_Repository;
 
 
-        public UOW(LMS_CMS_Context db)
-        {
-            this.db = db;
-        }
-        
         public UOW(Octa_DbContext octa_Db)
         {
             this.octa_Db = octa_Db;

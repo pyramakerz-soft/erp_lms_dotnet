@@ -28,8 +28,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpPost]
         public IActionResult Login([FromBody] LoginDTO UserInfo)
         {
-            string connectionString = _dbContextFactory.CreateOneDbContext(HttpContext);
-            var Unit_Of_Work = new UOW(connectionString);
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             if (UserInfo == null)
             {

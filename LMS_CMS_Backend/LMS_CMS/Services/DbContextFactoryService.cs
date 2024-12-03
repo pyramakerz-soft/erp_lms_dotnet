@@ -1,11 +1,12 @@
-﻿using LMS_CMS_DAL.Models.Domains;
+﻿using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Services
 {
     public class DbContextFactoryService
     {
-        public string CreateOneDbContext(HttpContext httpContext)
+        public UOW CreateOneDbContext(HttpContext httpContext)
         {
             var connectionString = httpContext.Items["ConnectionString"] as string;
 
@@ -14,7 +15,8 @@ namespace LMS_CMS_PL.Services
                 throw new Exception("Connection string not found in HttpContext.");
             }
 
-            return connectionString;
+            var Unit_Of_Work = new UOW(connectionString);
+            return Unit_Of_Work;
         }
     }
 }

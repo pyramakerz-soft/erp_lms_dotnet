@@ -20,8 +20,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet]
         public async Task<ActionResult> GetTableAData()
         {
-            string connectionString = _dbContextFactory.CreateOneDbContext(HttpContext);
-            var uow = new UOW(connectionString);
+            UOW uow = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             var data = uow.employee_Repository.Select_All();
 

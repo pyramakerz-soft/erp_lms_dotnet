@@ -25,7 +25,7 @@ namespace LMS_CMS_PL.Middleware
                 await context.Response.WriteAsync("Domain name header is missing or invalid.");
                 return;
             }
-
+             
             using (var scope = _serviceProvider.CreateScope())
             { 
                 var dbContext = scope.ServiceProvider.GetRequiredService<Octa_DbContext>();
@@ -48,3 +48,4 @@ namespace LMS_CMS_PL.Middleware
         }
     }
 }
+ 

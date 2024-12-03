@@ -77,9 +77,6 @@ namespace LMS_CMS_BL.Config
             CreateMap<BusCompany, BusCompanyEditDTO>();
             CreateMap<BusCompanyEditDTO, BusCompany>();
 
-            CreateMap<Domain, DomainGetDTO>();
-            CreateMap<DomainGetDTO, Domain>();
-
             CreateMap<Employee, Employee_GetDTO>();
 
             CreateMap<Parent, ParentGetDTO>();

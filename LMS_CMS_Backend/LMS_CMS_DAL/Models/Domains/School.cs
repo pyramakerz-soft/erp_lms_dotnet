@@ -16,12 +16,6 @@ namespace LMS_CMS_DAL.Models.Domains
         [StringLength(100, ErrorMessage = "School cannot be longer than 100 characters.")]
         public string Name { get; set; }
 
-
-        [ForeignKey("Domain")]
-        [Required]
-        public long Domain_id { get; set; }
-        public Domain Domain { get; set; }
-
         public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();
 
     }

@@ -17,11 +17,6 @@ namespace LMS_CMS_DAL.Models.Domains
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Role cannot be longer than 100 characters.")]
         public string Name { get; set; }
-        [ForeignKey("Domain")]
-        [Required]
-        public long Domain_ID { get; set; }
-
-        public Domain Domain { get; set; }
         public ICollection<Employee> Employess { get; set; } = new HashSet<Employee>();
 
         public ICollection<Role_Detailes> Role_Detailes { get; set; } = new HashSet<Role_Detailes>();

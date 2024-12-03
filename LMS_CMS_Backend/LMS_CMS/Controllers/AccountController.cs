@@ -60,7 +60,7 @@ namespace LMS_CMS_PL.Controllers
 
             if (UserInfo.Type == "employee" && user is Employee emp)
             {
-                var tokenEmp = Generate_Jwt_Token(emp.User_Name, emp.ID.ToString(), UserInfo.Type, emp.Domain_ID.ToString(), emp.Role_ID.ToString());
+                var tokenEmp = Generate_Jwt_Token(emp.User_Name, emp.ID.ToString(), UserInfo.Type, emp.Role_ID.ToString());
                 return Ok(new { Token = tokenEmp });
             }
             else if (UserInfo.Type == "student" && user is Student stu)
@@ -82,7 +82,7 @@ namespace LMS_CMS_PL.Controllers
             return BadRequest("Unexpected user type.");
         }
 
-        private string Generate_Jwt_Token(string username, string userId ,string type, string? domainId = null, string? roleId = null)
+        private string Generate_Jwt_Token(string username, string userId ,string type, string? roleId = null)
         {
             var claims = new List<Claim>
             {
@@ -92,10 +92,6 @@ namespace LMS_CMS_PL.Controllers
                 new Claim("id", userId),
                 new Claim("type", type),
             };
-            if (!string.IsNullOrEmpty(domainId))
-            {
-                claims.Add(new Claim("domain", domainId));
-            }
 
             if (!string.IsNullOrEmpty(roleId))
             {

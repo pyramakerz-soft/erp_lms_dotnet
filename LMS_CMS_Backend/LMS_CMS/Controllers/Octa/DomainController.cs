@@ -1,4 +1,9 @@
-﻿using LMS_CMS_BL.UOW;
+﻿using AutoMapper;
+using LMS_CMS_BL.DTO.Bus;
+using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Octa;
+using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +25,14 @@ namespace LMS_CMS_PL.Controllers.Octa
             _dynamicDatabaseService = dynamicDatabaseService;
         }
 
+        [HttpGet]
+        public IActionResult Get()
+        {
+
+            List<LMS_CMS_DAL.Models.Octa.Domain> Domains = _Unit_Of_Work.domain_Octa_Repository.Select_All();
+
+            return Ok(Domains);
+        }
         [HttpPost]
         public async Task<IActionResult> AddDomain(string domainName)
         {
@@ -40,4 +53,5 @@ namespace LMS_CMS_PL.Controllers.Octa
             return Ok(new { message = "Domain and database setup successfully." });
         }
     }
+
 }

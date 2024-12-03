@@ -19,7 +19,6 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Parent> Parent_Repository;
         GenericRepo<Student> Student_Repository;
         GenericRepo<Role> Role_Repository;
-        GenericRepo<LMS_CMS_DAL.Models.Domains.Domain> Domain_Repository;
         GenericRepo<LMS_CMS_DAL.Models.Octa.Domain> Domain_Octa_Repository;
         GenericRepo<School> School_Repository;
         GenericRepo<Domain_Page_Detailes> Domain_Page_Detailes_Repository;
@@ -91,18 +90,6 @@ namespace LMS_CMS_BL.UOW
                     Role_Repository = new GenericRepo<Role>(db);
                 }
                 return Role_Repository;
-            }
-        }
-
-        public GenericRepo<LMS_CMS_DAL.Models.Domains.Domain> domain_Repository
-        {
-            get
-            {
-                if (Domain_Repository == null)
-                {
-                    Domain_Repository = new GenericRepo<LMS_CMS_DAL.Models.Domains.Domain>(db);
-                }
-                return Domain_Repository;
             }
         }
         public GenericRepo<LMS_CMS_DAL.Models.Octa.Domain> domain_Octa_Repository

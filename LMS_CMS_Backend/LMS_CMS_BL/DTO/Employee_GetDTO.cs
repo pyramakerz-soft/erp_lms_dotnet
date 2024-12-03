@@ -15,7 +15,6 @@ namespace LMS_CMS_BL.DTO
         public string en_name { get; set; }
         public string ar_name { get; set; }
         public string Password { get; set; }
-        public long Domain_ID { get; set; }
         public long Role_ID { get; set; }
         public long? BusCompanyID { get; set; }
         public long EmployeeTypeID { get; set; }

@@ -27,9 +27,6 @@ namespace LMS_CMS_DAL.Models.Domains
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters.")]
         public string Password { get; set; }
-        [ForeignKey("Domain")]
-        [Required]
-        public long Domain_ID { get; set; }
         [ForeignKey("Role")]
         [Required]
         public long Role_ID { get; set; }
@@ -43,7 +40,6 @@ namespace LMS_CMS_DAL.Models.Domains
 
         public EmployeeType EmployeeType { get; set; }
 
-        public Domain Domain { get; set; }
         public Role Role { get; set; }
         public ICollection<Bus> DrivenBuses { get; set; } = new HashSet<Bus>();
         public ICollection<Bus> DriverAssistant { get; set; } = new HashSet<Bus>();

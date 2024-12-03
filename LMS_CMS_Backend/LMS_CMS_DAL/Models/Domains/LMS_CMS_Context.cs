@@ -15,8 +15,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<School> Schools { get; set; }
-        public DbSet<Domain> Domains { get; set; }
-        public DbSet<Domain_Page_Detailes> Domain_Page_Details { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<Role_Detailes> Role_Detailes { get; set; }
 
@@ -64,9 +62,6 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<Employee>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
-            modelBuilder.Entity<Domain>()
-                .HasIndex(p => p.Name)
-                .IsUnique();
             modelBuilder.Entity<Page>()
                 .HasIndex(p => p.ar_name)
                 .IsUnique();
@@ -95,24 +90,6 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasForeignKey(p => p.Role_ID)
                  .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Domain_Page_Detailes>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.Domain_Page_Detailes)
-                 .HasForeignKey(p => p.Domain_ID)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Domain_Page_Detailes>()
-                 .HasOne(p => p.Page)
-                 .WithMany(p => p.Domain_Page_Detailes)
-                 .HasForeignKey(p => p.Page_ID)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Employee>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.Employess)
-                 .HasForeignKey(p => p.Domain_ID)
-                 .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Employee>()
                  .HasOne(p => p.EmployeeType)
                  .WithMany(p => p.Employees)
@@ -125,12 +102,6 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasForeignKey(p => p.BusCompanyID)
                  .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Role>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.Roles)
-                 .HasForeignKey(p => p.Domain_ID)
-                 .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Role_Detailes>()
                  .HasOne(p => p.Role)
                  .WithMany(p => p.Role_Detailes)
@@ -141,12 +112,6 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasOne(p => p.Page)
                  .WithMany(p => p.Role_Detailes)
                  .HasForeignKey(p => p.Page_ID)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<School>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.Schools)
-                 .HasForeignKey(p => p.Domain_id)
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Student>()
@@ -165,42 +130,6 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasOne(p => p.AcademicYear)
                  .WithMany(p => p.Semesters)
                  .HasForeignKey(p => p.AcademicYearID)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<BusType>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.BusTypes)
-                 .HasForeignKey(p => p.DomainId)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<BusRestrict>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.BusRestricts)
-                 .HasForeignKey(p => p.DomainId)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<BusStatus>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.BusStatus)
-                 .HasForeignKey(p => p.DomainId)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<BusCategory>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.BusCategories)
-                 .HasForeignKey(p => p.DomainId)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<BusCompany>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.BusCompanies)
-                 .HasForeignKey(p => p.DomainId)
-                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Bus>()
-                 .HasOne(p => p.Domain)
-                 .WithMany(p => p.Buses)
-                 .HasForeignKey(p => p.DomainID)
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Bus>()

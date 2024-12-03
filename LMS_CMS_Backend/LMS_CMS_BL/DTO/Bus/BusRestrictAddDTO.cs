@@ -9,6 +9,5 @@ namespace LMS_CMS_BL.DTO.Bus
     public class BusRestrictAddDTO
     {
         public string Name { get; set; }
-        public long DomainId { get; set; }
     }
 }

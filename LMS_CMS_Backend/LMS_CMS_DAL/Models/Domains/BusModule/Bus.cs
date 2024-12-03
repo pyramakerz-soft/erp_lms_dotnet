@@ -20,8 +20,7 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
         public string Name { get; set; }
         public long Capacity { get; set; }
         public bool IsCapacityRestricted { get; set; }
-        [ForeignKey("Domain")]
-        public long DomainID { get; set; }
+
         [ForeignKey("BusType")]
         public long? BusTypeID { get; set; }
         [ForeignKey("BusRestrict")]
@@ -35,7 +34,6 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
         [ForeignKey("BusCompany")]
         public long? BusCompanyID { get; set; }
 
-        public Domain Domain { get; set; }
         public BusType? BusType { get; set; }
         public BusRestrict? BusRestrict { get; set; }
         public BusStatus? BusStatus { get; set; }

@@ -29,10 +29,11 @@ namespace LMS_CMS_PL.Controllers.Octa
         public IActionResult Get()
         {
 
-            List<LMS_CMS_DAL.Models.Octa.Domain> Domains = _Unit_Of_Work.domain_Octa_Repository.Select_All();
+            List<LMS_CMS_DAL.Models.Octa.Domain> Domains = _Unit_Of_Work.domain_Octa_Repository.Select_All_Octa();
 
             return Ok(Domains);
         }
+
         [HttpPost]
         public async Task<IActionResult> AddDomain(string domainName)
         {

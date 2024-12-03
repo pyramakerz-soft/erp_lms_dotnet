@@ -45,7 +45,7 @@ namespace LMS_CMS_BL.Repository
             {
                 query = query.Include(include);
             }
-
+                     
             return query.ToList();
         }
 
@@ -57,11 +57,6 @@ namespace LMS_CMS_BL.Repository
         public void Add(TEntity entity)
         {
             db.Set<TEntity>().Add(entity);
-        }
-
-        public void Add_Octa(TEntity entity)
-        {
-            octa_db.Set<TEntity>().Add(entity);
         }
 
         public void Update(TEntity entity)
@@ -116,6 +111,18 @@ namespace LMS_CMS_BL.Repository
             }
 
             return await query.Where(predicate).ToListAsync();
+        }
+
+        ////////////////////////////////////////////////// Octa /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public void Add_Octa(TEntity entity)
+        {
+            octa_db.Set<TEntity>().Add(entity);
+        }
+
+        public List<TEntity> Select_All_Octa()
+        {
+            return octa_db.Set<TEntity>().ToList();
         }
     }
 }

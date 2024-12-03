@@ -22,26 +22,17 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet]
         public async Task<ActionResult> GetTableAData()
         {
-            try
-            {
-                // Use the factory service to create the DbContext
-                using (var dbContext = _dbContextFactory.CreateOneDbContext(HttpContext))
-                {
-                    // Fetch data from TableAs
-                    var data = await dbContext.Domains.ToListAsync();
+            string connectionString = _dbContextFactory.CreateOneDbContext(HttpContext);
+            var uow = new UOW(connectionString);
 
-                    if (data == null)
-                    {
-                        return NotFound("No data found in TableAs.");
-                    }
+            var data = uow.employee_Repository.Select_All();
 
-                    return Ok(data);
-                }
-            }
-            catch (Exception ex)
+            if (data == null)
             {
-                return BadRequest(ex.Message);
+                return NotFound("No data found in TableAs.");
             }
+
+            return Ok(data);
         }
     }
 }

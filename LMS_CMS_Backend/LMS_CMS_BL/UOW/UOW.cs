@@ -2,6 +2,7 @@
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Octa;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,14 @@ namespace LMS_CMS_BL.UOW
         public UOW(Octa_DbContext octa_Db)
         {
             this.octa_Db = octa_Db;
+        }
+
+        public UOW(string connectionString)
+        {
+            // Use the connection string to initialize the context dynamically
+            var optionsBuilder = new DbContextOptionsBuilder<LMS_CMS_Context>();
+            optionsBuilder.UseSqlServer(connectionString);
+            db = new LMS_CMS_Context(optionsBuilder.Options);
         }
 
         public GenericRepo<Employee> employee_Repository

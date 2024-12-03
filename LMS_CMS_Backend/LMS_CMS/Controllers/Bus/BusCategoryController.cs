@@ -48,17 +48,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                BusCategories = Unit_Of_Work.busCategory_Repository.FindBy(t => t.IsDeleted != true && t.DomainId == employeeDomain);
-            }
-            else
-            {
-                BusCategories = Unit_Of_Work.busCategory_Repository.FindBy(t => t.IsDeleted != true);
-            }
+            BusCategories = Unit_Of_Work.busCategory_Repository.FindBy(t => t.IsDeleted != true);
 
             if (BusCategories == null || BusCategories.Count == 0)
             {
@@ -99,68 +89,56 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 return NotFound("No bus category with this ID");
             }
-            else
-            {
-                if (userTypeClaim == "employee")
-                {
-                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                    long employeeDomain = employee.Domain_ID;
-                    if (busCategory.DomainId != employeeDomain)
-                    {
-                        return Unauthorized();
-                    }
-                }
-            }
 
             BusCatigoryGetDTO busCategoryDto = mapper.Map<BusCatigoryGetDTO>(busCategory);
             return Ok(busCategoryDto);
         }
         ///////////////////////////////////////////////////
 
-        [HttpGet("DomainId")]
-        [Authorize_Endpoint_Attribute(
-            allowedTypes: new[] { "pyramakerz", "employee" },
-            pages: new[] { "Busses", "Bus Categories" }
-        )]
-        public IActionResult GetByDomainId(long id)
-        {
-            var userClaims = HttpContext.User.Claims;
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+        //[HttpGet("DomainId")]
+        //[Authorize_Endpoint_Attribute(
+        //    allowedTypes: new[] { "pyramakerz", "employee" },
+        //    pages: new[] { "Busses", "Bus Categories" }
+        //)]
+        //public IActionResult GetByDomainId(long id)
+        //{
+        //    var userClaims = HttpContext.User.Claims;
+        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        //    long.TryParse(userIdClaim, out long userId);
+        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-            if (userIdClaim == null || userTypeClaim == null)
-            {
-                return Unauthorized("User ID or Type claim not found.");
-            }
+        //    if (userIdClaim == null || userTypeClaim == null)
+        //    {
+        //        return Unauthorized("User ID or Type claim not found.");
+        //    }
 
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
+        //    if (userTypeClaim == "employee")
+        //    {
+        //        Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+        //        long employeeDomain = employee.Domain_ID;
 
-                if (id != employeeDomain)
-                {
-                    return Unauthorized();
-                }
-            }
+        //        if (id != employeeDomain)
+        //        {
+        //            return Unauthorized();
+        //        }
+        //    }
 
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
-            if (domain == null)
-            {
-                return NotFound("No Domain with this Id");
-            }
+        //    Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
+        //    if (domain == null)
+        //    {
+        //        return NotFound("No Domain with this Id");
+        //    }
 
-            List<BusCategory> BusCategory = Unit_Of_Work.busCategory_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-            if (BusCategory == null || BusCategory.Count == 0)
-            {
-                return NotFound("There are no buse categories in this domian");
-            }
+        //    List<BusCategory> BusCategory = Unit_Of_Work.busCategory_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
+        //    if (BusCategory == null || BusCategory.Count == 0)
+        //    {
+        //        return NotFound("There are no buse categories in this domian");
+        //    }
 
-            List<BusCatigoryGetDTO> BusCategoryDTO = mapper.Map<List<BusCatigoryGetDTO>>(BusCategory);
+        //    List<BusCatigoryGetDTO> BusCategoryDTO = mapper.Map<List<BusCatigoryGetDTO>>(BusCategory);
 
-            return Ok(BusCategoryDTO);
-        }
+        //    return Ok(BusCategoryDTO);
+        //}
         ///////////////////////////////////////////////////
 
         [HttpPost]
@@ -183,23 +161,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (NewCategory == null) 
             { 
                 return BadRequest("Bus Category cannot be null"); 
-            }
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (NewCategory.DomainId != employeeDomain)
-                {
-                    return Unauthorized();
-                }
-            }
-
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(NewCategory.DomainId);
-            if (domain == null || domain.IsDeleted == true)
-            {
-                return NotFound("No Domain with this Id");
             }
 
             BusCategory busCategory = mapper.Map<BusCategory>(NewCategory);
@@ -247,29 +208,10 @@ namespace LMS_CMS_PL.Controllers.Bus
                 BadRequest(); 
             }
 
-
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(EditBusCatigory.DomainId);
-            if (domain == null || domain.IsDeleted == true)
-            {
-                return NotFound("No Domain with this Id");
-            }
-
             BusCategory busCatigory = Unit_Of_Work.busCategory_Repository.Select_By_Id(EditBusCatigory.ID);
             if (busCatigory == null || busCatigory.IsDeleted == true)
             {
                 return NotFound("No Bus Category with this ID");
-            }
-
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (EditBusCatigory.DomainId != employeeDomain || busCatigory.DomainId != employeeDomain)
-                {
-                    return Unauthorized();
-                }
             }
 
             if (userTypeClaim == "employee")
@@ -353,14 +295,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 if (userTypeClaim == "employee")
                 {
-                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                    long employeeDomain = employee.Domain_ID;
-
-                    if (busCategory.DomainId != employeeDomain)
-                    {
-                        return Unauthorized();
-                    }
-
                     Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Categories");
                     if (page != null)
                     {

@@ -53,29 +53,13 @@ namespace LMS_CMS_PL.Controllers.Bus
                 return NotFound("No Bus with this Id");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
-                    bus => bus.BusID == busId && bus.IsDeleted != true && bus.Bus.DomainID == employeeDomain,
-                    query => query.Include(bus => bus.Bus),
-                    query => query.Include(stu => stu.Student),
-                    query => query.Include(busCat => busCat.BusCategory),
-                    query => query.Include(sem => sem.Semester)
-                    );
-            }
-            else
-            {
-                busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
+            busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
                     bus => bus.BusID == busId && bus.IsDeleted != true,
                     query => query.Include(bus => bus.Bus),
                     query => query.Include(stu => stu.Student),
                     query => query.Include(busCat => busCat.BusCategory),
                     query => query.Include(sem => sem.Semester)
                     );
-            }
 
             if (busStudents == null || busStudents.Count == 0)
             {
@@ -121,18 +105,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 return NotFound("No bus Student with this ID");
             }
-            else
-            {
-                if (userTypeClaim == "employee")
-                {
-                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                    long employeeDomain = employee.Domain_ID;
-                    if (busStudent.Bus.DomainID != employeeDomain)
-                    {
-                        return Unauthorized();
-                    }
-                }
-            }
 
             BusStudentGetDTO busStudentDTO = mapper.Map<BusStudentGetDTO>(busStudent);
 
@@ -168,21 +140,9 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             Student student = Unit_Of_Work.student_Repository.Select_By_Id(busStudentAddDTO.StudentID);
-            if (bus == null||bus.IsDeleted == true)
+            if (student == null || student.IsDeleted == true)
             {
                 return NotFound("No Student with this ID");
-            }
-
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (bus.DomainID != employeeDomain)
-                {
-                    return Unauthorized();
-                }
             }
 
             if (busStudentAddDTO.SemseterID != null)
@@ -200,17 +160,6 @@ namespace LMS_CMS_PL.Controllers.Bus
                 if (busCategory == null || busCategory.IsDeleted == true)
                 {
                     return NotFound("No Bus Category with this ID");
-                }
-            }
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (bus.DomainID != employeeDomain)
-                {
-                    return Unauthorized();
                 }
             }
 
@@ -264,7 +213,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             Student student = Unit_Of_Work.student_Repository.Select_By_Id(busStudentPutDTO.StudentID);
-            if (bus == null || bus.IsDeleted == true)
+            if (student == null || student.IsDeleted == true)
             {
                 return NotFound("No Student with this ID");
             }
@@ -291,17 +240,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busStudentExists == null||busStudentExists.IsDeleted == true)
             {
                 return NotFound("No Bus Student with this ID");
-            }
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (bus.DomainID != employeeDomain || busStudentExists.Bus.DomainID != employeeDomain)
-                {
-                    return Unauthorized();
-                }
             }
 
             if (userTypeClaim == "employee")
@@ -383,14 +321,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 if (userTypeClaim == "employee")
                 {
-                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                    long employeeDomain = employee.Domain_ID;
-
-                    if (busStudent.Bus.DomainID != employeeDomain)
-                    {
-                        return Unauthorized();
-                    }
-
                     Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Busses");
                     if (page != null)
                     {

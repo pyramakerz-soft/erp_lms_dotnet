@@ -18,7 +18,6 @@ namespace LMS_CMS_PL.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             var domainName = context.Request.Headers["DomainName"].FirstOrDefault();
-
             if (string.IsNullOrEmpty(domainName))
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -29,7 +28,7 @@ namespace LMS_CMS_PL.Middleware
             using (var scope = _serviceProvider.CreateScope())
             { 
                 var dbContext = scope.ServiceProvider.GetRequiredService<Octa_DbContext>();
-                 
+
                 var domain = await dbContext.Domains.FirstOrDefaultAsync(d => d.Name == domainName);
 
                 if (domain != null)

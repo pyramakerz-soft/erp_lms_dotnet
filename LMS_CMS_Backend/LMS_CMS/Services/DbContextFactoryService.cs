@@ -5,7 +5,7 @@ namespace LMS_CMS_PL.Services
 {
     public class DbContextFactoryService
     {
-        public LMS_CMS_Context CreateOneDbContext(HttpContext httpContext)
+        public string CreateOneDbContext(HttpContext httpContext)
         {
             var connectionString = httpContext.Items["    "] as string;
 
@@ -14,11 +14,7 @@ namespace LMS_CMS_PL.Services
                 throw new Exception("Connection string not found in HttpContext.");
             }
 
-            // Create a new DbContext with the dynamic connection string
-            var optionsBuilder = new DbContextOptionsBuilder<LMS_CMS_Context>();
-            optionsBuilder.UseSqlServer(connectionString);
-
-            return new LMS_CMS_Context(optionsBuilder.Options);
+            return connectionString;
         }
     }
 }

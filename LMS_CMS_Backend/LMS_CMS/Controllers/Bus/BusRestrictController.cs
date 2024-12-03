@@ -46,17 +46,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                busRestricts = Unit_Of_Work.busRestrict_Repository.FindBy(t => t.IsDeleted != true && t.DomainId == employeeDomain);
-            }
-            else
-            {
-                busRestricts = Unit_Of_Work.busRestrict_Repository.FindBy(t => t.IsDeleted != true);
-            }
+            busRestricts = Unit_Of_Work.busRestrict_Repository.FindBy(t => t.IsDeleted != true);
 
             if (busRestricts == null || busRestricts.Count == 0)
             {
@@ -98,68 +88,56 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 return NotFound("No bus restrict with this ID");
             }
-            else
-            {
-                if (userTypeClaim == "employee")
-                {
-                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                    long employeeDomain = employee.Domain_ID;
-                    if (busRestrict.DomainId != employeeDomain)
-                    {
-                        return Unauthorized();
-                    }
-                }
-            }
 
             BusRestrictGetDTO busRestrictDto = mapper.Map<BusRestrictGetDTO>(busRestrict);
             return Ok(busRestrictDto);
         }
         ///////////////////////////////////////////////////
 
-        [HttpGet("DomainId")]
-        [Authorize_Endpoint_Attribute(
-            allowedTypes: new[] { "pyramakerz", "employee" },
-            pages: new[] { "Busses", "Bus Restricts" }
-        )]
-        public IActionResult GetByDomainId(long id)
-        {
-            var userClaims = HttpContext.User.Claims;
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+        //[HttpGet("DomainId")]
+        //[Authorize_Endpoint_Attribute(
+        //    allowedTypes: new[] { "pyramakerz", "employee" },
+        //    pages: new[] { "Busses", "Bus Restricts" }
+        //)]
+        //public IActionResult GetByDomainId(long id)
+        //{
+        //    var userClaims = HttpContext.User.Claims;
+        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        //    long.TryParse(userIdClaim, out long userId);
+        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-            if (userIdClaim == null || userTypeClaim == null)
-            {
-                return Unauthorized("User ID or Type claim not found.");
-            }
+        //    if (userIdClaim == null || userTypeClaim == null)
+        //    {
+        //        return Unauthorized("User ID or Type claim not found.");
+        //    }
 
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
+        //    if (userTypeClaim == "employee")
+        //    {
+        //        Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
+        //        long employeeDomain = employee.Domain_ID;
 
-                if (id != employeeDomain)
-                {
-                    return Unauthorized();
-                }
-            }
+        //        if (id != employeeDomain)
+        //        {
+        //            return Unauthorized();
+        //        }
+        //    }
 
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
-            if (domain == null)
-            {
-                return NotFound("No Domain with this Id");
-            }
+        //    Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
+        //    if (domain == null)
+        //    {
+        //        return NotFound("No Domain with this Id");
+        //    }
 
-            List<BusRestrict> BusRestrict = Unit_Of_Work.busRestrict_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-            if (BusRestrict == null || BusRestrict.Count == 0)
-            {
-                return NotFound("There are no bus Restricts in this domian");
-            }
+        //    List<BusRestrict> BusRestrict = Unit_Of_Work.busRestrict_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
+        //    if (BusRestrict == null || BusRestrict.Count == 0)
+        //    {
+        //        return NotFound("There are no bus Restricts in this domian");
+        //    }
 
-            List<BusRestrictGetDTO> BusRestrictDTO = mapper.Map<List<BusRestrictGetDTO>>(BusRestrict);
+        //    List<BusRestrictGetDTO> BusRestrictDTO = mapper.Map<List<BusRestrictGetDTO>>(BusRestrict);
 
-            return Ok(BusRestrictDTO);
-        }
+        //    return Ok(BusRestrictDTO);
+        //}
 
         ///////////////////////////////////////////////////
 
@@ -183,23 +161,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (NewRestrict == null) 
             { 
                 return BadRequest("Bus Restrict cannot be null"); 
-            }
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (NewRestrict.DomainId != employeeDomain)
-                {
-                    return Unauthorized();
-                }
-            }
-
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(NewRestrict.DomainId);
-            if (domain == null || domain.IsDeleted == true)
-            {
-                return NotFound("No Domain with this Id");
             }
 
             BusRestrict busRestrict = mapper.Map<BusRestrict>(NewRestrict);
@@ -247,27 +208,10 @@ namespace LMS_CMS_PL.Controllers.Bus
                 BadRequest();
             }
 
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(EditBusrestrict.DomainId);
-            if (domain == null || domain.IsDeleted == true)
-            {
-                return NotFound("No Domain with this Id");
-            }
-
             BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(EditBusrestrict.ID);
             if (busRestrict == null || busRestrict.IsDeleted == true)
             {
                 return NotFound("No Bus Restrict with this ID");
-            }
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (EditBusrestrict.DomainId != employeeDomain || busRestrict.DomainId != employeeDomain)
-                {
-                    return Unauthorized();
-                }
             }
 
             if (userTypeClaim == "employee")
@@ -351,14 +295,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 if (userTypeClaim == "employee")
                 {
-                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                    long employeeDomain = employee.Domain_ID;
-
-                    if (busRestrict.DomainId != employeeDomain)
-                    {
-                        return Unauthorized();
-                    }
-
                     Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Restricts");
                     if (page != null)
                     {

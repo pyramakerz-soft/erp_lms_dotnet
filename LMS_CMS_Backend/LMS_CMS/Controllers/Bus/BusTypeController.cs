@@ -51,17 +51,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                BusType = Unit_Of_Work.busType_Repository.FindBy(t => t.IsDeleted != true && t.DomainId == employeeDomain);
-            }
-            else
-            {
-                BusType = Unit_Of_Work.busType_Repository.FindBy(t => t.IsDeleted != true);
-            }
+            BusType = Unit_Of_Work.busType_Repository.FindBy(t => t.IsDeleted != true);
 
             if (BusType == null || BusType.Count == 0)
             {
@@ -102,18 +92,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 return NotFound("No bus Type with this ID");
             }
-            else
-            {
-                if (userTypeClaim == "employee")
-                {
-                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                    long employeeDomain = employee.Domain_ID;
-                    if (busType.DomainId != employeeDomain)
-                    {
-                        return Unauthorized();
-                    }
-                }
-            }
 
             BusTypeGetDTO typeDTO = mapper.Map<BusTypeGetDTO>(busType);
             return Ok(typeDTO);
@@ -121,50 +99,33 @@ namespace LMS_CMS_PL.Controllers.Bus
 
         ///////////////////////////////////////////////////
 
-        [HttpGet("DomainId")]
-        [Authorize_Endpoint_Attribute(
-            allowedTypes: new[] { "pyramakerz", "employee" },
-            pages: new[] { "Busses", "Bus Types" }
-        )]
-        public IActionResult GetByDomainId(long id)
-        {
-            var userClaims = HttpContext.User.Claims;
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+        //[HttpGet("DomainId")]
+        //[Authorize_Endpoint_Attribute(
+        //    allowedTypes: new[] { "pyramakerz", "employee" },
+        //    pages: new[] { "Busses", "Bus Types" }
+        //)]
+        //public IActionResult GetByDomainId(long id)
+        //{
+        //    var userClaims = HttpContext.User.Claims;
+        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        //    long.TryParse(userIdClaim, out long userId);
+        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-            if (userIdClaim == null || userTypeClaim == null)
-            {
-                return Unauthorized("User ID or Type claim not found.");
-            }
+        //    if (userIdClaim == null || userTypeClaim == null)
+        //    {
+        //        return Unauthorized("User ID or Type claim not found.");
+        //    }
 
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
+        //    List<BusType> BusType = Unit_Of_Work.busType_Repository.FindBy(s => s.IsDeleted != true);
+        //    if (BusType == null || BusType.Count == 0)
+        //    {
+        //        return NotFound();
+        //    }
 
-                if (id != employeeDomain)
-                {
-                    return Unauthorized();
-                }
-            }
+        //    List<BusTypeGetDTO> BusTypeDTO = mapper.Map<List<BusTypeGetDTO>>(BusType);
 
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
-            if (domain == null)
-            {
-                return NotFound("No Domain with this Id");
-            }
-
-            List<BusType> BusType = Unit_Of_Work.busType_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-            if (BusType == null || BusType.Count == 0)
-            {
-                return NotFound();
-            }
-
-            List<BusTypeGetDTO> BusTypeDTO = mapper.Map<List<BusTypeGetDTO>>(BusType);
-
-            return Ok(BusTypeDTO);
-        }
+        //    return Ok(BusTypeDTO);
+        //}
 
         ///////////////////////////////////////////////////
 
@@ -188,23 +149,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (NewBus == null)
             {
                 return BadRequest("Bus Type cannot be null");
-            }
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (NewBus.DomainId != employeeDomain)
-                {
-                    return Unauthorized();
-                }
-            }
-
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(NewBus.DomainId);
-            if (domain == null || domain.IsDeleted == true)
-            {
-                return NotFound("No Domain with this Id");
             }
 
             BusType bustType = mapper.Map<BusType>(NewBus);
@@ -253,28 +197,11 @@ namespace LMS_CMS_PL.Controllers.Bus
                 BadRequest();
             }
 
-            Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(EditBusType.DomainId);
-            if (domain == null || domain.IsDeleted == true)
-            {
-                return NotFound("No Domain with this Id");
-            }
-
             BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(EditBusType.ID);
 
             if (busType == null || busType.IsDeleted == true)
             {
                 return NotFound("No Bus Type with this ID");
-            }
-
-            if (userTypeClaim == "employee")
-            {
-                Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                long employeeDomain = employee.Domain_ID;
-
-                if (EditBusType.DomainId != employeeDomain || busType.DomainId != employeeDomain)
-                {
-                    return Unauthorized();
-                }
             }
 
             if (userTypeClaim == "employee")
@@ -359,14 +286,6 @@ namespace LMS_CMS_PL.Controllers.Bus
             {
                 if (userTypeClaim == "employee")
                 {
-                    Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-                    long employeeDomain = employee.Domain_ID;
-
-                    if (busType.DomainId != employeeDomain)
-                    {
-                        return Unauthorized();
-                    }
-
                     Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Types");
                     if (page != null)
                     {

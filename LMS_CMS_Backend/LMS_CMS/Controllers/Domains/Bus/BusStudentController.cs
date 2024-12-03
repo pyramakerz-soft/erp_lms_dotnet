@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices.JavaScript;
 using BusModel = LMS_CMS_DAL.Models.Domains.BusModule.Bus;
 
-namespace LMS_CMS_PL.Controllers.Bus
+namespace LMS_CMS_PL.Controllers.Domains.Bus
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -29,7 +29,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpGet("GetByBusId/{busId}")]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses" }
         )]
@@ -72,7 +72,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpGet("{Id}")]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses" }
         )]
@@ -112,7 +112,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpPost]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses" }
         )]
@@ -148,7 +148,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busStudentAddDTO.SemseterID != null)
             {
                 Semester semester = Unit_Of_Work.semester_Repository.Select_By_Id(busStudentAddDTO.SemseterID);
-                if (semester == null||semester.IsDeleted == true)
+                if (semester == null || semester.IsDeleted == true)
                 {
                     return NotFound("No Semester with this ID");
                 }
@@ -182,7 +182,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpPut]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowEdit: 1,
             pages: new[] { "Busses" }
@@ -207,7 +207,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             BusModel bus = Unit_Of_Work.bus_Repository.Select_By_Id(busStudentPutDTO.BusID);
-            if (bus == null||bus.IsDeleted == true)
+            if (bus == null || bus.IsDeleted == true)
             {
                 return NotFound("No Bus with this ID");
             }
@@ -221,7 +221,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             if (busStudentPutDTO.SemseterID != null)
             {
                 Semester semester = Unit_Of_Work.semester_Repository.Select_By_Id(busStudentPutDTO.SemseterID);
-                if (semester == null||semester.IsDeleted == true)
+                if (semester == null || semester.IsDeleted == true)
                 {
                     return NotFound("No Semester with this ID");
                 }
@@ -237,7 +237,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
 
             BusStudent busStudentExists = Unit_Of_Work.busStudent_Repository.Select_By_Id(busStudentPutDTO.ID);
-            if (busStudentExists == null||busStudentExists.IsDeleted == true)
+            if (busStudentExists == null || busStudentExists.IsDeleted == true)
             {
                 return NotFound("No Bus Student with this ID");
             }
@@ -288,7 +288,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         }
 
         [HttpDelete("{Id}")]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowDelete: 1,
             pages: new[] { "Busses" }
@@ -353,7 +353,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                 else if (userTypeClaim == "employee")
                 {
                     busStudent.DeletedByUserId = userId;
-                    if(busStudent.DeletedByPyramakerzId != null)
+                    if (busStudent.DeletedByPyramakerzId != null)
                     {
                         busStudent.DeletedByPyramakerzId = null;
                     }

@@ -8,14 +8,14 @@ namespace LMS_CMS_PL.Services
     {
         public UOW CreateOneDbContext(HttpContext httpContext)
         {
-            var connectionString = httpContext.Items["ConnectionString"] as string;
+            string connectionString = httpContext.Items["ConnectionString"] as string;
 
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new Exception("Connection string not found in HttpContext.");
             }
 
-            var Unit_Of_Work = new UOW(connectionString);
+            UOW Unit_Of_Work = new UOW(connectionString);
             return Unit_Of_Work;
         }
     }

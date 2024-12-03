@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LMS_CMS_PL.Controllers.Bus
+namespace LMS_CMS_PL.Controllers.Domains.Bus
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -28,7 +28,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////
 
         [HttpGet]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Restricts" }
         )]
@@ -61,7 +61,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////////////
 
         [HttpGet("id")]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Restricts" }
         )]
@@ -142,7 +142,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         ///////////////////////////////////////////////////
 
         [HttpPost]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             pages: new[] { "Busses", "Bus Restricts" }
         )]
@@ -158,9 +158,9 @@ namespace LMS_CMS_PL.Controllers.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewRestrict == null) 
-            { 
-                return BadRequest("Bus Restrict cannot be null"); 
+            if (NewRestrict == null)
+            {
+                return BadRequest("Bus Restrict cannot be null");
             }
 
             BusRestrict busRestrict = mapper.Map<BusRestrict>(NewRestrict);
@@ -172,7 +172,7 @@ namespace LMS_CMS_PL.Controllers.Bus
             }
             else if (userTypeClaim == "employee")
             {
-                busRestrict.InsertedByUserId= userId;
+                busRestrict.InsertedByUserId = userId;
             }
 
             Unit_Of_Work.busRestrict_Repository.Add(busRestrict);
@@ -184,7 +184,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         ////////////////////////////////////////////////////////
 
         [HttpPut]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowEdit: 1,
             pages: new[] { "Busses", "Bus Restricts" }
@@ -233,7 +233,7 @@ namespace LMS_CMS_PL.Controllers.Bus
                     return BadRequest("Bus Restricts page doesn't exist");
                 }
             }
-             
+
             mapper.Map(EditBusrestrict, busRestrict);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busRestrict.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -262,7 +262,7 @@ namespace LMS_CMS_PL.Controllers.Bus
         ////////////////////////////////////////////////////////
 
         [HttpDelete]
-        [Authorize_Endpoint_Attribute(
+        [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
             allowDelete: 1,
             pages: new[] { "Busses", "Bus Restricts" }

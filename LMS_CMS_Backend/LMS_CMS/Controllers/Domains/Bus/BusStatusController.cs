@@ -4,23 +4,25 @@ using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_PL.Attribute;
+using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS_CMS_PL.Controllers.Domains.Bus
 {
-    [Route("api/[controller]")]
+    [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
     public class BusStatusController : ControllerBase
     {
-        private UOW Unit_Of_Work;
+        private readonly DbContextFactoryService _dbContextFactory;
+
         IMapper mapper;
 
-        public BusStatusController(UOW Unit_Of_Work, IMapper mapper)
+        public BusStatusController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
-            this.Unit_Of_Work = Unit_Of_Work;
+            _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
         }
 
@@ -34,6 +36,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         )]
         public IActionResult Get()
         {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
             List<BusStatus> BusStatus;
 
             var userClaims = HttpContext.User.Claims;
@@ -67,6 +71,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         )]
         public IActionResult GetById(long id)
         {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
             if (id == 0)
             {
                 return BadRequest("Enter Bus Status ID");
@@ -146,6 +152,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         )]
         public IActionResult Add(BusStatusAddDTO NewBus)
         {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
@@ -189,6 +197,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         )]
         public IActionResult Edit(BusStatusEditDTO EditBusStatus)
         {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
@@ -269,6 +279,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         )]
         public IActionResult Delete(long id)
         {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;

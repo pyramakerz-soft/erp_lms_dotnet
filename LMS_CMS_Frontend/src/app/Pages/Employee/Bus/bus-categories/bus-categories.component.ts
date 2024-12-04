@@ -51,15 +51,15 @@ export class BusCategoriesComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
-      this.DomainID = this.User_Data_After_Login.domain;
-      this.GetTableData(this.DomainID);
-      this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Categories', items);
-        this.AllowEdit = settingsPage.allow_Edit;
-        this.AllowDelete = settingsPage.allow_Delete;
-        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
-        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
-      });
+      // this.DomainID = this.User_Data_After_Login.domain;
+      this.GetTableData();
+      // this.menuService.menuItemsForEmployee$.subscribe((items) => {
+      //   const settingsPage = this.menuService.findByPageName('Bus Categories', items);
+      //   this.AllowEdit = settingsPage.allow_Edit;
+      //   this.AllowDelete = settingsPage.allow_Delete;
+      //   this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+      //   this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+      // });
     } else if (this.User_Data_After_Login.type === "pyramakerz") {
       this.GetAllDomains();
       this.IsEmployee = false;
@@ -74,7 +74,7 @@ export class BusCategoriesComponent {
 
   AddNewType() {
     this.BusTypeServ.Add(this.DomainID, this.newType).subscribe((data) => {
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
       this.closeModal();
     });
   }
@@ -83,15 +83,14 @@ export class BusCategoriesComponent {
       this.DomainData = data;
     })
   }
-  GetTableData(id: number) {
-    if (this.DomainID !== null) {
-      this.BusTypeServ.GetByDomainId(id).subscribe((data) => {
+  GetTableData() {
+      this.BusTypeServ.Get().subscribe((data) => {
+        console.log(data)
         this.TableData=[];
         this.TableData = data;
+      } ,(error)=>{
+        console.log(error)
       });
-    } else {
-      console.log("No domain selected");
-    }
   }
 
   openModal() {
@@ -104,7 +103,7 @@ export class BusCategoriesComponent {
 
   Delete(id: number) {
     this.BusTypeServ.Delete(id).subscribe((data) => {
-      this.GetTableData(1);
+      this.GetTableData();
     })
   }
   Edit(id: number) {
@@ -122,7 +121,7 @@ export class BusCategoriesComponent {
   Save(){
     this.EditType.name=this.newType;
     this.BusTypeServ.Edit(this.EditType).subscribe(()=>{
-      this.GetTableData(1);
+      this.GetTableData();
       this.closeModal();
       this.newType="";
     })
@@ -141,7 +140,7 @@ export class BusCategoriesComponent {
     this.IsChoosenDomain=true;
     const selectedValue: number = Number((event.target as HTMLSelectElement).value);
     this.DomainID=selectedValue;
-    this.GetTableData(selectedValue);
+    this.GetTableData();
   }
   IsAllowDelete(InsertedByID: number) {
     if (this.IsEmployee == false) { return true; }

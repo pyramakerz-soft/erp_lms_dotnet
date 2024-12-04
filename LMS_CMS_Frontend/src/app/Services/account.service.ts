@@ -23,10 +23,8 @@ export class AccountService {
 
   Login(UserInfo: Login) {
     const headers = new HttpHeaders()
-      .set('domain-name', 'Domain 2') // Match 'domain-name' key exactly
+      .set('domain-name', 'Domain 2') 
       .set('Content-Type', 'application/json');
-  
-    console.log('Request Headers:', headers.get('domain-name')); // Verify header value
   
     return this.http.post(`${this.baseUrl}/Account`, UserInfo, {
       headers: headers,
@@ -39,6 +37,7 @@ export class AccountService {
     let token = localStorage.getItem("current_token")
     if(token){
       User_Data_After_Login = jwtDecode(token)
+      console.log("User_Data_After_Login",User_Data_After_Login)
       return User_Data_After_Login
     } else{
       return User_Data_After_Login

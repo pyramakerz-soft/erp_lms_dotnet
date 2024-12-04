@@ -138,6 +138,7 @@ export class LoginComponent {
           }
 
           this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
+          console.log("afterlog",this.User_Data_After_Login)
 
           if (this.User_Data_After_Login.type == "parent") {
             this.router.navigateByUrl("/Parent")

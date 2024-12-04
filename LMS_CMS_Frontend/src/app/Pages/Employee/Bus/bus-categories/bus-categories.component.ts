@@ -85,7 +85,6 @@ export class BusCategoriesComponent {
   }
   GetTableData() {
       this.BusTypeServ.Get().subscribe((data) => {
-        console.log(data)
         this.TableData=[];
         this.TableData = data;
       } ,(error)=>{

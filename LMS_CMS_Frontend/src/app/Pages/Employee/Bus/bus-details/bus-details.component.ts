@@ -46,9 +46,9 @@ export class BusDetailsComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
  
-
+  IsChoosenDomain: boolean = false;
   IsEmployee: boolean = true;
-
+  
   validationErrors: { [key in keyof Bus]?: string } = {};
 
   constructor(public busService:BusService, public account:AccountService, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
@@ -59,8 +59,8 @@ export class BusDetailsComponent {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID=this.User_Data_After_Login.id;
     if (this.User_Data_After_Login.type === "employee") {
-      this.domainId = this.User_Data_After_Login.domain;
-      this.busService.GetbyDomainId(this.domainId).subscribe(
+      this.IsChoosenDomain = true;
+      this.busService.Get().subscribe(
         (data: any) => {
           this.busData = data;
         }
@@ -77,7 +77,6 @@ export class BusDetailsComponent {
       this.IsEmployee = false;
       this.AllowEdit = true;
       this.AllowDelete = true;
-      console.log(this.AllowEdit,this.AllowDelete)
     }
   }
 
@@ -251,7 +250,6 @@ export class BusDetailsComponent {
 
   SaveBus(){
     this.bus.domainID = this.domainId
-    console.log(this.bus)
     if (this.isFormValid()) {
       if(this.editBus == false){
         this.busService.Add(this.bus).subscribe(
@@ -286,7 +284,6 @@ export class BusDetailsComponent {
   }
 
   MoveToBusStudent(busId:number){
-    console.log(busId)
     this.router.navigateByUrl('Employee/Bus Student/'+ busId);
   }
 

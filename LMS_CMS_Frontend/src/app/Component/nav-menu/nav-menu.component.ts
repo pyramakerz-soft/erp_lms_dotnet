@@ -57,7 +57,6 @@ export class NavMenuComponent {
 
       }
     }
-    console.log(this.allTokens)
   }
 
 

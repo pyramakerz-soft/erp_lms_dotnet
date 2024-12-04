@@ -37,7 +37,6 @@ export class AccountService {
     let token = localStorage.getItem("current_token")
     if(token){
       User_Data_After_Login = jwtDecode(token)
-      console.log("User_Data_After_Login",User_Data_After_Login)
       return User_Data_After_Login
     } else{
       return User_Data_After_Login

@@ -38,7 +38,7 @@ export const routes: Routes = [
             { path: "Busses", component: BusDetailsComponent, title: "Bus" },    
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus", },    
             { path: "Bus Student/:busId", component: BusStudentComponent, title: "Bus Student"},    
-            { path: "Bus Types", component: BusTypesComponent, title: "Bus Type" },    
+            { path: "Bus Type", component: BusTypesComponent, title: "Bus Type" },    
             { path: "Bus Status", component: BusStatusComponent, title: "Bus Status" },    
             { path: "Bus Restricts", component: BusRestrictsComponent, title: "Bus Restrict" },    
             { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category" },    

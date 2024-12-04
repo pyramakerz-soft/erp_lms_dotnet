@@ -14,7 +14,7 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 @Component({
   selector: 'app-bus-restricts',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './bus-restricts.component.html',
   styleUrl: './bus-restricts.component.css'
 })
@@ -36,13 +36,13 @@ export class BusRestrictsComponent {
 
   IsChoosenDomain: boolean = false;
   IsEmployee: boolean = true;
-  
+
   newType: string = '';
   isModalVisible: boolean = false;
   mode: string = "";
 
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService) { }
+  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService) { }
 
   ngOnInit() {
 
@@ -52,7 +52,7 @@ export class BusRestrictsComponent {
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
       this.DomainID = this.User_Data_After_Login.domain;
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
         const settingsPage = this.menuService.findByPageName('Bus Restricts', items);
         this.AllowEdit = settingsPage.allow_Edit;
@@ -68,36 +68,34 @@ export class BusRestrictsComponent {
     }
   }
 
-  Create(){
-    this.mode="add";
+  Create() {
+    this.mode = "add";
     this.openModal();
   }
 
   AddNewType() {
     this.busRestrictServ.Add(this.DomainID, this.newType).subscribe((data) => {
       this.closeModal();
-      this.newType="";
-      this.GetTableData(this.DomainID);
+      this.newType = "";
+      this.GetTableData();
 
     },
-    error => {
-      console.log(error)
-    });
+      error => {
+        console.log(error)
+      });
   }
   GetAllDomains() {
     this.DomainServ.Get().subscribe((data) => {
       this.DomainData = data;
     })
   }
-  GetTableData(id: number) {
-    if (this.DomainID !== null) {
-      this.busRestrictServ.GetByDomainId(id).subscribe((data) => {
-        this.TableData=[];
-        this.TableData = data;
-      });
-    } else {
-      console.log("No domain selected");
-    }
+  GetTableData() {
+    this.busRestrictServ.Get().subscribe((data) => {
+      this.TableData = [];
+      this.TableData = data;
+    }, (error) => {
+      console.log(error)
+    });
   }
 
   openModal() {
@@ -110,14 +108,14 @@ export class BusRestrictsComponent {
 
   Delete(id: number) {
     this.busRestrictServ.Delete(id).subscribe((data) => {
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
     })
   }
   Edit(id: number) {
-    this.mode="edit";
+    this.mode = "edit";
     const typeToEdit = this.TableData.find((t) => t.id === id);
     if (typeToEdit) {
-      this.EditType={ ...typeToEdit };
+      this.EditType = { ...typeToEdit };
       this.newType = this.EditType.name;
       this.openModal();
     } else {
@@ -125,29 +123,29 @@ export class BusRestrictsComponent {
     }
   }
 
-  Save(){
-    this.EditType.name=this.newType;
-    this.busRestrictServ.Edit(this.EditType).subscribe(()=>{
-      this.GetTableData(this.DomainID);
+  Save() {
+    this.EditType.name = this.newType;
+    this.busRestrictServ.Edit(this.EditType).subscribe(() => {
+      this.GetTableData();
       this.closeModal();
-      this.newType="";
+      this.newType = "";
     })
   }
 
-  CreateOREdit(){
-    if(this.mode==="add"){
+  CreateOREdit() {
+    if (this.mode === "add") {
       this.AddNewType();
     }
-    else if(this.mode==="edit"){
+    else if (this.mode === "edit") {
       this.Save();
     }
   }
 
-  getBusDataByDomainId(event:Event){
-    this.IsChoosenDomain=true;
+  getBusDataByDomainId(event: Event) {
+    this.IsChoosenDomain = true;
     const selectedValue: number = Number((event.target as HTMLSelectElement).value);
-    this.DomainID=selectedValue;
-    this.GetTableData(selectedValue);
+    this.DomainID = selectedValue;
+    this.GetTableData();
   }
 
   IsAllowDelete(InsertedByID: number) {

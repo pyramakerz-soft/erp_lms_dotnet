@@ -50,8 +50,7 @@ export class BusCompaniesComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
-      this.DomainID = this.User_Data_After_Login.domain;
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
         const settingsPage = this.menuService.findByPageName('Bus Companies', items);
         this.AllowEdit = settingsPage.allow_Edit;
@@ -74,7 +73,7 @@ export class BusCompaniesComponent {
 
   AddNewType() {
     this.BusTypeServ.Add(this.DomainID, this.newType).subscribe((data) => {
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
       this.closeModal();
     });
   }
@@ -83,17 +82,14 @@ export class BusCompaniesComponent {
       this.DomainData = data;
     })
   }
-  GetTableData(id: number) {
-    if (this.DomainID !== null) {
-      this.BusTypeServ.GetByDomainId(id).subscribe((data) => {
-        this.TableData=[];
-        this.TableData = data;
-      });
-    } else {
-      console.log("No domain selected");
-    }
-  }
-
+  GetTableData() {
+    this.BusTypeServ.Get().subscribe((data) => {
+      this.TableData=[];
+      this.TableData = data;
+    } ,(error)=>{
+      console.log(error)
+    });
+}
   openModal() {
     this.isModalVisible = true;
   }
@@ -104,7 +100,7 @@ export class BusCompaniesComponent {
 
   Delete(id: number) {
     this.BusTypeServ.Delete(id).subscribe((data) => {
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
     })
   }
   Edit(id: number) {
@@ -122,7 +118,7 @@ export class BusCompaniesComponent {
   Save(){
     this.EditType.name=this.newType;
     this.BusTypeServ.Edit(this.EditType).subscribe(()=>{
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
       this.closeModal();
       this.newType="";
     })
@@ -141,7 +137,7 @@ export class BusCompaniesComponent {
     this.IsChoosenDomain=true;
     const selectedValue: number = Number((event.target as HTMLSelectElement).value);
     this.DomainID=selectedValue;
-    this.GetTableData(selectedValue);
+    this.GetTableData();
   }
   IsAllowDelete(InsertedByID: number) {
     if (this.IsEmployee == false) { return true; }

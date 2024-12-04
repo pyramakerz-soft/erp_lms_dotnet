@@ -14,10 +14,10 @@ export class EmployeeService {
     this.baseUrl=ApiServ.BaseUrl
   }
 
-  GetWithTypeIdDomainID(typeId: number, domainID: number){
+  GetWithTypeIdDomainID(typeId: number){
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<Employee[]>(`${this.baseUrl}/Employee/GetByTypeIdDomainId/${typeId}/${domainID}`, { headers })
+    return this.http.get<Employee[]>(`${this.baseUrl}/Employee/GetByTypeId/${typeId}`, { headers })
   }
   
   GetByID(empID: number){

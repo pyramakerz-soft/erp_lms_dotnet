@@ -23,8 +23,8 @@ export class BusCategoriesComponent {
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   EditType: BusType = new BusType(0, "", 0);
 
-  AllowEdit: boolean = false;
-  AllowDelete: boolean = false;
+  AllowEdit: boolean = true;
+  AllowDelete: boolean = true;
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
@@ -53,13 +53,13 @@ export class BusCategoriesComponent {
       this.IsChoosenDomain = true;
       // this.DomainID = this.User_Data_After_Login.domain;
       this.GetTableData();
-      // this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      //   const settingsPage = this.menuService.findByPageName('Bus Categories', items);
-      //   this.AllowEdit = settingsPage.allow_Edit;
-      //   this.AllowDelete = settingsPage.allow_Delete;
-      //   this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
-      //   this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
-      // });
+      this.menuService.menuItemsForEmployee$.subscribe((items) => {
+        const settingsPage = this.menuService.findByPageName('Bus Categories', items);
+        this.AllowEdit = settingsPage.allow_Edit;
+        this.AllowDelete = settingsPage.allow_Delete;
+        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+      });
     } else if (this.User_Data_After_Login.type === "pyramakerz") {
       this.GetAllDomains();
       this.IsEmployee = false;

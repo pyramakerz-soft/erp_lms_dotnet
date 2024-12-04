@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS_CMS_PL.Controllers.Domains
 {
-    [Route("api/[controller]")]
+    [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
     public class ParentController : ControllerBase
@@ -33,7 +33,7 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             if (parent == null || parent.IsDeleted == true)
             {
-                return NotFound("No employee found");
+                return NotFound("No Parent found");
             }
 
             ParentGetDTO employeeDTO = mapper.Map<ParentGetDTO>(parent);

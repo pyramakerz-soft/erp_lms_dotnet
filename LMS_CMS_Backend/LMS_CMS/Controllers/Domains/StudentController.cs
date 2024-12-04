@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LMS_CMS_PL.Controllers
+namespace LMS_CMS_PL.Controllers.Domains
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
@@ -33,7 +33,7 @@ namespace LMS_CMS_PL.Controllers
 
             if (student == null || student.IsDeleted == true)
             {
-                return NotFound("No employee found");
+                return NotFound("No Student found");
             }
 
             StudentGetDTO StudentDTO = mapper.Map<StudentGetDTO>(student);

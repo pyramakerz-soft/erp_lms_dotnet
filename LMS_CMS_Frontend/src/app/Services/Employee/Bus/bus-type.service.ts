@@ -10,49 +10,70 @@ import { BusTypeAdd } from '../../../Models/Bus/bus-type-add';
 })
 export class BusTypeService {
 
-  baseUrl=""
+  baseUrl = ""
+  header = ""
 
-  constructor(public http: HttpClient, public ApiServ:ApiService){  
-    this.baseUrl=ApiServ.BaseUrl
+  constructor(public http: HttpClient, public ApiServ: ApiService) {
+    this.baseUrl = ApiServ.BaseUrl
+    this.header = ApiServ.GetHeader();
   }
 
-  Get(){
+
+  Get() {
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
     return this.http.get<BusType[]>(`${this.baseUrl}/BusType`, { headers })
   }
 
   Add(domainId: number, name: string): Observable<any> {
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
     const body = { DomainId: domainId, Name: name };
 
     return this.http.post<any>(`${this.baseUrl}/BusType`, body, {
-        headers: headers,
-        responseType: 'text' as 'json'
+      headers: headers,
+      responseType: 'text' as 'json'
     });
-}
+  }
 
-  Edit(NewType:BusType): Observable<BusType> {
+  Edit(NewType: BusType): Observable<BusType> {
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
     return this.http.put<BusType>(`${this.baseUrl}/BusType`, NewType, { headers });
   }
 
-  Delete(id:number){
+  Delete(id: number) {
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
     return this.http.delete(`${this.baseUrl}/BusType?id=${id}`, { headers })
   }
 
-  GetByID(id:number){
+  GetByID(id: number) {
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
     return this.http.get(`${this.baseUrl}/BusType/${id}`, { headers })
   }
-  GetByDomainId(id:number){
+  GetByDomainId(id: number) {
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
     return this.http.get<BusType[]>(`${this.baseUrl}/BusType/DomainId?id=${id}`, { headers })
 
   }

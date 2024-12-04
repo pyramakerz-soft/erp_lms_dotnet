@@ -8,21 +8,29 @@ import { BusStudent } from '../../../Models/Bus/bus-student';
 })
 export class BusStudentService {
 
-  baseUrl=""
+  baseUrl = ""
+  header = ""
 
-  constructor(public http: HttpClient, public ApiServ:ApiService){  
-    this.baseUrl=ApiServ.BaseUrl
+  constructor(public http: HttpClient, public ApiServ: ApiService) {
+    this.baseUrl = ApiServ.BaseUrl
+    this.header = ApiServ.GetHeader();
   }
 
   GetbyBusId(busId: number){
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
     return this.http.get<BusStudent[]>(`${this.baseUrl}/BusStudent/GetByBusId/${busId}`, { headers })
   }
 
   DeleteBusStudent(busStudentId: number){
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
     return this.http.delete(`${this.baseUrl}/BusStudent/${busStudentId}`, { headers })
   }
 }

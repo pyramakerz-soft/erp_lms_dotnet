@@ -26,23 +26,23 @@ import { BusStudentComponent } from './Pages/Employee/Bus/bus-student/bus-studen
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
     { path: "Pyramakerz/login", component: PyramakerzLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
+    { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category" },    
 
     
     { 
         path: "Employee",     
         component: MainLayoutComponent, 
         title: "Employee Home", 
-        canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard], 
         children: [
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" },    
-            { path: "Busses", component: BusDetailsComponent, title: "Bus" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
-            { path: "Bus Details",component: BusDetailsComponent,title: "Bus", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
-            { path: "Bus Student/:busId", component: BusStudentComponent, title: "Bus Student", canActivate:[noNavigateWithoutLoginGuard] },    
-            { path: "Bus Types", component: BusTypesComponent, title: "Bus Type" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
-            { path: "Bus Status", component: BusStatusComponent, title: "Bus Status" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
-            { path: "Bus Restricts", component: BusRestrictsComponent, title: "Bus Restrict" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
-            { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
-            { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
+            { path: "Busses", component: BusDetailsComponent, title: "Bus" },    
+            { path: "Bus Details",component: BusDetailsComponent,title: "Bus", },    
+            { path: "Bus Student/:busId", component: BusStudentComponent, title: "Bus Student"},    
+            { path: "Bus Types", component: BusTypesComponent, title: "Bus Type" },    
+            { path: "Bus Status", component: BusStatusComponent, title: "Bus Status" },    
+            { path: "Bus Restricts", component: BusRestrictsComponent, title: "Bus Restrict" },    
+            { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category" },    
+            { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company" },  
         ]
     },
     { 

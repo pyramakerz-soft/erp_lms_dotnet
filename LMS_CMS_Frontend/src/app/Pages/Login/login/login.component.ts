@@ -148,6 +148,7 @@ export class LoginComponent {
           }
 
         }, (error) => {
+          console.log(error)
           if (error.error === "UserName or Password is Invalid") {
             this.somthingError = "UserName or Password is Invalid"
           }

@@ -22,7 +22,6 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Role> Role_Repository;
         GenericRepo<LMS_CMS_DAL.Models.Octa.Domain> Domain_Octa_Repository;
         GenericRepo<School> School_Repository;
-        GenericRepo<Domain_Page_Detailes> Domain_Page_Detailes_Repository;
         GenericRepo<Page> Page_Repository;
         GenericRepo<Role_Detailes> Role_Detailes_Repository;
         GenericRepo<Pyramakerz> Pyramakerz_Repository;
@@ -129,18 +128,6 @@ namespace LMS_CMS_BL.UOW
                     Pyramakerz_Repository = new GenericRepo<Pyramakerz>(db);
                 }
                 return Pyramakerz_Repository;
-            }
-        }
-
-        public GenericRepo<Domain_Page_Detailes> domain_Page_Detailes_Repository
-        {
-            get
-            {
-                if (Domain_Page_Detailes_Repository == null)
-                {
-                    Domain_Page_Detailes_Repository = new GenericRepo<Domain_Page_Detailes>(db);
-                }
-                return Domain_Page_Detailes_Repository;
             }
         }
 

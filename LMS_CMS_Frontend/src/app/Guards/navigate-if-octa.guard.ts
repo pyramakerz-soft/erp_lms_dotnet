@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AccountService } from '../Services/account.service';
 import { TokenData } from '../Models/token-data';
-export const navigateIfPyramakerzGuard: CanActivateFn = (route, state) => {
+export const navigateIfOctaGuard: CanActivateFn = (route, state) => {
   let token = localStorage.getItem("current_token")
   const router = inject(Router);
   const account = inject(AccountService);
@@ -10,7 +10,7 @@ export const navigateIfPyramakerzGuard: CanActivateFn = (route, state) => {
   User_Data_After_Login = account.Get_Data_Form_Token()
   let User_Type = User_Data_After_Login.type
 
-  if(User_Type!="pyramakerz"){
+  if(User_Type!="octa"){
     if(User_Type=="parent"){
       router.navigateByUrl('Parent');
       return false;

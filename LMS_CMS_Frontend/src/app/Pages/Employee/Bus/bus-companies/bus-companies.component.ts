@@ -59,7 +59,7 @@ export class BusCompaniesComponent {
         this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
       });
-    } else if (this.User_Data_After_Login.type === "pyramakerz") {
+    } else if (this.User_Data_After_Login.type === "octa") {
       this.GetAllDomains();
       this.IsEmployee = false;
       this.AllowEdit = true;

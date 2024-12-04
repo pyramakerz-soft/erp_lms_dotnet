@@ -50,7 +50,7 @@ export class MainLayoutComponent {
         }
       ]
     }
-    else if (this.User_Data_After_Login.type == "pyramakerz") {
+    else if (this.User_Data_After_Login.type == "octa") {
       await this.Get_All_With_Group_By();
     }
   }

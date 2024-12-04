@@ -29,7 +29,7 @@ export const noNavigateWithoutLoginGuard: CanActivateFn = (route, state) => {
 
   switch (userData.type) {
 
-    case 'pyramakerz':
+    case 'octa':
       return true;
 
     case 'employee':

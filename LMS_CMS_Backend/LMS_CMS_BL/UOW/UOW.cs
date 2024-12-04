@@ -20,11 +20,11 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Parent> Parent_Repository;
         GenericRepo<Student> Student_Repository;
         GenericRepo<Role> Role_Repository;
-        GenericRepo<LMS_CMS_DAL.Models.Octa.Domain> Domain_Octa_Repository;
+        GenericRepo<Domain> Domain_Octa_Repository;
         GenericRepo<School> School_Repository;
         GenericRepo<Page> Page_Repository;
         GenericRepo<Role_Detailes> Role_Detailes_Repository;
-        GenericRepo<Pyramakerz> Pyramakerz_Repository;
+        GenericRepo<Octa> Octa_Repository;
         GenericRepo<Bus> Bus_Repository;
         GenericRepo<BusStudent> BusStudent_Repository;
         GenericRepo<BusType> BusType_Repository;
@@ -95,13 +95,13 @@ namespace LMS_CMS_BL.UOW
                 return Role_Repository;
             }
         }
-        public GenericRepo<LMS_CMS_DAL.Models.Octa.Domain> domain_Octa_Repository
+        public GenericRepo<Domain> domain_Octa_Repository
         {
             get
             {
                 if (Domain_Octa_Repository == null)
                 {
-                    Domain_Octa_Repository = new GenericRepo<LMS_CMS_DAL.Models.Octa.Domain>(octa_Db);
+                    Domain_Octa_Repository = new GenericRepo<Domain>(octa_Db);
                 }
                 return Domain_Octa_Repository;
             }
@@ -119,15 +119,15 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
-        public GenericRepo<Pyramakerz> pyramakerz_Repository
+        public GenericRepo<Octa> octa_Repository
         {
             get
             {
-                if (Pyramakerz_Repository == null)
+                if (Octa_Repository == null)
                 {
-                    Pyramakerz_Repository = new GenericRepo<Pyramakerz>(db);
+                    Octa_Repository = new GenericRepo<Octa>(octa_Db);
                 }
-                return Pyramakerz_Repository;
+                return Octa_Repository;
             }
         }
 

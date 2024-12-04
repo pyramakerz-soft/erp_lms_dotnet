@@ -18,8 +18,8 @@ export const navigateIfStudentGuard: CanActivateFn = (route, state) => {
     }else if(User_Type=="employee"){
       router.navigateByUrl('Employee');
       return false;
-    }else if(User_Type=="pyramakerz"){
-      router.navigateByUrl('Pyramakerz');
+    }else if(User_Type=="octa"){
+      router.navigateByUrl('octa');
       return false;
     }
   }

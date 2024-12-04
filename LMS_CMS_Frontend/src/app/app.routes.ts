@@ -9,10 +9,9 @@ import { navigateIfParentGuard } from './Guards/navigate-if-parent.guard';
 import { navigateIfStudentGuard } from './Guards/navigate-if-student.guard';
 import { navigateIfEmployeeGuard } from './Guards/navigate-if-employee.guard';
 import { MainLayoutComponent } from './Pages/Layouts/main-layout/main-layout.component';
-import { PyramakerzLoginComponent } from './Pages/Login/pyramakerz-login/pyramakerz-login.component';
-import { navigateIfPyramakerzGuard } from './Guards/navigate-if-pyramakerz.guard';
-import { noNavigateWithoutPyramakerzLoginGuard } from './Guards/no-navigate-without-pyramakerz-login.guard';
-import { SettingsComponent } from './Pages/Employee/settings/settings.component';
+import { OctaLoginComponent } from './Pages/Login/octa-login/octa-login.component';
+import { navigateIfOctaGuard } from './Guards/navigate-if-octa.guard';
+import { noNavigateWithoutOctaLoginGuard } from './Guards/no-navigate-without-octa-login.guard';
 import { navigateIfHaveSettingPageGuard } from './Guards/navigate-if-have-This-page.guard';
 import { BusTypesComponent } from './Pages/Employee/Bus/bus-types/bus-types.component';
 import { BusStatusComponent } from './Pages/Employee/Bus/bus-status/bus-status.component';
@@ -25,7 +24,8 @@ import { BusStudentComponent } from './Pages/Employee/Bus/bus-student/bus-studen
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
-    { path: "Pyramakerz/login", component: PyramakerzLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
+    { path: "Octa/login", component: OctaLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
+
     
     { 
         path: "Employee",     
@@ -63,10 +63,10 @@ export const routes: Routes = [
         ]
     },
     { 
-        path: "Pyramakerz", 
+        path: "Octa", 
         component: MainLayoutComponent, 
-        title: "Pyramakerz Home",
-        canActivate:[noNavigateWithoutPyramakerzLoginGuard, navigateIfPyramakerzGuard ,navigateIfHaveSettingPageGuard], 
+        title: "Octa Home",
+        canActivate:[noNavigateWithoutOctaLoginGuard, navigateIfOctaGuard ,navigateIfHaveSettingPageGuard], 
         children: [
             { path: "Busses", component: BusDetailsComponent, title: "Bus" , canActivate:[navigateIfHaveSettingPageGuard]},    
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    

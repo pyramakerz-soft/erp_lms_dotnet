@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models.Domains
+namespace LMS_CMS_DAL.Models.Octa
 {
-    public class Pyramakerz
+    public class Octa
     {
         [Key]
         public long ID { get; set; }

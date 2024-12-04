@@ -9,13 +9,13 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-pyramakerz-login',
+  selector: 'app-octa-login',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './pyramakerz-login.component.html',
-  styleUrl: './pyramakerz-login.component.css'
+  templateUrl: './octa-login.component.html',
+  styleUrl: './octa-login.component.css'
 })
-export class PyramakerzLoginComponent {
+export class OctaLoginComponent {
 
   userInfo: Login = new Login("", "", "", "");
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
@@ -28,7 +28,7 @@ export class PyramakerzLoginComponent {
 
 
   SignIN() {
-    this.userInfo.type = "pyramakerz";
+    this.userInfo.type = "octa";
     this.accountService.Login(this.userInfo).subscribe(
       (d: any) => {
 
@@ -81,7 +81,7 @@ export class PyramakerzLoginComponent {
         }
 
         this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
-        this.router.navigateByUrl("Pyramakerz/Home")
+        this.router.navigateByUrl("Octa/Home")
         
       }, (error) => {
         if (error.error === "UserName or Password is Invalid") {

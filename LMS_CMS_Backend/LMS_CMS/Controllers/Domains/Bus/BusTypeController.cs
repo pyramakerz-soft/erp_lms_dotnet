@@ -35,7 +35,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Types" }
         )]
         public IActionResult Get()
@@ -70,7 +70,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpGet("id")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Types" }
         )]
         public IActionResult GetById(long id)
@@ -136,7 +136,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Types" }
         )]
         public IActionResult Add(BusTypeAddDTO NewBus)
@@ -162,9 +162,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             bustType.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "pyramakerz")
+            if (userTypeClaim == "octa")
             {
-                bustType.InsertedByPyramakerzId = userId;
+                bustType.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
@@ -181,7 +181,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpPut]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
             pages: new[] { "Busses", "Bus Types" }
         )]
@@ -237,9 +237,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busType.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "pyramakerz")
+            if (userTypeClaim == "octa")
             {
-                busType.UpdatedByPyramakerzId = userId;
+                busType.UpdatedByOctaId = userId;
                 if (busType.UpdatedByUserId != null)
                 {
                     busType.UpdatedByUserId = null;
@@ -248,9 +248,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             else if (userTypeClaim == "employee")
             {
                 busType.UpdatedByUserId = userId;
-                if (busType.UpdatedByPyramakerzId != null)
+                if (busType.UpdatedByOctaId != null)
                 {
-                    busType.UpdatedByPyramakerzId = null;
+                    busType.UpdatedByOctaId = null;
                 }
             }
 
@@ -263,7 +263,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpDelete]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
             pages: new[] { "Busses", "Bus Types" }
         )]
@@ -318,9 +318,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 busType.IsDeleted = true;
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
                 busType.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                if (userTypeClaim == "pyramakerz")
+                if (userTypeClaim == "octa")
                 {
-                    busType.DeletedByPyramakerzId = userId;
+                    busType.DeletedByOctaId = userId;
                     if (busType.DeletedByUserId != null)
                     {
                         busType.DeletedByUserId = null;
@@ -329,9 +329,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 else if (userTypeClaim == "employee")
                 {
                     busType.DeletedByUserId = userId;
-                    if (busType.DeletedByPyramakerzId != null)
+                    if (busType.DeletedByOctaId != null)
                     {
-                        busType.DeletedByPyramakerzId = null;
+                        busType.DeletedByOctaId = null;
                     }
                 }
 

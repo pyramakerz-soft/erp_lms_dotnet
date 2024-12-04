@@ -10,6 +10,7 @@ namespace LMS_CMS_DAL.Models.Octa
     public class Octa_DbContext : DbContext
     {
         public DbSet<Domain> Domains { get; set; }
+        public DbSet<Octa> Octa { get; set; }
 
         public Octa_DbContext(DbContextOptions<Octa_DbContext> options)
             : base(options)
@@ -21,6 +22,12 @@ namespace LMS_CMS_DAL.Models.Octa
             modelBuilder.Entity<Domain>()
                .HasIndex(p => p.Name)
                .IsUnique();
+            modelBuilder.Entity<Octa>()
+               .HasIndex(p => p.Email)
+               .IsUnique();
+            modelBuilder.Entity<Octa>()
+                .HasIndex(p => p.User_Name)
+                .IsUnique();
         }
     }
 }

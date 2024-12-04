@@ -84,9 +84,6 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<Student, StudentGetDTO>();
             CreateMap<StudentGetDTO, Student>();
-
-
-
         }
     }
 }

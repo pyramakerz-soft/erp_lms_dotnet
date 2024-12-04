@@ -20,7 +20,7 @@ export const navigateIfHaveSettingPageGuard: CanActivateFn = (route, state) => {
 
   const userData = accountService.Get_Data_Form_Token();
 
-  if (userData.type==="pyramakerz") {
+  if (userData.type==="octa") {
     return true;  
   }
 

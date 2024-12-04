@@ -28,7 +28,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         ///////////////////////////////////////////
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Categories" }
         )]
         public IActionResult Get()
@@ -56,7 +56,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpGet("id")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Categories" }
         )]
         public IActionResult GetById(long id)
@@ -137,7 +137,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Categories" }
         )]
         public IActionResult Add(BusCatigoryAddDTO NewCategory)
@@ -163,9 +163,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busCategory.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "pyramakerz")
+            if (userTypeClaim == "octa")
             {
-                busCategory.InsertedByPyramakerzId = userId;
+                busCategory.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
@@ -181,7 +181,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpPut]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
             pages: new[] { "Busses", "Bus Categories" }
         )]
@@ -235,9 +235,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             mapper.Map(EditBusCatigory, busCatigory);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busCatigory.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "pyramakerz")
+            if (userTypeClaim == "octa")
             {
-                busCatigory.UpdatedByPyramakerzId = userId;
+                busCatigory.UpdatedByOctaId = userId;
                 if (busCatigory.UpdatedByUserId != null)
                 {
                     busCatigory.UpdatedByUserId = null;
@@ -246,9 +246,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             else if (userTypeClaim == "employee")
             {
                 busCatigory.UpdatedByUserId = userId;
-                if (busCatigory.UpdatedByPyramakerzId != null)
+                if (busCatigory.UpdatedByOctaId != null)
                 {
-                    busCatigory.UpdatedByPyramakerzId = null;
+                    busCatigory.UpdatedByOctaId = null;
                 }
             }
 
@@ -261,7 +261,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpDelete]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
             pages: new[] { "Busses", "Bus Categories" }
         )]
@@ -316,9 +316,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 busCategory.IsDeleted = true;
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
                 busCategory.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                if (userTypeClaim == "pyramakerz")
+                if (userTypeClaim == "octa")
                 {
-                    busCategory.DeletedByPyramakerzId = userId;
+                    busCategory.DeletedByOctaId = userId;
                     if (busCategory.DeletedByUserId != null)
                     {
                         busCategory.DeletedByUserId = null;
@@ -327,9 +327,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 else if (userTypeClaim == "employee")
                 {
                     busCategory.DeletedByUserId = userId;
-                    if (busCategory.DeletedByPyramakerzId != null)
+                    if (busCategory.DeletedByOctaId != null)
                     {
-                        busCategory.DeletedByPyramakerzId = null;
+                        busCategory.DeletedByOctaId = null;
                     }
                 }
 

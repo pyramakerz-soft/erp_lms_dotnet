@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace LMS_CMS_PL.Controllers
+namespace LMS_CMS_PL.Controllers.Domains
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             var roleDetailsList = await Unit_Of_Work.role_Detailes_Repository.Database().Role_Detailes
-                .Where(rd => rd.Role_ID == roleId && rd.IsDeleted!=true)
+                .Where(rd => rd.Role_ID == roleId && rd.IsDeleted != true)
                 .Include(rd => rd.Page)  // Include the related Page entity
                 .ThenInclude(p => p.ChildPages) // Include the child pages
                 .ToListAsync();
@@ -48,7 +48,7 @@ namespace LMS_CMS_PL.Controllers
 
             // Group role details by parent page
             var parentPages = roleDetailsList
-                .Where(rd => rd.Page.Page_ID == null && rd.IsDeleted!=true)  // Only root-level pages
+                .Where(rd => rd.Page.Page_ID == null && rd.IsDeleted != true)  // Only root-level pages
                 .GroupBy(rd => rd.Page.ID) // Group by parent page ID to avoid duplication
                 .Select(group => new Role_Details_GetDTO
                 {

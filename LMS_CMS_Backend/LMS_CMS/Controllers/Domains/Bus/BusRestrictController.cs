@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Restricts" }
         )]
         public IActionResult Get()
@@ -66,7 +66,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpGet("id")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Restricts" }
         )]
         public IActionResult GetById(long id)
@@ -149,7 +149,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Busses", "Bus Restricts" }
         )]
         public IActionResult Add(BusRestrictAddDTO NewRestrict)
@@ -174,9 +174,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             BusRestrict busRestrict = mapper.Map<BusRestrict>(NewRestrict);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busRestrict.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "pyramakerz")
+            if (userTypeClaim == "octa")
             {
-                busRestrict.InsertedByPyramakerzId = userId;
+                busRestrict.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
@@ -193,7 +193,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpPut]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
             pages: new[] { "Busses", "Bus Restricts" }
         )]
@@ -247,9 +247,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             mapper.Map(EditBusrestrict, busRestrict);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busRestrict.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "pyramakerz")
+            if (userTypeClaim == "octa")
             {
-                busRestrict.UpdatedByPyramakerzId = userId;
+                busRestrict.UpdatedByOctaId = userId;
                 if (busRestrict.UpdatedByUserId != null)
                 {
                     busRestrict.UpdatedByUserId = null;
@@ -258,9 +258,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             else if (userTypeClaim == "employee")
             {
                 busRestrict.UpdatedByUserId = userId;
-                if (busRestrict.UpdatedByPyramakerzId != null)
+                if (busRestrict.UpdatedByOctaId != null)
                 {
-                    busRestrict.UpdatedByPyramakerzId = null;
+                    busRestrict.UpdatedByOctaId = null;
                 }
             }
 
@@ -273,7 +273,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         [HttpDelete]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "pyramakerz", "employee" },
+            allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
             pages: new[] { "Busses", "Bus Restricts" }
         )]
@@ -328,9 +328,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 busRestrict.IsDeleted = true;
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
                 busRestrict.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                if (userTypeClaim == "pyramakerz")
+                if (userTypeClaim == "octa")
                 {
-                    busRestrict.DeletedByPyramakerzId = userId;
+                    busRestrict.DeletedByOctaId = userId;
                     if (busRestrict.DeletedByUserId != null)
                     {
                         busRestrict.DeletedByUserId = null;
@@ -339,9 +339,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 else if (userTypeClaim == "employee")
                 {
                     busRestrict.DeletedByUserId = userId;
-                    if (busRestrict.DeletedByPyramakerzId != null)
+                    if (busRestrict.DeletedByOctaId != null)
                     {
-                        busRestrict.DeletedByPyramakerzId = null;
+                        busRestrict.DeletedByOctaId = null;
                     }
                 }
 

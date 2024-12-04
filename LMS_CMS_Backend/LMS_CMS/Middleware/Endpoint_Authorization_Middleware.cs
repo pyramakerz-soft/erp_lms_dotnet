@@ -40,7 +40,7 @@ namespace LMS_CMS_PL.Middleware
 
             var roleId = userClaims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
             // Allow `pyramakerz` full access
-            if (userType == "pyramakerz")
+            if (userType == "octa")
             {
                 await _next(context);
                 return;

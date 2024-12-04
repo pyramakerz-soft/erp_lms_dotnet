@@ -11,13 +11,11 @@ namespace LMS_CMS_DAL.Models.Domains
     {
         public DbSet<Parent> Parents { get; set; }
         public DbSet<Student> Students { get; set; }
-        public DbSet<Pyramakerz> Pyramakerz { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<School> Schools { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<Role_Detailes> Role_Detailes { get; set; }
-
         public DbSet<EmployeeType> EmployeeType { get; set; }
         public DbSet<AcademicYear> AcademicYear { get; set; }
         public DbSet<Semester> Semester { get; set; }
@@ -28,9 +26,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<BusCompany> BusCompany { get; set; }
         public DbSet<Bus> Bus { get; set; }
         public DbSet<BusStudent> BusStudent { get; set; }
-
-
-
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -52,13 +47,6 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<Student>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
-            modelBuilder.Entity<Pyramakerz>()
-               .HasIndex(p => p.Email)
-               .IsUnique();
-            modelBuilder.Entity<Pyramakerz>()
-                .HasIndex(p => p.User_Name)
-                .IsUnique();
-
             modelBuilder.Entity<Employee>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
@@ -196,12 +184,6 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasOne(b => b.DeletedByEmployee)
                 .WithMany()
                 .HasForeignKey(b => b.DeletedByUserId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<Bus>()
-                .HasOne(b => b.DeletedByPyramakerz)
-                .WithMany()
-                .HasForeignKey(b => b.DeletedByPyramakerzId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }

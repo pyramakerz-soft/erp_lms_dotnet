@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20241204133054_RemovePyramakerzTableMigration")]
+    partial class RemovePyramakerzTableMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,11 +73,17 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByOctaId");
 
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("SchoolID");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -158,13 +167,19 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("BusTypeID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("DriverAssistantID");
 
                     b.HasIndex("DriverID");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -216,9 +231,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -270,9 +291,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -324,9 +351,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -378,9 +411,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -452,13 +491,19 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("BusID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByOctaId");
 
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("SemseterID");
 
                     b.HasIndex("StudentID");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -510,9 +555,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -590,13 +641,19 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("BusCompanyID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("EmployeeTypeID");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Role_ID");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -716,12 +773,18 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -776,9 +839,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -843,13 +912,19 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByOctaId");
 
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Page_ID");
 
                     b.HasIndex("Role_ID");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -901,9 +976,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -960,9 +1041,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("AcademicYearID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1036,14 +1123,20 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("DeletedByOctaId");
+
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("InsertedByOctaId");
+
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Parent_Id");
+
+                    b.HasIndex("UpdatedByOctaId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1053,11 +1146,46 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.ToTable("Students");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Octa.Octa", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("User_Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Octa");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AcademicYear", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -1069,17 +1197,27 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("InsertedByOcta");
 
                     b.Navigation("School");
 
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.Bus", b =>
@@ -1104,6 +1242,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("BusTypeID")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId")
@@ -1119,9 +1262,17 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("DriverID")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1137,24 +1288,42 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("Driver");
 
                     b.Navigation("DriverAssistant");
 
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusCategory", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1162,20 +1331,38 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusCompany", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1183,20 +1370,38 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusRestrict", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1204,20 +1409,38 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusStatus", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1225,9 +1448,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusStudent", b =>
@@ -1243,9 +1472,17 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -1262,6 +1499,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
@@ -1272,24 +1513,42 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("InsertedByOcta");
 
                     b.Navigation("Semester");
 
                     b.Navigation("Student");
 
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusType", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1297,9 +1556,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Employee", b =>
@@ -1308,6 +1573,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany("Employees")
                         .HasForeignKey("BusCompanyID")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
@@ -1319,6 +1588,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
@@ -1329,6 +1602,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
@@ -1337,13 +1614,19 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("EmployeeType");
 
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("Role");
 
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Page", b =>
@@ -1358,13 +1641,25 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Parent", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1372,20 +1667,38 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Role", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1393,16 +1706,30 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Role_Detailes", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -1420,30 +1747,52 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("InsertedByOcta");
 
                     b.Navigation("Page");
 
                     b.Navigation("Role");
 
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.School", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1451,9 +1800,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Semester", b =>
@@ -1463,13 +1818,25 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("AcademicYearID")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -1479,16 +1846,30 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
 
+                    b.Navigation("InsertedByOcta");
+
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Student", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "DeletedByOcta")
+                        .WithMany()
+                        .HasForeignKey("DeletedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "InsertedByOcta")
+                        .WithMany()
+                        .HasForeignKey("InsertedByOctaId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -1500,17 +1881,27 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Octa.Octa", "UpdatedByOcta")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByOctaId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("DeletedByOcta");
+
                     b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("InsertedByOcta");
 
                     b.Navigation("Parent");
 
                     b.Navigation("UpdatedByEmployee");
+
+                    b.Navigation("UpdatedByOcta");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AcademicYear", b =>

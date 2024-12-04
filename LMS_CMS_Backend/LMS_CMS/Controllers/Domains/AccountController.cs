@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -18,11 +19,13 @@ namespace LMS_CMS_PL.Controllers.Domains
     {
         private readonly DbContextFactoryService _dbContextFactory;
         private readonly IConfiguration _configuration;
+        private readonly UOW _Unit_Of_Work_Octa;
 
-        public AccountController(DbContextFactoryService dbContextFactory, IConfiguration configuration)
+        public AccountController(DbContextFactoryService dbContextFactory, IConfiguration configuration, UOW unit_Of_Work_Octa)
         {
             _dbContextFactory = dbContextFactory;
             _configuration = configuration;
+            _Unit_Of_Work_Octa = unit_Of_Work_Octa;
         }
 
         [HttpPost]
@@ -34,7 +37,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("Data Can't be null");
             }
-            if (UserInfo.Type == null || !new[] { "employee", "student", "parent", "pyramakerz" }.Contains(UserInfo.Type.ToLower()))
+            if (UserInfo.Type == null || !new[] { "employee", "student", "parent", "octa" }.Contains(UserInfo.Type.ToLower()))
             {
                 return BadRequest("Invalid user type.");
             }
@@ -52,7 +55,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                 "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password && emp.IsDeleted != true),
                 "student" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == UserInfo.User_Name && stu.Password == UserInfo.Password && stu.IsDeleted != true),
                 "parent" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password && par.IsDeleted != true),
-                "pyramakerz" => Unit_Of_Work.pyramakerz_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password),
+                "octa" => _Unit_Of_Work_Octa.octa_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password),
                 _ => null
             };
 
@@ -76,10 +79,10 @@ namespace LMS_CMS_PL.Controllers.Domains
                 var token = Generate_Jwt_Token(par.User_Name, par.ID.ToString(), UserInfo.Type);
                 return Ok(new { Token = token });
             }
-            else if (UserInfo.Type == "pyramakerz" && user is Pyramakerz pym)
+            else if (UserInfo.Type == "octa" && user is LMS_CMS_DAL.Models.Octa.Octa pym)
             {
                 var token = Generate_Jwt_Token(pym.User_Name, pym.ID.ToString(), UserInfo.Type);
-                return Ok(new { Token = token });
+                return base.Ok(new { Token = token });
             }
 
             return BadRequest("Unexpected user type.");

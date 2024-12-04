@@ -51,10 +51,9 @@ export class BusTypesComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
-      this.DomainID = this.User_Data_After_Login.domain;
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Types', items);
+        const settingsPage = this.menuService.findByPageName('Bus Type', items);
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
         this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
@@ -75,7 +74,7 @@ export class BusTypesComponent {
 
   AddNewType() {
     this.BusTypeServ.Add(this.DomainID, this.newType).subscribe((data) => {
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
       this.closeModal();
     });
   }
@@ -86,9 +85,9 @@ export class BusTypesComponent {
     })
   }
 
-  GetTableData(id: number) {
+  GetTableData() {
     if (this.DomainID !== null) {
-      this.BusTypeServ.GetByDomainId(id).subscribe((data) => {
+      this.BusTypeServ.Get().subscribe((data) => {
         this.TableData = [];
         this.TableData = data;
       });
@@ -107,7 +106,7 @@ export class BusTypesComponent {
 
   Delete(id: number) {
     this.BusTypeServ.Delete(id).subscribe((data) => {
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
     })
   }
 
@@ -126,7 +125,7 @@ export class BusTypesComponent {
   Save() {
     this.EditType.name = this.newType;
     this.BusTypeServ.Edit(this.EditType).subscribe(() => {
-      this.GetTableData(this.DomainID);
+      this.GetTableData();
       this.closeModal();
       this.newType = "";
     })
@@ -145,7 +144,7 @@ export class BusTypesComponent {
     this.IsChoosenDomain = true;
     const selectedValue: number = Number((event.target as HTMLSelectElement).value);
     this.DomainID = selectedValue;
-    this.GetTableData(selectedValue);
+    this.GetTableData();
   }
 
   IsAllowDelete(InsertedByID: number) {

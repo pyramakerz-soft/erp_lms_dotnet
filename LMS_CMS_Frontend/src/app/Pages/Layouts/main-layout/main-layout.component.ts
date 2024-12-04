@@ -69,7 +69,6 @@ export class MainLayoutComponent {
     this.roleDetailsService.Get_All_With_Group_By().subscribe(
       (data:any) => {
         this.menuItemsForEmployee = data
-        console.log(this.menuItemsForEmployee)
         this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
       } ,(error)=>{
         this.menuItemsForEmployee = [];

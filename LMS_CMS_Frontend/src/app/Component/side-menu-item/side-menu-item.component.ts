@@ -24,7 +24,6 @@ export class SideMenuItemComponent {
   async ngOnInit() {
     this.subscription = this.communicationService.action$.subscribe((state) => {
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        console.log("items",items)
         this.menuItemsForEmployee = items;
       },(error)=>{
         this.menuItemsForEmployee = [];

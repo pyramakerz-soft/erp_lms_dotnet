@@ -19,7 +19,6 @@ export const noNavigateWithoutLoginGuard: CanActivateFn = (route, state) => {
   const token = localStorage.getItem('current_token');
 
   if (!token) {
-    console.log('No token found. Redirecting to login.');
     router.navigateByUrl('');
     return false;
   }

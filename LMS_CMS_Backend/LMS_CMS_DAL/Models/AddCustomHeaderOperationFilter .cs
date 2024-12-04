@@ -17,7 +17,7 @@ namespace LMS_CMS_DAL.Models
 
             operation.Parameters.Add(new OpenApiParameter
             {
-                Name = "DomainName",
+                Name = "Domain-Name",
                 In = ParameterLocation.Header,
                 Required = false, // Set to true if the header is mandatory
                 Schema = new OpenApiSchema

@@ -22,15 +22,15 @@ export class AccountService {
   }
 
   Login(UserInfo: Login) {
-    const domainName = "Domain 2"; // Replace with your actual domain name value
-  
     const headers = new HttpHeaders()
-      .set('DomainName', domainName); // Add custom header
+      .set('domain-name', 'Domain 2') // Match 'domain-name' key exactly
+      .set('Content-Type', 'application/json');
   
-      console.log("hh",headers)
+    console.log('Request Headers:', headers.get('domain-name')); // Verify header value
+  
     return this.http.post(`${this.baseUrl}/Account`, UserInfo, {
       headers: headers,
-      responseType: 'text'
+      responseType: 'text',
     });
   }
 

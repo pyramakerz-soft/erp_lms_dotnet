@@ -10,10 +10,10 @@ export class ApiService {
   // BaseUrl="https://3.214.27.32/"
   // BaseUrl= "http://localhost:5094/api"
 
-  Header:string="";
   constructor() { }
 
   GetHeader(){
-    return this.Header;
+    var Header = "Domain 2"
+    return Header;
   }
 }

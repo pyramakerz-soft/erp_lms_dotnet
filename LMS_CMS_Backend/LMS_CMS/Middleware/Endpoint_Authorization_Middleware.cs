@@ -33,7 +33,7 @@ namespace LMS_CMS_PL.Middleware
 
             if (userType == null)
             {
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await context.Response.WriteAsync("You Need To Login.");
                 return;
             }

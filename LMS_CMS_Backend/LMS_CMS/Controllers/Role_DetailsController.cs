@@ -2,29 +2,34 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_PL.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/with-domain/[controller]")]
     [ApiController]
+    [Authorize]
     public class Role_DetailsController : ControllerBase
     {
-        private UOW Unit_Of_Work;
+        private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
 
-        public Role_DetailsController(UOW Unit_Of_Work, IMapper mapper)
+        public Role_DetailsController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
-            this.Unit_Of_Work = Unit_Of_Work;
+            _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
         }
 
         [HttpGet("Get_With_RoleID_Group_By/{roleId}")]
         public async Task<IActionResult> Get_With_RoleID_Group_By(long roleId)
         {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
             var roleDetailsList = await Unit_Of_Work.role_Detailes_Repository.Database().Role_Detailes
                 .Where(rd => rd.Role_ID == roleId && rd.IsDeleted!=true)
                 .Include(rd => rd.Page)  // Include the related Page entity
@@ -83,6 +88,8 @@ namespace LMS_CMS_PL.Controllers
         [HttpGet("Get_All_With_Group_By")]
         public async Task<IActionResult> Get_All_With_Group_By()
         {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
             var roleDetailsList = await Unit_Of_Work.role_Detailes_Repository.Database().Role_Detailes
                 .Where(rd => rd.IsDeleted != true)
                 .Include(rd => rd.Page)  // Include the related Page entity

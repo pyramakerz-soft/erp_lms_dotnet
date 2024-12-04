@@ -20,16 +20,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
-
         public BusCategoryController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
         }
-
-
         ///////////////////////////////////////////
-
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "pyramakerz", "employee" },
@@ -38,28 +34,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         public IActionResult Get()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-
             List<BusCategory> BusCategories;
-
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
             if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-
             BusCategories = Unit_Of_Work.busCategory_Repository.FindBy(t => t.IsDeleted != true);
-
             if (BusCategories == null || BusCategories.Count == 0)
             {
                 return NotFound();
             }
-
             List<BusCatigoryGetDTO> BusCatigoryDTO = mapper.Map<List<BusCatigoryGetDTO>>(BusCategories);
-
             return Ok(BusCatigoryDTO);
         }
 

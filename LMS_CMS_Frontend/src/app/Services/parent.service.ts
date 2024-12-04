@@ -8,14 +8,20 @@ import { ApiService } from './api.service';
 export class ParentService {
 
   baseUrl=""
-
+  domainName = ""
+  
   constructor(public http: HttpClient, public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
+    this.domainName = ApiServ.GetHeader()
   }
 
   GetByID(id:number){
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.domainName)
+    .set('Content-Type', 'application/json')
+    
     return this.http.get(`${this.baseUrl}/Parent/${id}`, { headers })
   }
 }

@@ -186,13 +186,13 @@ export class BusDetailsComponent {
   }
   
   GetBusDriver() {
-    this.EmployeeServ.GetWithTypeIdDomainID(2).subscribe((data) => {
+    this.EmployeeServ.GetWithTypeId(2).subscribe((data) => {
       this.BusDriver = data;
     });
   }
   
   GetBusDriverAssistant() {
-    this.EmployeeServ.GetWithTypeIdDomainID(3).subscribe((data) => {
+    this.EmployeeServ.GetWithTypeId(3).subscribe((data) => {
       this.BusDriverAssistant = data;
     });
   }

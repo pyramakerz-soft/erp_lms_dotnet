@@ -9,20 +9,30 @@ import { Employee } from '../../Models/Employee/employee';
 export class EmployeeService {
 
   baseUrl=""
-
+  domainName = ""
+  
   constructor(public http: HttpClient, public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
+    this.domainName = ApiServ.GetHeader()
   }
 
-  GetWithTypeIdDomainID(typeId: number){
+  GetWithTypeId(typeId: number){
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.domainName)
+    .set('Content-Type', 'application/json');
+
     return this.http.get<Employee[]>(`${this.baseUrl}/Employee/GetByTypeId/${typeId}`, { headers })
   }
   
   GetByID(empID: number){
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', 'Domain 2')
+    .set('Content-Type', 'application/json');
+
     return this.http.get<Employee[]>(`${this.baseUrl}/Employee/${empID}`, { headers })
   }
 }

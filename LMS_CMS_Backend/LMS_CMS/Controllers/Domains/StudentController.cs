@@ -2,21 +2,24 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_PL.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS_CMS_PL.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/with-domain/[controller]")]
     [ApiController]
+    [Authorize]
     public class StudentController : ControllerBase
     {
-        private UOW Unit_Of_Work;
+        private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public StudentController(UOW Unit_Of_Work, IMapper mapper)
+        public StudentController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
-            this.Unit_Of_Work = Unit_Of_Work;
+            _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
         }
 
@@ -24,6 +27,8 @@ namespace LMS_CMS_PL.Controllers
         [HttpGet("{Id}")]
         public IActionResult GetByID(long Id)
         {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
             Student student = Unit_Of_Work.student_Repository.Select_By_Id(Id);
 
             if (student == null || student.IsDeleted == true)

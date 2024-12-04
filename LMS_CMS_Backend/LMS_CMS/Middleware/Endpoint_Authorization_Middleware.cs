@@ -1,5 +1,6 @@
 ﻿using LMS_CMS_BL.UOW;
 using LMS_CMS_PL.Attribute;
+using LMS_CMS_PL.Services;
 
 namespace LMS_CMS_PL.Middleware
 {
@@ -56,7 +57,10 @@ namespace LMS_CMS_PL.Middleware
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var _unitOfWork = scope.ServiceProvider.GetRequiredService<UOW>();
+                    //var _unitOfWork = scope.ServiceProvider.GetRequiredService<UOW>();
+                    var _dbContextFactory = scope.ServiceProvider.GetRequiredService<DbContextFactoryService>();
+                    UOW _unitOfWork = _dbContextFactory.CreateOneDbContext(context);
+
 
                     // Retrieve Role_Detailes with related Page details using the repository
                     var roleDetails = _unitOfWork.role_Detailes_Repository

@@ -29,6 +29,14 @@ namespace LMS_CMS_PL.Middleware
             var userClaims = context.User.Claims;
 
             var userType = userClaims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userType == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsync("You Need To Login.");
+                return;
+            }
+
             var roleId = userClaims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
             // Allow `pyramakerz` full access
             if (userType == "pyramakerz")

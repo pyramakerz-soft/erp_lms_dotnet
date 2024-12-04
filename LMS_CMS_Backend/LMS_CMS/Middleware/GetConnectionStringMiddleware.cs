@@ -15,9 +15,14 @@ namespace LMS_CMS_PL.Middleware
             _serviceProvider = serviceProvider;
         }
 
+
         public async Task InvokeAsync(HttpContext context)
         {
-            var domainName = context.Request.Headers["DomainName"].FirstOrDefault();
+
+
+            var domainName = context.Request.Headers["Domain-Name"].FirstOrDefault();
+ 
+
             if (string.IsNullOrEmpty(domainName))
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;

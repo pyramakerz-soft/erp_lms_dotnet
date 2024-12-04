@@ -10,15 +10,21 @@ import { BusTypeAdd } from '../../../Models/Bus/bus-type-add';
 })
 export class BusCategoryService {
   baseUrl=""
-
+  header=""
   constructor(public http: HttpClient, public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
+    this.header=ApiServ.GetHeader();
   }
 
-  Get(){
+  Get() {
     const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusCategory` , { headers })
+    const domainName = "Domain 2"; 
+    
+    const headers = new HttpHeaders()
+      .set('Authorization', `Bearer ${token}`)
+      .set('DomainName', domainName); 
+  
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusCategory`, { headers });
   }
 
   Add(domainId: number, name: string): Observable<any> {

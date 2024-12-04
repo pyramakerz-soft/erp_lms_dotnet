@@ -21,8 +21,17 @@ export class AccountService {
     this.baseUrl=ApiServ.BaseUrl
   }
 
-  Login(UserInfo:Login){
-    return this.http.post(`${this.baseUrl}/Account`, UserInfo, { responseType: 'text' })
+  Login(UserInfo: Login) {
+    const headers = new HttpHeaders()
+      .set('domain-name', 'Domain 2') // Match 'domain-name' key exactly
+      .set('Content-Type', 'application/json');
+  
+    console.log('Request Headers:', headers.get('domain-name')); // Verify header value
+  
+    return this.http.post(`${this.baseUrl}/Account`, UserInfo, {
+      headers: headers,
+      responseType: 'text',
+    });
   }
 
   Get_Data_Form_Token(){

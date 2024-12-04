@@ -10,6 +10,7 @@ using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Services;
 using LMS_CMS_DAL.Models;
+using Microsoft.Extensions.Options;
 
 namespace LMS_CMS
 {
@@ -98,10 +99,19 @@ namespace LMS_CMS
             /// 2)
             builder.Services.AddCors(option =>
             {
-                option.AddPolicy(txt, builder => {
-                    builder.AllowAnyOrigin();
-                    builder.AllowAnyMethod();
-                    builder.AllowAnyHeader();
+                //option.AddPolicy(txt, builder => {
+                //    builder.AllowAnyOrigin();
+                //    builder.AllowAnyMethod();
+                //    builder.AllowAnyHeader();
+                //    builder.WithHeaders("domain-name", "content-type", "Domain-Name");
+                //});
+
+                option.AddPolicy("AllowSpecificOrigin", builder =>
+                {
+                    builder.AllowAnyOrigin() // Replace with your Angular app URL
+                           .AllowAnyMethod() // Allow all HTTP methods
+                           .AllowAnyHeader() // Allow all headers
+                           .WithHeaders( "content-type", "Domain-Name"); // Specifically allow 'domain-name'
                 });
             });
 
@@ -118,7 +128,7 @@ namespace LMS_CMS
 
             /// 1) For DB Check
             app.UseMiddleware<DbConnection_Check_Middleware>();
-             
+            app.UseCors("AllowSpecificOrigin");
 
             //////// Authentication
             app.UseAuthentication();

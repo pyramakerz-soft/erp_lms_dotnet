@@ -15,11 +15,12 @@ export class LogOutService {
   constructor(private router: Router ,private communicationService: NewTokenService) { }
 
   getAllTokens(): void {
+    this.allTokens=[]
     let count = 0;
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key || '');
-      if (key && key.includes('token') && key != "current_token") {
+      if (key && key.includes('token') && key != "current_token"&& key != "token") {
         if (value) {
           this.User_Data_After_Login = jwtDecode(value)
           this.allTokens.push({ id: count, key: this.User_Data_After_Login.user_Name, KeyInLocal: key, value: value || '' });
@@ -36,7 +37,6 @@ export class LogOutService {
     let currentTokenn = localStorage.getItem("current_token") ?? "";
 
     const currentIndex = this.allTokens.findIndex(token => token.value === currentTokenn);
-
     if (currentIndex === -1) {
       return;
     }
@@ -53,9 +53,10 @@ export class LogOutService {
     } else {
       localStorage.removeItem("current_token");
     }
-
+    this.getAllTokens();
     localStorage.setItem("count", this.allTokens.length.toString());
     this.communicationService.sendAction(true);
+    this.router.navigateByUrl("")
 
   }
 }

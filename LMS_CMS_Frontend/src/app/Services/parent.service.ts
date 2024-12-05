@@ -8,18 +8,21 @@ import { ApiService } from './api.service';
 export class ParentService {
 
   baseUrl=""
-  domainName = ""
-  
+  header = ""
+
   constructor(public http: HttpClient, public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
-    this.domainName = ApiServ.GetHeader()
+    this.header = ApiServ.GetHeader()
   }
 
-  GetByID(id:number){
+  GetByID(id:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('Authorization', `Bearer ${token}`)
-    .set('domain-name', this.domainName)
+    .set('domain-name', this.header)
     .set('Content-Type', 'application/json')
     
     return this.http.get(`${this.baseUrl}/Parent/${id}`, { headers })

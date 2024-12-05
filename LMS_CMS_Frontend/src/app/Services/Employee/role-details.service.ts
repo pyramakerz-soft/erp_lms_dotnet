@@ -14,8 +14,10 @@ export class RoleDetailsService {
     this.header=ApiServ.GetHeader();
   }
 
-  Get_Pages_With_RoleID(roleId: number){
-    
+  Get_Pages_With_RoleID(roleId: number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header) 

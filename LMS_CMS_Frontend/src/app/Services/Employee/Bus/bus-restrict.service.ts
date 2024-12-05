@@ -19,7 +19,10 @@ export class BusRestrictService {
   }
 
 
-  Get(){
+  Get(DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -28,13 +31,16 @@ export class BusRestrictService {
     return this.http.get<BusType[]>(`${this.baseUrl}/BusRestrict`, { headers })
   }
 
-  Add(domainId: number, name: string): Observable<any> {
+  Add( name: string,DomainName?:string): Observable<any> {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    const body = { DomainId: domainId, Name: name };
+    const body = {  Name: name };
     return this.http.post<any>(`${this.baseUrl}/BusRestrict`, body, {
         headers,
         responseType: 'text' as 'json'
@@ -43,7 +49,10 @@ export class BusRestrictService {
 
 
 
-  Edit(NewType:BusType): Observable<BusType> {
+  Edit(NewType:BusType,DomainName?:string): Observable<BusType> {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -52,7 +61,10 @@ export class BusRestrictService {
     return this.http.put<BusType>(`${this.baseUrl}/BusRestrict`, NewType, { headers });
   }
 
-  Delete(id:number){
+  Delete(id:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -61,7 +73,10 @@ export class BusRestrictService {
     return this.http.delete(`${this.baseUrl}/BusRestrict?id=${id}`, { headers })
   }
 
-  GetByID(id:number){
+  GetByID(id:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -69,13 +84,12 @@ export class BusRestrictService {
     .set('Content-Type', 'application/json');
     return this.http.get(`${this.baseUrl}/BusRestrict/${id}`, { headers })
   }
-  GetByDomainId(id:number){
+  GetByDomainName(DomainName:string){
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
-    .set('domain-name', this.header)
+    .set('domain-name', DomainName)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusRestrict/DomainId?id=${id}`, { headers })
-
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusRestrict`, { headers })
   }
 }

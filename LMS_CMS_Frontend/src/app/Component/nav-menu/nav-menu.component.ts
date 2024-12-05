@@ -47,7 +47,7 @@ export class NavMenuComponent {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key || '');
 
-      if (key && key.includes('token') && key != "current_token") {
+      if (key && key.includes('token') && key != "current_token"&& key != "token") {
         if (value) {
           this.User_Data_After_Login = jwtDecode(value)
           if(this.User_Data_After_Login.user_Name)

@@ -19,7 +19,10 @@ export class BusTypeService {
   }
 
 
-  Get() {
+  Get(DomainName?:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
@@ -28,13 +31,16 @@ export class BusTypeService {
     return this.http.get<BusType[]>(`${this.baseUrl}/BusType`, { headers })
   }
 
-  Add(domainId: number, name: string): Observable<any> {
+  Add(name: string,DomainName?:string): Observable<any> {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    const body = { DomainId: domainId, Name: name };
+    const body = {  Name: name };
 
     return this.http.post<any>(`${this.baseUrl}/BusType`, body, {
       headers: headers,
@@ -42,7 +48,10 @@ export class BusTypeService {
     });
   }
 
-  Edit(NewType: BusType): Observable<BusType> {
+  Edit(NewType: BusType,DomainName?:string): Observable<BusType> {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
@@ -51,7 +60,10 @@ export class BusTypeService {
     return this.http.put<BusType>(`${this.baseUrl}/BusType`, NewType, { headers });
   }
 
-  Delete(id: number) {
+  Delete(id: number,DomainName?:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
@@ -60,7 +72,10 @@ export class BusTypeService {
     return this.http.delete(`${this.baseUrl}/BusType?id=${id}`, { headers })
   }
 
-  GetByID(id: number) {
+  GetByID(id: number,DomainName?:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
@@ -68,13 +83,12 @@ export class BusTypeService {
       .set('Content-Type', 'application/json');
     return this.http.get(`${this.baseUrl}/BusType/${id}`, { headers })
   }
-  GetByDomainId(id: number) {
+  GetByDomainName(DomainName:string){
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
-      .set('domain-name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusType/DomainId?id=${id}`, { headers })
-
+    .set('domain-name', DomainName)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusType`, { headers })
   }
 }

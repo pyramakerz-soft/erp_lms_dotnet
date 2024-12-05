@@ -17,6 +17,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public string Name { get; set; }
 
         public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();
-
+        public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
     }
 }

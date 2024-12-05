@@ -34,14 +34,11 @@ namespace LMS_CMS_DAL.Models.Domains
         [EmailAddress]
         public string Email { get; set; }
 
-
         [ForeignKey("Parent")]
         public long Parent_Id { get; set; }
 
         public Parent Parent { get; set; }
-
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
-
-
+        public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
     }
 }

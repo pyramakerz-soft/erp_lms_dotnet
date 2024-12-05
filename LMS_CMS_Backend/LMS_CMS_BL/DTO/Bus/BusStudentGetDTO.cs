@@ -14,21 +14,21 @@ namespace LMS_CMS_BL.DTO.Bus
         public string BusName { get; set; }
         public long StudentID { get; set; }
         public string StudentName { get; set; }
-        public long? BusCategoryID { get; set; }
-        public string? BusCategoryName { get; set; }
-        public long? SemseterID { get; set; }
-        public string? SemseterName { get; set; }
+        public long BusCategoryID { get; set; }
+        public string BusCategoryName { get; set; }
+        public long SemseterID { get; set; }
+        public string SemseterName { get; set; }
         public bool IsException { get; set; }
         public string ExceptionFromDate { get; set; }
         public string ExceptionToDate { get; set; }
         public long? DeletedByUserId { get; set; }
         public long? InsertedByUserId { get; set; }
         public long? UpdatedByUserId { get; set; }
-        //public long? SchoolID { get; set; }
-        //public string? SchoolName { get; set; }
-        //public long? GradeID { get; set; }
-        //public string? GradeName { get; set; }
-        //public long? ClassID { get; set; }
-        //public string? ClassName { get; set; }
+        public long SchoolID { get; set; }
+        public string SchoolName { get; set; }
+        public long GradeID { get; set; }
+        public string GradeName { get; set; }
+        public long ClassID { get; set; }
+        public string ClassName { get; set; }
     }
 }

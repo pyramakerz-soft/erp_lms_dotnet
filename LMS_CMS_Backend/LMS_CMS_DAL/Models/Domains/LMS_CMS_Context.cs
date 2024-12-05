@@ -26,6 +26,9 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<BusCompany> BusCompany { get; set; }
         public DbSet<Bus> Bus { get; set; }
         public DbSet<BusStudent> BusStudent { get; set; }
+        public DbSet<StudentAcademicYear> StudentAcademicYear { get; set; }
+        public DbSet<Class> Class { get; set; }
+        public DbSet<Grade> Grade { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -38,31 +41,46 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<Parent>()
                 .HasIndex(p => p.Email)
                 .IsUnique();
+
             modelBuilder.Entity<Parent>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
+
             modelBuilder.Entity<Student>()
                 .HasIndex(p => p.Email)
                 .IsUnique();
+
             modelBuilder.Entity<Student>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
+
             modelBuilder.Entity<Employee>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
+
             modelBuilder.Entity<Page>()
                 .HasIndex(p => p.ar_name)
                 .IsUnique();
+
             modelBuilder.Entity<Page>()
                 .HasIndex(p => p.en_name)
                 .IsUnique();
+
             modelBuilder.Entity<Page>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
+
             modelBuilder.Entity<EmployeeType>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
+            modelBuilder.Entity<Class>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Grade>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
 
             ///////////////////////// OnDelete: /////////////////////////
             modelBuilder.Entity<Page>()
@@ -178,6 +196,36 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasOne(p => p.Semester)
                  .WithMany(p => p.BusStudents)
                  .HasForeignKey(p => p.SemseterID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentAcademicYear>()
+                 .HasOne(p => p.Student)
+                 .WithMany(p => p.StudentAcademicYears)
+                 .HasForeignKey(p => p.StudentID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentAcademicYear>()
+                 .HasOne(p => p.School)
+                 .WithMany(p => p.StudentAcademicYears)
+                 .HasForeignKey(p => p.SchoolID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentAcademicYear>()
+                 .HasOne(p => p.Class)
+                 .WithMany(p => p.StudentAcademicYears)
+                 .HasForeignKey(p => p.ClassID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentAcademicYear>()
+                 .HasOne(p => p.Grade)
+                 .WithMany(p => p.StudentAcademicYears)
+                 .HasForeignKey(p => p.GradeID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentAcademicYear>()
+                 .HasOne(p => p.Semester)
+                 .WithMany(p => p.StudentAcademicYears)
+                 .HasForeignKey(p => p.SemesterID)
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Bus>()

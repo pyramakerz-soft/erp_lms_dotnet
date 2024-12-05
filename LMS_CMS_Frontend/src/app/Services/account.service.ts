@@ -14,16 +14,19 @@ import { TokenData } from '../Models/token-data';
 export class AccountService {
   
   baseUrl=""
+  header=""
   isAuthenticated = !!localStorage.getItem("current_token");
   
 
   constructor(public http: HttpClient ,private router: Router , public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
+    this.header = ApiServ.GetHeader();
+
   }
 
   Login(UserInfo: Login) {
     const headers = new HttpHeaders()
-      .set('domain-name', 'Domain 2') 
+      .set('domain-name','Domain 3')
       .set('Content-Type', 'application/json');
   
     return this.http.post(`${this.baseUrl}/Account`, UserInfo, {

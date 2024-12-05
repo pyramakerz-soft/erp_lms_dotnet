@@ -94,6 +94,7 @@ namespace LMS_CMS
 
             builder.Services.AddScoped<DynamicDatabaseService>();
             builder.Services.AddScoped<DbContextFactoryService>();
+            builder.Services.AddScoped<GenerateJWTService>();
 
 
             /// 2)

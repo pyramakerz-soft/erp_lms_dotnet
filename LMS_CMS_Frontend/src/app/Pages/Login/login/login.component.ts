@@ -193,7 +193,6 @@ export class LoginComponent {
           this.allTokens.push({ id: count, key: this.User_Data_After_Login2.user_Name, KeyInLocal: key, value: value || '' ,UserType:this.User_Data_After_Login2.type});
           count++;
         }
-
       }
     }
   }

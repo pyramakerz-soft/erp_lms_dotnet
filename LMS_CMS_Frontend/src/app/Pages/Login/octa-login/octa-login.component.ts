@@ -24,8 +24,31 @@ export class OctaLoginComponent {
   passwordError: string = "";
   somthingError: string = "";
 
+  
+  token1 = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+  token2 = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+
+  allTokens: { id: number, key: string; KeyInLocal: string; value: string; UserType:string}[] = [];
+  User_Data_After_Login2 = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+
   constructor(private router: Router, public accountService: AccountService) { }
 
+  getAllTokens(): void {
+    let count = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key || '');
+
+      if (key && key.includes('token') && key != "current_token") {
+        if (value) {
+          this.User_Data_After_Login2 = jwtDecode(value)
+
+          this.allTokens.push({ id: count, key: this.User_Data_After_Login2.user_Name, KeyInLocal: key, value: value || '' ,UserType:this.User_Data_After_Login2.type});
+          count++;
+        }
+      }
+    }
+  }
 
   SignIN() {
     this.userInfo.type = "octa";
@@ -36,10 +59,12 @@ export class OctaLoginComponent {
         localStorage.setItem("GoToLogin", "false");
         localStorage.removeItem("current_token");
         let count = localStorage.getItem("count")
+        this.getAllTokens();
 
         this.accountService.isAuthenticated = true;
         const token = JSON.parse(d).token;
         let add = true;
+        let Counter=0;
 
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
@@ -56,11 +81,11 @@ export class OctaLoginComponent {
 
         if (add == true) {
           if (count === null) {
-            localStorage.setItem("count", "1");
+            // localStorage.setItem("count", "1");
             localStorage.setItem("token 1", token);
           } else {
             let countNum = parseInt(count) + 1;
-            localStorage.setItem("count", countNum.toString());
+            // localStorage.setItem("count", countNum.toString());
             let T = localStorage.getItem("token " + countNum)
             if (T != null) {
               let i = countNum + 1;
@@ -79,7 +104,23 @@ export class OctaLoginComponent {
             }
           }
         }
-
+        else if(add == false) {
+          this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
+          const currentIndex = this.allTokens.findIndex(token => token.UserType === this.User_Data_After_Login.type && token.key===this.User_Data_After_Login.user_Name);
+          const currentToken = this.allTokens[currentIndex];
+          // console.log("mennab",currentIndex,currentToken,currentToken.KeyInLocal)
+          localStorage.setItem(currentToken.KeyInLocal, token);
+        }
+        
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          const value = localStorage.getItem(key || '');
+          if (key && value && key.includes('token') && key != "current_token"&&key != "token") {
+           Counter++;
+          }
+        }
+        localStorage.removeItem("count");
+        localStorage.setItem("count", Counter.toString());
         this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
         this.router.navigateByUrl("Octa/Home")
         

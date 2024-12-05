@@ -16,7 +16,10 @@ export class EmployeeService {
     this.header = ApiServ.GetHeader();
   }
 
-  GetWithTypeId(typeId: number){
+  GetWithTypeId(typeId: number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('Authorization', `Bearer ${token}`)
@@ -26,7 +29,10 @@ export class EmployeeService {
     return this.http.get<Employee[]>(`${this.baseUrl}/Employee/GetByTypeId/${typeId}`, { headers })
   }
   
-  GetByID(empID: number){
+  GetByID(empID: number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('Authorization', `Bearer ${token}`)

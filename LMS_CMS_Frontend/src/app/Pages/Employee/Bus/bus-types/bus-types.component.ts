@@ -73,7 +73,7 @@ export class BusTypesComponent {
   }
 
   AddNewType() {
-    this.BusTypeServ.Add(this.DomainID, this.newType).subscribe((data) => {
+    this.BusTypeServ.Add( this.newType).subscribe((data) => {
       this.GetTableData();
       this.closeModal();
     });

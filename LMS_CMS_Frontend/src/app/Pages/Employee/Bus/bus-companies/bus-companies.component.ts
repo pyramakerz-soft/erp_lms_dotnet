@@ -10,11 +10,12 @@ import { AccountService } from '../../../../Services/account.service';
 import { BusCompanyService } from '../../../../Services/Employee/Bus/bus-company.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
+import { ApiService } from '../../../../Services/api.service';
 
 @Component({
   selector: 'app-bus-companies',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './bus-companies.component.html',
   styleUrl: './bus-companies.component.css'
 })
@@ -30,18 +31,18 @@ export class BusCompaniesComponent {
   TableData: BusType[] = []
   DomainData: Domain[] = []
 
-  DomainID: number = 0;
+  DomainName: string = "";
   UserID: number = 0;
 
   IsChoosenDomain: boolean = false;
   IsEmployee: boolean = true;
-  
+
   newType: string = '';
   isModalVisible: boolean = false;
   mode: string = "";
 
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCompanyService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService)  { }
+  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCompanyService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
   ngOnInit() {
 
@@ -50,6 +51,7 @@ export class BusCompaniesComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
+      this.DomainName = this.ApiServ.GetHeader();
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
         const settingsPage = this.menuService.findByPageName('Bus Companies', items);
@@ -66,13 +68,13 @@ export class BusCompaniesComponent {
     }
   }
 
-  Create(){
-    this.mode="add";
-  this.openModal();
+  Create() {
+    this.mode = "add";
+    this.openModal();
   }
 
   AddNewType() {
-    this.BusTypeServ.Add(this.DomainID, this.newType).subscribe((data) => {
+    this.BusTypeServ.Add(this.newType, this.DomainName).subscribe((data) => {
       this.GetTableData();
       this.closeModal();
     });
@@ -80,16 +82,19 @@ export class BusCompaniesComponent {
   GetAllDomains() {
     this.DomainServ.Get().subscribe((data) => {
       this.DomainData = data;
-    })
-  }
-  GetTableData() {
-    this.BusTypeServ.Get().subscribe((data) => {
-      this.TableData=[];
-      this.TableData = data;
-    } ,(error)=>{
+    }, (error) => {
       console.log(error)
     });
-}
+  }
+  GetTableData() {
+    this.BusTypeServ.Get(this.DomainName).subscribe((data) => {
+      this.TableData = [];
+      this.TableData = data;
+    }, (error) => {
+      this.TableData = [];
+      console.log(error)
+    });
+  }
   openModal() {
     this.isModalVisible = true;
   }
@@ -99,45 +104,56 @@ export class BusCompaniesComponent {
   }
 
   Delete(id: number) {
-    this.BusTypeServ.Delete(id).subscribe((data) => {
+    this.BusTypeServ.Delete(id, this.DomainName).subscribe((data) => {
       this.GetTableData();
     })
   }
   Edit(id: number) {
-    this.mode="edit";
+    this.mode = "edit";
     const typeToEdit = this.TableData.find((t) => t.id === id);
     if (typeToEdit) {
-      this.EditType={ ...typeToEdit };
+      this.EditType = { ...typeToEdit };
       this.newType = this.EditType.name;
-     this.openModal();
+      this.openModal();
     } else {
       console.error("Type not found!");
     }
   }
 
-  Save(){
-    this.EditType.name=this.newType;
-    this.BusTypeServ.Edit(this.EditType).subscribe(()=>{
+  Save() {
+    this.EditType.name = this.newType;
+    this.BusTypeServ.Edit(this.EditType, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
-      this.newType="";
+      this.newType = "";
     })
   }
 
-  CreateOREdit(){
-    if(this.mode==="add"){
+  CreateOREdit() {
+    if (this.mode === "add") {
       this.AddNewType();
     }
-    else if(this.mode==="edit"){
+    else if (this.mode === "edit") {
       this.Save();
     }
   }
 
-  getBusDataByDomainId(event:Event){
-    this.IsChoosenDomain=true;
-    const selectedValue: number = Number((event.target as HTMLSelectElement).value);
-    this.DomainID=selectedValue;
-    this.GetTableData();
+  getBusDataByDomainId(event: Event) {
+    this.IsChoosenDomain = true;
+    const selectedValue: string = ((event.target as HTMLSelectElement).value);
+    console.log(selectedValue)
+    this.DomainName = selectedValue;
+    this.GetTableDataByDomainName();
+  }
+  GetTableDataByDomainName() {
+    this.BusTypeServ.GetByDomainName(this.DomainName).subscribe((data) => {
+      console.log(data)
+      this.TableData = [];
+      this.TableData = data;
+    }, (error) => {
+      this.TableData = [];
+      console.log(error)
+    });
   }
   IsAllowDelete(InsertedByID: number) {
     if (this.IsEmployee == false) { return true; }

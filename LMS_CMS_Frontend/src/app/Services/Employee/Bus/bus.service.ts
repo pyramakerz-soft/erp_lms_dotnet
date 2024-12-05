@@ -16,7 +16,10 @@ export class BusService {
     this.header = ApiServ.GetHeader();
   }
 
-  Get(){
+  Get(DomainName?:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -25,16 +28,22 @@ export class BusService {
     return this.http.get(`${this.baseUrl}/Bus`,{ headers })
   }
   
-  GetbyDomainId(domainId: number){
+  GetbyDomainName(domainName: string){
+     if(domainName!=null) {
+      this.header=domainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.get(`${this.baseUrl}/Bus/GetByDomainID/${domainId}`,{ headers })
+    return this.http.get(`${this.baseUrl}/Bus`,{ headers })
   }
   
-  GetbyBusId(busId: number){
+  GetbyBusId(busId: number,DomainName?:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -43,7 +52,10 @@ export class BusService {
     return this.http.get<Bus>(`${this.baseUrl}/Bus/${busId}`,{ headers })
   }
 
-  DeleteBus(busId:number){
+  DeleteBus(busId:number,DomainName?:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -55,7 +67,10 @@ export class BusService {
   });
   }
 
-  Add(bus:Bus){
+  Add(bus:Bus,DomainName?:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -67,7 +82,10 @@ export class BusService {
   });
   }
 
-  Edit(bus:Bus){
+  Edit(bus:Bus,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)

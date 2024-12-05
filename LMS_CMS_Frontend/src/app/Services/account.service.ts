@@ -14,19 +14,22 @@ import { TokenData } from '../Models/token-data';
 export class AccountService {
   
   baseUrl=""
+  baseUrlOcta=""
+
   header=""
+
   isAuthenticated = !!localStorage.getItem("current_token");
-  
 
   constructor(public http: HttpClient ,private router: Router , public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
+    this.baseUrlOcta=ApiServ.BaseUrlOcta
     this.header = ApiServ.GetHeader();
 
   }
 
   Login(UserInfo: Login) {
     const headers = new HttpHeaders()
-      .set('domain-name','Domain 3')
+      .set('domain-name',this.header)
       .set('Content-Type', 'application/json');
   
     return this.http.post(`${this.baseUrl}/Account`, UserInfo, {
@@ -45,4 +48,14 @@ export class AccountService {
       return User_Data_After_Login
     }
   }
+
+  LoginOcta(UserInfo: Login) {
+    const headers = new HttpHeaders()
+    .set('Content-Type', 'application/json');
+    return this.http.post(`${this.baseUrlOcta}/OctaAccount`, UserInfo, {
+      headers: headers,
+      responseType: 'text',
+    });
+  }
+
 }

@@ -16,7 +16,10 @@ export class BusStudentService {
     this.header = ApiServ.GetHeader();
   }
 
-  GetbyBusId(busId: number){
+  GetbyBusId(busId: number,DomainName?:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
@@ -25,7 +28,10 @@ export class BusStudentService {
     return this.http.get<BusStudent[]>(`${this.baseUrl}/BusStudent/GetByBusId/${busId}`, { headers })
   }
 
-  DeleteBusStudent(busStudentId: number){
+  DeleteBusStudent(busStudentId: number,DomainName?:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
     .set('domain-name', this.header)

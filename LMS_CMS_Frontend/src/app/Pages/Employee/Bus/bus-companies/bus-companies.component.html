@@ -15,7 +15,7 @@
         <select id="domains" (change)="getBusDataByDomainId($event)"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
         <option value="" disabled selected hidden>Select a Domain</option>
-        <option *ngFor="let domain of DomainData" [value]="domain.id">
+        <option *ngFor="let domain of DomainData" [value]="domain.name">
             {{ domain.name }}
         </option>
     </select>
@@ -44,7 +44,7 @@
             <tbody>
                 <!-- No Data Row -->
                 <tr *ngIf="TableData.length === 0">
-                    <td colspan="4" class="px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    <td colspan="11" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                         No Data Found
                     </td>
                 </tr>

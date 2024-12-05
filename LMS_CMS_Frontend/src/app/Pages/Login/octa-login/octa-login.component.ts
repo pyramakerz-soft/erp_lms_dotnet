@@ -35,11 +35,12 @@ export class OctaLoginComponent {
 
   getAllTokens(): void {
     let count = 0;
+    this.allTokens=[];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key || '');
 
-      if (key && key.includes('token') && key != "current_token") {
+      if (key && key.includes('token') && key != "current_token"&& key != "token") {
         if (value) {
           this.User_Data_After_Login2 = jwtDecode(value)
 
@@ -52,7 +53,7 @@ export class OctaLoginComponent {
 
   SignIN() {
     this.userInfo.type = "octa";
-    this.accountService.Login(this.userInfo).subscribe(
+    this.accountService.LoginOcta(this.userInfo).subscribe(
       (d: any) => {
 
         localStorage.removeItem("GoToLogin");
@@ -69,7 +70,7 @@ export class OctaLoginComponent {
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i);
           const value = localStorage.getItem(key || '');
-          if (key && value && key.includes('token') && key != "current_token") {
+          if (key && value && key.includes('token') && key != "current_token"&& key != "token") {
             let decodedToken1: TokenData = jwtDecode(token);
             let decodedToken2: TokenData = jwtDecode(value);
             if (decodedToken1.user_Name === decodedToken2.user_Name && decodedToken1.type === decodedToken2.type)

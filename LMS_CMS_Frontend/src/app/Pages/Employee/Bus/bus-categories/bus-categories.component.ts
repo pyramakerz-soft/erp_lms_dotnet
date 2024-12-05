@@ -31,7 +31,7 @@ export class BusCategoriesComponent {
   TableData: BusType[] = []
   DomainData: Domain[] = []
 
-  DomainID: number = 0;
+  DomainName: string = "";
   UserID: number = 0;
 
   IsChoosenDomain: boolean = false;
@@ -41,6 +41,7 @@ export class BusCategoriesComponent {
   isModalVisible: boolean = false;
   mode: string = "";
 
+  
 
   constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCategoryService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService) { }
 
@@ -73,7 +74,7 @@ export class BusCategoriesComponent {
   }
 
   AddNewType() {
-    this.BusTypeServ.Add(this.DomainID, this.newType).subscribe((data) => {
+    this.BusTypeServ.Add(this.newType).subscribe((data) => {
       this.GetTableData();
       this.closeModal();
     });
@@ -137,10 +138,21 @@ export class BusCategoriesComponent {
 
   getBusDataByDomainId(event:Event){
     this.IsChoosenDomain=true;
-    const selectedValue: number = Number((event.target as HTMLSelectElement).value);
-    this.DomainID=selectedValue;
-    this.GetTableData();
+    const selectedValue: string = ((event.target as HTMLSelectElement).value);
+    console.log(selectedValue)
+    this.DomainName=selectedValue;
+    this.GetTableDataByDomainName();
   }
+  GetTableDataByDomainName() {
+    this.BusTypeServ.GetByDomainName(this.DomainName).subscribe((data) => {
+      console.log(data)
+      this.TableData=[];
+      this.TableData = data;
+    } ,(error)=>{
+      this.TableData=[];
+      console.log(error)
+    });
+}
   IsAllowDelete(InsertedByID: number) {
     if (this.IsEmployee == false) { return true; }
     const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);

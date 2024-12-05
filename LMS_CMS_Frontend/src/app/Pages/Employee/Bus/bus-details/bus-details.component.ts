@@ -32,7 +32,7 @@ export class BusDetailsComponent {
   busData :Bus[] = []
   bus :Bus  = new Bus()
   editBus = false
-  domainId:number = 0
+  domainName:string = ""
 
   BusType: BusType[] = []
   BusRestrict: BusType[] = []
@@ -87,16 +87,19 @@ export class BusDetailsComponent {
   }
 
   getBusDataByDomainId(event:Event){
+    this.IsChoosenDomain=true;
     const selectedValue = (event.target as HTMLSelectElement).value;
-    this.domainId = +selectedValue
+    this.domainName = selectedValue
     this.busData = []
 
-    this.busService.GetbyDomainId(this.domainId).subscribe(
+    this.busService.GetbyDomainName(this.domainName).subscribe(
       (data: any) => {
+        this.busData=[]
         this.busData = data;
-
-      }
-    );
+      } ,(error)=>{
+        this.busData=[];
+        console.log(error)
+      });
   }
 
   deleteBus(busId: number) {
@@ -111,7 +114,7 @@ export class BusDetailsComponent {
     }).then((result) => {
       this.busService.DeleteBus(busId).subscribe(
         (data: any) => {
-          this.busService.GetbyDomainId(this.domainId).subscribe(
+          this.busService.GetbyDomainName(this.domainName).subscribe(
             (data: any) => {
               this.busData = data;
             }
@@ -161,25 +164,25 @@ export class BusDetailsComponent {
   }
 
   GetBusType() {
-    this.BusTypeServ.GetByDomainId(this.domainId).subscribe((data) => {
+    this.BusTypeServ.GetByDomainName(this.domainName).subscribe((data) => {
       this.BusType = data;
     });
   }
  
   GetBusrestrict() {
-    this.busRestrictServ.GetByDomainId(this.domainId).subscribe((data) => {
+    this.busRestrictServ.GetByDomainName(this.domainName).subscribe((data) => {
       this.BusRestrict = data;
     });
   }
 
   GetBusStatus() {
-    this.busStatusServ.GetByDomainId(this.domainId).subscribe((data) => {
+    this.busStatusServ.GetByDomainName(this.domainName).subscribe((data) => {
       this.BusStatus = data;
     });
   }
   
   GetBusCompany() {
-    this.BusCompanyServ.GetByDomainId(this.domainId).subscribe((data) => {
+    this.BusCompanyServ.GetByDomainName(this.domainName).subscribe((data) => {
       this.BusCompany = data;
     });
   }
@@ -254,7 +257,7 @@ export class BusDetailsComponent {
         this.busService.Add(this.bus).subscribe(
           (result: any) => {
             this.closeModal()
-            this.busService.GetbyDomainId(this.domainId).subscribe(
+            this.busService.GetbyDomainName(this.domainName).subscribe(
               (data: any) => {
                 this.busData = data;
               }
@@ -268,7 +271,7 @@ export class BusDetailsComponent {
         this.busService.Edit(this.bus).subscribe(
           (result: any) => {
             this.closeModal()
-            this.busService.GetbyDomainId(this.domainId).subscribe(
+            this.busService.GetbyDomainName(this.domainName).subscribe(
               (data: any) => {
                 this.busData = data;
               }

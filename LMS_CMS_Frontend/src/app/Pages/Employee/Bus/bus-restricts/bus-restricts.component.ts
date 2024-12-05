@@ -74,7 +74,7 @@ export class BusRestrictsComponent {
   }
 
   AddNewType() {
-    this.busRestrictServ.Add(this.DomainID, this.newType).subscribe((data) => {
+    this.busRestrictServ.Add( this.newType).subscribe((data) => {
       this.closeModal();
       this.newType = "";
       this.GetTableData();

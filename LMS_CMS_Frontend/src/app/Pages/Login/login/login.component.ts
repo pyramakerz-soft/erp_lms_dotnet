@@ -182,11 +182,12 @@ export class LoginComponent {
 
   getAllTokens(): void {
     let count = 0;
+    this.allTokens=[];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key || '');
 
-      if (key && key.includes('token') && key != "current_token") {
+      if (key && key.includes('token') && key != "current_token"&& key != "token") {
         if (value) {
           this.User_Data_After_Login2 = jwtDecode(value)
 

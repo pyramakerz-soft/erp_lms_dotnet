@@ -75,10 +75,6 @@ namespace LMS_CMS_BL.Repository
             return db.Set<TEntity>().FirstOrDefault(predicate);
         }
 
-        public TEntity First_Or_Default_Octa(Expression<Func<TEntity, bool>> predicate)
-        {
-            return octa_db.Set<TEntity>().FirstOrDefault(predicate);
-        }
 
         public async Task<TEntity> FindByIncludesAsync(
             Expression<Func<TEntity, bool>> predicate,
@@ -112,8 +108,7 @@ namespace LMS_CMS_BL.Repository
 
             return await query.Where(predicate).ToListAsync();
         }
-
-        ////////////////////////////////////////////////// Octa /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ ///////////////////////////////////////////////////////////////////// Octa /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public void Add_Octa(TEntity entity)
         {
@@ -123,6 +118,26 @@ namespace LMS_CMS_BL.Repository
         public List<TEntity> Select_All_Octa()
         {
             return octa_db.Set<TEntity>().ToList();
+        }
+
+        public TEntity Select_By_Id_Octa(params object[] keyValues)
+        {
+            return octa_db.Set<TEntity>().Find(keyValues);
+        }
+
+        public void Update_Octa(TEntity entity)
+        {
+            octa_db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        }
+
+        public void Delete_Octa(long id)
+        {
+            TEntity obj = octa_db.Set<TEntity>().Find(id);
+            octa_db.Set<TEntity>().Remove(obj);
+        }
+        public TEntity First_Or_Default_Octa(Expression<Func<TEntity, bool>> predicate)
+        {
+            return octa_db.Set<TEntity>().FirstOrDefault(predicate);
         }
     }
 }

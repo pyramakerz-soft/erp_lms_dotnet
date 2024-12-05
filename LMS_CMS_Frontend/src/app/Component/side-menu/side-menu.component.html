@@ -1,9 +1,14 @@
-<div *ngIf="!IsMenuOpen" class="primaryBg rounded-lg text-white h-full min-h-[100vh] py-10 px-3 flex flex-col items-center text-sm lg:text-xl">
+<div *ngIf="!IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-full min-h-[100vh] py-10 px-3 flex flex-col items-center text-sm lg:text-xl space-y-4">
     <img class="w-3 lg:w-fit" src="Images/logo-orange 1 1.png" (click)="toggleMenu()">
+    <i class="fa-solid fa-magnifying-glass p-3" (click)="toggleSearch()"></i>
+    <!-- <img *ngFor="let item of menuItemsForEmployee" class="w-3 lg:w-fit" src="Icons/Dashboard.png" (click)="toggleMenu()"> -->
+    <img *ngFor="let item of menuItemsForEmployee" class="w-3 lg:w-fit" src="Icons/DashboardGray.png" (click)="toggleMenu()">
+    <!-- <img *ngFor="let item of menuItems" class="w-3 lg:w-fit" src="Icons/Dashboard.png" (click)="toggleMenu()"> -->
+    <img *ngFor="let item of menuItems" class="w-3 lg:w-fit" src="Icons/DashboardGray.png" (click)="toggleMenu()">
 </div>
 
-<div *ngIf="IsMenuOpen" class="primaryBg rounded-lg text-white h-full min-h-[100vh] py-10 px-4 flex flex-col items-center text-sm lg:text-xl">
-    <div class="px-7 text-base text-[#919191] flex space-x-4 rtl:space-x-reverse items-center" (click)="toggleMenu()">
+<div *ngIf="IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-full min-h-[100vh] py-10 px-4 flex flex-col items-center text-sm lg:text-xl">
+    <div class="px-7 text-base flex space-x-4 rtl:space-x-reverse items-center" (click)="toggleMenu()">
         <i class="fa-solid fa-angle-left"></i>
         <p>Lookscout Dashboard</p>
     </div>
@@ -12,8 +17,8 @@
         <span class="absolute text-[#FFFFFF0D] ltr:ml-2 rtl:mr-2">
             <i class="fa-solid fa-magnifying-glass"></i>
         </span>
-        <input type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 text-sm rounded-md"
-            placeholder="Search here..." />
+        <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 text-sm rounded-md"
+            placeholder="Search here..." [disabled]="!IsMenuOpen"/>
     </div>
 
     <section class="mt-6 min-w-full">

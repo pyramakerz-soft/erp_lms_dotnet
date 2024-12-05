@@ -39,8 +39,7 @@ export class SideMenuItemComponent {
   
   }
 
-  navigateToLogin(routName:string): void {
-    // this.router.navigateByUrl('Employee/')
+  navigateToRoute(routName:string): void {
     this.router.navigateByUrl(`Employee/${routName}`)
   }
 }

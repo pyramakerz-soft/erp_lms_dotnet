@@ -29,7 +29,7 @@ export class AccountService {
 
   Login(UserInfo: Login) {
     const headers = new HttpHeaders()
-      .set('domain-name',this.header)
+      .set('domain-name', this.header)
       .set('Content-Type', 'application/json');
   
     return this.http.post(`${this.baseUrl}/Account`, UserInfo, {

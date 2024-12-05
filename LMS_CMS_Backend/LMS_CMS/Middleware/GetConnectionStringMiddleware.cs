@@ -1,6 +1,8 @@
-﻿using LMS_CMS_BL.UOW;
+﻿using Azure.Core;
+using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace LMS_CMS_PL.Middleware
 {
@@ -18,8 +20,6 @@ namespace LMS_CMS_PL.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-
-
             var domainName = context.Request.Headers["Domain-Name"].FirstOrDefault();
  
 

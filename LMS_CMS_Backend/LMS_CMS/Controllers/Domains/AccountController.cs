@@ -18,14 +18,14 @@ namespace LMS_CMS_PL.Controllers.Domains
     public class AccountController : Controller
     {
         private readonly DbContextFactoryService _dbContextFactory;
-        private readonly IConfiguration _configuration;
+        private readonly GenerateJWTService _generateJWT;
         private readonly UOW _Unit_Of_Work_Octa;
 
-        public AccountController(DbContextFactoryService dbContextFactory, IConfiguration configuration, UOW unit_Of_Work_Octa)
+        public AccountController(DbContextFactoryService dbContextFactory, UOW unit_Of_Work_Octa, GenerateJWTService generateJWT)
         {
             _dbContextFactory = dbContextFactory;
-            _configuration = configuration;
             _Unit_Of_Work_Octa = unit_Of_Work_Octa;
+            _generateJWT = generateJWT;
         }
 
         [HttpPost]
@@ -37,7 +37,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("Data Can't be null");
             }
-            if (UserInfo.Type == null || !new[] { "employee", "student", "parent", "octa" }.Contains(UserInfo.Type.ToLower()))
+            if (UserInfo.Type == null || !new[] { "employee", "student", "parent" }.Contains(UserInfo.Type.ToLower()))
             {
                 return BadRequest("Invalid user type.");
             }
@@ -55,8 +55,6 @@ namespace LMS_CMS_PL.Controllers.Domains
                 "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password && emp.IsDeleted != true),
                 "student" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == UserInfo.User_Name && stu.Password == UserInfo.Password && stu.IsDeleted != true),
                 "parent" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password && par.IsDeleted != true),
-                "octa" => _Unit_Of_Work_Octa.octa_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password),
-                _ => null
             };
 
             if (user == null)
@@ -66,56 +64,21 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             if (UserInfo.Type == "employee" && user is Employee emp)
             {
-                var tokenEmp = Generate_Jwt_Token(emp.User_Name, emp.ID.ToString(), UserInfo.Type, emp.Role_ID.ToString());
+                var tokenEmp = _generateJWT.Generate_Jwt_Token(emp.User_Name, emp.ID.ToString(), UserInfo.Type, emp.Role_ID.ToString());
                 return Ok(new { Token = tokenEmp });
             }
             else if (UserInfo.Type == "student" && user is Student stu)
             {
-                var token = Generate_Jwt_Token(stu.User_Name, stu.ID.ToString(), UserInfo.Type);
+                var token = _generateJWT.Generate_Jwt_Token(stu.User_Name, stu.ID.ToString(), UserInfo.Type);
                 return Ok(new { Token = token });
             }
             else if (UserInfo.Type == "parent" && user is Parent par)
             {
-                var token = Generate_Jwt_Token(par.User_Name, par.ID.ToString(), UserInfo.Type);
+                var token = _generateJWT.Generate_Jwt_Token(par.User_Name, par.ID.ToString(), UserInfo.Type);
                 return Ok(new { Token = token });
-            }
-            else if (UserInfo.Type == "octa" && user is LMS_CMS_DAL.Models.Octa.Octa pym)
-            {
-                var token = Generate_Jwt_Token(pym.User_Name, pym.ID.ToString(), UserInfo.Type);
-                return base.Ok(new { Token = token });
             }
 
             return BadRequest("Unexpected user type.");
-        }
-
-        private string Generate_Jwt_Token(string username, string userId, string type, string? roleId = null)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, _configuration["JWT:Subject"]),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("user_Name", username),
-                new Claim("id", userId),
-                new Claim("type", type),
-            };
-
-            if (!string.IsNullOrEmpty(roleId))
-            {
-                claims.Add(new Claim("role", roleId));
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
-            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                _configuration["JWT:Issuer"],
-                _configuration["JWT:Audience"],
-                claims,
-                expires: DateTime.UtcNow.AddDays(30),
-                signingCredentials: signIn
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

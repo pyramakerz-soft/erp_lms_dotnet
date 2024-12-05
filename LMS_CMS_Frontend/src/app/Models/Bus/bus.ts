@@ -4,7 +4,6 @@ export class Bus {
         public name: string = '',
         public capacity: number | null = null,
         public isCapacityRestricted: boolean = false,
-        public domainID: number = 0,
         public busTypeID: number | null = null,
         public busTypeName: string | null = null,
         public busRestrictID: number | null = null,
@@ -20,7 +19,5 @@ export class Bus {
         public deletedByUserId :number =0,
         public updatedByUserId :number =0,
         public insertedByUserId :number =0,
-
-
     ) {}
 }

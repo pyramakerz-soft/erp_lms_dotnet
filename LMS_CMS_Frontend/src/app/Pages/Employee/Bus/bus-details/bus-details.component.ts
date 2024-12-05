@@ -249,7 +249,6 @@ export class BusDetailsComponent {
   }
 
   SaveBus(){
-    this.bus.domainID = this.domainId
     if (this.isFormValid()) {
       if(this.editBus == false){
         this.busService.Add(this.bus).subscribe(

@@ -10,6 +10,7 @@ import { AccountService } from '../../../../Services/account.service';
 import { BusCategoryService } from '../../../../Services/Employee/Bus/bus-category.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
+import { ApiService } from '../../../../Services/api.service';
 
 @Component({
   selector: 'app-bus-categories',
@@ -43,15 +44,16 @@ export class BusCategoriesComponent {
 
   
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCategoryService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService) { }
+  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCategoryService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService,public ApiServ:ApiService) { }
 
   ngOnInit() {
 
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
-
+    
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
+      this.DomainName=this.ApiServ.GetHeader();
       // this.DomainID = this.User_Data_After_Login.domain;
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -74,7 +76,7 @@ export class BusCategoriesComponent {
   }
 
   AddNewType() {
-    this.BusTypeServ.Add(this.newType).subscribe((data) => {
+    this.BusTypeServ.Add(this.newType,this.DomainName).subscribe((data) => {
       this.GetTableData();
       this.closeModal();
     });
@@ -85,7 +87,7 @@ export class BusCategoriesComponent {
     })
   }
   GetTableData() {
-      this.BusTypeServ.Get().subscribe((data) => {
+      this.BusTypeServ.Get(this.DomainName).subscribe((data) => {
         this.TableData=[];
         this.TableData = data;
       } ,(error)=>{
@@ -102,7 +104,7 @@ export class BusCategoriesComponent {
   }
 
   Delete(id: number) {
-    this.BusTypeServ.Delete(id).subscribe((data) => {
+    this.BusTypeServ.Delete(id,this.DomainName).subscribe((data) => {
       this.GetTableData();
     })
   }
@@ -120,7 +122,7 @@ export class BusCategoriesComponent {
 
   Save(){
     this.EditType.name=this.newType;
-    this.BusTypeServ.Edit(this.EditType).subscribe(()=>{
+    this.BusTypeServ.Edit(this.EditType,this.DomainName).subscribe(()=>{
       this.GetTableData();
       this.closeModal();
       this.newType="";
@@ -136,23 +138,15 @@ export class BusCategoriesComponent {
     }
   }
 
-  getBusDataByDomainId(event:Event){
+  getBusDataByDomainName(event:Event){
     this.IsChoosenDomain=true;
     const selectedValue: string = ((event.target as HTMLSelectElement).value);
     console.log(selectedValue)
     this.DomainName=selectedValue;
-    this.GetTableDataByDomainName();
+    this.GetTableData();
   }
-  GetTableDataByDomainName() {
-    this.BusTypeServ.GetByDomainName(this.DomainName).subscribe((data) => {
-      console.log(data)
-      this.TableData=[];
-      this.TableData = data;
-    } ,(error)=>{
-      this.TableData=[];
-      console.log(error)
-    });
-}
+
+  
   IsAllowDelete(InsertedByID: number) {
     if (this.IsEmployee == false) { return true; }
     const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);

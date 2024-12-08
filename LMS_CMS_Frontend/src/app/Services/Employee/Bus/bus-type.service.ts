@@ -23,6 +23,7 @@ export class BusTypeService {
     if(DomainName!=null) {
       this.header=DomainName 
     }
+    console.log(this.header)
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
@@ -83,12 +84,12 @@ export class BusTypeService {
       .set('Content-Type', 'application/json');
     return this.http.get(`${this.baseUrl}/BusType/${id}`, { headers })
   }
-  GetByDomainName(DomainName:string){
-    const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders()
-    .set('domain-name', DomainName)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json');
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusType`, { headers })
-  }
+  // GetByDomainName(DomainName:string){
+  //   const token = localStorage.getItem("current_token");
+  //   const headers = new HttpHeaders()
+  //   .set('domain-name', DomainName)
+  //   .set('Authorization', `Bearer ${token}`)
+  //   .set('Content-Type', 'application/json');
+  //   return this.http.get<BusType[]>(`${this.baseUrl}/BusType`, { headers })
+  // }
 }

@@ -18,5 +18,6 @@ namespace LMS_CMS_DAL.Models.Domains
 
         public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
+        public ICollection<Grade> Grades { get; set; } = new HashSet<Grade>();
     }
 }

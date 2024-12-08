@@ -11,6 +11,7 @@ import { compileComponentClassMetadata } from '@angular/compiler';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
+import { ApiService } from '../../../../Services/api.service';
 
 @Component({
   selector: 'app-bus-status',
@@ -32,7 +33,7 @@ export class BusStatusComponent {
   TableData: BusType[] = []
   DomainData: Domain[] = []
 
-  DomainID: number = 0;
+  DomainName: string = "";
   UserID: number = 0;
 
   IsChoosenDomain: boolean = false;
@@ -43,7 +44,7 @@ export class BusStatusComponent {
   mode: string = "";
 
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService) { }
+  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
 
   ngOnInit() {
 
@@ -52,7 +53,7 @@ export class BusStatusComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
-      this.DomainID = this.User_Data_After_Login.domain;
+      this.DomainName=this.ApiServ.GetHeader();
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
         const settingsPage = this.menuService.findByPageName('Bus Status', items);
@@ -75,7 +76,7 @@ export class BusStatusComponent {
   }
 
   AddNewType() {
-    this.busStatusServ.Add( this.newType).subscribe((data) => {
+    this.busStatusServ.Add(this.newType,this.DomainName).subscribe((data) => {
       this.closeModal();
       this.newType = "";
       this.GetTableData();
@@ -89,7 +90,7 @@ export class BusStatusComponent {
   }
 
   GetTableData() {
-    this.busStatusServ.Get().subscribe((data) => {
+    this.busStatusServ.Get(this.DomainName).subscribe((data) => {
       this.TableData=[];
       this.TableData = data;
     } ,(error)=>{
@@ -106,7 +107,7 @@ export class BusStatusComponent {
   }
 
   Delete(id: number) {
-    this.busStatusServ.Delete(id).subscribe((data) => {
+    this.busStatusServ.Delete(id,this.DomainName).subscribe((data) => {
       this.GetTableData();
     })
   }
@@ -124,7 +125,7 @@ export class BusStatusComponent {
 
   Save() {
     this.EditType.name = this.newType;
-    this.busStatusServ.Edit(this.EditType).subscribe(() => {
+    this.busStatusServ.Edit(this.EditType,this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
       this.newType = "";
@@ -142,8 +143,8 @@ export class BusStatusComponent {
 
   getBusDataByDomainId(event: Event) {
     this.IsChoosenDomain = true;
-    const selectedValue: number = Number((event.target as HTMLSelectElement).value);
-    this.DomainID = selectedValue;
+    const selectedValue: string = ((event.target as HTMLSelectElement).value);
+    this.DomainName = selectedValue;
     this.GetTableData();
   }
 

@@ -10,6 +10,8 @@ import { BusStudent } from '../../../../Models/Bus/bus-student';
 import Swal from 'sweetalert2';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
+import { ApiService } from '../../../../Services/api.service';
+import { ShareDomainNameService } from '../../../../Services/Employee/share-domain-name.service';
 
 @Component({
   selector: 'app-bus-student',
@@ -31,11 +33,17 @@ export class BusStudentComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
   UserID:number=0; 
+  DomainName: string = "";
 
 
-  constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,public menuService :MenuService){}
+  constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,public menuService :MenuService,public ApiServ:ApiService,public DomainNameServ:ShareDomainNameService){}
 
   ngOnInit(){
+    this.DomainNameServ.currentBusId.subscribe((DomainName) => {
+      if (DomainName !== null) {
+        this.DomainName=DomainName;
+      }
+    });
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID=this.User_Data_After_Login.id;
     this.busId = Number(this.activeRoute.snapshot.paramMap.get('busId'))
@@ -51,13 +59,13 @@ export class BusStudentComponent {
   }
 
   GetBusById(busId:number){
-    this.busService.GetbyBusId(busId).subscribe((data) => {
+    this.busService.GetbyBusId(busId,this.DomainName).subscribe((data) => {
       this.bus = data;
     });
   }
   
   GetStudentsByBusId(busId:number){
-    this.busStudentService.GetbyBusId(busId).subscribe((data) => {
+    this.busStudentService.GetbyBusId(busId,this.DomainName).subscribe((data) => {
       this.busStudentData = data;
     });
   }
@@ -72,7 +80,7 @@ export class BusStudentComponent {
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel'
     }).then((result) => {
-      this.busStudentService.DeleteBusStudent(busStudentId).subscribe(
+      this.busStudentService.DeleteBusStudent(busStudentId,this.DomainName).subscribe(
         (data: any) => {
           this.GetStudentsByBusId(this.busId);
         }

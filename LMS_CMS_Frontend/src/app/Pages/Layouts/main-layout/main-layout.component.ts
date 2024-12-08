@@ -66,7 +66,7 @@ export class MainLayoutComponent {
       });
   }
   Get_All_With_Group_By() {
-    this.roleDetailsService.Get_All_With_Group_By().subscribe(
+    this.roleDetailsService.Get_All_Pages().subscribe(
       (data:any) => {
         this.menuItemsForEmployee = data
         this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);

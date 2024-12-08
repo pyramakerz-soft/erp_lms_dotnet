@@ -15,10 +15,9 @@ export class BusCategoryService {
 
   constructor(public http: HttpClient, public ApiServ: ApiService) {
     this.baseUrl = ApiServ.BaseUrl
-    this.header = ApiServ.GetHeader();
   }
 
-  Get(DomainName?:string) {
+  Get(DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -31,7 +30,7 @@ export class BusCategoryService {
     return this.http.get<BusType[]>(`${this.baseUrl}/BusCategory`, { headers });
   }
 
-  Add( name: string,DomainName?:string): Observable<any> {
+  Add( name: string,DomainName:string): Observable<any> {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -47,7 +46,7 @@ export class BusCategoryService {
     });
   }
 
-  Edit(NewType: BusType,DomainName?:string): Observable<BusType> {
+  Edit(NewType: BusType,DomainName:string): Observable<BusType> {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -59,7 +58,7 @@ export class BusCategoryService {
     return this.http.put<BusType>(`${this.baseUrl}/BusCategory`, NewType, { headers });
   }
 
-  Delete(id: number,DomainName?:string) {
+  Delete(id: number,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -71,7 +70,7 @@ export class BusCategoryService {
     return this.http.delete(`${this.baseUrl}/BusCategory?id=${id}`, { headers })
   }
 
-  GetByID(id: number,DomainName?:string) {
+  GetByID(id: number,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }

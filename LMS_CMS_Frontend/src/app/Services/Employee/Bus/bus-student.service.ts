@@ -13,10 +13,9 @@ export class BusStudentService {
 
   constructor(public http: HttpClient, public ApiServ: ApiService) {
     this.baseUrl = ApiServ.BaseUrl
-    this.header = ApiServ.GetHeader();
   }
 
-  GetbyBusId(busId: number,DomainName?:string){
+  GetbyBusId(busId: number,DomainName:string){
      if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -28,7 +27,7 @@ export class BusStudentService {
     return this.http.get<BusStudent[]>(`${this.baseUrl}/BusStudent/GetByBusId/${busId}`, { headers })
   }
 
-  DeleteBusStudent(busStudentId: number,DomainName?:string){
+  DeleteBusStudent(busStudentId: number,DomainName:string){
      if(DomainName!=null) {
       this.header=DomainName 
     }

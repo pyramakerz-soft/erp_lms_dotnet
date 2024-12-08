@@ -15,11 +15,10 @@ export class BusTypeService {
 
   constructor(public http: HttpClient, public ApiServ: ApiService) {
     this.baseUrl = ApiServ.BaseUrl
-    this.header = ApiServ.GetHeader();
   }
 
 
-  Get(DomainName?:string) {
+  Get(DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -32,7 +31,7 @@ export class BusTypeService {
     return this.http.get<BusType[]>(`${this.baseUrl}/BusType`, { headers })
   }
 
-  Add(name: string,DomainName?:string): Observable<any> {
+  Add(name: string,DomainName:string): Observable<any> {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -49,7 +48,7 @@ export class BusTypeService {
     });
   }
 
-  Edit(NewType: BusType,DomainName?:string): Observable<BusType> {
+  Edit(NewType: BusType,DomainName:string): Observable<BusType> {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -61,7 +60,7 @@ export class BusTypeService {
     return this.http.put<BusType>(`${this.baseUrl}/BusType`, NewType, { headers });
   }
 
-  Delete(id: number,DomainName?:string) {
+  Delete(id: number,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -73,7 +72,7 @@ export class BusTypeService {
     return this.http.delete(`${this.baseUrl}/BusType?id=${id}`, { headers })
   }
 
-  GetByID(id: number,DomainName?:string) {
+  GetByID(id: number,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }

@@ -63,7 +63,7 @@ export class BusDetailsComponent {
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
       this.DomainName=this.ApiServ.GetHeader();
-      this.busService.Get().subscribe(
+      this.busService.Get(this.DomainName).subscribe(
         (data: any) => {
           this.busData = data;
         }

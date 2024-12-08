@@ -8,10 +8,13 @@ import { ApiService } from '../api.service';
 export class RoleDetailsService {
   baseUrl=""
   header=""
+  OctaUrl=""
 
   constructor(public http: HttpClient, public ApiServ:ApiService){  
     this.baseUrl=ApiServ.BaseUrl
+    this.OctaUrl=ApiServ.BaseUrlOcta
     this.header=ApiServ.GetHeader();
+
   }
 
   Get_Pages_With_RoleID(roleId: number,DomainName?:string){
@@ -34,5 +37,14 @@ export class RoleDetailsService {
     .set('Content-Type', 'application/json');
 
     return this.http.get(`${this.baseUrl}/Role_Details/Get_All_With_Group_By`, { headers });
+  }
+
+  Get_All_Pages(){
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get(`${this.OctaUrl}/Page`, { headers });
   }
 }

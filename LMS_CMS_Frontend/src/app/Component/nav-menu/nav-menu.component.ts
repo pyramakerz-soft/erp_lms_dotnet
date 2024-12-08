@@ -108,7 +108,7 @@ export class NavMenuComponent {
   ChangeAccount(id: number): void {
     const tokenObject = this.allTokens.find(s => s.id === id);
     const token = localStorage.getItem("current_token")
-
+    this.togglePopup();
     if (tokenObject && token != tokenObject.value) {
       localStorage.removeItem("current_token");
       localStorage.setItem("current_token", tokenObject.value);

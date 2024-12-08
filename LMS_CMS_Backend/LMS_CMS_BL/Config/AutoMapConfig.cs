@@ -3,6 +3,7 @@ using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Octa;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,10 @@ namespace LMS_CMS_BL.Config
     {
         public AutoMapConfig()
         {
-            CreateMap<Page, Page_AddDTO>();
-            CreateMap<Page_AddDTO, Page>();
+            CreateMap<LMS_CMS_DAL.Models.Domains.Page, Page_AddDTO>();
+            CreateMap<Page_AddDTO,  LMS_CMS_DAL.Models.Domains.Page > ();
 
-            CreateMap<Page, Page_GetDTO>();
+            CreateMap <LMS_CMS_DAL.Models.Domains.Page, Page_GetDTO >();
 
             CreateMap<Bus, Bus_GetDTO>()
                 .ForMember(dest => dest.BusTypeName, opt => opt.MapFrom(src => src.BusType.Name))
@@ -86,6 +87,9 @@ namespace LMS_CMS_BL.Config
             CreateMap<StudentGetDTO, Student>();
 
             CreateMap<Semester, Semester_GetDTO>();
+
+            CreateMap<LMS_CMS_DAL.Models.Octa.Page, Page_GetDTO>();
+            CreateMap<Page_GetDTO, LMS_CMS_DAL.Models.Octa.Page>();
         }
     }
 }

@@ -22,7 +22,8 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Role> Role_Repository;
         GenericRepo<Domain> Domain_Octa_Repository;
         GenericRepo<School> School_Repository;
-        GenericRepo<Page> Page_Repository;
+        GenericRepo<LMS_CMS_DAL.Models.Domains.Page> Page_Repository;
+        GenericRepo<LMS_CMS_DAL.Models.Octa.Page> Page_Octa_Repository;
         GenericRepo<Role_Detailes> Role_Detailes_Repository;
         GenericRepo<Octa> Octa_Repository;
         GenericRepo<Bus> Bus_Repository;
@@ -134,15 +135,26 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
-        public GenericRepo<Page> page_Repository
+        public GenericRepo<LMS_CMS_DAL.Models.Domains.Page> page_Repository
         {
             get
             {
                 if (Page_Repository == null)
                 {
-                    Page_Repository = new GenericRepo<Page>(db);
+                    Page_Repository = new GenericRepo<LMS_CMS_DAL.Models.Domains.Page>(db);
                 }
                 return Page_Repository;
+            }
+        }
+        public GenericRepo<LMS_CMS_DAL.Models.Octa.Page> page_Octa_Repository
+        {
+            get
+            {
+                if (Page_Octa_Repository == null)
+                {
+                    Page_Octa_Repository = new GenericRepo<LMS_CMS_DAL.Models.Octa.Page>(octa_Db);
+                }
+                return Page_Octa_Repository;
             }
         }
 

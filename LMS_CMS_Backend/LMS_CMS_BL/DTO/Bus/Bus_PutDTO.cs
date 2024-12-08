@@ -21,5 +21,8 @@ namespace LMS_CMS_BL.DTO.Bus
         public long? DriverID { get; set; }
         public long? DriverAssistantID { get; set; }
         public long? BusCompanyID { get; set; }
+        public int MorningPrice { get; set; }
+        public int BackPrice { get; set; }
+        public int TwoWaysPrice { get; set; }
     }
 }

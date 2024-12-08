@@ -20,6 +20,10 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
         public string Name { get; set; }
         public long Capacity { get; set; }
         public bool IsCapacityRestricted { get; set; }
+        public int MorningPrice { get; set; }
+        public int BackPrice { get; set; }
+        public int TwoWaysPrice { get; set; }
+
 
         [ForeignKey("BusType")]
         public long? BusTypeID { get; set; }
@@ -33,6 +37,7 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
         public long? DriverAssistantID { get; set; }
         [ForeignKey("BusCompany")]
         public long? BusCompanyID { get; set; }
+
 
         public BusType? BusType { get; set; }
         public BusRestrict? BusRestrict { get; set; }

@@ -35,6 +35,9 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<AcademicYear> AcademicYear_Repository;
         GenericRepo<Semester> Semester_Repository;
         GenericRepo<EmployeeType> EmployeeType_Repository;
+        GenericRepo<Class> Class_Repository;
+        GenericRepo<Grade> Grade_Repository;
+        GenericRepo<StudentAcademicYear> StudentAcademicYear_Repository;
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -269,6 +272,42 @@ namespace LMS_CMS_BL.UOW
                     EmployeeType_Repository = new GenericRepo<EmployeeType>(db);
                 }
                 return EmployeeType_Repository;
+            }
+        }
+
+        public GenericRepo<Class> class_Repository
+        {
+            get
+            {
+                if (Class_Repository == null)
+                {
+                    Class_Repository = new GenericRepo<Class>(db);
+                }
+                return Class_Repository;
+            }
+        }
+
+        public GenericRepo<Grade> grade_Repository
+        {
+            get
+            {
+                if (Grade_Repository == null)
+                {
+                    Grade_Repository = new GenericRepo<Grade>(db);
+                }
+                return Grade_Repository;
+            }
+        }
+
+        public GenericRepo<StudentAcademicYear> studentAcademicYear_Repository
+        {
+            get
+            {
+                if (StudentAcademicYear_Repository == null)
+                {
+                    StudentAcademicYear_Repository = new GenericRepo<StudentAcademicYear>(db);
+                }
+                return StudentAcademicYear_Repository;
             }
         }
 

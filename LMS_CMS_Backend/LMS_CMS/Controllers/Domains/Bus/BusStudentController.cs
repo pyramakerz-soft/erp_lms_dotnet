@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
 using BusModel = LMS_CMS_DAL.Models.Domains.BusModule.Bus;
 
@@ -58,12 +59,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             }
 
             busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
-                    bus => bus.BusID == busId && bus.IsDeleted != true,
-                    query => query.Include(bus => bus.Bus),
-                    query => query.Include(stu => stu.Student),
-                    query => query.Include(busCat => busCat.BusCategory),
-                    query => query.Include(sem => sem.Semester)
-                    );
+                bus => bus.BusID == busId && bus.IsDeleted != true,
+                query => query.Include(bus => bus.Bus),
+                query => query.Include(stu => stu.Student).ThenInclude(stu => stu.StudentAcademicYears),
+                query => query.Include(busCat => busCat.BusCategory),
+                query => query.Include(sem => sem.Semester)
+            );
 
             if (busStudents == null || busStudents.Count == 0)
             {
@@ -72,8 +73,34 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             List<BusStudentGetDTO> busStudentDTOs = mapper.Map<List<BusStudentGetDTO>>(busStudents);
 
+            foreach (var dto in busStudentDTOs)
+            {
+                var busStudent = Unit_Of_Work.busStudent_Repository.Select_By_Id(dto.ID);
+                if (busStudent != null)
+                {
+                    var studentAcademicYear = Unit_Of_Work.studentAcademicYear_Repository
+                        .First_Or_Default(s => s.SemesterID == busStudent.SemseterID);
+
+                    if (studentAcademicYear != null)
+                    {
+                        dto.SchoolID = studentAcademicYear.SchoolID;
+                        var school = Unit_Of_Work.school_Repository.Select_By_Id(dto.SchoolID);
+                        dto.SchoolName = school.Name;
+
+                        dto.GradeID = studentAcademicYear.GradeID;
+                        var grade = Unit_Of_Work.grade_Repository.Select_By_Id(dto.GradeID);
+                        dto.GradeName = grade.Name;
+
+                        dto.ClassID = studentAcademicYear.ClassID;
+                        var classs = Unit_Of_Work.class_Repository.Select_By_Id(dto.ClassID);
+                        dto.ClassName = classs.Name;
+                    }
+                }
+            }
+
             return Ok(busStudentDTOs);
         }
+
 
         [HttpGet("{Id}")]
         [Authorize_Endpoint_(
@@ -102,7 +129,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             var busStudent = await Unit_Of_Work.busStudent_Repository.FindByIncludesAsync(
                 busStu => busStu.ID == Id && busStu.IsDeleted != true,
                 query => query.Include(e => e.Bus),
-                query => query.Include(e => e.Student),
+                query => query.Include(e => e.Student).ThenInclude(stu => stu.StudentAcademicYears),
                 query => query.Include(e => e.BusCategory),
                 query => query.Include(e => e.Semester)
             );
@@ -113,6 +140,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             }
 
             BusStudentGetDTO busStudentDTO = mapper.Map<BusStudentGetDTO>(busStudent);
+
+            var studentAcademicYear = Unit_Of_Work.studentAcademicYear_Repository
+                    .First_Or_Default(s => s.SemesterID == busStudent.SemseterID);
+
+            if (studentAcademicYear != null)
+            {
+                busStudentDTO.SchoolID = studentAcademicYear.SchoolID;
+                var school = Unit_Of_Work.school_Repository.Select_By_Id(busStudentDTO.SchoolID);
+                busStudentDTO.SchoolName = school.Name;
+
+                busStudentDTO.GradeID = studentAcademicYear.GradeID;
+                var grade = Unit_Of_Work.grade_Repository.Select_By_Id(busStudentDTO.GradeID);
+                busStudentDTO.GradeName = grade.Name;
+
+                busStudentDTO.ClassID = studentAcademicYear.ClassID;
+                var classs = Unit_Of_Work.class_Repository.Select_By_Id(busStudentDTO.ClassID);
+                busStudentDTO.ClassName = classs.Name;
+            }
 
             return Ok(busStudentDTO);
         }

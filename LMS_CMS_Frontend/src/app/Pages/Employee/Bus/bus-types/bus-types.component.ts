@@ -142,6 +142,7 @@ export class BusTypesComponent {
     this.IsChoosenDomain = true;
     const selectedValue: string = ((event.target as HTMLSelectElement).value);
     this.DomainName = selectedValue;
+    console.log(this.DomainName)
     this.GetTableData();
   }
 

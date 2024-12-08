@@ -23,6 +23,7 @@ export class BusTypeService {
     if(DomainName!=null) {
       this.header=DomainName 
     }
+    console.log(this.header)
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)

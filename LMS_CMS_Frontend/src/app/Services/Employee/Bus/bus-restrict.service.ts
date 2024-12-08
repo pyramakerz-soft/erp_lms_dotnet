@@ -15,11 +15,10 @@ export class BusRestrictService {
 
   constructor(public http: HttpClient, public ApiServ: ApiService) {
     this.baseUrl = ApiServ.BaseUrl
-    this.header = ApiServ.GetHeader();
   }
 
 
-  Get(DomainName?:string){
+  Get(DomainName:string){
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -31,7 +30,7 @@ export class BusRestrictService {
     return this.http.get<BusType[]>(`${this.baseUrl}/BusRestrict`, { headers })
   }
 
-  Add( name: string,DomainName?:string): Observable<any> {
+  Add( name: string,DomainName:string): Observable<any> {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -49,7 +48,7 @@ export class BusRestrictService {
 
 
 
-  Edit(NewType:BusType,DomainName?:string): Observable<BusType> {
+  Edit(NewType:BusType,DomainName:string): Observable<BusType> {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -61,7 +60,7 @@ export class BusRestrictService {
     return this.http.put<BusType>(`${this.baseUrl}/BusRestrict`, NewType, { headers });
   }
 
-  Delete(id:number,DomainName?:string){
+  Delete(id:number,DomainName:string){
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -73,7 +72,7 @@ export class BusRestrictService {
     return this.http.delete(`${this.baseUrl}/BusRestrict?id=${id}`, { headers })
   }
 
-  GetByID(id:number,DomainName?:string){
+  GetByID(id:number,DomainName:string){
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -83,13 +82,5 @@ export class BusRestrictService {
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
     return this.http.get(`${this.baseUrl}/BusRestrict/${id}`, { headers })
-  }
-  GetByDomainName(DomainName:string){
-    const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders()
-    .set('domain-name', DomainName)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json');
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusRestrict`, { headers })
   }
 }

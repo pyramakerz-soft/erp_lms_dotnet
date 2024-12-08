@@ -16,7 +16,7 @@ export class BusService {
     this.header = ApiServ.GetHeader();
   }
 
-  Get(DomainName?:string){
+  Get(DomainName:string){
      if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -40,7 +40,7 @@ export class BusService {
     return this.http.get(`${this.baseUrl}/Bus`,{ headers })
   }
   
-  GetbyBusId(busId: number,DomainName?:string){
+  GetbyBusId(busId: number,DomainName:string){
      if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -52,7 +52,7 @@ export class BusService {
     return this.http.get<Bus>(`${this.baseUrl}/Bus/${busId}`,{ headers })
   }
 
-  DeleteBus(busId:number,DomainName?:string){
+  DeleteBus(busId:number,DomainName:string){
      if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -67,7 +67,7 @@ export class BusService {
   });
   }
 
-  Add(bus:Bus,DomainName?:string){
+  Add(bus:Bus,DomainName:string){
      if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -82,7 +82,7 @@ export class BusService {
   });
   }
 
-  Edit(bus:Bus,DomainName?:string){
+  Edit(bus:Bus,DomainName:string){
     if(DomainName!=null) {
       this.header=DomainName 
     }

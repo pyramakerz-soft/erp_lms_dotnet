@@ -143,17 +143,7 @@ export class BusCompaniesComponent {
     const selectedValue: string = ((event.target as HTMLSelectElement).value);
     console.log(selectedValue)
     this.DomainName = selectedValue;
-    this.GetTableDataByDomainName();
-  }
-  GetTableDataByDomainName() {
-    this.BusTypeServ.GetByDomainName(this.DomainName).subscribe((data) => {
-      console.log(data)
-      this.TableData = [];
-      this.TableData = data;
-    }, (error) => {
-      this.TableData = [];
-      console.log(error)
-    });
+    this.GetTableData();
   }
   IsAllowDelete(InsertedByID: number) {
     if (this.IsEmployee == false) { return true; }

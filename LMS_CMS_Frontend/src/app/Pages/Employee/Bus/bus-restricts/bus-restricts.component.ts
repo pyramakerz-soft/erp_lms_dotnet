@@ -10,6 +10,7 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
+import { ApiService } from '../../../../Services/api.service';
 
 @Component({
   selector: 'app-bus-restricts',
@@ -31,7 +32,7 @@ export class BusRestrictsComponent {
   TableData: BusType[] = []
   DomainData: Domain[] = []
 
-  DomainID: number = 0;
+  DomainName: string = "";
   UserID: number = 0;
 
   IsChoosenDomain: boolean = false;
@@ -42,7 +43,7 @@ export class BusRestrictsComponent {
   mode: string = "";
 
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService) { }
+  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
 
   ngOnInit() {
 
@@ -51,7 +52,7 @@ export class BusRestrictsComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
-      this.DomainID = this.User_Data_After_Login.domain;
+      this.DomainName=this.ApiServ.GetHeader();
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
         const settingsPage = this.menuService.findByPageName('Bus Restricts', items);
@@ -74,7 +75,7 @@ export class BusRestrictsComponent {
   }
 
   AddNewType() {
-    this.busRestrictServ.Add( this.newType).subscribe((data) => {
+    this.busRestrictServ.Add( this.newType,this.DomainName).subscribe((data) => {
       this.closeModal();
       this.newType = "";
       this.GetTableData();
@@ -90,7 +91,7 @@ export class BusRestrictsComponent {
     })
   }
   GetTableData() {
-    this.busRestrictServ.Get().subscribe((data) => {
+    this.busRestrictServ.Get(this.DomainName).subscribe((data) => {
       this.TableData = [];
       this.TableData = data;
     }, (error) => {
@@ -107,7 +108,7 @@ export class BusRestrictsComponent {
   }
 
   Delete(id: number) {
-    this.busRestrictServ.Delete(id).subscribe((data) => {
+    this.busRestrictServ.Delete(id,this.DomainName).subscribe((data) => {
       this.GetTableData();
     })
   }
@@ -125,7 +126,7 @@ export class BusRestrictsComponent {
 
   Save() {
     this.EditType.name = this.newType;
-    this.busRestrictServ.Edit(this.EditType).subscribe(() => {
+    this.busRestrictServ.Edit(this.EditType,this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
       this.newType = "";
@@ -143,8 +144,8 @@ export class BusRestrictsComponent {
 
   getBusDataByDomainId(event: Event) {
     this.IsChoosenDomain = true;
-    const selectedValue: number = Number((event.target as HTMLSelectElement).value);
-    this.DomainID = selectedValue;
+    const selectedValue: string = ((event.target as HTMLSelectElement).value);
+    this.DomainName = selectedValue;
     this.GetTableData();
   }
 

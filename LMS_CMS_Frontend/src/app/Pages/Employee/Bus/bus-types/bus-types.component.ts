@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { Domain } from '../../../../Models/domain';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
+import { ApiService } from '../../../../Services/api.service';
 
 @Component({
   selector: 'app-bus-types',
@@ -31,7 +32,7 @@ export class BusTypesComponent {
   TableData: BusType[] = []
   DomainData: Domain[] = []
 
-  DomainID: number = 0;
+  DomainName: string = "";
   UserID: number = 0;
 
   IsChoosenDomain: boolean = false;
@@ -42,7 +43,7 @@ export class BusTypesComponent {
   mode: string = "";
 
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusTypeService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService) { }
+  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusTypeService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
 
   ngOnInit() {
 
@@ -51,6 +52,7 @@ export class BusTypesComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
+      this.DomainName=this.ApiServ.GetHeader();
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
         const settingsPage = this.menuService.findByPageName('Bus Type', items);
@@ -73,7 +75,7 @@ export class BusTypesComponent {
   }
 
   AddNewType() {
-    this.BusTypeServ.Add( this.newType).subscribe((data) => {
+    this.BusTypeServ.Add(this.newType,this.DomainName).subscribe((data) => {
       this.GetTableData();
       this.closeModal();
     });
@@ -86,14 +88,10 @@ export class BusTypesComponent {
   }
 
   GetTableData() {
-    if (this.DomainID !== null) {
-      this.BusTypeServ.Get().subscribe((data) => {
+      this.BusTypeServ.Get(this.DomainName).subscribe((data) => {
         this.TableData = [];
         this.TableData = data;
       });
-    } else {
-      console.log("No domain selected");
-    }
   }
 
   openModal() {
@@ -105,7 +103,7 @@ export class BusTypesComponent {
   }
 
   Delete(id: number) {
-    this.BusTypeServ.Delete(id).subscribe((data) => {
+    this.BusTypeServ.Delete(id,this.DomainName).subscribe((data) => {
       this.GetTableData();
     })
   }
@@ -124,7 +122,7 @@ export class BusTypesComponent {
 
   Save() {
     this.EditType.name = this.newType;
-    this.BusTypeServ.Edit(this.EditType).subscribe(() => {
+    this.BusTypeServ.Edit(this.EditType,this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
       this.newType = "";
@@ -142,8 +140,8 @@ export class BusTypesComponent {
 
   getBusDataByDomainId(event: Event) {
     this.IsChoosenDomain = true;
-    const selectedValue: number = Number((event.target as HTMLSelectElement).value);
-    this.DomainID = selectedValue;
+    const selectedValue: string = ((event.target as HTMLSelectElement).value);
+    this.DomainName = selectedValue;
     this.GetTableData();
   }
 

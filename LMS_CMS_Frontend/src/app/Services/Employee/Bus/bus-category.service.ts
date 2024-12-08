@@ -83,12 +83,4 @@ export class BusCategoryService {
     return this.http.get(`${this.baseUrl}/BusCategory/${id}`, { headers })
   }
 
-  GetByDomainName(DomainName:string){
-    const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders()
-    .set('domain-name', DomainName)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json');
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusCategory`, { headers })
-  }
 }

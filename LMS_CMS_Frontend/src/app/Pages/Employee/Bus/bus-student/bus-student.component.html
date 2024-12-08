@@ -100,9 +100,9 @@
                     [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
                     class="border-t border-gray-300 text-xs md:text-sm">
 
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">Dummy</td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">Dummy</td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">Dummy</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.schoolName }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.gradeName }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.className }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div *ngIf="row.busCategoryName; else emptybusCategoryName">
@@ -155,47 +155,60 @@
 <div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
     <div class="bg-white rounded-2xl p-12 w-1/2">
         <div class="flex justify-between items-center">
-            <h1 class="font-semibold text-2xl leading-9">Create Bus</h1>
+            <h1 class="font-semibold text-2xl leading-9">Add Student</h1>
             <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
 
         <div class="mt-6 mb-4 flex flex-wrap justify-between">
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="school">Choose School</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school">
-                    <!-- <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                <select 
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()">
+                    <option value="" disabled selected>Choose School</option>
+                    <option *ngFor="let school of SchoolGroupByGradeGroupByClass" [value]="school.id">{{ school.name }}</option>
+                    <option *ngIf="SchoolGroupByGradeGroupByClass.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="grade">Choose Grade</label>
-                <select 
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" >
+                <label class="mb-2" for="grade" [ngClass]="{ 'text-gray-400': !selectedSchool, 'primaryTxt': selectedSchool }">Choose Grade</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()" [disabled]="!selectedSchool">
+                    <option value="" disabled selected>Choose Grade</option>
+                    <option *ngFor="let grade of filteredGrades" [value]="grade.id">{{ grade.name }}</option>
+                    <option *ngIf="filteredGrades.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="class">Choose Class</label>
-                <select 
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="class" >
+                <label class="mb-2" [ngClass]="{ 'text-gray-400': !selectedGrade, 'primaryTxt': selectedGrade }" for="class">Choose Class</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="class" [(ngModel)]="selectedClass" (change)="onClassChange()" [disabled]="!selectedGrade">
+                    <option value="" disabled selected>Choose Class</option>
+                    <option *ngFor="let classItem of filteredClasses" [value]="classItem.id">{{ classItem.name }}</option>
+                    <option *ngIf="filteredClasses.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="student">Choose Student</label>
-                <select 
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student" >
+                <label class="mb-2" [ngClass]="{ 'text-gray-400': !selectedClass, 'primaryTxt': selectedClass }" for="student">Choose Student</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student" [(ngModel)]="busStudent.studentID" [disabled]="!selectedClass">
+                    <option *ngIf="selectedClass" value="" disabled selected>Choose Student</option>
+                    <option *ngFor="let stu of Students" [value]="stu.id">{{ stu.en_name }}</option>
+                    <option *ngIf="Students.length === 0 && selectedClass" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="categories">Bus Categories</label>
                 <select 
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="categories" >
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="busCategory" [(ngModel)]="busStudent.busCategoryID">
+                    <option value="" disabled selected>Choose Bus Category</option>
+                    <option *ngFor="let cat of BusCategories" [value]="cat.id">{{ cat.name }}</option>
+                    <option *ngIf="BusCategories.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="semester">Semester</label>
                 <select 
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semester" >
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semester" [(ngModel)]="busStudent.semseterID">
+                    <option value="" disabled selected>Choose Semester</option>
+                    <option *ngFor="let semester of Semesters" [value]="semester.id">{{ semester.name }}</option>
+                    <option *ngIf="Semesters.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex w-full space-x-5 items-center mb-4">
@@ -205,11 +218,11 @@
             </div>
             <div *ngIf="exception" class="flex flex-col w-[49%]">
                 <label for="from" class="mb-2 primaryTxt">Date From</label>
-                <input id="from" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="From">
+                <input id="from" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="From" [(ngModel)]="busStudent.exceptionFromDate">
             </div>
             <div *ngIf="exception" class="flex flex-col w-[49%]">
                 <label for="to" class="mb-2 primaryTxt">Date To</label>
-                <input id="to" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="To">
+                <input id="to" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="To" [(ngModel)]="busStudent.exceptionToDate">
             </div>
         </div>
 

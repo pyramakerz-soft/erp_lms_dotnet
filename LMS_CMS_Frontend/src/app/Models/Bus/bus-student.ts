@@ -15,6 +15,11 @@ export class BusStudent {
         public deletedByUserId :number =0,
         public updatedByUserId :number =0,
         public insertedByUserId :number =0,
-
+        public classID: number | null = null,
+        public className: string | null = null,
+        public schoolID: number | null = null,
+        public schoolName: string | null = null,
+        public gradeID: number | null = null,
+        public gradeName: string | null = null,
     ) {}
 }

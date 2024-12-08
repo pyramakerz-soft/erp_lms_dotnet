@@ -12,11 +12,22 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
 import { ShareDomainNameService } from '../../../../Services/Employee/share-domain-name.service';
+import { School } from '../../../../Models/school';
+import { SchoolService } from '../../../../Services/Employee/school.service';
+import { BusCategoryService } from '../../../../Services/Employee/Bus/bus-category.service';
+import { BusType } from '../../../../Models/Bus/bus-type';
+import { Semester } from '../../../../Models/semester';
+import { SemesterService } from '../../../../Services/Employee/semester.service';
+import { Grade } from '../../../../Models/grade';
+import { Class } from '../../../../Models/class';
+import { FormsModule } from '@angular/forms';
+import { StudentService } from '../../../../Services/student.service';
+import { Student } from '../../../../Models/student';
 
 @Component({
   selector: 'app-bus-student',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './bus-student.component.html',
   styleUrl: './bus-student.component.css'
 })
@@ -34,9 +45,21 @@ export class BusStudentComponent {
   AllowDeleteForOthers: boolean = false;
   UserID:number=0; 
   DomainName: string = "";
+  SchoolGroupByGradeGroupByClass:School[] = []
+  BusCategories:BusType[] = []
+  Semesters:Semester[] = []
 
+  selectedSchool: number | null = null;
+  selectedGrade: number | null = null;
+  selectedClass: number | null = null;
 
-  constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,public menuService :MenuService,public ApiServ:ApiService,public DomainNameServ:ShareDomainNameService){}
+  filteredGrades:Grade[] = [];
+  filteredClasses:Class[] = [];
+  Students:Student[] = [];
+
+  constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
+    public menuService :MenuService,public ApiServ:ApiService,public DomainNameServ:ShareDomainNameService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
+    , public semesterService:SemesterService, public studentService:StudentService){}
 
   ngOnInit(){
     this.DomainNameServ.currentBusId.subscribe((DomainName) => {
@@ -56,6 +79,9 @@ export class BusStudentComponent {
       this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
       this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
     });
+    this.GetSchoolsGroupByGradeGroupByClass()
+    this.GetBusCategories()
+    this.GetSemesters()
   }
 
   GetBusById(busId:number){
@@ -67,6 +93,24 @@ export class BusStudentComponent {
   GetStudentsByBusId(busId:number){
     this.busStudentService.GetbyBusId(busId,this.DomainName).subscribe((data) => {
       this.busStudentData = data;
+    });
+  }
+  
+  GetSchoolsGroupByGradeGroupByClass(){
+    this.schoolService.Get(this.DomainName).subscribe((data) => {
+      this.SchoolGroupByGradeGroupByClass = data;
+    });
+  }
+ 
+  GetBusCategories(){
+    this.busCategoryService.Get(this.DomainName).subscribe((data) => {
+      this.BusCategories = data;
+    });
+  }
+ 
+  GetSemesters(){
+    this.semesterService.Get(this.DomainName).subscribe((data) => {
+      this.Semesters = data;
     });
   }
 
@@ -91,7 +135,6 @@ export class BusStudentComponent {
   OpenModal(busStudentId?: number) {
     if (busStudentId) {
       this.editBusStudent = true;
-      this.GetStudentsByBusId(this.busId);
     }
     
     document.getElementById("Add_Modal")?.classList.remove("hidden");
@@ -111,17 +154,49 @@ export class BusStudentComponent {
   onIsExceptionChange(event: Event) {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.exception = isChecked
+    this.busStudent.isException = this.exception
   }
-
-  SaveBusStudent(){
-    
-  }
+  
   IsAllowDelete(InsertedByID:number){
     const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
     return IsAllow;
   }
+  
   IsAllowEdit(InsertedByID:number){
     const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
     return IsAllow;
+  }
+
+  onSchoolChange() {
+    const selectedSchool = this.SchoolGroupByGradeGroupByClass.find((element) => element.id == this.selectedSchool)
+    this.filteredGrades = selectedSchool ? selectedSchool.grades : [];
+    this.selectedGrade = null;
+    this.selectedClass = null;
+    this.filteredClasses = [];
+  }
+
+  onGradeChange() {
+    const selectedSchool = this.SchoolGroupByGradeGroupByClass.find((element) => element.id == this.selectedSchool)
+    this.filteredGrades = selectedSchool ? selectedSchool.grades : [];
+    const selectedGrade = this.filteredGrades.find((element) => element.id == this.selectedGrade)
+    this.filteredClasses = selectedGrade ? selectedGrade.classes : [];
+    this.selectedClass = null;
+  }
+
+  onClassChange(){
+    if(this.selectedClass){
+      this.studentService.GetByClassID(this.selectedClass, this.DomainName).subscribe((data) => {
+        this.Students = data
+      });
+    }
+  }
+
+  SaveBusStudent(){
+    this.busStudent.busID = this.busId
+    console.log(this.busStudent)
+    this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
+      this.closeModal()
+      this.GetStudentsByBusId(this.busId);
+    });
   }
 }

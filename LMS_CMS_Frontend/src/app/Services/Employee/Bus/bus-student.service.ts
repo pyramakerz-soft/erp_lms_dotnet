@@ -38,4 +38,14 @@ export class BusStudentService {
     .set('Content-Type', 'application/json');
     return this.http.delete(`${this.baseUrl}/BusStudent/${busStudentId}`, { headers })
   }
+
+  Add(busStu:BusStudent, DomainName:string){
+    this.header=DomainName 
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.post(`${this.baseUrl}/BusStudent`, busStu, { headers })
+  }
 }

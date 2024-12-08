@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
+import { Student } from '../Models/student';
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,16 @@ export class StudentService {
     .set('Content-Type', 'application/json');
 
     return this.http.get(`${this.baseUrl}/Student/${id}`, { headers })
+  }
+
+  GetByClassID(id:number,DomainName:string){
+    this.header=DomainName 
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<Student[]>(`${this.baseUrl}/Student/Get_By_ClassID/${id}`, { headers })
   }
 }

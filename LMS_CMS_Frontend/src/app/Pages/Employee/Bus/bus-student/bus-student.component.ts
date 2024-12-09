@@ -11,7 +11,6 @@ import Swal from 'sweetalert2';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
-import { ShareDomainNameService } from '../../../../Services/Employee/share-domain-name.service';
 import { School } from '../../../../Models/school';
 import { SchoolService } from '../../../../Services/Employee/school.service';
 import { BusCategoryService } from '../../../../Services/Employee/Bus/bus-category.service';
@@ -58,18 +57,14 @@ export class BusStudentComponent {
   Students:Student[] = [];
 
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
-    public menuService :MenuService,public ApiServ:ApiService,public DomainNameServ:ShareDomainNameService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
+    public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
     , public semesterService:SemesterService, public studentService:StudentService){}
 
   ngOnInit(){
-    this.DomainNameServ.currentBusId.subscribe((DomainName) => {
-      if (DomainName !== null) {
-        this.DomainName=DomainName;
-      }
-    });
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID=this.User_Data_After_Login.id;
     this.busId = Number(this.activeRoute.snapshot.paramMap.get('busId'))
+    this.DomainName = String(this.activeRoute.snapshot.paramMap.get('domainName'))
     this.GetBusById(this.busId);
     this.GetStudentsByBusId(this.busId);
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -79,6 +74,12 @@ export class BusStudentComponent {
       this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
       this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
     });
+
+    // Delete this part
+    this.AllowEdit = true
+    this.AllowDelete = true
+    //
+
     this.GetSchoolsGroupByGradeGroupByClass()
     this.GetBusCategories()
     this.GetSemesters()
@@ -90,7 +91,26 @@ export class BusStudentComponent {
     });
   }
   
+  GetbyId(busStuId:number){
+    this.busStudentService.GetbyId(busStuId,this.DomainName).subscribe((data) => {
+      this.busStudent = data;
+      console.log(this.busStudent)
+      this.selectedSchool = this.busStudent.schoolID
+      this.selectedGrade = this.busStudent.gradeID
+      this.selectedClass = this.busStudent.classID
+
+      const selectedSchool = this.SchoolGroupByGradeGroupByClass.find((element) => element.id == this.selectedSchool)
+      this.filteredGrades = selectedSchool ? selectedSchool.grades : [];
+      const selectedGrade = this.filteredGrades.find((element) => element.id == this.selectedGrade)
+      this.filteredClasses = selectedGrade ? selectedGrade.classes : [];
+
+      // To get the students
+      this.onClassChange()
+    });
+  }
+  
   GetStudentsByBusId(busId:number){
+    this.busStudentData= []
     this.busStudentService.GetbyBusId(busId,this.DomainName).subscribe((data) => {
       this.busStudentData = data;
     });
@@ -124,17 +144,20 @@ export class BusStudentComponent {
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel'
     }).then((result) => {
-      this.busStudentService.DeleteBusStudent(busStudentId,this.DomainName).subscribe(
-        (data: any) => {
-          this.GetStudentsByBusId(this.busId);
-        }
-      );
+      if (result.isConfirmed) {
+        this.busStudentService.DeleteBusStudent(busStudentId,this.DomainName).subscribe(
+          (data: any) => {
+            this.GetStudentsByBusId(this.busId);
+          }
+        );
+      }
     });
   }
 
   OpenModal(busStudentId?: number) {
     if (busStudentId) {
       this.editBusStudent = true;
+      this.GetbyId(busStudentId)
     }
     
     document.getElementById("Add_Modal")?.classList.remove("hidden");
@@ -149,6 +172,14 @@ export class BusStudentComponent {
     if(this.editBusStudent){
       this.editBusStudent = false
     }
+
+    this.selectedSchool = null;
+    this.selectedGrade = null;
+    this.selectedClass = null;
+
+    this.filteredGrades = [];
+    this.filteredClasses = [];
+    this.Students = [];
   }
 
   onIsExceptionChange(event: Event) {
@@ -159,12 +190,14 @@ export class BusStudentComponent {
   
   IsAllowDelete(InsertedByID:number){
     const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
-    return IsAllow;
+    // return IsAllow;
+    return true
   }
   
   IsAllowEdit(InsertedByID:number){
     const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
-    return IsAllow;
+    // return IsAllow;
+    return true
   }
 
   onSchoolChange() {
@@ -192,11 +225,24 @@ export class BusStudentComponent {
   }
 
   SaveBusStudent(){
-    this.busStudent.busID = this.busId
     console.log(this.busStudent)
-    this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
-      this.closeModal()
-      this.GetStudentsByBusId(this.busId);
-    });
+    this.busStudent.busID = this.busId
+
+    if(this.busStudent.isException == false){
+      this.busStudent.exceptionFromDate = null
+      this.busStudent.exceptionToDate = null
+    }
+
+    if(this.editBusStudent == false){
+      this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
+        this.closeModal()
+        this.GetStudentsByBusId(this.busId);
+      });
+    } else{
+      this.busStudentService.Edit(this.busStudent, this.DomainName).subscribe((data) => {
+        this.closeModal()
+        this.GetStudentsByBusId(this.busId);
+      });
+    }
   }
 }

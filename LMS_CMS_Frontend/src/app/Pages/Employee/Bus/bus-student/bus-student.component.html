@@ -34,6 +34,18 @@
             <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Company</p>
             <p class="font-medium text-base text-[#1E1E1E]">{{ bus.busCompanyName }}</p>
         </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Morning Price</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.morningPrice }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Back Price</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.backPrice }}</p>
+        </div>
+        <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Two Ways Price</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ bus.twoWaysPrice }}</p>
+        </div>
         <div class="flex space-x-5 items-center w-[30%] mb-4">
             <i *ngIf="bus.isCapacityRestricted" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
             <i *ngIf="!bus.isCapacityRestricted" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
@@ -139,7 +151,7 @@
                             <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" >
                                 <i class="fa-regular fa-trash-can" (click)="deleteBusStudent(row.id)"></i>
                             </button>
-                            <button  *ngIf="AllowEdit&& IsAllowEdit(row.insertedByUserId) ">
+                            <button  *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId) ">
                                 <i class="fa-solid fa-pencil" (click)="OpenModal(row.id)"></i>
                             </button>
                         </div>
@@ -155,39 +167,41 @@
 <div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
     <div class="bg-white rounded-2xl p-12 w-1/2">
         <div class="flex justify-between items-center">
-            <h1 class="font-semibold text-2xl leading-9">Add Student</h1>
+            <h1 *ngIf="!editBusStudent" class="font-semibold text-2xl leading-9">Add Student</h1>
+            <h1 *ngIf="editBusStudent" class="font-semibold text-2xl leading-9">Edit Student</h1>
             <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
 
         <div class="mt-6 mb-4 flex flex-wrap justify-between">
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="school">Choose School</label>
-                <select 
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()">
+                <label class="mb-2" for="school" [ngClass]="{ 'text-gray-400': editBusStudent, 'primaryTxt': !editBusStudent}">Choose School</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
+                [disabled]="editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': editBusStudent}">
                     <option value="" disabled selected>Choose School</option>
                     <option *ngFor="let school of SchoolGroupByGradeGroupByClass" [value]="school.id">{{ school.name }}</option>
                     <option *ngIf="SchoolGroupByGradeGroupByClass.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" for="grade" [ngClass]="{ 'text-gray-400': !selectedSchool, 'primaryTxt': selectedSchool }">Choose Grade</label>
-                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()" [disabled]="!selectedSchool">
+                <label class="mb-2" for="grade" [ngClass]="{ 'text-gray-400': !selectedSchool || editBusStudent, 'primaryTxt': selectedSchool && !editBusStudent }">Choose Grade</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()" [disabled]="!selectedSchool || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editBusStudent }">
                     <option value="" disabled selected>Choose Grade</option>
                     <option *ngFor="let grade of filteredGrades" [value]="grade.id">{{ grade.name }}</option>
                     <option *ngIf="filteredGrades.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" [ngClass]="{ 'text-gray-400': !selectedGrade, 'primaryTxt': selectedGrade }" for="class">Choose Class</label>
-                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="class" [(ngModel)]="selectedClass" (change)="onClassChange()" [disabled]="!selectedGrade">
+                <label class="mb-2" [ngClass]="{ 'text-gray-400': !selectedGrade || editBusStudent, 'primaryTxt': selectedGrade && !editBusStudent}" for="class">Choose Class</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="class" [(ngModel)]="selectedClass" (change)="onClassChange()" [disabled]="!selectedGrade || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedGrade || editBusStudent }">
                     <option value="" disabled selected>Choose Class</option>
                     <option *ngFor="let classItem of filteredClasses" [value]="classItem.id">{{ classItem.name }}</option>
                     <option *ngIf="filteredClasses.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" [ngClass]="{ 'text-gray-400': !selectedClass, 'primaryTxt': selectedClass }" for="student">Choose Student</label>
-                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student" [(ngModel)]="busStudent.studentID" [disabled]="!selectedClass">
+                <label class="mb-2" [ngClass]="{ 'text-gray-400': !selectedClass || editBusStudent, 'primaryTxt': selectedClass && !editBusStudent}" for="student">Choose Student</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student" [(ngModel)]="busStudent.studentID" [disabled]="!selectedClass || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedClass || editBusStudent }">
                     <option *ngIf="selectedClass" value="" disabled selected>Choose Student</option>
                     <option *ngFor="let stu of Students" [value]="stu.id">{{ stu.en_name }}</option>
                     <option *ngIf="Students.length === 0 && selectedClass" disabled selected>No Data Found</option>

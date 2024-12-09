@@ -19,7 +19,6 @@ import { Router } from '@angular/router';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
-import { ShareDomainNameService } from '../../../../Services/Employee/share-domain-name.service';
 
 @Component({
   selector: 'app-bus-details',
@@ -55,7 +54,7 @@ export class BusDetailsComponent {
 
   constructor(public busService:BusService, public account:AccountService, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
     public busRestrictServ: BusRestrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService, 
-    private menuService: MenuService,public EditDeleteServ:DeleteEditPermissionService, public router:Router,public ApiServ:ApiService ,public DomainNameServ:ShareDomainNameService){}
+    private menuService: MenuService,public EditDeleteServ:DeleteEditPermissionService, public router:Router,public ApiServ:ApiService){}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -288,8 +287,7 @@ export class BusDetailsComponent {
   }
 
   MoveToBusStudent(busId:number){
-    this.DomainNameServ.setBusId(this.DomainName);
-    this.router.navigateByUrl('Employee/Bus Student/'+ busId);
+    this.router.navigateByUrl('Employee/Bus Student/' + this.DomainName + '/' + busId);
   }
 
   IsAllowDelete(InsertedByID: number) {

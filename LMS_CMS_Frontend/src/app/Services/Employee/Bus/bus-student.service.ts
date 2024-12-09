@@ -15,6 +15,18 @@ export class BusStudentService {
     this.baseUrl = ApiServ.BaseUrl
   }
 
+  GetbyId(busStuId: number,DomainName:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.get<BusStudent>(`${this.baseUrl}/BusStudent/${busStuId}`, { headers })
+  }
+
   GetbyBusId(busId: number,DomainName:string){
      if(DomainName!=null) {
       this.header=DomainName 
@@ -47,5 +59,15 @@ export class BusStudentService {
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
     return this.http.post(`${this.baseUrl}/BusStudent`, busStu, { headers })
+  }
+
+  Edit(busStu:BusStudent, DomainName:string){
+    this.header=DomainName 
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.put(`${this.baseUrl}/BusStudent`, busStu, { headers })
   }
 }

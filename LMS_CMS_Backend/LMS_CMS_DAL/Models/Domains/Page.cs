@@ -18,6 +18,7 @@ namespace LMS_CMS_DAL.Models.Domains
         [Required(ErrorMessage = "الاسم مطلوب")]
         [StringLength(100, ErrorMessage = "لا يمكن أن يكون الاسم أطول من 100 حرف")]
         public string ar_name { get; set; }
+        public bool IsDisplay { get; set; }
 
         [ForeignKey("Parent")]
         public long? Page_ID { get; set; }

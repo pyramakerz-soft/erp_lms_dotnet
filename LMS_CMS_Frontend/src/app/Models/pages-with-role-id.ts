@@ -6,6 +6,7 @@ export class PagesWithRoleId {
         public page_ID: number | null = null,
         public allow_Edit: boolean = false,
         public allow_Delete: boolean = false,
+        public IsDisplay:boolean=false,
         public children: PagesWithRoleId[] = []
     ) {}
 }

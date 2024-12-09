@@ -193,7 +193,6 @@ export class BusStudentComponent {
 
   SaveBusStudent(){
     this.busStudent.busID = this.busId
-    console.log(this.busStudent)
     this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
       this.closeModal()
       this.GetStudentsByBusId(this.busId);

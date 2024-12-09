@@ -16,8 +16,8 @@ namespace LMS_CMS_PL.Services
 
         public async Task AddDomainAndSetupDatabase(string domainName)
         {
-            string connectionString = $"Data Source=.;Initial Catalog={domainName};Integrated Security=True; TrustServerCertificate=True";
-            //string connectionString = $"Data Source=MENNA-PC\\SQLEXPRESS02;Initial Catalog={domainName};Integrated Security=True; TrustServerCertificate=True";
+            //string connectionString = $"Data Source=.;Initial Catalog={domainName};Integrated Security=True; TrustServerCertificate=True";
+            string connectionString = $"Data Source=MENNA-PC\\SQLEXPRESS02;Initial Catalog={domainName};Integrated Security=True; TrustServerCertificate=True";
             //string connectionString = $"Data Source=DESKTOP-3BNN4KG;Initial Catalog={domainName};Integrated Security=True; TrustServerCertificate=True";
 
             // Add the domain to the Domain table

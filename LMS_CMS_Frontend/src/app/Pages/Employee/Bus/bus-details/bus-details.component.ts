@@ -216,7 +216,7 @@ export class BusDetailsComponent {
       if (this.bus.hasOwnProperty(key)) {
         const field = key as keyof Bus;
         if (!this.bus[field]) {
-          if(field == "name" || field == 'capacity'){
+          if(field == "name" || field == 'capacity'|| field == 'backPrice'|| field == 'twoWaysPrice'|| field == 'morningPrice'){
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
           }
@@ -237,7 +237,7 @@ export class BusDetailsComponent {
 
   onInputValueChange(event: { field: keyof Bus, value: any }) {
     const { field, value } = event;
-    if (field == "name" || field == "capacity") {
+    if (field == "name" || field == "capacity"|| field == "twoWaysPrice"|| field == "backPrice"|| field == "morningPrice") {
       (this.bus as any)[field] = value;
       if (value) {
         this.validationErrors[field] = '';

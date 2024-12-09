@@ -56,7 +56,6 @@ export class BusTypesComponent {
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
         const settingsPage = this.menuService.findByPageName('Bus Types', items);
-        console.log(settingsPage)
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
         this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
@@ -143,7 +142,6 @@ export class BusTypesComponent {
     this.IsChoosenDomain = true;
     const selectedValue: string = ((event.target as HTMLSelectElement).value);
     this.DomainName = selectedValue;
-    console.log(this.DomainName)
     this.GetTableData();
   }
 

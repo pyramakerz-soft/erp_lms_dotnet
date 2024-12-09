@@ -24,7 +24,6 @@ export class SideMenuComponent {
   constructor(private communicationService: NewTokenService) {}
 
   toggleMenu() {
-    console.log(this.menuItems)
     this.IsMenuOpen = !this.IsMenuOpen
     this.IsSearchFocus = false
   }

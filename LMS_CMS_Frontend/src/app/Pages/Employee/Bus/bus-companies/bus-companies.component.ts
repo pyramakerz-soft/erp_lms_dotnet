@@ -11,6 +11,7 @@ import { BusCompanyService } from '../../../../Services/Employee/Bus/bus-company
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-bus-companies',
@@ -29,6 +30,8 @@ export class BusCompaniesComponent {
   AllowDeleteForOthers: boolean = false;
 
   TableData: BusType[] = []
+  OriginData: BusType[] = []
+
   DomainData: Domain[] = []
 
   DomainName: string = "";
@@ -40,6 +43,10 @@ export class BusCompaniesComponent {
   newType: string = '';
   isModalVisible: boolean = false;
   mode: string = "";
+
+  key: keyof BusType = "id"; 
+  value:any="";
+  IsSearchOpen:boolean=false;
 
 
   constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCompanyService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
@@ -86,15 +93,16 @@ export class BusCompaniesComponent {
       console.log(error)
     });
   }
-  GetTableData() {
-    this.BusTypeServ.Get(this.DomainName).subscribe((data) => {
-      this.TableData = [];
+  async GetTableData() {
+    try {
+      const data = await firstValueFrom(this.BusTypeServ.Get(this.DomainName));
       this.TableData = data;
-    }, (error) => {
+    } catch (error) {
       this.TableData = [];
-      console.log(error)
-    });
+      console.log('Error loading data:', error);
+    }
   }
+  
   openModal() {
     this.isModalVisible = true;
   }
@@ -154,5 +162,23 @@ export class BusCompaniesComponent {
     if (this.IsEmployee == false) { return true; }
     const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
     return IsAllow;
+  }
+
+  async SearchByKeyValue() {
+    await this.GetTableData();  
+    if(this.value!=""){
+    const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+  
+     this.TableData = this.TableData.filter(t => {
+      if (typeof t[this.key] === 'number') {
+        return t[this.key] === numericValue;
+      }
+      return t[this.key] == this.value;
+     });
+    }
+  }
+
+  SearchToggle(){
+    this.IsSearchOpen=!this.IsSearchOpen;
   }
 }

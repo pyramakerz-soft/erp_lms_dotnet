@@ -77,6 +77,37 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             return Ok(new { message = "Domain and database setup successfully." });
         }
+
+        [HttpPut]
+        public async Task<IActionResult> EditDomain(string domainName)
+        {
+            var userClaims = HttpContext.User.Claims;
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            if (userTypeClaim == null)
+            {
+                return Unauthorized("User Type claim not found.");
+            }
+
+            if (userTypeClaim != "octa")
+            {
+                return Unauthorized("Access Denied");
+            }
+
+            if (string.IsNullOrWhiteSpace(domainName))
+            {
+                return BadRequest("Invalid domain name.");
+            }
+
+            var existingDomain = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(d => d.Name == domainName);
+            if (existingDomain == null)
+            {
+                return Conflict("Domain doesn't exist.");
+            }
+
+            await _dynamicDatabaseService.ApplyMigrations(domainName);
+
+            return Ok(new { message = "Domain and database Updated successfully." });
+        }
     }
 
 }

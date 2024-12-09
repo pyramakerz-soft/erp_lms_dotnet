@@ -56,6 +56,8 @@ export class BusStudentComponent {
   filteredClasses:Class[] = [];
   Students:Student[] = [];
 
+  validationErrors: { [key in keyof BusStudent]?: string } = {};
+
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
     public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
     , public semesterService:SemesterService, public studentService:StudentService){}
@@ -68,17 +70,14 @@ export class BusStudentComponent {
     this.GetBusById(this.busId);
     this.GetStudentsByBusId(this.busId);
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName('Bus Student', items);
-      this.AllowEdit = settingsPage.allow_Edit;
-      this.AllowDelete = settingsPage.allow_Delete;
-      this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
-      this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
+      const settingsPage = this.menuService.findByPageName('Bus Students', items);
+      if (settingsPage) {
+        this.AllowEdit = settingsPage.allow_Edit;
+        this.AllowDelete = settingsPage.allow_Delete;
+        this.AllowDeleteForOthers=settingsPage.allow_Delete_For_Others
+        this.AllowEditForOthers=settingsPage.allow_Edit_For_Others
+      }
     });
-
-    // Delete this part
-    this.AllowEdit = true
-    this.AllowDelete = true
-    //
 
     this.GetSchoolsGroupByGradeGroupByClass()
     this.GetBusCategories()
@@ -190,14 +189,12 @@ export class BusStudentComponent {
   
   IsAllowDelete(InsertedByID:number){
     const IsAllow=this.EditDeleteServ.IsAllowDelete(InsertedByID,this.UserID,this.AllowDeleteForOthers);
-    // return IsAllow;
-    return true
+    return IsAllow;
   }
   
   IsAllowEdit(InsertedByID:number){
     const IsAllow=this.EditDeleteServ.IsAllowEdit(InsertedByID,this.UserID,this.AllowEditForOthers);
-    // return IsAllow;
-    return true
+    return IsAllow;
   }
 
   onSchoolChange() {
@@ -223,6 +220,38 @@ export class BusStudentComponent {
       });
     }
   }
+
+  capitalizeField(field: keyof BusStudent): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.busStudent) {
+      if (this.busStudent.hasOwnProperty(key)) {
+        const field = key as keyof BusStudent;
+        if (!this.busStudent[field]) {
+          if(field == "busCategoryID" || field == 'semseterID'|| field == 'studentID'){
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          }
+        } else {
+          this.validationErrors[field] = '';
+        }
+      }
+    }
+    return isValid;
+  }
+
+  // onInputValueChange(event: { field: keyof Bus, value: any }) {
+  //   const { field, value } = event;
+  //   if (field == "name" || field == "capacity"|| field == "twoWaysPrice"|| field == "backPrice"|| field == "morningPrice") {
+  //     (this.bus as any)[field] = value;
+  //     if (value) {
+  //       this.validationErrors[field] = '';
+  //     }
+  //   }
+  // }
 
   SaveBusStudent(){
     console.log(this.busStudent)

@@ -11,11 +11,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-bus-restricts',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule ,SearchComponent],
   templateUrl: './bus-restricts.component.html',
   styleUrl: './bus-restricts.component.css'
 })
@@ -43,6 +45,9 @@ export class BusRestrictsComponent {
   mode: string = "";
 
   path:string = ""
+  key: keyof BusType = "id";
+  value: any = "";
+  keysArray: string[] = ['id', 'name'];
 
   constructor(private router: Router, public activeRoute:ActivatedRoute, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
 
@@ -98,13 +103,15 @@ export class BusRestrictsComponent {
       this.DomainData = data;
     })
   }
-  GetTableData() {
-    this.busRestrictServ.Get(this.DomainName).subscribe((data) => {
-      this.TableData = [];
+  
+  async GetTableData() {
+    try {
+      const data = await firstValueFrom(this.busRestrictServ.Get(this.DomainName));
       this.TableData = data;
-    }, (error) => {
-      console.log(error)
-    });
+    } catch (error) {
+      this.TableData = [];
+      console.log('Error loading data:', error);
+    }
   }
 
   openModal() {
@@ -167,5 +174,26 @@ export class BusRestrictsComponent {
     if (this.IsEmployee == false) { return true; }
     const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
     return IsAllow;
+  }
+
+  async onSearchEvent(event: { key: keyof BusType, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    console.log('Search by:', this.key, this.value);
+    await this.GetTableData();
+    if (this.value != "") {
+      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+
+      this.TableData = this.TableData.filter(t => {
+        const fieldValue = t[this.key];  
+        if (typeof fieldValue === 'string') {
+          return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+        }
+        if (typeof t[this.key] === 'number') {
+          return t[this.key] === numericValue;
+        }
+        return t[this.key] == this.value;
+      });
+    }
   }
 }

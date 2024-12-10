@@ -12,11 +12,12 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
 import { firstValueFrom } from 'rxjs';
+import { SearchComponent } from '../../../../Component/search/search.component';
 
 @Component({
   selector: 'app-bus-companies',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SearchComponent],
   templateUrl: './bus-companies.component.html',
   styleUrl: './bus-companies.component.css'
 })
@@ -44,9 +45,10 @@ export class BusCompaniesComponent {
   isModalVisible: boolean = false;
   mode: string = "";
 
-  key: keyof BusType = "id"; 
-  value:any="";
-  IsSearchOpen:boolean=false;
+  key: keyof BusType = "id";
+  value: any = "";
+  IsSearchOpen: boolean = false;
+  keysArray: string[] = ['id', 'name'];
 
 
   constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCompanyService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
@@ -86,6 +88,7 @@ export class BusCompaniesComponent {
       this.closeModal();
     });
   }
+
   GetAllDomains() {
     this.DomainServ.Get().subscribe((data) => {
       this.DomainData = data;
@@ -93,6 +96,7 @@ export class BusCompaniesComponent {
       console.log(error)
     });
   }
+
   async GetTableData() {
     try {
       const data = await firstValueFrom(this.BusTypeServ.Get(this.DomainName));
@@ -102,7 +106,7 @@ export class BusCompaniesComponent {
       console.log('Error loading data:', error);
     }
   }
-  
+
   openModal() {
     this.isModalVisible = true;
   }
@@ -116,6 +120,7 @@ export class BusCompaniesComponent {
       this.GetTableData();
     })
   }
+
   Edit(id: number) {
     this.mode = "edit";
     const typeToEdit = this.TableData.find((t) => t.id === id);
@@ -152,6 +157,7 @@ export class BusCompaniesComponent {
     this.DomainName = selectedValue;
     this.GetTableData();
   }
+
   IsAllowDelete(InsertedByID: number) {
     if (this.IsEmployee == false) { return true; }
     const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
@@ -164,21 +170,20 @@ export class BusCompaniesComponent {
     return IsAllow;
   }
 
-  async SearchByKeyValue() {
-    await this.GetTableData();  
-    if(this.value!=""){
-    const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
-  
-     this.TableData = this.TableData.filter(t => {
-      if (typeof t[this.key] === 'number') {
-        return t[this.key] === numericValue;
-      }
-      return t[this.key] == this.value;
-     });
-    }
-  }
+  async onSearchEvent(event: { key: keyof BusType, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    console.log('Search by:', this.key, this.value);
+    await this.GetTableData();
+    if (this.value != "") {
+      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 
-  SearchToggle(){
-    this.IsSearchOpen=!this.IsSearchOpen;
+      this.TableData = this.TableData.filter(t => {
+        if (typeof t[this.key] === 'number') {
+          return t[this.key] === numericValue;
+        }
+        return t[this.key] == this.value;
+      });
+    }
   }
 }

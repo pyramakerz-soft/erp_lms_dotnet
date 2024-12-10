@@ -177,6 +177,10 @@ export class BusStatusComponent {
       const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 
       this.TableData = this.TableData.filter(t => {
+        const fieldValue = t[this.key];  
+        if (typeof fieldValue === 'string') {
+          return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+        }
         if (typeof t[this.key] === 'number') {
           return t[this.key] === numericValue;
         }

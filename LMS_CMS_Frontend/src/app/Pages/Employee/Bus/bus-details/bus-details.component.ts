@@ -19,11 +19,13 @@ import { Router } from '@angular/router';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-bus-details',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule,CommonModule,SearchComponent],
   templateUrl: './bus-details.component.html',
   styleUrl: './bus-details.component.css'
 })
@@ -51,6 +53,10 @@ export class BusDetailsComponent {
   IsEmployee: boolean = true;
   
   validationErrors: { [key in keyof Bus]?: string } = {};
+
+  key: keyof BusType = "id";
+  value: any = "";
+  keysArray: string[] = ['id', 'name','capacity','isCapacityRestricted','backPrice','twoWaysPrice','morningPrice','busTypeName','busRestrictName','busStatusName','driverName','driverAssistantName','busCompanyName'];
 
   constructor(public busService:BusService, public account:AccountService, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
     public busRestrictServ: BusRestrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService, 
@@ -303,4 +309,34 @@ export class BusDetailsComponent {
     const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
     return IsAllow;
   }
+
+  async onSearchEvent(event: { key: keyof BusType, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    console.log('Search by:', this.key, this.value);
+  
+    try {
+      const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
+      this.busData = data || [];
+  
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+  
+        this.busData = this.busData.filter(t => {
+          const fieldValue = t[this.key];  
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.busData = [];
+      console.log('Error fetching data:', error);
+    }
+  }
+  
 }

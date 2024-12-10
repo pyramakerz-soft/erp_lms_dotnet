@@ -25,7 +25,7 @@ export class BusService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.get(`${this.baseUrl}/Bus`,{ headers })
+    return this.http.get<Bus[]>(`${this.baseUrl}/Bus`,{ headers })
   }
   
   GetbyDomainName(domainName: string){

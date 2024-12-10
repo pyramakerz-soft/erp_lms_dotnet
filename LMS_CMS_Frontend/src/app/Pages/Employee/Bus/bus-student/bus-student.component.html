@@ -223,29 +223,36 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2" [ngClass]="{ 'text-gray-400': !selectedClass || editBusStudent, 'primaryTxt': selectedClass && !editBusStudent}" for="student">Choose Student</label>
-                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student" [(ngModel)]="busStudent.studentID" [disabled]="!selectedClass || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedClass || editBusStudent }">
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student" 
+                [(ngModel)]="busStudent.studentID" [disabled]="!selectedClass || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedClass || editBusStudent }"
+                (ngModelChange)="onInputValueChange({ field: 'studentID', value: $event })">
                     <option *ngIf="selectedClass" value="" disabled selected>Choose Student</option>
                     <option *ngFor="let stu of Students" [value]="stu.id">{{ stu.en_name }}</option>
                     <option *ngIf="Students.length === 0 && selectedClass" disabled selected>No Data Found</option>
                 </select>
+                <span *ngIf="validationErrors['studentID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['studentID'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="categories">Bus Categories</label>
                 <select 
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="busCategory" [(ngModel)]="busStudent.busCategoryID">
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="busCategory" [(ngModel)]="busStudent.busCategoryID"
+                (ngModelChange)="onInputValueChange({ field: 'busCategoryID', value: $event })">
                     <option value="" disabled selected>Choose Bus Category</option>
                     <option *ngFor="let cat of BusCategories" [value]="cat.id">{{ cat.name }}</option>
                     <option *ngIf="BusCategories.length === 0" disabled selected>No Data Found</option>
                 </select>
+                <span *ngIf="validationErrors['busCategoryID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['busCategoryID'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="semester">Semester</label>
                 <select 
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semester" [(ngModel)]="busStudent.semseterID">
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semester" [(ngModel)]="busStudent.semseterID"
+                (ngModelChange)="onInputValueChange({ field: 'semseterID', value: $event })">
                     <option value="" disabled selected>Choose Semester</option>
                     <option *ngFor="let semester of Semesters" [value]="semester.id">{{ semester.name }}</option>
                     <option *ngIf="Semesters.length === 0" disabled selected>No Data Found</option>
                 </select>
+                <span *ngIf="validationErrors['semseterID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['semseterID'] }}</span>
             </div>
             <div class="flex w-full space-x-5 items-center mb-4">
                 <input type="checkbox" id="exception" class="w-5 h-5"
@@ -254,11 +261,15 @@
             </div>
             <div *ngIf="exception" class="flex flex-col w-[49%]">
                 <label for="from" class="mb-2 primaryTxt">Date From</label>
-                <input id="from" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="From" [(ngModel)]="busStudent.exceptionFromDate">
+                <input id="from" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="From" [(ngModel)]="busStudent.exceptionFromDate"
+                (ngModelChange)="onInputValueChange({ field: 'exceptionFromDate', value: $event })">
+                <span *ngIf="validationErrors['exceptionFromDate']" class="text-red-500 ml-3 font-normal">{{ validationErrors['exceptionFromDate'] }}</span>
             </div>
             <div *ngIf="exception" class="flex flex-col w-[49%]">
                 <label for="to" class="mb-2 primaryTxt">Date To</label>
-                <input id="to" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="To" [(ngModel)]="busStudent.exceptionToDate">
+                <input id="to" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="To" [(ngModel)]="busStudent.exceptionToDate"
+                (ngModelChange)="onInputValueChange({ field: 'exceptionToDate', value: $event })">
+                <span *ngIf="validationErrors['exceptionToDate']" class="text-red-500 ml-3 font-normal">{{ validationErrors['exceptionToDate'] }}</span>
             </div>
         </div>
 

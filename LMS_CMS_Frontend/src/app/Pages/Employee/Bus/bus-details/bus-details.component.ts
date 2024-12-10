@@ -15,7 +15,7 @@ import { BusCompanyService } from '../../../../Services/Employee/Bus/bus-company
 import { Employee } from '../../../../Models/Employee/employee';
 import { EmployeeService } from '../../../../Services/Employee/employee.service'; 
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
@@ -58,7 +58,9 @@ export class BusDetailsComponent {
   value: any = "";
   keysArray: string[] = ['id', 'name','capacity','isCapacityRestricted','backPrice','twoWaysPrice','morningPrice','busTypeName','busRestrictName','busStatusName','driverName','driverAssistantName','busCompanyName'];
 
-  constructor(public busService:BusService, public account:AccountService, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
+  path:string = ""
+
+  constructor(public busService:BusService, public account:AccountService, public activeRoute:ActivatedRoute, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
     public busRestrictServ: BusRestrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService, 
     private menuService: MenuService,public EditDeleteServ:DeleteEditPermissionService, public router:Router,public ApiServ:ApiService){}
 
@@ -73,8 +75,13 @@ export class BusDetailsComponent {
           this.busData = data;
         }
       );
+
+      this.activeRoute.url.subscribe(url => {
+        this.path = url[0].path
+      });
+
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Details', items);
+        const settingsPage = this.menuService.findByPageName(this.path, items);
         if (settingsPage) {
           this.AllowEdit = settingsPage.allow_Edit;
           this.AllowDelete = settingsPage.allow_Delete;
@@ -122,15 +129,17 @@ export class BusDetailsComponent {
       confirmButtonText: 'Delete',
       cancelButtonText: 'Cancel'
     }).then((result) => {
-      this.busService.DeleteBus(busId,this.DomainName).subscribe(
-        (data: any) => {
-          this.busService.Get(this.DomainName).subscribe(
-            (data: any) => {
-              this.busData = data;
-            }
-          );
-        }
-      );
+      if (result.isConfirmed) {
+        this.busService.DeleteBus(busId,this.DomainName).subscribe(
+          (data: any) => {
+            this.busService.Get(this.DomainName).subscribe(
+              (data: any) => {
+                this.busData = data;
+              }
+            );
+          }
+        );
+      }
     });
   }
 

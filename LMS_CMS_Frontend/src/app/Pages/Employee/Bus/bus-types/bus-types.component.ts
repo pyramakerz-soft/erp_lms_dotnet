@@ -13,11 +13,12 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { ApiService } from '../../../../Services/api.service';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-bus-types',
   standalone: true,
-  imports: [FormsModule, CommonModule,SearchComponent],
+  imports: [FormsModule, CommonModule, SearchComponent],
   templateUrl: './bus-types.component.html',
   styleUrls: ['./bus-types.component.css']
 })
@@ -39,17 +40,17 @@ export class BusTypesComponent {
 
   IsChoosenDomain: boolean = false;
   IsEmployee: boolean = true;
-  
+
   newType: string = '';
   isModalVisible: boolean = false;
   mode: string = "";
 
-  path:string = ""
+  path: string = ""
   key: keyof BusType = "id";
   value: any = "";
   keysArray: string[] = ['id', 'name'];
 
-  constructor(private router: Router, private menuService: MenuService, public activeRoute:ActivatedRoute , public account: AccountService, public BusTypeServ: BusTypeService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
+  constructor(private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public BusTypeServ: BusTypeService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
   ngOnInit() {
 
@@ -58,7 +59,7 @@ export class BusTypesComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
-      this.DomainName=this.ApiServ.GetHeader();
+      this.DomainName = this.ApiServ.GetHeader();
 
       this.activeRoute.url.subscribe(url => {
         this.path = url[0].path
@@ -88,7 +89,7 @@ export class BusTypesComponent {
   }
 
   AddNewType() {
-    this.BusTypeServ.Add(this.newType,this.DomainName).subscribe((data) => {
+    this.BusTypeServ.Add(this.newType, this.DomainName).subscribe((data) => {
       this.GetTableData();
       this.closeModal();
     });
@@ -119,9 +120,22 @@ export class BusTypesComponent {
   }
 
   Delete(id: number) {
-    this.BusTypeServ.Delete(id,this.DomainName).subscribe((data) => {
-      this.GetTableData();
-    })
+    Swal.fire({
+      title: 'Are you sure you want to delete bus Type?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.BusTypeServ.Delete(id, this.DomainName).subscribe((data) => {
+          this.GetTableData();
+        }
+        );
+      }
+    });
   }
 
   Edit(id: number) {
@@ -138,7 +152,7 @@ export class BusTypesComponent {
 
   Save() {
     this.EditType.name = this.newType;
-    this.BusTypeServ.Edit(this.EditType,this.DomainName).subscribe(() => {
+    this.BusTypeServ.Edit(this.EditType, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
       this.newType = "";
@@ -182,7 +196,7 @@ export class BusTypesComponent {
       const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 
       this.TableData = this.TableData.filter(t => {
-        const fieldValue = t[this.key];  
+        const fieldValue = t[this.key];
         if (typeof fieldValue === 'string') {
           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
         }

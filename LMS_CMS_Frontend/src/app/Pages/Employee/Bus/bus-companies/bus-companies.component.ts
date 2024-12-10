@@ -47,7 +47,6 @@ export class BusCompaniesComponent {
 
   key: keyof BusType = "id";
   value: any = "";
-  IsSearchOpen: boolean = false;
   keysArray: string[] = ['id', 'name'];
 
 
@@ -64,10 +63,12 @@ export class BusCompaniesComponent {
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
         const settingsPage = this.menuService.findByPageName('Bus Companies', items);
+        if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
         this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+        }
       });
     } else if (this.User_Data_After_Login.type === "octa") {
       this.GetAllDomains();

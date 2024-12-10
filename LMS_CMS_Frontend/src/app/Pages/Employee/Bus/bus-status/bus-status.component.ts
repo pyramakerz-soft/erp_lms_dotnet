@@ -12,11 +12,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { ApiService } from '../../../../Services/api.service';
+import { firstValueFrom } from 'rxjs';
+import { SearchComponent } from '../../../../Component/search/search.component';
 
 @Component({
   selector: 'app-bus-status',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,SearchComponent],
   templateUrl: './bus-status.component.html',
   styleUrl: './bus-status.component.css'
 })
@@ -43,6 +45,9 @@ export class BusStatusComponent {
   isModalVisible: boolean = false;
   mode: string = "";
 
+  key: keyof BusType = "id";
+  value: any = "";
+  keysArray: string[] = ['id', 'name'];
 
   constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
 
@@ -91,14 +96,15 @@ export class BusStatusComponent {
     })
   }
 
-  GetTableData() {
-    this.busStatusServ.Get(this.DomainName).subscribe((data) => {
-      this.TableData=[];
+  async GetTableData() {
+    try {
+      const data = await firstValueFrom(this.busStatusServ.Get(this.DomainName));
       this.TableData = data;
-    } ,(error)=>{
-      console.log(error)
-    });
-}
+    } catch (error) {
+      this.TableData = [];
+      console.log('Error loading data:', error);
+    }
+  }
 
   openModal() {
     this.isModalVisible = true;
@@ -162,4 +168,20 @@ export class BusStatusComponent {
     return IsAllow;
   }
 
+  async onSearchEvent(event: { key: keyof BusType, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    console.log('Search by:', this.key, this.value);
+    await this.GetTableData();
+    if (this.value != "") {
+      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+
+      this.TableData = this.TableData.filter(t => {
+        if (typeof t[this.key] === 'number') {
+          return t[this.key] === numericValue;
+        }
+        return t[this.key] == this.value;
+      });
+    }
+  }
 }

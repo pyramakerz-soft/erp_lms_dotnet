@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TokenData } from '../../../../Models/token-data';
 import { BusType } from '../../../../Models/Bus/bus-type';
 import { Domain } from '../../../../Models/domain';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { AccountService } from '../../../../Services/account.service';
 import { BusCategoryService } from '../../../../Services/Employee/Bus/bus-category.service';
@@ -42,9 +42,9 @@ export class BusCategoriesComponent {
   isModalVisible: boolean = false;
   mode: string = "";
 
-  
+  path:string = ""
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCategoryService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService,public ApiServ:ApiService) { }
+  constructor(private router: Router, private menuService: MenuService, public activeRoute:ActivatedRoute, public account: AccountService, public BusTypeServ: BusCategoryService, public DomainServ: DomainService ,public EditDeleteServ:DeleteEditPermissionService,public ApiServ:ApiService) { }
 
   ngOnInit() {
 
@@ -54,10 +54,14 @@ export class BusCategoriesComponent {
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
       this.DomainName=this.ApiServ.GetHeader();
-      // this.DomainID = this.User_Data_After_Login.domain;
+      
+      this.activeRoute.url.subscribe(url => {
+        this.path = url[0].path
+      });
+
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Categories', items);
+        const settingsPage = this.menuService.findByPageName(this.path, items);
         if (settingsPage) {
           this.AllowEdit = settingsPage.allow_Edit;
           this.AllowDelete = settingsPage.allow_Delete;

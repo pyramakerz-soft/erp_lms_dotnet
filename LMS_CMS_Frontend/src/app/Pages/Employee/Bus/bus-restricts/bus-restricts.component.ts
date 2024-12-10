@@ -3,7 +3,7 @@ import { BusType } from '../../../../Models/Bus/bus-type';
 import { TokenData } from '../../../../Models/token-data';
 import { Domain } from '../../../../Models/domain';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
 import { BusRestrictService } from '../../../../Services/Employee/Bus/bus-restrict.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
@@ -42,8 +42,9 @@ export class BusRestrictsComponent {
   isModalVisible: boolean = false;
   mode: string = "";
 
+  path:string = ""
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
+  constructor(private router: Router, public activeRoute:ActivatedRoute, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
 
   ngOnInit() {
 
@@ -53,9 +54,14 @@ export class BusRestrictsComponent {
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
       this.DomainName=this.ApiServ.GetHeader();
+
+      this.activeRoute.url.subscribe(url => {
+        this.path = url[0].path
+      });
+
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Restricts', items);
+        const settingsPage = this.menuService.findByPageName(this.path, items);
         if (settingsPage) {
           this.AllowEdit = settingsPage.allow_Edit;
           this.AllowDelete = settingsPage.allow_Delete;

@@ -5,7 +5,7 @@ import { BusType } from '../../../../Models/Bus/bus-type';
 import { Domain } from '../../../../Models/domain';
 import { TokenData } from '../../../../Models/token-data';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
 import { BusCompanyService } from '../../../../Services/Employee/Bus/bus-company.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
@@ -50,8 +50,9 @@ export class BusCompaniesComponent {
   IsSearchOpen: boolean = false;
   keysArray: string[] = ['id', 'name'];
 
+  path:string = ""
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public BusTypeServ: BusCompanyService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
+  constructor(private router: Router, private menuService: MenuService, public activeRoute:ActivatedRoute, public account: AccountService, public BusTypeServ: BusCompanyService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
   ngOnInit() {
 
@@ -61,13 +62,20 @@ export class BusCompaniesComponent {
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
       this.DomainName = this.ApiServ.GetHeader();
+
+      this.activeRoute.url.subscribe(url => {
+        this.path = url[0].path
+      });
+
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Companies', items);
-        this.AllowEdit = settingsPage.allow_Edit;
-        this.AllowDelete = settingsPage.allow_Delete;
-        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
-        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+        const settingsPage = this.menuService.findByPageName(this.path, items);
+        if(settingsPage){
+          this.AllowEdit = settingsPage.allow_Edit;
+          this.AllowDelete = settingsPage.allow_Delete;
+          this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+          this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+        }
       });
     } else if (this.User_Data_After_Login.type === "octa") {
       this.GetAllDomains();

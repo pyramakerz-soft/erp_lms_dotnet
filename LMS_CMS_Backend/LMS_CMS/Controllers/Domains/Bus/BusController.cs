@@ -478,7 +478,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 }
                 Unit_Of_Work.bus_Repository.Update(bus);
                 Unit_Of_Work.SaveChanges();
-                return Ok("Bus has Successfully been deleted");
+                return Ok(new { message = "Bus has Successfully been deleted" });
             }
         }
     }

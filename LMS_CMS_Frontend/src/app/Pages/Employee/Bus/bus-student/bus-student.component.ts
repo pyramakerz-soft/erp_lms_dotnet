@@ -58,6 +58,8 @@ export class BusStudentComponent {
 
   validationErrors: { [key in keyof BusStudent]?: string } = {};
 
+  path:string = ""
+
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
     public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
     , public semesterService:SemesterService, public studentService:StudentService){}
@@ -67,10 +69,16 @@ export class BusStudentComponent {
     this.UserID=this.User_Data_After_Login.id;
     this.busId = Number(this.activeRoute.snapshot.paramMap.get('busId'))
     this.DomainName = String(this.activeRoute.snapshot.paramMap.get('domainName'))
+    
+    this.activeRoute.url.subscribe(url => {
+      this.path = url[0].path
+    });
+    
     this.GetBusById(this.busId);
     this.GetStudentsByBusId(this.busId);
+
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName('Bus Students', items);
+      const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;

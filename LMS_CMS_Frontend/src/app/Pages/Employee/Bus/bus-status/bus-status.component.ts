@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TokenData } from '../../../../Models/token-data';
 import { BusType } from '../../../../Models/Bus/bus-type';
 import { Domain } from '../../../../Models/domain';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
@@ -43,8 +43,9 @@ export class BusStatusComponent {
   isModalVisible: boolean = false;
   mode: string = "";
 
+  path:string = ""
 
-  constructor(private router: Router, private menuService: MenuService, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
+  constructor(private router: Router, private menuService: MenuService, public activeRoute:ActivatedRoute, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
 
   ngOnInit() {
 
@@ -54,9 +55,14 @@ export class BusStatusComponent {
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
       this.DomainName=this.ApiServ.GetHeader();
+
+      this.activeRoute.url.subscribe(url => {
+        this.path = url[0].path
+      });
+
       this.GetTableData();
       this.menuService.menuItemsForEmployee$.subscribe((items) => {
-        const settingsPage = this.menuService.findByPageName('Bus Status', items);
+        const settingsPage = this.menuService.findByPageName(this.path, items);
         if (settingsPage) {
           this.AllowEdit = settingsPage.allow_Edit;
           this.AllowDelete = settingsPage.allow_Delete;

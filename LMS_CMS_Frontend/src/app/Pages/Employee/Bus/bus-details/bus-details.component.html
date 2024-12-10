@@ -64,6 +64,15 @@
                         Company
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        backPrice
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        morningPrice
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        twoWaysPrice
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Actions
                     </th>
                 </tr>
@@ -155,6 +164,42 @@
                             </div>
                         </div>
                         <ng-template #emptydriverbusCompanyName>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.backPrice; else backPrice">
+                            <div class="truncate" title="{{ row.backPrice }}">
+                                {{ row.backPrice }}
+                            </div>
+                        </div>
+                        <ng-template #backPrice>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.morningPrice; else morningPrice">
+                            <div class="truncate" title="{{ row.morningPrice }}">
+                                {{ row.morningPrice }}
+                            </div>
+                        </div>
+                        <ng-template #morningPrice>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.twoWaysPrice; else twoWaysPrice">
+                            <div class="truncate" title="{{ row.driverName }}">
+                                {{ row.twoWaysPrice }}
+                            </div>
+                        </div>
+                        <ng-template #twoWaysPrice>
                             <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
                                 <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
                             </div>

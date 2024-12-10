@@ -132,6 +132,7 @@ export class BusDetailsComponent {
       if (result.isConfirmed) {
         this.busService.DeleteBus(busId,this.DomainName).subscribe(
           (data: any) => {
+            this.busData=[]
             this.busService.Get(this.DomainName).subscribe(
               (data: any) => {
                 this.busData = data;

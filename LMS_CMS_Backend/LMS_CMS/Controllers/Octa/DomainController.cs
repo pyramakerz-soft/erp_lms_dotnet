@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace LMS_CMS_PL.Controllers.Octa
 {
@@ -65,6 +66,12 @@ namespace LMS_CMS_PL.Controllers.Octa
             if (string.IsNullOrWhiteSpace(domainName))
             {
                 return BadRequest("Invalid domain name.");
+            }
+
+            var domainNameRegex = @"^[a-zA-Z_]+$";
+            if (!Regex.IsMatch(domainName, domainNameRegex))
+            {
+                return BadRequest("Domain name can only contain letters and underscores, and no spaces or numbers.");
             }
 
             var existingDomain = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(d => d.Name == domainName);

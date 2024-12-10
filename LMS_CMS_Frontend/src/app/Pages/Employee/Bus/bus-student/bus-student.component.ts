@@ -185,6 +185,12 @@ export class BusStudentComponent {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.exception = isChecked
     this.busStudent.isException = this.exception
+    if(this.busStudent.isException == false){
+      this.busStudent.exceptionFromDate = null
+      this.busStudent.exceptionToDate = null
+      this.validationErrors["exceptionFromDate"] = '';
+      this.validationErrors["exceptionToDate"] = '';
+    }
   }
   
   IsAllowDelete(InsertedByID:number){
@@ -238,20 +244,33 @@ export class BusStudentComponent {
         } else {
           this.validationErrors[field] = '';
         }
+
+        if(field == 'isException'){
+          if(this.busStudent.isException == true){
+            if(this.busStudent.exceptionFromDate == null){
+              this.validationErrors["exceptionFromDate"] = `*From Date is required`
+              isValid = false;
+            }
+            if(this.busStudent.exceptionToDate == null){
+              this.validationErrors["exceptionToDate"] = `*To Date is required`
+              isValid = false;
+            }
+          }
+        }
       }
     }
     return isValid;
   }
 
-  // onInputValueChange(event: { field: keyof Bus, value: any }) {
-  //   const { field, value } = event;
-  //   if (field == "name" || field == "capacity"|| field == "twoWaysPrice"|| field == "backPrice"|| field == "morningPrice") {
-  //     (this.bus as any)[field] = value;
-  //     if (value) {
-  //       this.validationErrors[field] = '';
-  //     }
-  //   }
-  // }
+  onInputValueChange(event: { field: keyof BusStudent, value: any }) {
+    const { field, value } = event;
+    if (field == "busCategoryID" || field == "semseterID"|| field == "studentID"|| field == "exceptionFromDate"|| field == "exceptionToDate") {
+      (this.busStudent as any)[field] = value;
+      if (value) {
+        this.validationErrors[field] = '';
+      }
+    }
+  }
 
   SaveBusStudent(){
     console.log(this.busStudent)
@@ -262,16 +281,18 @@ export class BusStudentComponent {
       this.busStudent.exceptionToDate = null
     }
 
-    if(this.editBusStudent == false){
-      this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
-        this.closeModal()
-        this.GetStudentsByBusId(this.busId);
-      });
-    } else{
-      this.busStudentService.Edit(this.busStudent, this.DomainName).subscribe((data) => {
-        this.closeModal()
-        this.GetStudentsByBusId(this.busId);
-      });
+    if (this.isFormValid()) {
+      if(this.editBusStudent == false){
+        this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
+          this.closeModal()
+          this.GetStudentsByBusId(this.busId);
+        });
+      } else{
+        this.busStudentService.Edit(this.busStudent, this.DomainName).subscribe((data) => {
+          this.closeModal()
+          this.GetStudentsByBusId(this.busId);
+        });
+      }
     }
   }
 }

@@ -307,7 +307,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 if (userTypeClaim == "employee")
                 {
-                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Restricts");
+                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Restrict"); 
                     if (page != null)
                     {
                         Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);

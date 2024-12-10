@@ -13,11 +13,12 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { ApiService } from '../../../../Services/api.service';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-bus-restricts',
   standalone: true,
-  imports: [CommonModule, FormsModule ,SearchComponent],
+  imports: [CommonModule, FormsModule, SearchComponent],
   templateUrl: './bus-restricts.component.html',
   styleUrl: './bus-restricts.component.css'
 })
@@ -44,12 +45,12 @@ export class BusRestrictsComponent {
   isModalVisible: boolean = false;
   mode: string = "";
 
-  path:string = ""
+  path: string = ""
   key: keyof BusType = "id";
   value: any = "";
   keysArray: string[] = ['id', 'name'];
 
-  constructor(private router: Router, public activeRoute:ActivatedRoute, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
+  constructor(private router: Router, public activeRoute: ActivatedRoute, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
   ngOnInit() {
 
@@ -58,7 +59,7 @@ export class BusRestrictsComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
-      this.DomainName=this.ApiServ.GetHeader();
+      this.DomainName = this.ApiServ.GetHeader();
 
       this.activeRoute.url.subscribe(url => {
         this.path = url[0].path
@@ -88,7 +89,7 @@ export class BusRestrictsComponent {
   }
 
   AddNewType() {
-    this.busRestrictServ.Add( this.newType,this.DomainName).subscribe((data) => {
+    this.busRestrictServ.Add(this.newType, this.DomainName).subscribe((data) => {
       this.closeModal();
       this.newType = "";
       this.GetTableData();
@@ -103,7 +104,7 @@ export class BusRestrictsComponent {
       this.DomainData = data;
     })
   }
-  
+
   async GetTableData() {
     try {
       const data = await firstValueFrom(this.busRestrictServ.Get(this.DomainName));
@@ -123,9 +124,22 @@ export class BusRestrictsComponent {
   }
 
   Delete(id: number) {
-    this.busRestrictServ.Delete(id,this.DomainName).subscribe((data) => {
-      this.GetTableData();
-    })
+    Swal.fire({
+      title: 'Are you sure you want to delete bus Restrict?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.busRestrictServ.Delete(id, this.DomainName).subscribe((data) => {
+          this.GetTableData();
+        }
+        );
+      }
+    });
   }
   Edit(id: number) {
     this.mode = "edit";
@@ -141,7 +155,7 @@ export class BusRestrictsComponent {
 
   Save() {
     this.EditType.name = this.newType;
-    this.busRestrictServ.Edit(this.EditType,this.DomainName).subscribe(() => {
+    this.busRestrictServ.Edit(this.EditType, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
       this.newType = "";
@@ -185,7 +199,7 @@ export class BusRestrictsComponent {
       const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 
       this.TableData = this.TableData.filter(t => {
-        const fieldValue = t[this.key];  
+        const fieldValue = t[this.key];
         if (typeof fieldValue === 'string') {
           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
         }

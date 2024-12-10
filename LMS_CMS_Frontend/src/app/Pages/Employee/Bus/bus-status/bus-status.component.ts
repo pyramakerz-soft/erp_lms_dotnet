@@ -14,11 +14,12 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { ApiService } from '../../../../Services/api.service';
 import { firstValueFrom } from 'rxjs';
 import { SearchComponent } from '../../../../Component/search/search.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-bus-status',
   standalone: true,
-  imports: [CommonModule, FormsModule,SearchComponent],
+  imports: [CommonModule, FormsModule, SearchComponent],
   templateUrl: './bus-status.component.html',
   styleUrl: './bus-status.component.css'
 })
@@ -40,17 +41,17 @@ export class BusStatusComponent {
 
   IsChoosenDomain: boolean = false;
   IsEmployee: boolean = true;
-  
+
   newType: string = '';
   isModalVisible: boolean = false;
   mode: string = "";
 
-  path:string = ""
+  path: string = ""
   key: keyof BusType = "id";
   value: any = "";
   keysArray: string[] = ['id', 'name'];
 
-  constructor(private router: Router, private menuService: MenuService, public activeRoute:ActivatedRoute, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService,public ApiServ:ApiService) { }
+  constructor(private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public busStatusServ: BusStatusService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
   ngOnInit() {
 
@@ -59,7 +60,7 @@ export class BusStatusComponent {
 
     if (this.User_Data_After_Login.type === "employee") {
       this.IsChoosenDomain = true;
-      this.DomainName=this.ApiServ.GetHeader();
+      this.DomainName = this.ApiServ.GetHeader();
 
       this.activeRoute.url.subscribe(url => {
         this.path = url[0].path
@@ -89,7 +90,7 @@ export class BusStatusComponent {
   }
 
   AddNewType() {
-    this.busStatusServ.Add(this.newType,this.DomainName).subscribe((data) => {
+    this.busStatusServ.Add(this.newType, this.DomainName).subscribe((data) => {
       this.closeModal();
       this.newType = "";
       this.GetTableData();
@@ -121,9 +122,22 @@ export class BusStatusComponent {
   }
 
   Delete(id: number) {
-    this.busStatusServ.Delete(id,this.DomainName).subscribe((data) => {
-      this.GetTableData();
-    })
+    Swal.fire({
+      title: 'Are you sure you want to delete bus Status?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.busStatusServ.Delete(id, this.DomainName).subscribe((data) => {
+          this.GetTableData();
+        }
+        );
+      }
+    });
   }
   Edit(id: number) {
     this.mode = "edit";
@@ -139,7 +153,7 @@ export class BusStatusComponent {
 
   Save() {
     this.EditType.name = this.newType;
-    this.busStatusServ.Edit(this.EditType,this.DomainName).subscribe(() => {
+    this.busStatusServ.Edit(this.EditType, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
       this.newType = "";
@@ -183,7 +197,7 @@ export class BusStatusComponent {
       const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 
       this.TableData = this.TableData.filter(t => {
-        const fieldValue = t[this.key];  
+        const fieldValue = t[this.key];
         if (typeof fieldValue === 'string') {
           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
         }

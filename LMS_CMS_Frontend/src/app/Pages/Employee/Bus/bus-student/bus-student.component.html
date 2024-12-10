@@ -144,8 +144,30 @@
                         <i *ngIf="row.isException" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
                         <i *ngIf="!row.isException" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
                     </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.exceptionFromDate }}</td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.exceptionToDate }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.exceptionFromDate; else emptyFromDate">
+                            <div class="truncate" title="{{ row.exceptionFromDate }}">
+                                {{ row.exceptionFromDate }}
+                            </div>
+                        </div>
+                        <ng-template #emptyFromDate>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div *ngIf="row.exceptionToDate; else emptyToDate">
+                            <div class="truncate" title="{{ row.exceptionToDate }}">
+                                {{ row.exceptionToDate }}
+                            </div>
+                        </div>
+                        <ng-template #emptyToDate>
+                            <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
+                                <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
+                            </div>
+                        </ng-template>
+                    </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
                             <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" >

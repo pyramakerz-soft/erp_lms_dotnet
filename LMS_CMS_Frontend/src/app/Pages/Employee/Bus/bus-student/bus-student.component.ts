@@ -187,6 +187,7 @@ export class BusStudentComponent {
     this.filteredGrades = [];
     this.filteredClasses = [];
     this.Students = [];
+    this.validationErrors = {};
   }
 
   onIsExceptionChange(event: Event) {

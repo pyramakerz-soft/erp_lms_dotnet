@@ -10,7 +10,7 @@
             'secondaryBorder': IsChoosenDomain,
             'secondaryTxt': IsChoosenDomain  
         }" class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-                Create Bus Type
+                Create Bus Status
             </button>
         </div>
     </div>
@@ -94,15 +94,19 @@
             class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
             <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
-        <h1 class="font-poppins font-semibold text-2xl leading-9">Create Bus Type</h1>
+        <h1 *ngIf="!busStatus.id" class="font-poppins font-semibold text-2xl leading-9">Create Bus Status</h1>
+        <h1 *ngIf="busStatus.id" class="font-poppins font-semibold text-2xl leading-9">Edit Bus Status</h1>
         <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
             <h6 class="font-poppins font-medium text-base leading-6">Type Name</h6>
-            <div class="flex justify-start mt-2 gap-2">
-                <input type="text" class="w-[404px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
-                    [(ngModel)]="newType" placeholder="Enter new type" />
+            <div class="flex justify-start mt-2 gap-2 items-start">
+                <div class="flex flex-col">
+                    <input type="text" class="w-[404px] h-[45px] rounded-lg border border-solid border-gray-300 px-2" 
+                        [(ngModel)]="busStatus.name" placeholder="Enter new status" (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"/>
+                    <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
+                </div>
                 <button class="secondaryBg text-white font-poppins font-medium px-4 py-2 rounded-lg"
                     (click)="CreateOREdit()">
-                    Create
+                    Save
                 </button>
             </div>
         </div>

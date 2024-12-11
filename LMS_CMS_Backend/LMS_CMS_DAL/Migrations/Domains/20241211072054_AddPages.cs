@@ -17,7 +17,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
             migrationBuilder.Sql("INSERT INTO Pages (ID, en_name, ar_name, Page_ID, IsDisplay) VALUES (5, 'Bus Categories', N'فئات الحافلات', 1, 1)");
             migrationBuilder.Sql("INSERT INTO Pages (ID, en_name, ar_name, Page_ID, IsDisplay) VALUES (6, 'Bus Status', N'حالة الحافلات', 1, 1)");
             migrationBuilder.Sql("INSERT INTO Pages (ID, en_name, ar_name, Page_ID, IsDisplay) VALUES (7, 'Bus Companies', N'شركات الحافلات', 1, 1)");
-            migrationBuilder.Sql("INSERT INTO Pages (ID, en_name, ar_name, Page_ID, IsDisplay) VALUES (9, 'Bus Students', N'طلاب الحافلات', 1, 1)");
+            migrationBuilder.Sql("INSERT INTO Pages (ID, en_name, ar_name, Page_ID, IsDisplay) VALUES (9, 'Bus Students', N'طلاب الحافلات', 0, 1)");
             migrationBuilder.Sql("INSERT INTO Pages (ID, en_name, ar_name, Page_ID, IsDisplay) VALUES (10, 'Print Name Tag', N'طباعة بطاقة الاسم', 1, 1)");
             migrationBuilder.Sql("INSERT INTO Pages (ID, en_name, ar_name, Page_ID, IsDisplay) VALUES (11, 'Violations', N'المخالفات', 1, 1)");
         }

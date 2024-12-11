@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.BusModule
 {
-    internal class PrintNameTag
+    public class PrintNameTag
     {
+
     }
 }

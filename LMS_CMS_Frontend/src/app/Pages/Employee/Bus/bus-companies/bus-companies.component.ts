@@ -24,7 +24,7 @@ import Swal from 'sweetalert2';
 })
 export class BusCompaniesComponent {
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-  EditType: BusType = new BusType(0, "", 0);
+  busCompany: BusType = new BusType(0, "", 0);
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
@@ -42,7 +42,6 @@ export class BusCompaniesComponent {
   IsChoosenDomain: boolean = false;
   IsEmployee: boolean = true;
 
-  newType: string = '';
   isModalVisible: boolean = false;
   mode: string = "";
 
@@ -51,6 +50,8 @@ export class BusCompaniesComponent {
   keysArray: string[] = ['id', 'name'];
 
   path: string = ""
+
+  validationErrors: { [key in keyof BusType]?: string } = {};
 
   constructor(private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public BusTypeServ: BusCompanyService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
@@ -90,13 +91,6 @@ export class BusCompaniesComponent {
     this.openModal();
   }
 
-  AddNewType() {
-    this.BusTypeServ.Add(this.newType, this.DomainName).subscribe((data) => {
-      this.GetTableData();
-      this.closeModal();
-    });
-  }
-
   GetAllDomains() {
     this.DomainServ.Get().subscribe((data) => {
       this.DomainData = data;
@@ -120,12 +114,14 @@ export class BusCompaniesComponent {
   }
 
   closeModal() {
+    this.busCompany = new BusType()
     this.isModalVisible = false;
+    this.validationErrors = {};
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete bus?',
+      title: 'Are you sure you want to delete this bus company?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -146,29 +142,69 @@ export class BusCompaniesComponent {
     this.mode = "edit";
     const typeToEdit = this.TableData.find((t) => t.id === id);
     if (typeToEdit) {
-      this.EditType = { ...typeToEdit };
-      this.newType = this.EditType.name;
+      this.busCompany = { ...typeToEdit };
       this.openModal();
     } else {
       console.error("Type not found!");
     }
   }
 
-  Save() {
-    this.EditType.name = this.newType;
-    this.BusTypeServ.Edit(this.EditType, this.DomainName).subscribe(() => {
+  capitalizeField(field: keyof BusType): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.busCompany) {
+      if (this.busCompany.hasOwnProperty(key)) {
+        const field = key as keyof BusType;
+        if (!this.busCompany[field]) {
+          if(field == "name"){
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          }
+        } else {
+          this.validationErrors[field] = '';
+        }
+      }
+    }
+    return isValid;
+  }
+
+  onInputValueChange(event: { field: keyof BusType, value: any }) {
+    const { field, value } = event;
+    if (field == "name") {
+      (this.busCompany as any)[field] = value;
+      if (value) {
+        this.validationErrors[field] = '';
+      }
+    }
+  }
+
+  AddNewType() {
+    this.BusTypeServ.Add(this.busCompany, this.DomainName).subscribe((data) => {
       this.GetTableData();
       this.closeModal();
-      this.newType = "";
+      this.busCompany = new BusType()
+    });
+  }
+
+  Save() {
+    this.BusTypeServ.Edit(this.busCompany, this.DomainName).subscribe(() => {
+      this.GetTableData();
+      this.closeModal();
+      this.busCompany = new BusType()
     })
   }
 
   CreateOREdit() {
-    if (this.mode === "add") {
-      this.AddNewType();
-    }
-    else if (this.mode === "edit") {
-      this.Save();
+    if(this.isFormValid()){
+      if (this.mode === "add") {
+        this.AddNewType();
+      }
+      else if (this.mode === "edit") {
+        this.Save();
+      }
     }
   }
 

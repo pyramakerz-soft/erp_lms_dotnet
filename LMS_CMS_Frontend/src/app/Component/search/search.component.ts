@@ -12,10 +12,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class SearchComponent {
 
-  key: keyof BusType = "id";
+  key: string = "id";
   value: any = "";
   IsSearchOpen: boolean = false;
-  @Output() searchEvent = new EventEmitter<{ key: keyof BusType, value: any }>();
+  @Output() searchEvent = new EventEmitter<{ key: string, value: any }>();
   @Input() keysArray: string[] = [];
   constructor() { }
 

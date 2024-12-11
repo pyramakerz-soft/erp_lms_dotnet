@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { BusType } from '../../../Models/Bus/bus-type';
 import { Observable } from 'rxjs';
-import { BusTypeAdd } from '../../../Models/Bus/bus-type-add';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +29,7 @@ export class BusTypeService {
     return this.http.get<BusType[]>(`${this.baseUrl}/BusType`, { headers })
   }
 
-  Add(name: string,DomainName:string): Observable<any> {
+  Add(busType: BusType,DomainName:string): Observable<any> {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -39,9 +38,8 @@ export class BusTypeService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    const body = {  Name: name };
 
-    return this.http.post<any>(`${this.baseUrl}/BusType`, body, {
+    return this.http.post<any>(`${this.baseUrl}/BusType`, busType, {
       headers: headers,
       responseType: 'text' as 'json'
     });

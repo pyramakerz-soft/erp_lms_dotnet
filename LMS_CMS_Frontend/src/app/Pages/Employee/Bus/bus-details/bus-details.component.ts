@@ -175,6 +175,8 @@ export class BusDetailsComponent {
     if(this.editBus){
       this.editBus = false
     }
+
+    this.validationErrors = {}; 
   }
 
   GetBusById(busId: number) {

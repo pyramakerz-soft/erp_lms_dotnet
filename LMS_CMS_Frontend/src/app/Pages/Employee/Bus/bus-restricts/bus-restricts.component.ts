@@ -25,7 +25,7 @@ import Swal from 'sweetalert2';
 export class BusRestrictsComponent {
 
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-  EditType: BusType = new BusType(0, "", 0);
+  busRestrict: BusType = new BusType(0, "", 0);
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
@@ -41,7 +41,6 @@ export class BusRestrictsComponent {
   IsChoosenDomain: boolean = false;
   IsEmployee: boolean = true;
 
-  newType: string = '';
   isModalVisible: boolean = false;
   mode: string = "";
 
@@ -49,6 +48,8 @@ export class BusRestrictsComponent {
   key: keyof BusType = "id";
   value: any = "";
   keysArray: string[] = ['id', 'name'];
+
+  validationErrors: { [key in keyof BusType]?: string } = {};
 
   constructor(private router: Router, public activeRoute: ActivatedRoute, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
@@ -87,18 +88,7 @@ export class BusRestrictsComponent {
     this.mode = "add";
     this.openModal();
   }
-
-  AddNewType() {
-    this.busRestrictServ.Add(this.newType, this.DomainName).subscribe((data) => {
-      this.closeModal();
-      this.newType = "";
-      this.GetTableData();
-
-    },
-      error => {
-        console.log(error)
-      });
-  }
+  
   GetAllDomains() {
     this.DomainServ.Get().subscribe((data) => {
       this.DomainData = data;
@@ -120,12 +110,14 @@ export class BusRestrictsComponent {
   }
 
   closeModal() {
+    this.busRestrict = new BusType()
     this.isModalVisible = false;
+    this.validationErrors = {};
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete bus Restrict?',
+      title: 'Are you sure you want to delete this bus restrict?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -141,33 +133,77 @@ export class BusRestrictsComponent {
       }
     });
   }
+
   Edit(id: number) {
     this.mode = "edit";
     const typeToEdit = this.TableData.find((t) => t.id === id);
     if (typeToEdit) {
-      this.EditType = { ...typeToEdit };
-      this.newType = this.EditType.name;
+      this.busRestrict = { ...typeToEdit };
       this.openModal();
     } else {
       console.error("Type not found!");
     }
   }
 
+  capitalizeField(field: keyof BusType): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.busRestrict) {
+      if (this.busRestrict.hasOwnProperty(key)) {
+        const field = key as keyof BusType;
+        if (!this.busRestrict[field]) {
+          if(field == "name"){
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          }
+        } else {
+          this.validationErrors[field] = '';
+        }
+      }
+    }
+    return isValid;
+  }
+
+  onInputValueChange(event: { field: keyof BusType, value: any }) {
+    const { field, value } = event;
+    if (field == "name") {
+      (this.busRestrict as any)[field] = value;
+      if (value) {
+        this.validationErrors[field] = '';
+      }
+    }
+  }
+
+  AddNewType() {
+    this.busRestrictServ.Add(this.busRestrict, this.DomainName).subscribe((data) => {
+      this.closeModal();
+      this.GetTableData();
+      this.busRestrict = new BusType()
+    },
+      error => {
+        console.log(error)
+      });
+  }
+
   Save() {
-    this.EditType.name = this.newType;
-    this.busRestrictServ.Edit(this.EditType, this.DomainName).subscribe(() => {
+    this.busRestrictServ.Edit(this.busRestrict, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
-      this.newType = "";
+      this.busRestrict = new BusType()
     })
   }
 
   CreateOREdit() {
-    if (this.mode === "add") {
-      this.AddNewType();
-    }
-    else if (this.mode === "edit") {
-      this.Save();
+    if(this.isFormValid()){
+      if (this.mode === "add") {
+        this.AddNewType();
+      }
+      else if (this.mode === "edit") {
+        this.Save();
+      }
     }
   }
 

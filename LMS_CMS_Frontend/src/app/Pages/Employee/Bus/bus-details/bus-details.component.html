@@ -308,19 +308,19 @@
             <div class="flex flex-col w-[32%] mb-4">
                 <label class="mb-2 primaryTxt" for="name">Morning Price</label>
                 <input id="morningPrice" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Price"
-                [(ngModel)]="bus.morningPrice"  (ngModelChange)="onInputValueChange({ field: 'morningPrice', value: $event })"/>
+                [(ngModel)]="bus.morningPrice"  (ngModelChange)="onInputValueChange({ field: 'morningPrice', value: $event })" (input)="validateNumber($event)"/>
                 <span *ngIf="validationErrors['morningPrice']" class="text-red-500 ml-3 font-normal">{{ validationErrors['morningPrice'] }}</span>
             </div>
             <div class="flex flex-col w-[32%] mb-4">
                 <label class="mb-2 primaryTxt" for="name">Back Price</label>
                 <input id="backPrice" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Price"
-                [(ngModel)]="bus.backPrice" (ngModelChange)="onInputValueChange({ field: 'backPrice', value: $event })"/>
+                [(ngModel)]="bus.backPrice" (ngModelChange)="onInputValueChange({ field: 'backPrice', value: $event })" (input)="validateNumber($event)"/>
                 <span *ngIf="validationErrors['backPrice']" class="text-red-500 ml-3 font-normal">{{ validationErrors['backPrice'] }}</span>
             </div>
             <div class="flex flex-col w-[32%] mb-4">
                 <label class="mb-2 primaryTxt" for="name">Two Ways Price</label>
                 <input id="twoWaysPrice" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Price"
-                [(ngModel)]="bus.twoWaysPrice"  (ngModelChange)="onInputValueChange({ field: 'twoWaysPrice', value: $event })"/>
+                [(ngModel)]="bus.twoWaysPrice"  (ngModelChange)="onInputValueChange({ field: 'twoWaysPrice', value: $event })" (input)="validateNumber($event)"/>
                 <span *ngIf="validationErrors['twoWaysPrice']" class="text-red-500 ml-3 font-normal">{{ validationErrors['twoWaysPrice'] }}</span>
             </div>
         </div>

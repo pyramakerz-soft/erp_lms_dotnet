@@ -28,4 +28,8 @@ export class SearchComponent {
   SearchByKeyValue() {
     this.searchEvent.emit({ key: this.key, value: this.value });
   }
+
+  formatKey(key: string): string {
+    return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+  }
 }

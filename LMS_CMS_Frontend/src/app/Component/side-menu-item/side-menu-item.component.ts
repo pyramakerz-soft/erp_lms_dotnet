@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, Routes } from '@angular/router';
 import { PagesWithRoleId } from '../../Models/pages-with-role-id';
 import { MenuService } from '../../Services/shared/menu.service';
 import { NewTokenService } from '../../Services/shared/new-token.service';
@@ -40,6 +40,28 @@ export class SideMenuItemComponent {
   }
 
   navigateToRoute(routName:string): void {
-    this.router.navigateByUrl(`Employee/${routName}`)
+    const routes: Routes = this.router.config;
+
+    const routeExists = this.isRouteExist(routName, routes);
+
+    if (routeExists) {
+      this.router.navigateByUrl(`Employee/${routName}`)
+    }
+  }
+
+  isRouteExist(routeName: string, routes: Routes): boolean {
+    for (const route of routes) {
+      if (route.path === routeName) {
+        return true;
+      }
+
+      if (route.children) {
+        const childRouteExists = this.isRouteExist(routeName, route.children);
+        if (childRouteExists) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

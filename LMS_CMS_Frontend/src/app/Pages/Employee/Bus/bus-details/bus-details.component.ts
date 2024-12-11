@@ -54,7 +54,7 @@ export class BusDetailsComponent {
   
   validationErrors: { [key in keyof Bus]?: string } = {};
 
-  key: keyof BusType = "id";
+  key: keyof Bus = "id";
   value: any = "";
   keysArray: string[] = ['id', 'name','capacity','isCapacityRestricted','backPrice','twoWaysPrice','morningPrice','busTypeName','busRestrictName','busStatusName','driverName','driverAssistantName','busCompanyName'];
 
@@ -322,11 +322,9 @@ export class BusDetailsComponent {
     return IsAllow;
   }
 
-  async onSearchEvent(event: { key: keyof BusType, value: any }) {
+  async onSearchEvent(event: { key: keyof Bus, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    console.log('Search by:', this.key, this.value);
-  
     try {
       const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
       this.busData = data || [];

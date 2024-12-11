@@ -2,19 +2,20 @@
     <div class="flex justify-between items-center">
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Bus</h1>
         <div class="flex justify-between items-center ">
-            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
-        <button (click)="openModal()"
-        [disabled]="!IsChoosenDomain"
-        [ngClass]="{ 
-            'text-gray-500': !IsChoosenDomain, 
-            'border border-gray-500': !IsChoosenDomain,
-            'cursor-not-allowed':  !IsChoosenDomain,
-            'secondaryBorder': IsChoosenDomain,
-            'secondaryTxt': IsChoosenDomain  
-        }"
-        class="rounded-lg px-4 py-3 flex items-center justify-center gap-2">
-            Create Bus
-        </button>
+            <!-- <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> -->
+            
+            <button (click)="openModal()"
+            [disabled]="!IsChoosenDomain"
+            [ngClass]="{ 
+                'text-gray-500': !IsChoosenDomain, 
+                'border border-gray-500': !IsChoosenDomain,
+                'cursor-not-allowed':  !IsChoosenDomain,
+                'secondaryBorder': IsChoosenDomain,
+                'secondaryTxt': IsChoosenDomain  
+            }"
+            class="rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+                Create Bus
+            </button>
         </div>
     </div>
 
@@ -64,13 +65,13 @@
                         Company
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        backPrice
+                        Back Price
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        morningPrice
+                        Morning Price
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        twoWaysPrice
+                        Two Ways Price
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Actions
@@ -212,6 +213,9 @@
                             </button>
                             <button>
                                 <i class="fa-solid fa-pencil" *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)"></i>
+                            </button>
+                            <button>
+                                <i class="fa-regular fa-eye" (click)="MoveToBusStudent(row.id)"></i>
                             </button>
                         </div>
                     </td>

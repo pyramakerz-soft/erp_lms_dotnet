@@ -54,7 +54,7 @@ export class BusDetailsComponent {
   
   validationErrors: { [key in keyof Bus]?: string } = {};
 
-  key: keyof Bus = "id";
+  key: string= "id";
   value: any = "";
   keysArray: string[] = ['id', 'name','capacity','isCapacityRestricted','backPrice','twoWaysPrice','morningPrice','busTypeName','busRestrictName','busStatusName','driverName','driverAssistantName','busCompanyName'];
 
@@ -322,7 +322,7 @@ export class BusDetailsComponent {
     return IsAllow;
   }
 
-  async onSearchEvent(event: { key: keyof Bus, value: any }) {
+  async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
     try {
@@ -333,7 +333,7 @@ export class BusDetailsComponent {
         const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
         this.busData = this.busData.filter(t => {
-          const fieldValue = t[this.key];  
+          const fieldValue = t[this.key as keyof typeof t];
           if (typeof fieldValue === 'string') {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }

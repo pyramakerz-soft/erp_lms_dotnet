@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center">
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Bus</h1>
         <div class="flex justify-between items-center ">
-            <!-- <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> -->
+            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             
             <button (click)="openModal()"
             [disabled]="!IsChoosenDomain"

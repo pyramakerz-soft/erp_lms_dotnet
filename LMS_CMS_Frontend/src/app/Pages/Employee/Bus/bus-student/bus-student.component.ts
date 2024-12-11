@@ -68,6 +68,7 @@ export class BusStudentComponent {
 
   busDataTransfer :Bus[] = []
   busStudentTransfer :BusStudent = new BusStudent()
+  isTransfer:boolean = false
 
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
     public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
@@ -365,9 +366,17 @@ export class BusStudentComponent {
 
     this.busDataTransfer = []
     this.busStudentTransfer = new BusStudent()
+    this.isTransfer = false
+  }
+
+  onTransferChange(){
+    this.isTransfer = true
   }
 
   SaveTransfer(){
-    
+    this.busStudentService.Edit(this.busStudentTransfer, this.DomainName).subscribe((data) => {
+      this.closeTransferBusStudentModal()
+      this.GetStudentsByBusId(this.busId)
+    });
   }
 }

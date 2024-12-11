@@ -294,14 +294,11 @@
         </div>
         <div class="mt-4 bg-[#F7F7F7] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
             <h6 class="font-medium text-base leading-6">Buses</h6>
-            <div class="flex justify-between mt-2 gap-2 items-start">
+            <div class="flex justify-between mt-2 gap-2">
                 <div class="w-full">
-                    <!-- <input type="text" class="w-[404px] h-[45px] rounded-lg border border-solid border-gray-300 px-2" 
-                        [(ngModel)]="busRestrict.name" placeholder="Enter new restrict" (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"/>
-                    <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span> -->
-                    <select [(ngModel)]="busStudentTransfer.id"
-                        class="w-full rounded-lg border border-solid border-gray-300" id="Buses" >
-                        <option disabled selected>Choose Bus</option>
+                    <select [(ngModel)]="busStudentTransfer.busID" (change)="onTransferChange()"
+                        class="w-full rounded-lg border border-solid border-gray-300 h-full px-2" id="Buses" >
+                        <option disabled selected hidden>Choose Bus</option>
                         <option *ngFor="let bus of busDataTransfer" [value]="bus.id">{{bus.name}}</option>
                         <option *ngIf="busDataTransfer.length === 0" disabled selected>No Data Found</option>
                     </select>

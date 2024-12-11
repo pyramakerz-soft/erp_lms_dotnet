@@ -5,12 +5,12 @@
     </div>
 </div>
 
-<div class="flex justify-between mt-5">
+<div *ngIf="this.User_Data_After_Login.type === 'octa'" class="flex justify-between mt-5">
     <div class="w-[48%]">
         <label for="buses" class=" mb-2 text-sm font-medium text-gray-900">Domains</label>
         <select id="buses" (change)="DomainIsChanged($event)"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  w-full p-2.5">
-            <option value="" disabled selected hidden>Select a Bus</option>
+            <option value="" disabled selected hidden>Select a Domain</option>
             <option *ngFor="let domain of DomainData" [value]="domain.name">
                 {{ domain.name }}
             </option>
@@ -20,7 +20,19 @@
         <label for="buses" class="mb-2 text-sm font-medium text-gray-900">Buses</label>
         <select id="buses" (change)="getDataByBusId($event)"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  w-full p-2.5">
-            <option value="" disabled selected hidden>Select a Bus</option>
+            <option *ngIf="busId == -1" value="" disabled selected hidden>Select a Bus</option>
+            <option *ngFor="let bus of BusData" [value]="bus.id">
+                {{ bus.name }}
+            </option>
+        </select>
+    </div>
+</div>
+<div *ngIf="this.User_Data_After_Login.type === 'employee'" class="mt-5">
+    <div>
+        <label for="buses" class="mb-2 text-sm font-medium text-gray-900">Buses</label>
+        <select id="buses" (change)="getDataByBusId($event)" [(ngModel)]="busId"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+            <option *ngIf="busId == -1" value="0" disabled selected hidden>Select a Bus</option>
             <option *ngFor="let bus of BusData" [value]="bus.id">
                 {{ bus.name }}
             </option>
@@ -28,7 +40,8 @@
     </div>
 </div>
 
-<div *ngIf="busId!=0">
+
+<div *ngIf="busId!=-1">
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
         <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
             <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
@@ -64,9 +77,6 @@
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Date To
                     </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Actions
-                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -96,16 +106,6 @@
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.exceptionFromDate }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.exceptionToDate }}</td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div class="flex space-x-4">
-                            <button>
-                                <i class="fa-regular fa-trash-can"></i>
-                            </button>
-                            <button>
-                                <i class="fa-solid fa-pencil"></i>
-                            </button>
-                        </div>
-                    </td>
                 </tr>
             </tbody>
         </table>

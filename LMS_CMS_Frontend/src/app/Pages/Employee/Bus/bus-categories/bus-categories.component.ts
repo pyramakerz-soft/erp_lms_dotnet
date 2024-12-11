@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TokenData } from '../../../../Models/token-data';
@@ -25,7 +25,7 @@ import Swal from 'sweetalert2';
 export class BusCategoriesComponent {
 
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-  busCategory: BusType = new BusType(0, "", 0);
+  busCategory: BusType = new BusType();
 
   AllowEdit: boolean = true;
   AllowDelete: boolean = true;

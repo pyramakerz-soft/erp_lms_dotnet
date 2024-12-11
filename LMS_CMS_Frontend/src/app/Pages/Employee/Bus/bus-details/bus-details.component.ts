@@ -54,9 +54,9 @@ export class BusDetailsComponent {
   
   validationErrors: { [key in keyof Bus]?: string } = {};
 
-  key: keyof BusType = "id";
+  key: string= "id";
   value: any = "";
-  keysArray: string[] = ['id', 'name','capacity','isCapacityRestricted','backPrice','twoWaysPrice','morningPrice','busTypeName','busRestrictName','busStatusName','driverName','driverAssistantName','busCompanyName'];
+  keysArray: string[] = ['id', 'name','capacity','backPrice','twoWaysPrice','morningPrice','busTypeName','busRestrictName','busStatusName','driverName','driverAssistantName','busCompanyName'];
 
   path:string = ""
 
@@ -322,11 +322,9 @@ export class BusDetailsComponent {
     return IsAllow;
   }
 
-  async onSearchEvent(event: { key: keyof BusType, value: any }) {
+  async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    console.log('Search by:', this.key, this.value);
-  
     try {
       const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
       this.busData = data || [];
@@ -335,7 +333,7 @@ export class BusDetailsComponent {
         const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
         this.busData = this.busData.filter(t => {
-          const fieldValue = t[this.key];  
+          const fieldValue = t[this.key as keyof typeof t];
           if (typeof fieldValue === 'string') {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }

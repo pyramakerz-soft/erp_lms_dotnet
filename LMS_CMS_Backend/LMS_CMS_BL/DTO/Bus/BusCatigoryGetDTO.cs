@@ -17,6 +17,6 @@ namespace LMS_CMS_BL.DTO.Bus
         public long? UpdatedByUserId { get; set; }
         public long? DeletedByOctaId { get; set; }
         public long? DeletedByUserId { get; set; }
-
+        public DateTime? InsertedAt { get; set; }
     }
 }

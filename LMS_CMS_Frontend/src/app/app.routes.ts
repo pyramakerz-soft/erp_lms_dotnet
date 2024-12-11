@@ -20,6 +20,7 @@ import { BusCategoriesComponent } from './Pages/Employee/Bus/bus-categories/bus-
 import { BusCompaniesComponent } from './Pages/Employee/Bus/bus-companies/bus-companies.component';
 import { BusDetailsComponent } from './Pages/Employee/Bus/bus-details/bus-details.component';
 import { BusStudentComponent } from './Pages/Employee/Bus/bus-student/bus-student.component';
+import { BusPrintNameTagComponent } from './Pages/Employee/Bus/bus-print-name-tag/bus-print-name-tag.component';
 
 
 export const routes: Routes = [
@@ -41,6 +42,8 @@ export const routes: Routes = [
             { path: "Bus Restricts", component: BusRestrictsComponent, title: "Bus Restrict"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
+            { path: "Bus Name Tag", component: BusPrintNameTagComponent, title: "Bus Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
+
         ]
     },
     { 
@@ -74,6 +77,7 @@ export const routes: Routes = [
             { path: "Bus Restricts", component: BusRestrictsComponent, title: "Bus Restrict" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
             { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
             { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
+            { path: "Bus Name Tag", component: BusPrintNameTagComponent, title: "Bus Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
 

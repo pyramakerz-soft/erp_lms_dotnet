@@ -45,7 +45,7 @@ export class BusCompaniesComponent {
   isModalVisible: boolean = false;
   mode: string = "";
 
-  key: keyof BusType = "id";
+  key: string = "id";
   value: any = "";
   keysArray: string[] = ['id', 'name'];
 
@@ -227,7 +227,7 @@ export class BusCompaniesComponent {
     return IsAllow;
   }
 
-  async onSearchEvent(event: { key: keyof BusType, value: any }) {
+  async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
     console.log('Search by:', this.key, this.value);
@@ -236,14 +236,14 @@ export class BusCompaniesComponent {
       const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 
       this.TableData = this.TableData.filter(t => {
-        const fieldValue = t[this.key];
+        const fieldValue = t[this.key as keyof typeof t];
         if (typeof fieldValue === 'string') {
           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
         }
-        if (typeof t[this.key] === 'number') {
-          return t[this.key] === numericValue;
+        if (typeof fieldValue === 'number') {
+          return fieldValue === numericValue;
         }
-        return t[this.key] == this.value;
+        return fieldValue == this.value;
       });
     }
   }

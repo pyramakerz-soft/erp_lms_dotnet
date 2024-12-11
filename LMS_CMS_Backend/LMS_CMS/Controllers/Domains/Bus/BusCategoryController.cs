@@ -158,6 +158,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return BadRequest("Bus Category cannot be null");
             }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Returns validation errors
+            }
 
             BusCategory busCategory = mapper.Map<BusCategory>(NewCategory);
 

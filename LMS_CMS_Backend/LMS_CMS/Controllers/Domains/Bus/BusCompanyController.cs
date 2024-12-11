@@ -162,7 +162,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewBusCompany == null)
+            if (NewBusCompany == null|| NewBusCompany.Name=="")
             {
                 return BadRequest("Bus Company cannot be null");
             }

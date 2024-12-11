@@ -155,10 +155,9 @@ export class BusRestrictsComponent {
 
   Save() {
     this.EditType.name = this.newType;
-    this.busRestrictServ.Edit(this.EditType, this.DomainName).subscribe(() => {
+        this.busRestrictServ.Edit(this.EditType, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
-      this.newType = "";
     })
   }
 

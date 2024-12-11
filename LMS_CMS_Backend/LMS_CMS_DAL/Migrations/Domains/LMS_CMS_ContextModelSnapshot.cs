@@ -78,7 +78,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("AcademicYear");
+                    b.ToTable("AcademicYear", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.Bus", b =>
@@ -177,7 +177,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Bus");
+                    b.ToTable("Bus", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusCategory", b =>
@@ -231,7 +231,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusCategory");
+                    b.ToTable("BusCategory", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusCompany", b =>
@@ -285,7 +285,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusCompany");
+                    b.ToTable("BusCompany", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusRestrict", b =>
@@ -339,7 +339,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusRestrict");
+                    b.ToTable("BusRestrict", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusStatus", b =>
@@ -393,7 +393,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusStatus");
+                    b.ToTable("BusStatus", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusStudent", b =>
@@ -471,7 +471,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusStudent");
+                    b.ToTable("BusStudent", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusType", b =>
@@ -525,7 +525,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusType");
+                    b.ToTable("BusType", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Class", b =>
@@ -587,7 +587,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Class");
+                    b.ToTable("Class", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Employee", b =>
@@ -674,7 +674,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("User_Name")
                         .IsUnique();
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.EmployeeType", b =>
@@ -689,7 +689,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
-                    b.ToTable("EmployeeType");
+                    b.ToTable("EmployeeType", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Grade", b =>
@@ -751,7 +751,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Grade");
+                    b.ToTable("Grade", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Page", b =>
@@ -785,7 +785,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("en_name")
                         .IsUnique();
 
-                    b.ToTable("Pages");
+                    b.ToTable("Pages", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Parent", b =>
@@ -864,7 +864,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("User_Name")
                         .IsUnique();
 
-                    b.ToTable("Parents");
+                    b.ToTable("Parents", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Role", b =>
@@ -918,7 +918,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Role_Detailes", b =>
@@ -989,7 +989,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Role_Detailes");
+                    b.ToTable("Role_Detailes", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.School", b =>
@@ -1043,7 +1043,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Schools");
+                    b.ToTable("Schools", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Semester", b =>
@@ -1102,7 +1102,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Semester");
+                    b.ToTable("Semester", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Student", b =>
@@ -1186,7 +1186,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("User_Name")
                         .IsUnique();
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.StudentAcademicYear", b =>
@@ -1260,7 +1260,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("StudentAcademicYear");
+                    b.ToTable("StudentAcademicYear", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AcademicYear", b =>

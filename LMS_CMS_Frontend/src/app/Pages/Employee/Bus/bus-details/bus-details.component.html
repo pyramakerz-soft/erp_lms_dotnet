@@ -296,7 +296,7 @@
                 <label class="mb-2 primaryTxt" for="company">Company</label>
                 <select [(ngModel)]="bus.busCompanyID"
                   class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="company" >
-                  <option *ngIf="!bus.busCompanyID" disabled selected>{{ bus.busCompanyName || 'Select Company' }}</option>  <!-- Placeholder -->
+                  <option *ngIf="!bus.busCompanyID" disabled selected>{{ bus.busCompanyName || 'Select Company' }}</option>
                   <option *ngFor="let company of BusCompany" [value]="company.id">{{company.name}}</option>
                   <option *ngIf="BusCompany.length === 0" disabled selected>No Data Found</option>
                 </select>

@@ -22,11 +22,13 @@ import { Class } from '../../../../Models/class';
 import { FormsModule } from '@angular/forms';
 import { StudentService } from '../../../../Services/student.service';
 import { Student } from '../../../../Models/student';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-bus-student',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SearchComponent],
   templateUrl: './bus-student.component.html',
   styleUrl: './bus-student.component.css'
 })
@@ -59,6 +61,13 @@ export class BusStudentComponent {
   validationErrors: { [key in keyof BusStudent]?: string } = {};
 
   path:string = ""
+
+  keysArray: string[] = ['schoolName', 'gradeName', 'className', 'studentName', 'busCategoryName', 'semseterName'];
+  key: string= "schoolName";
+  value: any = "";
+
+  busDataTransfer :Bus[] = []
+  busStudentTransfer :BusStudent = new BusStudent()
 
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
     public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
@@ -101,7 +110,6 @@ export class BusStudentComponent {
   GetbyId(busStuId:number){
     this.busStudentService.GetbyId(busStuId,this.DomainName).subscribe((data) => {
       this.busStudent = data;
-      console.log(this.busStudent)
       this.selectedSchool = this.busStudent.schoolID
       this.selectedGrade = this.busStudent.gradeID
       this.selectedClass = this.busStudent.classID
@@ -143,7 +151,7 @@ export class BusStudentComponent {
 
   deleteBusStudent(busStudentId: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete student?',
+      title: 'Are you sure you want to delete this student?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -303,5 +311,63 @@ export class BusStudentComponent {
         });
       }
     }
+  }
+
+  async onSearchEvent(event: { key: string, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: BusStudent[] = await firstValueFrom(this.busStudentService.GetbyBusId(this.busId,this.DomainName));  
+      this.busStudentData = data || [];
+  
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+  
+        this.busStudentData = this.busStudentData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.busStudentData = [];
+      console.log('Error fetching data:', error);
+    }
+  }
+
+  getBusesForTransfer(){
+    this.busService.Get(this.DomainName).subscribe(
+      (data: any) => {
+        this.busDataTransfer = data;
+      }
+    );
+  }
+
+  openTransferBusStudentModal(busStudentId:number){
+    document.getElementById("Transfer_Modal")?.classList.remove("hidden");
+    document.getElementById("Transfer_Modal")?.classList.add("flex");
+
+    this.getBusesForTransfer()
+
+    this.busStudentService.GetbyId(busStudentId,this.DomainName).subscribe((data) => {
+      this.busStudentTransfer = data
+    });
+  }
+  
+  closeTransferBusStudentModal(){
+    document.getElementById("Transfer_Modal")?.classList.remove("flex");
+    document.getElementById("Transfer_Modal")?.classList.add("hidden");
+
+    this.busDataTransfer = []
+    this.busStudentTransfer = new BusStudent()
+  }
+
+  SaveTransfer(){
+    
   }
 }

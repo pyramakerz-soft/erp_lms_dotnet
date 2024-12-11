@@ -46,7 +46,9 @@ export class BusPrintNameTagComponent {
   busStudentData: BusStudent[] = []
 
   DomainName: string = "";
-  busId: number = 0
+  busId: number = -1;
+
+  IsClearBus: boolean = false;
 
   constructor(private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public busStudentServ: BusStudentService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public BusServ: BusService) { }
 
@@ -87,30 +89,37 @@ export class BusPrintNameTagComponent {
   }
 
   GetAllBus() {
+    console.log("get bus")
     this.BusServ.Get(this.DomainName).subscribe((data) => {
       this.BusData = data;
     })
   }
 
   async GetTableData(busId: number) {
-    const data = await firstValueFrom(this.busStudentServ.GetbyBusId(busId, this.DomainName));
+    this.busStudentData=[]
+    try {
+      const data = await firstValueFrom(this.busStudentServ.GetbyBusId(busId, this.DomainName));
       this.busStudentData = data;
-      console.log(this.busStudentData)
+      console.log(this.busStudentData);
+    } catch (error) {
+      this.busStudentData = [];
+    }
   }
 
   getDataByBusId(event: Event) {
     this.IsChoosenDomain = true;
     const selectedValue: number = Number((event.target as HTMLSelectElement).value);
     this.busId = selectedValue;
-    console.log(this.busId,this.DomainName)
+    console.log(this.busId, this.DomainName)
     this.GetTableData(this.busId);
   }
 
-  DomainIsChanged(event: Event){
+  DomainIsChanged(event: Event) {
+    this.BusData = []
     this.IsChoosenDomain = true;
     const selectedValue: string = ((event.target as HTMLSelectElement).value);
     this.DomainName = selectedValue;
-    this.busId=0;
+    this.busId = -1;
     this.GetAllBus();
   }
 

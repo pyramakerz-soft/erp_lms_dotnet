@@ -36,7 +36,9 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.BusName, opt => opt.MapFrom(src => src.Bus.Name))
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.en_name))
                 .ForMember(dest => dest.BusCategoryName, opt => opt.MapFrom(src => src.BusCategory.Name))
-                .ForMember(dest => dest.SemseterName, opt => opt.MapFrom(src => src.Semester.Name));
+                .ForMember(dest => dest.SemseterName, opt => opt.MapFrom(src => src.Semester.Name))
+                .ForMember(dest => dest.StudentAcademicYear, opt => opt.MapFrom(src => src.Semester.AcademicYear.Name));
+
             CreateMap<BusStudent_AddDTO, BusStudent>();
             CreateMap<BusStudent_PutDTO, BusStudent>();
 
@@ -90,6 +92,11 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<LMS_CMS_DAL.Models.Octa.Page, Page_GetDTO>();
             CreateMap<Page_GetDTO, LMS_CMS_DAL.Models.Octa.Page>();
+
+            CreateMap<AcademicYear, AcademicYearGet>();
+            CreateMap<AcademicYearGet, AcademicYear>();
+
+
         }
     }
 }

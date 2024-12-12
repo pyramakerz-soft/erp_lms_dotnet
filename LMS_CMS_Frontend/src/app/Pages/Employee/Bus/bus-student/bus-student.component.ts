@@ -24,6 +24,8 @@ import { StudentService } from '../../../../Services/student.service';
 import { Student } from '../../../../Models/student';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
+import { AcadimicYearService } from '../../../../Services/Employee/acadimic-year.service';
+import { AcademicYear } from '../../../../Models/academic-year';
 
 @Component({
   selector: 'app-bus-student',
@@ -70,16 +72,19 @@ export class BusStudentComponent {
   busStudentTransfer :BusStudent = new BusStudent()
   isTransfer:boolean = false
 
+  AcademicYearData:AcademicYear[]=[]
+
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
     public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
-    , public semesterService:SemesterService, public studentService:StudentService){}
+    , public semesterService:SemesterService, public studentService:StudentService ,public AcademicServ:AcadimicYearService){}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID=this.User_Data_After_Login.id;
     this.busId = Number(this.activeRoute.snapshot.paramMap.get('busId'))
     this.DomainName = String(this.activeRoute.snapshot.paramMap.get('domainName'))
-    
+    this.GetAllAcademicYears();
+    console.log("dfd",this.busStudent.studentID)
     this.activeRoute.url.subscribe(url => {
       this.path = url[0].path
     });
@@ -88,6 +93,7 @@ export class BusStudentComponent {
     this.GetStudentsByBusId(this.busId);
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
+      console.log(this.path)
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
@@ -128,6 +134,7 @@ export class BusStudentComponent {
   GetStudentsByBusId(busId:number){
     this.busStudentData= []
     this.busStudentService.GetbyBusId(busId,this.DomainName).subscribe((data) => {
+      console.log(data)
       this.busStudentData = data;
     });
   }
@@ -378,5 +385,21 @@ export class BusStudentComponent {
       this.closeTransferBusStudentModal()
       this.GetStudentsByBusId(this.busId)
     });
+  }
+
+  GetAllAcademicYears(){
+    this.AcademicServ.Get(this.DomainName).subscribe((data) => {
+        this.AcademicYearData=data
+    });
+  }
+
+  getDataByAcademicYear(event: Event){
+    const selectedValue: string = ((event.target as HTMLSelectElement).value);
+    if(selectedValue=="default")
+    this.GetStudentsByBusId(this.busId);
+    else{
+      this.busStudentData=this.busStudentData.filter(t=>t.studentAcademicYear==selectedValue)
+      console.log("after filter",this.busStudentData)
+    }
   }
 }

@@ -63,7 +63,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 query => query.Include(bus => bus.Bus),
                 query => query.Include(stu => stu.Student).ThenInclude(stu => stu.StudentAcademicYears),
                 query => query.Include(busCat => busCat.BusCategory),
-                query => query.Include(sem => sem.Semester)
+                query => query.Include(sem => sem.Semester),
+                query => query.Include(sem => sem.Semester).ThenInclude(st => st.AcademicYear)
+
             );
 
             if (busStudents == null || busStudents.Count == 0)

@@ -145,6 +145,8 @@ export class BusDetailsComponent {
   }
 
   openModal(busId?: number) {
+    console.log(this.bus)
+    this.bus.busCompanyID=null;
     if (busId) {
       this.editBus = true;
       this.GetBusById(busId); 
@@ -307,7 +309,8 @@ export class BusDetailsComponent {
   }
 
   MoveToBusStudent(busId:number){
-    this.router.navigateByUrl('Employee/Bus Students/' + this.DomainName + '/' + busId);
+    console.log('Employee/Bus Student/' + this.DomainName + '/' + busId)
+    this.router.navigateByUrl('Employee/Bus Student/' + this.DomainName + '/' + busId);
   }
 
   IsAllowDelete(InsertedByID: number) {

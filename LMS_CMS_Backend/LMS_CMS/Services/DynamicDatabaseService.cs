@@ -21,6 +21,33 @@ namespace LMS_CMS_PL.Services
             _configuration = configuration;
         }
 
+        //public async Task AddDomainAndSetupDatabase(string domainName)
+        //{
+        //    var dataSource = _configuration["DynamicConStr:DataSource"];
+        //    var integratedSecurity = _configuration["DynamicConStr:IntegratedSecurity"];
+        //    var trustServerCertificate = _configuration["DynamicConStr:TrustServerCertificate"];
+
+        //    string connectionString = $"{dataSource}{domainName}{integratedSecurity}{trustServerCertificate}";
+
+        //    var domain = new Domain { Name = domainName, ConnectionString = connectionString };
+        //    Unit_Of_Work.domain_Octa_Repository.Add_Octa(domain);
+        //    Unit_Of_Work.SaveOctaChanges();
+
+        //    var optionsBuilder = new DbContextOptionsBuilder<LMS_CMS_Context>();
+        //    optionsBuilder.UseSqlServer(connectionString);
+
+        //    using (var dbContext = new LMS_CMS_Context(optionsBuilder.Options))
+        //    {
+        //        // Create the database if it doesn't exist
+        //        bool databaseExists = await dbContext.Database.CanConnectAsync();
+        //        if (!databaseExists)
+        //        {
+        //            await dbContext.Database.EnsureCreatedAsync();
+        //        }
+        //    }
+        //}
+
+
         public async Task AddDomainAndSetupDatabase(string domainName)
         {
             var dataSource = _configuration["DynamicConStr:DataSource"];
@@ -38,14 +65,12 @@ namespace LMS_CMS_PL.Services
 
             using (var dbContext = new LMS_CMS_Context(optionsBuilder.Options))
             {
-                // Create the database if it doesn't exist
-                bool databaseExists = await dbContext.Database.CanConnectAsync();
-                if (!databaseExists)
-                {
-                    await dbContext.Database.EnsureCreatedAsync();
-                }
+                // Apply migrations directly
+                await dbContext.Database.MigrateAsync();
             }
         }
+
+
 
         public async Task ApplyMigrations(string domainName)
         {

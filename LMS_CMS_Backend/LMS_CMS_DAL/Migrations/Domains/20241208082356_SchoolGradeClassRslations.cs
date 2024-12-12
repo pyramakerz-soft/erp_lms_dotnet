@@ -24,6 +24,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 nullable: false,
                 defaultValue: 0L);
 
+
             migrationBuilder.CreateIndex(
                 name: "IX_Grade_SchoolID",
                 table: "Grade",

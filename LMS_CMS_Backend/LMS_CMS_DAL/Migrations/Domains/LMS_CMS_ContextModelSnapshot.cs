@@ -131,7 +131,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("InsertedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<bool>("IsCapacityRestrict")
+                    b.Property<bool>("IsCapacityRestricted")
                         .HasColumnType("bit");
 
                     b.Property<bool?>("IsDeleted")

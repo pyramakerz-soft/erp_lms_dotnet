@@ -13,7 +13,7 @@ export class ApiService {
   constructor() { }
 
   GetHeader(){
-    var Header = "domain"
+    var Header = "Domain_"
     return Header;
   }
 }

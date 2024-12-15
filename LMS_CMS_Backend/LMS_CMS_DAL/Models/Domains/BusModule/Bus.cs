@@ -19,7 +19,7 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
         public long Capacity { get; set; }
-        public bool IsCapacityRestrict { get; set; }
+        public bool IsCapacityRestricted { get; set; }
         public int MorningPrice { get; set; }
         public int BackPrice { get; set; }
         public int TwoWaysPrice { get; set; }

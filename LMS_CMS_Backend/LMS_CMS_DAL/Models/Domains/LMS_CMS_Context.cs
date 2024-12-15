@@ -20,7 +20,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<AcademicYear> AcademicYear { get; set; }
         public DbSet<Semester> Semester { get; set; }
         public DbSet<BusType> BusType { get; set; }
-        public DbSet<BusRestrict> BusRestrict { get; set; }
+        public DbSet<BusDistrict> BusDistrict { get; set; }
         public DbSet<BusStatus> BusStatus { get; set; }
         public DbSet<BusCategory> BusCategory { get; set; }
         public DbSet<BusCompany> BusCompany { get; set; }
@@ -145,9 +145,9 @@ namespace LMS_CMS_DAL.Models.Domains
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Bus>()
-                 .HasOne(p => p.BusRestrict)
+                 .HasOne(p => p.BusDistrict)
                  .WithMany(p => p.Buses)
-                 .HasForeignKey(p => p.BusRestrictID)
+                 .HasForeignKey(p => p.BusDistrictID)
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Bus>()

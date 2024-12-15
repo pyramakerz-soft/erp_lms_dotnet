@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class BusRestrictService {
+export class BusDistrictService {
 
   baseUrl = ""
   header = ""
@@ -26,10 +26,10 @@ export class BusRestrictService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.get<BusType[]>(`${this.baseUrl}/BusRestrict`, { headers })
+    return this.http.get<BusType[]>(`${this.baseUrl}/BusDistrict`, { headers })
   }
 
-  Add( busRestrict: BusType,DomainName:string): Observable<any> {
+  Add( busDistrict: BusType,DomainName:string): Observable<any> {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -38,7 +38,7 @@ export class BusRestrictService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.post<any>(`${this.baseUrl}/BusRestrict`, busRestrict, {
+    return this.http.post<any>(`${this.baseUrl}/BusDistrict`, busDistrict, {
         headers,
         responseType: 'text' as 'json'
     });
@@ -53,7 +53,8 @@ export class BusRestrictService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.put<BusType>(`${this.baseUrl}/BusRestrict`, NewType, { headers });
+    console.log(NewType,this.header)
+    return this.http.put<BusType>(`${this.baseUrl}/BusDistrict`, NewType, { headers });
   }
 
   Delete(id:number,DomainName:string){
@@ -65,7 +66,7 @@ export class BusRestrictService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.delete(`${this.baseUrl}/BusRestrict?id=${id}`, { headers })
+    return this.http.delete(`${this.baseUrl}/BusDistrict?id=${id}`, { headers })
   }
 
   GetByID(id:number,DomainName:string){
@@ -77,6 +78,6 @@ export class BusRestrictService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.get(`${this.baseUrl}/BusRestrict/${id}`, { headers })
+    return this.http.get(`${this.baseUrl}/BusDistrict/${id}`, { headers })
   }
 }

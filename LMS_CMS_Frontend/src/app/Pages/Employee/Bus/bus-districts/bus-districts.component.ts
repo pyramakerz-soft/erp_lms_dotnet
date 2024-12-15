@@ -5,7 +5,7 @@ import { Domain } from '../../../../Models/domain';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
-import { BusRestrictService } from '../../../../Services/Employee/Bus/bus-restrict.service';
+import { BusDistrictService } from '../../../../Services/Employee/Bus/bus-district.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,16 +16,16 @@ import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-bus-restricts',
+  selector: 'app-bus-Districts',
   standalone: true,
   imports: [CommonModule, FormsModule, SearchComponent],
-  templateUrl: './bus-restricts.component.html',
-  styleUrl: './bus-restricts.component.css'
+  templateUrl: './bus-Districts.component.html',
+  styleUrl: './bus-Districts.component.css'
 })
-export class BusRestrictsComponent {
+export class BusDistrictsComponent {
 
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-  busRestrict: BusType = new BusType(0, "", 0);
+  busDistrict: BusType = new BusType(0, "", 0);
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
@@ -51,7 +51,7 @@ export class BusRestrictsComponent {
 
   validationErrors: { [key in keyof BusType]?: string } = {};
 
-  constructor(private router: Router, public activeRoute: ActivatedRoute, private menuService: MenuService, public account: AccountService, public busRestrictServ: BusRestrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
+  constructor(private router: Router, public activeRoute: ActivatedRoute, private menuService: MenuService, public account: AccountService, public busDistrictServ: BusDistrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
   ngOnInit() {
 
@@ -97,7 +97,7 @@ export class BusRestrictsComponent {
 
   async GetTableData() {
     try {
-      const data = await firstValueFrom(this.busRestrictServ.Get(this.DomainName));
+      const data = await firstValueFrom(this.busDistrictServ.Get(this.DomainName));
       this.TableData = data;
     } catch (error) {
       this.TableData = [];
@@ -110,14 +110,14 @@ export class BusRestrictsComponent {
   }
 
   closeModal() {
-    this.busRestrict = new BusType()
+    this.busDistrict = new BusType()
     this.isModalVisible = false;
     this.validationErrors = {};
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this bus restrict?',
+      title: 'Are you sure you want to delete this bus District?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -126,7 +126,7 @@ export class BusRestrictsComponent {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.busRestrictServ.Delete(id, this.DomainName).subscribe((data) => {
+        this.busDistrictServ.Delete(id, this.DomainName).subscribe((data) => {
           this.GetTableData();
         }
         );
@@ -138,7 +138,7 @@ export class BusRestrictsComponent {
     this.mode = "edit";
     const typeToEdit = this.TableData.find((t) => t.id === id);
     if (typeToEdit) {
-      this.busRestrict = { ...typeToEdit };
+      this.busDistrict = { ...typeToEdit };
       this.openModal();
     } else {
       console.error("Type not found!");
@@ -151,10 +151,10 @@ export class BusRestrictsComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    for (const key in this.busRestrict) {
-      if (this.busRestrict.hasOwnProperty(key)) {
+    for (const key in this.busDistrict) {
+      if (this.busDistrict.hasOwnProperty(key)) {
         const field = key as keyof BusType;
-        if (!this.busRestrict[field]) {
+        if (!this.busDistrict[field]) {
           if(field == "name"){
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
@@ -170,7 +170,7 @@ export class BusRestrictsComponent {
   onInputValueChange(event: { field: keyof BusType, value: any }) {
     const { field, value } = event;
     if (field == "name") {
-      (this.busRestrict as any)[field] = value;
+      (this.busDistrict as any)[field] = value;
       if (value) {
         this.validationErrors[field] = '';
       }
@@ -178,10 +178,10 @@ export class BusRestrictsComponent {
   }
 
   AddNewType() {
-    this.busRestrictServ.Add(this.busRestrict, this.DomainName).subscribe((data) => {
+    this.busDistrictServ.Add(this.busDistrict, this.DomainName).subscribe((data) => {
       this.closeModal();
       this.GetTableData();
-      this.busRestrict = new BusType()
+      this.busDistrict = new BusType()
     },
       error => {
         console.log(error)
@@ -189,10 +189,10 @@ export class BusRestrictsComponent {
   }
 
   Save() {
-    this.busRestrictServ.Edit(this.busRestrict, this.DomainName).subscribe(() => {
+    this.busDistrictServ.Edit(this.busDistrict, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
-      this.busRestrict = new BusType()
+      this.busDistrict = new BusType()
     })
   }
 

@@ -44,7 +44,7 @@
                         Bus Type
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Bus Restrict
+                        Bus District
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Active Bus
@@ -53,7 +53,7 @@
                         Capacity
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Restrict
+                        District
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Driver
@@ -106,12 +106,12 @@
                         </ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div *ngIf="row.busRestrictName; else emptyRestrict">
-                            <div class="truncate" title="{{ row.busRestrictName }}">
-                                {{ row.busRestrictName }}
+                        <div *ngIf="row.busDistrictName; else emptyDistrict">
+                            <div class="truncate" title="{{ row.busDistrictName }}">
+                                {{ row.busDistrictName }}
                             </div>
                         </div>
-                        <ng-template #emptyRestrict>
+                        <ng-template #emptyDistrict>
                             <div class="flex justify-center bg-[#d7d7d7a2] p-3 rounded-md">
                                 <div class="w-[70%] h-[1px] bg-[#868d98]"></div>
                             </div>
@@ -254,12 +254,12 @@
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="restrict">Restrict</label>
-                <select [(ngModel)]="bus.busRestrictID"
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="restrict" >
-                    <option *ngIf="!bus.busRestrictID" [value]="null" disabled selected>{{ bus.busRestrictName || 'Select Restrict' }}</option>
-                    <option *ngFor="let restrict of BusRestrict" [value]="restrict.id">{{ restrict.name }}</option>
-                    <option *ngIf="BusRestrict.length === 0" disabled selected>No Data Found</option>
+                <label class="mb-2 primaryTxt" for="District">District</label>
+                <select [(ngModel)]="bus.busDistrictID"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="District" >
+                    <option *ngIf="!bus.busDistrictID" [value]="null" disabled selected>{{ bus.busDistrictName || 'Select District' }}</option>
+                    <option *ngFor="let District of BusDistrict" [value]="District.id">{{ District.name }}</option>
+                    <option *ngIf="BusDistrict.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
@@ -308,10 +308,10 @@
             </div>
             
             <div class="flex w-full space-x-5 items-center">
-                <input type="checkbox" id="Restricted" class="w-5 h-5"
-                (change)="onIsRestrictedChange($event)"
+                <input type="checkbox" id="Districted" class="w-5 h-5"
+                (change)="onIsDistrictedChange($event)"
                 [checked]="bus.isCapacityRestricted">
-                <label for="Restricted" class="text-sm">Restricted Capacity</label>
+                <label for="Districted" class="text-sm">Districted Capacity</label>
             </div>
         </div>
         <div class="flex justify-between mt-4">

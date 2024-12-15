@@ -9,7 +9,7 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { Domain } from '../../../../Models/domain';
 import { BusType } from '../../../../Models/Bus/bus-type';
 import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.service';
-import { BusRestrictService } from '../../../../Services/Employee/Bus/bus-restrict.service';
+import { BusDistrictService } from '../../../../Services/Employee/Bus/bus-district.service';
 import { BusStatusService } from '../../../../Services/Employee/Bus/bus-status.service';
 import { BusCompanyService } from '../../../../Services/Employee/Bus/bus-company.service';
 import { Employee } from '../../../../Models/Employee/employee';
@@ -38,7 +38,7 @@ export class BusDetailsComponent {
   DomainName: string = "";
 
   BusType: BusType[] = []
-  BusRestrict: BusType[] = []
+  BusDistrict: BusType[] = []
   BusStatus: BusType[] = []
   BusCompany: BusType[] = []
   BusDriver: Employee[] = []
@@ -56,12 +56,12 @@ export class BusDetailsComponent {
 
   key: string= "id";
   value: any = "";
-  keysArray: string[] = ['id', 'name','capacity','backPrice','twoWaysPrice','morningPrice','busTypeName','busRestrictName','busStatusName','driverName','driverAssistantName','busCompanyName'];
+  keysArray: string[] = ['id', 'name','capacity','backPrice','twoWaysPrice','morningPrice','busTypeName','busDistrictsName','busStatusName','driverName','driverAssistantName','busCompanyName'];
 
   path:string = ""
 
   constructor(public busService:BusService, public account:AccountService, public activeRoute:ActivatedRoute, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
-    public busRestrictServ: BusRestrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService, 
+    public busDistrictServ: BusDistrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService, 
     private menuService: MenuService,public EditDeleteServ:DeleteEditPermissionService, public router:Router,public ApiServ:ApiService){}
 
   ngOnInit(){
@@ -153,7 +153,7 @@ export class BusDetailsComponent {
     }
     
     this.GetBusType();
-    this.GetBusrestrict();
+    this.GetBusDistricts();
     this.GetBusStatus();
     this.GetBusCompany();
     this.GetBusDriver();
@@ -167,7 +167,7 @@ export class BusDetailsComponent {
     document.getElementById("Add_Modal")?.classList.remove("flex");
     document.getElementById("Add_Modal")?.classList.add("hidden");
     this.BusType= []
-    this.BusRestrict= []
+    this.BusDistrict= []
     this.BusStatus= []
     this.BusCompany= []
     this.BusDriver= []
@@ -193,9 +193,9 @@ export class BusDetailsComponent {
     });
   }
  
-  GetBusrestrict() {
-    this.busRestrictServ.Get(this.DomainName).subscribe((data) => {
-      this.BusRestrict = data;
+  GetBusDistricts() {
+    this.busDistrictServ.Get(this.DomainName).subscribe((data) => {
+      this.BusDistrict = data;
     });
   }
 
@@ -223,7 +223,7 @@ export class BusDetailsComponent {
     });
   }
 
-  onIsRestrictedChange(event: Event) {
+  onIsDistrictedChange(event: Event) {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.bus.isCapacityRestricted = isChecked
   }

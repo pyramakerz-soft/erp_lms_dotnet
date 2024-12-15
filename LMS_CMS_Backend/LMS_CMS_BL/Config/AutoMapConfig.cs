@@ -24,7 +24,7 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<Bus, Bus_GetDTO>()
                 .ForMember(dest => dest.BusTypeName, opt => opt.MapFrom(src => src.BusType.Name))
-                .ForMember(dest => dest.BusRestrictName, opt => opt.MapFrom(src => src.BusRestrict.Name))
+                .ForMember(dest => dest.BusDistrictName, opt => opt.MapFrom(src => src.BusDistrict.Name))
                 .ForMember(dest => dest.BusStatusName, opt => opt.MapFrom(src => src.BusStatus.Name))
                 .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.Driver.en_name))
                 .ForMember(dest => dest.DriverAssistantName, opt => opt.MapFrom(src => src.DriverAssistant.en_name))
@@ -51,12 +51,12 @@ namespace LMS_CMS_BL.Config
 
 
 
-            CreateMap<BusRestrict, BusRestrictAddDTO>();
-            CreateMap<BusRestrictAddDTO, BusRestrict>();
-            CreateMap<BusRestrict, BusRestrictGetDTO>();
-            CreateMap<BusRestrictGetDTO, BusRestrict>();
-            CreateMap<BusRestrictEditDTO, BusRestrict>();
-            CreateMap<BusRestrict, BusRestrictEditDTO>();
+            CreateMap<BusDistrict, BusDistrictAddDTO>();
+            CreateMap<BusDistrictAddDTO, BusDistrict>();
+            CreateMap<BusDistrict, BusDistrictGetDTO>();
+            CreateMap<BusDistrictGetDTO, BusDistrict>();
+            CreateMap<BusDistrictEditDTO, BusDistrict>();
+            CreateMap<BusDistrict, BusDistrictEditDTO>();
 
 
             CreateMap<BusCategory, BusCatigoryAddDTO>();

@@ -19,7 +19,7 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
         public long Capacity { get; set; }
-        public bool IsCapacityRestricted { get; set; }
+        public bool IsCapacityRestrict { get; set; }
         public int MorningPrice { get; set; }
         public int BackPrice { get; set; }
         public int TwoWaysPrice { get; set; }
@@ -27,8 +27,8 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
 
         [ForeignKey("BusType")]
         public long? BusTypeID { get; set; }
-        [ForeignKey("BusRestrict")]
-        public long? BusRestrictID { get; set; }
+        [ForeignKey("BusDistrict")]
+        public long? BusDistrictID { get; set; }
         [ForeignKey("BusStatus")]
         public long? BusStatusID { get; set; }
         [ForeignKey("Driver")]
@@ -40,7 +40,7 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
 
 
         public BusType? BusType { get; set; }
-        public BusRestrict? BusRestrict { get; set; }
+        public BusDistrict? BusDistrict { get; set; }
         public BusStatus? BusStatus { get; set; }
 
         public Employee? Driver { get; set; }

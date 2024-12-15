@@ -55,7 +55,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                     query => query.Include(emp => emp.Driver),
                     query => query.Include(assisstant => assisstant.DriverAssistant),
                     query => query.Include(type => type.BusType),
-                    query => query.Include(restrict => restrict.BusRestrict),
+                    query => query.Include(District => District.BusDistrict),
                     query => query.Include(StatusCode => StatusCode.BusStatus),
                     query => query.Include(company => company.BusCompany)
                     );
@@ -102,7 +102,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                    query => query.Include(e => e.DriverAssistant),
                    query => query.Include(e => e.BusType),
                    query => query.Include(e => e.BusStatus),
-                   query => query.Include(e => e.BusRestrict),
+                   query => query.Include(e => e.BusDistrict),
                    query => query.Include(e => e.BusCompany)
                    );
 
@@ -156,7 +156,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         //        query => query.Include(e => e.DriverAssistant),
         //        query => query.Include(e => e.BusType),
         //        query => query.Include(e => e.BusStatus),
-        //        query => query.Include(e => e.BusRestrict),
+        //        query => query.Include(e => e.BusDistrict),
         //        query => query.Include(e => e.BusCompany)
         //    );
 
@@ -213,12 +213,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 }
             }
 
-            if (busAddDTO.BusRestrictID != null)
+            if (busAddDTO.BusDistrictID != null)
             {
-                BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(busAddDTO.BusRestrictID);
-                if (busRestrict == null || busRestrict.IsDeleted == true)
+                BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(busAddDTO.BusDistrictID);
+                if (busDistrict == null || busDistrict.IsDeleted == true)
                 {
-                    return NotFound("No Bus Restrict with this ID");
+                    return NotFound("No Bus District with this ID");
                 }
             }
             if (busAddDTO.BusStatusID != null)
@@ -314,12 +314,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 }
             }
 
-            if (busPutDTO.BusRestrictID != null)
+            if (busPutDTO.BusDistrictID != null)
             {
-                BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(busPutDTO.BusRestrictID);
-                if (busRestrict == null || busRestrict.IsDeleted == true)
+                BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(busPutDTO.BusDistrictID);
+                if (busDistrict == null || busDistrict.IsDeleted == true)
                 {
-                    return NotFound("No Bus Restrict with this ID");
+                    return NotFound("No Bus District with this ID");
                 }
             }
             if (busPutDTO.BusStatusID != null)

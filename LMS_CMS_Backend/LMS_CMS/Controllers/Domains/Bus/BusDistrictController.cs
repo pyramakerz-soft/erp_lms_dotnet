@@ -14,13 +14,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class BusRestrictController : ControllerBase
+    public class BusDistrictController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
 
         IMapper mapper;
 
-        public BusRestrictController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public BusDistrictController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -32,13 +32,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Restricts" }
+            pages: new[] { "Busses", "Bus Districts" }
         )]
         public IActionResult Get()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<BusRestrict> busRestricts;
+            List<BusDistrict> busDistricts;
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
@@ -50,16 +50,16 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            busRestricts = Unit_Of_Work.busRestrict_Repository.FindBy(t => t.IsDeleted != true);
+            busDistricts = Unit_Of_Work.busDistrict_Repository.FindBy(t => t.IsDeleted != true);
 
-            if (busRestricts == null || busRestricts.Count == 0)
+            if (busDistricts == null || busDistricts.Count == 0)
             {
                 return NotFound();
             }
 
-            List<BusRestrictGetDTO> busRestrictsDTO = mapper.Map<List<BusRestrictGetDTO>>(busRestricts);
+            List<BusDistrictGetDTO> busDistrictsDTO = mapper.Map<List<BusDistrictGetDTO>>(busDistricts);
 
-            return Ok(busRestrictsDTO);
+            return Ok(busDistrictsDTO);
         }
 
         ///////////////////////////////////////////////////
@@ -67,7 +67,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpGet("id")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Restricts" }
+            pages: new[] { "Busses", "Bus Districts" }
         )]
         public IActionResult GetById(long id)
         {
@@ -75,7 +75,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (id == 0)
             {
-                return BadRequest("Enter Bus Restrict ID");
+                return BadRequest("Enter Bus District ID");
             }
 
             var userClaims = HttpContext.User.Claims;
@@ -88,22 +88,22 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(id);
+            BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(id);
 
-            if (busRestrict == null || busRestrict.IsDeleted == true)
+            if (busDistrict == null || busDistrict.IsDeleted == true)
             {
-                return NotFound("No bus restrict with this ID");
+                return NotFound("No bus District with this ID");
             }
 
-            BusRestrictGetDTO busRestrictDto = mapper.Map<BusRestrictGetDTO>(busRestrict);
-            return Ok(busRestrictDto);
+            BusDistrictGetDTO busDistrictDto = mapper.Map<BusDistrictGetDTO>(busDistrict);
+            return Ok(busDistrictDto);
         }
         ///////////////////////////////////////////////////
 
         //[HttpGet("DomainId")]
         //[Authorize_Endpoint_Attribute(
         //    allowedTypes: new[] { "pyramakerz", "employee" },
-        //    pages: new[] { "Busses", "Bus Restricts" }
+        //    pages: new[] { "Busses", "Bus Districts" }
         //)]
         //public IActionResult GetByDomainId(long id)
         //{
@@ -134,15 +134,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         //        return NotFound("No Domain with this Id");
         //    }
 
-        //    List<BusRestrict> BusRestrict = Unit_Of_Work.busRestrict_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-        //    if (BusRestrict == null || BusRestrict.Count == 0)
+        //    List<BusDistrict> BusDistrict = Unit_Of_Work.busDistrict_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
+        //    if (BusDistrict == null || BusDistrict.Count == 0)
         //    {
-        //        return NotFound("There are no bus Restricts in this domian");
+        //        return NotFound("There are no bus Districts in this domian");
         //    }
 
-        //    List<BusRestrictGetDTO> BusRestrictDTO = mapper.Map<List<BusRestrictGetDTO>>(BusRestrict);
+        //    List<BusDistrictGetDTO> BusDistrictDTO = mapper.Map<List<BusDistrictGetDTO>>(BusDistrict);
 
-        //    return Ok(BusRestrictDTO);
+        //    return Ok(BusDistrictDTO);
         //}
 
         ///////////////////////////////////////////////////
@@ -150,9 +150,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Restricts" }
+            pages: new[] { "Busses", "Bus Districts" }
         )]
-        public IActionResult Add(BusRestrictAddDTO NewRestrict)
+        public IActionResult Add(BusDistrictAddDTO NewDistrict)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -166,26 +166,26 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewRestrict == null)
+            if (NewDistrict == null)
             {
-                return BadRequest("Bus Restrict cannot be null");
+                return BadRequest("Bus District cannot be null");
             }
 
-            BusRestrict busRestrict = mapper.Map<BusRestrict>(NewRestrict);
+            BusDistrict busDistrict = mapper.Map<BusDistrict>(NewDistrict);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            busRestrict.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            busDistrict.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                busRestrict.InsertedByOctaId = userId;
+                busDistrict.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                busRestrict.InsertedByUserId = userId;
+                busDistrict.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.busRestrict_Repository.Add(busRestrict);
+            Unit_Of_Work.busDistrict_Repository.Add(busDistrict);
             Unit_Of_Work.SaveChanges();
-            return Ok(NewRestrict);
+            return Ok(NewDistrict);
 
         }
 
@@ -195,9 +195,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Busses", "Bus Restricts" }
+            pages: new[] { "Busses", "Bus Districts" }
         )]
-        public IActionResult Edit(BusRestrictEditDTO EditBusrestrict)
+        public IActionResult Edit(BusDistrictEditDTO EditBusDistrict)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -213,26 +213,26 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (EditBusrestrict == null)
+            if (EditBusDistrict == null)
             {
                 BadRequest();
             }
 
-            BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(EditBusrestrict.ID);
-            if (busRestrict == null || busRestrict.IsDeleted == true)
+            BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(EditBusDistrict.ID);
+            if (busDistrict == null || busDistrict.IsDeleted == true)
             {
-                return NotFound("No Bus Restrict with this ID");
+                return NotFound("No Bus District with this ID");
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Restrict");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Districts");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (busRestrict.InsertedByUserId != userId)
+                        if (busDistrict.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -240,33 +240,33 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 }
                 else
                 {
-                    return BadRequest("Bus Restricts page doesn't exist");
+                    return BadRequest("Bus Districts page doesn't exist");
                 }
             }
 
-            mapper.Map(EditBusrestrict, busRestrict);
+            mapper.Map(EditBusDistrict, busDistrict);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            busRestrict.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            busDistrict.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                busRestrict.UpdatedByOctaId = userId;
-                if (busRestrict.UpdatedByUserId != null)
+                busDistrict.UpdatedByOctaId = userId;
+                if (busDistrict.UpdatedByUserId != null)
                 {
-                    busRestrict.UpdatedByUserId = null;
+                    busDistrict.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                busRestrict.UpdatedByUserId = userId;
-                if (busRestrict.UpdatedByOctaId != null)
+                busDistrict.UpdatedByUserId = userId;
+                if (busDistrict.UpdatedByOctaId != null)
                 {
-                    busRestrict.UpdatedByOctaId = null;
+                    busDistrict.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.busRestrict_Repository.Update(busRestrict);
+            Unit_Of_Work.busDistrict_Repository.Update(busDistrict);
             Unit_Of_Work.SaveChanges();
-            return Ok(EditBusrestrict);
+            return Ok(EditBusDistrict);
         }
 
         ////////////////////////////////////////////////////////
@@ -275,7 +275,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Busses", "Bus Restricts" }
+            pages: new[] { "Busses", "Bus Districts" }
         )]
         public IActionResult Delete(long id)
         {
@@ -295,25 +295,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (id == 0)
             {
-                return BadRequest("Bus Restrict ID cannot be null.");
+                return BadRequest("Bus District ID cannot be null.");
             }
 
-            BusRestrict busRestrict = Unit_Of_Work.busRestrict_Repository.Select_By_Id(id);
-            if (busRestrict == null || busRestrict.IsDeleted == true)
+            BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(id);
+            if (busDistrict == null || busDistrict.IsDeleted == true)
             {
-                return NotFound("No Bus Restrict with this ID");
+                return NotFound("No Bus District with this ID");
             }
             else
             {
                 if (userTypeClaim == "employee")
                 {
-                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Restricts"); 
+                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Districts"); 
                     if (page != null)
                     {
                         Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                         if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                         {
-                            if (busRestrict.InsertedByUserId != userId)
+                            if (busDistrict.InsertedByUserId != userId)
                             {
                                 return Unauthorized();
                             }
@@ -321,31 +321,31 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                     }
                     else
                     {
-                        return BadRequest("Bus Restricts page doesn't exist");
+                        return BadRequest("Bus Districts page doesn't exist");
                     }
                 }
 
-                busRestrict.IsDeleted = true;
+                busDistrict.IsDeleted = true;
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-                busRestrict.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                busDistrict.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
                 if (userTypeClaim == "octa")
                 {
-                    busRestrict.DeletedByOctaId = userId;
-                    if (busRestrict.DeletedByUserId != null)
+                    busDistrict.DeletedByOctaId = userId;
+                    if (busDistrict.DeletedByUserId != null)
                     {
-                        busRestrict.DeletedByUserId = null;
+                        busDistrict.DeletedByUserId = null;
                     }
                 }
                 else if (userTypeClaim == "employee")
                 {
-                    busRestrict.DeletedByUserId = userId;
-                    if (busRestrict.DeletedByOctaId != null)
+                    busDistrict.DeletedByUserId = userId;
+                    if (busDistrict.DeletedByOctaId != null)
                     {
-                        busRestrict.DeletedByOctaId = null;
+                        busDistrict.DeletedByOctaId = null;
                     }
                 }
 
-                Unit_Of_Work.busRestrict_Repository.Update(busRestrict);
+                Unit_Of_Work.busDistrict_Repository.Update(busDistrict);
                 Unit_Of_Work.SaveChanges();
                 return Ok();
             }

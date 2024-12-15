@@ -29,7 +29,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Bus> Bus_Repository;
         GenericRepo<BusStudent> BusStudent_Repository;
         GenericRepo<BusType> BusType_Repository;
-        GenericRepo<BusRestrict> BusRestrict_Repository;
+        GenericRepo<BusDistrict> BusDistrict_Repository;
         GenericRepo<BusCategory> BusCategory_Repository;
         GenericRepo<BusStatus> BusStatus_Repository;
         GenericRepo<BusCompany> BusCompany_Repository;
@@ -206,15 +206,15 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
-        public GenericRepo<BusRestrict> busRestrict_Repository
+        public GenericRepo<BusDistrict> busDistrict_Repository
         {
             get
             {
-                if (BusRestrict_Repository == null)
+                if (BusDistrict_Repository == null)
                 {
-                    BusRestrict_Repository = new GenericRepo<BusRestrict>(db);
+                    BusDistrict_Repository = new GenericRepo<BusDistrict>(db);
                 }
-                return BusRestrict_Repository;
+                return BusDistrict_Repository;
             }
         }
         public GenericRepo<BusCategory> busCategory_Repository

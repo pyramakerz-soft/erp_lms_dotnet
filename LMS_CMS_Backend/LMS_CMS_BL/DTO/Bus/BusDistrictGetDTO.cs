@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.Bus
 {
-    public class BusRestrictGetDTO
+    public class BusDistrictGetDTO
     {
         public long ID { get; set; }
 

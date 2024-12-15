@@ -16,7 +16,7 @@ namespace LMS_CMS_BL.DTO.Bus
         public long Capacity { get; set; }
         public bool IsCapacityRestricted { get; set; }
         public long? BusTypeID { get; set; }
-        public long? BusRestrictID { get; set; }
+        public long? BusDistrictID { get; set; }
         public long? BusStatusID { get; set; }
         public long? DriverID { get; set; }
         public long? DriverAssistantID { get; set; }

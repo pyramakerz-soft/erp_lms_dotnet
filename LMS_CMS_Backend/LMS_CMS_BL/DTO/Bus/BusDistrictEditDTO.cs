@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LMS_CMS_DAL.Models.Domains;
 
-namespace LMS_CMS_DAL.Models.Domains.BusModule
+namespace LMS_CMS_BL.DTO.Bus
 {
-    public class BusRestrict : AuditableEntity
+    public class BusDistrictEditDTO
     {
-        [Key]
         public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
-
-        public ICollection<Bus> Buses { get; set; } = new HashSet<Bus>();
 
     }
 }

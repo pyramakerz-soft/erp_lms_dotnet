@@ -89,7 +89,6 @@ export class BusPrintNameTagComponent {
   }
 
   GetAllBus() {
-    console.log("get bus")
     this.BusServ.Get(this.DomainName).subscribe((data) => {
       this.BusData = data;
     })
@@ -100,7 +99,6 @@ export class BusPrintNameTagComponent {
     try {
       const data = await firstValueFrom(this.busStudentServ.GetbyBusId(busId, this.DomainName));
       this.busStudentData = data;
-      console.log(this.busStudentData);
     } catch (error) {
       this.busStudentData = [];
     }
@@ -110,7 +108,6 @@ export class BusPrintNameTagComponent {
     this.IsChoosenDomain = true;
     const selectedValue: number = Number((event.target as HTMLSelectElement).value);
     this.busId = selectedValue;
-    console.log(this.busId, this.DomainName)
     this.GetTableData(this.busId);
   }
 

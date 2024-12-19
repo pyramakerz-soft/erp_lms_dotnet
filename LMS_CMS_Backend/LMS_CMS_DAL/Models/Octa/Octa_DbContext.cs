@@ -25,9 +25,6 @@ namespace LMS_CMS_DAL.Models.Octa
                .HasIndex(p => p.Name)
                .IsUnique();
             modelBuilder.Entity<Octa>()
-               .HasIndex(p => p.Email)
-               .IsUnique();
-            modelBuilder.Entity<Octa>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
             modelBuilder.Entity<Page>()

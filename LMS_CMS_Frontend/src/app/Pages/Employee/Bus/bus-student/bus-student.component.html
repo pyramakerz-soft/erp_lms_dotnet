@@ -68,7 +68,7 @@
         <label for="Years" class="block mb-2 text-sm font-medium text-gray-900">Year</label>
         <select id="Years" (change)="getDataByAcademicYear($event)"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-            <option [value]="null"  selected >Select Year</option>
+            <option [value]="null" disabled selected hidden >Select Year</option>
             <option *ngFor="let domain of AcademicYearData" [value]="domain.name">
                 {{ domain.name }}
             </option>
@@ -231,7 +231,7 @@
                 <select
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
                 [disabled]="editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': editBusStudent}">
-                    <option [value]="null" disabled selected>Choose School</option>
+                    <option [value]="null" disabled selected hidden>Choose School</option>
                     <option *ngFor="let school of SchoolGroupByGradeGroupByClass" [value]="school.id">{{ school.name }}</option>
                     <option *ngIf="SchoolGroupByGradeGroupByClass.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -239,7 +239,7 @@
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2" for="grade" [ngClass]="{ 'text-gray-400': !selectedSchool || editBusStudent, 'primaryTxt': selectedSchool && !editBusStudent }">Choose Grade</label>
                 <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()" [disabled]="!selectedSchool || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editBusStudent }">
-                    <option [value]="null" disabled selected>Choose Grade</option>
+                    <option [value]="null" disabled selected hidden>Choose Grade</option>
                     <option *ngFor="let grade of filteredGrades" [value]="grade.id">{{ grade.name }}</option>
                     <option *ngIf="filteredGrades.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -247,7 +247,7 @@
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2" [ngClass]="{ 'text-gray-400': !selectedGrade || editBusStudent, 'primaryTxt': selectedGrade && !editBusStudent}" for="class">Choose Class</label>
                 <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="class" [(ngModel)]="selectedClass" (change)="onClassChange()" [disabled]="!selectedGrade || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedGrade || editBusStudent }">
-                    <option [value]="null" disabled selected>Choose Class</option>
+                    <option [value]="null" disabled selected hidden>Choose Class</option>
                     <option *ngFor="let classItem of filteredClasses" [value]="classItem.id">{{ classItem.name }}</option>
                     <option *ngIf="filteredClasses.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -257,7 +257,7 @@
                 <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student" 
                 [(ngModel)]="busStudent.studentID" [disabled]="!selectedClass || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedClass || editBusStudent }"
                 (ngModelChange)="onInputValueChange({ field: 'studentID', value: $event })">
-                    <option [value]="0" disabled selected>Choose Student</option>
+                    <option [value]="0" disabled selected hidden>Choose Student</option>
                     <option *ngFor="let stu of Students" [value]="stu.id">{{ stu.en_name }}</option>
                     <option *ngIf="Students.length === 0 && selectedClass" disabled selected>No Data Found</option>
                 </select>
@@ -268,7 +268,7 @@
                 <select 
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="busCategory" [(ngModel)]="busStudent.busCategoryID"
                 (ngModelChange)="onInputValueChange({ field: 'busCategoryID', value: $event })">
-                    <option [value]="null" disabled selected>Choose Bus Category</option>
+                    <option [value]="null" disabled selected hidden>Choose Bus Category</option>
                     <option *ngFor="let cat of BusCategories" [value]="cat.id">{{ cat.name }}</option>
                     <option *ngIf="BusCategories.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -279,7 +279,7 @@
                 <select 
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semester" [(ngModel)]="busStudent.semseterID"
                 (ngModelChange)="onInputValueChange({ field: 'semseterID', value: $event })">
-                    <option [value]="null" disabled selected>Choose Semester</option>
+                    <option [value]="null" disabled selected hidden>Choose Semester</option>
                     <option *ngFor="let semester of Semesters" [value]="semester.id">{{ semester.name }}</option>
                     <option *ngIf="Semesters.length === 0" disabled selected>No Data Found</option>
                 </select>

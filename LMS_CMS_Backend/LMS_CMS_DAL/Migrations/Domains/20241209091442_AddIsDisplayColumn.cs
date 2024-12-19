@@ -77,9 +77,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
             //    name: "IX_Class_GradeID",
             //    table: "Class");
 
-            //migrationBuilder.DropColumn(
-            //    name: "IsDisplay",
-            //    table: "Pages");
+            migrationBuilder.DropColumn(
+                name: "IsDisplay",
+                table: "Pages");
 
             //migrationBuilder.DropColumn(
             //    name: "SchoolID",

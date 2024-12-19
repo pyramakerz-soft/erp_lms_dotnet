@@ -34,6 +34,7 @@ export const navigateIfHaveSettingPageGuard: CanActivateFn = (route, state) => {
       return Array.isArray(accessiblePages) ? accessiblePages : [];
     }),
     switchMap((accessiblePages: any[]) => {
+      console.log(accessiblePages)
       const currentPage: string = route.routeConfig?.path || '';
       const baseRoute: string = currentPage.split('/')[0];
       const page = menuService.findByPageName(baseRoute, accessiblePages);

@@ -36,13 +36,13 @@ export const routes: Routes = [
         children: [
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }, 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
-            { path: "Bus Student/:domainName/:busId", component: BusStudentComponent, title: "Bus Student", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]}, 
+            { path: "Bus Students/:domainName/:busId", component: BusStudentComponent, title: "Bus Students", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]}, 
             { path: "Bus Types", component: BusTypesComponent, title: "Bus Type"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Status", component: BusStatusComponent, title: "Bus Status"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Districts", component: BusDistrictsComponent, title: "Bus Districts"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
-            { path: "Bus Name Tag", component: BusPrintNameTagComponent, title: "Bus Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
 
         ]
     },
@@ -71,13 +71,13 @@ export const routes: Routes = [
         canActivate:[noNavigateWithoutOctaLoginGuard, navigateIfOctaGuard ,navigateIfHaveSettingPageGuard], 
         children: [ 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
-            { path: "Bus Student/:domainName/:busId", component: BusStudentComponent, title: "Bus Student", canActivate:[noNavigateWithoutLoginGuard] },    
+            { path: "Bus Students/:domainName/:busId", component: BusStudentComponent, title: "Bus Students", canActivate:[noNavigateWithoutLoginGuard] },    
             { path: "Bus Types", component: BusTypesComponent, title: "Bus Type" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
             { path: "Bus Status", component: BusStatusComponent, title: "Bus Status" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
             { path: "Bus Districts", component: BusDistrictsComponent, title: "Bus Districts" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
             { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},    
             { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
-            { path: "Bus Name Tag", component: BusPrintNameTagComponent, title: "Bus Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
 

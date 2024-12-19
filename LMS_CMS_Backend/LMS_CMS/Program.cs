@@ -109,10 +109,10 @@ namespace LMS_CMS
 
                 option.AddPolicy("AllowSpecificOrigin", builder =>
                 {
-                    builder.AllowAnyOrigin() // Replace with your Angular app URL
-                           .AllowAnyMethod() // Allow all HTTP methods
-                           .AllowAnyHeader() // Allow all headers
-                           .WithHeaders( "content-type", "Domain-Name"); // Specifically allow 'domain-name'
+                    builder.AllowAnyOrigin()  
+                           .AllowAnyMethod()  
+                           .AllowAnyHeader()  
+                           .WithHeaders( "content-type", "Domain-Name");  
                 });
             });
 

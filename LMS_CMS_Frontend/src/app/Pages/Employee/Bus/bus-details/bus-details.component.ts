@@ -309,8 +309,7 @@ export class BusDetailsComponent {
   }
 
   MoveToBusStudent(busId:number){
-    console.log('Employee/Bus Student/' + this.DomainName + '/' + busId)
-    this.router.navigateByUrl('Employee/Bus Student/' + this.DomainName + '/' + busId);
+    this.router.navigateByUrl('Employee/Bus Students/' + this.DomainName + '/' + busId);
   }
 
   IsAllowDelete(InsertedByID: number) {

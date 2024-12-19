@@ -248,7 +248,7 @@
                 <label class="mb-2 primaryTxt" for="type">Type</label>
                 <select [(ngModel)]="bus.busTypeID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="type">
-                    <option *ngIf="!bus.busTypeID" [value]="null" disabled selected>{{ bus.busTypeName || 'Select Type' }}</option>
+                    <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Type' }}</option>
                     <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
                     <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -257,7 +257,7 @@
                 <label class="mb-2 primaryTxt" for="District">District</label>
                 <select [(ngModel)]="bus.busDistrictID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="District" >
-                    <option *ngIf="!bus.busDistrictID" [value]="null" disabled selected>{{ bus.busDistrictName || 'Select District' }}</option>
+                    <option *ngIf="!bus.busDistrictID" [value]="null" disabled selected hidden>{{ bus.busDistrictName || 'Select District' }}</option>
                     <option *ngFor="let District of BusDistrict" [value]="District.id">{{ District.name }}</option>
                     <option *ngIf="BusDistrict.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -266,7 +266,7 @@
                 <label class="mb-2 primaryTxt" for="status">Status</label>
                 <select [(ngModel)]="bus.busStatusID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="status" >
-                <option *ngIf="!bus.busStatusID" [value]="null" disabled selected>{{ bus.busStatusName || 'Select Status' }}</option>
+                <option *ngIf="!bus.busStatusID" [value]="null" disabled selected hidden>{{ bus.busStatusName || 'Select Status' }}</option>
                     <option *ngFor="let status of BusStatus" [value]="status.id">{{ status.name }}</option>
                     <option *ngIf="BusStatus.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -283,7 +283,7 @@
                 <label class="mb-2 primaryTxt" for="driver">Driver</label>
                 <select [(ngModel)]="bus.driverID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="driver" >
-                   <option *ngIf="!bus.driverID" [value]="null" disabled selected>{{ bus.driverName || 'Select Status' }}</option>
+                   <option *ngIf="!bus.driverID" [value]="null" disabled selected hidden>{{ bus.driverName || 'Select Status' }}</option>
                     <option *ngFor="let driver of BusDriver" [value]="driver.id">{{ driver.en_name }}</option>
                     <option *ngIf="BusDriver.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -292,7 +292,7 @@
                 <label class="mb-2 primaryTxt" for="assistant">Driver Assistante</label>
                 <select [(ngModel)]="bus.driverAssistantID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="assistant" >
-                    <option [value]="null" disabled selected>{{ bus.driverAssistantName || 'Select driver Assistant Name' }}</option>
+                    <option [value]="null" disabled selected hidden>{{ bus.driverAssistantName || 'Select driver Assistant Name' }}</option>
                     <option *ngFor="let assistant of BusDriverAssistant" [value]="assistant.id">{{assistant.en_name}}</option>
                     <option *ngIf="BusDriverAssistant.length === 0" disabled selected>No Data Found</option>
                 </select>
@@ -301,7 +301,7 @@
                 <label class="mb-2 primaryTxt" for="company">Company</label>
                 <select [(ngModel)]="bus.busCompanyID"
                   class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="company" >
-                  <option [value]="null" disabled selected>{{ bus.busCompanyName || 'Select Company' }}</option>
+                  <option [value]="null" disabled selected hidden>{{ bus.busCompanyName || 'Select Company' }}</option>
                   <option *ngFor="let company of BusCompany" [value]="company.id">{{company.name}}</option>
                   <option *ngIf="BusCompany.length === 0" disabled selected>No Data Found</option>
                 </select>

@@ -17,10 +17,10 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string Name { get; set; }
         public int Number { get; set; }
         [ForeignKey("Floor")]
-        public int FloorID { get; set; }
+        public long FloorID { get; set; }
         public Floor Floor { get; set; }
         [ForeignKey("Grade")]
-        public int GradeID { get; set; }
+        public long GradeID { get; set; }
         public Grade Grade { get; set; }
 
     }

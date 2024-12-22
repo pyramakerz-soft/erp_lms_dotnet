@@ -17,7 +17,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string Name { get; set; }
        public string  Address { get; set; }
         [ForeignKey("SchoolType")]
-        public int SchoolTypeID { get; set; }
+        public long SchoolTypeID { get; set; }
         public SchoolType SchoolType { get; set; }
         public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();

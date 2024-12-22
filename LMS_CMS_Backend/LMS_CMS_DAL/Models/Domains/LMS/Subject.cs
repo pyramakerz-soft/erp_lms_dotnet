@@ -28,11 +28,11 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public int NumberOfSessionPerWeek { get; set; }
 
         [ForeignKey("Grade")]
-        public int GradeID { get; set; }
+        public long GradeID { get; set; }
         public Grade Grade { get; set; }
 
         [ForeignKey("SubjectCategory")]
-        public string SubjectCategoryID { get; set; }
+        public long SubjectCategoryID { get; set; }
         public SubjectCategory SubjectCategory { get; set; }
 
 

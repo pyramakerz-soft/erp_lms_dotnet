@@ -45,6 +45,13 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<ViolationsModel> Violations_Repository;
         GenericRepo<EmployeeAttachment> EmployeeAttachment_Repository;
         GenericRepo<EmployeeTypeViolation> EmployeeTypeViolation_Repository;
+        GenericRepo<Subject> Subject_Repository;
+        GenericRepo<SubjectCategory> SubjectCategory_Repository;
+        GenericRepo<Building> Building_Repository;
+        GenericRepo<Floor> Floor_Repository;
+        GenericRepo<Section> Section_Repository;
+        GenericRepo<SchoolType> SchoolType_Repository;
+        GenericRepo<Classroom> Classroom_Repository;
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -362,6 +369,85 @@ namespace LMS_CMS_BL.UOW
                     EmployeeTypeViolation_Repository = new GenericRepo<EmployeeTypeViolation>(db);
                 }
                 return EmployeeTypeViolation_Repository;
+            }
+        }
+        public GenericRepo<Floor> floor_Repository
+        {
+            get
+            {
+                if (Floor_Repository == null)
+                {
+                    Floor_Repository = new GenericRepo<Floor>(db);
+                }
+                return Floor_Repository;
+            }
+        }
+
+        public GenericRepo<Building> building_Repository
+        {
+            get
+            {
+                if (Building_Repository == null)
+                {
+                    Building_Repository = new GenericRepo<Building>(db);
+                }
+                return Building_Repository;
+            }
+        }
+
+        public GenericRepo<Section> section_Repository
+        {
+            get
+            {
+                if (Section_Repository == null)
+                {
+                    Section_Repository = new GenericRepo<Section>(db);
+                }
+                return Section_Repository;
+            }
+        }
+        public GenericRepo<SubjectCategory> subjectCategory_Repository
+        {
+            get
+            {
+                if (SubjectCategory_Repository == null)
+                {
+                    SubjectCategory_Repository = new GenericRepo<SubjectCategory>(db);
+                }
+                return SubjectCategory_Repository;
+            }
+        }
+        public GenericRepo<Subject> subject_Repository
+        {
+            get
+            {
+                if (Subject_Repository == null)
+                {
+                    Subject_Repository = new GenericRepo<Subject>(db);
+                }
+                return Subject_Repository;
+            }
+        }
+        public GenericRepo<SchoolType> schoolType_Repository
+        {
+            get
+            {
+                if (SchoolType_Repository == null)
+                {
+                    SchoolType_Repository = new GenericRepo<SchoolType>(db);
+                }
+                return SchoolType_Repository;
+            }
+        }
+        public GenericRepo<Classroom> classroom_Repository
+        {
+            get
+            {
+                if (Classroom_Repository == null)
+                {
+                    Classroom_Repository = new GenericRepo<Classroom>(db);
+                }
+                return Classroom_Repository;
             }
         }
 

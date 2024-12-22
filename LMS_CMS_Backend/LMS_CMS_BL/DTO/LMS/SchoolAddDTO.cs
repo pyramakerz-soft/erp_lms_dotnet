@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.LMS
 {
-    public class School_GetDTO
+    public class SchoolAddDTO
     {
-        public long ID { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
-        public string SchoolTypeName { get; set; }
+        public long SchoolTypeID { get; set; }
     }
 }

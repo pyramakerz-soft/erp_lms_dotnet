@@ -2,6 +2,7 @@
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_DAL.Models.Domains.Violations;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ViolationsModel = LMS_CMS_DAL.Models.Domains.Violations.Violations;
 
 namespace LMS_CMS_BL.UOW
 {
@@ -40,6 +42,9 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Class> Class_Repository;
         GenericRepo<Grade> Grade_Repository;
         GenericRepo<StudentAcademicYear> StudentAcademicYear_Repository;
+        GenericRepo<ViolationsModel> Violations_Repository;
+        GenericRepo<EmployeeAttachment> EmployeeAttachment_Repository;
+        GenericRepo<EmployeeTypeViolation> EmployeeTypeViolation_Repository;
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -321,6 +326,42 @@ namespace LMS_CMS_BL.UOW
                     StudentAcademicYear_Repository = new GenericRepo<StudentAcademicYear>(db);
                 }
                 return StudentAcademicYear_Repository;
+            }
+        }
+
+        public GenericRepo<ViolationsModel> violations_Repository
+        {
+            get
+            {
+                if (Violations_Repository == null)
+                {
+                    Violations_Repository = new GenericRepo<ViolationsModel>(db);
+                }
+                return Violations_Repository;
+            }
+        }
+
+        public GenericRepo<EmployeeAttachment> employeeAttachment_Repository
+        {
+            get
+            {
+                if (EmployeeAttachment_Repository == null)
+                {
+                    EmployeeAttachment_Repository = new GenericRepo<EmployeeAttachment>(db);
+                }
+                return EmployeeAttachment_Repository;
+            }
+        }
+
+        public GenericRepo<EmployeeTypeViolation> employeeTypeViolation_Repository
+        {
+            get
+            {
+                if (EmployeeTypeViolation_Repository == null)
+                {
+                    EmployeeTypeViolation_Repository = new GenericRepo<EmployeeTypeViolation>(db);
+                }
+                return EmployeeTypeViolation_Repository;
             }
         }
 

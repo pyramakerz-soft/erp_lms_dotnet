@@ -14,5 +14,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
+        public ICollection<School> Schools { get; set; } = new HashSet<School>();
+
     }
 }

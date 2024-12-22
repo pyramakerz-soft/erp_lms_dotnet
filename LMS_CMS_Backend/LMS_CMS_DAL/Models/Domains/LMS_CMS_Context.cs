@@ -1,11 +1,14 @@
 ﻿using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_DAL.Models.Domains.Violations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ViolationsModel = LMS_CMS_DAL.Models.Domains.Violations.Violations;
+
 namespace LMS_CMS_DAL.Models.Domains
 {
     public partial class LMS_CMS_Context : DbContext
@@ -30,6 +33,9 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<StudentAcademicYear> StudentAcademicYear { get; set; }
         public DbSet<Class> Class { get; set; }
         public DbSet<Grade> Grade { get; set; }
+        public DbSet<EmployeeAttachment> EmployeeAttachment { get; set; }
+        public DbSet<ViolationsModel> Violations { get; set; }
+        public DbSet<EmployeeTypeViolation> EmployeeTypeViolation { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -81,6 +87,10 @@ namespace LMS_CMS_DAL.Models.Domains
 
             modelBuilder.Entity<Grade>()
                 .HasIndex(p => p.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<EmployeeAttachment>()
+                .HasIndex(p => p.Link)
                 .IsUnique();
 
             ///////////////////////// OnDelete: /////////////////////////

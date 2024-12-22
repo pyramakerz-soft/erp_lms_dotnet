@@ -1,4 +1,5 @@
 ﻿using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -31,3 +32,4 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public Semester Semester { get; set; }
     }
 }
+

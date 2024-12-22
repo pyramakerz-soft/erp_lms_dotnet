@@ -16,11 +16,14 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
-        [ForeignKey("School")]
-        public long SchoolID { get; set; }
-
-        public School School { get; set; }
+        [ForeignKey("Section")]
+        public long SectionID { get; set; }
+        public Section Section { get; set; }
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
         public ICollection<Class> Classes { get; set; } = new HashSet<Class>();
+        public ICollection<Subject> Subjects { get; set; } = new HashSet<Subject>();
+        public ICollection<Classroom> Classrooms { get; set; } = new HashSet<Classroom>();
+
+
     }
 }

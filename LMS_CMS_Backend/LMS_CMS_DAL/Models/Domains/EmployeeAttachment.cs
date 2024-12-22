@@ -6,20 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models.Domains.LMS
+namespace LMS_CMS_DAL.Models.Domains
 {
-    public class Building
+    public class EmployeeAttachment
     {
         [Key]
         public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
+        public string Link { get; set; }
+        [ForeignKey("Employee")]
+        public long EmployeeID { get; set; }
 
-        [ForeignKey("school")]
-        public int SchoolID { get; set; }
-        public School school { get; set; }
-        public ICollection<Floor> Floors { get; set; } = new HashSet<Floor>();
-
+        public Employee Employee { get; set; }
     }
 }

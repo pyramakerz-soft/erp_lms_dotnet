@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace LMS_CMS_DAL.Models.Domains.BusModule
 {
     public class BusStudent : AuditableEntity
     {
+        [Key]
         public long ID { get; set; }
         [ForeignKey("Bus")]
         public long BusID { get; set; }

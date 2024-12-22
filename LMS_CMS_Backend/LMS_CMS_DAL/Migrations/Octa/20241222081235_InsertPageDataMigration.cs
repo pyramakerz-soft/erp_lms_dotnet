@@ -2,16 +2,16 @@
 
 #nullable disable
 
-namespace LMS_CMS_DAL.Migrations.Domains
+namespace LMS_CMS_DAL.Migrations.Octa
 {
     /// <inheritdoc />
-    public partial class Insert_Page_Data : Migration
+    public partial class InsertPageDataMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-                INSERT INTO Pages(ID, en_name, ar_name, Page_ID, IsDisplay) VALUES
+                INSERT INTO Page(ID, en_name, ar_name, Page_ID, IsDisplay) VALUES
                 (1, 'Busses', N'الحافلات', NULL, 1),
                 (2, 'Bus Details', N'تفاصيل الحافلات', 1, 1),
                 (3, 'Bus Types', N'أنواع الحافلات', 1, 1),
@@ -28,7 +28,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DELETE FROM Pages WHERE ID IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)");
+            migrationBuilder.Sql("DELETE FROM Page WHERE ID IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)");
         }
     }
 }

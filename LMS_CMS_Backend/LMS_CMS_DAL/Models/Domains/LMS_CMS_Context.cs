@@ -13,12 +13,12 @@ namespace LMS_CMS_DAL.Models.Domains
 {
     public partial class LMS_CMS_Context : DbContext
     {
-        public DbSet<Parent> Parents { get; set; }
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<School> Schools { get; set; }
-        public DbSet<Page> Pages { get; set; }
+        public DbSet<Parent> Parent { get; set; }
+        public DbSet<Student> Student { get; set; }
+        public DbSet<Employee> Employee { get; set; }
+        public DbSet<Role> Role { get; set; }
+        public DbSet<School> School { get; set; }
+        public DbSet<Page> Page { get; set; }
         public DbSet<Role_Detailes> Role_Detailes { get; set; }
         public DbSet<EmployeeType> EmployeeType { get; set; }
         public DbSet<AcademicYear> AcademicYear { get; set; }
@@ -36,7 +36,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<EmployeeAttachment> EmployeeAttachment { get; set; }
         public DbSet<ViolationsModel> Violations { get; set; }
         public DbSet<EmployeeTypeViolation> EmployeeTypeViolation { get; set; }
-
         public DbSet<Subject> Subject { get; set; }
         public DbSet<SubjectCategory> SubjectCategory { get; set; }
         public DbSet<Floor> Floor { get; set; }
@@ -280,12 +279,6 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasForeignKey(p => p.SemesterID)
                  .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Bus>()
-                .HasOne(b => b.DeletedByEmployee)
-                .WithMany()
-                .HasForeignKey(b => b.DeletedByUserId)
-                .OnDelete(DeleteBehavior.SetNull);
-
             modelBuilder.Entity<Subject>()
                  .HasOne(p => p.Grade)
                  .WithMany(p => p.Subjects)
@@ -345,6 +338,13 @@ namespace LMS_CMS_DAL.Models.Domains
                  .WithMany(p => p.Schools)
                  .HasForeignKey(p => p.SchoolTypeID)
                  .OnDelete(DeleteBehavior.Restrict);
+
+            ///////////////////////// Exception: /////////////////////////
+            modelBuilder.Entity<Bus>()
+                .HasOne(b => b.DeletedByEmployee)
+                .WithMany()
+                .HasForeignKey(b => b.DeletedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

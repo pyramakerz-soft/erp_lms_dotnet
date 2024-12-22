@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_BL.DTO
+namespace LMS_CMS_BL.DTO.LMS
 {
-    public class School_GetDTO
+    public class Grade_GetDTO
     {
         public long ID { get; set; }
         public string Name { get; set; }
-        public List<Grade_GetDTO> Grades { get; set; } = new List<Grade_GetDTO>();
+        public List<Class_GetDTO> Classes { get; set; } = new List<Class_GetDTO>();
     }
 }

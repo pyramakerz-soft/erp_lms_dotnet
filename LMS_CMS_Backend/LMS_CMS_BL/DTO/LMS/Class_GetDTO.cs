@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_BL.DTO
+namespace LMS_CMS_BL.DTO.LMS
 {
     public class Class_GetDTO
     {

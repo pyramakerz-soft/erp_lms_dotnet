@@ -24,6 +24,5 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<Section> Sections { get; set; } = new HashSet<Section>();
         public ICollection<Building> Buildings { get; set; } = new HashSet<Building>();
 
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.UOW;
-using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

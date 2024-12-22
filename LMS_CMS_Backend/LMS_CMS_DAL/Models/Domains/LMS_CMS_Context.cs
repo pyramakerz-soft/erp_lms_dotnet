@@ -1,4 +1,5 @@
 ﻿using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

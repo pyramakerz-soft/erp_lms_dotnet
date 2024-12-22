@@ -65,6 +65,10 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
 
+            modelBuilder.Entity<Employee>()
+                .HasIndex(p => p.Mobile)
+                .IsUnique();
+
             modelBuilder.Entity<Page>()
                 .HasIndex(p => p.ar_name)
                 .IsUnique();
@@ -98,8 +102,7 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasOne(p => p.Parent)
                  .WithMany(p => p.ChildPages)
                  .HasForeignKey(p => p.Page_ID)
-                 .OnDelete(DeleteBehavior.Restrict);
-
+                 .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Employee>()
                  .HasOne(p => p.Role)
@@ -237,6 +240,24 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasOne(p => p.Semester)
                  .WithMany(p => p.StudentAcademicYears)
                  .HasForeignKey(p => p.SemesterID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<EmployeeTypeViolation>()
+                 .HasOne(p => p.EmployeeType)
+                 .WithMany(p => p.EmployeeTypeViolations)
+                 .HasForeignKey(p => p.EmployeeTypeID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<EmployeeTypeViolation>()
+                 .HasOne(p => p.Violation)
+                 .WithMany(p => p.EmployeeTypeViolations)
+                 .HasForeignKey(p => p.ViolationID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<EmployeeAttachment>()
+                 .HasOne(p => p.Employee)
+                 .WithMany(p => p.EmployeeAttachments)
+                 .HasForeignKey(p => p.EmployeeID)
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Bus>()

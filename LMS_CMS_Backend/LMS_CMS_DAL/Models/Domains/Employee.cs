@@ -27,7 +27,12 @@ namespace LMS_CMS_DAL.Models.Domains
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters.")]
         public string Password { get; set; }
-
+        public string Mobile { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public string LicenseNumber { get; set; }
+        public string ExpireDate { get; set; }
+        public string Address { get; set; }
         [ForeignKey("Role")]
         [Required]
         public long Role_ID { get; set; }

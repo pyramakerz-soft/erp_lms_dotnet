@@ -22,17 +22,17 @@ namespace LMS_CMS_DAL.Models.Domains
         public string en_name { get; set; }
 
         [StringLength(100, ErrorMessage = "لا يمكن أن يكون الاسم أطول من 100 حرف")]
-        public string ar_name { get; set; }
+        public string? ar_name { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters.")]
         public string Password { get; set; }
-        public string Mobile { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
-        public string LicenseNumber { get; set; }
-        public string ExpireDate { get; set; }
-        public string Address { get; set; }
+        public string? Mobile { get; set; }
+        public string? Phone { get; set; }
+        public string? Email { get; set; }
+        public string? LicenseNumber { get; set; }
+        public string? ExpireDate { get; set; }
+        public string? Address { get; set; }
         [ForeignKey("Role")]
         [Required]
         public long Role_ID { get; set; }

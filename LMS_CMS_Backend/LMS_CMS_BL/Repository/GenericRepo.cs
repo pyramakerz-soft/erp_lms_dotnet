@@ -31,6 +31,11 @@ namespace LMS_CMS_BL.Repository
         {
             return this.db;
         }
+        
+        public Octa_DbContext OctaDatabase()
+        {
+            return this.octa_db;
+        }
 
         public List<TEntity> Select_All()
         {

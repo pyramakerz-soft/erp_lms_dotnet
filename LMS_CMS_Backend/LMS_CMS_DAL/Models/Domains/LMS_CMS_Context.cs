@@ -47,10 +47,6 @@ namespace LMS_CMS_DAL.Models.Domains
 
 
 
-
-
-
-
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
             : base(options)
         {
@@ -104,6 +100,38 @@ namespace LMS_CMS_DAL.Models.Domains
 
             modelBuilder.Entity<EmployeeAttachment>()
                 .HasIndex(p => p.Link)
+                .IsUnique();
+
+            modelBuilder.Entity<Subject>()
+                .HasIndex(p => p.ID)
+                .IsUnique();
+
+            modelBuilder.Entity<SubjectCategory>()
+                .HasIndex(p => p.ID)
+                .IsUnique();
+
+            modelBuilder.Entity<Floor>()
+                .HasIndex(p => p.ID)
+                .IsUnique();
+
+            modelBuilder.Entity<Building>()
+                .HasIndex(p => p.ID)
+                .IsUnique();
+
+            modelBuilder.Entity<Section>()
+                .HasIndex(p => p.ID)
+                .IsUnique();
+
+            modelBuilder.Entity<Section>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Classroom>()
+                .HasIndex(p => p.ID)
+                .IsUnique();
+
+            modelBuilder.Entity<SchoolType>()
+                .HasIndex(p => p.ID)
                 .IsUnique();
 
             ///////////////////////// OnDelete: /////////////////////////
@@ -257,6 +285,66 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany()
                 .HasForeignKey(b => b.DeletedByUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Subject>()
+                 .HasOne(p => p.Grade)
+                 .WithMany(p => p.Subjects)
+                 .HasForeignKey(p => p.GradeID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Subject>()
+                 .HasOne(p => p.SubjectCategory)
+                 .WithMany(p => p.Subjects)
+                 .HasForeignKey(p => p.SubjectCategoryID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Floor>()
+                 .HasOne(p => p.building)
+                 .WithMany(p => p.Floors)
+                 .HasForeignKey(p => p.buildingID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Building>()
+                 .HasOne(p => p.school)
+                 .WithMany(p => p.Buildings)
+                 .HasForeignKey(p => p.SchoolID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Section>()
+                 .HasOne(p => p.school)
+                 .WithMany(p => p.Sections)
+                 .HasForeignKey(p => p.SchoolID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Grade>()
+                 .HasOne(p => p.Section)
+                 .WithMany(p => p.Grades)
+                 .HasForeignKey(p => p.SectionID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Classroom>()
+                 .HasOne(p => p.Grade)
+                 .WithMany(p => p.Classrooms)
+                 .HasForeignKey(p => p.GradeID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Classroom>()
+                 .HasOne(p => p.Floor)
+                 .WithMany(p => p.Classrooms)
+                 .HasForeignKey(p => p.FloorID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Semester>()
+                 .HasOne(p => p.AcademicYear)
+                 .WithMany(p => p.Semesters)
+                 .HasForeignKey(p => p.AcademicYearID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<School>()
+                 .HasOne(p => p.SchoolType)
+                 .WithMany(p => p.Schools)
+                 .HasForeignKey(p => p.SchoolTypeID)
+                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

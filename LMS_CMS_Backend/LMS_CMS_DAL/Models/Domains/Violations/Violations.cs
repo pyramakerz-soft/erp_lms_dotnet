@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.Violations
 {
-    public class Violations
+    public class Violations : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

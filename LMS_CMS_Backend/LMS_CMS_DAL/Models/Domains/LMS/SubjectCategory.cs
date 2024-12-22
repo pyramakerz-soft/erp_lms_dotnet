@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.LMS
 {
-    public class SubjectCategory
+    public class SubjectCategory : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

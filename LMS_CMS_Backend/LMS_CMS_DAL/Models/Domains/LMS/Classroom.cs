@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.LMS
 {
-    public class Classroom
+    public class Classroom : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

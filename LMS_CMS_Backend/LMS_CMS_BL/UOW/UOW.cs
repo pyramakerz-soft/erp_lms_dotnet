@@ -54,7 +54,6 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Classroom> Classroom_Repository;
 
 
-
         public UOW(Octa_DbContext octa_Db)
         {
             this.octa_Db = octa_Db;

@@ -17,7 +17,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string Name { get; set; }
 
         [ForeignKey("school")]
-        public int SchoolID { get; set; }
+        public long SchoolID { get; set; }
         public School school { get; set; }
         public ICollection<Floor> Floors { get; set; } = new HashSet<Floor>();
 

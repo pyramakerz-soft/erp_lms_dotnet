@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models.Domains
+namespace LMS_CMS_DAL.Models.Domains.LMS
 {
     public class School : AuditableEntity
     {
@@ -15,9 +15,15 @@ namespace LMS_CMS_DAL.Models.Domains
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "School cannot be longer than 100 characters.")]
         public string Name { get; set; }
-
+       public string  Address { get; set; }
+        [ForeignKey("SchoolType")]
+        public int SchoolTypeID { get; set; }
+        public SchoolType SchoolType { get; set; }
         public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
-        public ICollection<Grade> Grades { get; set; } = new HashSet<Grade>();
+        public ICollection<Section> Sections { get; set; } = new HashSet<Section>();
+        public ICollection<Building> Buildings { get; set; } = new HashSet<Building>();
+
+
     }
 }

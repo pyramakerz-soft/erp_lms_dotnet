@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.LMS;
 
-namespace LMS_CMS_DAL.Models.Domains
+namespace LMS_CMS_DAL.Models.Domains.LMS
 {
     public class Semester : AuditableEntity
     {
@@ -16,6 +17,8 @@ namespace LMS_CMS_DAL.Models.Domains
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
+        public string DateFrom { get; set; }
+        public string DateTo { get; set; }
         [ForeignKey("AcademicYear")]
 
         public long? AcademicYearID { get; set; }

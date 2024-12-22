@@ -1,4 +1,4 @@
-﻿using LMS_CMS_DAL.Models.Domains;
+﻿using LMS_CMS_DAL.Models.Domains.LMS;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,5 @@
 ﻿using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Migrations.Domains;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -60,6 +61,67 @@ namespace LMS_CMS_PL.Controllers.Octa
             LMS_CMS_DAL.Models.Octa.Octa octas = _Unit_Of_Work.octa_Repository.Select_By_Id_Octa(Id);
 
             return Ok(octas);
+        }
+
+        [HttpPost]
+        public IActionResult Add(LMS_CMS_DAL.Models.Octa.Octa newAcc)
+        {
+            var userClaims = HttpContext.User.Claims;
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            if (userTypeClaim == null)
+            {
+                return Unauthorized("User Type claim not found.");
+            }
+
+            if (userTypeClaim != "octa")
+            {
+                return Unauthorized("Access Denied");
+            }
+
+             _Unit_Of_Work.octa_Repository.Add_Octa(newAcc);
+            _Unit_Of_Work.SaveOctaChanges();
+            return Ok(newAcc);
+        }
+
+        [HttpPut]
+        public IActionResult Edit(LMS_CMS_DAL.Models.Octa.Octa newAcc)
+        {
+            var userClaims = HttpContext.User.Claims;
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            if (userTypeClaim == null)
+            {
+                return Unauthorized("User Type claim not found.");
+            }
+
+            if (userTypeClaim != "octa")
+            {
+                return Unauthorized("Access Denied");
+            }
+
+            _Unit_Of_Work.octa_Repository.Update_Octa(newAcc);
+            _Unit_Of_Work.SaveOctaChanges();
+            return Ok(newAcc);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult delete(long id)
+        {
+            var userClaims = HttpContext.User.Claims;
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            if (userTypeClaim == null)
+            {
+                return Unauthorized("User Type claim not found.");
+            }
+
+            if (userTypeClaim != "octa")
+            {
+                return Unauthorized("Access Denied");
+            }
+
+            LMS_CMS_DAL.Models.Octa.Octa octas = _Unit_Of_Work.octa_Repository.Select_By_Id_Octa(id);
+            _Unit_Of_Work.octa_Repository.Delete_Octa(id);
+            _Unit_Of_Work.SaveOctaChanges();
+            return Ok();
         }
 
     }

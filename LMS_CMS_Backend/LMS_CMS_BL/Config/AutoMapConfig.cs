@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Bus;
+using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
@@ -97,6 +98,17 @@ namespace LMS_CMS_BL.Config
             CreateMap<AcademicYear, AcademicYearGet>();
             CreateMap<AcademicYearGet, AcademicYear>();
 
+            CreateMap<School, School_GetDTO>()
+                 .ForMember(dest => dest.SchoolTypeName, opt => opt.MapFrom(src => src.SchoolType.Name));
+            CreateMap<School_GetDTO, School>();
+
+            CreateMap<School, SchoolAddDTO>()
+                .ForMember(dest => dest.SchoolTypeID, opt => opt.MapFrom(src => src.SchoolType.ID));
+            CreateMap<SchoolAddDTO, School>();
+
+            CreateMap<School, SchoolEditDTO>()
+                .ForMember(dest => dest.SchoolTypeID, opt => opt.MapFrom(src => src.SchoolType.ID));
+            CreateMap<SchoolEditDTO, School>();
 
         }
     }

@@ -1,5 +1,4 @@
-﻿using LMS_CMS_DAL.Models.Domains;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

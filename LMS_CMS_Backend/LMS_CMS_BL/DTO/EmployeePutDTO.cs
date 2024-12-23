@@ -1,17 +1,17 @@
-﻿using System;
+﻿using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LMS_CMS_DAL.Models.Domains.BusModule;
 
-namespace LMS_CMS_DAL.Models.Domains
+namespace LMS_CMS_BL.DTO
 {
-    public class Employee : AuditableEntity
+    public class EmployeePutDTO
     {
-        [Key]
         public long ID { get; set; }
         [Required(ErrorMessage = "User_Name is required")]
         [StringLength(100, ErrorMessage = "Username cannot be longer than 100 characters.")]
@@ -33,26 +33,12 @@ namespace LMS_CMS_DAL.Models.Domains
         public string? LicenseNumber { get; set; }
         public string? ExpireDate { get; set; }
         public string? Address { get; set; }
-
-
-        [ForeignKey("Role")]
         [Required]
         public long Role_ID { get; set; }
-        public Role Role { get; set; }
-
-
-        [ForeignKey("BusCompany")]
+        [Required]
         public long? BusCompanyID { get; set; }
-        public BusCompany? BusCompany { get; set; }
-
-
-        [ForeignKey("EmployeeType")]
+        [Required]
         public long EmployeeTypeID { get; set; }
-        public EmployeeType EmployeeType { get; set; }
 
-
-        public ICollection<Bus> DrivenBuses { get; set; } = new HashSet<Bus>();
-        public ICollection<Bus> DriverAssistant { get; set; } = new HashSet<Bus>();
-        public ICollection<EmployeeAttachment> EmployeeAttachments { get; set; } = new HashSet<EmployeeAttachment>();
     }
 }

@@ -144,5 +144,10 @@ namespace LMS_CMS_BL.Repository
         {
             return octa_db.Set<TEntity>().FirstOrDefault(predicate);
         }
+
+        public List<TEntity> FindBy_Octa(Expression<Func<TEntity, bool>> predicate)
+        {
+            return octa_db.Set<TEntity>().Where(predicate).ToList();
+        }
     }
 }

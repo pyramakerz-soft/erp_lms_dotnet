@@ -1,5 +1,6 @@
 ﻿using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +22,12 @@ namespace LMS_CMS_PL.Services
             _configuration = configuration;
         }
 
-        public async Task AddDomainAndSetupDatabase(string domainName)
+        public async Task AddDomainAndSetupDatabase(string domainName, long userId)
         {
             string connectionString = BuildConnectionString(domainName);
 
-            var domain = new Domain { Name = domainName, ConnectionString = connectionString };
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            var domain = new Domain { Name = domainName, ConnectionString = connectionString, InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone), InsertedByUserId =  userId };
             Unit_Of_Work.domain_Octa_Repository.Add_Octa(domain);
             Unit_Of_Work.SaveOctaChanges();
 

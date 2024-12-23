@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Octa
 {
-    public class Octa
+    public class Octa : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

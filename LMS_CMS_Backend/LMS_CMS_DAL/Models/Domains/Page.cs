@@ -23,6 +23,7 @@ namespace LMS_CMS_DAL.Models.Domains
 
         [ForeignKey("Parent")]
         public long? Page_ID { get; set; }
+
         public Page Parent { get; set; }
         public ICollection<Page> ChildPages { get; set; } = new List<Page>();
         public ICollection<Role_Detailes> Role_Detailes { get; set; } = new List<Role_Detailes>();

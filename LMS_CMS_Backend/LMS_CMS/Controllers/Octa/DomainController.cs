@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
-using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Bus;
+using LMS_CMS_BL.DTO.Octa;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Migrations.Domains;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Drawing;
+using System.Runtime.InteropServices.JavaScript;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -36,29 +39,62 @@ namespace LMS_CMS_PL.Controllers.Octa
             _dbContextFactory = dbContextFactory;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         [HttpGet]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
         public IActionResult Get()
         {
-            var userClaims = HttpContext.User.Claims;
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            if (userTypeClaim == null)
+            List<Domain> Domains = _Unit_Of_Work.domain_Octa_Repository.FindBy_Octa(t => t.IsDeleted != true);
+            if (Domains == null || Domains.Count == 0)
             {
-                return Unauthorized("User Type claim not found.");
+                return NotFound();
             }
-
-            if (userTypeClaim != "octa")
-            {
-                return Unauthorized("Access Denied");
-            }
-
-            List<Domain> Domains = _Unit_Of_Work.domain_Octa_Repository.Select_All_Octa();
 
             return Ok(Domains);
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("{Id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
+        public IActionResult GetById(long Id)
+        {
+            if (Id == 0)
+            {
+                return BadRequest("Enter Bus ID");
+            }
+
+            Domain Domain = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(t => t.IsDeleted != true && t.ID == Id);
+
+            if (Domain == null)
+            {
+                return NotFound();
+            }
+
+            HttpContext.Items["ConnectionString"] = Domain.ConnectionString;
+
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<LMS_CMS_DAL.Models.Domains.Page> pages = Unit_Of_Work.page_Repository.FindBy(p => p.Page_ID == null);
+
+            DomainGetDTO domianDTO = new DomainGetDTO{ ID = Domain.ID, Name = Domain.Name, Pages = pages.ToArray() };
+
+            return Ok(domianDTO);
+        }
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         private IEnumerable<LMS_CMS_DAL.Models.Octa.Page> GetPagesByParentId(long parentId)
         {
             return _Unit_Of_Work.domain_Octa_Repository.OctaDatabase().Page.Where(p => p.Page_ID == parentId).ToList();
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         private void AddPageWithChildren(LMS_CMS_DAL.Models.Octa.Page page, UOW Unit_Of_Work)
         {
@@ -87,6 +123,8 @@ namespace LMS_CMS_PL.Controllers.Octa
             }
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         private string GenerateSecurePassword(int length)
         {
             const string allCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*-_=+?";
@@ -103,19 +141,19 @@ namespace LMS_CMS_PL.Controllers.Octa
             return password.ToString();
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         [HttpPost]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
         public async Task<IActionResult> AddDomain([FromBody] DomainAdd_DTO domain)
         {
-            var userClaims = HttpContext.User.Claims;
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            if (userTypeClaim == null)
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            if (userIdClaim == null)
             {
-                return Unauthorized("User Type claim not found.");
-            }
-
-            if (userTypeClaim != "octa")
-            {
-                return Unauthorized("Access Denied");
+                return Unauthorized("User Id claim not found.");
             }
 
             if (string.IsNullOrWhiteSpace(domain.DomainName))
@@ -135,10 +173,10 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Conflict("Domain already exists.");
             }
 
-            await _dynamicDatabaseService.AddDomainAndSetupDatabase(domain.DomainName);
+            await _dynamicDatabaseService.AddDomainAndSetupDatabase(domain.DomainName, userId);
 
             // Make the DB Connection
-            var domainEx = await _Unit_Of_Work.domain_Octa_Repository.OctaDatabase().Domains.FirstOrDefaultAsync(d => d.Name == domain.DomainName);
+            var domainEx = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(d => d.Name == domain.DomainName);
 
             HttpContext.Items["ConnectionString"] = domainEx.ConnectionString;
 
@@ -165,6 +203,7 @@ namespace LMS_CMS_PL.Controllers.Octa
             }
 
             var notFoundPages = new List<long>();
+            var notModulePages = new List<long>();
 
             for (long i = 0; i < domain.Pages.Length; i++)
             {
@@ -172,8 +211,15 @@ namespace LMS_CMS_PL.Controllers.Octa
                 if (page == null)
                 {
                     notFoundPages.Add(domain.Pages[i]);
+                } 
+                else if (page.Page_ID != null)
+                {
+                    notModulePages.Add(domain.Pages[i]);
                 }
-                AddPageWithChildren(page, Unit_Of_Work);
+                else
+                {
+                    AddPageWithChildren(page, Unit_Of_Work);
+                }
             }
 
             Unit_Of_Work.SaveChanges();
@@ -183,25 +229,19 @@ namespace LMS_CMS_PL.Controllers.Octa
                 message = "Domain and database setup successfully.",
                 userName = domain.DomainName,
                 password = Pass,
-                notFoundPages = notFoundPages.Any() ? notFoundPages : null
+                notFoundPages = notFoundPages.Any() ? notFoundPages : null,
+                notModulePages = notModulePages.Any() ? notModulePages : null
             });
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditDomain(string domainName)
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpPut("ReRunMigrations")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
+        public async Task<IActionResult> ReRunMigrations(string domainName)
         {
-            var userClaims = HttpContext.User.Claims;
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            if (userTypeClaim == null)
-            {
-                return Unauthorized("User Type claim not found.");
-            }
-
-            if (userTypeClaim != "octa")
-            {
-                return Unauthorized("Access Denied");
-            }
-
             if (string.IsNullOrWhiteSpace(domainName))
             {
                 return BadRequest("Invalid domain name.");
@@ -215,7 +255,135 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             await _dynamicDatabaseService.ApplyMigrations(domainName);
 
-            return Ok(new { message = "Domain and database Updated successfully." });
+            return Ok(new { message = "Migrations are Updated successfully." });
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpPut]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
+        public async Task<IActionResult> EditDomain(DomainPut_DTO domain)
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User Id claim not found.");
+            }
+
+            if (string.IsNullOrWhiteSpace(domain.DomainName))
+            {
+                return BadRequest("Invalid domain name.");
+            }
+
+            var existingDomain = _Unit_Of_Work.domain_Octa_Repository.Select_By_Id_Octa(domain.ID);
+            if (existingDomain == null)
+            {
+                return Conflict("Domain doesn't exist.");
+            }
+
+            HttpContext.Items["ConnectionString"] = existingDomain.ConnectionString;
+
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (domain.Pages == null || domain.Pages.Length == 0)
+            {
+                return BadRequest("Pages array cannot be null or empty.");
+            }
+
+            // Delete What is not there
+            var FoundPages = Unit_Of_Work.page_Repository.Select_All();
+            if (FoundPages != null || FoundPages.Count != 0)
+            {
+                for (int i = 0; i < FoundPages.Count; i++)
+                {
+                    long id = FoundPages[i].ID;
+                    var existingPage = Unit_Of_Work.page_Repository.Select_By_Id(id);
+
+                    if (existingPage != null)
+                    {
+                        Unit_Of_Work.page_Repository.Delete(existingPage.ID);
+                    }
+                }
+                Unit_Of_Work.SaveChanges();
+            }
+
+            var notFoundPages = new List<long>();
+            var notModulePages = new List<long>();
+
+            for (long i = 0; i < domain.Pages.Length; i++)
+            {
+                var page = _Unit_Of_Work.page_Octa_Repository.Select_By_Id_Octa(domain.Pages[i]);
+
+                if (page == null)
+                {
+                    notFoundPages.Add(domain.Pages[i]);
+                }
+                else if (page.Page_ID != null)
+                {
+                    notModulePages.Add(domain.Pages[i]);
+                } 
+                else
+                {
+                    AddPageWithChildren(page, Unit_Of_Work);
+                }
+            }
+
+            Unit_Of_Work.SaveChanges();
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            existingDomain.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            existingDomain.UpdatedByUserId = userId;
+
+            _Unit_Of_Work.SaveOctaChanges();
+
+            return Ok(new
+            {
+                message = "Domain and database Updated successfully.",
+                notFoundPages = notFoundPages.Any() ? notFoundPages : null,
+                notModulePages = notModulePages.Any() ? notModulePages : null
+            });
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        [HttpDelete("{Id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
+        public IActionResult Delete(long Id)
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID claim not found.");
+            }
+
+            if (Id == 0)
+            {
+                return BadRequest("Domain ID cannot be null.");
+            }
+
+            Domain domain = _Unit_Of_Work.domain_Octa_Repository.Select_By_Id_Octa(Id);
+            if (domain == null || domain.IsDeleted == true)
+            {
+                return NotFound("No Domain with this ID");
+            }
+            else
+            {
+                domain.IsDeleted = true;
+                TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+                domain.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                domain.DeletedByUserId = userId;
+
+                _Unit_Of_Work.domain_Octa_Repository.Update_Octa(domain);
+                _Unit_Of_Work.SaveOctaChanges();
+                return Ok(new { message = "Domain has Successfully been deleted" });
+            }
         }
     }
 

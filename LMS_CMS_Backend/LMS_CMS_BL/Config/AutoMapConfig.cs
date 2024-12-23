@@ -82,7 +82,25 @@ namespace LMS_CMS_BL.Config
             CreateMap<BusCompany, BusCompanyEditDTO>();
             CreateMap<BusCompanyEditDTO, BusCompany>();
 
-            CreateMap<Employee, Employee_GetDTO>();
+            CreateMap<Employee, Employee_GetDTO>()
+                .ForMember(dest => dest.Role_Name, opt => opt.MapFrom(src => src.Role.Name))
+                .ForMember(dest => dest.Role_ID, opt => opt.MapFrom(src => src.Role.ID))
+                .ForMember(dest => dest.EmployeeTypeName, opt => opt.MapFrom(src => src.EmployeeType.Name))
+                .ForMember(dest => dest.EmployeeTypeID, opt => opt.MapFrom(src => src.EmployeeType.ID))
+                .ForMember(dest => dest.BusCompanyID, opt => opt.MapFrom(src => src.BusCompany.ID))
+                .ForMember(dest => dest.BusCompanyName, opt => opt.MapFrom(src => src.BusCompany.Name));
+
+            CreateMap<Employee, EmployeeAddDTO>()
+               .ForMember(dest => dest.Role_ID, opt => opt.MapFrom(src => src.Role.ID))
+               .ForMember(dest => dest.EmployeeTypeID, opt => opt.MapFrom(src => src.EmployeeType.ID))
+               .ForMember(dest => dest.BusCompanyID, opt => opt.MapFrom(src => src.BusCompany.ID));
+            CreateMap<EmployeeAddDTO, Employee>();
+
+            CreateMap<Employee, EmployeePutDTO>()
+              .ForMember(dest => dest.Role_ID, opt => opt.MapFrom(src => src.Role.ID))
+              .ForMember(dest => dest.EmployeeTypeID, opt => opt.MapFrom(src => src.EmployeeType.ID))
+              .ForMember(dest => dest.BusCompanyID, opt => opt.MapFrom(src => src.BusCompany.ID));
+            CreateMap<EmployeePutDTO, Employee>();
 
             CreateMap<Parent, ParentGetDTO>();
             CreateMap<ParentGetDTO, Parent>();
@@ -90,7 +108,6 @@ namespace LMS_CMS_BL.Config
             CreateMap<Student, StudentGetDTO>();
             CreateMap<StudentGetDTO, Student>();
 
-            CreateMap<Semester, Semester_GetDTO>();
 
             CreateMap<LMS_CMS_DAL.Models.Octa.Page, Page_GetDTO>();
             CreateMap<Page_GetDTO, LMS_CMS_DAL.Models.Octa.Page>();
@@ -110,6 +127,14 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.SchoolTypeID, opt => opt.MapFrom(src => src.SchoolType.ID));
             CreateMap<SchoolEditDTO, School>();
 
+            CreateMap<Semester, Semester_GetDTO>()
+               .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID))
+               .ForMember(dest => dest.AcademicYearName, opt => opt.MapFrom(src => src.AcademicYear.Name));
+            CreateMap<Semester_GetDTO, Semester>();
+
+            CreateMap<Semester, SemesterAddDTO>()
+              .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID));
+            CreateMap<SemesterAddDTO, Semester>();
         }
     }
 }

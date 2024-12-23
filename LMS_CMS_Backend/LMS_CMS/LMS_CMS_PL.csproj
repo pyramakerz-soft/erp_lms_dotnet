@@ -23,4 +23,8 @@
     <ProjectReference Include="..\LMS_CMS_BL\LMS_CMS_BL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Attachments\" />
+  </ItemGroup>
+
 </Project>

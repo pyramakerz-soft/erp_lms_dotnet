@@ -58,6 +58,10 @@ namespace LMS_CMS_BL.Repository
         {
             return db.Set<TEntity>().Find(keyValues);
         }
+        public async Task<TEntity> Select_By_IdAsync(params object[] keyValues)
+        {
+            return await db.Set<TEntity>().FindAsync(keyValues);
+        }
 
         public void Add(TEntity entity)
         {

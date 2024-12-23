@@ -126,6 +126,8 @@ namespace LMS_CMS
 
             var app = builder.Build();
 
+            ///////// send files
+            app.UseStaticFiles();
 
             /// 1) For DB Check
             app.UseMiddleware<DbConnection_Check_Middleware>();

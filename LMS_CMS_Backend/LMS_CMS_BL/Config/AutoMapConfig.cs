@@ -2,9 +2,11 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.DTO.LMS;
+using LMS_CMS_BL.DTO.Violation;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_DAL.Models.Domains.Violations;
 using LMS_CMS_DAL.Models.Octa;
 using System;
 using System.Collections.Generic;
@@ -109,6 +111,16 @@ namespace LMS_CMS_BL.Config
             CreateMap<School, SchoolEditDTO>()
                 .ForMember(dest => dest.SchoolTypeID, opt => opt.MapFrom(src => src.SchoolType.ID));
             CreateMap<SchoolEditDTO, School>();
+
+            CreateMap<EmployeeTypeViolation, EmployeeTypeViolationGetDTO>()
+                .ForMember(dest => dest.EmployeeTypes, opt => opt.MapFrom(src => src.EmployeeType.Name))
+                .ForMember(dest => dest.ViolationsTypes, opt => opt.MapFrom(src => src.Violation.Name));
+
+            CreateMap<Building, BuildingGetDTO>()
+               .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID))
+               .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.school.Name));
+
+            CreateMap<BuildingAddDTO, Building>();
 
         }
     }

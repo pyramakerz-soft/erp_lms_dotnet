@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
-using LMS_CMS_DAL.Migrations.Domains;
-using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
@@ -11,20 +9,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices.JavaScript;
-using LMS_CMS_BL.DTO.Bus;
 
 namespace LMS_CMS_PL.Controllers.Domains.LMS
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class BuildingController : ControllerBase
+    public class SubjectCategoryController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public BuildingController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public SubjectCategoryController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -33,60 +29,58 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Subject Categories", "Administrator" }
         )]
-        public async Task<IActionResult> GetAsync()
+        public IActionResult GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<Building> Building = await Unit_Of_Work.building_Repository.Select_All_With_IncludesById<Building>(
-                    b => b.IsDeleted != true,
-                    query => query.Include(emp => emp.school)
-                    );
+            List<SubjectCategory> SubjectCategorys = Unit_Of_Work.subjectCategory_Repository.FindBy(
+                    f => f.IsDeleted != true);
 
-            if (Building == null || Building.Count == 0)
+            if (SubjectCategorys == null || SubjectCategorys.Count == 0)
             {
                 return NotFound();
             }
 
-            List<BuildingGetDTO> BuildingDTO = mapper.Map<List<BuildingGetDTO>>(Building);
+            List<SubjectCategoryGetDTO> SubjectCategorysDTO = mapper.Map<List<SubjectCategoryGetDTO>>(SubjectCategorys);
 
-            return Ok(BuildingDTO);
+            return Ok(SubjectCategorysDTO);
         }
-        
+
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Subject Categories", "Administrator" }
         )]
-        public async Task<IActionResult> GetById(long id)
+        public IActionResult GetById(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             if (id == 0)
             {
-                return BadRequest("Enter Building ID");
+                return BadRequest("Enter Subject Category ID");
             }
 
-            Building Building = await Unit_Of_Work.building_Repository.FindByIncludesAsync(t => t.IsDeleted != true && t.ID == id, query => query.Include(e => e.school));
+            SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
 
-            if (Building == null)
+            if (subjectCategory == null)
             {
                 return NotFound();
             }
 
-            BuildingGetDTO BuildingDTO = mapper.Map<BuildingGetDTO>(Building);
+            SubjectCategoryGetDTO subjectCategoryGetDTO = mapper.Map<SubjectCategoryGetDTO>(subjectCategory);
 
-            return Ok(BuildingDTO);
+            return Ok(subjectCategoryGetDTO);
         }
 
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
-        )]
-        public IActionResult Add(BuildingAddDTO NewBuilding)
+           allowedTypes: new[] { "octa", "employee" },
+           pages: new[] { "Subject Categories", "Administrator" }
+       )]
+        public IActionResult Add(SubjectCategoryAddDTO NewSubCat)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -99,45 +93,36 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewBuilding == null)
+            if (NewSubCat == null)
             {
-                return BadRequest("Building cannot be null");
+                return BadRequest("Subject Category cannot be null");
             }
 
-            if (NewBuilding.SchoolID != 0)
-            {
-                School school = Unit_Of_Work.school_Repository.Select_By_Id(NewBuilding.SchoolID);
-                if (school == null)
-                {
-                    return BadRequest("No School with this ID");
-                }
-            }
-
-            Building Building = mapper.Map<Building>(NewBuilding);
+            SubjectCategory subjectCat = mapper.Map<SubjectCategory>(NewSubCat);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            Building.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            subjectCat.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                Building.InsertedByOctaId = userId;
+                subjectCat.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                Building.InsertedByUserId = userId;
+                subjectCat.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.building_Repository.Add(Building);
+            Unit_Of_Work.subjectCategory_Repository.Add(subjectCat);
             Unit_Of_Work.SaveChanges();
-            return Ok(NewBuilding);
+            return Ok(NewSubCat);
         }
 
         [HttpPut]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            allowEdit: 1,
-            pages: new[] { "Buildings", "Administrator" }
-        )]
-        public IActionResult Edit(BuildingPutDTO EditedBuilding)
+           allowedTypes: new[] { "octa", "employee" },
+           allowEdit: 1,
+           pages: new[] { "Subject Categories", "Administrator" }
+       )]
+        public IActionResult Edit(SubjectCategoryPutDTO EditedSubjectCategory)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -152,35 +137,26 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (EditedBuilding == null)
+            if (EditedSubjectCategory == null)
             {
-                return BadRequest("Building cannot be null");
+                return BadRequest("Subject Category cannot be null");
             }
 
-            if (EditedBuilding.SchoolID != 0)
+            SubjectCategory SubjectCategoryExists = Unit_Of_Work.subjectCategory_Repository.Select_By_Id(EditedSubjectCategory.ID);
+            if (SubjectCategoryExists == null || SubjectCategoryExists.IsDeleted == true)
             {
-                School school = Unit_Of_Work.school_Repository.Select_By_Id(EditedBuilding.SchoolID);
-                if (school == null)
-                {
-                    return BadRequest("No School with this ID");
-                }
-            }
-
-            Building BuildingExists = Unit_Of_Work.building_Repository.Select_By_Id(EditedBuilding.ID);
-            if (BuildingExists == null || BuildingExists.IsDeleted == true)
-            {
-                return NotFound("No Building with this ID");
+                return NotFound("No Floor with this ID");
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Buildings");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject Categories");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (BuildingExists.InsertedByUserId != userId)
+                        if (SubjectCategoryExists.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -188,40 +164,40 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Building page doesn't exist");
+                    return BadRequest("Subject Categories page doesn't exist");
                 }
             }
-             
-            mapper.Map(EditedBuilding, BuildingExists);
+
+            mapper.Map(EditedSubjectCategory, SubjectCategoryExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            BuildingExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            SubjectCategoryExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                BuildingExists.UpdatedByOctaId = userId;
-                if (BuildingExists.UpdatedByUserId != null)
+                SubjectCategoryExists.UpdatedByOctaId = userId;
+                if (SubjectCategoryExists.UpdatedByUserId != null)
                 {
-                    BuildingExists.UpdatedByUserId = null;
+                    SubjectCategoryExists.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                BuildingExists.UpdatedByUserId = userId;
-                if (BuildingExists.UpdatedByOctaId != null)
+                SubjectCategoryExists.UpdatedByUserId = userId;
+                if (SubjectCategoryExists.UpdatedByOctaId != null)
                 {
-                    BuildingExists.UpdatedByOctaId = null;
+                    SubjectCategoryExists.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.building_Repository.Update(BuildingExists);
+            Unit_Of_Work.subjectCategory_Repository.Update(SubjectCategoryExists);
             Unit_Of_Work.SaveChanges();
-            return Ok(EditedBuilding);
+            return Ok(EditedSubjectCategory);
         }
-        
+
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Subject Categories", "Administrator" }
         )]
         public IActionResult Delete(long id)
         {
@@ -241,26 +217,26 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (id == 0)
             {
-                return BadRequest("Enter Building ID");
+                return BadRequest("Enter Floor ID");
             }
 
-            Building Building = Unit_Of_Work.building_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
 
-            if (Building == null)
+            if (subjectCategory == null)
             {
                 return NotFound();
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Buildings");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject Categories");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                     {
-                        if (Building.InsertedByUserId != userId)
+                        if (subjectCategory.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -268,31 +244,31 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Buildings page doesn't exist");
+                    return BadRequest("Subject Categories page doesn't exist");
                 }
             }
 
-            Building.IsDeleted = true;
+            subjectCategory.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            Building.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            subjectCategory.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                Building.DeletedByOctaId = userId;
-                if (Building.DeletedByUserId != null)
+                subjectCategory.DeletedByOctaId = userId;
+                if (subjectCategory.DeletedByUserId != null)
                 {
-                    Building.DeletedByUserId = null;
+                    subjectCategory.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                Building.DeletedByUserId = userId;
-                if (Building.DeletedByOctaId != null)
+                subjectCategory.DeletedByUserId = userId;
+                if (subjectCategory.DeletedByOctaId != null)
                 {
-                    Building.DeletedByOctaId = null;
+                    subjectCategory.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.building_Repository.Update(Building);
+            Unit_Of_Work.subjectCategory_Repository.Update(subjectCategory);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

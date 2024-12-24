@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
-using LMS_CMS_DAL.Migrations.Domains;
-using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
@@ -11,20 +9,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices.JavaScript;
-using LMS_CMS_BL.DTO.Bus;
 
 namespace LMS_CMS_PL.Controllers.Domains.LMS
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class BuildingController : ControllerBase
+    public class FloorController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public BuildingController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public FloorController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -33,31 +29,31 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Floors", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<Building> Building = await Unit_Of_Work.building_Repository.Select_All_With_IncludesById<Building>(
-                    b => b.IsDeleted != true,
-                    query => query.Include(emp => emp.school)
+            List<Floor> floors = await Unit_Of_Work.floor_Repository.Select_All_With_IncludesById<Floor>(
+                    f => f.IsDeleted != true,
+                    query => query.Include(emp => emp.building)
                     );
 
-            if (Building == null || Building.Count == 0)
+            if (floors == null || floors.Count == 0)
             {
                 return NotFound();
             }
 
-            List<BuildingGetDTO> BuildingDTO = mapper.Map<List<BuildingGetDTO>>(Building);
+            List<FloorGetDTO> floorsDTO = mapper.Map<List<FloorGetDTO>>(floors);
 
-            return Ok(BuildingDTO);
+            return Ok(floorsDTO);
         }
-        
+
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Floors", "Administrator" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -65,28 +61,28 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (id == 0)
             {
-                return BadRequest("Enter Building ID");
+                return BadRequest("Enter Floor ID");
             }
 
-            Building Building = await Unit_Of_Work.building_Repository.FindByIncludesAsync(t => t.IsDeleted != true && t.ID == id, query => query.Include(e => e.school));
+            Floor floor = await Unit_Of_Work.floor_Repository.FindByIncludesAsync(t => t.IsDeleted != true && t.ID == id, query => query.Include(e => e.building));
 
 
-            if (Building == null)
+            if (floor == null)
             {
                 return NotFound();
             }
 
-            BuildingGetDTO BuildingDTO = mapper.Map<BuildingGetDTO>(Building);
+            FloorGetDTO floorDTO = mapper.Map<FloorGetDTO>(floor);
 
-            return Ok(BuildingDTO);
+            return Ok(floorDTO);
         }
 
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Floors", "Administrator" }
         )]
-        public IActionResult Add(BuildingAddDTO NewBuilding)
+        public IActionResult Add(FloorAddDTO NewFloor)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -99,45 +95,45 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewBuilding == null)
+            if (NewFloor == null)
             {
-                return BadRequest("Building cannot be null");
+                return BadRequest("Floor cannot be null");
             }
 
-            if (NewBuilding.SchoolID != 0)
+            if (NewFloor.buildingID != 0)
             {
-                School school = Unit_Of_Work.school_Repository.Select_By_Id(NewBuilding.SchoolID);
-                if (school == null)
+                Building building = Unit_Of_Work.building_Repository.Select_By_Id(NewFloor.buildingID);
+                if (building == null)
                 {
-                    return BadRequest("No School with this ID");
+                    return BadRequest("No Building with this ID");
                 }
             }
 
-            Building Building = mapper.Map<Building>(NewBuilding);
+            Floor Floor = mapper.Map<Floor>(NewFloor);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            Building.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            Floor.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                Building.InsertedByOctaId = userId;
+                Floor.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                Building.InsertedByUserId = userId;
+                Floor.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.building_Repository.Add(Building);
+            Unit_Of_Work.floor_Repository.Add(Floor);
             Unit_Of_Work.SaveChanges();
-            return Ok(NewBuilding);
+            return Ok(NewFloor);
         }
 
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Floors", "Administrator" }
         )]
-        public IActionResult Edit(BuildingPutDTO EditedBuilding)
+        public IActionResult Edit(FloorPutDTO EditedFloor)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -152,35 +148,35 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (EditedBuilding == null)
+            if (EditedFloor == null)
             {
-                return BadRequest("Building cannot be null");
+                return BadRequest("Floor cannot be null");
             }
 
-            if (EditedBuilding.SchoolID != 0)
+            if (EditedFloor.buildingID != 0)
             {
-                School school = Unit_Of_Work.school_Repository.Select_By_Id(EditedBuilding.SchoolID);
-                if (school == null)
+                Building building = Unit_Of_Work.building_Repository.Select_By_Id(EditedFloor.buildingID);
+                if (building == null)
                 {
-                    return BadRequest("No School with this ID");
+                    return BadRequest("No Building with this ID");
                 }
             }
 
-            Building BuildingExists = Unit_Of_Work.building_Repository.Select_By_Id(EditedBuilding.ID);
-            if (BuildingExists == null || BuildingExists.IsDeleted == true)
+            Floor FloorExists = Unit_Of_Work.floor_Repository.Select_By_Id(EditedFloor.ID);
+            if (FloorExists == null || FloorExists.IsDeleted == true)
             {
-                return NotFound("No Building with this ID");
+                return NotFound("No Floor with this ID");
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Buildings");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Floors");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (BuildingExists.InsertedByUserId != userId)
+                        if (FloorExists.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -188,40 +184,40 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Building page doesn't exist");
+                    return BadRequest("Floors page doesn't exist");
                 }
             }
-             
-            mapper.Map(EditedBuilding, BuildingExists);
+
+            mapper.Map(EditedFloor, FloorExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            BuildingExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            FloorExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                BuildingExists.UpdatedByOctaId = userId;
-                if (BuildingExists.UpdatedByUserId != null)
+                FloorExists.UpdatedByOctaId = userId;
+                if (FloorExists.UpdatedByUserId != null)
                 {
-                    BuildingExists.UpdatedByUserId = null;
+                    FloorExists.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                BuildingExists.UpdatedByUserId = userId;
-                if (BuildingExists.UpdatedByOctaId != null)
+                FloorExists.UpdatedByUserId = userId;
+                if (FloorExists.UpdatedByOctaId != null)
                 {
-                    BuildingExists.UpdatedByOctaId = null;
+                    FloorExists.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.building_Repository.Update(BuildingExists);
+            Unit_Of_Work.floor_Repository.Update(FloorExists);
             Unit_Of_Work.SaveChanges();
-            return Ok(EditedBuilding);
+            return Ok(EditedFloor);
         }
-        
+
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Floors", "Administrator" }
         )]
         public IActionResult Delete(long id)
         {
@@ -241,26 +237,26 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (id == 0)
             {
-                return BadRequest("Enter Building ID");
+                return BadRequest("Enter Floor ID");
             }
 
-            Building Building = Unit_Of_Work.building_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            Floor floor = Unit_Of_Work.floor_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
 
-            if (Building == null)
+            if (floor == null)
             {
                 return NotFound();
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Buildings");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Floors");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                     {
-                        if (Building.InsertedByUserId != userId)
+                        if (floor.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -268,31 +264,31 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Buildings page doesn't exist");
+                    return BadRequest("Floors page doesn't exist");
                 }
             }
 
-            Building.IsDeleted = true;
+            floor.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            Building.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            floor.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                Building.DeletedByOctaId = userId;
-                if (Building.DeletedByUserId != null)
+                floor.DeletedByOctaId = userId;
+                if (floor.DeletedByUserId != null)
                 {
-                    Building.DeletedByUserId = null;
+                    floor.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                Building.DeletedByUserId = userId;
-                if (Building.DeletedByOctaId != null)
+                floor.DeletedByUserId = userId;
+                if (floor.DeletedByOctaId != null)
                 {
-                    Building.DeletedByOctaId = null;
+                    floor.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.building_Repository.Update(Building);
+            Unit_Of_Work.floor_Repository.Update(floor);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

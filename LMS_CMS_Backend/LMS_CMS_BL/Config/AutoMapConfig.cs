@@ -163,6 +163,15 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<SubjectAddDTO, Subject>();
             CreateMap<SubjectPutDTO, Subject>();
+       
+            CreateMap<Section, SectionGetDTO>()
+               .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID))
+               .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.school.Name));
+            CreateMap<SectionGetDTO, Section>();
+
+            CreateMap<Section, SectionAddDTO>()
+               .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID));
+            CreateMap<SectionAddDTO, Section>();
         }
     }
 }

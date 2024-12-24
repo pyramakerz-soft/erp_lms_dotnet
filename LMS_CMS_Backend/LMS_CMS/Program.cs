@@ -11,6 +11,7 @@ using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Services;
 using LMS_CMS_DAL.Models;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.FileProviders;
 
 namespace LMS_CMS
 {
@@ -128,6 +129,12 @@ namespace LMS_CMS
 
             ///////// send files
             app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
+                RequestPath = "/uploads"
+            });
+
 
             /// 1) For DB Check
             app.UseMiddleware<DbConnection_Check_Middleware>();

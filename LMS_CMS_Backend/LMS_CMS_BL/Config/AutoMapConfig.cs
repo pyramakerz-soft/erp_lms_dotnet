@@ -136,8 +136,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<Building, BuildingGetDTO>()
                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID))
                .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.school.Name));
-
             CreateMap<BuildingAddDTO, Building>();
+            CreateMap<BuildingPutDTO, Building>();
 
             CreateMap<Semester, Semester_GetDTO>()
                .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID))
@@ -147,10 +147,23 @@ namespace LMS_CMS_BL.Config
             CreateMap<Semester, SemesterAddDTO>()
               .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID));
             CreateMap<SemesterAddDTO, Semester>();
+             
+            CreateMap<Floor, FloorGetDTO>()
+               .ForMember(dest => dest.BuildingID, opt => opt.MapFrom(src => src.building.ID))
+               .ForMember(dest => dest.BuildingName, opt => opt.MapFrom(src => src.building.Name));
+            CreateMap<FloorAddDTO, Floor>();
+            CreateMap<FloorPutDTO, Floor>();
 
+            CreateMap<SubjectCategory, SubjectCategoryGetDTO>();
+            CreateMap<SubjectCategoryAddDTO, SubjectCategory>();
+            CreateMap<SubjectCategoryPutDTO, SubjectCategory>();
+ 
             CreateMap<EmployeeAttachment, EmployeeAttachmentDTO>();
             CreateMap<EmployeeAttachmentDTO, EmployeeAttachment>();
 
+            CreateMap<SubjectAddDTO, Subject>();
+            CreateMap<SubjectPutDTO, Subject>();
+       
             CreateMap<Section, SectionGetDTO>()
                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID))
                .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.school.Name));
@@ -159,9 +172,6 @@ namespace LMS_CMS_BL.Config
             CreateMap<Section, SectionAddDTO>()
                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID));
             CreateMap<SectionAddDTO, Section>();
-
-
-
         }
     }
 }

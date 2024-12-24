@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_DAL.Models.Domains
+namespace LMS_CMS_BL.DTO
 {
-    public class EmployeeAttachment : AuditableEntity
+    public class EmployeeAttachmentDTO
     {
-        [Key]
         public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
@@ -18,7 +17,5 @@ namespace LMS_CMS_DAL.Models.Domains
         public string Link { get; set; }
         [ForeignKey("Employee")]
         public long EmployeeID { get; set; }
-
-        public Employee Employee { get; set; }
     }
 }

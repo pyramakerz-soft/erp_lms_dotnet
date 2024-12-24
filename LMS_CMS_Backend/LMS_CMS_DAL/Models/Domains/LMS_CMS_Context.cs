@@ -345,6 +345,12 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany()
                 .HasForeignKey(b => b.DeletedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Employee>()
+                .HasMany(e => e.EmployeeAttachments)
+                .WithOne(ea => ea.Employee)
+                .HasForeignKey(ea => ea.EmployeeID)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

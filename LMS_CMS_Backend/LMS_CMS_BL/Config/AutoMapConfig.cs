@@ -147,7 +147,7 @@ namespace LMS_CMS_BL.Config
             CreateMap<Semester, SemesterAddDTO>()
               .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID));
             CreateMap<SemesterAddDTO, Semester>();
-
+             
             CreateMap<Floor, FloorGetDTO>()
                .ForMember(dest => dest.BuildingID, opt => opt.MapFrom(src => src.building.ID))
                .ForMember(dest => dest.BuildingName, opt => opt.MapFrom(src => src.building.Name));
@@ -157,6 +157,12 @@ namespace LMS_CMS_BL.Config
             CreateMap<SubjectCategory, SubjectCategoryGetDTO>();
             CreateMap<SubjectCategoryAddDTO, SubjectCategory>();
             CreateMap<SubjectCategoryPutDTO, SubjectCategory>();
+ 
+            CreateMap<EmployeeAttachment, EmployeeAttachmentDTO>();
+            CreateMap<EmployeeAttachmentDTO, EmployeeAttachment>();
+
+            CreateMap<SubjectAddDTO, Subject>();
+            CreateMap<SubjectPutDTO, Subject>();
         }
     }
 }

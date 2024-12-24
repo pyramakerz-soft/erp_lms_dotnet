@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
-using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
-using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,12 +13,12 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class SemesterController : ControllerBase
+    public class SectionController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public SemesterController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public SectionController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -42,48 +41,18 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            List<Semester> Semesters = await Unit_Of_Work.semester_Repository.Select_All_With_IncludesById<Semester>(
+            List<Section> Sections = await Unit_Of_Work.section_Repository.Select_All_With_IncludesById<Section>(
                     sem => sem.IsDeleted != true,
-                    query => query.Include(emp => emp.AcademicYear));
+                    query => query.Include(emp => emp.school));
 
-            if (Semesters == null || Semesters.Count == 0)
+            if (Sections == null || Sections.Count == 0)
             {
                 return NotFound();
             }
 
-            List<Semester_GetDTO> SemesterDTO = mapper.Map<List<Semester_GetDTO>>(Semesters);
+            List<SectionGetDTO> SectionDTO = mapper.Map<List<SectionGetDTO>>(Sections);
 
-            return Ok(SemesterDTO);
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-        [HttpGet("GetByAcademicYear/{id}")]
-        public async Task<IActionResult> GetAsyncByAcademicYear(long id)
-        {
-            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-
-            var userClaims = HttpContext.User.Claims;
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-            if (userIdClaim == null || userTypeClaim == null)
-            {
-                return Unauthorized("User ID or Type claim not found.");
-            }
-            List<Semester> Semesters = await Unit_Of_Work.semester_Repository.Select_All_With_IncludesById<Semester>(
-                    sem => sem.IsDeleted != true && sem.AcademicYearID == id,
-                    query => query.Include(emp => emp.AcademicYear));
-
-            if (Semesters == null || Semesters.Count == 0)
-            {
-                return NotFound();
-            }
-
-            List<Semester_GetDTO> SemesterDTO = mapper.Map<List<Semester_GetDTO>>(Semesters);
-
-            return Ok(SemesterDTO);
+            return Ok(SectionDTO);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,25 +72,24 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            Semester Semesters = await Unit_Of_Work.semester_Repository.FindByIncludesAsync(
+            Section Sections = await Unit_Of_Work.section_Repository.FindByIncludesAsync(
                     sem => sem.IsDeleted != true && sem.ID == id,
-                    query => query.Include(emp => emp.AcademicYear));
+                    query => query.Include(emp => emp.school));
 
-            if (Semesters == null)
+            if (Sections == null)
             {
                 return NotFound();
             }
 
-            Semester_GetDTO SemesterDTO = mapper.Map<Semester_GetDTO>(Semesters);
+            SectionGetDTO SectionDTO = mapper.Map<SectionGetDTO>(Sections);
 
-            return Ok(SemesterDTO);
+            return Ok(SectionDTO);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
-
-        public async Task<IActionResult> Add(SemesterAddDTO NewSemester)
+        public async Task<IActionResult> Add(SectionAddDTO NewSection)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -134,32 +102,30 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            if (NewSemester == null)
+            if (NewSection == null)
             {
                 return NotFound();
             }
-            Semester semester = mapper.Map<Semester>(NewSemester);
-
+            Section section = mapper.Map<Section>(NewSection);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            semester.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            section.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                semester.InsertedByOctaId = userId;
+                section.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                semester.InsertedByUserId = userId;
+                section.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.semester_Repository.Add(semester);
+            Unit_Of_Work.section_Repository.Add(section);
             Unit_Of_Work.SaveChanges();
-            return Ok(NewSemester);
+            return Ok(NewSection);
         }
-
         ////////////////////////////////////////////////////
 
         [HttpPut]
-        public IActionResult Edit(Semester_GetDTO newSemester)
+        public IActionResult Edit(SectionGetDTO newSection)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -173,35 +139,35 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (newSemester == null)
+            if (newSection == null)
             {
-                return BadRequest("Semester cannot be null");
+                return BadRequest("Section cannot be null");
             }
 
-            Semester semester = mapper.Map<Semester>(newSemester);
+            Section section = mapper.Map<Section>(newSection);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            semester.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            section.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                semester.UpdatedByOctaId = userId;
-                if (semester.UpdatedByUserId != null)
+                section.UpdatedByOctaId = userId;
+                if (section.UpdatedByUserId != null)
                 {
-                    semester.UpdatedByUserId = null;
+                    section.UpdatedByUserId = null;
                 }
 
             }
             else if (userTypeClaim == "employee")
             {
-                semester.UpdatedByUserId = userId;
-                if (semester.UpdatedByOctaId != null)
+                section.UpdatedByUserId = userId;
+                if (section.UpdatedByOctaId != null)
                 {
-                    semester.UpdatedByOctaId = null;
+                    section.UpdatedByOctaId = null;
                 }
             }
-            Unit_Of_Work.semester_Repository.Update(semester);
+            Unit_Of_Work.section_Repository.Update(section);
             Unit_Of_Work.SaveChanges();
-            return Ok(newSemester);
+            return Ok(newSection);
 
         }
 
@@ -226,33 +192,33 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("id cannot be null");
             }
-            Semester semester = Unit_Of_Work.semester_Repository.Select_By_Id(id);
+            Section section = Unit_Of_Work.section_Repository.Select_By_Id(id);
 
-            if (semester == null || semester.IsDeleted == true)
+            if (section == null || section.IsDeleted == true)
             {
-                return NotFound("No semester with this ID");
+                return NotFound("No Section with this ID");
             }
-            semester.IsDeleted = true;
+            section.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            semester.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            section.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                semester.DeletedByOctaId = userId;
-                if (semester.DeletedByUserId != null)
+                section.DeletedByOctaId = userId;
+                if (section.DeletedByUserId != null)
                 {
-                    semester.DeletedByUserId = null;
+                    section.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                semester.DeletedByUserId = userId;
-                if (semester.DeletedByOctaId != null)
+                section.DeletedByUserId = userId;
+                if (section.DeletedByOctaId != null)
                 {
-                    semester.DeletedByOctaId = null;
+                    section.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.semester_Repository.Update(semester);
+            Unit_Of_Work.section_Repository.Update(section);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

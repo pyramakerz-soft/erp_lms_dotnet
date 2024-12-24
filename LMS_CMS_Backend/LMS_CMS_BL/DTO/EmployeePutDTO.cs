@@ -12,6 +12,7 @@ namespace LMS_CMS_BL.DTO
 {
     public class EmployeePutDTO
     {
+        [Key]
         public long ID { get; set; }
         [Required(ErrorMessage = "User_Name is required")]
         [StringLength(100, ErrorMessage = "Username cannot be longer than 100 characters.")]

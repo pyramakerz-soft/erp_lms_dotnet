@@ -147,6 +147,11 @@ namespace LMS_CMS_BL.Config
             CreateMap<Semester, SemesterAddDTO>()
               .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID));
             CreateMap<SemesterAddDTO, Semester>();
+
+            CreateMap<EmployeeAttachment, EmployeeAttachmentDTO>();
+            CreateMap<EmployeeAttachmentDTO, EmployeeAttachment>();
+
+
         }
     }
 }

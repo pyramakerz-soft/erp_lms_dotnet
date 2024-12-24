@@ -204,7 +204,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             Unit_Of_Work.SaveChanges();
 
             ////create attachment folder
-            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Attachments");
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Attachments");
             var employeeFolder = Path.Combine(baseFolder, employee.User_Name);
             if (!Directory.Exists(employeeFolder))
             {
@@ -226,7 +226,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                     EmployeeAttachment uploadedFile = new EmployeeAttachment
                     {
                         EmployeeID = employee.ID,
-                        Link = $"{Request.Scheme}://{Request.Host}/Attachments/{employee.User_Name}/{file.FileName}",
+                        Link = $"{Request.Scheme}://{Request.Host}/Uploads/Attachments/{employee.User_Name}/{file.FileName}",
                         Name = file.FileName,
                     }; 
 
@@ -264,7 +264,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return NotFound("Employee not found.");
             }
-            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Attachments");
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Attachments");
             if (oldEmp.User_Name != newEmployee.User_Name)
             {
                 var oldEmployeeFolder = Path.Combine(baseFolder, oldEmp.User_Name);
@@ -349,7 +349,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                         EmployeeAttachment uploadedFile = new EmployeeAttachment
                         {
                             EmployeeID = oldEmp.ID,
-                            Link = $"{Request.Scheme}://{Request.Host}/Attachments/{oldEmp.User_Name}/{file.FileName}",
+                            Link = $"{Request.Scheme}://{Request.Host}/Uploads/Attachments/{oldEmp.User_Name}/{file.FileName}",
                             Name = file.FileName,
                         };
                         Unit_Of_Work.employeeAttachment_Repository.Add(uploadedFile);
@@ -468,7 +468,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                 return BadRequest(new { message = "Invalid file path." });
             }
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", folderName, fileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Attachments", folderName, fileName);
             if (!System.IO.File.Exists(filePath))
             {
                 return NotFound(new { message = "File not found." });

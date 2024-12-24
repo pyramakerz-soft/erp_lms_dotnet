@@ -50,8 +50,10 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Building> Building_Repository;
         GenericRepo<Floor> Floor_Repository;
         GenericRepo<Section> Section_Repository;
-        GenericRepo<SchoolType> SchoolType_Repository;
+        GenericRepo<LMS_CMS_DAL.Models.Domains.LMS.SchoolType> SchoolType_Repository;
+        GenericRepo<LMS_CMS_DAL.Models.Octa.SchoolType> SchoolType_Octa_Repository;
         GenericRepo<Classroom> Classroom_Repository;
+
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -168,6 +170,17 @@ namespace LMS_CMS_BL.UOW
                     Page_Octa_Repository = new GenericRepo<LMS_CMS_DAL.Models.Octa.Page>(octa_Db);
                 }
                 return Page_Octa_Repository;
+            }
+        }
+        public GenericRepo<LMS_CMS_DAL.Models.Octa.SchoolType> schoolType_Octa_Repository
+        {
+            get
+            {
+                if (SchoolType_Octa_Repository == null)
+                {
+                    SchoolType_Octa_Repository = new GenericRepo<LMS_CMS_DAL.Models.Octa.SchoolType>(octa_Db);
+                }
+                return SchoolType_Octa_Repository;
             }
         }
 
@@ -428,13 +441,13 @@ namespace LMS_CMS_BL.UOW
                 return Subject_Repository;
             }
         }
-        public GenericRepo<SchoolType> schoolType_Repository
+        public GenericRepo<LMS_CMS_DAL.Models.Domains.LMS.SchoolType> schoolType_Repository
         {
             get
             {
                 if (SchoolType_Repository == null)
                 {
-                    SchoolType_Repository = new GenericRepo<SchoolType>(db);
+                    SchoolType_Repository = new GenericRepo<LMS_CMS_DAL.Models.Domains.LMS.SchoolType>(db);
                 }
                 return SchoolType_Repository;
             }

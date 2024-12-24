@@ -221,6 +221,14 @@ namespace LMS_CMS_PL.Controllers.Octa
                     AddPageWithChildren(page, Unit_Of_Work);
                 }
             }
+            //// add schoolType
+            List<LMS_CMS_DAL.Models.Octa.SchoolType> SchoolTypes = _Unit_Of_Work.schoolType_Octa_Repository.Select_All_Octa();
+            foreach (var item in SchoolTypes)
+            {
+                LMS_CMS_DAL.Models.Domains.LMS.SchoolType schoolType = new LMS_CMS_DAL.Models.Domains.LMS.SchoolType();
+                schoolType.Name = item.Name;
+                Unit_Of_Work.schoolType_Repository.Add(schoolType);
+            }
 
             Unit_Of_Work.SaveChanges();
 

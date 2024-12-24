@@ -12,6 +12,7 @@ namespace LMS_CMS_DAL.Models.Octa
         public DbSet<Domain> Domains { get; set; }
         public DbSet<Octa> Octa { get; set; }
         public DbSet<Page> Page { get; set; }
+        public DbSet<SchoolType> SchoolType { get; set; }
 
 
         public Octa_DbContext(DbContextOptions<Octa_DbContext> options)
@@ -36,6 +37,9 @@ namespace LMS_CMS_DAL.Models.Octa
             modelBuilder.Entity<Page>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
+            modelBuilder.Entity<SchoolType>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
 
             ////////////////////////////////////////////
             modelBuilder.Entity<Page>()

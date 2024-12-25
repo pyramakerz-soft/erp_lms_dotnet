@@ -39,7 +39,6 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<AcademicYear> AcademicYear_Repository;
         GenericRepo<Semester> Semester_Repository;
         GenericRepo<EmployeeType> EmployeeType_Repository;
-        GenericRepo<Class> Class_Repository;
         GenericRepo<Grade> Grade_Repository;
         GenericRepo<StudentAcademicYear> StudentAcademicYear_Repository;
         GenericRepo<ViolationsModel> Violations_Repository;
@@ -310,18 +309,6 @@ namespace LMS_CMS_BL.UOW
                     EmployeeType_Repository = new GenericRepo<EmployeeType>(db);
                 }
                 return EmployeeType_Repository;
-            }
-        }
-
-        public GenericRepo<Class> class_Repository
-        {
-            get
-            {
-                if (Class_Repository == null)
-                {
-                    Class_Repository = new GenericRepo<Class>(db);
-                }
-                return Class_Repository;
             }
         }
 

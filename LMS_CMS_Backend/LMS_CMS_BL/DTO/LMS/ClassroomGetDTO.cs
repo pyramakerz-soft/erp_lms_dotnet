@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.LMS
 {
-    public class Class_GetDTO
+    public class ClassroomGetDTO
     {
-        public long ID { get; set; }
-        public string Name { get; set; }
     }
 }

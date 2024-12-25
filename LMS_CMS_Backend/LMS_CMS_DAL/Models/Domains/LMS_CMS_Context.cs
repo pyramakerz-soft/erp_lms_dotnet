@@ -31,7 +31,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Bus> Bus { get; set; }
         public DbSet<BusStudent> BusStudent { get; set; }
         public DbSet<StudentAcademicYear> StudentAcademicYear { get; set; }
-        public DbSet<Class> Class { get; set; }
         public DbSet<Grade> Grade { get; set; }
         public DbSet<EmployeeAttachment> EmployeeAttachment { get; set; }
         public DbSet<ViolationsModel> Violations { get; set; }
@@ -89,7 +88,7 @@ namespace LMS_CMS_DAL.Models.Domains
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
-            modelBuilder.Entity<Class>()
+            modelBuilder.Entity<Classroom>()
                 .HasIndex(p => p.Name)
                 .IsUnique();
 
@@ -131,6 +130,14 @@ namespace LMS_CMS_DAL.Models.Domains
 
             modelBuilder.Entity<SchoolType>()
                 .HasIndex(p => p.ID)
+                .IsUnique();
+
+            modelBuilder.Entity<Subject>()
+                .HasIndex(p => p.en_name)
+                .IsUnique();
+
+            modelBuilder.Entity<Subject>()
+                .HasIndex(p => p.ar_name)
                 .IsUnique();
 
             ///////////////////////// OnDelete: /////////////////////////
@@ -262,7 +269,7 @@ namespace LMS_CMS_DAL.Models.Domains
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<StudentAcademicYear>()
-                 .HasOne(p => p.Class)
+                 .HasOne(p => p.Classroom)
                  .WithMany(p => p.StudentAcademicYears)
                  .HasForeignKey(p => p.ClassID)
                  .OnDelete(DeleteBehavior.Restrict);
@@ -339,6 +346,18 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasForeignKey(p => p.SchoolTypeID)
                  .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Floor>()
+                .HasOne(f => f.floorMonitor) 
+                .WithMany(e => e.Floors) 
+                .HasForeignKey(f => f.FloorMonitorID) 
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Employee>()
+                .HasMany(e => e.EmployeeAttachments)
+                .WithOne(ea => ea.Employee)
+                .HasForeignKey(ea => ea.EmployeeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()
                 .HasOne(b => b.DeletedByEmployee)
@@ -346,11 +365,11 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasForeignKey(b => b.DeletedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Employee>()
-                .HasMany(e => e.EmployeeAttachments)
-                .WithOne(ea => ea.Employee)
-                .HasForeignKey(ea => ea.EmployeeID)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Floor>()
+               .HasOne(f => f.DeletedByEmployee)
+               .WithMany()  
+               .HasForeignKey(f => f.DeletedByUserId)
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

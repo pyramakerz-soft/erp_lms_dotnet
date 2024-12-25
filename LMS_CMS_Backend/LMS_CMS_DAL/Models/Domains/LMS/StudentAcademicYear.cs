@@ -27,7 +27,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
 
         public Student Student { get; set; }
         public School School { get; set; }
-        public Class Class { get; set; }
+        public Classroom Classroom { get; set; }
         public Grade Grade { get; set; }
         public Semester Semester { get; set; }
     }

@@ -23,5 +23,6 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public long GradeID { get; set; }
         public Grade Grade { get; set; }
 
+        public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
     }
 }

@@ -18,8 +18,10 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
 
         [ForeignKey("building")]
         public long buildingID { get; set; }
+        [ForeignKey("floorMonitor")]
+        public long? FloorMonitorID { get; set; }
         public Building building { get; set; }
+        public Employee floorMonitor { get; set; }
         public ICollection<Classroom> Classrooms { get; set; } = new HashSet<Classroom>();
-
     }
 }

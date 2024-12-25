@@ -147,10 +147,12 @@ namespace LMS_CMS_BL.Config
             CreateMap<Semester, SemesterAddDTO>()
               .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID));
             CreateMap<SemesterAddDTO, Semester>();
-             
+
             CreateMap<Floor, FloorGetDTO>()
                .ForMember(dest => dest.BuildingID, opt => opt.MapFrom(src => src.building.ID))
-               .ForMember(dest => dest.BuildingName, opt => opt.MapFrom(src => src.building.Name));
+               .ForMember(dest => dest.BuildingName, opt => opt.MapFrom(src => src.building.Name))
+               .ForMember(dest => dest.FloorMonitorID, opt => opt.MapFrom(src => src.floorMonitor.ID))
+               .ForMember(dest => dest.FloorMonitorName, opt => opt.MapFrom(src => src.floorMonitor.en_name));
             CreateMap<FloorAddDTO, Floor>();
             CreateMap<FloorPutDTO, Floor>();
 

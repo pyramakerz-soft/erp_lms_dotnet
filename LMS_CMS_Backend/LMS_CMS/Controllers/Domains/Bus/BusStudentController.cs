@@ -95,7 +95,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                         dto.GradeName = grade.Name;
 
                         dto.ClassID = studentAcademicYear.ClassID;
-                        var classs = Unit_Of_Work.class_Repository.Select_By_Id(dto.ClassID);
+                        var classs = Unit_Of_Work.classroom_Repository.Select_By_Id(dto.ClassID);
                         dto.ClassName = classs.Name;
                     }
                 }
@@ -158,7 +158,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 busStudentDTO.GradeName = grade.Name;
 
                 busStudentDTO.ClassID = studentAcademicYear.ClassID;
-                var classs = Unit_Of_Work.class_Repository.Select_By_Id(busStudentDTO.ClassID);
+                var classs = Unit_Of_Work.classroom_Repository.Select_By_Id(busStudentDTO.ClassID);
                 busStudentDTO.ClassName = classs.Name;
             }
 

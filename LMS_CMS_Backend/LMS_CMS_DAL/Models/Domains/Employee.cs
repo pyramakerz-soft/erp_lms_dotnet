@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.LMS;
 
 namespace LMS_CMS_DAL.Models.Domains
 {
@@ -54,5 +55,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public ICollection<Bus> DrivenBuses { get; set; } = new HashSet<Bus>();
         public ICollection<Bus> DriverAssistant { get; set; } = new HashSet<Bus>();
         public ICollection<EmployeeAttachment> EmployeeAttachments { get; set; } = new HashSet<EmployeeAttachment>();
+        public ICollection<Floor> Floors { get; set; } = new HashSet<Floor>();
     }
 }

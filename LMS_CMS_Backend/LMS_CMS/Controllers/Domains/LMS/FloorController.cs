@@ -37,7 +37,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             List<Floor> floors = await Unit_Of_Work.floor_Repository.Select_All_With_IncludesById<Floor>(
                     f => f.IsDeleted != true,
-                    query => query.Include(emp => emp.building)
+                    query => query.Include(emp => emp.building),
+                    query => query.Include(emp => emp.floorMonitor)
                     );
 
             if (floors == null || floors.Count == 0)
@@ -64,7 +65,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return BadRequest("Enter Floor ID");
             }
 
-            Floor floor = await Unit_Of_Work.floor_Repository.FindByIncludesAsync(t => t.IsDeleted != true && t.ID == id, query => query.Include(e => e.building));
+            Floor floor = await Unit_Of_Work.floor_Repository.FindByIncludesAsync(
+                t => t.IsDeleted != true && t.ID == id, 
+                query => query.Include(e => e.building),
+                query => query.Include(emp => emp.floorMonitor)
+                );
 
 
             if (floor == null)

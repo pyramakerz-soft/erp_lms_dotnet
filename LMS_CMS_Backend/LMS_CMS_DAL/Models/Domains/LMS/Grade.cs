@@ -20,10 +20,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public long SectionID { get; set; }
         public Section Section { get; set; }
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
-        public ICollection<Class> Classes { get; set; } = new HashSet<Class>();
         public ICollection<Subject> Subjects { get; set; } = new HashSet<Subject>();
         public ICollection<Classroom> Classrooms { get; set; } = new HashSet<Classroom>();
-
-
     }
 }

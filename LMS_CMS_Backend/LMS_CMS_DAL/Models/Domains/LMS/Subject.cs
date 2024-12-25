@@ -34,9 +34,6 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("SubjectCategory")]
         public long SubjectCategoryID { get; set; }
         public SubjectCategory SubjectCategory { get; set; }
-
-
-
     }
 }
 

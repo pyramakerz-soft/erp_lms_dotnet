@@ -63,7 +63,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            Class cls = Unit_Of_Work.class_Repository.Select_By_Id(Id);
+            Classroom cls = Unit_Of_Work.classroom_Repository.Select_By_Id(Id);
             if (cls == null)
             {
                 return NotFound("No Class with this Id");

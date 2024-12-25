@@ -8,6 +8,8 @@ using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 
 namespace LMS_CMS_PL.Controllers.Domains.LMS
 {
@@ -17,12 +19,86 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
     public class SubjectController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
+        private readonly FileImageValidationService _fileImageValidationService;
         IMapper mapper;
 
-        public SubjectController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public SubjectController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _fileImageValidationService = fileImageValidationService;
+        }
+
+        [HttpGet]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Subjects", "Administrator" }
+        )]
+        public async Task<IActionResult> GetAsync()
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<Subject> subjects = await Unit_Of_Work.subject_Repository.Select_All_With_IncludesById<Subject>(
+                    f => f.IsDeleted != true,
+                    query => query.Include(emp => emp.Grade),
+                    query => query.Include(emp => emp.SubjectCategory)
+                    );
+
+            if (subjects == null || subjects.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<SubjectGetDTO> subjectsDTO = mapper.Map<List<SubjectGetDTO>>(subjects);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            foreach (var subject in subjectsDTO)
+            {
+                if (!string.IsNullOrEmpty(subject.IconLink))
+                {
+                    subject.IconLink = $"{serverUrl}{subject.IconLink.Replace("\\", "/")}"; 
+                }
+            }
+
+            return Ok(subjectsDTO);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Subjects", "Administrator" }
+        )]
+        public async Task<IActionResult> GetById(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (id == 0)
+            {
+                return BadRequest("Enter Subject ID");
+            }
+
+            Subject subject = await Unit_Of_Work.subject_Repository.FindByIncludesAsync(
+                t => t.IsDeleted != true && t.ID == id, 
+                query => query.Include(e => e.Grade),
+                query => query.Include(e => e.SubjectCategory)
+                );
+
+
+            if (subject == null)
+            {
+                return NotFound();
+            }
+
+            SubjectGetDTO subjectDTO = mapper.Map<SubjectGetDTO>(subject);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            
+            if (!string.IsNullOrEmpty(subjectDTO.IconLink))
+            {
+                subjectDTO.IconLink = $"{serverUrl}{subjectDTO.IconLink.Replace("\\", "/")}";
+            }
+
+            return Ok(subjectDTO);
         }
 
         [HttpPost]
@@ -63,6 +139,15 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 if (subjectCategory == null)
                 {
                     return BadRequest("No Subject Category with this ID");
+                }
+            }
+
+            if (NewSubject.IconFile != null)
+            {
+                string returnFileInput = _fileImageValidationService.ValidateImageFile(NewSubject.IconFile);
+                if (returnFileInput != null)
+                {
+                    return BadRequest(returnFileInput);
                 }
             }
 
@@ -149,8 +234,18 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
             }
 
+            if (EditSubject.IconFile != null)
+            {
+                string returnFileInput = _fileImageValidationService.ValidateImageFile(EditSubject.IconFile);
+                if (returnFileInput != null)
+                {
+                    return BadRequest(returnFileInput);
+                }
+            }
+
             Subject SubjectExists = Unit_Of_Work.subject_Repository.Select_By_Id(EditSubject.ID);
             string iconLinkExists = SubjectExists.IconLink;
+            string enNameExists = SubjectExists.en_name;
             if (SubjectExists == null || SubjectExists.IsDeleted == true)
             {
                 return NotFound("No Subject with this ID");
@@ -199,41 +294,148 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (EditSubject.IconFile != null)
             {
                 var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/SubjectIcon");
+                var oldSubjectFolder = Path.Combine(baseFolder, enNameExists);
                 var subjectFolder = Path.Combine(baseFolder, EditSubject.en_name);
                 if (!Directory.Exists(subjectFolder))
                 {
                     Directory.CreateDirectory(subjectFolder);
                 }
 
-                if (EditSubject.IconFile != null)
+                string existingFilePath = Path.Combine(Directory.GetCurrentDirectory(), iconLinkExists);
+
+                if (System.IO.File.Exists(existingFilePath))
                 {
-                    string existingFilePath = Path.Combine(Directory.GetCurrentDirectory(), iconLinkExists);
+                    System.IO.File.Delete(existingFilePath); // Delete the old file
+                }
 
-                    if (System.IO.File.Exists(existingFilePath))
+                if (EditSubject.IconFile.Length > 0)
+                {
+                    var filePath = Path.Combine(subjectFolder, EditSubject.IconFile.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        System.IO.File.Delete(existingFilePath); // Delete the old file
-                    }
-
-                    if (EditSubject.IconFile.Length > 0)
-                    {
-                        var filePath = Path.Combine(subjectFolder, EditSubject.IconFile.FileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await EditSubject.IconFile.CopyToAsync(stream);
-                        }
+                        await EditSubject.IconFile.CopyToAsync(stream);
                     }
                 }
 
                 SubjectExists.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, EditSubject.IconFile.FileName);
+                if (oldSubjectFolder != null)
+                {
+                    Directory.Delete(oldSubjectFolder);
+                }
             }
             else
             {
-                SubjectExists.IconLink = EditSubject.IconLink;
+                if (EditSubject.en_name != enNameExists)
+                {
+                    var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/SubjectIcon");
+                    var oldSubjectFolder = Path.Combine(baseFolder, enNameExists);
+                    var newSubjectFolder = Path.Combine(baseFolder, EditSubject.en_name);
+
+                    // Rename the folder if it exists
+                    if (Directory.Exists(oldSubjectFolder))
+                    {
+                        if (!Directory.Exists(newSubjectFolder))
+                        {
+                            Directory.CreateDirectory(newSubjectFolder);
+                        }
+                         
+                        var files = Directory.GetFiles(oldSubjectFolder);
+                        foreach (var file in files)
+                        {
+                            var fileName = Path.GetFileName(file);
+                            var destFile = Path.Combine(newSubjectFolder, fileName);
+                            System.IO.File.Move(file, destFile);
+                        }
+                         
+                        Directory.Delete(oldSubjectFolder);
+                    }
+                }
+                SubjectExists.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, Path.GetFileName(iconLinkExists));
             }
 
             Unit_Of_Work.subject_Repository.Update(SubjectExists);
             Unit_Of_Work.SaveChanges();
             return Ok(EditSubject);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Subjects", "Administrator" }
+        )]
+        public IActionResult Delete(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (id == 0)
+            {
+                return BadRequest("Enter Subject ID");
+            }
+
+            Subject subject = Unit_Of_Work.subject_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+
+
+            if (subject == null)
+            {
+                return NotFound();
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subjects");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
+                    {
+                        if (subject.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Subjects page doesn't exist");
+                }
+            }
+
+            subject.IsDeleted = true;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            subject.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                subject.DeletedByOctaId = userId;
+                if (subject.DeletedByUserId != null)
+                {
+                    subject.DeletedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                subject.DeletedByUserId = userId;
+                if (subject.DeletedByOctaId != null)
+                {
+                    subject.DeletedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.subject_Repository.Update(subject);
+            Unit_Of_Work.SaveChanges();
+            return Ok();
         }
     }
 }

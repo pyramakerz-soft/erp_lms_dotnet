@@ -161,6 +161,11 @@ namespace LMS_CMS_BL.Config
             CreateMap<EmployeeAttachment, EmployeeAttachmentDTO>();
             CreateMap<EmployeeAttachmentDTO, EmployeeAttachment>();
 
+            CreateMap<Subject, SubjectGetDTO>()
+                .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name))
+                .ForMember(dest => dest.GradeID, opt => opt.MapFrom(src => src.Grade.ID))
+                .ForMember(dest => dest.SubjectCategoryID, opt => opt.MapFrom(src => src.SubjectCategory.ID))
+                .ForMember(dest => dest.SubjectCategoryName, opt => opt.MapFrom(src => src.SubjectCategory.Name));
             CreateMap<SubjectAddDTO, Subject>();
             CreateMap<SubjectPutDTO, Subject>();
        

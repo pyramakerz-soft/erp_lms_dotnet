@@ -96,6 +96,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<DynamicDatabaseService>();
             builder.Services.AddScoped<DbContextFactoryService>();
             builder.Services.AddScoped<GenerateJWTService>();
+            builder.Services.AddScoped<FileImageValidationService>();
 
 
             /// 2)

@@ -21,8 +21,8 @@ namespace LMS_CMS_BL.DTO.LMS
         public string IconLink { get; set; }
         public int NumberOfSessionPerWeek { get; set; }
         public long GradeID { get; set; }
-        public long GradeName { get; set; }
+        public string GradeName { get; set; }
         public long SubjectCategoryID { get; set; }
-        public long SubjectCategoryName { get; set; }
+        public string SubjectCategoryName { get; set; }
     }
 }

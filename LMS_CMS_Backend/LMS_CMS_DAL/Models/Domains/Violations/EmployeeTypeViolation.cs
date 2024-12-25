@@ -19,6 +19,6 @@ namespace LMS_CMS_DAL.Models.Domains.Violations
         public long ViolationID { get; set; }
 
         public EmployeeType EmployeeType { get; set; }
-        public Violations Violation { get; set; }
+        public Violation Violation { get; set; }
     }
 }

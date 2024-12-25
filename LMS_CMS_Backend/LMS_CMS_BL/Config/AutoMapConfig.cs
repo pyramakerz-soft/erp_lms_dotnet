@@ -183,6 +183,15 @@ namespace LMS_CMS_BL.Config
             CreateMap<Role, RolesGetDTO>();
             CreateMap<RolesGetDTO, Role>();
 
+            CreateMap<Grade , GradeAddDTO>()
+                .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Section.ID));
+            CreateMap<GradeAddDTO, Grade>();
+
+            CreateMap<Grade, GradeGetDTO>()
+                .ForMember(dest => dest.SectionName, opt => opt.MapFrom(src => src.Section.Name))
+                .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Section.ID));
+            CreateMap<GradeGetDTO, Grade>();
+
             CreateMap<Section, SectionGetDTO>()
                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID))
                .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.school.Name));

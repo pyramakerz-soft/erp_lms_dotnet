@@ -8,7 +8,7 @@ using LMS_CMS_DAL.Models.Domains;
 
 namespace LMS_CMS_DAL.Models.Domains.Violations
 {
-    public class Violations : AuditableEntity
+    public class Violation : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

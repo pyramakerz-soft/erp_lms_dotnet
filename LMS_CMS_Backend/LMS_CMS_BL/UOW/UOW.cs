@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ViolationsModel = LMS_CMS_DAL.Models.Domains.Violations.Violations;
+using ViolationsModel = LMS_CMS_DAL.Models.Domains.Violations.Violation;
 
 namespace LMS_CMS_BL.UOW
 {
@@ -472,6 +472,11 @@ namespace LMS_CMS_BL.UOW
         public void SaveOctaChanges()
         {
             octa_Db.SaveChanges();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await db.SaveChangesAsync();
         }
     }
 }

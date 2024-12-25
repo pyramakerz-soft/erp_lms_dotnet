@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ViolationsModel = LMS_CMS_DAL.Models.Domains.Violations.Violations;
+using ViolationsModel = LMS_CMS_DAL.Models.Domains.Violations.Violation;
 
 namespace LMS_CMS_DAL.Models.Domains
 {
@@ -60,6 +60,10 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<Parent>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
+
+            modelBuilder.Entity<Role>()
+               .HasIndex(p => p.Name)
+               .IsUnique();
 
             modelBuilder.Entity<Student>()
                 .HasIndex(p => p.Email)

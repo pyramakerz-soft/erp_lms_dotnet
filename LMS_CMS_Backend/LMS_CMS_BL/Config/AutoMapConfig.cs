@@ -114,8 +114,14 @@ namespace LMS_CMS_BL.Config
             CreateMap<LMS_CMS_DAL.Models.Octa.Page, Page_GetDTO>();
             CreateMap<Page_GetDTO, LMS_CMS_DAL.Models.Octa.Page>();
 
-            CreateMap<AcademicYear, AcademicYearGet>();
+            CreateMap<AcademicYear, AcademicYearGet>()
+              .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.School.Name))
+              .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.School.ID));
             CreateMap<AcademicYearGet, AcademicYear>();
+
+            CreateMap<AcademicYear, AcademicYearAddDTO>()
+              .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.School.ID));
+            CreateMap<AcademicYearAddDTO, AcademicYear>();
 
             CreateMap<School, School_GetDTO>()
                  .ForMember(dest => dest.SchoolTypeName, opt => opt.MapFrom(src => src.SchoolType.Name));
@@ -130,8 +136,10 @@ namespace LMS_CMS_BL.Config
             CreateMap<SchoolEditDTO, School>();
 
             CreateMap<EmployeeTypeViolation, EmployeeTypeViolationGetDTO>()
-                .ForMember(dest => dest.EmployeeTypes, opt => opt.MapFrom(src => src.EmployeeType.Name))
-                .ForMember(dest => dest.ViolationsTypes, opt => opt.MapFrom(src => src.Violation.Name));
+                .ForMember(dest => dest.EmployeeTypeName, opt => opt.MapFrom(src => src.EmployeeType.Name))
+                .ForMember(dest => dest.EmployeeTypeID, opt => opt.MapFrom(src => src.EmployeeType.ID))
+                .ForMember(dest => dest.ViolationID, opt => opt.MapFrom(src => src.Violation.ID))
+                .ForMember(dest => dest.ViolationsTypeName, opt => opt.MapFrom(src => src.Violation.Name));
 
             CreateMap<Building, BuildingGetDTO>()
                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID))
@@ -163,7 +171,11 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<SubjectAddDTO, Subject>();
             CreateMap<SubjectPutDTO, Subject>();
-       
+
+
+            CreateMap<Role, RolesGetDTO>();
+            CreateMap<RolesGetDTO, Role>();
+
             CreateMap<Section, SectionGetDTO>()
                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID))
                .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.school.Name));

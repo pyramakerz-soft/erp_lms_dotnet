@@ -67,7 +67,10 @@ namespace LMS_CMS_BL.Repository
         {
             db.Set<TEntity>().Add(entity);
         }
-
+        public async Task AddAsync(TEntity entity)
+        {
+            await db.Set<TEntity>().AddAsync(entity);
+        }
         public void Update(TEntity entity)
         {
             db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;

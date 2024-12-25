@@ -17,5 +17,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public int Number { get; set; }
         public long FloorID { get; set; }
         public long GradeID { get; set; }
+        public long AcademicYearID { get; set; }
     }
 }

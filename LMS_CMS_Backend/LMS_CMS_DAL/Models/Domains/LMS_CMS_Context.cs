@@ -42,7 +42,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Violation> Violation { get; set; }
         public DbSet<EmployeeTypeViolation> EmployeeTypeViolation { get; set; }
 
-
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
             : base(options)
         {

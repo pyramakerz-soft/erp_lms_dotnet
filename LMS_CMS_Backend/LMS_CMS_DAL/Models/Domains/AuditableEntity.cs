@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains
 {
-    [NotMapped]
     public class AuditableEntity
     {
         [ForeignKey("InsertedByEmployee")]

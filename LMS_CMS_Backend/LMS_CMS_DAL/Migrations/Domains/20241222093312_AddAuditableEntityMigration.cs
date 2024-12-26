@@ -15,11 +15,138 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "FK_Bus_Employee_DeletedByUserId",
                 table: "Bus");
 
-            migrationBuilder.DropTable(
-                name: "EmployeeTypeViolation");
+            //migrationBuilder.DropTable(
+            //    name: "EmployeeTypeViolation");
 
-            migrationBuilder.DropTable(
-                name: "Violations");
+            //migrationBuilder.DropTable(
+            //    name: "Violations");
+
+
+
+            //
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DeletedAt",
+                table: "Violations",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "DeletedByOctaId",
+                table: "Violations",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "DeletedByUserId",
+                table: "Violations",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "InsertedAt",
+                table: "Violations",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "InsertedByOctaId",
+                table: "Violations",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "InsertedByUserId",
+                table: "Violations",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDeleted",
+                table: "Violations",
+                type: "bit",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "UpdatedAt",
+                table: "Violations",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "UpdatedByOctaId",
+                table: "Violations",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "UpdatedByUserId",
+                table: "Violations",
+                type: "bigint",
+                nullable: true);
+            ///
+
+            //
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DeletedAt",
+                table: "EmployeeTypeViolation",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "DeletedByOctaId",
+                table: "EmployeeTypeViolation",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "DeletedByUserId",
+                table: "EmployeeTypeViolation",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "InsertedAt",
+                table: "EmployeeTypeViolation",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "InsertedByOctaId",
+                table: "EmployeeTypeViolation",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "InsertedByUserId",
+                table: "EmployeeTypeViolation",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDeleted",
+                table: "EmployeeTypeViolation",
+                type: "bit",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "UpdatedAt",
+                table: "EmployeeTypeViolation",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "UpdatedByOctaId",
+                table: "EmployeeTypeViolation",
+                type: "bigint",
+                nullable: true);
+
+            migrationBuilder.AddColumn<long>(
+                name: "UpdatedByUserId",
+                table: "EmployeeTypeViolation",
+                type: "bigint",
+                nullable: true);
+            ///
+
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "DeletedAt",
@@ -1157,61 +1284,145 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "UpdatedByUserId",
                 table: "Building");
 
-            migrationBuilder.CreateTable(
-                name: "Violations",
-                columns: table => new
-                {
-                    ID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Violations", x => x.ID);
-                });
+            //
+            migrationBuilder.DropColumn(
+               name: "DeletedAt",
+               table: "EmployeeTypeViolation");
 
-            migrationBuilder.CreateTable(
-                name: "EmployeeTypeViolation",
-                columns: table => new
-                {
-                    ID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeTypeID = table.Column<long>(type: "bigint", nullable: true),
-                    ViolationID = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmployeeTypeViolation", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_EmployeeTypeViolation_EmployeeType_EmployeeTypeID",
-                        column: x => x.EmployeeTypeID,
-                        principalTable: "EmployeeType",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_EmployeeTypeViolation_Violations_ViolationID",
-                        column: x => x.ViolationID,
-                        principalTable: "Violations",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.DropColumn(
+                name: "DeletedByOctaId",
+                table: "EmployeeTypeViolation");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_EmployeeTypeViolation_EmployeeTypeID",
-                table: "EmployeeTypeViolation",
-                column: "EmployeeTypeID");
+            migrationBuilder.DropColumn(
+                name: "DeletedByUserId",
+                table: "EmployeeTypeViolation");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_EmployeeTypeViolation_ViolationID",
-                table: "EmployeeTypeViolation",
-                column: "ViolationID");
+            migrationBuilder.DropColumn(
+                name: "InsertedAt",
+                table: "EmployeeTypeViolation");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Bus_Employee_DeletedByUserId",
-                table: "Bus",
-                column: "DeletedByUserId",
-                principalTable: "Employee",
-                principalColumn: "ID",
-                onDelete: ReferentialAction.SetNull);
+            migrationBuilder.DropColumn(
+                name: "InsertedByOctaId",
+                table: "EmployeeTypeViolation");
+
+            migrationBuilder.DropColumn(
+                name: "InsertedByUserId",
+                table: "EmployeeTypeViolation");
+
+            migrationBuilder.DropColumn(
+                name: "IsDeleted",
+                table: "EmployeeTypeViolation");
+
+            migrationBuilder.DropColumn(
+                name: "UpdatedAt",
+                table: "EmployeeTypeViolation");
+
+            migrationBuilder.DropColumn(
+                name: "UpdatedByOctaId",
+                table: "EmployeeTypeViolation");
+
+            migrationBuilder.DropColumn(
+                name: "UpdatedByUserId",
+                table: "EmployeeTypeViolation");
+            //
+
+            //
+            migrationBuilder.DropColumn(
+               name: "DeletedAt",
+               table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "DeletedByOctaId",
+                table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "DeletedByUserId",
+                table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "InsertedAt",
+                table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "InsertedByOctaId",
+                table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "InsertedByUserId",
+                table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "IsDeleted",
+                table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "UpdatedAt",
+                table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "UpdatedByOctaId",
+                table: "Violations");
+
+            migrationBuilder.DropColumn(
+                name: "UpdatedByUserId",
+                table: "Violations");
+            //
+
+            //migrationBuilder.CreateTable(
+            //    name: "Violations",
+            //    columns: table => new
+            //    {
+            //        ID = table.Column<long>(type: "bigint", nullable: false)
+            //            .Annotation("SqlServer:Identity", "1, 1"),
+            //        Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_Violations", x => x.ID);
+            //    });
+
+            //migrationBuilder.CreateTable(
+            //    name: "EmployeeTypeViolation",
+            //    columns: table => new
+            //    {
+            //        ID = table.Column<long>(type: "bigint", nullable: false)
+            //            .Annotation("SqlServer:Identity", "1, 1"),
+            //        EmployeeTypeID = table.Column<long>(type: "bigint", nullable: true),
+            //        ViolationID = table.Column<long>(type: "bigint", nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_EmployeeTypeViolation", x => x.ID);
+            //        table.ForeignKey(
+            //            name: "FK_EmployeeTypeViolation_EmployeeType_EmployeeTypeID",
+            //            column: x => x.EmployeeTypeID,
+            //            principalTable: "EmployeeType",
+            //            principalColumn: "ID");
+            //        table.ForeignKey(
+            //            name: "FK_EmployeeTypeViolation_Violations_ViolationID",
+            //            column: x => x.ViolationID,
+            //            principalTable: "Violations",
+            //            principalColumn: "ID",
+            //            onDelete: ReferentialAction.Cascade);
+            //    });
+
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_EmployeeTypeViolation_EmployeeTypeID",
+            //    table: "EmployeeTypeViolation",
+            //    column: "EmployeeTypeID");
+
+            //migrationBuilder.CreateIndex(
+            //    name: "IX_EmployeeTypeViolation_ViolationID",
+            //    table: "EmployeeTypeViolation",
+            //    column: "ViolationID");
+
+            //migrationBuilder.AddForeignKey(
+            //    name: "FK_Bus_Employee_DeletedByUserId",
+            //    table: "Bus",
+            //    column: "DeletedByUserId",
+            //    principalTable: "Employee",
+            //    principalColumn: "ID",
+            //    onDelete: ReferentialAction.SetNull);
         }
     }
 }

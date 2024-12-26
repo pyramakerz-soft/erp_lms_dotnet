@@ -92,10 +92,6 @@ namespace LMS_CMS_DAL.Models.Domains
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
-            modelBuilder.Entity<Classroom>()
-                .HasIndex(p => p.Name)
-                .IsUnique();
-
             modelBuilder.Entity<Grade>()
                 .HasIndex(p => p.Name)
                 .IsUnique();

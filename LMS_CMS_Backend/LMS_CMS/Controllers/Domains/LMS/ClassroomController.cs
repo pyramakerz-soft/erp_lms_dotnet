@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Migrations.Domains;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
@@ -35,7 +36,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<Classroom> classrooms = await Unit_Of_Work.classroom_Repository.Select_All_With_IncludesById<Floor>(
+            List<Classroom> classrooms = await Unit_Of_Work.classroom_Repository.Select_All_With_IncludesById<Classroom>(
                     f => f.IsDeleted != true,
                     query => query.Include(emp => emp.Grade),
                     query => query.Include(emp => emp.AcademicYear),
@@ -332,6 +333,79 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
 
             Unit_Of_Work.classroom_Repository.Update(classroom);
+            Unit_Of_Work.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPut("CopyClassroom")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Classrooms", "Administrator" }
+        )]
+        public IActionResult CopyClassroom(CopyClassroomDTO copyClassroomDTO)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (copyClassroomDTO == null)
+            {
+                return BadRequest("Copy Classroom cannot be null");
+            }
+
+            if (copyClassroomDTO.FromAcademicYearID != 0)
+            {
+                AcademicYear academicYearFrom = Unit_Of_Work.academicYear_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == copyClassroomDTO.FromAcademicYearID);
+                if (academicYearFrom == null)
+                {
+                    return BadRequest("No From Academic Year with this ID");
+                }
+            }
+
+            if (copyClassroomDTO.ToAcademicYearID != 0)
+            {
+                AcademicYear academicYearTo = Unit_Of_Work.academicYear_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == copyClassroomDTO.ToAcademicYearID);
+                if (academicYearTo == null)
+                {
+                    return BadRequest("No To Academic Year with this ID");
+                }
+            }
+
+            List<Classroom> FromClassRooms = Unit_Of_Work.classroom_Repository.FindBy(t => t.IsDeleted != true && t.AcademicYearID == copyClassroomDTO.FromAcademicYearID);
+
+            if (FromClassRooms == null || FromClassRooms.Count == 0)
+            {
+                return NotFound();
+            }
+            for (int i = 0; i < FromClassRooms.Count; i++)
+            {
+                ClassroomAddDTO ClassroomAddDTO = mapper.Map<ClassroomAddDTO>(FromClassRooms[i]);
+                ClassroomAddDTO.AcademicYearID = copyClassroomDTO.ToAcademicYearID;
+
+                Classroom Classroom = mapper.Map<Classroom>(ClassroomAddDTO);
+
+                TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+                Classroom.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "octa")
+                {
+                    Classroom.InsertedByOctaId = userId;
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    Classroom.InsertedByUserId = userId;
+                }
+
+                Unit_Of_Work.classroom_Repository.Add(Classroom);
+            }
+
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

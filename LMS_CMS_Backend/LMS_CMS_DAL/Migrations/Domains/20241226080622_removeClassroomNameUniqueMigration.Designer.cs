@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20241225134029_AcademicYearInClassroomMigration")]
-    partial class AcademicYearInClassroomMigration
+    [Migration("20241226080622_removeClassroomNameUniqueMigration")]
+    partial class removeClassroomNameUniqueMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -859,9 +859,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("InsertedByUserId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.HasIndex("UpdatedByUserId");
 
                     b.ToTable("Classroom");
@@ -941,6 +938,14 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<string>("DateFrom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DateTo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");

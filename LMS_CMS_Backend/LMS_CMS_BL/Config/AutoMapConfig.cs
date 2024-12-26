@@ -206,6 +206,7 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.AcademicYearName, opt => opt.MapFrom(src => src.AcademicYear.Name))
                 .ForMember(dest => dest.FloorName, opt => opt.MapFrom(src => src.Floor.Name));
             CreateMap<ClassroomAddDTO, Classroom>();
+            CreateMap<Classroom, ClassroomAddDTO>();
             CreateMap<ClassroomPutDTO, Classroom>();
         }
     }

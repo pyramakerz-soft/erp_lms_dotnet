@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LMS_CMS_DAL.Migrations.Domians
+namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20241225125839_dateFromInGrade")]
-    partial class dateFromInGrade
+    [Migration("20241226072826_UpdateGradeAndAcademicYearTablesMigration")]
+    partial class UpdateGradeAndAcademicYearTablesMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -797,6 +797,9 @@ namespace LMS_CMS_DAL.Migrations.Domians
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
+                    b.Property<long>("AcademicYearID")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -842,6 +845,8 @@ namespace LMS_CMS_DAL.Migrations.Domians
                         .HasColumnType("bigint");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("AcademicYearID");
 
                     b.HasIndex("DeletedByUserId");
 
@@ -2165,6 +2170,12 @@ namespace LMS_CMS_DAL.Migrations.Domians
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Classroom", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.AcademicYear", "AcademicYear")
+                        .WithMany("Classrooms")
+                        .HasForeignKey("AcademicYearID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -2188,6 +2199,8 @@ namespace LMS_CMS_DAL.Migrations.Domians
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("AcademicYear");
 
                     b.Navigation("DeletedByEmployee");
 
@@ -2660,6 +2673,8 @@ namespace LMS_CMS_DAL.Migrations.Domians
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.AcademicYear", b =>
                 {
+                    b.Navigation("Classrooms");
+
                     b.Navigation("Semesters");
                 });
 

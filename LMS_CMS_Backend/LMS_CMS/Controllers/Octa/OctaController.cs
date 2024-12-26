@@ -1,5 +1,4 @@
 ﻿using LMS_CMS_BL.UOW;
-using LMS_CMS_DAL.Migrations.Domains;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;

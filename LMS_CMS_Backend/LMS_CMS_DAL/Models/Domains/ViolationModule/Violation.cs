@@ -5,14 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_BL.DTO.LMS
+namespace LMS_CMS_DAL.Models.Domains.ViolationModule
 {
-    public class SchoolTypeGetDTO
+    public class Violation : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
+        public ICollection<EmployeeTypeViolation> EmployeeTypeViolations { get; set; } = new HashSet<EmployeeTypeViolation>();
+
     }
 }

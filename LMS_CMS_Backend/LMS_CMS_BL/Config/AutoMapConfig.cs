@@ -2,11 +2,12 @@
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.DTO.LMS;
+using LMS_CMS_BL.DTO.Octa;
 using LMS_CMS_BL.DTO.Violation;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
-using LMS_CMS_DAL.Models.Domains.Violations;
+using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using LMS_CMS_DAL.Models.Octa;
 using System;
 using System.Collections.Generic;
@@ -208,6 +209,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<ClassroomAddDTO, Classroom>();
             CreateMap<Classroom, ClassroomAddDTO>();
             CreateMap<ClassroomPutDTO, Classroom>();
+
+            CreateMap<DTO.Octa.SchoolTypeAddDTO, LMS_CMS_DAL.Models.Octa.SchoolType>();
         }
     }
 }

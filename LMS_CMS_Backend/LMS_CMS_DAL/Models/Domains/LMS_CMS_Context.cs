@@ -1,13 +1,12 @@
 ﻿using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
-using LMS_CMS_DAL.Models.Domains.Violations;
+using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ViolationsModel = LMS_CMS_DAL.Models.Domains.Violations.Violation;
 
 namespace LMS_CMS_DAL.Models.Domains
 {
@@ -35,6 +34,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<EmployeeAttachment> EmployeeAttachment { get; set; }
         public DbSet<Violation> Violation { get; set; }
         public DbSet<EmployeeTypeViolation> EmployeeTypeViolation { get; set; }
+
         public DbSet<Subject> Subject { get; set; }
         public DbSet<SubjectCategory> SubjectCategory { get; set; }
         public DbSet<Floor> Floor { get; set; }
@@ -92,45 +92,21 @@ namespace LMS_CMS_DAL.Models.Domains
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
+            modelBuilder.Entity<SchoolType>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
             modelBuilder.Entity<Grade>()
                 .HasIndex(p => p.Name)
                 .IsUnique();
 
             modelBuilder.Entity<EmployeeAttachment>()
                 .HasIndex(p => p.Link)
-                .IsUnique();
-
-            modelBuilder.Entity<Subject>()
-                .HasIndex(p => p.ID)
-                .IsUnique();
-
-            modelBuilder.Entity<SubjectCategory>()
-                .HasIndex(p => p.ID)
-                .IsUnique();
-
-            modelBuilder.Entity<Floor>()
-                .HasIndex(p => p.ID)
-                .IsUnique();
-
-            modelBuilder.Entity<Building>()
-                .HasIndex(p => p.ID)
-                .IsUnique();
-
-            modelBuilder.Entity<Section>()
-                .HasIndex(p => p.ID)
-                .IsUnique();
+                .IsUnique(); 
 
             modelBuilder.Entity<Section>()
                 .HasIndex(p => p.Name)
-                .IsUnique();
-
-            modelBuilder.Entity<Classroom>()
-                .HasIndex(p => p.ID)
-                .IsUnique();
-
-            modelBuilder.Entity<SchoolType>()
-                .HasIndex(p => p.ID)
-                .IsUnique();
+                .IsUnique(); 
 
             modelBuilder.Entity<Subject>()
                 .HasIndex(p => p.en_name)
@@ -139,6 +115,10 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<Subject>()
                 .HasIndex(p => p.ar_name)
                 .IsUnique();
+            
+            //modelBuilder.Entity<Violation>()
+            //    .HasIndex(p => p.Name)
+            //    .IsUnique();
 
             modelBuilder.Entity<Violation>()
                 .HasIndex(p => p.Name)

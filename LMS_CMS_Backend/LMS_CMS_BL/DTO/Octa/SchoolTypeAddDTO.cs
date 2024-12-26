@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LMS_CMS_BL.DTO.LMS
+namespace LMS_CMS_BL.DTO.Octa
 {
     public class SchoolTypeAddDTO
     {

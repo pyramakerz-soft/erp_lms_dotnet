@@ -1,4 +1,4 @@
-﻿using LMS_CMS_DAL.Models.Domains.Violations;
+﻿using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

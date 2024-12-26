@@ -118,7 +118,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Bus");
+                    b.ToTable("Bus", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusCategory", b =>
@@ -172,7 +172,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusCategory");
+                    b.ToTable("BusCategory", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusCompany", b =>
@@ -226,7 +226,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusCompany");
+                    b.ToTable("BusCompany", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusDistrict", b =>
@@ -280,7 +280,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusDistrict");
+                    b.ToTable("BusDistrict", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusStatus", b =>
@@ -334,7 +334,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusStatus");
+                    b.ToTable("BusStatus", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusStudent", b =>
@@ -412,7 +412,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusStudent");
+                    b.ToTable("BusStudent", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.BusType", b =>
@@ -466,7 +466,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("BusType");
+                    b.ToTable("BusType", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Employee", b =>
@@ -570,7 +570,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("User_Name")
                         .IsUnique();
 
-                    b.ToTable("Employee");
+                    b.ToTable("Employee", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.EmployeeAttachment", b =>
@@ -636,7 +636,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("EmployeeAttachment");
+                    b.ToTable("EmployeeAttachment", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.EmployeeType", b =>
@@ -651,10 +651,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("EmployeeType");
+                    b.ToTable("EmployeeType", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.AcademicYear", b =>
@@ -724,7 +721,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("AcademicYear");
+                    b.ToTable("AcademicYear", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Building", b =>
@@ -777,16 +774,13 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("DeletedByUserId");
 
-                    b.HasIndex("ID")
-                        .IsUnique();
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("SchoolID");
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Building");
+                    b.ToTable("Building", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Classroom", b =>
@@ -854,14 +848,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("GradeID");
 
-                    b.HasIndex("ID")
-                        .IsUnique();
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Classroom");
+                    b.ToTable("Classroom", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Floor", b =>
@@ -919,16 +910,13 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("FloorMonitorID");
 
-                    b.HasIndex("ID")
-                        .IsUnique();
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("UpdatedByUserId");
 
                     b.HasIndex("buildingID");
 
-                    b.ToTable("Floor");
+                    b.ToTable("Floor", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Grade", b =>
@@ -998,7 +986,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Grade");
+                    b.ToTable("Grade", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.School", b =>
@@ -1060,64 +1048,22 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("School");
+                    b.ToTable("School", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.SchoolType", b =>
                 {
                     b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeletedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeletedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("InsertedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("InsertedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("InsertedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("UpdatedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("UpdatedByUserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("ID");
 
-                    b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("ID")
-                        .IsUnique();
-
-                    b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByUserId");
-
-                    b.ToTable("SchoolType");
+                    b.ToTable("SchoolType", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Section", b =>
@@ -1170,9 +1116,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("DeletedByUserId");
 
-                    b.HasIndex("ID")
-                        .IsUnique();
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Name")
@@ -1182,7 +1125,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Section");
+                    b.ToTable("Section", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Semester", b =>
@@ -1249,7 +1192,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Semester");
+                    b.ToTable("Semester", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Student", b =>
@@ -1333,7 +1276,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("User_Name")
                         .IsUnique();
 
-                    b.ToTable("Student");
+                    b.ToTable("Student", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.StudentAcademicYear", b =>
@@ -1407,7 +1350,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("StudentAcademicYear");
+                    b.ToTable("StudentAcademicYear", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Subject", b =>
@@ -1496,9 +1439,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("GradeID");
 
-                    b.HasIndex("ID")
-                        .IsUnique();
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("SubjectCategoryID");
@@ -1511,7 +1451,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("en_name")
                         .IsUnique();
 
-                    b.ToTable("Subject");
+                    b.ToTable("Subject", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.SubjectCategory", b =>
@@ -1561,14 +1501,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("DeletedByUserId");
 
-                    b.HasIndex("ID")
-                        .IsUnique();
-
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("SubjectCategory");
+                    b.ToTable("SubjectCategory", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Page", b =>
@@ -1602,7 +1539,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("en_name")
                         .IsUnique();
 
-                    b.ToTable("Page");
+                    b.ToTable("Page", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Parent", b =>
@@ -1681,7 +1618,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("User_Name")
                         .IsUnique();
 
-                    b.ToTable("Parent");
+                    b.ToTable("Parent", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Role", b =>
@@ -1738,7 +1675,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Role");
+                    b.ToTable("Role", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Role_Detailes", b =>
@@ -1809,64 +1746,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Role_Detailes");
-                });
-
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Violations.Violation", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeletedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeletedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("InsertedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("InsertedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("InsertedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("UpdatedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("UpdatedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("UpdatedByUserId");
-
-                    b.ToTable("Violation");
+                    b.ToTable("Role_Detailes", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.BusModule.Bus", b =>
@@ -2362,27 +2242,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("UpdatedByEmployee");
                 });
 
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.SchoolType", b =>
-                {
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByUserId");
-
-                    b.Navigation("DeletedByEmployee");
-
-                    b.Navigation("InsertedByEmployee");
-
-                    b.Navigation("UpdatedByEmployee");
-                });
-
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Section", b =>
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
@@ -2673,27 +2532,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("Page");
 
                     b.Navigation("Role");
-
-                    b.Navigation("UpdatedByEmployee");
-                });
-
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Violations.Violation", b =>
-                {
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByUserId");
-
-                    b.Navigation("DeletedByEmployee");
-
-                    b.Navigation("InsertedByEmployee");
 
                     b.Navigation("UpdatedByEmployee");
                 });

@@ -44,7 +44,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<SchoolType> SchoolType { get; set; }
 
 
-
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
             : base(options)
         {

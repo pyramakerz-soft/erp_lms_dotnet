@@ -32,52 +32,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         ///////////////////////////////////////////
 
         [HttpGet]
-        //[Authorize_Endpoint_(
-        //    allowedTypes: new[] { "octa", "employee" },
-        //    pages: new[] { "Violation Types", "Administrator" }
-        //)]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Violation Types", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
+            List<EmployeeTypeViolation> EmpTypeViolations = Unit_Of_Work.employeeTypeViolation_Repository.Select_All(); 
 
-            List<EmployeeTypeViolation> EmpTypeViolations = await Unit_Of_Work.employeeTypeViolation_Repository.Select_All_With_IncludesById<EmployeeTypeViolation>(
-                    bus => bus.IsDeleted != true,
-                    query => query.Include(emp => emp.EmployeeType),
-                    query => query.Include(assisstant => assisstant.Violation)
-                    );
-
-            if (EmpTypeViolations == null || EmpTypeViolations.Count == 0)
-            {
-                return NotFound();
-            }
-
-            List<EmployeeTypeViolationGetDTO> EmpTypeViolationsDTO = mapper.Map<List<EmployeeTypeViolationGetDTO>>(EmpTypeViolations);
-
-            return Ok(EmpTypeViolationsDTO);
-        }
-
-        ///////////////////////////////////////////
-
-        [HttpGet("GetByEmployeeType/{id}")]
-        public async Task<IActionResult> GetAsyncByEmployeeType(long id)
-        {
-            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-
-            var userClaims = HttpContext.User.Claims;
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-            if (userIdClaim == null || userTypeClaim == null)
-            {
-                return Unauthorized("User ID or Type claim not found.");
-            }
-            List<EmployeeTypeViolation> EmpTypeViolations = await Unit_Of_Work.employeeTypeViolation_Repository.Select_All_With_IncludesById<EmployeeTypeViolation>(
-                     emp => emp.IsDeleted != true&&emp.EmployeeTypeID == id,
-                     query => query.Include(emp => emp.EmployeeType),
-                     query => query.Include(assisstant => assisstant.Violation)
-                     );
+            //List<EmployeeTypeViolation> EmpTypeViolations = await Unit_Of_Work.employeeTypeViolation_Repository.Select_All_With_IncludesById<EmployeeTypeViolation>(
+            //        bus => bus.IsDeleted != true,
+            //        query => query.Include(emp => emp.EmployeeType),
+            //        query => query.Include(assisstant => assisstant.Violation)
+            //        );
 
             if (EmpTypeViolations == null || EmpTypeViolations.Count == 0)
             {
@@ -91,35 +60,67 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
         ///////////////////////////////////////////
 
-        [HttpGet("id")]
+        //[HttpGet("GetByEmployeeType/{id}")]
+        //public async Task<IActionResult> GetAsyncByEmployeeType(long id)
+        //{
+        //    UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-        public async Task<IActionResult> GetAsyncByID(long id)
-        {
-            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+        //    var userClaims = HttpContext.User.Claims;
+        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        //    long.TryParse(userIdClaim, out long userId);
+        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-            var userClaims = HttpContext.User.Claims;
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+        //    if (userIdClaim == null || userTypeClaim == null)
+        //    {
+        //        return Unauthorized("User ID or Type claim not found.");
+        //    }
+        //    List<EmployeeTypeViolation> EmpTypeViolations = await Unit_Of_Work.employeeTypeViolation_Repository.Select_All_With_IncludesById<EmployeeTypeViolation>(
+        //             emp => emp.IsDeleted != true&&emp.EmployeeTypeID == id,
+        //             query => query.Include(emp => emp.EmployeeType),
+        //             query => query.Include(assisstant => assisstant.Violation)
+        //             );
 
-            if (userIdClaim == null || userTypeClaim == null)
-            {
-                return Unauthorized("User ID or Type claim not found.");
-            }
-            EmployeeTypeViolation EmployeeTypeViolation = await Unit_Of_Work.employeeTypeViolation_Repository.FindByIncludesAsync(
-                    sem => sem.IsDeleted != true && sem.ID == id,
-                    query => query.Include(emp => emp.EmployeeType),
-                    query => query.Include(assisstant => assisstant.Violation));
+        //    if (EmpTypeViolations == null || EmpTypeViolations.Count == 0)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (EmployeeTypeViolation == null)
-            {
-                return NotFound();
-            }
+        //    List<EmployeeTypeViolationGetDTO> EmpTypeViolationsDTO = mapper.Map<List<EmployeeTypeViolationGetDTO>>(EmpTypeViolations);
 
-            EmployeeTypeViolationGetDTO EmpTypeViolationsDTO = mapper.Map<EmployeeTypeViolationGetDTO>(EmployeeTypeViolation);
+        //    return Ok(EmpTypeViolationsDTO);
+        //}
 
-            return Ok(EmpTypeViolationsDTO);
-        }
+        ///////////////////////////////////////////
+
+        //[HttpGet("id")]
+
+        //public async Task<IActionResult> GetAsyncByID(long id)
+        //{
+        //    UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+        //    var userClaims = HttpContext.User.Claims;
+        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        //    long.TryParse(userIdClaim, out long userId);
+        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+        //    if (userIdClaim == null || userTypeClaim == null)
+        //    {
+        //        return Unauthorized("User ID or Type claim not found.");
+        //    }
+        //    EmployeeTypeViolation EmployeeTypeViolation = await Unit_Of_Work.employeeTypeViolation_Repository.FindByIncludesAsync(
+        //            sem => sem.IsDeleted != true && sem.ID == id,
+        //            query => query.Include(emp => emp.EmployeeType),
+        //            query => query.Include(assisstant => assisstant.Violation));
+
+        //    if (EmployeeTypeViolation == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    EmployeeTypeViolationGetDTO EmpTypeViolationsDTO = mapper.Map<EmployeeTypeViolationGetDTO>(EmployeeTypeViolation);
+
+        //    return Ok(EmpTypeViolationsDTO);
+        //}
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
 

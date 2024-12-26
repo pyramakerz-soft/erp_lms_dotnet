@@ -141,6 +141,16 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.EmployeeTypeID, opt => opt.MapFrom(src => src.EmployeeType.ID))
                 .ForMember(dest => dest.ViolationID, opt => opt.MapFrom(src => src.Violation.ID))
                 .ForMember(dest => dest.ViolationsTypeName, opt => opt.MapFrom(src => src.Violation.Name));
+            CreateMap<EmployeeTypeViolation, EmployeeTypeViolationAddDTO>()
+                 .ForMember(dest => dest.ViolationsTypeId, opt => opt.MapFrom(src => src.Violation.ID))
+                .ForMember(dest => dest.EmployeeTypeID, opt => opt.MapFrom(src => src.EmployeeType.ID));
+            CreateMap<EmployeeTypeViolationAddDTO, EmployeeTypeViolation>();
+
+            CreateMap<Violation, ViolationGetDTO>();
+            CreateMap<ViolationGetDTO, Violation>();
+
+            CreateMap<Violation, ViolationAddDTO>();
+            CreateMap<ViolationAddDTO, Violation>();
 
             CreateMap<Building, BuildingGetDTO>()
                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID))

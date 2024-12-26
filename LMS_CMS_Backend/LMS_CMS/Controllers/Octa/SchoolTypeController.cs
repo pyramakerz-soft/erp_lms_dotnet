@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Octa;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Services;
@@ -104,7 +105,7 @@ namespace LMS_CMS_PL.Controllers.Octa
                 // Add The school type to the domian
                 LMS_CMS_DAL.Models.Domains.LMS.SchoolType schoolTypeDomain = new LMS_CMS_DAL.Models.Domains.LMS.SchoolType();
                 schoolTypeDomain.Name = schoolType.Name;
-                //schoolTypeDomain.ID = schoolType.ID;
+                schoolTypeDomain.ID = SchoolTypeDTO.ID;
                 Unit_Of_Work.schoolType_Repository.Add(schoolTypeDomain);
                 Unit_Of_Work.SaveChanges();
             }
@@ -114,7 +115,7 @@ namespace LMS_CMS_PL.Controllers.Octa
 
         ////////////////////////////////////////////////////
         [HttpPut]
-        public IActionResult Edit(LMS_CMS_DAL.Models.Octa.SchoolType schoolType)
+        public IActionResult Edit(SchoolTypePutDTO schoolType)
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
@@ -128,15 +129,42 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Unauthorized("Access Denied");
             }
 
-            _Unit_Of_Work.schoolType_Octa_Repository.Update_Octa(schoolType);
+            LMS_CMS_DAL.Models.Octa.SchoolType schoolTypeExists = _Unit_Of_Work.schoolType_Octa_Repository.Select_By_Id_Octa(schoolType.ID);
+
+            if (schoolTypeExists == null)
+            {
+                return NotFound("No School Type with this ID");
+            }
+
+            mapper.Map(schoolType, schoolTypeExists);
+            _Unit_Of_Work.schoolType_Octa_Repository.Update_Octa(schoolTypeExists);
             _Unit_Of_Work.SaveOctaChanges();
+
+            List<Domain> domains = _Unit_Of_Work.domain_Octa_Repository.Select_All_Octa();
+
+            for (int i = 0; i < domains.Count; i++)
+            {
+                var domainConStr = domains[i].ConnectionString;
+                // Make the DB Connection
+                HttpContext.Items["ConnectionString"] = domainConStr;
+                UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+                // Update The school type in the domian
+                LMS_CMS_DAL.Models.Domains.LMS.SchoolType schoolTypeDomainExists = Unit_Of_Work.schoolType_Repository.Select_By_Id(schoolType.ID);
+
+                mapper.Map(schoolType, schoolTypeDomainExists);
+
+                Unit_Of_Work.schoolType_Repository.Update(schoolTypeDomainExists);
+                Unit_Of_Work.SaveChanges();
+            }
+
             return Ok(schoolType);
         }
 
         ////////////////////////////////////////////////////
 
         [HttpDelete("{id}")]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
@@ -145,14 +173,42 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Unauthorized("User Type claim not found.");
             }
 
-            if (userTypeClaim != "octa")
+            LMS_CMS_DAL.Models.Octa.SchoolType octas = _Unit_Of_Work.schoolType_Octa_Repository.Select_By_Id_Octa(id);
+
+            if (octas == null)
             {
-                return Unauthorized("Access Denied");
+                return NotFound();
             }
 
-            LMS_CMS_DAL.Models.Octa.SchoolType octas = _Unit_Of_Work.schoolType_Octa_Repository.Select_By_Id_Octa(id);
+
+            if (id == 0)
+            {
+                return BadRequest("Enter School Type ID");
+            }
+
             _Unit_Of_Work.schoolType_Octa_Repository.Delete_Octa(id);
             _Unit_Of_Work.SaveOctaChanges();
+
+            List<Domain> domains = _Unit_Of_Work.domain_Octa_Repository.Select_All_Octa();
+
+            for (int i = 0; i < domains.Count; i++)
+            {
+                var domainConStr = domains[i].ConnectionString;
+                // Make the DB Connection
+                HttpContext.Items["ConnectionString"] = domainConStr;
+                UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+                // Delete The school type from the domian
+                LMS_CMS_DAL.Models.Domains.LMS.SchoolType schoolTypeDomainExists = Unit_Of_Work.schoolType_Repository.Select_By_Id(id);
+
+                if (schoolTypeDomainExists == null)
+                {
+                    return NotFound();
+                }
+
+                Unit_Of_Work.schoolType_Repository.Delete(id);
+                Unit_Of_Work.SaveChanges();
+            }
             return Ok();
         }
     }

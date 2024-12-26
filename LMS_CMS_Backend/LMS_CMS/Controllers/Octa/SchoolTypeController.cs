@@ -1,4 +1,8 @@
-﻿using LMS_CMS_BL.UOW;
+﻿using AutoMapper;
+using LMS_CMS_BL.DTO.LMS;
+using LMS_CMS_BL.DTO.Octa;
+using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -15,12 +19,14 @@ namespace LMS_CMS_PL.Controllers.Octa
         private readonly UOW _Unit_Of_Work;
         private readonly DynamicDatabaseService _dynamicDatabaseService;
         private readonly DbContextFactoryService _dbContextFactory;
+        IMapper mapper;
 
-        public SchoolTypeController(DynamicDatabaseService dynamicDatabaseService, UOW Unit_Of_Work, DbContextFactoryService dbContextFactory)
+        public SchoolTypeController(DynamicDatabaseService dynamicDatabaseService, UOW Unit_Of_Work, DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _Unit_Of_Work = Unit_Of_Work;
             _dynamicDatabaseService = dynamicDatabaseService;
             _dbContextFactory = dbContextFactory;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -67,7 +73,7 @@ namespace LMS_CMS_PL.Controllers.Octa
         ////////////////////////////////////////////////////
 
         [HttpPost]
-        public IActionResult Add(LMS_CMS_DAL.Models.Octa.SchoolType schoolType)
+        public IActionResult Add(LMS_CMS_BL.DTO.Octa.SchoolTypeAddDTO schoolType)
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
@@ -80,7 +86,10 @@ namespace LMS_CMS_PL.Controllers.Octa
             {
                 return Unauthorized("Access Denied");
             }
-            _Unit_Of_Work.schoolType_Octa_Repository.Add_Octa(schoolType);
+
+            LMS_CMS_DAL.Models.Octa.SchoolType SchoolTypeDTO = mapper.Map<LMS_CMS_DAL.Models.Octa.SchoolType>(schoolType);
+
+            _Unit_Of_Work.schoolType_Octa_Repository.Add_Octa(SchoolTypeDTO);
             _Unit_Of_Work.SaveOctaChanges();
 
             List<Domain> domains = _Unit_Of_Work.domain_Octa_Repository.Select_All_Octa();
@@ -95,6 +104,7 @@ namespace LMS_CMS_PL.Controllers.Octa
                 // Add The school type to the domian
                 LMS_CMS_DAL.Models.Domains.LMS.SchoolType schoolTypeDomain = new LMS_CMS_DAL.Models.Domains.LMS.SchoolType();
                 schoolTypeDomain.Name = schoolType.Name;
+                //schoolTypeDomain.ID = schoolType.ID;
                 Unit_Of_Work.schoolType_Repository.Add(schoolTypeDomain);
                 Unit_Of_Work.SaveChanges();
             }

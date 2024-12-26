@@ -2,7 +2,7 @@
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
-using LMS_CMS_DAL.Models.Domains.Violations;
+using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ViolationsModel = LMS_CMS_DAL.Models.Domains.Violations.Violation;
 
 namespace LMS_CMS_BL.UOW
 {
@@ -41,7 +40,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<EmployeeType> EmployeeType_Repository;
         GenericRepo<Grade> Grade_Repository;
         GenericRepo<StudentAcademicYear> StudentAcademicYear_Repository;
-        GenericRepo<ViolationsModel> Violations_Repository;
+        GenericRepo<Violation> Violations_Repository;
         GenericRepo<EmployeeAttachment> EmployeeAttachment_Repository;
         GenericRepo<EmployeeTypeViolation> EmployeeTypeViolation_Repository;
         GenericRepo<Subject> Subject_Repository;
@@ -336,13 +335,13 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
-        public GenericRepo<ViolationsModel> violations_Repository
+        public GenericRepo<Violation> violations_Repository
         {
             get
             {
                 if (Violations_Repository == null)
                 {
-                    Violations_Repository = new GenericRepo<ViolationsModel>(db);
+                    Violations_Repository = new GenericRepo<Violation>(db);
                 }
                 return Violations_Repository;
             }

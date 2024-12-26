@@ -5,7 +5,7 @@
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     /// <inheritdoc />
-    public partial class Insert_Employee_Type_Data : Migration
+    public partial class InsertEmployeeTypeMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

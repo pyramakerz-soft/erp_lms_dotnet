@@ -12,7 +12,7 @@ namespace LMS_CMS_BL.DTO.Violation
         public long ID { get; set; }
         public long? EmployeeTypeID { get; set; }
         public long ViolationID { get; set; }
-        public string ViolationsTypeName { get; set; }
-        public string EmployeeTypeName { get; set; }
+        public string? ViolationsTypeName { get; set; }
+        public string? EmployeeTypeName { get; set; }
     }
 }

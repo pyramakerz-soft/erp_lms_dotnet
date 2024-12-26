@@ -183,5 +183,141 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         }
 
         ////////////////////////////////////////////////////
+
+        [HttpPut]
+        public IActionResult Edit(EmployeeTypeViolationGetDTO NewEmployeeTypeViolation)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (NewEmployeeTypeViolation == null)
+            {
+                return BadRequest("Employee Type Violation cannot be null");
+            }
+            if (NewEmployeeTypeViolation.EmployeeTypeID == null)
+            {
+                return BadRequest("EmployeeId Can not be null");
+            }
+            EmployeeType empType = Unit_Of_Work.employeeType_Repository.Select_By_Id(NewEmployeeTypeViolation.EmployeeTypeID);
+            if (empType == null)
+            {
+                return NotFound("this Employee Type Is Not Exist");
+            }
+            Violation vioType = Unit_Of_Work.violations_Repository.Select_By_Id(NewEmployeeTypeViolation.ViolationID);
+            if (vioType == null)
+            {
+                return NotFound("this Violation Type Is Not Exist");
+            }
+            if (vioType.Name != NewEmployeeTypeViolation.ViolationsTypeName) 
+            {
+                vioType.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "octa")
+                {
+                    vioType.UpdatedByOctaId = userId;
+                    if (vioType.UpdatedByUserId != null)
+                    {
+                        vioType.UpdatedByUserId = null;
+                    }
+
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    vioType.UpdatedByUserId = userId;
+                    if (vioType.UpdatedByOctaId != null)
+                    {
+                        vioType.UpdatedByOctaId = null;
+                    }
+                }
+               Unit_Of_Work.violations_Repository.Update(vioType);
+                Unit_Of_Work.SaveChanges();
+            }
+
+            EmployeeTypeViolation employeeTypeViolation = mapper.Map<EmployeeTypeViolation>(NewEmployeeTypeViolation);
+
+            employeeTypeViolation.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                employeeTypeViolation.UpdatedByOctaId = userId;
+                if (employeeTypeViolation.UpdatedByUserId != null)
+                {
+                    employeeTypeViolation.UpdatedByUserId = null;
+                }
+
+            }
+            else if (userTypeClaim == "employee")
+            {
+                employeeTypeViolation.UpdatedByUserId = userId;
+                if (employeeTypeViolation.UpdatedByOctaId != null)
+                {
+                    employeeTypeViolation.UpdatedByOctaId = null;
+                }
+            }
+            Unit_Of_Work.employeeTypeViolation_Repository.Update(employeeTypeViolation);
+            Unit_Of_Work.SaveChanges();
+            return Ok(employeeTypeViolation);
+        }
+
+        //////////////////////////////////////////////////////
+
+        [HttpDelete]
+        public IActionResult delete(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (id == null)
+            {
+                return BadRequest("id cannot be null");
+            }
+            EmployeeTypeViolation employeeTypeViolation = Unit_Of_Work.employeeTypeViolation_Repository.Select_By_Id(id);
+
+            if (employeeTypeViolation == null || employeeTypeViolation.IsDeleted == true)
+            {
+                return NotFound("No semester with this ID");
+            }
+            employeeTypeViolation.IsDeleted = true;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            employeeTypeViolation.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                employeeTypeViolation.DeletedByOctaId = userId;
+                if (employeeTypeViolation.DeletedByUserId != null)
+                {
+                    employeeTypeViolation.DeletedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                employeeTypeViolation.DeletedByUserId = userId;
+                if (employeeTypeViolation.DeletedByOctaId != null)
+                {
+                    employeeTypeViolation.DeletedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.employeeTypeViolation_Repository.Update(employeeTypeViolation);
+            Unit_Of_Work.SaveChanges();
+            return Ok();
+        }
+
     }
 }

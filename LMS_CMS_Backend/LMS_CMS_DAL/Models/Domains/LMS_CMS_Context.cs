@@ -33,7 +33,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<StudentAcademicYear> StudentAcademicYear { get; set; }
         public DbSet<Grade> Grade { get; set; }
         public DbSet<EmployeeAttachment> EmployeeAttachment { get; set; }
-        public DbSet<ViolationsModel> Violations { get; set; }
+        public DbSet<Violation> Violation { get; set; }
         public DbSet<EmployeeTypeViolation> EmployeeTypeViolation { get; set; }
         public DbSet<Subject> Subject { get; set; }
         public DbSet<SubjectCategory> SubjectCategory { get; set; }
@@ -140,6 +140,13 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasIndex(p => p.ar_name)
                 .IsUnique();
 
+            modelBuilder.Entity<Violation>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<EmployeeType>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
             ///////////////////////// OnDelete: /////////////////////////
             modelBuilder.Entity<Page>()
                  .HasOne(p => p.Parent)

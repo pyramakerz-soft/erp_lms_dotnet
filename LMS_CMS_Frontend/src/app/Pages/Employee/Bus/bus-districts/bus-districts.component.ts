@@ -19,8 +19,8 @@ import Swal from 'sweetalert2';
   selector: 'app-bus-Districts',
   standalone: true,
   imports: [CommonModule, FormsModule, SearchComponent],
-  templateUrl: './bus-Districts.component.html',
-  styleUrl: './bus-Districts.component.css'
+  templateUrl: './bus-districts.component.html',
+  styleUrl: './bus-districts.component.css'
 })
 export class BusDistrictsComponent {
 

@@ -223,6 +223,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<DTO.Octa.SchoolTypeAddDTO, LMS_CMS_DAL.Models.Octa.SchoolType>();
             CreateMap<SchoolTypePutDTO, LMS_CMS_DAL.Models.Octa.SchoolType>();
             CreateMap<SchoolTypePutDTO, LMS_CMS_DAL.Models.Domains.LMS.SchoolType>();
+
+            CreateMap<Domain, DomainGetDTO>();
         }
     }
 }

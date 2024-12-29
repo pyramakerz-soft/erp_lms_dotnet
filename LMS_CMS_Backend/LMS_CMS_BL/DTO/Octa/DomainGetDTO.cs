@@ -12,6 +12,7 @@ namespace LMS_CMS_BL.DTO.Octa
     {
         public long ID { get; set; }
         public string Name { get; set; }
-        public Page[]? Pages { get; set; }
+        public string? InsertedAt { get; set; }
+        public long[]? Pages { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.DTO.Octa;
 using LMS_CMS_BL.UOW;
@@ -30,12 +31,14 @@ namespace LMS_CMS_PL.Controllers.Octa
         private readonly DynamicDatabaseService _dynamicDatabaseService;
         private readonly DbContextFactoryService _dbContextFactory;
         HashSet<long> addedPageIds = new HashSet<long>();
+        IMapper mapper;
 
-        public DomainController(DynamicDatabaseService dynamicDatabaseService, UOW Unit_Of_Work, DbContextFactoryService dbContextFactory)
+        public DomainController(DynamicDatabaseService dynamicDatabaseService, UOW Unit_Of_Work, DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _Unit_Of_Work = Unit_Of_Work;
             _dynamicDatabaseService = dynamicDatabaseService;
             _dbContextFactory = dbContextFactory;
+            this.mapper = mapper;
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +55,9 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return NotFound();
             }
 
-            return Ok(Domains);
+            List<DomainGetDTO> domainGetDTOs = mapper.Map<List<DomainGetDTO>>(Domains);
+
+            return Ok(domainGetDTOs);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +86,13 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             List<LMS_CMS_DAL.Models.Domains.Page> pages = Unit_Of_Work.page_Repository.FindBy(p => p.Page_ID == null);
 
-            DomainGetDTO domianDTO = new DomainGetDTO{ ID = Domain.ID, Name = Domain.Name, Pages = pages.ToArray() };
+            List<long> pagesId = new List<long>();
+            for (int i = 0; i < pages.Count; i++)
+            {
+                pagesId.Add(pages[i].ID);
+            }
+
+            DomainGetDTO domianDTO = new DomainGetDTO{ ID = Domain.ID, Name = Domain.Name, Pages = pagesId.ToArray() };
 
             return Ok(domianDTO);
         }
@@ -288,7 +299,7 @@ namespace LMS_CMS_PL.Controllers.Octa
             }
 
             var existingDomain = _Unit_Of_Work.domain_Octa_Repository.Select_By_Id_Octa(domain.ID);
-            if (existingDomain == null)
+            if (existingDomain == null || existingDomain.IsDeleted == true)
             {
                 return Conflict("Domain doesn't exist.");
             }

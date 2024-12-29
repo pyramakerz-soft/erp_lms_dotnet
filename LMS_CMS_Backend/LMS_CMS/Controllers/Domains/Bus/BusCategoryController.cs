@@ -89,52 +89,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         }
         ///////////////////////////////////////////////////
 
-        //[HttpGet("DomainId")]
-        //[Authorize_Endpoint_Attribute(
-        //    allowedTypes: new[] { "pyramakerz", "employee" },
-        //    pages: new[] { "Busses", "Bus Categories" }
-        //)]
-        //public IActionResult GetByDomainId(long id)
-        //{
-        //    var userClaims = HttpContext.User.Claims;
-        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        //    long.TryParse(userIdClaim, out long userId);
-        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-        //    if (userIdClaim == null || userTypeClaim == null)
-        //    {
-        //        return Unauthorized("User ID or Type claim not found.");
-        //    }
-
-        //    if (userTypeClaim == "employee")
-        //    {
-        //        Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-        //        long employeeDomain = employee.Domain_ID;
-
-        //        if (id != employeeDomain)
-        //        {
-        //            return Unauthorized();
-        //        }
-        //    }
-
-        //    Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
-        //    if (domain == null)
-        //    {
-        //        return NotFound("No Domain with this Id");
-        //    }
-
-        //    List<BusCategory> BusCategory = Unit_Of_Work.busCategory_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-        //    if (BusCategory == null || BusCategory.Count == 0)
-        //    {
-        //        return NotFound("There are no buse categories in this domian");
-        //    }
-
-        //    List<BusCatigoryGetDTO> BusCategoryDTO = mapper.Map<List<BusCatigoryGetDTO>>(BusCategory);
-
-        //    return Ok(BusCategoryDTO);
-        //}
-        ///////////////////////////////////////////////////
-
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },

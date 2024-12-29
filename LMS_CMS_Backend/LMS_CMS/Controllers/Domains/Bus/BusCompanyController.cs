@@ -96,53 +96,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             return Ok(CompanyDTO);
         }
         ///////////////////////////////////////////////////
-
-        //[HttpGet("DomainId")]
-        //[Authorize_Endpoint_Attribute(
-        //    allowedTypes: new[] { "pyramakerz", "employee" },
-        //    pages: new[] { "Busses", "Bus Companies" }
-        //)]
-        //public IActionResult GetByDomainId(long id)
-        //{
-        //    var userClaims = HttpContext.User.Claims;
-        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        //    long.TryParse(userIdClaim, out long userId);
-        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-        //    if (userIdClaim == null || userTypeClaim == null)
-        //    {
-        //        return Unauthorized("User ID or Type claim not found.");
-        //    }
-
-        //    if (userTypeClaim == "employee")
-        //    {
-        //        Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-        //        long employeeDomain = employee.Domain_ID;
-
-        //        if (id != employeeDomain)
-        //        {
-        //            return Unauthorized();
-        //        }
-        //    }
-
-        //    Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
-        //    if (domain == null)
-        //    {
-        //        return NotFound("No Domain with this Id");
-        //    }
-
-        //    List<BusCompany> BusCompany = Unit_Of_Work.busCompany_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-        //    if (BusCompany == null || BusCompany.Count == 0)
-        //    {
-        //        return NotFound("There are no bus Companies in this domian");
-        //    }
-
-        //    List<BusCompanyGetDTO> BusCompanyDTO = mapper.Map<List<BusCompanyGetDTO>>(BusCompany);
-
-        //    return Ok(BusCompanyDTO);
-        //}
-        ///////////////////////////////////////////////////
-
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
@@ -165,6 +118,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             if (NewBusCompany == null|| NewBusCompany.Name=="")
             {
                 return BadRequest("Bus Company cannot be null");
+            }
+            if (NewBusCompany.Name == null)
+            {
+                return BadRequest("the name cannot be null");
             }
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -212,7 +169,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 BadRequest();
             }
-
+            if (EditBusCompany.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusCompany busCompany = Unit_Of_Work.busCompany_Repository.Select_By_Id(EditBusCompany.ID);
             if (busCompany == null || busCompany.IsDeleted == true)
             {

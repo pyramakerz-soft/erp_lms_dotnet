@@ -99,52 +99,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         }
         ///////////////////////////////////////////////////
 
-        //[HttpGet("DomainId")]
-        //[Authorize_Endpoint_Attribute(
-        //    allowedTypes: new[] { "pyramakerz", "employee" },
-        //    pages: new[] { "Busses", "Bus Status" }
-        //)]
-        //public IActionResult GetByDomainId(long id)
-        //{
-        //    var userClaims = HttpContext.User.Claims;
-        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        //    long.TryParse(userIdClaim, out long userId);
-        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-        //    if (userIdClaim == null || userTypeClaim == null)
-        //    {
-        //        return Unauthorized("User ID or Type claim not found.");
-        //    }
-
-        //    if (userTypeClaim == "employee")
-        //    {
-        //        Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-        //        long employeeDomain = employee.Domain_ID;
-
-        //        if (id != employeeDomain)
-        //        {
-        //            return Unauthorized();
-        //        }
-        //    }
-
-        //    Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
-        //    if (domain == null)
-        //    {
-        //        return NotFound("No Domain with this Id");
-        //    }
-
-        //    List<BusStatus> BusStatus = Unit_Of_Work.busStatus_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-        //    if (BusStatus == null || BusStatus.Count == 0)
-        //    {
-        //        return NotFound("There is no bus status in this domian");
-        //    }
-
-        //    List<BusStatusGetDTO> BusStatusDTO = mapper.Map<List<BusStatusGetDTO>>(BusStatus);
-
-        //    return Ok(BusStatusDTO);
-        //}
-        ///////////////////////////////////////////////////
-
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
@@ -168,7 +122,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return BadRequest("Bus Status cannot be null");
             }
-
+            if (NewBus.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusStatus bustStatus = mapper.Map<BusStatus>(NewBus);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             bustStatus.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -215,7 +172,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 BadRequest();
             }
-
+            if (EditBusStatus.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusStatus busStatus = Unit_Of_Work.busStatus_Repository.Select_By_Id(EditBusStatus.ID);
 
             if (busStatus == null || busStatus.IsDeleted == true)

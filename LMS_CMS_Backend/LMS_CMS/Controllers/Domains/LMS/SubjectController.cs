@@ -123,7 +123,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("Subject cannot be null");
             }
-
+            if (NewSubject.en_name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
+            if (NewSubject.ar_name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             if (NewSubject.GradeID != 0)
             {
                 Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g=>g.ID==NewSubject.GradeID&&g.IsDeleted!=true);

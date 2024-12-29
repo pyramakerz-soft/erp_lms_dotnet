@@ -232,6 +232,24 @@ namespace LMS_CMS_PL.Controllers.Octa
                 }
             }
 
+
+            //// Add all pages to Admin role
+            foreach (var pageId in addedPageIds)
+            {
+                Role_Detailes roleDetail = new Role_Detailes
+                {
+                    Role_ID = 1, // Admin Role
+                    Page_ID = pageId,
+                    Allow_Edit = true,
+                    Allow_Delete = true,
+                    Allow_Edit_For_Others = true,
+                    Allow_Delete_For_Others = true,
+                };
+                Unit_Of_Work.role_Detailes_Repository.Add(roleDetail);
+            }
+            Unit_Of_Work.SaveChanges();
+
+
             //// add schoolType
             List<LMS_CMS_DAL.Models.Octa.SchoolType> SchoolTypes = _Unit_Of_Work.schoolType_Octa_Repository.Select_All_Octa();
             foreach (var item in SchoolTypes)

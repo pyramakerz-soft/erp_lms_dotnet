@@ -1,0 +1,172 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Domains</h1>
+    <div class="flex justify-between items-center ">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        
+        <button (click)="openModal()"
+        class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            Create Domain
+        </button>
+    </div>
+</div>
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Domain Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Date
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="domainData.length === 0">
+                <td colspan="4" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of domainData; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.insertedAt | date:'MMM d, yyyy' }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex space-x-4">
+                        <button>
+                            <i class="fa-regular fa-trash-can" (click)="deleteDomain(row.id)"></i>
+                        </button>
+                        <button>
+                            <i class="fa-regular fa-eye" (click)="openViewModal(row.id)"></i>
+                        </button>
+                        <button>
+                            <i class="fa-solid fa-pencil" (click)="openModal(row.id)"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Add-Edit Domain Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px]">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!editDomain" class="font-semibold text-2xl leading-9">Create Domain</h1>
+            <h1 *ngIf="editDomain" class="font-semibold text-2xl leading-9">Edit Domain</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+
+        <div class="p-[16px_24px] mt-6 mb-4 bg-[#F7F7F7] rounded-3xl">
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="name">Domain Name</label>
+                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Domain Name"
+                [(ngModel)]="domain.name" 
+                (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"
+                [class.text-gray-500]="editDomain" 
+                [disabled]="editDomain"/>
+                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="type">Modules</label>
+                <div>
+                    <div class="flex justify-between items-center rounded-lg border border-solid border-gray-300 px-4 py-3 cursor-pointer bg-white text-gray-400" 
+                    (click)="toggleDropdown($event)">
+                        <span *ngIf="domain.pages.length == 0">
+                           Choose Modules
+                        </span>
+                        <div *ngIf="domain.pages.length != 0" class="flex space-x-2 flex-wrap">
+                            <div *ngFor="let moduleId of domain.pages">
+                                <p *ngFor="let module of ModulesData">
+                                    @if(module.id == moduleId){
+                                        <p class="p-2 rounded-md border bg-[#EBEBEB] text-[#6F6F6F]">
+                                            {{module.en_name}}
+                                            <i class="fa-solid fa-xmark text-red-600 ml-3" (click)="removeFromModules(moduleId, $event)"></i>
+                                        </p>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-angle-down"></i>
+                    </div>
+                
+                    <div *ngIf="isDropdownOpen" class=" w-full border border-[#E5E5EA] rounded-md bg-white mt-1 max-h-60 overflow-y-auto">
+                        @if(ModulesData.length !==0 ) {
+                            <div *ngFor="let module of ModulesData" class="p-2 hover:bg-gray-100 flex items-center space-x-3">
+                                <input type="checkbox" 
+                                id="module{{module.en_name}}" 
+                                class="mr-2" 
+                                [value]="module.id" 
+                                (change)="onModuleChange(module.id, $event)"
+                                [checked]="domain.pages.includes(module.id)">
+                                <label for="module{{module.en_name}}" class="text-xs md:text-sm">{{ module.en_name }}</label>
+                            </div>
+                        }@else {
+                            <div class="p-2">No Data Found</div>
+                        }
+                    </div>
+                </div>
+                <span *ngIf="validationErrors['pages']" class="text-red-500 ml-3 font-normal">{{ validationErrors['pages'] }}</span>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="SaveDomain()" [hidden]="isSaved" >
+                Save
+            </button>
+            <button
+                *ngIf="isSaved"
+                [disabled] = "isSaved"
+                class="secondaryBg text-white font-medium px-4 py-2 rounded-lg">
+                <div class="loader"></div> 
+            </button>  
+        </div>
+    </div>
+</div>
+
+
+<!-- View Domain Modal -->
+<div id="View_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px]">
+        <div class="flex justify-between items-center">
+            <h1 class="font-semibold text-2xl leading-9">{{ domain.name }} Account</h1>
+            <div class="flex space-x-3">
+                <button (click)="openModal(domain.id)" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">Edit</button>
+                <button (click)="closeViewModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+            </div>
+        </div>
+
+        <div class="p-[16px_24px] mt-6 mb-4 bg-[#F7F7F7] rounded-3xl">
+            <div class="flex flex-col mb-4 bg-[#EBEBEB] p-2 rounded-2xl">
+                <label class="mb-2 text-[#6F6F6F] font-semibold" for="name">Domain Name</label>
+                <label class="mb-2 primaryTxt" for="name">{{ domain.name }}</label>
+            </div>
+            <div class="flex flex-col mb-4 bg-[#EBEBEB] p-2 rounded-2xl">
+                <label class="mb-2 text-[#6F6F6F] font-semibold" for="type">Modules</label>
+                <div class="flex">
+                    <div *ngFor="let module of ModulesData" class="bg-white p-2 rounded-md">
+                        {{module.en_name}}
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+
+         

@@ -23,6 +23,7 @@ import { BusPrintNameTagComponent } from './Pages/Employee/Bus/bus-print-name-ta
 import { BusDistrictsComponent } from './Pages/Employee/Bus/bus-districts/bus-districts.component';
 import { DomainsComponent } from './Pages/Octa/domains/domains.component';
 import { SchoolTypeComponent } from './Pages/Octa/school-type/school-type.component';
+import { SchoolComponent } from './Pages/Octa/school/school.component';
 
 
 export const routes: Routes = [
@@ -82,6 +83,7 @@ export const routes: Routes = [
             { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Domains", component: DomainsComponent, title: "Domains"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "School Types", component: SchoolTypeComponent, title: "School Types"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "School", component: SchoolComponent, title: "School"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
 

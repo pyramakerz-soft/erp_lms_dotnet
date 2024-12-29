@@ -24,6 +24,54 @@ export class SchoolService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.get<School[]>(`${this.baseUrl}/School`, { headers })
+    return this.http.get<School[]>(`${this.baseUrl}/Schools`, { headers })
+  }
+
+  GetBySchoolId(id:number, DomainName:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.get<School>(`${this.baseUrl}/Schools/${id}`, { headers })
+  }
+
+  Add(school:School, DomainName:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.post(`${this.baseUrl}/Schools`, school, { headers })
+  }
+
+  Edit(school:School, DomainName:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.put(`${this.baseUrl}/Schools`, school, { headers })
+  }
+
+  Delete(id:number, DomainName:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.delete(`${this.baseUrl}/Schools/${id}`, { headers })
   }
 }

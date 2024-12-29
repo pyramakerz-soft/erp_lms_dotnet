@@ -60,6 +60,9 @@ export class MainLayoutComponent {
             },
             {
               label: "School Types", route: "School Types"
+            },
+            {
+              label: "School", route: "School"
             }
           ]
         }

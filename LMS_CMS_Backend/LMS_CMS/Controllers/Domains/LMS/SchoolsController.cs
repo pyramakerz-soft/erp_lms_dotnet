@@ -64,7 +64,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         }
         ///////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa" }
         )]
@@ -195,7 +195,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         ////////////////////////////////////////////////////
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa" }
         )]

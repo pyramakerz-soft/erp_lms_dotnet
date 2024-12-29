@@ -106,6 +106,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return NotFound();
             }
+            if (NewSection.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             School school = Unit_Of_Work.school_Repository.First_Or_Default(s=>s.ID==NewSection.SchoolID&&s.IsDeleted!=true);
             if (school == null)
             {
@@ -148,6 +152,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (newSection == null)
             {
                 return BadRequest("Section cannot be null");
+            }
+            if (newSection.Name == null)
+            {
+                return BadRequest("the name cannot be null");
             }
             School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newSection.SchoolID && s.IsDeleted != true);
             if (school == null)

@@ -151,6 +151,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return NotFound();
             }
+            if (NewSemester.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             AcademicYear academicYear=Unit_Of_Work.academicYear_Repository.First_Or_Default(a=>a.ID==NewSemester.AcademicYearID&&a.IsDeleted!=true);
             if (academicYear == null) {
               return NotFound("there is no AcademicYear whit this id");
@@ -198,6 +202,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (newSemester == null)
             {
                 return BadRequest("Semester cannot be null");
+            }
+            if (newSemester.Name == null)
+            {
+                return BadRequest("the name cannot be null");
             }
             AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(a => a.ID == newSemester.AcademicYearID && a.IsDeleted != true);
             if (academicYear == null)

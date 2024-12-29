@@ -116,59 +116,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             return Ok(busDTO);
         }
 
-        //[HttpGet("GetByDomainID/{Id}")]
-        //[Authorize_Endpoint_Attribute(
-        //    allowedTypes: new[] { "pyramakerz", "employee" },
-        //    pages: new[] { "Busses", "Bus Details" }
-        //)]
-        //public async Task<IActionResult> GetByDomainIDAsync(long Id)
-        //{
-        //    var userClaims = HttpContext.User.Claims;
-        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        //    long.TryParse(userIdClaim, out long userId);
-        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-        //    if (userIdClaim == null || userTypeClaim == null)
-        //    {
-        //        return Unauthorized("User ID or Type claim not found.");
-        //    }
-
-        //    if (userTypeClaim == "employee")
-        //    {
-        //        Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-        //        long employeeDomain = employee.Domain_ID;
-
-        //        if (Id != employeeDomain)
-        //        {
-        //            return Unauthorized();
-        //        }
-        //    }
-
-        //    Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(Id);
-        //    if (domain == null)
-        //    {
-        //        return NotFound("No Domain with this Id");
-        //    }
-
-        //    List<BusModel> buses = await Unit_Of_Work.bus_Repository.Select_All_With_IncludesById<BusModel>(
-        //        bus => bus.DomainID == Id && bus.IsDeleted != true,
-        //        query => query.Include(e => e.Driver),
-        //        query => query.Include(e => e.DriverAssistant),
-        //        query => query.Include(e => e.BusType),
-        //        query => query.Include(e => e.BusStatus),
-        //        query => query.Include(e => e.BusDistrict),
-        //        query => query.Include(e => e.BusCompany)
-        //    );
-
-        //    if (buses == null || buses.Count == 0)
-        //    {
-        //        return NotFound("There are no buses in this domian");
-        //    }
-
-        //    List<Bus_GetDTO> busDTOs = mapper.Map<List<Bus_GetDTO>>(buses);
-
-        //    return Ok(busDTOs);
-        //}
 
         [HttpPost]
         [Authorize_Endpoint_(
@@ -202,6 +149,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 {
                     return NotFound("No Bus Type with this ID");
                 }
+            }
+            if (busAddDTO.Name == null)
+            {
+              return BadRequest("the bus name Cannot be null");
             }
 
             if (busAddDTO.BusCompanyID != null)
@@ -349,7 +300,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                     return NotFound("No Bus Status Assisstant with this ID");
                 }
             }
-
+            if (busPutDTO.Name == null)
+            {
+                return BadRequest("the bus name Cannot be null");
+            }
 
             BusModel busExists = Unit_Of_Work.bus_Repository.First_Or_Default(b => b.ID == busPutDTO.ID && b.IsDeleted != true);
             if (busExists == null || busExists.IsDeleted == true)

@@ -104,7 +104,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("Floor cannot be null");
             }
-
+            if (NewFloor.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             if (NewFloor.buildingID != 0)
             {
                 Building building = Unit_Of_Work.building_Repository.First_Or_Default(b=>b.ID==NewFloor.buildingID&&b.IsDeleted!=true);
@@ -169,7 +172,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("Floor cannot be null");
             }
-
+            if (EditedFloor.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             if (EditedFloor.buildingID != 0)
             {
                 Building building = Unit_Of_Work.building_Repository.First_Or_Default(b => b.ID == EditedFloor.buildingID && b.IsDeleted != true);

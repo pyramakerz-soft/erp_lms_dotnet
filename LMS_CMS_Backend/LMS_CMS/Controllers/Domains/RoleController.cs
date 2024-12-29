@@ -61,7 +61,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Role", "Administrator" }
@@ -243,7 +243,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         }
         //////////////////////////////////////////////////////
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,

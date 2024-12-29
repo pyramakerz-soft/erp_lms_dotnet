@@ -22,6 +22,8 @@ import { BusStudentComponent } from './Pages/Employee/Bus/bus-student/bus-studen
 import { BusPrintNameTagComponent } from './Pages/Employee/Bus/bus-print-name-tag/bus-print-name-tag.component';
 import { BusDistrictsComponent } from './Pages/Employee/Bus/bus-districts/bus-districts.component';
 import { DomainsComponent } from './Pages/Octa/domains/domains.component';
+import { RoleComponent } from './Pages/Employee/Administrator/role/role.component';
+import { RoleAddEditComponent } from './Pages/Employee/Administrator/role-add-edit/role-add-edit.component';
 
 
 export const routes: Routes = [
@@ -44,7 +46,8 @@ export const routes: Routes = [
             { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
             { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
-
+            { path: "Role", component: RoleComponent, title: "Role"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]}, 
+            { path: "Role Create", component: RoleAddEditComponent, title: "Role Create"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
     { 

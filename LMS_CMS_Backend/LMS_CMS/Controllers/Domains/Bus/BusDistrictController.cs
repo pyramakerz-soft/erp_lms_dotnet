@@ -98,54 +98,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             BusDistrictGetDTO busDistrictDto = mapper.Map<BusDistrictGetDTO>(busDistrict);
             return Ok(busDistrictDto);
         }
-        ///////////////////////////////////////////////////
-
-        //[HttpGet("DomainId")]
-        //[Authorize_Endpoint_Attribute(
-        //    allowedTypes: new[] { "pyramakerz", "employee" },
-        //    pages: new[] { "Busses", "Bus Districts" }
-        //)]
-        //public IActionResult GetByDomainId(long id)
-        //{
-        //    var userClaims = HttpContext.User.Claims;
-        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        //    long.TryParse(userIdClaim, out long userId);
-        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-        //    if (userIdClaim == null || userTypeClaim == null)
-        //    {
-        //        return Unauthorized("User ID or Type claim not found.");
-        //    }
-
-        //    if (userTypeClaim == "employee")
-        //    {
-        //        Employee employee = Unit_Of_Work.employee_Repository.Select_By_Id(userId);
-        //        long employeeDomain = employee.Domain_ID;
-
-        //        if (id != employeeDomain)
-        //        {
-        //            return Unauthorized();
-        //        }
-        //    }
-
-        //    Domain domain = Unit_Of_Work.domain_Repository.Select_By_Id(id);
-        //    if (domain == null)
-        //    {
-        //        return NotFound("No Domain with this Id");
-        //    }
-
-        //    List<BusDistrict> BusDistrict = Unit_Of_Work.busDistrict_Repository.FindBy(s => s.DomainId == id && s.IsDeleted != true);
-        //    if (BusDistrict == null || BusDistrict.Count == 0)
-        //    {
-        //        return NotFound("There are no bus Districts in this domian");
-        //    }
-
-        //    List<BusDistrictGetDTO> BusDistrictDTO = mapper.Map<List<BusDistrictGetDTO>>(BusDistrict);
-
-        //    return Ok(BusDistrictDTO);
-        //}
-
-        ///////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
 
         [HttpPost]
         [Authorize_Endpoint_(
@@ -170,7 +123,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return BadRequest("Bus District cannot be null");
             }
-
+            if (NewDistrict.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusDistrict busDistrict = mapper.Map<BusDistrict>(NewDistrict);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             busDistrict.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -217,7 +173,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 BadRequest();
             }
-
+            if (EditBusDistrict.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(EditBusDistrict.ID);
             if (busDistrict == null || busDistrict.IsDeleted == true)
             {

@@ -97,7 +97,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("Subject Category cannot be null");
             }
-
+            if (NewSubCat.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             SubjectCategory subjectCat = mapper.Map<SubjectCategory>(NewSubCat);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -142,6 +145,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return BadRequest("Subject Category cannot be null");
             }
 
+            if (EditedSubjectCategory.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             SubjectCategory SubjectCategoryExists = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(s=>s.ID==EditedSubjectCategory.ID&&s.IsDeleted!=true);
             if (SubjectCategoryExists == null || SubjectCategoryExists.IsDeleted == true)
             {

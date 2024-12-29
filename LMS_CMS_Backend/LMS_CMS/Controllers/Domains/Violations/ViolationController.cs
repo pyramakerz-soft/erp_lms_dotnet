@@ -160,6 +160,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             {
                 return BadRequest("Violation cannot be null");
             }
+            if (Newviolation.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             Violation violation=Unit_Of_Work.violations_Repository.First_Or_Default(v=>v.ID==Newviolation.ID);
             if (violation == null)
             { 

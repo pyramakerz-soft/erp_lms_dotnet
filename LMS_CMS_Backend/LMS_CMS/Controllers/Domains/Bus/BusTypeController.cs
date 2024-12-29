@@ -104,36 +104,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
         ///////////////////////////////////////////////////
 
-        //[HttpGet("DomainId")]
-        //[Authorize_Endpoint_Attribute(
-        //    allowedTypes: new[] { "pyramakerz", "employee" },
-        //    pages: new[] { "Busses", "Bus Types" }
-        //)]
-        //public IActionResult GetByDomainId(long id)
-        //{
-        //    var userClaims = HttpContext.User.Claims;
-        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        //    long.TryParse(userIdClaim, out long userId);
-        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-        //    if (userIdClaim == null || userTypeClaim == null)
-        //    {
-        //        return Unauthorized("User ID or Type claim not found.");
-        //    }
-
-        //    List<BusType> BusType = Unit_Of_Work.busType_Repository.FindBy(s => s.IsDeleted != true);
-        //    if (BusType == null || BusType.Count == 0)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    List<BusTypeGetDTO> BusTypeDTO = mapper.Map<List<BusTypeGetDTO>>(BusType);
-
-        //    return Ok(BusTypeDTO);
-        //}
-
-        ///////////////////////////////////////////////////
-
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
@@ -157,7 +127,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return BadRequest("Bus Type cannot be null");
             }
-
+            if (NewBus.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusType bustType = mapper.Map<BusType>(NewBus);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -205,7 +178,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 BadRequest();
             }
-
+            if (EditBusType.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(EditBusType.ID);
 
             if (busType == null || busType.IsDeleted == true)

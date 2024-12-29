@@ -116,7 +116,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return BadRequest(ModelState); // Returns validation errors
             }
-
+            if(NewCategory.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusCategory busCategory = mapper.Map<BusCategory>(NewCategory);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -163,7 +166,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 BadRequest();
             }
-
+            if (EditBusCatigory.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             BusCategory busCatigory = Unit_Of_Work.busCategory_Repository.Select_By_Id(EditBusCatigory.ID);
             if (busCatigory == null || busCatigory.IsDeleted == true)
             {

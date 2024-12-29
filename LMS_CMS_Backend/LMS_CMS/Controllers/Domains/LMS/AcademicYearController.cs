@@ -117,6 +117,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("AcademicYear can not be null");
             }
+            if (NewAcademicYear.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             School school = Unit_Of_Work.school_Repository.First_Or_Default(s=>s.ID==NewAcademicYear.SchoolID&&s.IsDeleted!=true);
             if (school==null)
             {
@@ -164,6 +168,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (newAcademicYear == null)
             {
                 return BadRequest("AcademicYear cannot be null");
+            }
+            if (newAcademicYear.Name == null)
+            {
+                return BadRequest("the name cannot be null");
             }
             School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newAcademicYear.SchoolID && s.IsDeleted != true);
             if (school == null)

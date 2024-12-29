@@ -47,7 +47,6 @@ export class DomainsComponent {
   GetDomainById(domainId: number) {
     this.domainService.GetDomainBuID(domainId).subscribe((data) => {
       this.domain = data;
-      console.log(this.domain)
     });
   }
 
@@ -63,7 +62,7 @@ export class DomainsComponent {
 
   openModal(domainId?: number) {
     this.closeViewModal()
-    
+
     if (domainId) {
       this.editDomain = true;
       this.GetDomainById(domainId); 
@@ -199,8 +198,11 @@ export class DomainsComponent {
               this.validationErrors[field] = `*${this.capitalizeField(field)} cannot be longer than 100 characters`
               isValid = false;
             }
-          }
-          if(field == "pages"){
+            if(!/^[a-zA-Z_]+$/.test(this.domain.name)){
+              this.validationErrors[field] = `*Domain name can only contain letters and underscores, and no spaces or numbers.`
+              isValid = false;
+            }
+          }else if(field == "pages"){
             if(this.domain.pages.length == 0){
               this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
               isValid = false;

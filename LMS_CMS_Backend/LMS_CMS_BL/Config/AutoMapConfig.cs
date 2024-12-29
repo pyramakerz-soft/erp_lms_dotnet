@@ -125,7 +125,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<AcademicYearAddDTO, AcademicYear>();
 
             CreateMap<School, School_GetDTO>()
-                 .ForMember(dest => dest.SchoolTypeName, opt => opt.MapFrom(src => src.SchoolType.Name));
+                 .ForMember(dest => dest.SchoolTypeName, opt => opt.MapFrom(src => src.SchoolType.Name))
+                 .ForMember(dest => dest.SchoolTypeID, opt => opt.MapFrom(src => src.SchoolType.ID));
             CreateMap<School_GetDTO, School>();
 
             CreateMap<School, SchoolAddDTO>()

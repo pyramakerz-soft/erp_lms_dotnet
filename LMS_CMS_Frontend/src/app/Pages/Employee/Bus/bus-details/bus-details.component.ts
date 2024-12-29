@@ -145,7 +145,6 @@ export class BusDetailsComponent {
   }
 
   openModal(busId?: number) {
-    console.log(this.bus)
     this.bus.busCompanyID=null;
     if (busId) {
       this.editBus = true;

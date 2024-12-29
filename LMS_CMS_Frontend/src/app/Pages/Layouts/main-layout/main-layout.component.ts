@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { PagesWithRoleId } from '../../../Models/pages-with-role-id';
 import { MenuService } from '../../../Services/shared/menu.service';
 import { NewTokenService } from '../../../Services/shared/new-token.service';
+import { routes } from '../../../app.routes';
 
 @Component({
   selector: 'app-main-layout',
@@ -53,7 +54,17 @@ export class MainLayoutComponent {
     else if (this.User_Data_After_Login.type == "octa") {
       this.menuItems = [
         {
-          label: 'Domains', route: 'Domains'
+          label: 'Administrator', subItems:[
+            {
+              label: "Domains", route: "Domains"
+            },
+            {
+              label: "School Types", route: "School Types"
+            },
+            {
+              label: "School", route: "School"
+            }
+          ]
         }
       ]
     }

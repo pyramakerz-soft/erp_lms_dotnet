@@ -3,6 +3,7 @@ using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -262,6 +263,19 @@ namespace LMS_CMS_PL.Controllers.Domains
             if (oldEmp == null)
             {
                 return NotFound("Employee not found.");
+            }
+            Role role = Unit_Of_Work.role_Repository.First_Or_Default(r=>r.ID==newEmployee.Role_ID&&r.IsDeleted!=true);
+            if (role == null) 
+            {
+                return NotFound("there is no role with this id");
+            }
+            if (newEmployee.BusCompanyID != null)
+            {
+                 BusCompany busCompany = Unit_Of_Work.busCompany_Repository.First_Or_Default(r => r.ID == newEmployee.BusCompanyID && r.IsDeleted != true);
+                if (busCompany == null)
+                {
+                    return NotFound("there is no busCompany with this id");
+                }
             }
             var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Attachments");
             if (oldEmp.User_Name != newEmployee.User_Name)

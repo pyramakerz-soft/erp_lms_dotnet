@@ -32,6 +32,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ///////////////////////////////////////////
 
         [HttpGet]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa"}
+        )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -62,6 +65,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ///////////////////////////////////////////
 
         [HttpGet("id")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
         public async Task<IActionResult> GetAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -92,6 +98,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ///////////////////////////////////////////////
 
         [HttpPost]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
         public IActionResult Add(SchoolAddDTO newSchool)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -110,7 +119,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("School cannot be null");
             }
-
+            SchoolType schoolType = Unit_Of_Work.schoolType_Repository.First_Or_Default(s => s.ID == newSchool.SchoolTypeID);
+            if (schoolType == null) 
+            { 
+                return BadRequest("there is no School Type with this id");
+            }
             School school = mapper.Map<School>(newSchool);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -127,6 +140,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////
 
         [HttpPut]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
         public IActionResult Edit(SchoolEditDTO newSchool)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -145,10 +161,19 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("School cannot be null");
             }
+            SchoolType schoolType = Unit_Of_Work.schoolType_Repository.First_Or_Default(s => s.ID == newSchool.SchoolTypeID);
+            if (schoolType == null)
+            {
+                return BadRequest("there is no School Type with this id");
+            }
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newSchool.ID);
+            if (school == null)
+            {
+                return BadRequest("there is no School with this id");
+            }
+            mapper.Map(newSchool, school);
 
-           School school = mapper.Map<School>(newSchool);
-           
-           TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
            school.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
            if (userTypeClaim == "octa")
            {
@@ -163,6 +188,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////
 
         [HttpDelete]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa" }
+        )]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

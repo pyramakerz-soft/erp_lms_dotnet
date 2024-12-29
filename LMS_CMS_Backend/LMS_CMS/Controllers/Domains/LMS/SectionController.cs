@@ -106,6 +106,12 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return NotFound();
             }
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(s=>s.ID==NewSection.SchoolID&&s.IsDeleted!=true);
+            if (school == null)
+            {
+              return NotFound("there is no school with this id");
+            }
+
             Section section = mapper.Map<Section>(NewSection);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             section.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -143,8 +149,17 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("Section cannot be null");
             }
-
-            Section section = mapper.Map<Section>(newSection);
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newSection.SchoolID && s.IsDeleted != true);
+            if (school == null)
+            {
+                return NotFound("there is no school with this id");
+            }
+            Section section = Unit_Of_Work.section_Repository.First_Or_Default(s => s.ID == newSection.ID && s.IsDeleted != true);
+            if (section == null)
+            {
+                return NotFound("there is no section with this id");
+            }
+            mapper.Map(newSection, section);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             section.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);

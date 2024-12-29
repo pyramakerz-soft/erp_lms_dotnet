@@ -29,7 +29,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject Categories", "Administrator" }
+            pages: new[] { "Subject Categories", "LMS" }
         )]
         public IActionResult GetAsync()
         {
@@ -51,7 +51,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject Categories", "Administrator" }
+            pages: new[] { "Subject Categories", "LMS" }
         )]
         public IActionResult GetById(long id)
         {
@@ -78,7 +78,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Subject Categories", "Administrator" }
+           pages: new[] { "Subject Categories", "LMS" }
        )]
         public IActionResult Add(SubjectCategoryAddDTO NewSubCat)
         {
@@ -120,7 +120,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Subject Categories", "Administrator" }
+           pages: new[] { "Subject Categories", "LMS" }
        )]
         public IActionResult Edit(SubjectCategoryPutDTO EditedSubjectCategory)
         {
@@ -142,7 +142,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return BadRequest("Subject Category cannot be null");
             }
 
-            SubjectCategory SubjectCategoryExists = Unit_Of_Work.subjectCategory_Repository.Select_By_Id(EditedSubjectCategory.ID);
+            SubjectCategory SubjectCategoryExists = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(s=>s.ID==EditedSubjectCategory.ID&&s.IsDeleted!=true);
             if (SubjectCategoryExists == null || SubjectCategoryExists.IsDeleted == true)
             {
                 return NotFound("No Floor with this ID");
@@ -197,7 +197,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Subject Categories", "Administrator" }
+            pages: new[] { "Subject Categories", "LMS" }
         )]
         public IActionResult Delete(long id)
         {

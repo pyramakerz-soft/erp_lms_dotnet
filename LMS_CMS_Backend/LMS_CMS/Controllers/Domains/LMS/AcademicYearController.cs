@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +28,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         //////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Academic Years", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -57,7 +62,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         //////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("id")]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Academic Years", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -88,7 +96,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Academic Years", "Administrator" }
+        )]
         public async Task<IActionResult> Add(AcademicYearAddDTO NewAcademicYear)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -105,6 +116,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (NewAcademicYear == null)
             {
                 return BadRequest("AcademicYear can not be null");
+            }
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(s=>s.ID==NewAcademicYear.SchoolID&&s.IsDeleted!=true);
+            if (school==null)
+            {
+                return NotFound("No School with this ID");
             }
             AcademicYear academicYear = mapper.Map<AcademicYear>(NewAcademicYear);
 
@@ -127,6 +143,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////
 
         [HttpPut]
+        [Authorize_Endpoint_(
+             allowedTypes: new[] { "octa", "employee" },
+             allowEdit: 1,
+             pages: new[] { "Academic Years", "Administrator" }
+         )]
         public IActionResult Edit(AcademicYearGet newAcademicYear)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -144,7 +165,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("AcademicYear cannot be null");
             }
-
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newAcademicYear.SchoolID && s.IsDeleted != true);
+            if (school == null)
+            {
+                return NotFound("No School with this ID");
+            }
             AcademicYear AcademicYear = mapper.Map<AcademicYear>(newAcademicYear);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -175,6 +200,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         //////////////////////////////////////////////////////
 
         [HttpDelete]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Busses", "Bus Districts" }
+        )]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

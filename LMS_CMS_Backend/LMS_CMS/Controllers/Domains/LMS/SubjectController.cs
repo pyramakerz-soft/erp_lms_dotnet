@@ -32,7 +32,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subjects", "Administrator" }
+            pages: new[] { "Subject", "LMS" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -66,7 +66,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subjects", "Administrator" }
+            pages: new[] { "Subject", "LMS" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -104,7 +104,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subjects", "Administrator" }
+            pages: new[] { "Subject", "LMS" }
         )]
         public async Task<IActionResult> Add([FromForm]SubjectAddDTO NewSubject)
         {
@@ -126,7 +126,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (NewSubject.GradeID != 0)
             {
-                Grade grade = Unit_Of_Work.grade_Repository.Select_By_Id(NewSubject.GradeID);
+                Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g=>g.ID==NewSubject.GradeID&&g.IsDeleted!=true);
                 if (grade == null)
                 {
                     return BadRequest("No Grade with this ID");
@@ -135,7 +135,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (NewSubject.SubjectCategoryID != 0)
             {
-                SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.Select_By_Id(NewSubject.SubjectCategoryID);
+                SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(g => g.ID == NewSubject.SubjectCategoryID && g.IsDeleted != true);
                 if (subjectCategory == null)
                 {
                     return BadRequest("No Subject Category with this ID");
@@ -194,7 +194,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Subjects", "Administrator" }
+            pages: new[] { "Subject", "LMS" }
         )]
         public async Task<IActionResult> Edit([FromForm] SubjectPutDTO EditSubject)
         {
@@ -362,7 +362,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Subjects", "Administrator" }
+            pages: new[] { "Subject", "LMS" }
         )]
         public IActionResult Delete(long id)
         {

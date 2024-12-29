@@ -14,6 +14,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public string Name { get; set; }
         [Required]
         public long buildingID { get; set; }
-        public long FloorMonitorID { get; set; }
+        public long? FloorMonitorID { get; set; }
     }
 }

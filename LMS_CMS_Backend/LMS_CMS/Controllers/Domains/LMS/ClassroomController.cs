@@ -109,7 +109,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (NewClassroom.GradeID != 0)
             {
-                Grade grade = Unit_Of_Work.grade_Repository.Select_By_Id(NewClassroom.GradeID);
+                Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g=>g.ID==NewClassroom.GradeID&&g.IsDeleted!=true);
                 if (grade == null)
                 {
                     return BadRequest("No Grade with this ID");
@@ -118,7 +118,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (NewClassroom.FloorID != 0)
             {
-                Floor Floor = Unit_Of_Work.floor_Repository.Select_By_Id(NewClassroom.FloorID);
+                Floor Floor = Unit_Of_Work.floor_Repository.First_Or_Default(g => g.ID == NewClassroom.FloorID && g.IsDeleted != true);
                 if (Floor == null)
                 {
                     return BadRequest("No Floor with this ID");
@@ -127,7 +127,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (NewClassroom.AcademicYearID != 0)
             {
-                AcademicYear AcademicYear = Unit_Of_Work.academicYear_Repository.Select_By_Id(NewClassroom.AcademicYearID);
+                AcademicYear AcademicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == NewClassroom.AcademicYearID && g.IsDeleted != true);
                 if (AcademicYear == null)
                 {
                     return BadRequest("No Academic Year with this ID");
@@ -180,7 +180,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (EditedClassroom.GradeID != 0)
             {
-                Grade Grade = Unit_Of_Work.grade_Repository.Select_By_Id(EditedClassroom.GradeID);
+                Grade Grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == EditedClassroom.GradeID && g.IsDeleted != true);
                 if (Grade == null)
                 {
                     return BadRequest("No Grade with this ID");
@@ -189,7 +189,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (EditedClassroom.FloorID != 0)
             {
-                Floor Floor = Unit_Of_Work.floor_Repository.Select_By_Id(EditedClassroom.FloorID);
+                Floor Floor = Unit_Of_Work.floor_Repository.First_Or_Default(g => g.ID == EditedClassroom.FloorID && g.IsDeleted != true);
                 if (Floor == null)
                 {
                     return BadRequest("No Floor with this ID");
@@ -198,14 +198,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (EditedClassroom.AcademicYearID != 0)
             {
-                AcademicYear AcademicYear = Unit_Of_Work.academicYear_Repository.Select_By_Id(EditedClassroom.AcademicYearID);
+                AcademicYear AcademicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == EditedClassroom.AcademicYearID && g.IsDeleted != true);
                 if (AcademicYear == null)
                 {
                     return BadRequest("No Academic Year with this ID");
                 }
             }
 
-            Classroom ClassroomExists = Unit_Of_Work.classroom_Repository.Select_By_Id(EditedClassroom.ID);
+            Classroom ClassroomExists = Unit_Of_Work.classroom_Repository.First_Or_Default(g => g.ID ==EditedClassroom.ID && g.IsDeleted != true);
             if (ClassroomExists == null || ClassroomExists.IsDeleted == true)
             {
                 return NotFound("No Classroom with this ID");
@@ -216,7 +216,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Classrooms");
                 if (page != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId&&RD.IsDeleted!=true);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
                         if (ClassroomExists.InsertedByUserId != userId)

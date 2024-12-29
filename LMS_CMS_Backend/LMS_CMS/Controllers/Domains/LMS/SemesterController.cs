@@ -28,7 +28,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ///////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Semester", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -59,6 +62,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         //////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("GetByAcademicYear/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Semester", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsyncByAcademicYear(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -89,7 +96,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("id")]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Semester", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -120,7 +130,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Semester", "Administrator" }
+        )]
         public async Task<IActionResult> Add(SemesterAddDTO NewSemester)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -137,6 +150,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (NewSemester == null)
             {
                 return NotFound();
+            }
+            AcademicYear academicYear=Unit_Of_Work.academicYear_Repository.First_Or_Default(a=>a.ID==NewSemester.AcademicYearID&&a.IsDeleted!=true);
+            if (academicYear == null) {
+              return NotFound("there is no AcademicYear whit this id");
             }
             Semester semester = mapper.Map<Semester>(NewSemester);
 
@@ -159,6 +176,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////
 
         [HttpPut]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Semester", "Administrator" }
+        )]
         public IActionResult Edit(Semester_GetDTO newSemester)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -177,8 +199,17 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("Semester cannot be null");
             }
-
-            Semester semester = mapper.Map<Semester>(newSemester);
+            AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(a => a.ID == newSemester.AcademicYearID && a.IsDeleted != true);
+            if (academicYear == null)
+            {
+                return NotFound("there is no AcademicYear whit this id");
+            }
+            Semester semester =Unit_Of_Work.semester_Repository.First_Or_Default(s=>s.ID==newSemester.ID && s.IsDeleted != true);
+            if (semester == null)
+            {
+                return NotFound("there is no semester with this id");
+            }
+            mapper.Map(newSemester, semester);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             semester.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -208,6 +239,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         //////////////////////////////////////////////////////
 
         [HttpDelete]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Semester", "Administrator" }
+        )]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

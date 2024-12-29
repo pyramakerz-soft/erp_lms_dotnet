@@ -32,7 +32,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -56,7 +56,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -83,7 +83,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public IActionResult Add(BuildingAddDTO NewBuilding)
         {
@@ -105,7 +105,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (NewBuilding.SchoolID != 0)
             {
-                School school = Unit_Of_Work.school_Repository.Select_By_Id(NewBuilding.SchoolID);
+                School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == NewBuilding.SchoolID && s.IsDeleted != true);
                 if (school == null)
                 {
                     return BadRequest("No School with this ID");
@@ -134,7 +134,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public IActionResult Edit(BuildingPutDTO EditedBuilding)
         {
@@ -158,14 +158,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (EditedBuilding.SchoolID != 0)
             {
-                School school = Unit_Of_Work.school_Repository.Select_By_Id(EditedBuilding.SchoolID);
+                School school = Unit_Of_Work.school_Repository.First_Or_Default(s=>s.ID==EditedBuilding.SchoolID &&s.IsDeleted != true);
                 if (school == null)
                 {
                     return BadRequest("No School with this ID");
                 }
             }
 
-            Building BuildingExists = Unit_Of_Work.building_Repository.Select_By_Id(EditedBuilding.ID);
+            Building BuildingExists = Unit_Of_Work.building_Repository.First_Or_Default(b=>b.ID==EditedBuilding.ID && b.IsDeleted != true);
             if (BuildingExists == null || BuildingExists.IsDeleted == true)
             {
                 return NotFound("No Building with this ID");
@@ -220,7 +220,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Buildings", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public IActionResult Delete(long id)
         {

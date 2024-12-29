@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +29,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ///////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -58,7 +62,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ///////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("GetBySection/{id}")]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -88,7 +95,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("id")]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -119,7 +129,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         //////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public async Task<IActionResult> Add(GradeAddDTO Newgrade)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -141,7 +154,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("section id can not be null");
             }
-            Section section=Unit_Of_Work.section_Repository.First_Or_Default(s=>s.ID== Newgrade.SectionID);
+            Section section=Unit_Of_Work.section_Repository.First_Or_Default(s=>s.ID== Newgrade.SectionID&&s.IsDeleted!=true);
             if (section == null)
             {
                 return BadRequest("this section not found");
@@ -166,6 +179,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////
 
         [HttpPut]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public async Task<IActionResult> EditAsync(GradeGetDTO newGrade)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -188,13 +206,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("section id can not be null");
             }
-            Section section = Unit_Of_Work.section_Repository.First_Or_Default(s => s.ID == newGrade.SectionID);
+            Section section = Unit_Of_Work.section_Repository.First_Or_Default(s => s.ID == newGrade.SectionID&&s.IsDeleted!=true);
             if (section == null)
             {
                 return BadRequest("this section not found");
             }
 
-            Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(s => s.ID == newGrade.ID);
+            Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(s => s.ID == newGrade.ID && s.IsDeleted != true);
             if (grade == null)
             {
                 return BadRequest("this grade not exist");
@@ -224,7 +242,12 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         }
         //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

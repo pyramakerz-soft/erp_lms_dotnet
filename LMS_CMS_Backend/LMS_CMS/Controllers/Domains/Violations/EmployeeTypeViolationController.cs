@@ -61,6 +61,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         ///////////////////////////////////////////
 
         [HttpGet("GetByEmployeeType/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Violation Types", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsyncByEmployeeType(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -93,7 +97,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         ///////////////////////////////////////////
 
         [HttpGet("id")]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Violation Types", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -125,7 +132,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Violation Types", "Administrator" }
+        )]
         public async Task<IActionResult> Add(EmployeeTypeViolationAddDTO NewEmployeeTypeViolation)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -147,7 +157,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             {
                 return BadRequest("EmployeeId Can not be null");
             }
-            EmployeeType empType = Unit_Of_Work.employeeType_Repository.Select_By_Id(NewEmployeeTypeViolation.EmployeeTypeID);
+            EmployeeType empType = Unit_Of_Work.employeeType_Repository.First_Or_Default(e=>e.ID==NewEmployeeTypeViolation.EmployeeTypeID);
             if (empType == null)
             {
                 return NotFound("this Employee Type Is Not Exist");
@@ -273,6 +283,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         //////////////////////////////////////////////////////
 
         [HttpDelete]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Violation Types", "Administrator" }
+        )]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

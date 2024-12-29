@@ -1,5 +1,6 @@
 ﻿using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Octa;
+using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,9 @@ namespace LMS_CMS_PL.Controllers.Octa
         }
 
         [HttpGet]
+        [Authorize_Endpoint_(
+             allowedTypes: new[] { "octa" }
+         )]
         public IActionResult Get()
         {
             var userClaims = HttpContext.User.Claims;
@@ -43,6 +47,9 @@ namespace LMS_CMS_PL.Controllers.Octa
 
 
         [HttpGet("{Id}")]
+        [Authorize_Endpoint_(
+             allowedTypes: new[] { "octa" }
+         )]
         public IActionResult GetByID(long Id)
         {
             var userClaims = HttpContext.User.Claims;
@@ -63,6 +70,9 @@ namespace LMS_CMS_PL.Controllers.Octa
         }
 
         [HttpPost]
+        [Authorize_Endpoint_(
+             allowedTypes: new[] { "octa" }
+         )]
         public IActionResult Add(LMS_CMS_DAL.Models.Octa.Octa newAcc)
         {
             var userClaims = HttpContext.User.Claims;
@@ -83,6 +93,9 @@ namespace LMS_CMS_PL.Controllers.Octa
         }
 
         [HttpPut]
+        [Authorize_Endpoint_(
+             allowedTypes: new[] { "octa" }
+         )]
         public IActionResult Edit(LMS_CMS_DAL.Models.Octa.Octa newAcc)
         {
             var userClaims = HttpContext.User.Claims;
@@ -103,6 +116,9 @@ namespace LMS_CMS_PL.Controllers.Octa
         }
 
         [HttpDelete("{id}")]
+        [Authorize_Endpoint_(
+             allowedTypes: new[] { "octa" }
+         )]
         public IActionResult delete(long id)
         {
             var userClaims = HttpContext.User.Claims;

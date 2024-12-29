@@ -22,6 +22,7 @@ import { BusStudentComponent } from './Pages/Employee/Bus/bus-student/bus-studen
 import { BusPrintNameTagComponent } from './Pages/Employee/Bus/bus-print-name-tag/bus-print-name-tag.component';
 import { BusDistrictsComponent } from './Pages/Employee/Bus/bus-districts/bus-districts.component';
 import { DomainsComponent } from './Pages/Octa/domains/domains.component';
+import { SchoolTypeComponent } from './Pages/Octa/school-type/school-type.component';
 
 
 export const routes: Routes = [
@@ -80,6 +81,7 @@ export const routes: Routes = [
             { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
             { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Domains", component: DomainsComponent, title: "Domains"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "School Types", component: SchoolTypeComponent, title: "School Types"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
 

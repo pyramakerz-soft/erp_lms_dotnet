@@ -88,7 +88,9 @@ namespace LMS_CMS_PL.Controllers.Octa
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            if (userTypeClaim == null)
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            if (userTypeClaim == null || userIdClaim == null)
             {
                 return Unauthorized("User Type claim not found.");
             }
@@ -99,7 +101,9 @@ namespace LMS_CMS_PL.Controllers.Octa
             }
 
             LMS_CMS_DAL.Models.Octa.SchoolType SchoolTypeDTO = mapper.Map<LMS_CMS_DAL.Models.Octa.SchoolType>(schoolType);
-
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            SchoolTypeDTO.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            SchoolTypeDTO.InsertedByUserId = userId;
             _Unit_Of_Work.schoolType_Octa_Repository.Add_Octa(SchoolTypeDTO);
             _Unit_Of_Work.SaveOctaChanges();
 
@@ -132,7 +136,9 @@ namespace LMS_CMS_PL.Controllers.Octa
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            if (userTypeClaim == null)
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            if (userTypeClaim == null || userIdClaim == null)
             {
                 return Unauthorized("User Type claim not found.");
             }
@@ -150,6 +156,10 @@ namespace LMS_CMS_PL.Controllers.Octa
             }
 
             mapper.Map(schoolType, schoolTypeExists);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            schoolTypeExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            schoolTypeExists.UpdatedByUserId = userId;
+
             _Unit_Of_Work.schoolType_Octa_Repository.Update_Octa(schoolTypeExists);
             _Unit_Of_Work.SaveOctaChanges();
 
@@ -166,7 +176,6 @@ namespace LMS_CMS_PL.Controllers.Octa
                 LMS_CMS_DAL.Models.Domains.LMS.SchoolType schoolTypeDomainExists = Unit_Of_Work.schoolType_Repository.Select_By_Id(schoolType.ID);
 
                 mapper.Map(schoolType, schoolTypeDomainExists);
-
                 Unit_Of_Work.schoolType_Repository.Update(schoolTypeDomainExists);
                 Unit_Of_Work.SaveChanges();
             }

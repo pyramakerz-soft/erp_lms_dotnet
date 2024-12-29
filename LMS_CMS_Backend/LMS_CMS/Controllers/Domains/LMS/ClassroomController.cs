@@ -106,7 +106,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("Classroom cannot be null");
             }
-
+            if (NewClassroom.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             if (NewClassroom.GradeID != 0)
             {
                 Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g=>g.ID==NewClassroom.GradeID&&g.IsDeleted!=true);
@@ -177,7 +180,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("Classroom cannot be null");
             }
-
+            if (EditedClassroom.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             if (EditedClassroom.GradeID != 0)
             {
                 Grade Grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == EditedClassroom.GradeID && g.IsDeleted != true);

@@ -119,6 +119,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("School cannot be null");
             }
+            if (newSchool.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             SchoolType schoolType = Unit_Of_Work.schoolType_Repository.First_Or_Default(s => s.ID == newSchool.SchoolTypeID);
             if (schoolType == null) 
             { 
@@ -160,6 +164,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (newSchool == null)
             {
                 return BadRequest("School cannot be null");
+            }
+            if (newSchool.Name == null)
+            {
+                return BadRequest("the name cannot be null");
             }
             SchoolType schoolType = Unit_Of_Work.schoolType_Repository.First_Or_Default(s => s.ID == newSchool.SchoolTypeID);
             if (schoolType == null)

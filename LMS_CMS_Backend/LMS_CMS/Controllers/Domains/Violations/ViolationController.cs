@@ -114,6 +114,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             {
                 return NotFound();
             }
+            if (Newviolation.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             Violation violation = mapper.Map<Violation>(Newviolation);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

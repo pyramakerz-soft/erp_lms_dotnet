@@ -154,6 +154,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("section id can not be null");
             }
+            if (Newgrade.Name == null)
+            {
+                return BadRequest("the name cannot be null");
+            }
             Section section=Unit_Of_Work.section_Repository.First_Or_Default(s=>s.ID== Newgrade.SectionID&&s.IsDeleted!=true);
             if (section == null)
             {

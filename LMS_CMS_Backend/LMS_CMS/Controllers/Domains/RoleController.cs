@@ -4,6 +4,7 @@ using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -29,7 +30,10 @@ namespace LMS_CMS_PL.Controllers.Domains
         ///////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Role", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -58,7 +62,10 @@ namespace LMS_CMS_PL.Controllers.Domains
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("id")]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Role", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -87,7 +94,10 @@ namespace LMS_CMS_PL.Controllers.Domains
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Role", "Administrator" }
+        )]
         public async Task<IActionResult> Add(RoleAddDTO NewRoles)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -182,6 +192,11 @@ namespace LMS_CMS_PL.Controllers.Domains
         ////////////////////////////////////////////////////
 
         [HttpPut]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Role", "Administrator" }
+        )]
         public IActionResult Edit(RolesGetDTO newRole)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -229,6 +244,11 @@ namespace LMS_CMS_PL.Controllers.Domains
         //////////////////////////////////////////////////////
 
         [HttpDelete]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Role", "Administrator" }
+        )]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

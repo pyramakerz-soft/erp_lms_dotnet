@@ -197,7 +197,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             if (busAddDTO.BusTypeID != null)
             {
 
-                BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(busAddDTO.BusTypeID);
+                BusType busType = Unit_Of_Work.busType_Repository.First_Or_Default(b=>b.ID==busAddDTO.BusTypeID && b.IsDeleted != true);
                 if (busType == null || busType.IsDeleted == true)
                 {
                     return NotFound("No Bus Type with this ID");
@@ -206,7 +206,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busAddDTO.BusCompanyID != null)
             {
-                BusCompany busCompany = Unit_Of_Work.busCompany_Repository.Select_By_Id(busAddDTO.BusCompanyID);
+                BusCompany busCompany = Unit_Of_Work.busCompany_Repository.First_Or_Default(b => b.ID == busAddDTO.BusCompanyID && b.IsDeleted != true);
                 if (busCompany == null || busCompany.IsDeleted == true)
                 {
                     return NotFound("No Bus Company with this ID");
@@ -215,7 +215,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busAddDTO.BusDistrictID != null)
             {
-                BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(busAddDTO.BusDistrictID);
+                BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.First_Or_Default(b => b.ID == busAddDTO.BusDistrictID && b.IsDeleted != true);
                 if (busDistrict == null || busDistrict.IsDeleted == true)
                 {
                     return NotFound("No Bus District with this ID");
@@ -224,7 +224,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             if (busAddDTO.BusStatusID != null)
             {
 
-                BusStatus busStatus = Unit_Of_Work.busStatus_Repository.Select_By_Id(busAddDTO.BusStatusID);
+                BusStatus busStatus = Unit_Of_Work.busStatus_Repository.First_Or_Default(b => b.ID == busAddDTO.BusStatusID && b.IsDeleted != true);
                 if (busStatus == null || busStatus.IsDeleted == true)
                 {
                     return NotFound("No Bus Status with this ID");
@@ -233,7 +233,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busAddDTO.DriverID != null)
             {
-                Employee busDriver = Unit_Of_Work.employee_Repository.Select_By_Id(busAddDTO.DriverID);
+                Employee busDriver = Unit_Of_Work.employee_Repository.First_Or_Default(b => b.ID == busAddDTO.DriverID && b.IsDeleted != true);
                 if (busDriver == null || busDriver.IsDeleted == true)
                 {
                     return NotFound("No Bus Driver with this ID");
@@ -242,7 +242,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busAddDTO.DriverAssistantID != null)
             {
-                Employee busDriverAssisstant = Unit_Of_Work.employee_Repository.Select_By_Id(busAddDTO.DriverAssistantID);
+                Employee busDriverAssisstant = Unit_Of_Work.employee_Repository.First_Or_Default(b => b.ID == busAddDTO.DriverAssistantID && b.IsDeleted != true);
                 if (busDriverAssisstant == null || busDriverAssisstant.IsDeleted == true)
                 {
                     return NotFound("No Bus Status Assisstant with this ID");
@@ -298,7 +298,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busPutDTO.BusTypeID != null)
             {
-                BusType busType = Unit_Of_Work.busType_Repository.Select_By_Id(busPutDTO.BusTypeID);
+                BusType busType = Unit_Of_Work.busType_Repository.First_Or_Default(b=>b.ID==busPutDTO.BusTypeID&&b.IsDeleted!=true);
                 if (busType == null || busType.IsDeleted == true)
                 {
                     return NotFound("No Bus Type with this ID");
@@ -307,7 +307,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busPutDTO.BusCompanyID != null)
             {
-                BusCompany busCompany = Unit_Of_Work.busCompany_Repository.Select_By_Id(busPutDTO.BusCompanyID);
+                BusCompany busCompany = Unit_Of_Work.busCompany_Repository.First_Or_Default(b => b.ID == busPutDTO.BusCompanyID && b.IsDeleted != true);
                 if (busCompany == null || busCompany.IsDeleted == true)
                 {
                     return NotFound("No Bus Company with this ID");
@@ -316,7 +316,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busPutDTO.BusDistrictID != null)
             {
-                BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(busPutDTO.BusDistrictID);
+                BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.First_Or_Default(b => b.ID == busPutDTO.BusDistrictID && b.IsDeleted != true);
                 if (busDistrict == null || busDistrict.IsDeleted == true)
                 {
                     return NotFound("No Bus District with this ID");
@@ -325,7 +325,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             if (busPutDTO.BusStatusID != null)
             {
 
-                BusStatus busStatus = Unit_Of_Work.busStatus_Repository.Select_By_Id(busPutDTO.BusStatusID);
+                BusStatus busStatus = Unit_Of_Work.busStatus_Repository.First_Or_Default(b => b.ID == busPutDTO.BusStatusID && b.IsDeleted != true);
                 if (busStatus == null || busStatus.IsDeleted == true)
                 {
                     return NotFound("No Bus Status with this ID");
@@ -334,7 +334,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busPutDTO.DriverID != null)
             {
-                Employee busDriver = Unit_Of_Work.employee_Repository.Select_By_Id(busPutDTO.DriverID);
+                Employee busDriver = Unit_Of_Work.employee_Repository.First_Or_Default(b => b.ID == busPutDTO.DriverID && b.IsDeleted != true);
                 if (busDriver == null || busDriver.IsDeleted == true)
                 {
                     return NotFound("No Bus Driver with this ID");
@@ -343,7 +343,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (busPutDTO.DriverAssistantID != null)
             {
-                Employee busDriverAssisstant = Unit_Of_Work.employee_Repository.Select_By_Id(busPutDTO.DriverAssistantID);
+                Employee busDriverAssisstant = Unit_Of_Work.employee_Repository.First_Or_Default(b => b.ID == busPutDTO.DriverAssistantID && b.IsDeleted != true);
                 if (busDriverAssisstant == null || busDriverAssisstant.IsDeleted == true)
                 {
                     return NotFound("No Bus Status Assisstant with this ID");
@@ -351,7 +351,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             }
 
 
-            BusModel busExists = Unit_Of_Work.bus_Repository.Select_By_Id(busPutDTO.ID);
+            BusModel busExists = Unit_Of_Work.bus_Repository.First_Or_Default(b => b.ID == busPutDTO.ID && b.IsDeleted != true);
             if (busExists == null || busExists.IsDeleted == true)
             {
                 return NotFound("No Bus with this ID");

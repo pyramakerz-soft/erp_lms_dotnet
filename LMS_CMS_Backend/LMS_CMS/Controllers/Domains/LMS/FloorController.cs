@@ -29,7 +29,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Floors", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -54,7 +54,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Floors", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -85,7 +85,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Floors", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public IActionResult Add(FloorAddDTO NewFloor)
         {
@@ -107,10 +107,22 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (NewFloor.buildingID != 0)
             {
-                Building building = Unit_Of_Work.building_Repository.Select_By_Id(NewFloor.buildingID);
+                Building building = Unit_Of_Work.building_Repository.First_Or_Default(b=>b.ID==NewFloor.buildingID&&b.IsDeleted!=true);
                 if (building == null)
                 {
                     return BadRequest("No Building with this ID");
+                }
+            }
+            else
+            {
+                return BadRequest("Building id cannot be null");
+            }
+            if (NewFloor.FloorMonitorID != 0)
+            {
+                Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(b => b.ID == NewFloor.FloorMonitorID && b.IsDeleted != true);
+                if (employee == null)
+                {
+                    return BadRequest("No FloorMonitor with this ID");
                 }
             }
 
@@ -136,7 +148,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Floors", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public IActionResult Edit(FloorPutDTO EditedFloor)
         {
@@ -160,10 +172,22 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (EditedFloor.buildingID != 0)
             {
-                Building building = Unit_Of_Work.building_Repository.Select_By_Id(EditedFloor.buildingID);
+                Building building = Unit_Of_Work.building_Repository.First_Or_Default(b => b.ID == EditedFloor.buildingID && b.IsDeleted != true);
                 if (building == null)
                 {
                     return BadRequest("No Building with this ID");
+                }
+            }
+            else
+            {
+                return BadRequest("Building id cannot be null");
+            }
+            if (EditedFloor.FloorMonitorID != 0)
+            {
+                Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(b => b.ID == EditedFloor.FloorMonitorID && b.IsDeleted != true);
+                if (employee == null)
+                {
+                    return BadRequest("No FloorMonitor with this ID");
                 }
             }
 
@@ -222,7 +246,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Floors", "Administrator" }
+            pages: new[] { "Buildings & Floors", "Administrator" }
         )]
         public IActionResult Delete(long id)
         {

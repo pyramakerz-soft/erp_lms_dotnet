@@ -119,7 +119,7 @@ namespace LMS_CMS_PL.Controllers.Octa
         [Authorize_Endpoint_(
              allowedTypes: new[] { "octa" }
          )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;

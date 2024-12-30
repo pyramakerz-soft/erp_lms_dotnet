@@ -63,6 +63,9 @@ export class MainLayoutComponent {
             },
             {
               label: "School", route: "School"
+            },
+            {
+              label: "Account", route: "Account"
             }
           ]
         }

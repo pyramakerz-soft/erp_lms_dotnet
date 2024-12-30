@@ -1,0 +1,248 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Subject</h1>
+    <div class="flex justify-between items-center ">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        
+        <button (click)="openModal()"
+        class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            Create Subject
+        </button>
+    </div>
+</div>
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Subject Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Arabic Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Grade
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Order in Certificate 
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Credit Hours
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Subject Code
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Pass By
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Total Mark
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Hide From Grade Report
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Subject Category
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Number of session per week
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Date
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="subjectData.length === 0">
+                <td colspan="4" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of subjectData; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.en_name }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.ar_name }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.gradeName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInCertificate }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.creditHours }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subjectCode }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.passByDegree }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.totalMark }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <i *ngIf="row.hideFromGradeReport" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+                    <i *ngIf="!row.hideFromGradeReport" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
+                </td> 
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subjectCategoryName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.numberOfSessionPerWeek }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.insertedAt | date:'MMM d, yyyy' }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex space-x-4">
+                        <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                            (click)="deleteSubject(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button>
+                            <i class="fa-regular fa-eye" (click)="MoveToSubjectView(row.id)"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Add-Edit School Type Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-1/2">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!editSubject" class="font-semibold text-2xl leading-9">Create Subject</h1>
+            <h1 *ngIf="editSubject" class="font-semibold text-2xl leading-9">Edit Subject</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="name">Subject English</label>
+                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Subject English"
+                [(ngModel)]="subject.en_name" 
+                (ngModelChange)="onInputValueChange({ field: 'en_name', value: $event })"/>
+                <span *ngIf="validationErrors['en_name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['en_name'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="arname">Subject Arabic</label>
+                <input id="arname" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Subject Arabic"
+                [(ngModel)]="subject.ar_name" 
+                (ngModelChange)="onInputValueChange({ field: 'ar_name', value: $event })"/>
+                <span *ngIf="validationErrors['ar_name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['ar_name'] }}</span>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="school" [ngClass]="{ 'text-gray-400': editSubject, 'primaryTxt': !editSubject}">Choose School</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange($event)"
+                [disabled]="editSubject" [ngClass]="{ 'bg-[#EBEBEB]': editSubject}">
+                    <option [value]="null" disabled selected hidden>Choose School</option>
+                    <option *ngFor="let school of Schools" [value]="school.id">{{ school.name }}</option>
+                    <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="section" [ngClass]="{ 'text-gray-400': !selectedSchool || editSubject, 'primaryTxt': selectedSchool && !editSubject }">Choose Section</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="section" [(ngModel)]="selectedSection" (change)="onSectionChange($event)"
+                [disabled]="!selectedSchool || editSubject" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editSubject }">
+                    <option [value]="null" disabled selected hidden>Choose Section</option>
+                    <option *ngFor="let section of Sections" [value]="section.id">{{ section.name }}</option>
+                    <option *ngIf="Sections.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="grade" [ngClass]="{ 'text-gray-400': !selectedSection || editSubject, 'primaryTxt': selectedSection && !editSubject }">Choose Grade</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange($event)"
+                [disabled]="!selectedSection || editSubject" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSection || editSubject }">
+                    <option [value]="null" disabled selected hidden>Choose Section</option>
+                    <option *ngFor="let grade of Grades" [value]="grade.id">{{ grade.name }}</option>
+                    <option *ngIf="Grades.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="orderInCertificate">Order in Certificate</label>
+                <input id="orderInCertificate" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Order In Certificate" 
+                [(ngModel)]="subject.orderInCertificate"
+                (ngModelChange)="onInputValueChange({ field: 'orderInCertificate', value: $event })"
+                (input)="validateNumber($event)"/>
+                <span *ngIf="validationErrors['orderInCertificate']" class="text-red-500 ml-3 font-normal">{{ validationErrors['orderInCertificate'] }}</span>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="creditHours">Credit Hours</label>
+                <input id="creditHours" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Credit Hours" 
+                [(ngModel)]="subject.creditHours"
+                (ngModelChange)="onInputValueChange({ field: 'creditHours', value: $event })"
+                (input)="validateNumber($event)"/>
+                <span *ngIf="validationErrors['creditHours']" class="text-red-500 ml-3 font-normal">{{ validationErrors['creditHours'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="subjectCode">Subject Code</label>
+                <input id="subjectCode" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Subject Code"
+                [(ngModel)]="subject.subjectCode" 
+                (ngModelChange)="onInputValueChange({ field: 'subjectCode', value: $event })"/>
+                <span *ngIf="validationErrors['subjectCode']" class="text-red-500 ml-3 font-normal">{{ validationErrors['subjectCode'] }}</span>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="passByDegree">Pass By Degree</label>
+                <input id="passByDegree" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Pass By Degree" 
+                [(ngModel)]="subject.passByDegree"
+                (ngModelChange)="onInputValueChange({ field: 'passByDegree', value: $event })"
+                (input)="validateNumber($event)"/>
+                <span *ngIf="validationErrors['passByDegree']" class="text-red-500 ml-3 font-normal">{{ validationErrors['passByDegree'] }}</span>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="totalMark">Total Mark</label>
+                <input id="totalMark" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Credit Hours" 
+                [(ngModel)]="subject.totalMark"
+                (ngModelChange)="onInputValueChange({ field: 'totalMark', value: $event })"
+                (input)="validateNumber($event)"/>
+                <span *ngIf="validationErrors['totalMark']" class="text-red-500 ml-3 font-normal">{{ validationErrors['totalMark'] }}</span>
+            </div>
+            <div class="flex w-full space-x-5 items-center mb-4">
+                <input type="checkbox" id="hide" class="w-5 h-5"
+                (change)="onIsHideChange($event)"
+                [checked]="subject.hideFromGradeReport">
+                <label for="hide" class="text-sm">Hide From Grade Report</label>
+            </div>
+            <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
+                <div class="flex justify-center w-full">
+                    <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                        <img *ngIf="!subject.iconLink" src="Images/Icon frame.png" class="w-1/4">
+                        <img *ngIf="subject.iconLink" [src]="subject.iconLink" class="w-1/3 object-cover">
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to Upload </span>or drag and drop Icon</p>
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB)</p>
+                    </label>
+                    <input id="file-upload" type="file" class="hidden" (change)="onImageFileSelected($event)" accept="image/jpeg, image/png"  />
+                </div>
+                <span *ngIf="validationErrors['iconFile']" class="text-red-500  font-normal text-xs md:text-sm">{{ validationErrors['iconFile'] }}</span>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="subjCategory">Subject Categories</label>
+                <select 
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subjCategory" [(ngModel)]="subject.subjectCategoryID"
+                (ngModelChange)="onInputValueChange({ field: 'subjectCategoryID', value: $event })">
+                    <option [value]="0" disabled selected hidden>Choose Subject Category</option>
+                    <option *ngFor="let cat of subjectCategories" [value]="cat.id">{{ cat.name }}</option>
+                    <option *ngIf="subjectCategories.length === 0" disabled selected>No Data Found</option>
+                </select>
+                <span *ngIf="validationErrors['subjectCategoryID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['subjectCategoryID'] }}</span>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="numberOfSessionPerWeek">Number of session per week</label>
+                <input id="numberOfSessionPerWeek" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Number of session per week" 
+                [(ngModel)]="subject.numberOfSessionPerWeek"
+                (ngModelChange)="onInputValueChange({ field: 'numberOfSessionPerWeek', value: $event })"
+                (input)="validateNumber($event)"/>
+                <span *ngIf="validationErrors['numberOfSessionPerWeek']" class="text-red-500 ml-3 font-normal">{{ validationErrors['numberOfSessionPerWeek'] }}</span>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="SaveSubject()">
+                Save
+            </button>
+        </div>
+    </div>
+</div>

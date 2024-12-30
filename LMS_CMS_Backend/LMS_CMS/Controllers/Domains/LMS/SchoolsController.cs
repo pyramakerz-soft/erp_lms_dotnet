@@ -33,7 +33,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa"}
+            allowedTypes: new[] { "octa", "employee"}
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -66,7 +66,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa" }
+            allowedTypes: new[] { "octa", "employee" }
         )]
         public async Task<IActionResult> GetAsync(long id)
         {

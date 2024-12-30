@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +28,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ///////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -58,7 +62,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("id")]
-
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -89,6 +96,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public async Task<IActionResult> Add(SectionAddDTO NewSection)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -135,6 +146,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////
 
         [HttpPut]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public IActionResult Edit(SectionGetDTO newSection)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -197,6 +213,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         //////////////////////////////////////////////////////
 
         [HttpDelete]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Sections & Grade Levels", "Administrator" }
+        )]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

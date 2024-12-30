@@ -26,6 +26,10 @@ import { RoleComponent } from './Pages/Employee/Administrator/role/role.componen
 import { RoleAddEditComponent } from './Pages/Employee/Administrator/role-add-edit/role-add-edit.component';
 import { SchoolTypeComponent } from './Pages/Octa/school-type/school-type.component';
 import { SchoolComponent } from './Pages/Octa/school/school.component';
+import { AccountComponent } from './Pages/Octa/account/account.component';
+import { SubjectCategoryComponent } from './Pages/Employee/LMS/subject-category/subject-category.component';
+import { SubjectComponent } from './Pages/Employee/LMS/subject/subject.component';
+import { SubjectViewComponent } from './Pages/Employee/LMS/subject-view/subject-view.component';
 
 
 export const routes: Routes = [
@@ -50,6 +54,9 @@ export const routes: Routes = [
             { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Role", component: RoleComponent, title: "Role"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]}, 
             { path: "Role Create", component: RoleAddEditComponent, title: "Role Create"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Subject Categories", component: SubjectCategoryComponent, title: "Subject Categories"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Subject", component: SubjectComponent, title: "Subjects"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Subject/:domainName/:SubId", component: SubjectViewComponent, title: "Subject", canActivate:[noNavigateWithoutLoginGuard]}, 
         ]
     },
     { 
@@ -86,7 +93,8 @@ export const routes: Routes = [
             { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Domains", component: DomainsComponent, title: "Domains"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "School Types", component: SchoolTypeComponent, title: "School Types"  , canActivate:[noNavigateWithoutLoginGuard]},  
-            { path: "School", component: SchoolComponent, title: "School"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "School", component: SchoolComponent, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Account", component: AccountComponent, title: "Accounts"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
 

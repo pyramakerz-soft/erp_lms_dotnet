@@ -152,7 +152,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             SubjectCategory SubjectCategoryExists = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(s=>s.ID==EditedSubjectCategory.ID&&s.IsDeleted!=true);
             if (SubjectCategoryExists == null || SubjectCategoryExists.IsDeleted == true)
             {
-                return NotFound("No Floor with this ID");
+                return NotFound("No Subject Category with this ID");
             }
 
             if (userTypeClaim == "employee")

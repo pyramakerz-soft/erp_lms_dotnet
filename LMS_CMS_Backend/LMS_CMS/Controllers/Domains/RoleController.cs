@@ -113,13 +113,21 @@ namespace LMS_CMS_PL.Controllers.Domains
             }
             if (NewRoles == null)
             {
-                return NotFound();
+                return BadRequest("Role data is null.");
+            }
+            if (NewRoles.Pages == null || !NewRoles.Pages.Any())
+            {
+                return BadRequest("Pages list cannot be null or empty.");
             }
 
-            /// Create Role
-            Role role = new Role();
-            role.Name= NewRoles.Name;
+            Role role = Unit_Of_Work.role_Repository.First_Or_Default(r => r.Name == NewRoles.Name && r.IsDeleted != true);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            if (role != null)
+            {
+                return BadRequest("This Role Already Exist");
+            }
+            role = new Role(); 
+            role.Name = NewRoles.Name;
             role.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
@@ -132,62 +140,52 @@ namespace LMS_CMS_PL.Controllers.Domains
             await Unit_Of_Work.role_Repository.AddAsync(role);
             await Unit_Of_Work.SaveChangesAsync();
 
-            /// Create Role Drtails
-            role= Unit_Of_Work.role_Repository.First_Or_Default(r=>r.Name==NewRoles.Name);
-            if(role == null) { return NotFound(); }
-            if(NewRoles.pageId == null) { return BadRequest("page can not be null"); }
-            Page page = Unit_Of_Work.page_Repository.First_Or_Default(r => r.ID == NewRoles.pageId);
-            if (page == null) { return NotFound("there is no page with this id");}
+            role = Unit_Of_Work.role_Repository.First_Or_Default(r => r.Name == NewRoles.Name);
+            if (role == null) { return NotFound(); }
 
-            //this page is child 
-            if (page.Page_ID != null) 
+            foreach (var item in NewRoles.Pages)
             {
-                //check if the parent of this page exist in role details table
-                Role_Detailes role_Detailes1 =Unit_Of_Work.role_Detailes_Repository.First_Or_Default(p=>p.Page_ID == page.Page_ID);
-                if (role_Detailes1 == null)
+                if (item.pageId == null) { return BadRequest("Page cannot be null."); }
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(r => r.ID == item.pageId);
+                if (page == null) { return NotFound("There is no page with this ID."); }
+                if (page.Page_ID != null)
                 {
-                    role_Detailes1 = new Role_Detailes();
-                    role_Detailes1.Page_ID = (long)page.Page_ID;
-                    role_Detailes1.Role_ID = role.ID;
-                    role_Detailes1.Allow_Delete = true;
-                    role_Detailes1.Allow_Delete_For_Others = true;
-                    role_Detailes1.Allow_Edit = true;
-                    role_Detailes1.Allow_Edit_For_Others = true;
-                    role_Detailes1.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                    if (userTypeClaim == "octa")
+                    Role_Detailes role_Detailes1 = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(p => p.Page_ID == page.Page_ID && p.Role_ID== role.ID);
+                    if (role_Detailes1 == null)
                     {
-                        role_Detailes1.InsertedByOctaId = userId;
+                        role_Detailes1 = new Role_Detailes
+                        {
+                            Page_ID = (long)page.Page_ID,
+                            Role_ID = role.ID,
+                            Allow_Delete = true,
+                            Allow_Delete_For_Others = true,
+                            Allow_Edit = true,
+                            Allow_Edit_For_Others = true,
+                            InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
+                            InsertedByOctaId = userTypeClaim == "octa" ? userId : (long?)null,
+                            InsertedByUserId = userTypeClaim == "employee" ? userId : (long?)null
+                        };
+                        await Unit_Of_Work.role_Detailes_Repository.AddAsync(role_Detailes1);
+                        await Unit_Of_Work.SaveChangesAsync();
                     }
-                    else if (userTypeClaim == "employee")
-                    {
-                        role_Detailes1.InsertedByUserId = userId;
-                    }
-
-                    await Unit_Of_Work.role_Detailes_Repository.AddAsync(role_Detailes1);
-                    await Unit_Of_Work.SaveChangesAsync();
                 }
+               
+                Role_Detailes role_Detailes = new Role_Detailes
+                {
+                    Page_ID = item.pageId,
+                    Role_ID = role.ID,
+                    Allow_Delete = item.Allow_Delete,
+                    Allow_Delete_For_Others = item.Allow_Delete_For_Others,
+                    Allow_Edit = item.Allow_Edit,
+                    Allow_Edit_For_Others = item.Allow_Edit_For_Others,
+                    InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
+                    InsertedByOctaId = userTypeClaim == "octa" ? userId : (long?)null,
+                    InsertedByUserId = userTypeClaim == "employee" ? userId : (long?)null
+                };
+                await Unit_Of_Work.role_Detailes_Repository.AddAsync(role_Detailes);
+                await Unit_Of_Work.SaveChangesAsync();
             }
-
-            Role_Detailes role_Detailes = new Role_Detailes();
-            role_Detailes.Page_ID=NewRoles.pageId;
-            role_Detailes.Role_ID = role.ID;
-            role_Detailes.Allow_Delete = NewRoles.Allow_Delete;
-            role_Detailes.Allow_Delete_For_Others = NewRoles.Allow_Delete_For_Others;
-            role_Detailes.Allow_Edit = NewRoles.Allow_Edit;
-            role_Detailes.Allow_Edit_For_Others = NewRoles.Allow_Edit_For_Others;
-            role_Detailes.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "octa")
-            {
-                role_Detailes.InsertedByOctaId = userId;
-            }
-            else if (userTypeClaim == "employee")
-            {
-                role_Detailes.InsertedByUserId = userId;
-            }
-
-            await Unit_Of_Work.role_Detailes_Repository.AddAsync(role_Detailes);
-            await Unit_Of_Work.SaveChangesAsync();
-            return Ok(NewRoles);
+            return Ok();
         }
         ////////////////////////////////////////////////////
 
@@ -197,7 +195,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             allowEdit: 1,
             pages: new[] { "Role", "Administrator" }
         )]
-        public IActionResult Edit(RolesGetDTO newRole)
+        public async Task<IActionResult> Edit(RolePutDTO newRole)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -216,9 +214,15 @@ namespace LMS_CMS_PL.Controllers.Domains
                 return BadRequest("Role cannot be null");
             }
 
-            Role role = mapper.Map<Role>(newRole);
-
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            Role role = Unit_Of_Work.role_Repository.First_Or_Default(r => r.ID == newRole.ID);
+            if (role == null)
+            {
+                return BadRequest("Role cannot be null");
+            }
+            if (role.Name != newRole.Name) 
+            { 
+              role.Name = newRole.Name;
             role.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
@@ -237,8 +241,65 @@ namespace LMS_CMS_PL.Controllers.Domains
                     role.UpdatedByOctaId = null;
                 }
             }
-            Unit_Of_Work.role_Repository.Update(role);
-            Unit_Of_Work.SaveChanges();
+                Unit_Of_Work.role_Repository.Update(role);
+                Unit_Of_Work.SaveChanges();
+            }
+
+            List<Role_Detailes> role_Detailes =Unit_Of_Work.role_Detailes_Repository.FindBy(r=>r.Role_ID==newRole.ID); 
+            if (role_Detailes != null)
+            {
+                foreach (var item in role_Detailes)
+                {
+                    await Unit_Of_Work.role_Detailes_Repository.DeleteAsync(item.ID);
+                    await Unit_Of_Work.SaveChangesAsync();
+                }
+            }
+
+
+            foreach (var item in newRole.Pages)
+            {
+                if (item.pageId == null) { return BadRequest("Page cannot be null."); }
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(r => r.ID == item.pageId);
+                if (page == null) { return NotFound("There is no page with this ID."); }
+                if (page.Page_ID != null)
+                {
+                    Role_Detailes role_Detailes1 = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(p => p.Page_ID == page.Page_ID && p.Role_ID == role.ID);
+                    if (role_Detailes1 == null)
+                    {
+                        role_Detailes1 = new Role_Detailes
+                        {
+                            Page_ID = (long)page.Page_ID,
+                            Role_ID = role.ID,
+                            Allow_Delete = true,
+                            Allow_Delete_For_Others = true,
+                            Allow_Edit = true,
+                            Allow_Edit_For_Others = true,
+                            InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
+                            InsertedByOctaId = userTypeClaim == "octa" ? userId : (long?)null,
+                            InsertedByUserId = userTypeClaim == "employee" ? userId : (long?)null
+                        };
+                        await Unit_Of_Work.role_Detailes_Repository.AddAsync(role_Detailes1);
+                        await Unit_Of_Work.SaveChangesAsync();
+                    }
+                }
+
+                Role_Detailes role_Detailes2 = new Role_Detailes
+                {
+                    Page_ID = item.pageId,
+                    Role_ID = role.ID,
+                    Allow_Delete = item.Allow_Delete,
+                    Allow_Delete_For_Others = item.Allow_Delete_For_Others,
+                    Allow_Edit = item.Allow_Edit,
+                    Allow_Edit_For_Others = item.Allow_Edit_For_Others,
+                    InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
+                    InsertedByOctaId = userTypeClaim == "octa" ? userId : (long?)null,
+                    InsertedByUserId = userTypeClaim == "employee" ? userId : (long?)null
+                };
+                await Unit_Of_Work.role_Detailes_Repository.AddAsync(role_Detailes2);
+                await Unit_Of_Work.SaveChangesAsync();
+            }
+
+
             return Ok(newRole);
         }
         //////////////////////////////////////////////////////

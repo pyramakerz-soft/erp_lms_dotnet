@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             var roleDetailsList = await Unit_Of_Work.role_Detailes_Repository.Database().Role_Detailes
-                .Where(rd => rd.Role_ID == roleId && rd.IsDeleted != true)
+                .Where(rd => rd.IsDeleted != true && rd.Role_ID== roleId)
                 .Include(rd => rd.Page)  // Include the related Page entity
                 .ThenInclude(p => p.ChildPages) // Include the child pages
                 .ToListAsync();

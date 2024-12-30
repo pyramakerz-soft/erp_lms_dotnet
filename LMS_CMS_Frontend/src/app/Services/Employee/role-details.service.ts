@@ -28,7 +28,7 @@ export class RoleDetailsService {
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
 
-    return this.http.get(`${this.baseUrl}/Role_Details/Get_With_RoleID_Group_By/${roleId}`, { headers });
+    return this.http.get<PagesWithRoleId[]>(`${this.baseUrl}/Role_Details/Get_With_RoleID_Group_By/${roleId}`, { headers });
   }
   Get_All_With_Group_By(){
     const token = localStorage.getItem("current_token");

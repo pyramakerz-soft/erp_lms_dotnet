@@ -81,6 +81,14 @@ namespace LMS_CMS_BL.Repository
             TEntity obj = db.Set<TEntity>().Find(id);
             db.Set<TEntity>().Remove(obj);
         }
+        public async Task DeleteAsync(long id)
+        {
+            TEntity obj = await db.Set<TEntity>().FindAsync(id); 
+            if (obj != null)
+            {
+                db.Set<TEntity>().Remove(obj); 
+            }
+        }
 
         public TEntity First_Or_Default(Expression<Func<TEntity, bool>> predicate)
         {

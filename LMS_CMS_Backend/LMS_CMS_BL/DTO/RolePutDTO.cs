@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO
 {
-    public class RoleAddDTO
+    public class RolePutDTO
     {
+        public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Role cannot be longer than 100 characters.")]
         public string Name { get; set; }

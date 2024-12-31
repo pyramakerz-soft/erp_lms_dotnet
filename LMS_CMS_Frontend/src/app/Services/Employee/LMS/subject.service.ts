@@ -37,7 +37,6 @@ export class SubjectService {
       .set('Authorization', `Bearer ${token}`);
   
     const formData = new FormData();
-    formData.append('id', Subject.id.toString() ?? '');
     formData.append('en_name', Subject.en_name ?? '');
     formData.append('ar_name', Subject.ar_name ?? '');
     formData.append('orderInCertificate', Subject.orderInCertificate?.toString() ?? '');
@@ -67,9 +66,9 @@ export class SubjectService {
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`);
-  
-      console.log(Subject)
+   
     const formData = new FormData();
+    formData.append('id', Subject.id.toString() ?? '');
     formData.append('en_name', Subject.en_name ?? '');
     formData.append('ar_name', Subject.ar_name ?? '');
     formData.append('orderInCertificate', Subject.orderInCertificate?.toString() ?? '');

@@ -34,4 +34,8 @@ export class SubjectViewComponent {
   moveToSubjects(){
     this.router.navigateByUrl('Employee/Subject');
   }
+
+  editModal(){
+    
+  }
 }

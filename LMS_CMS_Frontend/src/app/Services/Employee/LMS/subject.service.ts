@@ -25,33 +25,70 @@ export class SubjectService {
       .set('Content-Type', 'application/json');
     return this.http.get<Subject[]>(`${this.baseUrl}/Subject`, { headers })
   }
-
-  Add(Subject: Subject,DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
+ 
+  Add(Subject: Subject, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName;
     }
+  
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
-
-    return this.http.post(`${this.baseUrl}/Subject`, Subject, {
-      headers: headers,
-      responseType: 'text' as 'json'
-    });
+      .set('Authorization', `Bearer ${token}`);
+  
+    const formData = new FormData();
+    formData.append('id', Subject.id.toString() ?? '');
+    formData.append('en_name', Subject.en_name ?? '');
+    formData.append('ar_name', Subject.ar_name ?? '');
+    formData.append('orderInCertificate', Subject.orderInCertificate?.toString() ?? '');
+    formData.append('creditHours', Subject.creditHours?.toString() ?? '');
+    formData.append('subjectCode', Subject.subjectCode?.toString() ?? '');
+    formData.append('passByDegree', Subject.passByDegree?.toString() ?? '');
+    formData.append('totalMark', Subject.totalMark?.toString() ?? '');
+    formData.append('hideFromGradeReport', String(Subject.hideFromGradeReport));
+    formData.append('numberOfSessionPerWeek', Subject.numberOfSessionPerWeek?.toString() ?? '');
+    formData.append('gradeID', String(Subject.gradeID));
+    formData.append('subjectCategoryID', String(Subject.subjectCategoryID));
+  
+    if (Subject.iconFile) {
+      formData.append('iconFile', Subject.iconFile, Subject.iconFile.name);
+    } 
+   
+    return this.http.post(`${this.baseUrl}/Subject`, formData, { headers });
   }
+  
 
   Edit(Subject: Subject,DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
+    if (DomainName != null) {
+      this.header = DomainName;
     }
+  
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
-    return this.http.put(`${this.baseUrl}/Subject`, Subject, { headers });
+      .set('Authorization', `Bearer ${token}`);
+  
+      console.log(Subject)
+    const formData = new FormData();
+    formData.append('en_name', Subject.en_name ?? '');
+    formData.append('ar_name', Subject.ar_name ?? '');
+    formData.append('orderInCertificate', Subject.orderInCertificate?.toString() ?? '');
+    formData.append('creditHours', Subject.creditHours?.toString() ?? '');
+    formData.append('subjectCode', Subject.subjectCode?.toString() ?? '');
+    formData.append('passByDegree', Subject.passByDegree?.toString() ?? '');
+    formData.append('totalMark', Subject.totalMark?.toString() ?? '');
+    formData.append('hideFromGradeReport', String(Subject.hideFromGradeReport));
+    formData.append('numberOfSessionPerWeek', Subject.numberOfSessionPerWeek?.toString() ?? '');
+    formData.append('gradeID', String(Subject.gradeID));
+    formData.append('subjectCategoryID', String(Subject.subjectCategoryID));
+  
+    if (Subject.iconFile) {
+      formData.append('iconFile', Subject.iconFile, Subject.iconFile.name);
+    } else if (Subject.iconLink) {
+      formData.append('iconLink', Subject.iconLink?.toString() ?? '');
+    } 
+
+    return this.http.put(`${this.baseUrl}/Subject`, formData, { headers });
   }
 
   Delete(id: number,DomainName:string) {

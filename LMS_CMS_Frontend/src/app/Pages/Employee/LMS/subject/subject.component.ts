@@ -54,7 +54,6 @@ export class SubjectComponent {
   selectedSection: number | null = null;
   Sections: Section[] = []
   
-  selectedGrade: number | null = null;
   Grades: Grade[] = []
   
   constructor(public account: AccountService, public router:Router, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
@@ -138,7 +137,6 @@ export class SubjectComponent {
     this.Sections = []
     this.Grades = []
     this.selectedSection = null
-    this.selectedGrade = null
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.selectedSchool = Number(selectedValue)
     if (this.selectedSchool) {
@@ -148,7 +146,6 @@ export class SubjectComponent {
  
   onSectionChange(event: Event) {
     this.Grades = []
-    this.selectedGrade = null
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.selectedSection = Number(selectedValue)
     if (this.selectedSection) {
@@ -156,14 +153,6 @@ export class SubjectComponent {
     }
   }
 
-  onGradeChange(event: Event) {
-    const selectedValue = (event.target as HTMLSelectElement).value;
-    this.selectedGrade = Number(selectedValue)
-    if (this.selectedGrade) {
-      this.subject.gradeID = this.selectedGrade
-    }
-  }
-  
   checkSchool(section:Section) {
     return section.schoolID == this.selectedSchool
   }
@@ -196,7 +185,6 @@ export class SubjectComponent {
     this.Grades = []
     this.selectedSchool = null
     this.selectedSection = null
-    this.selectedGrade = null
 
     if(this.editSubject){
       this.editSubject = false
@@ -240,21 +228,28 @@ export class SubjectComponent {
     for (const key in this.subject) {
       if (this.subject.hasOwnProperty(key)) {
         const field = key as keyof Subject;
-        // if (!this.subject[field]) {
-        //   if(field == "name"){
-        //     this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
-        //     isValid = false;
-        //   }
-        // } else {
-        //   if(field == "name"){
-        //     if(this.subject.name.length > 100){
-        //       this.validationErrors[field] = `*${this.capitalizeField(field)} cannot be longer than 100 characters`
-        //       isValid = false;
-        //     }
-        //   } else{
-        //     this.validationErrors[field] = '';
-        //   }
-        // }
+        if (!this.subject[field]) {
+          if(field == "ar_name" || field == "en_name" || field == "creditHours" || field == "gradeID" || field == "numberOfSessionPerWeek" || field == "orderInCertificate"
+             || field == "passByDegree"  || field == "totalMark"  || field == "subjectCategoryID"  || field == "subjectCode"
+          ){
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          } else if(field == "iconFile"){
+            if(!this.editSubject){
+              this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+              isValid = false;
+            }
+          }
+        } else {
+          if(field == "en_name" || field == "ar_name"){
+            if(this.subject.en_name.length > 100 || this.subject.ar_name.length > 100){
+              this.validationErrors[field] = `*${this.capitalizeField(field)} cannot be longer than 100 characters`
+              isValid = false;
+            }
+          } else{
+            this.validationErrors[field] = '';
+          }
+        }
       }
     }
     return isValid;
@@ -274,12 +269,10 @@ export class SubjectComponent {
 
   onInputValueChange(event: { field: keyof Subject, value: any }) {
     const { field, value } = event;
-    // if (field == "name" ) {
-    //   (this.subject as any)[field] = value;
-    //   if (value) {
-    //     this.validationErrors[field] = '';
-    //   }
-    // }
+    (this.subject as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    }
   }
 
   onImageFileSelected(event: any) {
@@ -316,9 +309,11 @@ export class SubjectComponent {
   }
 
   SaveSubject(){
+    console.log(this.subject)
+    console.log(this.validationErrors)
     if(this.isFormValid()){
       if(this.editSubject == false){
-        this.subjectService.Add(this.subject, this.DomainName).subscribe(
+        (this.subjectService.Add(this.subject, this.DomainName)).subscribe(
           (result: any) => {
             this.closeModal()
             this.getSubjectData()

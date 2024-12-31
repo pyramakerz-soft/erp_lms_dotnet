@@ -24,5 +24,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public string GradeName { get; set; }
         public long SubjectCategoryID { get; set; }
         public string SubjectCategoryName { get; set; }
+        public string InsertedAt { get; set; }
     }
 }

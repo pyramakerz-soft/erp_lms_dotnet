@@ -249,7 +249,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     return BadRequest(returnFileInput);
                 }
             }
-
+             
             Subject SubjectExists = Unit_Of_Work.subject_Repository.Select_By_Id(EditSubject.ID);
             string iconLinkExists = SubjectExists.IconLink;
             string enNameExists = SubjectExists.en_name;
@@ -260,7 +260,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subjects");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -274,29 +274,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Subjects page doesn't exist");
+                    return BadRequest("Subject page doesn't exist");
                 }
-            }
-
-            mapper.Map(EditSubject, SubjectExists);
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            SubjectExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "octa")
-            {
-                SubjectExists.UpdatedByOctaId = userId;
-                if (SubjectExists.UpdatedByUserId != null)
-                {
-                    SubjectExists.UpdatedByUserId = null;
-                }
-            }
-            else if (userTypeClaim == "employee")
-            {
-                SubjectExists.UpdatedByUserId = userId;
-                if (SubjectExists.UpdatedByOctaId != null)
-                {
-                    SubjectExists.UpdatedByOctaId = null;
-                }
-            }
+            } 
 
             if (EditSubject.IconFile != null)
             {
@@ -308,7 +288,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     Directory.CreateDirectory(subjectFolder);
                 }
 
-                string existingFilePath = Path.Combine(Directory.GetCurrentDirectory(), iconLinkExists);
+                string existingFilePath = Path.Combine(baseFolder, iconLinkExists);
 
                 if (System.IO.File.Exists(existingFilePath))
                 {
@@ -324,7 +304,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     }
                 }
 
-                SubjectExists.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, EditSubject.IconFile.FileName);
+                EditSubject.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, EditSubject.IconFile.FileName);
                 if (oldSubjectFolder != null)
                 {
                     Directory.Delete(oldSubjectFolder);
@@ -357,7 +337,27 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                         Directory.Delete(oldSubjectFolder);
                     }
                 }
-                SubjectExists.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, Path.GetFileName(iconLinkExists));
+                EditSubject.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, Path.GetFileName(iconLinkExists));
+            }
+
+            mapper.Map(EditSubject, SubjectExists);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            SubjectExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                SubjectExists.UpdatedByOctaId = userId;
+                if (SubjectExists.UpdatedByUserId != null)
+                {
+                    SubjectExists.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                SubjectExists.UpdatedByUserId = userId;
+                if (SubjectExists.UpdatedByOctaId != null)
+                {
+                    SubjectExists.UpdatedByOctaId = null;
+                }
             }
 
             Unit_Of_Work.subject_Repository.Update(SubjectExists);
@@ -402,7 +402,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subjects");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -416,7 +416,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Subjects page doesn't exist");
+                    return BadRequest("Subject page doesn't exist");
                 }
             }
 

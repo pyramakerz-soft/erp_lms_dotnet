@@ -1,1 +1,62 @@
-<p>subject-view works!</p>
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToSubjects()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ subject.en_name }}</h1>
+    </div>
+    <button
+    class="bg-[#6F6F6F] text-white rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+        Edit
+    </button>
+</div>
+
+<div class="flex flex-wrap justify-between mt-5">
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">English Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.en_name }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Arabic Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.ar_name }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Gradre</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.gradeName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Order in Certificate </p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.orderInCertificate }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Credit Hours</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.creditHours }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject Code</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.subjectCode }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Pass By Degree</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.passByDegree }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Total Marks</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.totalMark }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject Category</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.subjectCategoryName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Number of session per week</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ subject.numberOfSessionPerWeek }}</p>
+    </div>
+</div>
+<div class="flex space-x-5 items-center w-[30%] mb-4">
+    <i *ngIf="subject.hideFromGradeReport" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+    <i *ngIf="!subject.hideFromGradeReport" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
+    <label for="Restricted" class="text-sm">Hide From Grade Report</label>
+</div>
+<div class="bg-[#F6F6F6] rounded-md border-dashed border-2 w-[30%] px-6 py-3 lg:py-5">
+    <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject Icon</p>
+    <img *ngIf="subject.iconLink" [src]="subject.iconLink" class="object-cover w-1/2">
+</div>

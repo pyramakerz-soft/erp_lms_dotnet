@@ -30,6 +30,8 @@ import { AccountComponent } from './Pages/Octa/account/account.component';
 import { SubjectCategoryComponent } from './Pages/Employee/LMS/subject-category/subject-category.component';
 import { SubjectComponent } from './Pages/Employee/LMS/subject/subject.component';
 import { SubjectViewComponent } from './Pages/Employee/LMS/subject-view/subject-view.component';
+import { EmployeeComponent } from './Pages/Employee/Administrator/employee/employee.component';
+import { EmployeeAddEditComponent } from './Pages/Employee/Administrator/employee-add-edit/employee-add-edit.component';
 
 
 export const routes: Routes = [
@@ -58,6 +60,8 @@ export const routes: Routes = [
             { path: "Subject Categories", component: SubjectCategoryComponent, title: "Subject Categories"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Subject", component: SubjectComponent, title: "Subjects"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Subject/:domainName/:SubId", component: SubjectViewComponent, title: "Subject", canActivate:[noNavigateWithoutLoginGuard]}, 
+            { path: "Employee", component: EmployeeComponent, title: "Employee", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
+            { path: "Create Employee", component: EmployeeAddEditComponent, title: "Employee", canActivate:[noNavigateWithoutLoginGuard ]}, 
 
         ]
     },

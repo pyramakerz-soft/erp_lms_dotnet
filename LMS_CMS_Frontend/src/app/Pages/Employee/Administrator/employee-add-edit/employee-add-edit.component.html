@@ -1,0 +1,155 @@
+<div class="flex justify-between items-center">
+    <h1 class="font-semibold text-2xl leading-9">Create Employee</h1>
+
+    <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+        Save
+    </button>
+</div>
+
+<div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">User Name</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.user_Name" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">English Name</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.en_name" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Arabic Name</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.ar_name" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">password</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.password" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">mobile</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.mobile" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">phone</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.phone" />
+    </div>
+
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Email</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.email" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">licenseNumber</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.licenseNumber" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="expireDate">expireDate</label>
+        <input id="expireDate" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Expiry Date" [(ngModel)]="Data.expireDate" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Address</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.address" />
+    </div>
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="role">Choose Role</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="role"
+            [(ngModel)]="Data.role_ID">
+            <option [value]="0" disabled selected hidden>Role</option>
+            <option *ngFor="let role of Roles" [value]="role.id">{{ role.name }}</option>
+            <option *ngIf="Roles.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="bus">Choose Bus Comapny</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.busCompanyID">
+            <option [value]="0" disabled selected hidden>Choose Bus Company</option>
+            <option *ngFor="let bus of BusCompany" [value]="bus.id">{{ bus.name }}</option>
+            <option *ngIf="BusCompany.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="employeeType">Choose Employee Type</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="employeeType"
+            [(ngModel)]="Data.employeeTypeID">
+            <option [value]="0" disabled selected hidden>Choose Employee Type</option>
+            <option *ngFor="let employeeType of empTypes" [value]="employeeType.id">{{ employeeType.name }}</option>
+            <option *ngIf="empTypes.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+
+    <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
+        <div class="flex justify-center w-full">
+            <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                <img src="Images/Icon frame.png" class="w-1/4" alt="Upload Icon">
+                <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
+                    <span class="secondaryTxt">Click to Upload</span> or drag and drop files
+                </p>
+                <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB each)</p>
+            </label>
+            <input id="file-upload" type="file" class="hidden" accept="image/jpeg, image/png" multiple
+                (change)="onFilesSelected($event)" />
+        </div>
+    </div>
+</div>
+
+<div *ngIf="Data.files.length > 0" class="bg-white p-4 rounded-lg">
+    <div class="flex flex-wrap gap-4">
+        <div *ngFor="let file of Data.files; let i = index" class="flex w-full items-center gap-4 mb-4">
+            <div class="flex flex-col w-[34%]">
+                <h1 class="text-sm font-semibold mb-2">Name</h1>
+                <p class="text-sm font-medium text-gray-700 mb-4">{{ file.name }}</p>
+                <div class="border border-cacaca rounded-lg p-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-file"></i>
+                            <p class="text-sm font-medium text-gray-700 truncate">{{ file.name }}</p>
+                        </div>
+                        <button (click)="deleteFile(i)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <p class="text-sm font-medium text-gray-700 mb-4">{{ file.size }} bytes</p>
+                    <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="downloadFile(file)">
+                        Click to Download
+                    </p>
+                </div>
+            </div>
+
+            <div class="w-[64%]">
+                <div class="flex flex-col">
+                    <label class="mb-2 primaryTxt" for="name-{{ i }}">Add Name</label>
+                    <input 
+                        id="name-{{ i }}" 
+                        type="text" 
+                        class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                        placeholder="Enter Attachment Name" 
+                        [value]="file.name" 
+                        (input)="changeFileName(i, $event)" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

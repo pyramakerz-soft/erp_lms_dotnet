@@ -226,6 +226,10 @@ namespace LMS_CMS_BL.Config
             CreateMap<SchoolTypePutDTO, LMS_CMS_DAL.Models.Domains.LMS.SchoolType>();
 
             CreateMap<Domain, DomainGetDTO>();
+
+            CreateMap<EmployeeType, EmployeeTypeGetDTO>();
+            CreateMap<EmployeeTypeGetDTO, EmployeeType>();
+
         }
     }
 }

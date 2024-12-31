@@ -46,8 +46,8 @@ export class RoleAddEditComponent {
   }[] = [];
 
   RoleName: string = ""
-  RoleId:number=0;
-  mode:string=""
+  RoleId: number = 0;
+  mode: string = ""
   DataToSaveCreate: RoleAdd = new RoleAdd();
   DataToSaveEdit: RolePut = new RolePut();
 
@@ -55,7 +55,7 @@ export class RoleAddEditComponent {
   dataForEdit: PagesWithRoleId[] = []
 
 
-  constructor(public pageServ: PageService,public RoleDetailsServ:RoleDetailsService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, public RoleServ: RoleService, private router: Router) { }
+  constructor(public pageServ: PageService, public RoleDetailsServ: RoleDetailsService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, public RoleServ: RoleService, private router: Router) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -65,22 +65,22 @@ export class RoleAddEditComponent {
       this.activeRoute.url.subscribe(url => {
         this.path = url[0].path
         this.getAllPges();
-        if(this.path=="Role Edit"){
+        if (this.path == "Role Edit") {
           this.RoleId = Number(this.activeRoute.snapshot.paramMap.get('id'))
-          this.mode="Edit";
+          this.mode = "Edit";
           this.GetRoleName();
           this.GetAllPgesForEdit();
         }
-        else if(this.path=="Role Create"){
-          this.mode="Create";
+        else if (this.path == "Role Create") {
+          this.mode = "Create";
         }
       });
     }
   }
 
-  GetRoleName(){
-    this.RoleServ.Get_Role_id(this.RoleId,this.DomainName).subscribe((data)=>{
-      this.RoleName=data.name;
+  GetRoleName() {
+    this.RoleServ.Get_Role_id(this.RoleId, this.DomainName).subscribe((data) => {
+      this.RoleName = data.name;
     })
   }
   async getAllPges() {
@@ -128,22 +128,22 @@ export class RoleAddEditComponent {
 
     this.dataForEdit.forEach(element => {
       const resultItems1 = this.ResultArray.find(item => item.Rowkey === 0 && item.pageId === element.id);
-      if(resultItems1){
-        resultItems1.IsSave=true;
-        resultItems1.allow_Delete=true;
-        resultItems1.allow_Edit=true;
-        resultItems1.allow_Edit_For_Others=true;
-        resultItems1.allow_Delete_For_Others=true;
+      if (resultItems1) {
+        resultItems1.IsSave = true;
+        resultItems1.allow_Delete = true;
+        resultItems1.allow_Edit = true;
+        resultItems1.allow_Edit_For_Others = true;
+        resultItems1.allow_Delete_For_Others = true;
       }
       element.children.forEach(item => {
-        const resultItems2 = this.ResultArray.find(i => i.Rowkey ===element.id && i.pageId === item.id);
-      if(resultItems2){
-        resultItems2.IsSave=true;
-        resultItems2.allow_Delete=item.allow_Delete;
-        resultItems2.allow_Edit=item.allow_Edit;
-        resultItems2.allow_Edit_For_Others=item.allow_Edit_For_Others;
-        resultItems2.allow_Delete_For_Others=item.allow_Delete_For_Others;
-      }
+        const resultItems2 = this.ResultArray.find(i => i.Rowkey === element.id && i.pageId === item.id);
+        if (resultItems2) {
+          resultItems2.IsSave = true;
+          resultItems2.allow_Delete = item.allow_Delete;
+          resultItems2.allow_Edit = item.allow_Edit;
+          resultItems2.allow_Edit_For_Others = item.allow_Edit_For_Others;
+          resultItems2.allow_Delete_For_Others = item.allow_Delete_For_Others;
+        }
       });
     });
   }
@@ -224,44 +224,66 @@ export class RoleAddEditComponent {
 
   Save() {
     const resultItems = this.ResultArray.filter(item => item.IsSave === true);
-    if(this.mode=="Create"){
-      this.DataToSaveCreate.name = this.RoleName
-      this.DataToSaveCreate.pages = resultItems;
-      this.RoleServ.AddRole(this.DataToSaveCreate, this.DomainName).subscribe({
-        next: (response) => {
-          this.router.navigateByUrl("Employee/Role")
-        },
-        error: (error) => {
-          const errorMessage = error?.error || 'An unexpected error occurred.';
-  
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            confirmButtonColor: '#FF7519',
-            text: errorMessage,
-          });
-        },
-      });
+    if (this.RoleName == null || resultItems.length == 0) {
+      if (this.RoleName == null) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          confirmButtonColor: '#FF7519',
+          text: "Name is required",
+        });
+      }
+      if (resultItems.length == 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          confirmButtonColor: '#FF7519',
+          text: "Modules is required",
+        });
+      }
     }
-    else if(this.mode=="Edit"){
-      this.DataToSaveEdit.id=this.RoleId;
-      this.DataToSaveEdit.name = this.RoleName
-      this.DataToSaveEdit.pages = resultItems;
-      this.RoleServ.EditRole(this.DataToSaveEdit, this.DomainName).subscribe({
-        next: (response) => {
-          this.router.navigateByUrl("Employee/Role")
-        },
-        error: (error) => {
-          const errorMessage = error?.error || 'An unexpected error occurred.';
-  
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            confirmButtonColor: '#FF7519',
-            text: errorMessage,
-          });
-        },
-      });
+    else {
+      if (this.mode == "Create") {
+        this.DataToSaveCreate.name = this.RoleName
+        this.DataToSaveCreate.pages = resultItems;
+        this.RoleServ.AddRole(this.DataToSaveCreate, this.DomainName).subscribe({
+          next: (response) => {
+            this.router.navigateByUrl("Employee/Role")
+          },
+          error: (error) => {
+            console.log(error)
+            const errorMessage = error.error.errors.Name || 'An unexpected error occurred.';
+
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              confirmButtonColor: '#FF7519',
+              text: errorMessage,
+            });
+          },
+        });
+      }
+      else if (this.mode == "Edit") {
+        this.DataToSaveEdit.id = this.RoleId;
+        this.DataToSaveEdit.name = this.RoleName
+        this.DataToSaveEdit.pages = resultItems;
+        this.RoleServ.EditRole(this.DataToSaveEdit, this.DomainName).subscribe({
+          next: (response) => {
+            this.router.navigateByUrl("Employee/Role")
+          },
+          error: (error) => {
+            console.log(error.error.errors.Name)
+            const errorMessage = error.error.errors.Name || 'An unexpected error occurred.';
+
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              confirmButtonColor: '#FF7519',
+              text: errorMessage,
+            });
+          },
+        });
+      }
     }
 
   }

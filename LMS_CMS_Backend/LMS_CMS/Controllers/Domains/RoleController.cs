@@ -115,6 +115,10 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("Role data is null.");
             }
+            if (NewRoles.Name == null)
+            {
+                return BadRequest("Role Name cannot be null");
+            }
             if (NewRoles.Pages == null || !NewRoles.Pages.Any())
             {
                 return BadRequest("Pages list cannot be null or empty.");
@@ -212,6 +216,10 @@ namespace LMS_CMS_PL.Controllers.Domains
             if (newRole == null)
             {
                 return BadRequest("Role cannot be null");
+            }
+            if (newRole.Name == null)
+            {
+                return BadRequest("Role Name cannot be null");
             }
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

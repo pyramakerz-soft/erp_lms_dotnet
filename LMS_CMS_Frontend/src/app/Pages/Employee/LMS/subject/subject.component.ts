@@ -309,8 +309,6 @@ export class SubjectComponent {
   }
 
   SaveSubject(){
-    console.log(this.subject)
-    console.log(this.validationErrors)
     if(this.isFormValid()){
       if(this.editSubject == false){
         (this.subjectService.Add(this.subject, this.DomainName)).subscribe(

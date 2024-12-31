@@ -251,6 +251,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
              
             Subject SubjectExists = Unit_Of_Work.subject_Repository.Select_By_Id(EditSubject.ID);
+            Console.WriteLine("/////////////////////////////////////////////////////////////////////////////////////////");
+            Console.WriteLine(SubjectExists.IconLink);
+            Console.WriteLine(SubjectExists.ID);
+
             string iconLinkExists = SubjectExists.IconLink;
             string enNameExists = SubjectExists.en_name;
             if (SubjectExists == null || SubjectExists.IsDeleted == true)
@@ -283,16 +287,22 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/SubjectIcon");
                 var oldSubjectFolder = Path.Combine(baseFolder, enNameExists);
                 var subjectFolder = Path.Combine(baseFolder, EditSubject.en_name);
-                if (!Directory.Exists(subjectFolder))
-                {
-                    Directory.CreateDirectory(subjectFolder);
-                }
 
-                string existingFilePath = Path.Combine(baseFolder, iconLinkExists);
+                string existingFilePath = Path.Combine(baseFolder, enNameExists);
 
                 if (System.IO.File.Exists(existingFilePath))
                 {
                     System.IO.File.Delete(existingFilePath); // Delete the old file
+                }
+                
+                if (oldSubjectFolder != null)
+                {
+                    Directory.Delete(oldSubjectFolder, true);
+                }
+
+                if (!Directory.Exists(subjectFolder))
+                {
+                    Directory.CreateDirectory(subjectFolder);
                 }
 
                 if (EditSubject.IconFile.Length > 0)
@@ -305,10 +315,6 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
 
                 EditSubject.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, EditSubject.IconFile.FileName);
-                if (oldSubjectFolder != null)
-                {
-                    Directory.Delete(oldSubjectFolder);
-                }
             }
             else
             {

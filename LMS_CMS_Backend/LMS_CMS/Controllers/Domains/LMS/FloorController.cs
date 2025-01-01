@@ -29,7 +29,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Floor", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -54,7 +54,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Floor", "Administrator" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -82,10 +82,49 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             return Ok(floorDTO);
         }
 
+        [HttpGet("getByBuildingID/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Floor", "Administrator" }
+        )]
+        public async Task<IActionResult> GetByBuildingId(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (id == 0)
+            {
+                return BadRequest("Enter Building ID");
+            }
+
+            Building Building = await Unit_Of_Work.building_Repository.FindByIncludesAsync(t => t.IsDeleted != true && t.ID == id);
+
+
+            if (Building == null)
+            {
+                return NotFound();
+            }
+
+            List<Floor> floors = await Unit_Of_Work.floor_Repository.Select_All_With_IncludesById<Floor>(
+                t => t.IsDeleted != true && t.buildingID == id,
+                 query => query.Include(e => e.building),
+                query => query.Include(emp => emp.floorMonitor)
+                );
+
+
+            if (floors == null || floors.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<FloorGetDTO> floorsDTO = mapper.Map<List<FloorGetDTO>>(floors);
+
+            return Ok(floorsDTO);
+        }
+
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Floor", "Administrator" }
         )]
         public IActionResult Add(FloorAddDTO NewFloor)
         {
@@ -151,7 +190,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Floor", "Administrator" }
         )]
         public IActionResult Edit(FloorPutDTO EditedFloor)
         {
@@ -205,7 +244,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Floors");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Floor");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -219,7 +258,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Floors page doesn't exist");
+                    return BadRequest("Floor page doesn't exist");
                 }
             }
 
@@ -252,7 +291,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Floor", "Administrator" }
         )]
         public IActionResult Delete(long id)
         {
@@ -285,7 +324,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Floors");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Floor");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -299,7 +338,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Floors page doesn't exist");
+                    return BadRequest("Floor page doesn't exist");
                 }
             }
 

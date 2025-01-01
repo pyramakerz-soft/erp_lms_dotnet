@@ -29,7 +29,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Classrooms", "Administrator" }
+            pages: new[] { "Classroom", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -55,7 +55,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Classrooms", "Administrator" }
+            pages: new[] { "Classroom", "Administrator" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -87,7 +87,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Classrooms", "Administrator" }
+            pages: new[] { "Classroom", "Administrator" }
         )]
         public IActionResult Add(ClassroomAddDTO NewClassroom)
         {
@@ -159,7 +159,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Classrooms", "Administrator" }
+            pages: new[] { "Classroom", "Administrator" }
         )]
         public IActionResult Edit(ClassroomPutDTO EditedClassroom)
         {
@@ -219,7 +219,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Classrooms");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Classroom");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId&&RD.IsDeleted!=true);
@@ -233,7 +233,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Classrooms page doesn't exist");
+                    return BadRequest("Classroom page doesn't exist");
                 }
             }
 
@@ -266,7 +266,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Classrooms", "Administrator" }
+            pages: new[] { "Classroom", "Administrator" }
         )]
         public IActionResult Delete(long id)
         {
@@ -299,7 +299,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Classrooms");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Classroom");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -313,7 +313,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Classrooms page doesn't exist");
+                    return BadRequest("Classroom page doesn't exist");
                 }
             }
 
@@ -346,7 +346,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Classrooms", "Administrator" }
+            pages: new[] { "Classroom", "Administrator" }
         )]
         public IActionResult CopyClassroom(CopyClassroomDTO copyClassroomDTO)
         {

@@ -1,0 +1,102 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Buildings</h1>
+    <div class="flex justify-between items-center ">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        
+        <button (click)="openModal()"
+        class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            Create Building
+        </button>
+    </div>
+</div>
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Building Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    School
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="buildingData.length === 0">
+                <td colspan="4" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of buildingData; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.schoolName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex space-x-4">
+                        <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                            (click)="deleteBuilding(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button>
+                            <i class="fa-regular fa-eye" (click)="moveToFloors(row.id)"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!-- Add-Edit Building Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px]">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!editBuilding" class="font-semibold text-2xl leading-9">Create Building</h1>
+            <h1 *ngIf="editBuilding" class="font-semibold text-2xl leading-9">Edit Building</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="p-[16px_24px] mt-6 mb-4 bg-[#F7F7F7] rounded-3xl">
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="name">Building Name</label>
+                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Building"
+                [(ngModel)]="building.name" 
+                (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"/>
+                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="school">School</label>
+                <select (ngModelChange)="onInputValueChange({ field: 'schoolID', value: $event })"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="building.schoolID">
+                    <option [value]="0" disabled selected hidden>Choose School</option>
+                    <option *ngFor="let school of Schools" [value]="school.id">{{ school.name }}</option>
+                    <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
+                </select>
+                <span *ngIf="validationErrors['schoolID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['schoolID'] }}</span>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="SaveBuilding()">
+                Save
+            </button>
+        </div>
+    </div>
+</div>

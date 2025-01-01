@@ -32,7 +32,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Building", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -56,7 +56,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Building", "Administrator" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -83,7 +83,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Building", "Administrator" }
         )]
         public IActionResult Add(BuildingAddDTO NewBuilding)
         {
@@ -137,7 +137,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Building", "Administrator" }
         )]
         public IActionResult Edit(BuildingPutDTO EditedBuilding)
         {
@@ -179,7 +179,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Buildings");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Building");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -226,7 +226,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Buildings & Floors", "Administrator" }
+            pages: new[] { "Building", "Administrator" }
         )]
         public IActionResult Delete(long id)
         {
@@ -259,7 +259,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Buildings");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Building");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);

@@ -32,6 +32,9 @@ import { SubjectComponent } from './Pages/Employee/LMS/subject/subject.component
 import { SubjectViewComponent } from './Pages/Employee/LMS/subject-view/subject-view.component';
 import { EmployeeComponent } from './Pages/Employee/Administrator/employee/employee.component';
 import { EmployeeAddEditComponent } from './Pages/Employee/Administrator/employee-add-edit/employee-add-edit.component';
+import { BuildingComponent } from './Pages/Employee/LMS/building/building.component';
+import { FloorComponent } from './Pages/Employee/LMS/floor/floor.component';
+import { ClassroomComponent } from './Pages/Employee/LMS/classroom/classroom.component';
 
 
 export const routes: Routes = [
@@ -62,6 +65,9 @@ export const routes: Routes = [
             { path: "Subject/:domainName/:SubId", component: SubjectViewComponent, title: "Subject", canActivate:[noNavigateWithoutLoginGuard]}, 
             { path: "Employee", component: EmployeeComponent, title: "Employee", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
             { path: "Create Employee", component: EmployeeAddEditComponent, title: "Employee", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Building", component: BuildingComponent, title: "Building", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Floor/:domainName/:Id", component: FloorComponent, title: "Floor", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Classroom", component: ClassroomComponent, title: "Classroom", canActivate:[noNavigateWithoutLoginGuard ]}, 
 
         ]
     },

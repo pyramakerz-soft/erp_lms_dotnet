@@ -26,6 +26,10 @@
     border: 1px solid #FF7519;
 }
 
+.grayBorder {
+    border: 1px solid #6F6F6F;
+}
+
 /* .Primary{
     background-color: var(--bg-color);
     color: var(--text-color);

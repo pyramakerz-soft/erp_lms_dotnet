@@ -1,6 +1,13 @@
 <div class="flex justify-between items-center">
-    <h1 class="font-semibold text-2xl leading-9">Create Employee</h1>
-
+    <!-- <h1 class="font-semibold text-2xl leading-9">
+        {{ mode == 'Create' ? 'Create Employee' : 'Edit Employee' }}
+    </h1> -->
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <h1 class="font-semibold text-2xl leading-9">
+            {{ mode == 'Create' ? 'Create Employee' : 'Edit Employee' }}
+        </h1>
+    </div>
     <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
         Save
     </button>
@@ -125,7 +132,7 @@
                     <div class="flex justify-between items-center">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-file"></i>
-                            <p class="text-sm font-medium text-gray-700 truncate">{{ file.name }}</p>
+                            <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">{{ file.name }}</p>
                         </div>
                         <button (click)="deleteFile(i)">
                             <i class="fa-regular fa-trash-can"></i>
@@ -133,7 +140,7 @@
                     </div>
                     <p class="text-sm font-medium text-gray-700 mb-4">{{ file.size }} bytes</p>
                     <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="downloadFile(file)">
-                        Click to Download
+                        Click to View
                     </p>
                 </div>
             </div>
@@ -141,13 +148,9 @@
             <div class="w-[64%]">
                 <div class="flex flex-col">
                     <label class="mb-2 primaryTxt" for="name-{{ i }}">Add Name</label>
-                    <input 
-                        id="name-{{ i }}" 
-                        type="text" 
+                    <input id="name-{{ i }}" type="text" [value]="file.name"
                         class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                        placeholder="Enter Attachment Name" 
-                        [value]="file.name" 
-                        (input)="changeFileName(i, $event)" />
+                        placeholder="Enter Attachment Name" (change)="changeFileName(i, $event)" />
                 </div>
             </div>
         </div>

@@ -130,16 +130,40 @@ namespace LMS_CMS_PL.Controllers.Domains
             }
 
             Employee_GetDTO employeeDTO = mapper.Map<Employee_GetDTO>(employee);
+            //string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Attachments", employee.User_Name.Trim());
+            //if (Directory.Exists(folderPath))
+            //{
+            //    var fileInfos = new DirectoryInfo(folderPath).GetFiles();
 
-
-                List<EmployeeAttachment> employeeAttachments = Unit_Of_Work.employeeAttachment_Repository.FindBy(s => s.EmployeeID == employeeDTO.ID);
-                List<EmployeeAttachmentDTO> filesDTO = mapper.Map<List<EmployeeAttachmentDTO>>(employeeAttachments);
-                if (filesDTO != null)
-                    employeeDTO.Files = filesDTO;
-                else
-                    employeeDTO.Files = new List<EmployeeAttachmentDTO>();
+            //    employeeDTO.Files = fileInfos.Select(fileInfo => new EmployeeAttachmentDTO
+            //    {
+            //        Name = fileInfo.Name,
+            //        Type = GetMimeType(fileInfo.FullName),
+            //        Size = fileInfo.Length,
+            //        LastModified = new DateTimeOffset(fileInfo.LastWriteTimeUtc).ToUnixTimeMilliseconds(),
+            //        Link = $"{Request.Scheme}://{Request.Host}/Uploads/Attachments/{employee.User_Name.Trim()}/{fileInfo.Name}"
+            //    }).ToList();
+            //}
+            List<EmployeeAttachment> employeeAttachments = Unit_Of_Work.employeeAttachment_Repository.FindBy(s => s.EmployeeID == employeeDTO.ID &&s.IsDeleted!=true);
+            List<EmployeeAttachmentDTO> filesDTO = mapper.Map<List<EmployeeAttachmentDTO>>(employeeAttachments);
+            if (filesDTO != null)
+                employeeDTO.Files = filesDTO;
+            else
+                employeeDTO.Files = new List<EmployeeAttachmentDTO>();
 
             return Ok(employeeDTO);
+
+
+
+        }
+        private string GetMimeType(string filePath)
+        {
+            var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var mimeType))
+            {
+                mimeType = "application/octet-stream"; // Default MIME type
+            }
+            return mimeType;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -243,38 +267,71 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpPut]
         public async Task<IActionResult> EditAsync([FromForm] EmployeePutDTO newEmployee, [FromForm] List<IFormFile> files)
         {
-
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
             if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
+
             if (newEmployee == null)
             {
                 return BadRequest("Employee cannot be null");
             }
-
 
             Employee oldEmp = await Unit_Of_Work.employee_Repository.Select_By_IdAsync(newEmployee.ID);
             if (oldEmp == null)
             {
                 return NotFound("Employee not found.");
             }
-            Role role = Unit_Of_Work.role_Repository.First_Or_Default(r=>r.ID==newEmployee.Role_ID&&r.IsDeleted!=true);
-            if (role == null) 
+
+            Role role = Unit_Of_Work.role_Repository.First_Or_Default(r => r.ID == newEmployee.Role_ID && r.IsDeleted != true);
+            if (role == null)
             {
-                return NotFound("there is no role with this id");
+                return NotFound("There is no role with this ID.");
             }
+
             if (newEmployee.BusCompanyID != null)
             {
-                 BusCompany busCompany = Unit_Of_Work.busCompany_Repository.First_Or_Default(r => r.ID == newEmployee.BusCompanyID && r.IsDeleted != true);
+                BusCompany busCompany = Unit_Of_Work.busCompany_Repository.First_Or_Default(r => r.ID == newEmployee.BusCompanyID && r.IsDeleted != true);
                 if (busCompany == null)
                 {
-                    return NotFound("there is no busCompany with this id");
+                    return NotFound("There is no bus company with this ID.");
+                }
+            }
+
+            // Validation
+            string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            if (newEmployee.Email != null && !Regex.IsMatch(newEmployee.Email, emailPattern))
+            {
+                return BadRequest("Email is not valid.");
+            }
+
+            string mobilePattern = @"^0(10|11|12|15)\d{8}$";
+            if (newEmployee.Mobile != null && !Regex.IsMatch(newEmployee.Mobile, mobilePattern))
+            {
+                return BadRequest("Mobile is not valid.");
+            }
+
+            if (newEmployee.Phone != null && !Regex.IsMatch(newEmployee.Phone, mobilePattern))
+            {
+                return BadRequest("Phone is not valid.");
+            }
+
+            if (newEmployee.EmployeeTypeID == 2)
+            {
+                if (newEmployee.LicenseNumber == null)
+                {
+                    return BadRequest("LicenseNumber is required.");
+                }
+
+                if (newEmployee.ExpireDate == null)
+                {
+                    return BadRequest("ExpireDate is required.");
                 }
             }
             var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Attachments");
@@ -294,38 +351,31 @@ namespace LMS_CMS_PL.Controllers.Domains
                         Console.WriteLine($"An error occurred while renaming the folder: {ex.Message}");
                     }
                 }
-                else
-                {
-                    Console.WriteLine("Old folder does not exist.");
-                }
-            }
-
-            //Validation
-            string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            if (newEmployee.Email != null && !Regex.IsMatch(newEmployee.Email, pattern))
-            {
-                return BadRequest("Email Is Not Valid");
-            }
-            string MobilePattern = @"^0(10|11|12|15)\d{8}$";
-            if (newEmployee.Mobile != null && !Regex.IsMatch(newEmployee.Mobile, MobilePattern))
-            {
-                return BadRequest("Mobile Is Not Valid");
-            }
-            if (newEmployee.Phone != null && !Regex.IsMatch(newEmployee.Phone, MobilePattern))
-            {
-                return BadRequest("Phone Is Not Valid");
-            }
-            if (newEmployee.EmployeeTypeID == 2)
-            {
-                if (newEmployee.LicenseNumber == null)
-                    return BadRequest("LicenseNumber Is Required");
-                if (newEmployee.ExpireDate == null)
-                    return BadRequest("ExpireDate Is Required");
             }
 
 
+            // Folder and File Management
+            //var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Attachments");
+
+            // Handle old folder if User_Name changed
+            //if (oldEmp.User_Name != newEmployee.User_Name)
+            //{
+                //var oldEmployeeFolder = Path.Combine(baseFolder, oldEmp.User_Name.Trim());
+                //if (Directory.Exists(oldEmployeeFolder))
+                //{
+                //    var filesInFolder = Directory.GetFiles(oldEmployeeFolder);
+                //    foreach (var file in filesInFolder)
+                //    {
+                //        System.IO.File.Delete(file);
+                //    }
+                //    Directory.Delete(oldEmployeeFolder);
+                //}
+            //}
+
+            // Update employee
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             mapper.Map(newEmployee, oldEmp);
+
             if (userTypeClaim == "octa")
             {
                 oldEmp.UpdatedByOctaId = userId;
@@ -336,17 +386,29 @@ namespace LMS_CMS_PL.Controllers.Domains
                 oldEmp.UpdatedByUserId = userId;
                 oldEmp.UpdatedByOctaId = null;
             }
+
             oldEmp.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             Unit_Of_Work.employee_Repository.Update(oldEmp);
-            Unit_Of_Work.SaveChanges();
+            await Unit_Of_Work.SaveChangesAsync();
 
+            //// Delete existing employee attachments
+            //var existingAttachments = Unit_Of_Work.employeeAttachment_Repository.FindBy(s => s.EmployeeID == oldEmp.ID);
+            //foreach (var item in existingAttachments)
+            //{
+            //    Unit_Of_Work.employeeAttachment_Repository.Delete(item.ID);
+            //    await Unit_Of_Work.SaveChangesAsync();
+            //}
 
-            var employeeFolder = Path.Combine(baseFolder, oldEmp.User_Name);
+            // Create new folder for employee
+            var sanitizedUserName = newEmployee.User_Name.Trim().Replace(" ", "_");
+            var employeeFolder = Path.Combine(baseFolder, sanitizedUserName);
+
             if (!Directory.Exists(employeeFolder))
             {
                 Directory.CreateDirectory(employeeFolder);
             }
 
+            // Handle new files
             if (files != null && files.Any())
             {
                 foreach (var file in files)
@@ -359,24 +421,27 @@ namespace LMS_CMS_PL.Controllers.Domains
                             await file.CopyToAsync(stream);
                         }
 
-                        EmployeeAttachment uploadedFile = new EmployeeAttachment
+                        var uploadedFile = new EmployeeAttachment
                         {
                             EmployeeID = oldEmp.ID,
-                            Link = $"{Request.Scheme}://{Request.Host}/Uploads/Attachments/{oldEmp.User_Name}/{file.FileName}",
+                            Link = $"{Request.Scheme}://{Request.Host}/Uploads/Attachments/{sanitizedUserName}/{file.FileName}",
                             Name = file.FileName,
                         };
+
                         Unit_Of_Work.employeeAttachment_Repository.Add(uploadedFile);
-                        Unit_Of_Work.SaveChanges();
+                        await Unit_Of_Work.SaveChangesAsync();
                     }
                 }
             }
+
             return Ok(newEmployee);
         }
 
 
+
         //////////////////////////////////////////////////////
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -429,43 +494,41 @@ namespace LMS_CMS_PL.Controllers.Domains
         //////////////////////////////////////////////////////
 
 
-      [HttpDelete("DeleteFiles")]
+      [HttpDelete("DeleteFiles/{id}")]
     public IActionResult DeleteFiles(long id)
     {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            var userClaims = HttpContext.User.Claims;
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            //var userClaims = HttpContext.User.Claims;
+            //var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            //long.TryParse(userIdClaim, out long userId);
+            //var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-            if (userIdClaim == null || userTypeClaim == null)
-            {
-                return Unauthorized("User ID or Type claim not found.");
-            }
+            //if (userIdClaim == null || userTypeClaim == null)
+            //{
+            //    return Unauthorized("User ID or Type claim not found.");
+            //}
 
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            //TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             EmployeeAttachment employeeAttachment = Unit_Of_Work.employeeAttachment_Repository.First_Or_Default(s => s.ID == id);
-            employeeAttachment.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "octa")
-            {
-                employeeAttachment.DeletedByOctaId = userId;
-                if (employeeAttachment.DeletedByUserId != null)
-                {
-                    employeeAttachment.DeletedByUserId = null;
-                }
-            }
-            else if (userTypeClaim == "employee")
-            {
-                employeeAttachment.DeletedByUserId = userId;
-                if (employeeAttachment.DeletedByOctaId != null)
-                {
-                    employeeAttachment.DeletedByOctaId = null;
-                }
-            }
-            employeeAttachment.IsDeleted = true;
-            Unit_Of_Work.employeeAttachment_Repository.Update(employeeAttachment);
-            Unit_Of_Work.SaveChanges();
+            //employeeAttachment.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            //if (userTypeClaim == "octa")
+            //{
+            //    employeeAttachment.DeletedByOctaId = userId;
+            //    if (employeeAttachment.DeletedByUserId != null)
+            //    {
+            //        employeeAttachment.DeletedByUserId = null;
+            //    }
+            //}
+            //else if (userTypeClaim == "employee")
+            //{
+            //    employeeAttachment.DeletedByUserId = userId;
+            //    if (employeeAttachment.DeletedByOctaId != null)
+            //    {
+            //        employeeAttachment.DeletedByOctaId = null;
+            //    }
+            //}
+            //employeeAttachment.IsDeleted = true;
 
             Uri uri = new Uri(employeeAttachment.Link);
             string path = uri.LocalPath; 
@@ -496,6 +559,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return StatusCode(500, new { message = $"An error occurred while deleting the file: {ex.Message}" });
             }
+            Unit_Of_Work.employeeAttachment_Repository.Delete(id);
+            Unit_Of_Work.SaveChanges();
         }
 
     }

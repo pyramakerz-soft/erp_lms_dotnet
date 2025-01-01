@@ -17,5 +17,8 @@ namespace LMS_CMS_BL.DTO
         public string Link { get; set; }
         [ForeignKey("Employee")]
         public long EmployeeID { get; set; }
+        public string Type { get; set; }
+        public long Size { get; set; }
+        public long LastModified { get; set; }
     }
 }

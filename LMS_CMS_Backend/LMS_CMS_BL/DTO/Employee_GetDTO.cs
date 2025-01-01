@@ -39,5 +39,7 @@ namespace LMS_CMS_BL.DTO
         public long EmployeeTypeID { get; set; }
         public string? EmployeeTypeName { get; set; }
         public List<EmployeeAttachmentDTO>? Files { get; set; }
+
+
     }
 }

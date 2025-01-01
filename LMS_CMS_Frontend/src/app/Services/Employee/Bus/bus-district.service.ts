@@ -53,7 +53,6 @@ export class BusDistrictService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    console.log(NewType,this.header)
     return this.http.put<BusType>(`${this.baseUrl}/BusDistrict`, NewType, { headers });
   }
 

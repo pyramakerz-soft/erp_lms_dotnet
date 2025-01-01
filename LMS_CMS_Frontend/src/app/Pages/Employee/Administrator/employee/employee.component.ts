@@ -10,6 +10,7 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { TokenData } from '../../../../Models/token-data';
 import { EmployeeTypeService } from '../../../../Services/Employee/employee-type.service';
 import { EmployeeService } from '../../../../Services/Employee/employee.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-employee',
@@ -44,8 +45,66 @@ export class EmployeeComponent {
   }
   GetEmployee() {
     this.EmpServ.Get_Employees(this.DomainName).subscribe((data) => {
-      console.log("fdf", data)
       this.TableData = data
     })
   }
+
+  Create() {
+    this.router.navigateByUrl("Employee/Employee Create")
+  }
+
+  Edit(id: number) {
+    this.router.navigateByUrl(`Employee/Employee Edit/${id}`)
+
+  }
+
+  Delete(id: number) {
+    Swal.fire({
+      title: 'Are you sure you want to delete this Role?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show a loading indicator while the request is in progress
+        Swal.fire({
+          title: 'Deleting...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+  
+        this.EmpServ.Delete(id, this.DomainName).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'The role has been deleted successfully.',
+              confirmButtonColor: '#FF7519',
+            });
+            this.GetEmployee(); // Refresh the employee list
+          },
+          error: (error) => {
+            const errorMessage = error?.error || 'An unexpected error occurred.';
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: errorMessage,
+              confirmButtonColor: '#FF7519',
+            });
+          },
+        });
+      }
+    });
+  }
+
+  view(id:number){
+    this.router.navigateByUrl(`Employee/Employee Details/${id}`)
+
+  }
+  
 }

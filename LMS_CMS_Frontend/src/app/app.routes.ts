@@ -32,6 +32,7 @@ import { SubjectComponent } from './Pages/Employee/LMS/subject/subject.component
 import { SubjectViewComponent } from './Pages/Employee/LMS/subject-view/subject-view.component';
 import { EmployeeComponent } from './Pages/Employee/Administrator/employee/employee.component';
 import { EmployeeAddEditComponent } from './Pages/Employee/Administrator/employee-add-edit/employee-add-edit.component';
+import { EmployeeViewComponent } from './Pages/Employee/Administrator/employee-view/employee-view.component';
 
 
 export const routes: Routes = [
@@ -61,7 +62,9 @@ export const routes: Routes = [
             { path: "Subject", component: SubjectComponent, title: "Subjects"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Subject/:domainName/:SubId", component: SubjectViewComponent, title: "Subject", canActivate:[noNavigateWithoutLoginGuard]}, 
             { path: "Employee", component: EmployeeComponent, title: "Employee", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
-            { path: "Create Employee", component: EmployeeAddEditComponent, title: "Employee", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Employee Create", component: EmployeeAddEditComponent, title: "Employee Create", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Employee Edit/:id", component: EmployeeAddEditComponent, title: "Employee Edit", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Employee Details/:id", component: EmployeeViewComponent, title: "Employee Details", canActivate:[noNavigateWithoutLoginGuard ]}, 
 
         ]
     },

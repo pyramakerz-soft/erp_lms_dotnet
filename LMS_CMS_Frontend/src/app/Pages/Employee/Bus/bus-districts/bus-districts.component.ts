@@ -229,7 +229,6 @@ export class BusDistrictsComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    console.log('Search by:', this.key, this.value);
     await this.GetTableData();
     if (this.value != "") {
       const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);

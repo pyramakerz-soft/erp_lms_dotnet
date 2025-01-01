@@ -1,0 +1,82 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ Data.user_Name }}</h1>
+    </div>
+    <button 
+    (click)="edit()"
+    class="bg-[#6F6F6F] text-white rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+        Edit
+    </button>
+</div>
+
+<div class="flex flex-wrap justify-between mt-5">
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">English Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.en_name }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Arabic Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.ar_name }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Email</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.email }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Mobile </p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.mobile }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Phone</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.phone }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">licenseNumber</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.licenseNumber }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">expireDate</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.expireDate }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Address</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.address }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Role Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.role_Name }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">busCompanyName</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.busCompanyName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">employeeTypeName</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Data.employeeTypeName }}</p>
+    </div>
+</div>
+
+
+<div *ngIf="Data.files.length > 0" class="bg-white p-4 rounded-lg">
+    <div class="flex flex-wrap gap-4">
+        <div *ngFor="let file of Data.files; let i = index" class="flex w-full items-center gap-4 mb-4">
+            <div class="flex flex-col w-[34%]">
+                <h1 class="text-sm font-semibold mb-2">Name</h1>
+                <p class="text-sm font-medium text-gray-700 mb-4">{{ file.name }}</p>
+                <div class="border border-cacaca rounded-lg p-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-file"></i>
+                            <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">{{ file.name }}</p>
+                        </div>
+                    </div>
+                    <p class="text-sm font-medium text-gray-700 mb-4">{{ file.size }} bytes</p>
+                    <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="downloadFile(i)">
+                        Click to Download
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

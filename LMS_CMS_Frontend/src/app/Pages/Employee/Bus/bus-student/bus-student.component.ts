@@ -84,7 +84,6 @@ export class BusStudentComponent {
     this.busId = Number(this.activeRoute.snapshot.paramMap.get('busId'))
     this.DomainName = String(this.activeRoute.snapshot.paramMap.get('domainName'))
     this.GetAllAcademicYears();
-    console.log("dfd",this.busStudent.studentID)
     this.activeRoute.url.subscribe(url => {
       this.path = url[0].path
     });
@@ -93,7 +92,6 @@ export class BusStudentComponent {
     this.GetStudentsByBusId(this.busId);
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      console.log(this.path)
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
@@ -134,7 +132,6 @@ export class BusStudentComponent {
   GetStudentsByBusId(busId:number){
     this.busStudentData= []
     this.busStudentService.GetbyBusId(busId,this.DomainName).subscribe((data) => {
-      console.log(data)
       this.busStudentData = data;
     });
   }
@@ -298,7 +295,6 @@ export class BusStudentComponent {
   }
 
   SaveBusStudent(){
-    console.log(this.busStudent)
     this.busStudent.busID = this.busId
 
     if(this.busStudent.isException == false){
@@ -399,7 +395,6 @@ export class BusStudentComponent {
     this.GetStudentsByBusId(this.busId);
     else{
       this.busStudentData=this.busStudentData.filter(t=>t.studentAcademicYear==selectedValue)
-      console.log("after filter",this.busStudentData)
     }
   }
 }

@@ -1,0 +1,33 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToSemester()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Semester</h1>
+    </div>
+</div>
+
+<div class="flex flex-wrap mt-5">
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3  mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Name</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ semester.name }}</p>
+        </div>
+    </div>
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3 mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Academic Year Name</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ semester.academicYearName }}</p>
+        </div>
+    </div>
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3 mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Date From</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ semester.dateFrom }}</p>
+        </div>
+    </div>
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3 mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Date To</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ semester.dateTo }}</p>
+        </div>
+    </div>
+</div>

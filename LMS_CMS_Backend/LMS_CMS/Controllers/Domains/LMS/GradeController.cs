@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Grade", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -64,7 +64,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("GetBySection/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Grade", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync(long id)
         {
@@ -94,10 +94,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Grade", "Administrator" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -131,7 +131,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Grade", "Administrator" }
         )]
         public async Task<IActionResult> Add(GradeAddDTO Newgrade)
         {
@@ -186,7 +186,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Grade", "Administrator" }
         )]
         public async Task<IActionResult> EditAsync(GradeGetDTO newGrade)
         {
@@ -254,9 +254,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Grade", "Administrator" }
         )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

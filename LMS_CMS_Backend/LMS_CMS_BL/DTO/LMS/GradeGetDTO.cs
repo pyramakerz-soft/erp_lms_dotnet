@@ -18,5 +18,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public string DateTo { get; set; }
         public long SectionID { get; set; }
         public string? SectionName { get; set; }
+        public long? InsertedByUserId { get; set; }
     }
 }

@@ -14,16 +14,16 @@ import { TokenData } from '../../../../Models/token-data';
 import { ClassroomService } from '../../../../Services/Employee/LMS/classroom.service';
 import { School } from '../../../../Models/school';
 import Swal from 'sweetalert2';
-import { AcademicYear } from '../../../../Models/academic-year';
+import { AcademicYear } from '../../../../Models/LMS/academic-year';
 import { Section } from '../../../../Models/LMS/section';
-import { Grade } from '../../../../Models/grade';
 import { Floor } from '../../../../Models/LMS/floor';
 import { Building } from '../../../../Models/LMS/building';
 import { SectionService } from '../../../../Services/Employee/LMS/section.service';
 import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
-import { AcadimicYearService } from '../../../../Services/Employee/acadimic-year.service';
+import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
 import { FloorService } from '../../../../Services/Employee/LMS/floor.service';
 import { CopyClassroom } from '../../../../Models/LMS/copy-classroom';
+import { Grade } from '../../../../Models/LMS/grade';
 
 @Component({
   selector: 'app-classroom',

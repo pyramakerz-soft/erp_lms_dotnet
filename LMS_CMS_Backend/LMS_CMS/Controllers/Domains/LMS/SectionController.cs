@@ -30,7 +30,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Section", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -61,10 +61,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Section", "Administrator" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -98,7 +98,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Section", "Administrator" }
         )]
         public async Task<IActionResult> Add(SectionAddDTO NewSection)
         {
@@ -149,7 +149,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Section", "Administrator" }
         )]
         public IActionResult Edit(SectionGetDTO newSection)
         {
@@ -212,13 +212,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         //////////////////////////////////////////////////////
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Sections & Grade Levels", "Administrator" }
+            pages: new[] { "Section", "Administrator" }
         )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

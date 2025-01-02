@@ -36,6 +36,11 @@ import { EmployeeViewComponent } from './Pages/Employee/Administrator/employee-v
 import { BuildingComponent } from './Pages/Employee/LMS/building/building.component';
 import { FloorComponent } from './Pages/Employee/LMS/floor/floor.component';
 import { ClassroomComponent } from './Pages/Employee/LMS/classroom/classroom.component';
+import { SectionComponent } from './Pages/Employee/LMS/section/section.component';
+import { GradeComponent } from './Pages/Employee/LMS/grade/grade.component';
+import { AcademicYearComponent } from './Pages/Employee/LMS/academic-year/academic-year.component';
+import { SemesterComponent } from './Pages/Employee/LMS/semester/semester.component';
+import { SemesterViewComponent } from './Pages/Employee/LMS/semester-view/semester-view.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -70,7 +75,11 @@ export const routes: Routes = [
             { path: "Building", component: BuildingComponent, title: "Building", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Floor/:domainName/:Id", component: FloorComponent, title: "Floor", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Classroom", component: ClassroomComponent, title: "Classroom", canActivate:[noNavigateWithoutLoginGuard ]}, 
-
+            { path: "Section", component: SectionComponent, title: "Section", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Grade/:domainName/:Id", component: GradeComponent, title: "Grade", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Academic Year", component: AcademicYearComponent, title: "Academic Year", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Semester/:domainName/:Id", component: SemesterComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "SemesterView/:domainName/:Id", component: SemesterViewComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
         ]
     },
     { 

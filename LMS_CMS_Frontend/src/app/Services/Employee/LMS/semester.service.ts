@@ -1,12 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
-import { Section } from '../../../Models/LMS/section';
+import { Semester } from '../../../Models/LMS/semester';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SectionService {
+export class SemesterService {
+
   baseUrl = ""
   header = ""
 
@@ -14,16 +15,28 @@ export class SectionService {
     this.baseUrl = ApiServ.BaseUrl
   }
 
-  Get(DomainName:string) {
-    if(DomainName!=null) {
+  Get(DomainName:string){
+     if(DomainName!=null) {
       this.header=DomainName 
     }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
-      .set('domain-name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
-    return this.http.get<Section[]>(`${this.baseUrl}/Section`, { headers })
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.get<Semester[]>(`${this.baseUrl}/Semester`, { headers })
+  }
+
+  GetByAcademicYearId(id:number, DomainName:string){
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.get<Semester[]>(`${this.baseUrl}/Semester/GetByAcademicYear/${id}`, { headers })
   }
 
   GetByID(id: number,DomainName:string) {
@@ -35,10 +48,10 @@ export class SectionService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<Section>(`${this.baseUrl}/Section/${id}`, { headers })
+    return this.http.get<Semester>(`${this.baseUrl}/Semester/${id}`, { headers })
   }
 
-  Add(Section: Section,DomainName:string) {
+  Add(Semester: Semester,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -48,13 +61,13 @@ export class SectionService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
 
-    return this.http.post(`${this.baseUrl}/Section`, Section, {
+    return this.http.post(`${this.baseUrl}/Semester`, Semester, {
       headers: headers,
       responseType: 'text' as 'json'
     });
   }
 
-  Edit(Section: Section,DomainName:string) {
+  Edit(Semester: Semester,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -63,7 +76,7 @@ export class SectionService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.put(`${this.baseUrl}/Section`, Section, { headers });
+    return this.http.put(`${this.baseUrl}/Semester`, Semester, { headers });
   }
 
   Delete(id: number,DomainName:string) {
@@ -75,6 +88,6 @@ export class SectionService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.delete(`${this.baseUrl}/Section/${id}`, { headers })
+    return this.http.delete(`${this.baseUrl}/Semester/${id}`, { headers })
   }
 }

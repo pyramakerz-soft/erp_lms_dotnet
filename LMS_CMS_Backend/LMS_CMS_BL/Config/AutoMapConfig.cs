@@ -138,14 +138,20 @@ namespace LMS_CMS_BL.Config
             CreateMap<SchoolEditDTO, School>();
 
             CreateMap<EmployeeTypeViolation, EmployeeTypeViolationGetDTO>()
-                .ForMember(dest => dest.EmployeeTypeName, opt => opt.MapFrom(src => src.EmployeeType.Name))
-                .ForMember(dest => dest.EmployeeTypeID, opt => opt.MapFrom(src => src.EmployeeType.ID))
                 .ForMember(dest => dest.ViolationID, opt => opt.MapFrom(src => src.Violation.ID))
                 .ForMember(dest => dest.ViolationsTypeName, opt => opt.MapFrom(src => src.Violation.Name));
-            CreateMap<EmployeeTypeViolation, EmployeeTypeViolationAddDTO>()
-                 .ForMember(dest => dest.ViolationsTypeId, opt => opt.MapFrom(src => src.Violation.ID))
-                .ForMember(dest => dest.EmployeeTypeID, opt => opt.MapFrom(src => src.EmployeeType.ID));
+            CreateMap<EmployeeTypeViolation, EmployeeTypeViolationAddDTO>();
             CreateMap<EmployeeTypeViolationAddDTO, EmployeeTypeViolation>();
+
+            CreateMap<EmployeeTypeViolation, ViolationGetDTO>();
+            CreateMap<ViolationGetDTO, EmployeeTypeViolation>();
+
+            CreateMap<EmployeeTypeViolation, EmployeeTypeGetDTO>()
+                 .ForMember(dest => dest.EmpTypeVId, opt => opt.MapFrom(src => src.ID))
+                .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.EmployeeType.ID))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.EmployeeType.Name));
+            CreateMap<EmployeeTypeGetDTO, EmployeeTypeViolation>();
+
 
             CreateMap<Violation, ViolationGetDTO>();
             CreateMap<ViolationGetDTO, Violation>();

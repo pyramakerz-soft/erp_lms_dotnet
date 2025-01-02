@@ -157,28 +157,30 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             {
                 return BadRequest("EmployeeId Can not be null");
             }
-            EmployeeType empType = Unit_Of_Work.employeeType_Repository.First_Or_Default(e=>e.ID==NewEmployeeTypeViolation.EmployeeTypeID);
-            if (empType == null)
-            {
-                return NotFound("this Employee Type Is Not Exist");
-            }
-            //if (NewEmployeeTypeViolation.ViolationsTypeName == null)
+            //EmployeeType empType = Unit_Of_Work.employeeType_Repository.First_Or_Default(e=>e.ID==NewEmployeeTypeViolation.EmployeeTypeID);
+            //if (empType == null)
             //{
-            //    return BadRequest("ViolationsTypeName Can not be null");
+            //    return NotFound("this Employee Type Is Not Exist");
             //}
-            //Violation newViolation = new Violation();
-            //newViolation.Name = NewEmployeeTypeViolation.ViolationsTypeName;
-            //await Unit_Of_Work.violations_Repository.AddAsync(newViolation);
-            //await Unit_Of_Work.SaveChangesAsync();
-           Violation newViolation = Unit_Of_Work.violations_Repository.Select_By_Id(NewEmployeeTypeViolation.ViolationsTypeId);
-            if (newViolation == null)
+            if (NewEmployeeTypeViolation.ViolationName == null)
+            {
+                return BadRequest("ViolationsTypeName Can not be null");
+            }
+            Violation newViolation = new Violation();
+            newViolation.Name = NewEmployeeTypeViolation.ViolationName;
+            await Unit_Of_Work.violations_Repository.AddAsync(newViolation);
+            await Unit_Of_Work.SaveChangesAsync();
+            Violation Violation = Unit_Of_Work.violations_Repository.First_Or_Default(v=>v.Name == NewEmployeeTypeViolation.ViolationName&&v.IsDeleted!=true);
+            if (Violation == null)
             {
                 return NotFound("this Violation Type Is Not Exist");
             }
+            foreach (var item in NewEmployeeTypeViolation.EmployeeTypeID)
+            {
             EmployeeTypeViolation EmployeeTypeViolation = new EmployeeTypeViolation();
 
-            EmployeeTypeViolation.ViolationID = NewEmployeeTypeViolation.ViolationsTypeId;
-            EmployeeTypeViolation.EmployeeTypeID = NewEmployeeTypeViolation.EmployeeTypeID;
+            EmployeeTypeViolation.ViolationID = Violation.ID;
+            EmployeeTypeViolation.EmployeeTypeID = item;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             EmployeeTypeViolation.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
@@ -192,93 +194,99 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
             await Unit_Of_Work.employeeTypeViolation_Repository.AddAsync(EmployeeTypeViolation);
             await Unit_Of_Work.SaveChangesAsync();
+                
+            }
             return Ok(NewEmployeeTypeViolation);
         }
 
         //////////////////////////////////////////////////////
 
-        //[HttpPut]
-        //public IActionResult EditViolationName(EmployeeTypeViolationPutDTO NewViolation)
-        //{
-        //    UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+        [HttpPut]
+        public async Task<IActionResult> EditViolationNameAsync(EmployeeTypeViolationEditDTO NewViolation)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-        //    var userClaims = HttpContext.User.Claims;
-        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        //    long.TryParse(userIdClaim, out long userId);
-        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-        //    TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
-        //    if (userIdClaim == null || userTypeClaim == null)
-        //    {
-        //        return Unauthorized("User ID or Type claim not found.");
-        //    }
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
 
-        //    if (NewEmployeeTypeViolation == null)
-        //    {
-        //        return BadRequest("Employee Type Violation cannot be null");
-        //    }
-        //    if (NewEmployeeTypeViolation.EmployeeTypeID == null)
-        //    {
-        //        return BadRequest("EmployeeId Can not be null");
-        //    }
-        //    EmployeeType empType = Unit_Of_Work.employeeType_Repository.Select_By_Id(NewEmployeeTypeViolation.EmployeeTypeID);
-        //    if (empType == null)
-        //    {
-        //        return NotFound("this Employee Type Is Not Exist");
-        //    }
-        //    Violation vioType = Unit_Of_Work.violations_Repository.Select_By_Id(NewEmployeeTypeViolation.ViolationID);
-        //    if (vioType == null)
-        //    {
-        //        return NotFound("this Violation Type Is Not Exist");
-        //    }
-        //    if (vioType.Name != NewEmployeeTypeViolation.ViolationsTypeName) 
-        //    {
-        //        vioType.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-        //        if (userTypeClaim == "octa")
-        //        {
-        //            vioType.UpdatedByOctaId = userId;
-        //            if (vioType.UpdatedByUserId != null)
-        //            {
-        //                vioType.UpdatedByUserId = null;
-        //            }
+            if (NewViolation == null)
+            {
+                return BadRequest("Employee Type Violation cannot be null");
+            }
+            if (NewViolation.ViolationId == null)
+            {
+                return BadRequest("ViolationId Can not be null");
+            }
+            Violation violation = Unit_Of_Work.violations_Repository.First_Or_Default(v=>v.ID==NewViolation.ViolationId&&v.IsDeleted!=true);
+            if (violation == null) {
+                return Unauthorized("Violation not found.");
 
-        //        }
-        //        else if (userTypeClaim == "employee")
-        //        {
-        //            vioType.UpdatedByUserId = userId;
-        //            if (vioType.UpdatedByOctaId != null)
-        //            {
-        //                vioType.UpdatedByOctaId = null;
-        //            }
-        //        }
-        //       Unit_Of_Work.violations_Repository.Update(vioType);
-        //        Unit_Of_Work.SaveChanges();
-        //    }
+            }
+            if (NewViolation.ViolationName != violation.Name) 
+            {
+                violation.Name = NewViolation.ViolationName;
+               violation.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "octa")
+                {
+                    violation.UpdatedByOctaId = userId;
+                    if (violation.UpdatedByUserId != null)
+                    {
+                        violation.UpdatedByUserId = null;
+                    }
 
-        //    EmployeeTypeViolation employeeTypeViolation = mapper.Map<EmployeeTypeViolation>(NewEmployeeTypeViolation);
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    violation.UpdatedByUserId = userId;
+                    if (violation.UpdatedByOctaId != null)
+                    {
+                        violation.UpdatedByOctaId = null;
+                    }
+                }
+                Unit_Of_Work.violations_Repository.Update(violation);
+                await Unit_Of_Work.SaveChangesAsync();
+            }
 
-        //    employeeTypeViolation.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-        //    if (userTypeClaim == "octa")
-        //    {
-        //        employeeTypeViolation.UpdatedByOctaId = userId;
-        //        if (employeeTypeViolation.UpdatedByUserId != null)
-        //        {
-        //            employeeTypeViolation.UpdatedByUserId = null;
-        //        }
+            //delete all empTypeViolation
+            List<EmployeeTypeViolation> employeeTypeViolation = Unit_Of_Work.employeeTypeViolation_Repository.FindBy(i=>i.ViolationID==NewViolation.ViolationId);
+            foreach (var item in employeeTypeViolation)
+            {
+                await Unit_Of_Work.employeeTypeViolation_Repository.DeleteAsync(item.ID);
+                await Unit_Of_Work.SaveChangesAsync();
+            }
 
-        //    }
-        //    else if (userTypeClaim == "employee")
-        //    {
-        //        employeeTypeViolation.UpdatedByUserId = userId;
-        //        if (employeeTypeViolation.UpdatedByOctaId != null)
-        //        {
-        //            employeeTypeViolation.UpdatedByOctaId = null;
-        //        }
-        //    }
-        //    Unit_Of_Work.employeeTypeViolation_Repository.Update(employeeTypeViolation);
-        //    Unit_Of_Work.SaveChanges();
-        //    return Ok(employeeTypeViolation);
-        //}
+            //Create New empTypeViolation
+            foreach (var item in NewViolation.EmployeeTypeID)
+            {
+                EmployeeTypeViolation EmployeeTypeViolation = new EmployeeTypeViolation();
+
+                EmployeeTypeViolation.ViolationID = NewViolation.ViolationId;
+                EmployeeTypeViolation.EmployeeTypeID = item;
+                EmployeeTypeViolation.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "octa")
+                {
+                    EmployeeTypeViolation.InsertedByOctaId = userId;
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    EmployeeTypeViolation.InsertedByUserId = userId;
+                }
+
+                await Unit_Of_Work.employeeTypeViolation_Repository.AddAsync(EmployeeTypeViolation);
+                await Unit_Of_Work.SaveChangesAsync();
+
+            }
+
+            return Ok(NewViolation);
+        }
 
         //////////////////////////////////////////////////////
 

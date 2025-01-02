@@ -1,0 +1,151 @@
+<div class="">
+    <div class="flex justify-between items-center">
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Violation</h1>
+        <div class="flex justify-between items-center ">
+            <!-- <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> -->
+
+            <button (click)="Create()"
+                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+                Create Violation
+            </button>
+        </div>
+    </div>
+
+
+    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+            <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                <tr>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        ID
+                    </th>
+                    <th
+                        class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                        Name
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Employee Types
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- No Data Row -->
+                <tr *ngIf="Data.length === 0">
+                    <td colspan="17"
+                        class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                        No Data Found
+                    </td>
+                </tr>
+
+                <!-- Data Rows -->
+                <tr *ngFor="let row of Data; let i = index"
+                    [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                    class="border-t border-gray-300 text-xs md:text-sm">
+                    <td
+                        class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e] hover:bg-gray-200">
+                        {{ row.id }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div class="flex justify-start">
+                            <div *ngFor="let emp of row.employeeTypes; let j = index">
+                                <div class="mr-2 border border-[#EAECF0] border-t-0 border-l-0 bg-[#EBEBEB] p-1">
+                                    {{emp.name}}
+                                </div>
+
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div class="flex space-x-4">
+                            <button (click)="Delete(row.id)">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button (click)="Edit(row)">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isModalVisible}"
+    class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+    <div class="relative bg-white w-[669px] rounded-2xl p-12 gap-4 shadow-md">
+        <!-- Close Icon -->
+        <button (click)="closeModal()"
+            class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+        </button>
+
+        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">Create Violation</h1>
+        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">Edit Violation</h1>
+        <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
+            <h6 class="font-medium text-base leading-6 mb-3">Violation Name</h6>
+            <div class="flex justify-start mt-2 gap-2 items-start">
+                <div class="flex flex-col">
+                    <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
+                        [(ngModel)]="violation.violationName" placeholder="Enter new Violation" />
+                        <div class="mt-4">
+                            <div class="flex flex-col mb-1">
+                                <label class="mb-3" for="ac">Employee Type</label>
+                                <div class="relative">
+                                    <div 
+                                        class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer" 
+                                        (click)="toggleDropdown()"
+                                        tabindex="0"
+                                    >
+                                        <div *ngIf="empTypesSelected.length > 0; else placeholder">
+                                            <div class="flex flex-wrap">
+                                                <span 
+                                                    class="mr-2 mb-1 bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center"
+                                                    *ngFor="let selected of empTypesSelected"
+                                                >
+                                                    {{ selected.name }}
+                                                    <span 
+                                                        class="ml-2 cursor-pointer text-red-500"
+                                                        (click)="removeSelected(selected.id)"
+                                                    >
+                                                        &times;
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <ng-template #placeholder>
+                                            <span class="text-gray-400">Choose Employee Type</span>
+                                        </ng-template>
+                                    </div>
+                                    <div 
+                                        class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full shadow-md z-10"
+                                        *ngIf="dropdownOpen"
+                                    >
+                                        <ul>
+                                            <li 
+                                                *ngFor="let employeeType of empTypes"
+                                                class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                (click)="selectEmployeeType(employeeType)"
+                                            >
+                                                {{ employeeType.name }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

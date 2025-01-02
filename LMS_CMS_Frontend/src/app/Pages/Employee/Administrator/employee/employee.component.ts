@@ -69,7 +69,6 @@ export class EmployeeComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        // Show a loading indicator while the request is in progress
         Swal.fire({
           title: 'Deleting...',
           allowOutsideClick: false,
@@ -86,7 +85,7 @@ export class EmployeeComponent {
               text: 'The role has been deleted successfully.',
               confirmButtonColor: '#FF7519',
             });
-            this.GetEmployee(); // Refresh the employee list
+            this.GetEmployee(); 
           },
           error: (error) => {
             const errorMessage = error?.error || 'An unexpected error occurred.';

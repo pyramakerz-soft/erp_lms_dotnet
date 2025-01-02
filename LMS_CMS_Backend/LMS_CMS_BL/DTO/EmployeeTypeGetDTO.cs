@@ -9,6 +9,7 @@ namespace LMS_CMS_BL.DTO
 {
     public  class EmployeeTypeGetDTO
     {
+        public long EmpTypeVId { get; set; }
         public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]

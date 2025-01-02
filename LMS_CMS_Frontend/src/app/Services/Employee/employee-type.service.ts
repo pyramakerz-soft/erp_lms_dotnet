@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from '../api.service';
 import { EmployeeTypeGet } from '../../Models/Administrator/employee-type-get';
+import { ViolationAdd } from '../../Models/Administrator/violation-add';
 
 @Injectable({
   providedIn: 'root'
@@ -29,4 +30,7 @@ export class EmployeeTypeService {
     return this.http.get<EmployeeTypeGet[]>(`${this.baseUrl}/EmployeeType`, { headers })
     
   }
+
+  
+  
 }

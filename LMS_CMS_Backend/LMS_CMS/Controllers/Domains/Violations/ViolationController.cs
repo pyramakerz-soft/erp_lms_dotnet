@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Violation;
 using LMS_CMS_BL.UOW;
@@ -46,22 +47,33 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            List<Violation> Violations = await Unit_Of_Work.violations_Repository.Select_All_With_IncludesById<Violation>(
-                    sem => sem.IsDeleted != true);
 
-            if (Violations == null || Violations.Count == 0)
+            List<Violation> violations = await Unit_Of_Work.violations_Repository.Select_All_With_IncludesById<Violation>(
+                sem => sem.IsDeleted != true);
+
+            if (violations == null || violations.Count == 0)
             {
                 return NotFound();
             }
 
-            List<ViolationGetDTO> ViolationDTO = mapper.Map<List<ViolationGetDTO>>(Violations);
+            List<ViolationGetDTO> violationDTOs = mapper.Map<List<ViolationGetDTO>>(violations);
 
-            return Ok(ViolationDTO);
+            foreach (var item in violationDTOs)
+            {
+                List<EmployeeTypeViolation> employeeTypeViolations = await Unit_Of_Work.employeeTypeViolation_Repository
+                    .Select_All_With_IncludesById<EmployeeTypeViolation>(e => e.ViolationID == item.ID,
+                    query => query.Include(emp => emp.EmployeeType));
+
+                item.employeeTypes = mapper.Map<List<EmployeeTypeGetDTO>>(employeeTypeViolations);
+            }
+
+            return Ok(violationDTOs);
         }
+
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" }
         )]
@@ -78,16 +90,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            Violation violation = await Unit_Of_Work.violations_Repository.FindByIncludesAsync(
-                    sem => sem.IsDeleted != true && sem.ID == id);
 
-            if (violation == null)
+            Violation violation = await Unit_Of_Work.violations_Repository.FindByIncludesAsync(
+                sem => sem.IsDeleted != true && sem.ID==id);
+
+            if (violation == null )
             {
                 return NotFound();
             }
 
             ViolationGetDTO violationDTO = mapper.Map<ViolationGetDTO>(violation);
 
+
+                List<EmployeeTypeViolation> employeeTypeViolations = await Unit_Of_Work.employeeTypeViolation_Repository
+                    .Select_All_With_IncludesById<EmployeeTypeViolation>(e => e.ViolationID == violationDTO.ID,
+                    query => query.Include(emp => emp.EmployeeType));
+
+            violationDTO.employeeTypes = mapper.Map<List<EmployeeTypeGetDTO>>(employeeTypeViolations);
             return Ok(violationDTO);
         }
 
@@ -198,7 +217,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
         //////////////////////////////////////////////////////
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" }
         )]

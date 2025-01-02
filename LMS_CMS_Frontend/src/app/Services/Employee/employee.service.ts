@@ -85,7 +85,6 @@ export class EmployeeService {
     }
 
 
-    console.log(employee)
     const token = localStorage.getItem('current_token');
     const headers = new HttpHeaders()
       .set('Authorization', `Bearer ${token}`)

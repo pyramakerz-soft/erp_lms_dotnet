@@ -13,5 +13,6 @@ namespace LMS_CMS_BL.DTO.Violation
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
+        public List<EmployeeTypeGetDTO> employeeTypes { get; set; }
     }
 }

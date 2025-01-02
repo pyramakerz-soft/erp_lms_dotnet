@@ -36,6 +36,7 @@ import { EmployeeViewComponent } from './Pages/Employee/Administrator/employee-v
 import { BuildingComponent } from './Pages/Employee/LMS/building/building.component';
 import { FloorComponent } from './Pages/Employee/LMS/floor/floor.component';
 import { ClassroomComponent } from './Pages/Employee/LMS/classroom/classroom.component';
+import { ViolationTypesComponent } from './Pages/Employee/Administrator/violation-types/violation-types.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -70,6 +71,8 @@ export const routes: Routes = [
             { path: "Building", component: BuildingComponent, title: "Building", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Floor/:domainName/:Id", component: FloorComponent, title: "Floor", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Classroom", component: ClassroomComponent, title: "Classroom", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Violation Types", component: ViolationTypesComponent, title: "Violation Types", canActivate:[noNavigateWithoutLoginGuard ]}, 
+
 
         ]
     },

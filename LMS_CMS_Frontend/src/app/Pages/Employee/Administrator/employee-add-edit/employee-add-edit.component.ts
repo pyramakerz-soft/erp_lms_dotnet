@@ -115,23 +115,21 @@ export class EmployeeAddEditComponent {
   }
 
   downloadFile(file: any): void {
-    console.log("fvdf",file);
     if (this.mode == "Create") {
       const fileURL = URL.createObjectURL(file);
       const a = document.createElement('a');
       a.href = fileURL;
       a.download = file.name;
       a.click();
-      URL.revokeObjectURL(fileURL);
+      // URL.revokeObjectURL(fileURL);
     }
     else if(this.mode=="Edit"){
       const fileURL = file.link;
       const a = document.createElement('a');
       a.href = fileURL;
-      console.log(file)
-      a.download = file.name;
+      a.target = '_blank'; // Open in a new tab
       a.click();
-      URL.revokeObjectURL(fileURL);
+      // URL.revokeObjectURL(fileURL);
     }
   }
 

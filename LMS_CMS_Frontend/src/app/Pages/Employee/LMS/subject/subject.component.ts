@@ -17,8 +17,8 @@ import { School } from '../../../../Models/school';
 import { SchoolService } from '../../../../Services/Employee/school.service';
 import { Section } from '../../../../Models/LMS/section';
 import { SectionService } from '../../../../Services/Employee/LMS/section.service';
-import { Grade } from '../../../../Models/grade';
 import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
+import { Grade } from '../../../../Models/LMS/grade';
 
 @Component({
   selector: 'app-subject',

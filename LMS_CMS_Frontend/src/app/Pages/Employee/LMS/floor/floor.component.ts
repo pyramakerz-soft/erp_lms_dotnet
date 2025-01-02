@@ -24,7 +24,7 @@ import Swal from 'sweetalert2';
   styleUrl: './floor.component.css'
 })
 export class FloorComponent {
-  keysArray: string[] = ['id', 'name'];
+    keysArray: string[] = ['id', 'name'];
     key: string= "id";
     value: any = "";
   

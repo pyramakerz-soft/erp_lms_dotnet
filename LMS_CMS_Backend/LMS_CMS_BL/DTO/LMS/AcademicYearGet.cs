@@ -20,5 +20,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public bool IsActive { get; set; }
         public long SchoolID { get; set; }
         public string? SchoolName { get; set; }
+        public long? InsertedByUserId { get; set; }
     }
 }

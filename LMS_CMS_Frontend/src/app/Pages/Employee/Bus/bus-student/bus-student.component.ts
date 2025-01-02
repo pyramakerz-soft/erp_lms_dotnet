@@ -15,8 +15,7 @@ import { School } from '../../../../Models/school';
 import { SchoolService } from '../../../../Services/Employee/school.service';
 import { BusCategoryService } from '../../../../Services/Employee/Bus/bus-category.service';
 import { BusType } from '../../../../Models/Bus/bus-type';
-import { Semester } from '../../../../Models/semester';
-import { SemesterService } from '../../../../Services/Employee/semester.service';
+import { Semester } from '../../../../Models/LMS/semester';
 import { Grade } from '../../../../Models/grade';
 import { Class } from '../../../../Models/class';
 import { FormsModule } from '@angular/forms';
@@ -24,8 +23,9 @@ import { StudentService } from '../../../../Services/student.service';
 import { Student } from '../../../../Models/student';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
-import { AcadimicYearService } from '../../../../Services/Employee/acadimic-year.service';
-import { AcademicYear } from '../../../../Models/academic-year';
+import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
+import { AcademicYear } from '../../../../Models/LMS/academic-year';
+import { SemesterService } from '../../../../Services/Employee/LMS/semester.service';
 
 @Component({
   selector: 'app-bus-student',

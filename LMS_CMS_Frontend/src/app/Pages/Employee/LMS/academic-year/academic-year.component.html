@@ -1,0 +1,152 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Academic Years</h1>
+    <div class="flex justify-between items-center space-x-4">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        
+        <button (click)="openModal()"
+        class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            Create Academic Years
+        </button>
+    </div>
+</div>
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    School Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Date From
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Date To
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Is Active
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="academicYearData.length === 0">
+                <td colspan="7" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of academicYearData; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.dateFrom }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.dateTo }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.schoolName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex justify-start">
+                        <div *ngIf="row.isActive" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                            <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: green; padding: 4px;"></span>
+                            <p>
+                                Active
+                            </p>
+                        </div>
+                        <div *ngIf="!row.isActive" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                            <div class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: gray; padding: 4px;"></div>
+                            <p>
+                                Inactive
+                            </p>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex space-x-4">
+                        <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                            (click)="deleteAcademicYear(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button>
+                            <i class="fa-regular fa-eye" (click)="moveToAcademicYearView(row.id)"></i>
+                        </button>
+                    </div>
+                </td> 
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Section Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px] max-h-[95%] overflow-y-auto">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!editAcademicYear" class="font-semibold text-2xl leading-9">Create Academic Year</h1>
+            <h1 *ngIf="editAcademicYear" class="font-semibold text-2xl leading-9">Edit Academic Year</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="mt-6 mb-4 rounded-3xl p-[16px_24px] bg-[#F7F7F7] ">
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="name">Academic Year Name</label>
+                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Academic Year Name"
+                [(ngModel)]="academicYear.name" 
+                (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"/>
+                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
+            </div>
+
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="school">School</label>
+                <select (ngModelChange)="onInputValueChange({ field: 'schoolID', value: $event })"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="academicYear.schoolID">
+                    <option [value]="0" disabled selected hidden>Choose School</option>
+                    <option *ngFor="let school of Schools" [value]="school.id">{{ school.name }}</option>
+                    <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
+                </select>
+                <span *ngIf="validationErrors['schoolID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['schoolID'] }}</span>
+            </div>
+
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="dateFrom">Date From</label>
+                <input id="dateFrom" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter From"
+                [(ngModel)]="academicYear.dateFrom" 
+                (ngModelChange)="onInputValueChange({ field: 'dateFrom', value: $event })"/>
+                <span *ngIf="validationErrors['dateFrom']" class="text-red-500 ml-3 font-normal">{{ validationErrors['dateFrom'] }}</span>
+            </div>
+
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="dateTo">Date To</label>
+                <input id="dateTo" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter To"
+                [(ngModel)]="academicYear.dateTo" 
+                (ngModelChange)="onInputValueChange({ field: 'dateTo', value: $event })"/>
+                <span *ngIf="validationErrors['dateTo']" class="text-red-500 ml-3 font-normal">{{ validationErrors['dateTo'] }}</span>
+            </div>
+
+            <div class="flex w-full space-x-5 items-center mb-4">
+                <input type="checkbox" id="active" class="w-5 h-5"
+                (change)="onIsActiveChange($event)"
+                [checked]="academicYear.isActive">
+                <label for="active" class="text-sm">Is Active</label>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+                Save
+            </button>
+        </div>
+    </div>
+</div>

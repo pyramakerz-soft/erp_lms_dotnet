@@ -30,7 +30,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Academic Years", "Administrator" }
+            pages: new[] { "Academic Year", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -61,10 +61,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         }
         //////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Academic Years", "Administrator" }
+            pages: new[] { "Academic Year", "Administrator" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -80,7 +80,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
             AcademicYear academicYear = await Unit_Of_Work.academicYear_Repository.FindByIncludesAsync(
-                    sem => sem.IsDeleted != true,
+                    sem => sem.IsDeleted != true && sem.ID == id,
                     query => query.Include(emp => emp.School));
 
             if (academicYear == null)
@@ -98,7 +98,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Academic Years", "Administrator" }
+            pages: new[] { "Academic Year", "Administrator" }
         )]
         public async Task<IActionResult> Add(AcademicYearAddDTO NewAcademicYear)
         {
@@ -150,7 +150,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
              allowedTypes: new[] { "octa", "employee" },
              allowEdit: 1,
-             pages: new[] { "Academic Years", "Administrator" }
+             pages: new[] { "Academic Year", "Administrator" }
          )]
         public IActionResult Edit(AcademicYearGet newAcademicYear)
         {
@@ -207,13 +207,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         //////////////////////////////////////////////////////
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Busses", "Bus Districts" }
+            pages: new[] { "Academic Year", "Administrator" }
         )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

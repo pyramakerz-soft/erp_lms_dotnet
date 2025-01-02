@@ -1,0 +1,152 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToAcademicYear()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Academic Year</h1>
+    </div>
+</div>
+
+<div class="flex flex-wrap mt-5">
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3  mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Name</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ academicYear.name }}</p>
+        </div>
+    </div>
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3 mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">School Name</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ academicYear.schoolName }}</p>
+        </div>
+    </div>
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3 mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Date From</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ academicYear.dateFrom }}</p>
+        </div>
+    </div>
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3 mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Date To</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ academicYear.dateTo }}</p>
+        </div>
+    </div>
+</div>
+<div class="flex space-x-5 items-center w-[30%] mb-4 p-3">
+    <i *ngIf="academicYear.isActive" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+    <i *ngIf="!academicYear.isActive" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
+    <label class="text-sm">Is Active</label>
+</div>
+
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Semester</h1>
+    <div class="flex justify-between items-center ">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        
+        <button (click)="openModal()"
+        class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            Add Semester
+        </button>
+    </div>
+</div>
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Semester Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    From Date
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    To Date
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Academic Year
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="semesterData.length === 0">
+                <td colspan="6" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of semesterData; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.name }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.dateFrom }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.dateTo }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.academicYearName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex space-x-4">
+                        <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                            (click)="deleteSemester(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button>
+                            <i class="fa-regular fa-eye" (click)="MoveToSemesterView(row.id)"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Add-Edit Semester Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px]">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!editSemester" class="font-semibold text-2xl leading-9">Create Semester</h1>
+            <h1 *ngIf="editSemester" class="font-semibold text-2xl leading-9">Edit Semester</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="p-[16px_24px] mt-6 mb-4 bg-[#F7F7F7] rounded-3xl">
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="name">Semester Name</label>
+                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Semester Name"
+                [(ngModel)]="semester.name" 
+                (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"/>
+                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="dateFrom">Date From</label>
+                <input id="dateFrom" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter From"
+                [(ngModel)]="semester.dateFrom" 
+                (ngModelChange)="onInputValueChange({ field: 'dateFrom', value: $event })"/>
+                <span *ngIf="validationErrors['dateFrom']" class="text-red-500 ml-3 font-normal">{{ validationErrors['dateFrom'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="dateTo">Date To</label>
+                <input id="dateTo" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter To"
+                [(ngModel)]="semester.dateTo" 
+                (ngModelChange)="onInputValueChange({ field: 'dateTo', value: $event })"/>
+                <span *ngIf="validationErrors['dateTo']" class="text-red-500 ml-3 font-normal">{{ validationErrors['dateTo'] }}</span>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="SaveSemester()">
+                Save
+            </button>
+        </div>
+    </div>
+</div>

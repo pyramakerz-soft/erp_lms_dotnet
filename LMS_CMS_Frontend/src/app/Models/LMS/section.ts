@@ -4,5 +4,6 @@ export class Section {
         public name : string = '',
         public schoolID: number = 0,
         public schoolName : string = '',
+        public insertedByUserId: number = 0,
     ) {}
 }

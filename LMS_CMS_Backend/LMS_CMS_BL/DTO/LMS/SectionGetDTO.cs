@@ -17,6 +17,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public string Name { get; set; }
         public long SchoolID { get; set; }
         public string SchoolName { get; set; }
-
+        public long? InsertedByUserId { get; set; }
     }
 }

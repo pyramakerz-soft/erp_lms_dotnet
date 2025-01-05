@@ -4,6 +4,7 @@ using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS_CMS_PL.Controllers.Octa
@@ -77,6 +78,10 @@ namespace LMS_CMS_PL.Controllers.Octa
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
             if (userTypeClaim == null)
             {
                 return Unauthorized("User Type claim not found.");
@@ -87,7 +92,9 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Unauthorized("Access Denied");
             }
 
-             _Unit_Of_Work.octa_Repository.Add_Octa(newAcc);
+            newAcc.InsertedByUserId = userId;
+            newAcc.InsertedAt= TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            _Unit_Of_Work.octa_Repository.Add_Octa(newAcc);
             _Unit_Of_Work.SaveOctaChanges();
             return Ok(newAcc);
         }
@@ -100,6 +107,10 @@ namespace LMS_CMS_PL.Controllers.Octa
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
             if (userTypeClaim == null)
             {
                 return Unauthorized("User Type claim not found.");
@@ -110,6 +121,9 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Unauthorized("Access Denied");
             }
 
+
+            newAcc.UpdatedByUserId = userId;
+            newAcc.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             _Unit_Of_Work.octa_Repository.Update_Octa(newAcc);
             _Unit_Of_Work.SaveOctaChanges();
             return Ok(newAcc);
@@ -123,6 +137,10 @@ namespace LMS_CMS_PL.Controllers.Octa
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
             if (userTypeClaim == null)
             {
                 return Unauthorized("User Type claim not found.");
@@ -133,8 +151,16 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Unauthorized("Access Denied");
             }
 
-            LMS_CMS_DAL.Models.Octa.Octa octas = _Unit_Of_Work.octa_Repository.Select_By_Id_Octa(id);
-            _Unit_Of_Work.octa_Repository.Delete_Octa(id);
+            LMS_CMS_DAL.Models.Octa.Octa octa = _Unit_Of_Work.octa_Repository.Select_By_Id_Octa(id);
+            if(octa == null)
+            {
+                return NotFound();
+            }
+
+            octa.DeletedByUserId = userId;
+            octa.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            octa.IsDeleted= true;
+            _Unit_Of_Work.octa_Repository.Update_Octa(octa);
             _Unit_Of_Work.SaveOctaChanges();
             return Ok();
         }

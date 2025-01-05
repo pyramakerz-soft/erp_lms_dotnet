@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -160,6 +162,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -178,7 +182,33 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return NotFound("No School with this ID");
             }
-            AcademicYear AcademicYear = mapper.Map<AcademicYear>(newAcademicYear);
+            AcademicYear AcademicYear =Unit_Of_Work.academicYear_Repository.First_Or_Default(a=>a.ID== newAcademicYear.ID);
+            if (AcademicYear == null)
+            {
+                return BadRequest("this academic year doesn't exist");
+            }
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Academic Years");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (AcademicYear.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("AcademicYear page doesn't exist");
+                }
+            }
+
+            mapper.Map(newAcademicYear, AcademicYear);
+
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             AcademicYear.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -221,6 +251,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -236,6 +268,25 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (academicYear == null || academicYear.IsDeleted == true)
             {
                 return NotFound("No AcademicYear with this ID");
+            }
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Academic Years");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
+                    {
+                        if (academicYear.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("AcademicYear page doesn't exist");
+                }
             }
             academicYear.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

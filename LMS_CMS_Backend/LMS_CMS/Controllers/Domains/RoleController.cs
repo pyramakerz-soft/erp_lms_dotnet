@@ -106,6 +106,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -207,6 +209,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -228,9 +232,34 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("Role cannot be null");
             }
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Role");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (role.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Role page doesn't exist");
+                }
+            }
             if (role.Name != newRole.Name) 
             { 
-              role.Name = newRole.Name;
+                Role checkForUnique = Unit_Of_Work.role_Repository.First_Or_Default(r=>r.Name==newRole.Name);
+                if (checkForUnique != null)
+                {
+                    return BadRequest ("This Role Already Exist");
+                }
+
+            role.Name = newRole.Name;
             role.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
@@ -326,6 +355,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -337,6 +368,25 @@ namespace LMS_CMS_PL.Controllers.Domains
                 return BadRequest("id cannot be null");
             }
             Role role = Unit_Of_Work.role_Repository.Select_By_Id(id);
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Role");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
+                    {
+                        if (role.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Role page doesn't exist");
+                }
+            }
 
             if (role == null || role.IsDeleted == true)
             {

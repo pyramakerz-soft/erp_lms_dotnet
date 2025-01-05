@@ -3,6 +3,7 @@ using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Violation;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using LMS_CMS_PL.Attribute;
@@ -32,7 +33,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Violation Types", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -75,7 +77,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Violation Types", "Administrator" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -114,7 +117,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Violation Types", "Administrator" }
         )]
         public async Task<IActionResult> Add(ViolationAddDTO Newviolation)
         {
@@ -159,7 +163,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
         [HttpPut]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Violation Types", "Administrator" }
         )]
         public IActionResult Edit(ViolationGetDTO Newviolation)
         {
@@ -169,6 +175,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -187,6 +195,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             if (violation == null)
             { 
               return NotFound();
+            }
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Violations");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (violation.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Violations page doesn't exist");
+                }
             }
             ////mapper.Map<Violation>(Newviolation);
             mapper.Map(Newviolation, violation);
@@ -219,7 +246,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Violation Types", "Administrator" }
         )]
         public IActionResult delete(long id)
         {
@@ -229,6 +258,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -244,6 +275,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             if (violation == null || violation.IsDeleted == true)
             {
                 return NotFound("No Violation with this ID");
+            }
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Violations");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
+                    {
+                        if (violation.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Violations page doesn't exist");
+                }
             }
             violation.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

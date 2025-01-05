@@ -182,10 +182,6 @@ namespace LMS_CMS_PL.Controllers.Domains
         ///////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
-        [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Administrator", "Employee" }
-        )]
         public async Task<IActionResult> Add([FromForm] EmployeeAddDTO NewEmployee, [FromForm] List<IFormFile> files)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -228,13 +224,13 @@ namespace LMS_CMS_PL.Controllers.Domains
             }
 
             Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(e => e.User_Name == NewEmployee.User_Name);
-            if(employee != null)
+            if (employee != null)
             {
                 return BadRequest("This User Name Already Exist");
             }
-            if(NewEmployee.BusCompanyID != 0)
+            if (NewEmployee.BusCompanyID != 0)
             {
-                BusCompany bus=Unit_Of_Work.busCompany_Repository.First_Or_Default(b=>b.ID==NewEmployee.BusCompanyID&&b.IsDeleted!=true);
+                BusCompany bus = Unit_Of_Work.busCompany_Repository.First_Or_Default(b => b.ID == NewEmployee.BusCompanyID && b.IsDeleted != true);
                 if (bus == null)
                 {
                     return BadRequest("this bus company doesn't exist");
@@ -257,7 +253,12 @@ namespace LMS_CMS_PL.Controllers.Domains
                 }
             }
             ///create the object 
-            mapper.Map(NewEmployee,employee);
+            if (employee == null)
+            {
+                employee = new Employee();
+            }
+            mapper.Map(NewEmployee, employee);
+            employee.Password= BCrypt.Net.BCrypt.HashPassword(NewEmployee.Password);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             employee.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -298,7 +299,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                         EmployeeID = employee.ID,
                         Link = $"{Request.Scheme}://{Request.Host}/Uploads/Attachments/{employee.User_Name}/{file.FileName}",
                         Name = file.FileName,
-                    }; 
+                    };
 
                     Unit_Of_Work.employeeAttachment_Repository.Add(uploadedFile);
                     Unit_Of_Work.SaveChanges();
@@ -456,6 +457,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                 }
             }
             mapper.Map(newEmployee, oldEmp);
+            oldEmp.Password = BCrypt.Net.BCrypt.HashPassword(newEmployee.Password);
 
             if (userTypeClaim == "octa")
             {

@@ -171,6 +171,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             {
                 return BadRequest("this violation already exist");
             }
+            newViolation = new Violation();
             newViolation.Name = NewEmployeeTypeViolation.ViolationName;
             await Unit_Of_Work.violations_Repository.AddAsync(newViolation);
             await Unit_Of_Work.SaveChangesAsync();

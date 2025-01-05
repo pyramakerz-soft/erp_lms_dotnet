@@ -218,6 +218,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("the name cannot be null");
             }
+
             Section section = Unit_Of_Work.section_Repository.First_Or_Default(s => s.ID == newGrade.SectionID&&s.IsDeleted!=true);
             if (section == null)
             {
@@ -229,6 +230,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("this grade not exist");
             }
+
             if (userTypeClaim == "employee")
             {
                 Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sections & Grade Levels");

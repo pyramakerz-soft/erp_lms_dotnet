@@ -47,6 +47,9 @@ export class EmployeeAddEditComponent {
 
   EmpId: number = 0;
 
+  //  emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  //  mobilePattern = /^0(10|11|12|15)\d{8}$/;
+
   DeletedFiles: number[] = []
   constructor(public RoleServ: RoleService, public empTypeServ: EmployeeTypeService, public BusCompanyServ: BusCompanyService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router, public EmpServ: EmployeeService) { }
 
@@ -134,13 +137,41 @@ export class EmployeeAddEditComponent {
   }
 
   async Save() {
-    if (this.Data.user_Name == "") {
+    const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    const mobilePattern = /^0(10|11|12|15)\d{8}$/;
+  
+    if (this.Data.email && !emailPattern.test(this.Data.email)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'Email is not valid.',
+        confirmButtonColor: '#FF7519',
+      });
+      return Promise.resolve(false); // Stop and return
+    } else if (this.Data.mobile && !mobilePattern.test(this.Data.mobile)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'Mobile number is not valid.',
+        confirmButtonColor: '#FF7519',
+      });
+      return Promise.resolve(false); // Stop and return
+    } else if (this.Data.phone && !mobilePattern.test(this.Data.phone)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'Phone number is not valid.',
+        confirmButtonColor: '#FF7519',
+      });
+      return Promise.resolve(false); // Stop and return
+    } else if (this.Data.user_Name == "") {
       Swal.fire({
         icon: 'warning',
         title: 'Warning!',
         text: 'User Name cannot be empty.',
         confirmButtonColor: '#FF7519',
       });
+      return Promise.resolve(false);
     } else if (this.Data.en_name == "") {
       Swal.fire({
         icon: 'warning',
@@ -148,6 +179,7 @@ export class EmployeeAddEditComponent {
         text: 'English Name cannot be empty.',
         confirmButtonColor: '#FF7519',
       });
+      return Promise.resolve(false);
     } else if (this.Data.password == "") {
       Swal.fire({
         icon: 'warning',
@@ -155,6 +187,7 @@ export class EmployeeAddEditComponent {
         text: 'Password cannot be empty.',
         confirmButtonColor: '#FF7519',
       });
+      return Promise.resolve(false);
     } else if (this.Data.role_ID == 0) {
       Swal.fire({
         icon: 'warning',
@@ -162,6 +195,7 @@ export class EmployeeAddEditComponent {
         text: 'Role ID must be selected.',
         confirmButtonColor: '#FF7519',
       });
+      return Promise.resolve(false);
     } else if (this.Data.employeeTypeID == 0) {
       Swal.fire({
         icon: 'warning',
@@ -169,42 +203,59 @@ export class EmployeeAddEditComponent {
         text: 'Employee Type must be selected.',
         confirmButtonColor: '#FF7519',
       });
-    }
-    else if (this.Data.employeeTypeID == 2 && this.Data.licenseNumber == "" || this.Data.expireDate == "") {
-      if (this.Data.licenseNumber == "")
-        Swal.fire({
-          icon: 'warning',
-          title: 'Warning!',
-          text: 'licenseNumber cannot be empty.',
-          confirmButtonColor: '#FF7519',
-        });
-      if (this.Data.expireDate == "")
-        Swal.fire({
-          icon: 'warning',
-          title: 'Warning!',
-          text: 'expireDate cannot be empty.',
-          confirmButtonColor: '#FF7519',
-        });
-    }
-    else {
+      return Promise.resolve(false);
+    } else if (this.Data.employeeTypeID == 2 && this.Data.licenseNumber == "") {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'License Number cannot be empty.',
+        confirmButtonColor: '#FF7519',
+      });
+      return Promise.resolve(false);
+    } else if (this.Data.employeeTypeID == 2 && this.Data.expireDate == "") {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'Expire Date cannot be empty.',
+        confirmButtonColor: '#FF7519',
+      });
+      return Promise.resolve(false);
+    } else {
       if (this.mode == "Create") {
-        this.EmpServ.Add(this.Data, this.DomainName).subscribe((data) => {
-          this.router.navigateByUrl("Employee/Employee")
-        })
-      }
-      else if (this.mode == "Edit") {
-        if (this.DeletedFiles.length > 0) {
-          await this.DeletedFiles.forEach(id => {
-            this.EmpServ.DeleteFile(id, this.DomainName).subscribe(() => {
+        return this.EmpServ.Add(this.Data, this.DomainName).toPromise().then(
+          (data) => {
+            this.router.navigateByUrl("Employee/Employee");
+            return true;
+          },
+          (error) => {
+            console.error('Error occurred:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error?.error || 'An unexpected error occurred',
+              confirmButtonColor: '#FF7519',
             });
-          });
+            return false;
+          }
+        );
+      } else if (this.mode == "Edit") {
+        if (this.DeletedFiles.length > 0) {
+          for (const id of this.DeletedFiles) {
+            await this.EmpServ.DeleteFile(id, this.DomainName).toPromise();
+          }
         }
-        this.EmpServ.Edit(this.Data, this.DomainName).subscribe((data) => {
-          this.router.navigateByUrl("Employee/Employee")
-        })
+        return this.EmpServ.Edit(this.Data, this.DomainName).toPromise().then(
+          (data) => {
+            this.router.navigateByUrl("Employee/Employee");
+            return true;
+          }
+        );
       }
     }
+  
+    return Promise.resolve(true); // Default resolve if all logic completes
   }
+  
 
   moveToEmployee() {
     this.router.navigateByUrl("Employee/Employee")

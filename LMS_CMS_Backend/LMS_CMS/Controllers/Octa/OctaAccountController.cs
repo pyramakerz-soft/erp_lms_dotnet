@@ -48,9 +48,15 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return BadRequest("Password Can't be null");
             }
 
-            LMS_CMS_DAL.Models.Octa.Octa user = _Unit_Of_Work_Octa.octa_Repository.First_Or_Default_Octa(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password);
+            LMS_CMS_DAL.Models.Octa.Octa user = _Unit_Of_Work_Octa.octa_Repository.First_Or_Default_Octa(par => par.User_Name == UserInfo.User_Name );
 
             if (user == null)
+            {
+                return BadRequest("UserName or Password is Invalid");
+            }
+            bool isMatch = BCrypt.Net.BCrypt.Verify(UserInfo.Password, user.Password);
+
+            if (isMatch == false)
             {
                 return BadRequest("UserName or Password is Invalid");
             }

@@ -236,6 +236,9 @@ namespace LMS_CMS_BL.Config
             CreateMap<EmployeeType, EmployeeTypeGetDTO>();
             CreateMap<EmployeeTypeGetDTO, EmployeeType>();
 
+            CreateMap<Octa, OctaGetDTO>();
+            CreateMap<OctaAddDTO, Octa>();
+            CreateMap<OctaPutDTO, Octa>();
         }
     }
 }

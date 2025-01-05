@@ -232,6 +232,30 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("This User Name Already Exist");
             }
+            if(NewEmployee.BusCompanyID != 0)
+            {
+                BusCompany bus=Unit_Of_Work.busCompany_Repository.First_Or_Default(b=>b.ID==NewEmployee.BusCompanyID&&b.IsDeleted!=true);
+                if (bus == null)
+                {
+                    return BadRequest("this bus company doesn't exist");
+                }
+            }
+            if (NewEmployee.EmployeeTypeID != 0)
+            {
+                EmployeeType empType = Unit_Of_Work.employeeType_Repository.First_Or_Default(b => b.ID == NewEmployee.EmployeeTypeID);
+                if (empType == null)
+                {
+                    return BadRequest("this Employee Type doesn't exist");
+                }
+            }
+            if (NewEmployee.Role_ID != 0)
+            {
+                Role rolee = Unit_Of_Work.role_Repository.First_Or_Default(b => b.ID == NewEmployee.Role_ID && b.IsDeleted != true);
+                if (rolee == null)
+                {
+                    return BadRequest("this role doesn't exist");
+                }
+            }
             ///create the object 
             mapper.Map(NewEmployee,employee);
 

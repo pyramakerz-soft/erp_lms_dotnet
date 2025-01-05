@@ -29,6 +29,8 @@ namespace LMS_CMS_BL.DTO.Bus
         public long? DeletedByUserId { get; set; }
         public long SchoolID { get; set; }
         public string SchoolName { get; set; }
+        public long SectionID { get; set; }
+        public string SectionName { get; set; }
         public long GradeID { get; set; }
         public string GradeName { get; set; }
         public long ClassID { get; set; }

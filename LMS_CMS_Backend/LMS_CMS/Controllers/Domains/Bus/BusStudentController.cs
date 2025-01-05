@@ -64,9 +64,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 query => query.Include(bus => bus.Bus),
                 query => query.Include(stu => stu.Student).ThenInclude(stu => stu.StudentAcademicYears),
                 query => query.Include(busCat => busCat.BusCategory),
-                query => query.Include(sem => sem.Semester),
-                query => query.Include(sem => sem.Semester).ThenInclude(st => st.AcademicYear)
-
+                query => query.Include(sem => sem.Semester).ThenInclude(st => st.AcademicYear).ThenInclude(st => st.School) 
             );
 
             if (busStudents == null || busStudents.Count == 0)
@@ -82,17 +80,16 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 if (busStudent != null)
                 {
                     var studentAcademicYear = Unit_Of_Work.studentAcademicYear_Repository
-                        .First_Or_Default(s => s.SemesterID == busStudent.SemseterID);
-
+                        .First_Or_Default(s => s.SemesterID == busStudent.SemseterID && s.StudentID == busStudent.StudentID && s.SchoolID == dto.SchoolID);
                     if (studentAcademicYear != null)
                     {
-                        dto.SchoolID = studentAcademicYear.SchoolID;
-                        var school = Unit_Of_Work.school_Repository.Select_By_Id(dto.SchoolID);
-                        dto.SchoolName = school.Name;
-
                         dto.GradeID = studentAcademicYear.GradeID;
                         var grade = Unit_Of_Work.grade_Repository.Select_By_Id(dto.GradeID);
                         dto.GradeName = grade.Name;
+
+                        dto.SectionID = grade.SectionID;
+                        var section = Unit_Of_Work.section_Repository.Select_By_Id(dto.SectionID);
+                        dto.SectionName = section.Name;
 
                         dto.ClassID = studentAcademicYear.ClassID;
                         var classs = Unit_Of_Work.classroom_Repository.Select_By_Id(dto.ClassID);
@@ -131,10 +128,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             var busStudent = await Unit_Of_Work.busStudent_Repository.FindByIncludesAsync(
                 busStu => busStu.ID == Id && busStu.IsDeleted != true,
-                query => query.Include(e => e.Bus),
-                query => query.Include(e => e.Student).ThenInclude(stu => stu.StudentAcademicYears),
-                query => query.Include(e => e.BusCategory),
-                query => query.Include(e => e.Semester)
+                query => query.Include(bus => bus.Bus),
+                query => query.Include(stu => stu.Student).ThenInclude(stu => stu.StudentAcademicYears),
+                query => query.Include(busCat => busCat.BusCategory),
+                query => query.Include(sem => sem.Semester).ThenInclude(st => st.AcademicYear).ThenInclude(st => st.School)
             );
 
             if (busStudent == null || busStudent.IsDeleted == true)
@@ -149,13 +146,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (studentAcademicYear != null)
             {
-                busStudentDTO.SchoolID = studentAcademicYear.SchoolID;
-                var school = Unit_Of_Work.school_Repository.Select_By_Id(busStudentDTO.SchoolID);
-                busStudentDTO.SchoolName = school.Name;
-
                 busStudentDTO.GradeID = studentAcademicYear.GradeID;
                 var grade = Unit_Of_Work.grade_Repository.Select_By_Id(busStudentDTO.GradeID);
                 busStudentDTO.GradeName = grade.Name;
+                
+                busStudentDTO.SectionID = grade.SectionID;
+                var section = Unit_Of_Work.section_Repository.Select_By_Id(busStudentDTO.SectionID);
+                busStudentDTO.SectionName = section.Name;
 
                 busStudentDTO.ClassID = studentAcademicYear.ClassID;
                 var classs = Unit_Of_Work.classroom_Repository.Select_By_Id(busStudentDTO.ClassID);

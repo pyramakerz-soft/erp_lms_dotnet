@@ -16,8 +16,6 @@ import { SchoolService } from '../../../../Services/Employee/school.service';
 import { BusCategoryService } from '../../../../Services/Employee/Bus/bus-category.service';
 import { BusType } from '../../../../Models/Bus/bus-type';
 import { Semester } from '../../../../Models/LMS/semester';
-import { Grade } from '../../../../Models/grade';
-import { Class } from '../../../../Models/class';
 import { FormsModule } from '@angular/forms';
 import { StudentService } from '../../../../Services/student.service';
 import { Student } from '../../../../Models/student';
@@ -26,6 +24,12 @@ import { firstValueFrom } from 'rxjs';
 import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
 import { AcademicYear } from '../../../../Models/LMS/academic-year';
 import { SemesterService } from '../../../../Services/Employee/LMS/semester.service';
+import { Classroom } from '../../../../Models/LMS/classroom';
+import { Grade } from '../../../../Models/LMS/grade';
+import { Section } from '../../../../Models/LMS/section';
+import { SectionService } from '../../../../Services/Employee/LMS/section.service';
+import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
+import { ClassroomService } from '../../../../Services/Employee/LMS/classroom.service';
 
 @Component({
   selector: 'app-bus-student',
@@ -55,9 +59,11 @@ export class BusStudentComponent {
   selectedSchool: number | null = null;
   selectedGrade: number | null = null;
   selectedClass: number | null = null;
+  selectedSection: number | null = null;
 
   filteredGrades:Grade[] = [];
-  filteredClasses:Class[] = [];
+  filteredClasses:Classroom[] = [];
+  filteredSections:Section[] = [];
   Students:Student[] = [];
 
   validationErrors: { [key in keyof BusStudent]?: string } = {};
@@ -75,8 +81,8 @@ export class BusStudentComponent {
   AcademicYearData:AcademicYear[]=[]
 
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
-    public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService
-    , public semesterService:SemesterService, public studentService:StudentService ,public AcademicServ:AcadimicYearService){}
+    public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService, public sectionService:SectionService, 
+    public gradeService:GradeService, public classroomService:ClassroomService, public semesterService:SemesterService, public studentService:StudentService ,public AcademicServ:AcadimicYearService){}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -115,16 +121,7 @@ export class BusStudentComponent {
   GetbyId(busStuId:number){
     this.busStudentService.GetbyId(busStuId,this.DomainName).subscribe((data) => {
       this.busStudent = data;
-      this.selectedSchool = this.busStudent.schoolID
-      this.selectedGrade = this.busStudent.gradeID
       this.selectedClass = this.busStudent.classID
-
-      const selectedSchool = this.SchoolGroupByGradeGroupByClass.find((element) => element.id == this.selectedSchool)
-      this.filteredGrades = selectedSchool ? selectedSchool.grades : [];
-      const selectedGrade = this.filteredGrades.find((element) => element.id == this.selectedGrade)
-      this.filteredClasses = selectedGrade ? selectedGrade.classes : [];
-
-      // To get the students
       this.onClassChange()
     });
   }
@@ -189,6 +186,8 @@ export class BusStudentComponent {
     document.getElementById("Add_Modal")?.classList.add("hidden");
     this.busStudent = new BusStudent()
 
+    this.exception = false
+
     if(this.editBusStudent){
       this.editBusStudent = false
     }
@@ -196,8 +195,10 @@ export class BusStudentComponent {
     this.selectedSchool = null;
     this.selectedGrade = null;
     this.selectedClass = null;
+    this.selectedSection = null;
 
     this.filteredGrades = [];
+    this.filteredSections = [];
     this.filteredClasses = [];
     this.Students = [];
     this.validationErrors = {};
@@ -227,22 +228,59 @@ export class BusStudentComponent {
 
   onSchoolChange() {
     const selectedSchool = this.SchoolGroupByGradeGroupByClass.find((element) => element.id == this.selectedSchool)
-    this.filteredGrades = selectedSchool ? selectedSchool.grades : [];
+    this.sectionService.Get(this.DomainName).subscribe(
+      (data) => {
+        this.filteredSections = data.filter((section) => this.checkSchool(section))
+      }
+    )
+
+    this.selectedGrade = null;
+    this.selectedClass = null;
+    this.selectedSection = null;
+    this.filteredClasses = [];
+    this.filteredGrades = [];
+    this.Students = [];
+  }
+
+  checkSchool(element:any) {
+    return element.schoolID == this.selectedSchool
+  }
+
+  onSectionChange() {
+    this.gradeService.Get(this.DomainName).subscribe(
+      (data) => {
+        this.filteredGrades = data.filter((grade) => this.checkSection(grade))
+      }
+    )
+
     this.selectedGrade = null;
     this.selectedClass = null;
     this.filteredClasses = [];
+    this.Students = [];
+  }
+
+  checkSection(element:any) {
+    return element.sectionID == this.selectedSection
   }
 
   onGradeChange() {
-    const selectedSchool = this.SchoolGroupByGradeGroupByClass.find((element) => element.id == this.selectedSchool)
-    this.filteredGrades = selectedSchool ? selectedSchool.grades : [];
-    const selectedGrade = this.filteredGrades.find((element) => element.id == this.selectedGrade)
-    this.filteredClasses = selectedGrade ? selectedGrade.classes : [];
+    this.classroomService.Get(this.DomainName).subscribe(
+      (data) => {
+        this.filteredClasses = data.filter((cls) => this.checkGrade(cls))
+      }
+    )
+
     this.selectedClass = null;
+    this.Students = [];
+  }
+
+  checkGrade(element:any) {
+    return element.gradeID == this.selectedGrade
   }
 
   onClassChange(){
     if(this.selectedClass){
+      console.log(this.selectedClass)
       this.studentService.GetByClassID(this.selectedClass, this.DomainName).subscribe((data) => {
         this.Students = data
       });

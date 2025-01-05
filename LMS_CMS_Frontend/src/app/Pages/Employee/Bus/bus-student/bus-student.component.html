@@ -237,8 +237,16 @@
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" for="grade" [ngClass]="{ 'text-gray-400': !selectedSchool || editBusStudent, 'primaryTxt': selectedSchool && !editBusStudent }">Choose Grade</label>
-                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()" [disabled]="!selectedSchool || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editBusStudent }">
+                <label class="mb-2" for="section" [ngClass]="{ 'text-gray-400': !selectedSchool || editBusStudent, 'primaryTxt': selectedSchool && !editBusStudent }">Choose Section</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="section" [(ngModel)]="selectedSection" (change)="onSectionChange()" [disabled]="!selectedSchool || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editBusStudent }">
+                    <option [value]="null" disabled selected hidden>Choose Section</option>
+                    <option *ngFor="let section of filteredSections" [value]="section.id">{{ section.name }}</option>
+                    <option *ngIf="filteredSections.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="grade" [ngClass]="{ 'text-gray-400': !selectedSection || editBusStudent, 'primaryTxt': selectedSection && !editBusStudent }">Choose Grade</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()" [disabled]="!selectedSection || editBusStudent" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSection || editBusStudent }">
                     <option [value]="null" disabled selected hidden>Choose Grade</option>
                     <option *ngFor="let grade of filteredGrades" [value]="grade.id">{{ grade.name }}</option>
                     <option *ngIf="filteredGrades.length === 0" disabled selected>No Data Found</option>

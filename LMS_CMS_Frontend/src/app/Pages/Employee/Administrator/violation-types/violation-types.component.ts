@@ -21,37 +21,57 @@ import { ViolationEdit } from '../../../../Models/Administrator/violation-edit';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './violation-types.component.html',
-  styleUrl: './violation-types.component.css'
+  styleUrl: './violation-types.component.css',
 })
 export class ViolationTypesComponent {
+  User_Data_After_Login: TokenData = new TokenData(
+    '',
+    0,
+    0,
+    0,
+    0,
+    '',
+    '',
+    '',
+    '',
+    ''
+  );
 
-  User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-
-  DomainName: string = "";
+  DomainName: string = '';
   UserID: number = 0;
-  path: string = "";
+  path: string = '';
 
-  Data: Violation[] = []
+  Data: Violation[] = [];
   violation: ViolationAdd = new ViolationAdd();
-  
-  violationId:number=0;
+
+  violationId: number = 0;
 
   isModalVisible: boolean = false;
-  mode: string = "Create"
+  mode: string = 'Create';
 
-  empTypes: EmployeeTypeGet[] = []
+  empTypes: EmployeeTypeGet[] = [];
 
   dropdownOpen = false;
   empTypesSelected: EmployeeTypeGet[] = [];
 
-  constructor(public violationServ: ViolationService, public empTypeVioletionServ: EmployeeTypeViolationService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router, public empTypeServ: EmployeeTypeService) { }
+  constructor(
+    public violationServ: ViolationService,
+    public empTypeVioletionServ: EmployeeTypeViolationService,
+    public activeRoute: ActivatedRoute,
+    public account: AccountService,
+    public ApiServ: ApiService,
+    private menuService: MenuService,
+    public EditDeleteServ: DeleteEditPermissionService,
+    private router: Router,
+    public empTypeServ: EmployeeTypeService
+  ) {}
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
     this.DomainName = this.ApiServ.GetHeader();
-    this.activeRoute.url.subscribe(url => {
-      this.path = url[0].path
+    this.activeRoute.url.subscribe((url) => {
+      this.path = url[0].path;
     });
     this.GetViolation();
     this.GetEmployeeType();
@@ -60,7 +80,7 @@ export class ViolationTypesComponent {
   GetViolation() {
     this.violationServ.Get_Violations(this.DomainName).subscribe((data) => {
       this.Data = data;
-    })
+    });
   }
 
   GetEmployeeType() {
@@ -69,22 +89,30 @@ export class ViolationTypesComponent {
     });
   }
   Create() {
-    this.mode="Create"
+    this.mode = 'Create';
+    this.violation = new ViolationAdd();
+    this.dropdownOpen = false;
     this.openModal();
-
+    this.empTypesSelected = [];
   }
   openModal() {
     this.isModalVisible = true;
   }
   Edit(row: Violation): void {
-    this.mode="Edit"
-    this.violation.violationId=row.id
-    this.violation.violationName = this.Data.find((v) => v.id === row.id)?.name ?? '';
-    this.empTypesSelected = this.Data.find((v) => v.id === row.id)?.employeeTypes ?? [];
-    this.violation.employeeTypeID= this.Data.find((v) => v.id === row.id)?.employeeTypes.map(empType => empType.id) ?? [];
-    this.openModal()
+    this.mode = 'Edit';
+    this.violation.violationId = row.id;
+    this.violation.violationName =
+      this.Data.find((v) => v.id === row.id)?.name ?? '';
+    this.empTypesSelected =
+      this.Data.find((v) => v.id === row.id)?.employeeTypes ?? [];
+    this.violation.employeeTypeID =
+      this.Data.find((v) => v.id === row.id)?.employeeTypes.map(
+        (empType) => empType.id
+      ) ?? [];
+    this.openModal();
+    this.dropdownOpen = false;
   }
-  
+
   Delete(id: number): void {
     Swal.fire({
       title: 'Are you sure you want to delete this Violation?',
@@ -101,14 +129,14 @@ export class ViolationTypesComponent {
             this.GetViolation();
           },
           error: (error) => {
-            console.error("Error while deleting the Violation:", error);
+            console.error('Error while deleting the Violation:', error);
             Swal.fire({
               title: 'Error',
               text: 'An error occurred while deleting the Violation. Please try again later.',
               icon: 'error',
               confirmButtonText: 'OK',
             });
-          }
+          },
         });
       }
     });
@@ -118,28 +146,55 @@ export class ViolationTypesComponent {
     this.isModalVisible = false;
   }
   CreateOREdit() {
-    if(this.violation.violationName==""){
+    if (this.violation.violationName == '') {
       Swal.fire({
         title: 'Error',
         text: 'Please Enter Violation Name.',
         icon: 'error',
         confirmButtonText: 'OK',
       });
-    }
-    else{
-      if (this.mode == "Create") {
-        this.empTypeVioletionServ.Add(this.violation, this.DomainName).subscribe(() => {
-          this.GetViolation();
-          this.closeModal();
-        })
+    } else {
+      if (this.mode == 'Create') {
+        this.empTypeVioletionServ
+          .Add(this.violation, this.DomainName)
+          .subscribe({
+            next: (response) => {
+              this.GetViolation();
+              this.closeModal();
+            },
+            error: (error) => {
+              console.log(error);
+              const errorMessage =
+                error?.error || 'An unexpected error occurred';
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                confirmButtonColor: '#FF7519',
+                text: errorMessage,
+              });
+            },
+          });
+      } else if (this.mode == 'Edit') {
+        this.empTypeVioletionServ
+          .Edit(this.violation, this.DomainName)
+          .subscribe({
+            next: (response) => {
+              this.GetViolation();
+              this.closeModal();
+            },
+            error: (error) => {
+              console.log(error);
+              const errorMessage =
+                error?.error || 'An unexpected error occurred';
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                confirmButtonColor: '#FF7519',
+                text: errorMessage,
+              });
+            },
+          });
       }
-      else if(this.mode == "Edit") {
-        this.empTypeVioletionServ.Edit(this.violation, this.DomainName).subscribe(() => {
-          this.GetViolation();
-          this.closeModal();
-        })
-      }
-      this.toggleDropdown();
     }
   }
   toggleDropdown(): void {
@@ -147,15 +202,17 @@ export class ViolationTypesComponent {
   }
 
   selectEmployeeType(employeeType: EmployeeTypeGet): void {
-    if (!this.empTypesSelected.some(e => e.id === employeeType.id)) {
+    if (!this.empTypesSelected.some((e) => e.id === employeeType.id)) {
       this.empTypesSelected.push(employeeType);
     }
-    this.violation.employeeTypeID.push(employeeType.id)
+    this.violation.employeeTypeID.push(employeeType.id);
     this.dropdownOpen = false; // Close dropdown after selection
   }
 
   removeSelected(id: number): void {
-    this.empTypesSelected = this.empTypesSelected.filter(e => e.id !== id);
-    this.violation.employeeTypeID = this.violation.employeeTypeID.filter(i => i !== id);
+    this.empTypesSelected = this.empTypesSelected.filter((e) => e.id !== id);
+    this.violation.employeeTypeID = this.violation.employeeTypeID.filter(
+      (i) => i !== id
+    );
   }
 }

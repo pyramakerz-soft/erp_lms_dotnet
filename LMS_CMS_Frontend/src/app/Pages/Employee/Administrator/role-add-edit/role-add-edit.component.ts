@@ -252,7 +252,7 @@ export class RoleAddEditComponent {
           },
           error: (error) => {
             console.log(error)
-            const errorMessage = error.error.errors.Name || 'An unexpected error occurred.';
+            const errorMessage =  error?.error || 'An unexpected error occurred';
             Swal.fire({
               icon: 'error',
               title: 'Error',
@@ -271,8 +271,8 @@ export class RoleAddEditComponent {
             this.router.navigateByUrl("Employee/Role")
           },
           error: (error) => {
-            console.log(error.error.errors.Name)
-            const errorMessage = error.error.errors.Name || 'An unexpected error occurred.';
+            console.log(error)
+            const errorMessage =  error?.error || 'An unexpected error occurred';
 
             Swal.fire({
               icon: 'error',

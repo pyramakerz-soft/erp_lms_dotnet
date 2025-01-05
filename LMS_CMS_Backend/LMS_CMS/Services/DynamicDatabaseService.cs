@@ -58,6 +58,12 @@ namespace LMS_CMS_PL.Services
                 if (pendingMigrations.Any())
                 {
                     await dbContext.Database.MigrateAsync();
+                    // For All, Added Or Deleted Migrations
+                    await CreateAndPopulateMigrationHistoryTable(dbContext);
+                }
+                else
+                {
+                    // For Deleted Migrations
                     await CreateAndPopulateMigrationHistoryTable(dbContext);
                 }
             }
@@ -98,31 +104,31 @@ namespace LMS_CMS_PL.Services
 
             ///////////////////////////////
             // Get all migrations currently in the history table
-            //var getHistoryCommand = connection.CreateCommand();
-            //getHistoryCommand.CommandText = "SELECT MigrationId FROM __EFMigrationsHistory";
-            //var historyReader = await getHistoryCommand.ExecuteReaderAsync();
-            //var historyMigrations = new List<string>();
+            var getHistoryCommand = connection.CreateCommand();
+            getHistoryCommand.CommandText = "SELECT MigrationId FROM __EFMigrationsHistory";
+            var historyReader = await getHistoryCommand.ExecuteReaderAsync();
+            var historyMigrations = new List<string>();
 
-            //while (await historyReader.ReadAsync())
-            //{
-            //    historyMigrations.Add(historyReader.GetString(0));
-            //}
+            while (await historyReader.ReadAsync())
+            {
+                historyMigrations.Add(historyReader.GetString(0));
+            }
 
-            //historyReader.Close();
+            historyReader.Close();
 
-            //// Identify and remove obsolete migrations
-            //var obsoleteMigrations = historyMigrations.Except(migrations.Keys);
-            //foreach (var obsoleteMigration in obsoleteMigrations)
-            //{
-            //    var deleteCommand = connection.CreateCommand();
-            //    deleteCommand.CommandText = "DELETE FROM __EFMigrationsHistory WHERE MigrationId = @MigrationId";
-            //    var migrationIdParam = deleteCommand.CreateParameter();
-            //    migrationIdParam.ParameterName = "MigrationId";
-            //    migrationIdParam.Value = obsoleteMigration;
-            //    deleteCommand.Parameters.Add(migrationIdParam);
+            // Identify and remove obsolete migrations
+            var obsoleteMigrations = historyMigrations.Except(migrations.Keys);
+            foreach (var obsoleteMigration in obsoleteMigrations)
+            {
+                var deleteCommand = connection.CreateCommand();
+                deleteCommand.CommandText = "DELETE FROM __EFMigrationsHistory WHERE MigrationId = @MigrationId";
+                var migrationIdParam = deleteCommand.CreateParameter();
+                migrationIdParam.ParameterName = "MigrationId";
+                migrationIdParam.Value = obsoleteMigration;
+                deleteCommand.Parameters.Add(migrationIdParam);
 
-            //    await deleteCommand.ExecuteNonQueryAsync();
-            //}
+                await deleteCommand.ExecuteNonQueryAsync();
+            }
             ///////////////////////////////
 
             // Insert migration data into the __EFMigrationsHistory table

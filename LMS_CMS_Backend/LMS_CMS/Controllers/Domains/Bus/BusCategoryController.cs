@@ -78,7 +78,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            BusCategory busCategory = Unit_Of_Work.busCategory_Repository.Select_By_Id(id);
+            BusCategory busCategory = Unit_Of_Work.busCategory_Repository.First_Or_Default(b=>b.ID==id&&b.IsDeleted!=true);
             if (busCategory == null || busCategory.IsDeleted == true)
             {
                 return NotFound("No bus category with this ID");
@@ -170,7 +170,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return BadRequest("the name cannot be null");
             }
-            BusCategory busCatigory = Unit_Of_Work.busCategory_Repository.Select_By_Id(EditBusCatigory.ID);
+            BusCategory busCatigory = Unit_Of_Work.busCategory_Repository.First_Or_Default(b => b.ID == EditBusCatigory.ID);
             if (busCatigory == null || busCatigory.IsDeleted == true)
             {
                 return NotFound("No Bus Category with this ID");

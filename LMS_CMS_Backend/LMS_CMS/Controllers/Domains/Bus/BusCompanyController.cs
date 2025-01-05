@@ -86,7 +86,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            BusCompany busCompany = Unit_Of_Work.busCompany_Repository.Select_By_Id(id);
+            BusCompany busCompany = Unit_Of_Work.busCompany_Repository.First_Or_Default(b=>b.ID==id&&b.IsDeleted!=true);
             if (busCompany == null || busCompany.IsDeleted == true)
             {
                 return NotFound("No bus Company with this ID");
@@ -173,7 +173,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return BadRequest("the name cannot be null");
             }
-            BusCompany busCompany = Unit_Of_Work.busCompany_Repository.Select_By_Id(EditBusCompany.ID);
+            BusCompany busCompany = Unit_Of_Work.busCompany_Repository.First_Or_Default(b => b.ID == EditBusCompany.ID&&b.IsDeleted!=true);
             if (busCompany == null || busCompany.IsDeleted == true)
             {
                 return NotFound("No Bus Company with this ID");

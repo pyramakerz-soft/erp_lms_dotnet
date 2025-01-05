@@ -88,7 +88,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            BusStatus busStatus = Unit_Of_Work.busStatus_Repository.Select_By_Id(id);
+            BusStatus busStatus = Unit_Of_Work.busStatus_Repository.First_Or_Default(b=>b.ID==id&&b.IsDeleted!=true);
             if (busStatus == null || busStatus.IsDeleted == true)
             {
                 return NotFound("No bus status with this ID");

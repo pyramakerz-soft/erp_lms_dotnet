@@ -63,6 +63,7 @@ namespace LMS_CMS_PL.Controllers.Octa
         {
             var userClaims = HttpContext.User.Claims;
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
             if (userTypeClaim == null)
             {
                 return Unauthorized("User Type claim not found.");

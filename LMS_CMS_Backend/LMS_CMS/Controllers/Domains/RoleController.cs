@@ -126,7 +126,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                 return BadRequest("Pages list cannot be null or empty.");
             }
 
-            Role role = Unit_Of_Work.role_Repository.First_Or_Default(r => r.Name == NewRoles.Name && r.IsDeleted != true);
+            Role role = Unit_Of_Work.role_Repository.First_Or_Default(r => r.Name == NewRoles.Name );
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             if (role != null)
             {

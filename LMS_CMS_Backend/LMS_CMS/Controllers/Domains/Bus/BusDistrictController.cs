@@ -88,7 +88,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(id);
+            BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.First_Or_Default(b=>b.ID==id&&b.IsDeleted!=true);
 
             if (busDistrict == null || busDistrict.IsDeleted == true)
             {
@@ -177,7 +177,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return BadRequest("the name cannot be null");
             }
-            BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.Select_By_Id(EditBusDistrict.ID);
+            BusDistrict busDistrict = Unit_Of_Work.busDistrict_Repository.First_Or_Default(b => b.ID == EditBusDistrict.ID &&b.IsDeleted!=true);
             if (busDistrict == null || busDistrict.IsDeleted == true)
             {
                 return NotFound("No Bus District with this ID");

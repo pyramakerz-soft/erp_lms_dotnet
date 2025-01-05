@@ -10,8 +10,12 @@ namespace LMS_CMS_DAL.Migrations.Octa
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"
-                INSERT INTO Octa(User_Name, Arabic_Name, Password) VALUES('Octa', N'أوكتا', 'Octa2019@pass')
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword("Octa2019@pass");
+
+            // Insert the user with the hashed password
+            migrationBuilder.Sql($@"
+                INSERT INTO Octa(User_Name, Arabic_Name, Password) 
+                VALUES('Octa', N'أوكتا', '{hashedPassword}')
             ");
         }
 

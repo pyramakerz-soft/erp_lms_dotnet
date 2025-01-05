@@ -55,16 +55,20 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             dynamic user = UserInfo.Type switch
             {
-                "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.Password == UserInfo.Password && emp.IsDeleted != true),
-                "student" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == UserInfo.User_Name && stu.Password == UserInfo.Password && stu.IsDeleted != true),
-                "parent" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.Password == UserInfo.Password && par.IsDeleted != true),
+                "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.IsDeleted != true),
+                "student" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == UserInfo.User_Name && stu.IsDeleted != true),
+                "parent" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.IsDeleted != true),
             };
+            bool isMatch = BCrypt.Net.BCrypt.Verify(UserInfo.Password, user.Password);
 
             if (user == null)
             {
                 return BadRequest("UserName or Password is Invalid");
             }
-
+            if (isMatch==false)
+            {
+                return BadRequest("UserName or Password is Invalid");
+            }
             if (UserInfo.Type == "employee" && user is Employee emp)
             {
                 var tokenEmp = _generateJWT.Generate_Jwt_Token(emp.User_Name, emp.ID.ToString(), UserInfo.Type, emp.Role_ID.ToString());

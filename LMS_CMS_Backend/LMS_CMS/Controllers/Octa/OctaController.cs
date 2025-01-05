@@ -92,6 +92,7 @@ namespace LMS_CMS_PL.Controllers.Octa
             }
 
             LMS_CMS_DAL.Models.Octa.Octa octa = mapper.Map<LMS_CMS_DAL.Models.Octa.Octa>(newAcc);
+            octa.Password= BCrypt.Net.BCrypt.HashPassword(newAcc.Password);
             octa.InsertedByUserId = userId;
             octa.InsertedAt= TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             _Unit_Of_Work.octa_Repository.Add_Octa(octa);
@@ -128,6 +129,7 @@ namespace LMS_CMS_PL.Controllers.Octa
             }
 
             mapper.Map(editedAcc, octaExists);
+            octaExists.Password = BCrypt.Net.BCrypt.HashPassword(editedAcc.Password);
             octaExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             octaExists.UpdatedByUserId = userId;
             _Unit_Of_Work.octa_Repository.Update_Octa(octaExists);

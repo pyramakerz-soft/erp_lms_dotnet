@@ -13,7 +13,6 @@ namespace LMS_CMS_BL.DTO.Octa
         public long ID { get; set; }
         public string User_Name { get; set; } 
         public string Arabic_Name { get; set; } 
-        public string Password { get; set; }
         public long? InsertedByUserId { get; set; }
         public DateTime? InsertedAt { get; set; }
         public long? UpdatedByUserId { get; set; }

@@ -253,7 +253,6 @@ export class RoleAddEditComponent {
           error: (error) => {
             console.log(error)
             const errorMessage = error.error.errors.Name || 'An unexpected error occurred.';
-
             Swal.fire({
               icon: 'error',
               title: 'Error',

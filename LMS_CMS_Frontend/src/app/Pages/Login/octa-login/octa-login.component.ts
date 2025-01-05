@@ -51,99 +51,128 @@ export class OctaLoginComponent {
     }
   }
 
+  onUserNameChange() {
+    this.userNameError = ""
+    this.somthingError = ""
+  }
+
+  onPasswordChange() {
+    this.passwordError = ""
+    this.somthingError = ""
+  }
+
+  isFormValid() {
+    let isValid = true
+
+    if (this.userInfo.user_Name.trim() === "" && this.userInfo.password.trim() === "") {
+      isValid = false;
+      this.userNameError = '*Username cannot be empty';
+      this.passwordError = '*Password cannot be empty';
+    } else if (this.userInfo.user_Name.trim() === "") {
+      isValid = false;
+      this.userNameError = '*Username cannot be empty';
+    } else if (this.userInfo.password.trim() === "") {
+      isValid = false;
+      this.passwordError = '*Password cannot be empty';
+    }
+    return isValid
+  }
+
   SignIN() {
     this.userInfo.type = "octa";
-    this.accountService.LoginOcta(this.userInfo).subscribe(
-      (d: any) => {
-
-        localStorage.removeItem("GoToLogin");
-        localStorage.setItem("GoToLogin", "false");
-        localStorage.removeItem("current_token");
-        let count = localStorage.getItem("count")
-        this.getAllTokens();
-
-        this.accountService.isAuthenticated = true;
-        const token = JSON.parse(d).token;
-        let add = true;
-        let Counter=0;
-
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          const value = localStorage.getItem(key || '');
-          if (key && value && key.includes('token') && key != "current_token"&& key != "token") {
-            let decodedToken1: TokenData = jwtDecode(token);
-            let decodedToken2: TokenData = jwtDecode(value);
-            if (decodedToken1.user_Name === decodedToken2.user_Name && decodedToken1.type === decodedToken2.type)
-              add = false;
+    if (this.isFormValid()) {
+      this.accountService.LoginOcta(this.userInfo).subscribe(
+        (d: any) => {
+  
+          localStorage.removeItem("GoToLogin");
+          localStorage.setItem("GoToLogin", "false");
+          localStorage.removeItem("current_token");
+          let count = localStorage.getItem("count")
+          this.getAllTokens();
+  
+          this.accountService.isAuthenticated = true;
+          const token = JSON.parse(d).token;
+          let add = true;
+          let Counter=0;
+  
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const value = localStorage.getItem(key || '');
+            if (key && value && key.includes('token') && key != "current_token"&& key != "token") {
+              let decodedToken1: TokenData = jwtDecode(token);
+              let decodedToken2: TokenData = jwtDecode(value);
+              if (decodedToken1.user_Name === decodedToken2.user_Name && decodedToken1.type === decodedToken2.type)
+                add = false;
+            }
           }
-        }
-
-        localStorage.setItem("current_token", token);
-
-        if (add == true) {
-          if (count === null) {
-            // localStorage.setItem("count", "1");
-            localStorage.setItem("token 1", token);
-          } else {
-            let countNum = parseInt(count) + 1;
-            // localStorage.setItem("count", countNum.toString());
-            let T = localStorage.getItem("token " + countNum)
-            if (T != null) {
-              let i = countNum + 1;
-              let Continue = true;
-              while (Continue) {
-                let T2 = localStorage.getItem("token " + i);
-                if (T2 == null) {
-                  localStorage.setItem("token " + i, token);
-                  Continue = false;
+  
+          localStorage.setItem("current_token", token);
+  
+          if (add == true) {
+            if (count === null) {
+              // localStorage.setItem("count", "1");
+              localStorage.setItem("token 1", token);
+            } else {
+              let countNum = parseInt(count) + 1;
+              // localStorage.setItem("count", countNum.toString());
+              let T = localStorage.getItem("token " + countNum)
+              if (T != null) {
+                let i = countNum + 1;
+                let Continue = true;
+                while (Continue) {
+                  let T2 = localStorage.getItem("token " + i);
+                  if (T2 == null) {
+                    localStorage.setItem("token " + i, token);
+                    Continue = false;
+                  }
+                  i++;
                 }
-                i++;
+              }
+              else {
+                localStorage.setItem("token " + countNum, token);
               }
             }
-            else {
-              localStorage.setItem("token " + countNum, token);
+          }
+          else if(add == false) {
+            this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
+            const currentIndex = this.allTokens.findIndex(token => token.UserType === this.User_Data_After_Login.type && token.key===this.User_Data_After_Login.user_Name);
+            const currentToken = this.allTokens[currentIndex];
+            // console.log("mennab",currentIndex,currentToken,currentToken.KeyInLocal)
+            localStorage.setItem(currentToken.KeyInLocal, token);
+          }
+          
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const value = localStorage.getItem(key || '');
+            if (key && value && key.includes('token') && key != "current_token"&&key != "token") {
+             Counter++;
             }
           }
-        }
-        else if(add == false) {
+          localStorage.removeItem("count");
+          localStorage.setItem("count", Counter.toString());
           this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
-          const currentIndex = this.allTokens.findIndex(token => token.UserType === this.User_Data_After_Login.type && token.key===this.User_Data_After_Login.user_Name);
-          const currentToken = this.allTokens[currentIndex];
-          // console.log("mennab",currentIndex,currentToken,currentToken.KeyInLocal)
-          localStorage.setItem(currentToken.KeyInLocal, token);
-        }
-        
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          const value = localStorage.getItem(key || '');
-          if (key && value && key.includes('token') && key != "current_token"&&key != "token") {
-           Counter++;
+          this.router.navigateByUrl("Octa/Home")
+          
+        }, (error) => {
+          if (error.error === "UserName or Password is Invalid") {
+            this.somthingError = "UserName or Password is Invalid"
+          }
+          if (error.status == 400) {
+            this.somthingError = "Username, Password or Type maybe wrong"
+          }
+          else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: {
+                confirmButton: 'secondaryBg' // Add your custom class here
+              }
+            });
           }
         }
-        localStorage.removeItem("count");
-        localStorage.setItem("count", Counter.toString());
-        this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
-        this.router.navigateByUrl("Octa/Home")
-        
-      }, (error) => {
-        if (error.error === "UserName or Password is Invalid") {
-          this.somthingError = "UserName or Password is Invalid"
-        }
-        if (error.status == 400) {
-          this.somthingError = "Username, Password or Type maybe wrong"
-        }
-        else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Try Again Later!',
-            confirmButtonText: 'Okay',
-            customClass: {
-              confirmButton: 'secondaryBg' // Add your custom class here
-            }
-          });
-        }
-      }
-    );
+      );
+    }
   }
 }

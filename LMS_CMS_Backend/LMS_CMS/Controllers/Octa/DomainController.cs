@@ -161,6 +161,8 @@ namespace LMS_CMS_PL.Controllers.Octa
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
             if (userIdClaim == null)
             {
                 return Unauthorized("User Id claim not found.");
@@ -194,6 +196,8 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             // Create Admin Role
             Role role = new Role { Name = "Admin" };
+            role.InsertedByOctaId = userId;
+            role.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             Unit_Of_Work.role_Repository.Add(role);
             Unit_Of_Work.SaveChanges();
 
@@ -203,6 +207,8 @@ namespace LMS_CMS_PL.Controllers.Octa
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(Pass);
 
             Employee emp = new Employee { User_Name = domain.DomainName, en_name = domain.DomainName, Password = hashedPassword, Role_ID = 1, EmployeeTypeID = 1 };
+            emp.InsertedByOctaId= userId;
+            emp.InsertedAt= TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             Unit_Of_Work.employee_Repository.Add(emp);
             Unit_Of_Work.SaveChanges();
 
@@ -245,6 +251,8 @@ namespace LMS_CMS_PL.Controllers.Octa
                     Allow_Edit_For_Others = true,
                     Allow_Delete_For_Others = true,
                 };
+                roleDetail.InsertedByOctaId = userId;
+                roleDetail.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
                 Unit_Of_Work.role_Detailes_Repository.Add(roleDetail);
             }
             Unit_Of_Work.SaveChanges();

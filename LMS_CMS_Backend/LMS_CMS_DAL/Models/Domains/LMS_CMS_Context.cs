@@ -75,14 +75,15 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
 
-            modelBuilder.Entity<Page>()
-                .HasIndex(p => p.ar_name)
+            modelBuilder.Entity<Violation>()
+                .HasIndex(p => p.Name)
                 .IsUnique();
 
-            modelBuilder.Entity<Page>()
-                .HasIndex(p => p.en_name)
+            modelBuilder.Entity<EmployeeType>()
+                .HasIndex(p => p.Name)
                 .IsUnique();
 
+            ///////////////////////// No Identity: /////////////////////////
             modelBuilder.Entity<Page>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
@@ -95,37 +96,6 @@ namespace LMS_CMS_DAL.Models.Domains
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
-            modelBuilder.Entity<Grade>()
-                .HasIndex(p => p.Name)
-                .IsUnique();
-
-            modelBuilder.Entity<EmployeeAttachment>()
-                .HasIndex(p => p.Link)
-                .IsUnique(); 
-
-            modelBuilder.Entity<Section>()
-                .HasIndex(p => p.Name)
-                .IsUnique(); 
-
-            modelBuilder.Entity<Subject>()
-                .HasIndex(p => p.en_name)
-                .IsUnique();
-
-            modelBuilder.Entity<Subject>()
-                .HasIndex(p => p.ar_name)
-                .IsUnique();
-            
-            //modelBuilder.Entity<Violation>()
-            //    .HasIndex(p => p.Name)
-            //    .IsUnique();
-
-            modelBuilder.Entity<Violation>()
-                .HasIndex(p => p.Name)
-                .IsUnique();
-
-            modelBuilder.Entity<EmployeeType>()
-                .HasIndex(p => p.Name)
-                .IsUnique();
             ///////////////////////// OnDelete: /////////////////////////
             modelBuilder.Entity<Page>()
                  .HasOne(p => p.Parent)

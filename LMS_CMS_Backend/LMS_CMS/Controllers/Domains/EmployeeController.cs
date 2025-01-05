@@ -4,6 +4,7 @@ using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -34,6 +35,10 @@ namespace LMS_CMS_PL.Controllers.Domains
         ///////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Administrator", "Employee" }
+        )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -76,6 +81,10 @@ namespace LMS_CMS_PL.Controllers.Domains
         ///////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("GetByTypeId/{TypeId}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Administrator", "Employee" }
+        )]
         public async Task<IActionResult> GetByTypeIDAsync(long TypeId)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -114,6 +123,10 @@ namespace LMS_CMS_PL.Controllers.Domains
         ///////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("{empId}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Administrator", "Employee" }
+        )]
         public async Task<IActionResult> GetByIDAsync(long empId)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -168,8 +181,11 @@ namespace LMS_CMS_PL.Controllers.Domains
 
         ///////////////////////////////////////////////////////////////////////////////////////
 
-        //D:\ERP_System\erp_lms_dotnet\LMS_CMS_Backend\LMS_CMS\Attachments\
         [HttpPost]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Administrator", "Employee" }
+        )]
         public async Task<IActionResult> Add([FromForm] EmployeeAddDTO NewEmployee, [FromForm] List<IFormFile> files)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -211,8 +227,14 @@ namespace LMS_CMS_PL.Controllers.Domains
                     return BadRequest("ExpireDate Is Required");
             }
 
+            Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(e => e.User_Name == NewEmployee.User_Name);
+            if(employee != null)
+            {
+                return BadRequest("This User Name Already Exist");
+            }
             ///create the object 
-            Employee employee = mapper.Map<Employee>(NewEmployee);
+            mapper.Map(NewEmployee,employee);
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             employee.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
@@ -265,6 +287,11 @@ namespace LMS_CMS_PL.Controllers.Domains
         ////////////////////////////////////////////////////
 
         [HttpPut]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Administrator", "Employee" }
+        )]
         public async Task<IActionResult> EditAsync([FromForm] EmployeePutDTO newEmployee, [FromForm] List<IFormFile> files)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -272,6 +299,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -360,20 +389,48 @@ namespace LMS_CMS_PL.Controllers.Domains
             // Handle old folder if User_Name changed
             //if (oldEmp.User_Name != newEmployee.User_Name)
             //{
-                //var oldEmployeeFolder = Path.Combine(baseFolder, oldEmp.User_Name.Trim());
-                //if (Directory.Exists(oldEmployeeFolder))
-                //{
-                //    var filesInFolder = Directory.GetFiles(oldEmployeeFolder);
-                //    foreach (var file in filesInFolder)
-                //    {
-                //        System.IO.File.Delete(file);
-                //    }
-                //    Directory.Delete(oldEmployeeFolder);
-                //}
+            //var oldEmployeeFolder = Path.Combine(baseFolder, oldEmp.User_Name.Trim());
+            //if (Directory.Exists(oldEmployeeFolder))
+            //{
+            //    var filesInFolder = Directory.GetFiles(oldEmployeeFolder);
+            //    foreach (var file in filesInFolder)
+            //    {
+            //        System.IO.File.Delete(file);
+            //    }
+            //    Directory.Delete(oldEmployeeFolder);
+            //}
             //}
 
             // Update employee
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (oldEmp.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Employee page doesn't exist");
+                }
+            }
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
+            if(oldEmp.User_Name!=newEmployee.User_Name)
+            {
+                Employee emp2 =Unit_Of_Work.employee_Repository.First_Or_Default(e=>e.User_Name== newEmployee.User_Name);
+                if(emp2 != null)
+                {
+                    return BadRequest("this user name already exist");
+                }
+            }
             mapper.Map(newEmployee, oldEmp);
 
             if (userTypeClaim == "octa")
@@ -442,6 +499,11 @@ namespace LMS_CMS_PL.Controllers.Domains
         //////////////////////////////////////////////////////
 
         [HttpDelete("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Administrator", "Employee" }
+        )]
         public IActionResult delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -450,6 +512,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -465,6 +529,25 @@ namespace LMS_CMS_PL.Controllers.Domains
             if (employee == null || employee.IsDeleted == true)
             {
                 return NotFound("No semester with this ID");
+            }
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
+                    {
+                        if (employee.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Employee page doesn't exist");
+                }
             }
             employee.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

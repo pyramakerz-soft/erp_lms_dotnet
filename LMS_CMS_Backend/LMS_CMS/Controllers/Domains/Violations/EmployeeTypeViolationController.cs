@@ -166,7 +166,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             {
                 return BadRequest("ViolationsTypeName Can not be null");
             }
-            Violation newViolation = new Violation();
+            Violation newViolation = Unit_Of_Work.violations_Repository.First_Or_Default(v=>v.Name==NewEmployeeTypeViolation.ViolationName);
+            if(newViolation != null)
+            {
+                return BadRequest("this violation already exist");
+            }
             newViolation.Name = NewEmployeeTypeViolation.ViolationName;
             await Unit_Of_Work.violations_Repository.AddAsync(newViolation);
             await Unit_Of_Work.SaveChangesAsync();
@@ -202,6 +206,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         //////////////////////////////////////////////////////
 
         [HttpPut]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Violation Types", "Administrator" }
+        )]
         public async Task<IActionResult> EditViolationAsync(EmployeeTypeViolationEditDTO NewViolation)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -253,6 +262,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             }
             if (NewViolation.ViolationName != violation.Name) 
             {
+                Violation v2 =Unit_Of_Work.violations_Repository.First_Or_Default(v=>v.Name==NewViolation.ViolationName);
+                if (violation != null)
+                {
+                    return BadRequest("this violation already exist");
+                }
                 violation.Name = NewViolation.ViolationName;
                violation.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
                 if (userTypeClaim == "octa")

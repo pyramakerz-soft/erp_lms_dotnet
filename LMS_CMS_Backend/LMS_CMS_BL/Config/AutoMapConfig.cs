@@ -39,6 +39,7 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<BusStudent, BusStudentGetDTO>()
                 .ForMember(dest => dest.BusName, opt => opt.MapFrom(src => src.Bus.Name))
+                .ForMember(dest => dest.StudentID, opt => opt.MapFrom(src => src.Student.ID))
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.en_name))
                 .ForMember(dest => dest.BusCategoryName, opt => opt.MapFrom(src => src.BusCategory.Name))
                 .ForMember(dest => dest.SemseterName, opt => opt.MapFrom(src => src.Semester.Name))

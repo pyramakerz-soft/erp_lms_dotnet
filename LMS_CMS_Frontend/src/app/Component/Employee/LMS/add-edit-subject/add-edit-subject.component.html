@@ -1,119 +1,9 @@
-<div class="flex justify-between items-center">
-    <h1 class="primaryTxt font-semibold text-2xl leading-9">Subject</h1>
-    <div class="flex justify-between items-center ">
-        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
-        
-        <button (click)="openModal()"
-        class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
-            Create Subject
-        </button>
-    </div>
-</div>
-
-<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
-        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
-            <tr>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    ID
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Subject Name
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Arabic Name
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Grade
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Order in Certificate 
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Credit Hours
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Subject Code
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Pass By
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Total Mark
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Hide From Grade Report
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Subject Category
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Number of session per week
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Date
-                </th>
-                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Actions
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- No Data Row -->
-            <tr *ngIf="subjectData.length === 0">
-                <td colspan="14" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                    No Data Found
-                </td>
-            </tr>
-
-            <!-- Data Rows -->
-            <tr *ngFor="let row of subjectData; let i = index"
-                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
-                class="border-t border-gray-300 text-xs md:text-sm">
-
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.en_name }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.ar_name }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.gradeName }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInCertificate }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.creditHours }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subjectCode }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.passByDegree }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.totalMark }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <i *ngIf="row.hideFromGradeReport" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
-                    <i *ngIf="!row.hideFromGradeReport" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
-                </td> 
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subjectCategoryName }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.numberOfSessionPerWeek }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.insertedAt | date:'MMM d, yyyy' }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div class="flex space-x-4">
-                        <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
-                            (click)="deleteSubject(row.id)">
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
-                        <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)">
-                            <i class="fa-solid fa-pencil"></i>
-                        </button>
-                        <button>
-                            <i class="fa-regular fa-eye" (click)="MoveToSubjectView(row.id)"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-
-<!-- Add-Edit Subject Modal -->
-<!-- <div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
-    <div class="bg-white rounded-2xl p-12 w-1/2 max-h-[95%] overflow-y-auto">
+<div class="w-full py-5 fixed inset-0 h-full bg-black/50 ">
+    <div class="bg-white rounded-2xl p-12 w-1/2 max-h-[95%] overflow-y-auto m-auto">
         <div class="flex justify-between items-center">
             <h1 *ngIf="!editSubject" class="font-semibold text-2xl leading-9">Create Subject</h1>
             <h1 *ngIf="editSubject" class="font-semibold text-2xl leading-9">Edit Subject</h1>
-            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+            <button (click)="closeDialog()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
         
         <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
@@ -249,4 +139,4 @@
             </button>
         </div>
     </div>
-</div> -->
+</div>

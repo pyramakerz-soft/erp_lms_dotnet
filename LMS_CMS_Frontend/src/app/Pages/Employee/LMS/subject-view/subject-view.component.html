@@ -3,7 +3,7 @@
         <i class="fa-solid fa-chevron-left" (click)="moveToSubjects()"></i>
         <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ subject.en_name }}</h1>
     </div>
-    <button (click)="editModal()"
+    <button (click)="editModal()" *ngIf="AllowEdit && IsAllowEdit(subject.insertedByUserId)"
     class="bg-[#6F6F6F] text-white rounded-lg px-4 py-3 flex items-center justify-center gap-2">
         Edit
     </button>

@@ -19,6 +19,8 @@ import { Section } from '../../../../Models/LMS/section';
 import { SectionService } from '../../../../Services/Employee/LMS/section.service';
 import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { Grade } from '../../../../Models/LMS/grade';
+import { AddEditSubjectComponent } from '../../../../Component/Employee/LMS/add-edit-subject/add-edit-subject.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-subject',
@@ -58,7 +60,7 @@ export class SubjectComponent {
   
   constructor(public account: AccountService, public router:Router, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
     public activeRoute: ActivatedRoute, private menuService: MenuService, public subjectService: SubjectService, public subjectCategoryService: SubjectCategoryService,
-    public schoolService: SchoolService, public sectionService:SectionService, public gradeService:GradeService) {}
+    public schoolService: SchoolService, public sectionService:SectionService, public gradeService:GradeService, public dialog: MatDialog) {}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -91,106 +93,125 @@ export class SubjectComponent {
     )
   }
 
-  getSubjectCategoryData(){
-    this.subjectCategoryService.Get(this.DomainName).subscribe(
-      (data) => {
-        this.subjectCategories = data;
-      }
-    )
-  }
+  // getSubjectCategoryData(){
+  //   this.subjectCategoryService.Get(this.DomainName).subscribe(
+  //     (data) => {
+  //       this.subjectCategories = data;
+  //     }
+  //   )
+  // }
 
-  GetSubjectById(subjectId: number) {
-    this.subjectService.GetByID(subjectId, this.DomainName).subscribe((data) => {
-      this.subject = data;
-    });
-  }
+  // GetSubjectById(subjectId: number) {
+  //   this.subjectService.GetByID(subjectId, this.DomainName).subscribe((data) => {
+  //     this.subject = data;
+  //   });
+  // }
 
   MoveToSubjectView(SubId:number){
     this.router.navigateByUrl('Employee/Subject/' + this.DomainName + '/' + SubId);
   }
 
-  getSchools(){
-    this.schoolService.Get(this.DomainName).subscribe(
-      (data) => {
-        this.Schools = data;
-      }
-    )
-  }
+  // getSchools(){
+  //   this.schoolService.Get(this.DomainName).subscribe(
+  //     (data) => {
+  //       this.Schools = data;
+  //     }
+  //   )
+  // }
 
-  getSections(){
-    this.sectionService.Get(this.DomainName).subscribe(
-      (data) => {
-        this.Sections = data.filter((section) => this.checkSchool(section))
-      }
-    )
-  }
+  // getSections(){
+  //   this.sectionService.Get(this.DomainName).subscribe(
+  //     (data) => {
+  //       this.Sections = data.filter((section) => this.checkSchool(section))
+  //     }
+  //   )
+  // }
 
-  getGrades(){
-    this.gradeService.Get(this.DomainName).subscribe(
-      (data) => {
-        this.Grades = data.filter((grade) => this.checkSection(grade))
-      }
-    )
-  }
+  // getGrades(){
+  //   this.gradeService.Get(this.DomainName).subscribe(
+  //     (data) => {
+  //       this.Grades = data.filter((grade) => this.checkSection(grade))
+  //     }
+  //   )
+  // }
 
-  onSchoolChange(event: Event) {
-    this.Sections = []
-    this.Grades = []
-    this.selectedSection = null
-    const selectedValue = (event.target as HTMLSelectElement).value;
-    this.selectedSchool = Number(selectedValue)
-    if (this.selectedSchool) {
-      this.getSections(); 
-    }
-  }
+  // onSchoolChange(event: Event) {
+  //   this.Sections = []
+  //   this.Grades = []
+  //   this.selectedSection = null
+  //   const selectedValue = (event.target as HTMLSelectElement).value;
+  //   this.selectedSchool = Number(selectedValue)
+  //   if (this.selectedSchool) {
+  //     this.getSections(); 
+  //   }
+  // }
  
-  onSectionChange(event: Event) {
-    this.Grades = []
-    const selectedValue = (event.target as HTMLSelectElement).value;
-    this.selectedSection = Number(selectedValue)
-    if (this.selectedSection) {
-      this.getGrades(); 
-    }
-  }
+  // onSectionChange(event: Event) {
+  //   this.Grades = []
+  //   const selectedValue = (event.target as HTMLSelectElement).value;
+  //   this.selectedSection = Number(selectedValue)
+  //   if (this.selectedSection) {
+  //     this.getGrades(); 
+  //   }
+  // }
 
-  checkSchool(section:Section) {
-    return section.schoolID == this.selectedSchool
-  }
+  // checkSchool(section:Section) {
+  //   return section.schoolID == this.selectedSchool
+  // }
  
-  checkSection(grade:Grade) {
-    return grade.sectionID == this.selectedSection
-  }
+  // checkSection(grade:Grade) {
+  //   return grade.sectionID == this.selectedSection
+  // }
 
   openModal(subjectId?: number) {
     if (subjectId) {
       this.editSubject = true;
-      this.GetSubjectById(subjectId); 
+      this.openDialog(subjectId, this.editSubject); 
+    } else{
+      this.openDialog(); 
     }
     
-    this.getSubjectCategoryData() 
-    this.getSchools()
+    // this.getSubjectCategoryData() 
+    // this.getSchools()
 
-    document.getElementById("Add_Modal")?.classList.remove("hidden");
-    document.getElementById("Add_Modal")?.classList.add("flex");
+    // document.getElementById("Add_Modal")?.classList.remove("hidden");
+    // document.getElementById("Add_Modal")?.classList.add("flex");
   }
 
-  closeModal() {
-    document.getElementById("Add_Modal")?.classList.remove("flex");
-    document.getElementById("Add_Modal")?.classList.add("hidden");
+  openDialog(subjectId?: number, editSubject?: boolean): void {
+    const dialogRef = this.dialog.open(AddEditSubjectComponent, {
+      data: editSubject
+        ? {
+          subjectId: subjectId,
+          editSubject: editSubject
+        }
+        : {
+          editSubject: false
+        },
+    });
 
-    this.subject= new Subject()
-    this.subjectCategories = []
-    this.Schools = []
-    this.Sections = []
-    this.Grades = []
-    this.selectedSchool = null
-    this.selectedSection = null
-
-    if(this.editSubject){
-      this.editSubject = false
-    }
-    this.validationErrors = {}; 
+    dialogRef.afterClosed().subscribe(result => {
+      this.getSubjectData()
+    });
   }
+
+  // closeModal() {
+  //   document.getElementById("Add_Modal")?.classList.remove("flex");
+  //   document.getElementById("Add_Modal")?.classList.add("hidden");
+
+  //   this.subject= new Subject()
+  //   this.subjectCategories = []
+  //   this.Schools = []
+  //   this.Sections = []
+  //   this.Grades = []
+  //   this.selectedSchool = null
+  //   this.selectedSection = null
+
+  //   if(this.editSubject){
+  //     this.editSubject = false
+  //   }
+  //   this.validationErrors = {}; 
+  // }
   
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
@@ -219,84 +240,84 @@ export class SubjectComponent {
     // }
   }
 
-  capitalizeField(field: keyof Subject): string {
-      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-  }
+  // capitalizeField(field: keyof Subject): string {
+  //     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  // }
 
-  isFormValid(): boolean {
-    let isValid = true;
-    for (const key in this.subject) {
-      if (this.subject.hasOwnProperty(key)) {
-        const field = key as keyof Subject;
-        if (!this.subject[field]) {
-          if(field == "ar_name" || field == "en_name" || field == "creditHours" || field == "gradeID" || field == "numberOfSessionPerWeek" || field == "orderInCertificate"
-             || field == "passByDegree"  || field == "totalMark"  || field == "subjectCategoryID"  || field == "subjectCode"
-          ){
-            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
-            isValid = false;
-          } else if(field == "iconFile"){
-            if(!this.editSubject){
-              this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
-              isValid = false;
-            }
-          }
-        } else {
-          if(field == "en_name" || field == "ar_name"){
-            if(this.subject.en_name.length > 100 || this.subject.ar_name.length > 100){
-              this.validationErrors[field] = `*${this.capitalizeField(field)} cannot be longer than 100 characters`
-              isValid = false;
-            }
-          } else{
-            this.validationErrors[field] = '';
-          }
-        }
-      }
-    }
-    return isValid;
-  }
+  // isFormValid(): boolean {
+  //   let isValid = true;
+  //   for (const key in this.subject) {
+  //     if (this.subject.hasOwnProperty(key)) {
+  //       const field = key as keyof Subject;
+  //       if (!this.subject[field]) {
+  //         if(field == "ar_name" || field == "en_name" || field == "creditHours" || field == "gradeID" || field == "numberOfSessionPerWeek" || field == "orderInCertificate"
+  //            || field == "passByDegree"  || field == "totalMark"  || field == "subjectCategoryID"  || field == "subjectCode"
+  //         ){
+  //           this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+  //           isValid = false;
+  //         } else if(field == "iconFile"){
+  //           if(!this.editSubject){
+  //             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+  //             isValid = false;
+  //           }
+  //         }
+  //       } else {
+  //         if(field == "en_name" || field == "ar_name"){
+  //           if(this.subject.en_name.length > 100 || this.subject.ar_name.length > 100){
+  //             this.validationErrors[field] = `*${this.capitalizeField(field)} cannot be longer than 100 characters`
+  //             isValid = false;
+  //           }
+  //         } else{
+  //           this.validationErrors[field] = '';
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return isValid;
+  // }
 
-  validateNumber(event: any): void {
-    const value = event.target.value;
-    if (isNaN(value) || value === '') {
-        event.target.value = '';
-    }
-  }
+  // validateNumber(event: any): void {
+  //   const value = event.target.value;
+  //   if (isNaN(value) || value === '') {
+  //       event.target.value = '';
+  //   }
+  // }
 
-  onIsHideChange(event: Event) {
-    const isChecked = (event.target as HTMLInputElement).checked;
-    this.subject.hideFromGradeReport = isChecked
-  }
+  // onIsHideChange(event: Event) {
+  //   const isChecked = (event.target as HTMLInputElement).checked;
+  //   this.subject.hideFromGradeReport = isChecked
+  // }
 
-  onInputValueChange(event: { field: keyof Subject, value: any }) {
-    const { field, value } = event;
-    (this.subject as any)[field] = value;
-    if (value) {
-      this.validationErrors[field] = '';
-    }
-  }
+  // onInputValueChange(event: { field: keyof Subject, value: any }) {
+  //   const { field, value } = event;
+  //   (this.subject as any)[field] = value;
+  //   if (value) {
+  //     this.validationErrors[field] = '';
+  //   }
+  // }
 
-  onImageFileSelected(event: any) {
-    const file: File = event.target.files[0];
+  // onImageFileSelected(event: any) {
+  //   const file: File = event.target.files[0];
     
-    if (file) {
-      if (file.size > 25 * 1024 * 1024) {
-        this.validationErrors['iconFile'] = 'The file size exceeds the maximum limit of 25 MB.';
-        this.subject.iconFile = null;
-        return; 
-      }
-      if (file.type === 'image/jpeg' || file.type === 'image/png') {
-        this.subject.iconFile = file; 
-        this.validationErrors['iconFile'] = ''; 
+  //   if (file) {
+  //     if (file.size > 25 * 1024 * 1024) {
+  //       this.validationErrors['iconFile'] = 'The file size exceeds the maximum limit of 25 MB.';
+  //       this.subject.iconFile = null;
+  //       return; 
+  //     }
+  //     if (file.type === 'image/jpeg' || file.type === 'image/png') {
+  //       this.subject.iconFile = file; 
+  //       this.validationErrors['iconFile'] = ''; 
 
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-      } else {
-        this.validationErrors['iconFile'] = 'Invalid file type. Only JPEG, JPG and PNG are allowed.';
-        this.subject.iconFile = null;
-        return; 
-      }
-    }
-  }
+  //       const reader = new FileReader();
+  //       reader.readAsDataURL(file);
+  //     } else {
+  //       this.validationErrors['iconFile'] = 'Invalid file type. Only JPEG, JPG and PNG are allowed.';
+  //       this.subject.iconFile = null;
+  //       return; 
+  //     }
+  //   }
+  // }
 
   IsAllowDelete(InsertedByID: number) {
     const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
@@ -308,31 +329,31 @@ export class SubjectComponent {
     return IsAllow;
   }
 
-  SaveSubject(){
-    if(this.isFormValid()){
-      if(this.editSubject == false){
-        (this.subjectService.Add(this.subject, this.DomainName)).subscribe(
-          (result: any) => {
-            this.closeModal()
-            this.getSubjectData()
-          },
-          error => {
-            console.log(error)
-          }
-        );
-      } else{
-        this.subjectService.Edit(this.subject, this.DomainName).subscribe(
-          (result: any) => {
-            this.closeModal()
-            this.getSubjectData()
-          },
-          error => {
-            console.log(error)
-          }
-        );
-      }  
-    }
-  } 
+  // SaveSubject(){
+  //   if(this.isFormValid()){
+  //     if(this.editSubject == false){
+  //       (this.subjectService.Add(this.subject, this.DomainName)).subscribe(
+  //         (result: any) => {
+  //           this.closeModal()
+  //           this.getSubjectData()
+  //         },
+  //         error => {
+  //           console.log(error)
+  //         }
+  //       );
+  //     } else{
+  //       this.subjectService.Edit(this.subject, this.DomainName).subscribe(
+  //         (result: any) => {
+  //           this.closeModal()
+  //           this.getSubjectData()
+  //         },
+  //         error => {
+  //           console.log(error)
+  //         }
+  //       );
+  //     }  
+  //   }
+  // } 
 
   deleteSubject(id:number){
     Swal.fire({

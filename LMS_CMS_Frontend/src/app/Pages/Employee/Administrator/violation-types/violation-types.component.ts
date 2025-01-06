@@ -54,6 +54,11 @@ export class ViolationTypesComponent {
   dropdownOpen = false;
   empTypesSelected: EmployeeTypeGet[] = [];
 
+  AllowEdit: boolean = false;
+  AllowDelete: boolean = false;
+  AllowEditForOthers: boolean = false;
+  AllowDeleteForOthers: boolean = false;
+
   constructor(
     public violationServ: ViolationService,
     public empTypeVioletionServ: EmployeeTypeViolationService,
@@ -75,11 +80,23 @@ export class ViolationTypesComponent {
     });
     this.GetViolation();
     this.GetEmployeeType();
+    this.menuService.menuItemsForEmployee$.subscribe((items) => {
+      console.log(items)
+      const settingsPage = this.menuService.findByPageName(this.path, items);
+      if (settingsPage) {
+        console.log(settingsPage)
+        this.AllowEdit = settingsPage.allow_Edit;
+        this.AllowDelete = settingsPage.allow_Delete;
+        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+      }
+    });
   }
 
   GetViolation() {
     this.violationServ.Get_Violations(this.DomainName).subscribe((data) => {
       this.Data = data;
+      console.log(this.Data)
     });
   }
 
@@ -197,6 +214,7 @@ export class ViolationTypesComponent {
       }
     }
   }
+
   toggleDropdown(): void {
     this.dropdownOpen = !this.dropdownOpen;
   }
@@ -215,4 +233,15 @@ export class ViolationTypesComponent {
       (i) => i !== id
     );
   }
+
+  IsAllowDelete(InsertedByID: number) {
+    const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
+    return IsAllow;
+  }
+
+  IsAllowEdit(InsertedByID: number) {
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
+    return IsAllow;
+  }
+
 }

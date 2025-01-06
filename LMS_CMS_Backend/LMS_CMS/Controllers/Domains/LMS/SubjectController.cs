@@ -227,7 +227,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (EditSubject.GradeID != 0)
             {
                 Grade grade = Unit_Of_Work.grade_Repository.Select_By_Id(EditSubject.GradeID);
-                if (grade == null || grade.IsDeleted!=true)
+                if (grade == null || grade.IsDeleted==true)
                 {
                     return BadRequest("No Grade with this ID");
                 }
@@ -236,7 +236,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (EditSubject.SubjectCategoryID != 0)
             {
                 SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.Select_By_Id(EditSubject.SubjectCategoryID);
-                if (subjectCategory == null || subjectCategory.IsDeleted != true)
+                if (subjectCategory == null || subjectCategory.IsDeleted == true)
                 {
                     return BadRequest("No Subject Category with this ID");
                 }

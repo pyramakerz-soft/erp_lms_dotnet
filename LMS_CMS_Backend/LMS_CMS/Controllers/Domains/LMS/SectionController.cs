@@ -153,7 +153,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             allowEdit: 1,
             pages: new[] { "Section", "Administrator" }
         )]
-        public IActionResult Edit(SectionGetDTO newSection)
+        public IActionResult Edit(SectionEditDTO newSection)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

@@ -79,7 +79,7 @@ export const routes: Routes = [
             { path: "Violation Types", component: ViolationTypesComponent, title: "Violation Types", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Section", component: SectionComponent, title: "Section", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Grade/:domainName/:Id", component: GradeComponent, title: "Grade", canActivate:[noNavigateWithoutLoginGuard ]}, 
-            { path: "Academic Year", component: AcademicYearComponent, title: "Academic Year", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Academic Years", component: AcademicYearComponent, title: "Academic Year", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Semester/:domainName/:Id", component: SemesterComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "SemesterView/:domainName/:Id", component: SemesterViewComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
         ]

@@ -13,5 +13,7 @@ namespace LMS_CMS_BL.DTO.Violation
         public long ViolationID { get; set; }
         public string? ViolationsTypeName { get; set; }
         public List<EmployeeTypeGetDTO>  employeeTypes { get; set; }
+        public long? InsertedByUserId { get; set; }
+
     }
 }

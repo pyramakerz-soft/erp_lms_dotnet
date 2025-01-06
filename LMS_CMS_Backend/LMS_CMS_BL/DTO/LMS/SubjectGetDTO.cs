@@ -25,5 +25,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public long SubjectCategoryID { get; set; }
         public string SubjectCategoryName { get; set; }
         public string InsertedAt { get; set; }
+        public long? InsertedByUserId { get; set; }
+
     }
 }

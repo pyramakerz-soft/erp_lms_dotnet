@@ -186,7 +186,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             allowEdit: 1,
             pages: new[] { "Semester", "Administrator" }
         )]
-        public IActionResult Edit(Semester_GetDTO newSemester)
+        public IActionResult Edit(SemesterEditDTO newSemester)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

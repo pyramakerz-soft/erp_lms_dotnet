@@ -228,7 +228,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("This User Name Already Exist");
             }
-            if (NewEmployee.BusCompanyID != 0)
+            if (NewEmployee.BusCompanyID != null && NewEmployee.BusCompanyID != 0)
             {
                 BusCompany bus = Unit_Of_Work.busCompany_Repository.First_Or_Default(b => b.ID == NewEmployee.BusCompanyID && b.IsDeleted != true);
                 if (bus == null)
@@ -236,7 +236,11 @@ namespace LMS_CMS_PL.Controllers.Domains
                     return BadRequest("this bus company doesn't exist");
                 }
             }
-            if (NewEmployee.EmployeeTypeID != 0)
+            else
+            {
+                NewEmployee.BusCompanyID = null;
+            }
+            if (NewEmployee.EmployeeTypeID != 0 && NewEmployee.EmployeeTypeID != null)
             {
                 EmployeeType empType = Unit_Of_Work.employeeType_Repository.First_Or_Default(b => b.ID == NewEmployee.EmployeeTypeID);
                 if (empType == null)
@@ -244,13 +248,23 @@ namespace LMS_CMS_PL.Controllers.Domains
                     return BadRequest("this Employee Type doesn't exist");
                 }
             }
-            if (NewEmployee.Role_ID != 0)
+            else
+            {
+                return BadRequest("this Employee Type cannot be null");
+
+            }
+            if (NewEmployee.Role_ID != 0 && NewEmployee.Role_ID != null)
             {
                 Role rolee = Unit_Of_Work.role_Repository.First_Or_Default(b => b.ID == NewEmployee.Role_ID && b.IsDeleted != true);
                 if (rolee == null)
                 {
                     return BadRequest("this role doesn't exist");
                 }
+            }
+            else
+            {
+                return BadRequest("this role cannot be null");
+
             }
             ///create the object 
             if (employee == null)
@@ -343,19 +357,45 @@ namespace LMS_CMS_PL.Controllers.Domains
                 return NotFound("Employee not found.");
             }
 
-            Role role = Unit_Of_Work.role_Repository.First_Or_Default(r => r.ID == newEmployee.Role_ID && r.IsDeleted != true);
-            if (role == null)
-            {
-                return NotFound("There is no role with this ID.");
-            }
-
-            if (newEmployee.BusCompanyID != null)
+            if (newEmployee.BusCompanyID != null && newEmployee.BusCompanyID != 0)
             {
                 BusCompany busCompany = Unit_Of_Work.busCompany_Repository.First_Or_Default(r => r.ID == newEmployee.BusCompanyID && r.IsDeleted != true);
                 if (busCompany == null)
                 {
                     return NotFound("There is no bus company with this ID.");
                 }
+            }
+            else
+            {
+                newEmployee.BusCompanyID = null;
+            }
+
+            if (newEmployee.EmployeeTypeID != 0 && newEmployee.EmployeeTypeID != null)
+            {
+                EmployeeType empType = Unit_Of_Work.employeeType_Repository.First_Or_Default(b => b.ID == newEmployee.EmployeeTypeID);
+                if (empType == null)
+                {
+                    return BadRequest("this Employee Type doesn't exist");
+                }
+            }
+            else
+            {
+                return BadRequest("this Employee Type cannot be null");
+
+            }
+
+            if (newEmployee.Role_ID != 0 && newEmployee.Role_ID != null)
+            {
+                Role rolee = Unit_Of_Work.role_Repository.First_Or_Default(b => b.ID == newEmployee.Role_ID && b.IsDeleted != true);
+                if (rolee == null)
+                {
+                    return BadRequest("this role doesn't exist");
+                }
+            }
+            else
+            {
+                return BadRequest("this role cannot be null");
+
             }
 
             // Validation
@@ -483,7 +523,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             //}
 
             // Create new folder for employee
-            var sanitizedUserName = newEmployee.User_Name.Trim().Replace(" ", "_");
+            var sanitizedUserName = newEmployee.User_Name.Trim();
             var employeeFolder = Path.Combine(baseFolder, sanitizedUserName);
 
             if (!Directory.Exists(employeeFolder))
@@ -639,6 +679,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             //}
             //employeeAttachment.IsDeleted = true;
 
+            Unit_Of_Work.employeeAttachment_Repository.Delete(id);
+            Unit_Of_Work.SaveChanges();
             Uri uri = new Uri(employeeAttachment.Link);
             string path = uri.LocalPath; 
             string fileName = Path.GetFileName(path); 
@@ -668,8 +710,6 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return StatusCode(500, new { message = $"An error occurred while deleting the file: {ex.Message}" });
             }
-            Unit_Of_Work.employeeAttachment_Repository.Delete(id);
-            Unit_Of_Work.SaveChanges();
         }
 
     }

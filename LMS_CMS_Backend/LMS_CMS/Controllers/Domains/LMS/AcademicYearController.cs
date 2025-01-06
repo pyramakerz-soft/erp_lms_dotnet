@@ -32,7 +32,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Academic Year", "Administrator" }
+            pages: new[] { "Academic Years", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -66,7 +66,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Academic Year", "Administrator" }
+            pages: new[] { "Academic Years", "Administrator" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -100,7 +100,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Academic Year", "Administrator" }
+            pages: new[] { "Academic Years", "Administrator" }
         )]
         public async Task<IActionResult> Add(AcademicYearAddDTO NewAcademicYear)
         {
@@ -152,9 +152,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
              allowedTypes: new[] { "octa", "employee" },
              allowEdit: 1,
-             pages: new[] { "Academic Year", "Administrator" }
+             pages: new[] { "Academic Years", "Administrator" }
          )]
-        public IActionResult Edit(AcademicYearGet newAcademicYear)
+        public IActionResult Edit(AcademicYearEditDTO newAcademicYear)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -241,7 +241,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Academic Year", "Administrator" }
+            pages: new[] { "Academic Years", "Administrator" }
         )]
         public IActionResult Delete(long id)
         {

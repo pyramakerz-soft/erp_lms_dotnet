@@ -80,6 +80,8 @@ export class BusStudentComponent {
 
   AcademicYearData:AcademicYear[]=[]
 
+  id:number =0;
+
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
     public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService, public sectionService:SectionService, 
     public gradeService:GradeService, public classroomService:ClassroomService, public semesterService:SemesterService, public studentService:StudentService ,public AcademicServ:AcadimicYearService){}
@@ -120,7 +122,8 @@ export class BusStudentComponent {
   
   GetbyId(busStuId:number){
     this.busStudentService.GetbyId(busStuId,this.DomainName).subscribe((data) => {
-      this.busStudent = data;
+      this.id = data.studentID
+      this.busStudent = data; 
       this.selectedClass = this.busStudent.classID
       this.onClassChange()
     });
@@ -240,6 +243,7 @@ export class BusStudentComponent {
     this.filteredClasses = [];
     this.filteredGrades = [];
     this.Students = [];
+    this.busStudent.studentID = 0
   }
 
   checkSchool(element:any) {
@@ -257,6 +261,7 @@ export class BusStudentComponent {
     this.selectedClass = null;
     this.filteredClasses = [];
     this.Students = [];
+    this.busStudent.studentID = 0
   }
 
   checkSection(element:any) {
@@ -272,6 +277,7 @@ export class BusStudentComponent {
 
     this.selectedClass = null;
     this.Students = [];
+    this.busStudent.studentID = 0
   }
 
   checkGrade(element:any) {
@@ -279,8 +285,9 @@ export class BusStudentComponent {
   }
 
   onClassChange(){
+    this.Students = [];
+    this.busStudent.studentID = 0
     if(this.selectedClass){
-      console.log(this.selectedClass)
       this.studentService.GetByClassID(this.selectedClass, this.DomainName).subscribe((data) => {
         this.Students = data
       });
@@ -334,19 +341,20 @@ export class BusStudentComponent {
 
   SaveBusStudent(){
     this.busStudent.busID = this.busId
+    this.busStudent.studentID = this.id
 
     if(this.busStudent.isException == false){
       this.busStudent.exceptionFromDate = null
       this.busStudent.exceptionToDate = null
     }
-
+    
     if (this.isFormValid()) {
       if(this.editBusStudent == false){
         this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
           this.closeModal()
           this.GetStudentsByBusId(this.busId);
         });
-      } else{
+      } else{ 
         this.busStudentService.Edit(this.busStudent, this.DomainName).subscribe((data) => {
           this.closeModal()
           this.GetStudentsByBusId(this.busId);

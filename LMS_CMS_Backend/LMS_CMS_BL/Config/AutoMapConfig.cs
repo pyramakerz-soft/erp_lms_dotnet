@@ -125,6 +125,10 @@ namespace LMS_CMS_BL.Config
             CreateMap<AcademicYear, AcademicYearAddDTO>()
               .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.School.ID));
             CreateMap<AcademicYearAddDTO, AcademicYear>();
+            CreateMap<AcademicYear, AcademicYearEditDTO>()
+              .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.School.ID));
+            CreateMap<AcademicYearEditDTO, AcademicYear>();
+
 
             CreateMap<School, School_GetDTO>()
                  .ForMember(dest => dest.SchoolTypeName, opt => opt.MapFrom(src => src.SchoolType.Name))
@@ -176,6 +180,10 @@ namespace LMS_CMS_BL.Config
               .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID));
             CreateMap<SemesterAddDTO, Semester>();
 
+            CreateMap<Semester, SemesterEditDTO>()
+              .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.AcademicYear.ID));
+            CreateMap<SemesterEditDTO, Semester>();
+
             CreateMap<Floor, FloorGetDTO>()
                .ForMember(dest => dest.BuildingID, opt => opt.MapFrom(src => src.building.ID))
                .ForMember(dest => dest.BuildingName, opt => opt.MapFrom(src => src.building.Name))
@@ -207,6 +215,10 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Section.ID));
             CreateMap<GradeAddDTO, Grade>();
 
+            CreateMap<Grade, GradeEditDTO>()
+               .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Section.ID));
+            CreateMap<GradeEditDTO, Grade>();
+
             CreateMap<Grade, GradeGetDTO>()
                 .ForMember(dest => dest.SectionName, opt => opt.MapFrom(src => src.Section.Name))
                 .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Section.ID));
@@ -220,6 +232,11 @@ namespace LMS_CMS_BL.Config
             CreateMap<Section, SectionAddDTO>()
                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID));
             CreateMap<SectionAddDTO, Section>();
+
+
+            CreateMap<Section, SectionEditDTO>()
+               .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.school.ID));
+            CreateMap<SectionEditDTO, Section>();
 
             CreateMap<Classroom, ClassroomGetDTO>()
                 .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name))

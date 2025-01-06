@@ -144,6 +144,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -173,6 +174,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             }
             newViolation = new Violation();
             newViolation.Name = NewEmployeeTypeViolation.ViolationName;
+            newViolation.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                newViolation.InsertedByOctaId = userId;
+            }
+            else if (userTypeClaim == "employee")
+            {
+                newViolation.InsertedByUserId = userId;
+            }
             await Unit_Of_Work.violations_Repository.AddAsync(newViolation);
             await Unit_Of_Work.SaveChangesAsync();
             Violation Violation = Unit_Of_Work.violations_Repository.First_Or_Default(v=>v.Name == NewEmployeeTypeViolation.ViolationName&&v.IsDeleted!=true);
@@ -186,7 +196,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
 
             EmployeeTypeViolation.ViolationID = Violation.ID;
             EmployeeTypeViolation.EmployeeTypeID = item;
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             EmployeeTypeViolation.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
@@ -264,12 +273,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             if (NewViolation.ViolationName != violation.Name) 
             {
                 Violation v2 =Unit_Of_Work.violations_Repository.First_Or_Default(v=>v.Name==NewViolation.ViolationName);
-                if (violation != null)
+                if (v2 != null)
                 {
                     return BadRequest("this violation already exist");
                 }
                 violation.Name = NewViolation.ViolationName;
-               violation.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                violation.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
                 if (userTypeClaim == "octa")
                 {
                     violation.UpdatedByOctaId = userId;

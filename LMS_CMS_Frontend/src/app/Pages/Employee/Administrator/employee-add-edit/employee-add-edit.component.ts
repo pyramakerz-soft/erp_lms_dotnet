@@ -248,6 +248,16 @@ export class EmployeeAddEditComponent {
           (data) => {
             this.router.navigateByUrl("Employee/Employee");
             return true;
+          },
+          (error) => {
+            console.error('Error occurred:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error?.error || 'An unexpected error occurred',
+              confirmButtonColor: '#FF7519',
+            });
+            return false;
           }
         );
       }

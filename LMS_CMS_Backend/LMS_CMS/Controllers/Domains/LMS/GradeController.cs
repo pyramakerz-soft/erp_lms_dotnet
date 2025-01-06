@@ -190,7 +190,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             allowEdit: 1,
             pages: new[] { "Grade", "Administrator" }
         )]
-        public async Task<IActionResult> EditAsync(GradeGetDTO newGrade)
+        public async Task<IActionResult> EditAsync(GradeEditDTO newGrade)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

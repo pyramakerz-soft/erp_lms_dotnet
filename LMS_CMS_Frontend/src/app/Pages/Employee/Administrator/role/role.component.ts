@@ -109,4 +109,5 @@ export class RoleComponent {
   Create() {
     this.router.navigateByUrl("Employee/Role Create")
   }
+  
 }

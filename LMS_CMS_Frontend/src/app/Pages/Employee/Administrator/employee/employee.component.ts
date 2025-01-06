@@ -27,6 +27,11 @@ export class EmployeeComponent {
   UserID: number = 0;
   path: string = "";
 
+  AllowEdit: boolean = false;
+  AllowDelete: boolean = false;
+  AllowEditForOthers: boolean = false;
+  AllowDeleteForOthers: boolean = false;
+
   TableData: EmployeeGet[] = []
 
   constructor(public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router, public EmpServ: EmployeeService) { }
@@ -39,6 +44,17 @@ export class EmployeeComponent {
       this.activeRoute.url.subscribe(url => {
         this.path = url[0].path
         this.GetEmployee();
+        this.menuService.menuItemsForEmployee$.subscribe((items) => {
+          console.log(items)
+          const settingsPage = this.menuService.findByPageName(this.path, items);
+          if (settingsPage) {
+            console.log(settingsPage)
+            this.AllowEdit = settingsPage.allow_Edit;
+            this.AllowDelete = settingsPage.allow_Delete;
+            this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+            this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+          }
+        });
 
       });
     }
@@ -104,6 +120,16 @@ export class EmployeeComponent {
   view(id:number){
     this.router.navigateByUrl(`Employee/Employee Details/${id}`)
 
+  }
+  
+  IsAllowDelete(InsertedByID: number) {
+    const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
+    return IsAllow;
+  }
+
+  IsAllowEdit(InsertedByID: number) {
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
+    return IsAllow;
   }
   
 }

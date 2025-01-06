@@ -17,7 +17,9 @@ export class EmployeeGet {
         public busCompanyName: string = '',
         public employeeTypeID: number = 0,
         public employeeTypeName: string = '',
-        public files :File []=[]
+        public files :File []=[],
+        public insertedByUserId :number =0,
+
     ) {}
 }
 

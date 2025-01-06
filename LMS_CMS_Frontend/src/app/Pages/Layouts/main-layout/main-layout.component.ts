@@ -78,6 +78,7 @@ export class MainLayoutComponent {
     this.roleDetailsService.Get_Pages_With_RoleID(this.User_Data_After_Login.role).subscribe(
       (data:any) => {
         this.menuItemsForEmployee = data
+        console.log("pages",data)
         this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
       } ,(error)=>{
         this.menuItemsForEmployee = [];

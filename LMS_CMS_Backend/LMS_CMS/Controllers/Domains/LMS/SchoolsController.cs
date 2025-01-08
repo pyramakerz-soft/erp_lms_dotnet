@@ -22,11 +22,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly FileImageValidationService _fileImageValidationService;
 
-        public SchoolsController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public SchoolsController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _fileImageValidationService = fileImageValidationService;
         }
 
 
@@ -34,7 +36,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee"}
+            allowedTypes: new[] { "octa", "employee"},
+             pages: new[] { "School", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -59,7 +62,17 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return NotFound();
             }
 
-            List<School_GetDTO>schoolDTO =mapper.Map<List<School_GetDTO>>(Schools); 
+            List<School_GetDTO>schoolDTO =mapper.Map<List<School_GetDTO>>(Schools);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            foreach (var school in schoolDTO)
+            {
+                if (!string.IsNullOrEmpty(school.ReportImage))
+                {
+                    school.ReportImage = $"{serverUrl}{school.ReportImage.Replace("\\", "/")}";
+                }
+            }
+
 
             return Ok(schoolDTO);
         }
@@ -67,7 +80,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
+            allowedTypes: new[] { "octa", "employee" },
+             pages: new[] { "School", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync(long id)
         {
@@ -93,6 +107,12 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             School_GetDTO schoolDTO = mapper.Map<School_GetDTO>(School);
 
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            if (!string.IsNullOrEmpty(schoolDTO.ReportImage))
+            {
+                schoolDTO.ReportImage = $"{serverUrl}{schoolDTO.ReportImage.Replace("\\", "/")}";
+            }
+             
             return Ok(schoolDTO);
         }
 
@@ -146,9 +166,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpPut]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa" }
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "School", "Administrator" }
         )]
-        public IActionResult Edit(SchoolEditDTO newSchool)
+        public async Task<IActionResult> Edit([FromForm] SchoolEditDTO newSchool)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -172,28 +194,141 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("the name cannot be null");
             }
+
             SchoolType schoolType = Unit_Of_Work.schoolType_Repository.First_Or_Default(s => s.ID == newSchool.SchoolTypeID);
             if (schoolType == null)
             {
                 return BadRequest("there is no School Type with this id");
             }
-            School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newSchool.ID);
-            if (school == null)
-            {
-                return BadRequest("there is no School with this id");
-            }
-            mapper.Map(newSchool, school);
 
+            if (newSchool.ReportImageFile != null)
+            {
+                string returnFileInput = _fileImageValidationService.ValidateImageFile(newSchool.ReportImageFile);
+                if (returnFileInput != null)
+                {
+                    return BadRequest(returnFileInput);
+                }
+            }
+
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newSchool.ID);
+
+            string iconLinkExists = school.ReportImage;
+            string nameExists = school.Name;
+            if (school == null || school.IsDeleted == true)
+            {
+                return NotFound("No School with this ID");
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "School");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (school.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("School page doesn't exist");
+                }
+            }
+
+            if (newSchool.ReportImageFile != null)
+            {
+                var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/SchoolHeaderImages");
+                var oldSchoolFolder = Path.Combine(baseFolder, nameExists);
+                var SchoolFolder = Path.Combine(baseFolder, newSchool.Name);
+
+                string existingFilePath = Path.Combine(baseFolder, nameExists);
+
+                if (System.IO.File.Exists(existingFilePath))
+                {
+                    System.IO.File.Delete(existingFilePath); // Delete the old file
+                }
+
+                if (Directory.Exists(oldSchoolFolder))
+                {
+                    Directory.Delete(oldSchoolFolder, true);
+                }
+
+                if (!Directory.Exists(SchoolFolder))
+                {
+                    Directory.CreateDirectory(SchoolFolder);
+                }
+
+                if (newSchool.ReportImageFile.Length > 0)
+                {
+                    var filePath = Path.Combine(SchoolFolder, newSchool.ReportImageFile.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await newSchool.ReportImageFile.CopyToAsync(stream);
+                    }
+                }
+
+                newSchool.ReportImage = Path.Combine("Uploads", "SchoolHeaderImages", newSchool.Name, newSchool.ReportImageFile.FileName);
+            }
+            else
+            {
+                if(iconLinkExists != null)
+                {
+                    if (newSchool.Name != nameExists)
+                    {
+                        var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/SchoolHeaderImages");
+                        var oldSubjectFolder = Path.Combine(baseFolder, nameExists);
+                        var newSubjectFolder = Path.Combine(baseFolder, newSchool.Name);
+
+                        // Rename the folder if it exists
+                        if (Directory.Exists(oldSubjectFolder))
+                        {
+                            if (!Directory.Exists(newSubjectFolder))
+                            {
+                                Directory.CreateDirectory(newSubjectFolder);
+                            }
+
+                            var files = Directory.GetFiles(oldSubjectFolder);
+                            foreach (var file in files)
+                            {
+                                var fileName = Path.GetFileName(file);
+                                var destFile = Path.Combine(newSubjectFolder, fileName);
+                                System.IO.File.Move(file, destFile);
+                            }
+
+                            Directory.Delete(oldSubjectFolder);
+                        }
+                    }
+                    newSchool.ReportImage = Path.Combine("Uploads", "SchoolHeaderImages", newSchool.Name, Path.GetFileName(iconLinkExists));
+                }
+            }
+
+            mapper.Map(newSchool, school);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-           school.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-           if (userTypeClaim == "octa")
-           {
-               school.InsertedByOctaId = userId;
-           }
-           Unit_Of_Work.school_Repository.Update(school);
-           Unit_Of_Work.SaveChanges();
-           return Ok(newSchool);
-           
+            school.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                school.UpdatedByOctaId = userId;
+                if (school.UpdatedByUserId != null)
+                {
+                    school.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                school.UpdatedByUserId = userId;
+                if (school.UpdatedByOctaId != null)
+                {
+                    school.UpdatedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.school_Repository.Update(school);
+            Unit_Of_Work.SaveChanges();
+            return Ok(newSchool);
         }
 
         ////////////////////////////////////////////////////
@@ -202,7 +337,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa" }
         )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

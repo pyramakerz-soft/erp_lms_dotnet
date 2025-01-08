@@ -25,7 +25,8 @@ import { DomainsComponent } from './Pages/Octa/domains/domains.component';
 import { RoleComponent } from './Pages/Employee/Administrator/role/role.component';
 import { RoleAddEditComponent } from './Pages/Employee/Administrator/role-add-edit/role-add-edit.component';
 import { SchoolTypeComponent } from './Pages/Octa/school-type/school-type.component';
-import { SchoolComponent } from './Pages/Octa/school/school.component';
+import { SchoolComponent as SchoolComponentOcta  } from './Pages/Octa/school/school.component';
+import { SchoolComponent as SchoolComponentEmployee } from './Pages/Employee/Administrator/school/school.component';
 import { AccountComponent } from './Pages/Octa/account/account.component';
 import { SubjectCategoryComponent } from './Pages/Employee/LMS/subject-category/subject-category.component';
 import { SubjectComponent } from './Pages/Employee/LMS/subject/subject.component';
@@ -82,6 +83,7 @@ export const routes: Routes = [
             { path: "Academic Years", component: AcademicYearComponent, title: "Academic Year", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Semester/:domainName/:Id", component: SemesterComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "SemesterView/:domainName/:Id", component: SemesterViewComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "School", component: SchoolComponentEmployee, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
     { 
@@ -118,7 +120,7 @@ export const routes: Routes = [
             { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Domains", component: DomainsComponent, title: "Domains"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "School Types", component: SchoolTypeComponent, title: "School Types"  , canActivate:[noNavigateWithoutLoginGuard]},  
-            { path: "School", component: SchoolComponent, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "School", component: SchoolComponentOcta, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Account", component: AccountComponent, title: "Accounts"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },

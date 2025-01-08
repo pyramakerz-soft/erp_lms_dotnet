@@ -60,7 +60,29 @@ export class SchoolService {
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-    return this.http.put(`${this.baseUrl}/Schools`, school, { headers })
+
+    const formData = new FormData();
+    formData.append('id', school.id.toString() ?? '');
+    formData.append('name', school.name.toString() ?? ''); 
+    formData.append('schoolTypeID', String(school.schoolTypeID) ?? '');
+    formData.append('address', school.address?.toString() ?? '');
+    formData.append('reportHeaderOneEn', school.reportHeaderOneEn?.toString() ?? '');
+    formData.append('reportHeaderOneAr', school.reportHeaderOneAr?.toString() ?? ''); 
+    formData.append('reportHeaderTwoEn', school.reportHeaderTwoEn?.toString() ?? '');
+    formData.append('reportHeaderTwoAr', school.reportHeaderTwoAr?.toString() ?? '');
+  
+    if (school.reportImageFile) {
+      formData.append('reportImageFile', school.reportImageFile, school.reportImageFile.name);
+    } else if (school.reportImage) {
+      formData.append('reportImage', school.reportImage?.toString() ?? '');
+    } 
+
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
+
+    console.log(`${this.baseUrl}/Schools`)
+    return this.http.put(`${this.baseUrl}/Schools`, formData, { headers })
   }
 
   Delete(id:number, DomainName:string){

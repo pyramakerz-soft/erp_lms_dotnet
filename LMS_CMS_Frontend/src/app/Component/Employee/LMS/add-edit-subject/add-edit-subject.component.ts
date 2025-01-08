@@ -217,7 +217,6 @@ export class AddEditSubjectComponent {
   }
 
   SaveSubject(){
-    console.log(this.subject)
     if(this.isFormValid()){
       if(this.editSubject == false){
         (this.subjectService.Add(this.subject, this.DomainName)).subscribe(

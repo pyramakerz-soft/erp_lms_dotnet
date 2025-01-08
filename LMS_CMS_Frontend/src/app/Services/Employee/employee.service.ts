@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../api.service';
 import { Employee } from '../../Models/Employee/employee';
 import { EmployeeGet } from '../../Models/Employee/employee-get';
+import { EditPass } from '../../Models/Employee/edit-pass';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,6 @@ export class EmployeeService {
     .set('Authorization', `Bearer ${token}`)
     .set('domain-name', this.header)
     .set('Content-Type', 'application/json');
-
     return this.http.get<Employee[]>(`${this.baseUrl}/Employee/${empID}`, { headers })
   }
 
@@ -165,6 +165,18 @@ export class EmployeeService {
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
     return this.http.delete(`${this.baseUrl}/Employee/${id}`, { headers });
+  }
+
+  EditPassword(editpass:EditPass,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header) 
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.put(`${this.baseUrl}/Employee/${editpass.Id}`, editpass, { headers });
   }
 
 }

@@ -78,7 +78,6 @@ export class LoginComponent {
     if (this.isFormValid()) {
       this.accountService.Login(this.userInfo).subscribe(
         (d: any) => {
-
           localStorage.removeItem("GoToLogin");
           localStorage.setItem("GoToLogin", "false");
           localStorage.removeItem("current_token");
@@ -147,7 +146,7 @@ export class LoginComponent {
           localStorage.removeItem("count");
           localStorage.setItem("count", Counter.toString());
           this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
-
+        
           if (this.User_Data_After_Login.type == "parent") {
             this.router.navigateByUrl("/Parent")
           } else if (this.User_Data_After_Login.type == "student") {
@@ -157,7 +156,6 @@ export class LoginComponent {
           }
 
         }, (error) => {
-          console.log(error)
           if (error.error === "UserName or Password is Invalid") {
             this.somthingError = "UserName or Password is Invalid"
           }

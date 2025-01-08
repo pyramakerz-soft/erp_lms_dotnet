@@ -32,7 +32,7 @@
             placeholder="Enter User Name" [(ngModel)]="Data.ar_name" />
     </div>
 
-    <div class="flex flex-col mb-4 w-[49%]">
+    <div *ngIf="mode == 'Create'" class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">password</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter User Name" [(ngModel)]="Data.password" />

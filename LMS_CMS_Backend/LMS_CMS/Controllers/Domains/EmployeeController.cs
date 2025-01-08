@@ -497,7 +497,6 @@ namespace LMS_CMS_PL.Controllers.Domains
                 }
             }
             mapper.Map(newEmployee, oldEmp);
-            oldEmp.Password = BCrypt.Net.BCrypt.HashPassword(newEmployee.Password);
 
             if (userTypeClaim == "octa")
             {
@@ -594,7 +593,7 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             if (employee == null || employee.IsDeleted == true)
             {
-                return NotFound("No semester with this ID");
+                return NotFound("No employee with this ID");
             }
             if (userTypeClaim == "employee")
             {
@@ -710,6 +709,76 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return StatusCode(500, new { message = $"An error occurred while deleting the file: {ex.Message}" });
             }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+
+        [HttpPut("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Administrator", "Employee" }
+        )]
+        public async Task<IActionResult> EditpasswordAsync(EditPasswordDTO model)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (model.Password == "")
+            {
+                return BadRequest("password cannot be empty");
+            }
+
+            Employee oldEmp = await Unit_Of_Work.employee_Repository.Select_By_IdAsync(model.Id);
+            if (oldEmp == null || oldEmp.IsDeleted == true)
+            {
+                return NotFound("Employee not found.");
+            }
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (oldEmp.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Employee page doesn't exist");
+                }
+            }
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            if (userTypeClaim == "octa")
+            {
+                oldEmp.UpdatedByOctaId = userId;
+                oldEmp.UpdatedByUserId = null;
+            }
+            else if (userTypeClaim == "employee")
+            {
+                oldEmp.UpdatedByUserId = userId;
+                oldEmp.UpdatedByOctaId = null;
+            }
+            oldEmp.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
+            oldEmp.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            Unit_Of_Work.employee_Repository.Update(oldEmp);
+            await Unit_Of_Work.SaveChangesAsync();
+            return Ok();
         }
 
     }

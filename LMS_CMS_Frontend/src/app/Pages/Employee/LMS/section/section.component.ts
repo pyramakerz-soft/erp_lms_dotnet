@@ -162,7 +162,6 @@ export class SectionComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    console.log(this.section)
     for (const key in this.section) {
       if (this.section.hasOwnProperty(key)) {
         const field = key as keyof Section;

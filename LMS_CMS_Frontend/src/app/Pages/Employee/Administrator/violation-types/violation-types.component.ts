@@ -81,10 +81,8 @@ export class ViolationTypesComponent {
     this.GetViolation();
     this.GetEmployeeType();
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      console.log(items)
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
-        console.log(settingsPage)
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
         this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
@@ -96,7 +94,6 @@ export class ViolationTypesComponent {
   GetViolation() {
     this.violationServ.Get_Violations(this.DomainName).subscribe((data) => {
       this.Data = data;
-      console.log(this.Data)
     });
   }
 

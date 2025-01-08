@@ -1,0 +1,12 @@
+.flex-grow {
+    flex-grow: 1;
+  }
+  
+  input::placeholder {
+    color: #a0aec0;
+  }
+  
+  button {
+    border: none;
+    cursor: pointer;
+  }

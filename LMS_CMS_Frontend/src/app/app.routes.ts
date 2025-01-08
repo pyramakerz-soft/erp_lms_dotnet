@@ -42,6 +42,8 @@ import { GradeComponent } from './Pages/Employee/LMS/grade/grade.component';
 import { AcademicYearComponent } from './Pages/Employee/LMS/academic-year/academic-year.component';
 import { SemesterComponent } from './Pages/Employee/LMS/semester/semester.component';
 import { SemesterViewComponent } from './Pages/Employee/LMS/semester-view/semester-view.component';
+import { RegistrationFormFieldComponent } from './Pages/Employee/Registration/registration-form-field/registration-form-field.component';
+import { FieldsComponent } from './Pages/Employee/Registration/fields/fields.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -82,6 +84,8 @@ export const routes: Routes = [
             { path: "Academic Years", component: AcademicYearComponent, title: "Academic Year", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Semester/:domainName/:Id", component: SemesterComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "SemesterView/:domainName/:Id", component: SemesterViewComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "RegistrationFormField", component: RegistrationFormFieldComponent, title: "RegistrationFormField", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "CategoryFields/:id", component: FieldsComponent, title: "CategoryFields", canActivate:[noNavigateWithoutLoginGuard ]}, 
         ]
     },
     { 

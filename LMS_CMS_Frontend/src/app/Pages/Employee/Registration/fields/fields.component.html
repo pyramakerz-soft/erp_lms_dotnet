@@ -1,10 +1,33 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Categories</h1>
+    </div>
+</div>
+
+<div class="flex flex-wrap justify-between mt-5 mb-5">
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">English Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Category.enName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Arabic Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Category.arName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Order In Form</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ Category.orderInForm }}</p>
+    </div>
+</div>
+
+
 <div class="">
     <div class="flex justify-between items-center">
-        <h1 class="primaryTxt font-semibold text-2xl leading-9">Registration Form Field</h1>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Fields</h1>
         <div class="flex justify-between items-center ">
             <button (click)="Create()"
                 class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-                Create Categories
+                Add Field
             </button>
         </div>
     </div>
@@ -26,6 +49,12 @@
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Order In Form
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        IsMandatory
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        FieldTypeName
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Actions
@@ -51,11 +80,10 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.enName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInForm }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.isMandatory }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInForm }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
-                            <button (click)="view(row.id)">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
                             <button (click)="Delete(row.id)" *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
@@ -69,7 +97,6 @@
         </table>
     </div>
 </div>
-
 
 
 <!-- Modal -->
@@ -88,27 +115,58 @@
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories English</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
-                    <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="Category.enName" placeholder="Enter Name of Categories " />
+                    <input type="text"
+                        class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                        [(ngModel)]="field.enName" placeholder="Enter Name of Categories " />
                 </div>
             </div>
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories Arabic</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
-                    <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="Category.arName" placeholder="Enter Name of Categories " />
+                    <input type="text"
+                        class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                        [(ngModel)]="field.arName" placeholder="Enter Name of Categories " />
                 </div>
             </div>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Field Type</h6>
+            <div class="flex flex-col mb-4">
+                <select (ngModelChange)="onInputValueChange()"
+                class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3" id="fieldType" [(ngModel)]="field.fieldTypeID">
+                    <option [value]="0" disabled selected hidden>Choose Field Type</option>
+                    <option *ngFor="let type of fieldTypes" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="fieldTypes.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Options</h6>
+            <div class="border border-gray-300 rounded-lg w-[500px] px-2 py-2 flex flex-wrap gap-2 mb-4">
+                <span *ngFor="let opt of options; let i = index"
+                    class="flex items-centermr-2 mb-1 bg-gray-200  rounded-full px-3 py-1 text-sm">
+                    {{ opt }}
+                    <button type="button" class="ml-2 text-white bg-[#6F6F6F] rounded-full px-1"
+                        (click)="removeOption(i)">
+                        &times;
+                    </button>
+                </span>
+                <input type="text" class="flex-grow outline-none text-sm" [(ngModel)]="inputValue"
+                    (keydown.enter)="addOption()" placeholder="Enter option" />
+            </div>
+
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Order in Form </h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
-                    <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="Category.orderInForm"  
-                        placeholder=" " 
-                        type="number"
-                        min="0" 
-                        step="1" />
+                    <input type="text"
+                        class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                        [(ngModel)]="field.orderInForm" placeholder=" " type="number" min="0" step="1" />
                 </div>
+            </div>
+            <div class="flex items-center">
+                <input type="checkbox" id="i" [(ngModel)]="field.isMandatory"
+                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" />
+                <label for="i" class="text-gray-700">
+                    IsMendatory
+                </label>
             </div>
             <div class="flex justify-end">
                 <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">

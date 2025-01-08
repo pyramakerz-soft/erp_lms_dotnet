@@ -117,7 +117,6 @@ export class EmployeeComponent {
 
   view(id:number){
     this.router.navigateByUrl(`Employee/Employee Details/${id}`)
-
   }
   
   IsAllowDelete(InsertedByID: number) {

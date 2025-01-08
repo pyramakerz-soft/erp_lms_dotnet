@@ -97,7 +97,7 @@
                             <button (click)="Edit(row.id)" *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)">
                                 <i class="fa-solid fa-pencil"></i>
                             </button>
-                            <button (click)="view(row.id)" *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)">
+                            <button (click)="view(row.id)" >
                                 <i class="fa-solid fa-eye"></i> </button>
                         </div>
                     </td>

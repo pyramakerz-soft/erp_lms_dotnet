@@ -252,9 +252,6 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
              
             Subject SubjectExists = Unit_Of_Work.subject_Repository.Select_By_Id(EditSubject.ID);
-            Console.WriteLine("/////////////////////////////////////////////////////////////////////////////////////////");
-            Console.WriteLine(SubjectExists.IconLink);
-            Console.WriteLine(SubjectExists.ID);
 
             string iconLinkExists = SubjectExists.IconLink;
             string enNameExists = SubjectExists.en_name;
@@ -296,7 +293,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     System.IO.File.Delete(existingFilePath); // Delete the old file
                 }
                 
-                if (oldSubjectFolder != null)
+                if (Directory.Exists(oldSubjectFolder))
                 {
                     Directory.Delete(oldSubjectFolder, true);
                 }

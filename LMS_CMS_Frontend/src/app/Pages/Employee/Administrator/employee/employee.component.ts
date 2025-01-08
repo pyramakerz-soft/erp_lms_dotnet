@@ -45,10 +45,8 @@ export class EmployeeComponent {
         this.path = url[0].path
         this.GetEmployee();
         this.menuService.menuItemsForEmployee$.subscribe((items) => {
-          console.log(items)
           const settingsPage = this.menuService.findByPageName(this.path, items);
           if (settingsPage) {
-            console.log(settingsPage)
             this.AllowEdit = settingsPage.allow_Edit;
             this.AllowDelete = settingsPage.allow_Delete;
             this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others

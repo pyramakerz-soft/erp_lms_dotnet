@@ -35,7 +35,7 @@ export const noNavigateWithoutLoginGuard: CanActivateFn = (route, state) => {
       return employeeService.GetByID(userId).pipe(
         map(() => true), 
         catchError((error) => {
-          console.error('Error fetching employee data:', error);
+          console.error('Error fetching employee dataaaaaa:', error);
           logOutService.logOut();
           router.navigateByUrl('');
           return of(false); 

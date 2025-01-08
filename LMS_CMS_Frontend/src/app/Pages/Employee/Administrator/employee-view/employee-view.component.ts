@@ -9,6 +9,7 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { EmployeeService } from '../../../../Services/Employee/employee.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { EditPass } from '../../../../Models/Employee/edit-pass';
 
 @Component({
   selector: 'app-employee-view',
@@ -27,6 +28,16 @@ export class EmployeeViewComponent {
 
   Data: EmployeeGet = new EmployeeGet()
   EmpId: number = 0;
+
+  PasswordError: string = ""; 
+  isChange = false;
+  password:string =""
+
+  editpasss:EditPass=new EditPass();
+
+  AllowEdit: boolean = false;
+  AllowEditForOthers: boolean = false;
+
 
   constructor(public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router, public EmpServ: EmployeeService) { }
 
@@ -47,6 +58,13 @@ export class EmployeeViewComponent {
         })
       });
     }
+    this.menuService.menuItemsForEmployee$.subscribe((items) => {
+      const settingsPage = this.menuService.findByPageName("Employee", items);
+      if (settingsPage) {
+        this.AllowEdit = settingsPage.allow_Edit;
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+      }
+    });
   }
 
   moveToEmployee() {
@@ -64,5 +82,30 @@ export class EmployeeViewComponent {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }
+
+  toggleChangePassword() {
+    this.isChange = !this.isChange;
+  }
+
+  UpdatePassword(){
+    this.editpasss.Id=this.EmpId;
+    this.editpasss.Password=this.password
+   this.EmpServ.EditPassword(this.editpasss,this.DomainName).subscribe(()=>{
+    this.isChange = false
+    this.password = '';
+   })
+  }
+
+  CancelUpdatePassword(){
+    this.isChange = false
+    this.password = '';
+  }
+  onPasswordChange() {
+    this.PasswordError = "" 
+  }
+  IsAllowEdit() {
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(this.Data.insertedByUserId, this.UserID, this.AllowEditForOthers);
+    return IsAllow;
   }
 }

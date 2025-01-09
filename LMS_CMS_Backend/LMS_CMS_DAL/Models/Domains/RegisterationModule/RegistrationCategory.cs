@@ -18,7 +18,7 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         [Required(ErrorMessage = "Arabic Name is required")]
         [StringLength(100, ErrorMessage = "Arabic Name cannot be longer than 100 characters.")]
         public string ArName { get; set; }
-        public string OrderInForm { get; set; }
+        public int OrderInForm { get; set; }
         public ICollection<CategoryField> CategoryFields { get; set; } = new HashSet<CategoryField>();
         public ICollection<RegistrationFormCategory> RegistrationFormCategories { get; set; } = new HashSet<RegistrationFormCategory>();
     }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20250109092818_RelationBetweenTestGradeMigration")]
-    partial class RelationBetweenTestGradeMigration
+    [Migration("20250109111210_RegistrationTablesMigration")]
+    partial class RegistrationTablesMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1993,10 +1993,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.QuestionType", b =>
                 {
                     b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -2487,6 +2484,65 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("UpdatedByUserId");
 
                     b.ToTable("RegistrationForm");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegistrationFormCategory", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("RegistrationCategoryID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RegistrationFormID")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("RegistrationCategoryID");
+
+                    b.HasIndex("RegistrationFormID");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("RegistrationFormCategory");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.Test", b =>
@@ -3946,9 +4002,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("InsertedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegistrationForm", "RegistrationForm")
-                        .WithMany("RegistrationCategorys")
+                        .WithMany()
                         .HasForeignKey("RegistrationFormID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
@@ -3981,6 +4037,43 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("DeletedByEmployee");
 
                     b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegistrationFormCategory", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegistrationCategory", "RegistrationCategory")
+                        .WithMany("RegistrationFormCategories")
+                        .HasForeignKey("RegistrationCategoryID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegistrationForm", "RegistrationForm")
+                        .WithMany("RegistrationFormCategories")
+                        .HasForeignKey("RegistrationFormID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("RegistrationCategory");
+
+                    b.Navigation("RegistrationForm");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -4350,13 +4443,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegistrationCategory", b =>
                 {
                     b.Navigation("CategoryFields");
+
+                    b.Navigation("RegistrationFormCategories");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegistrationForm", b =>
                 {
                     b.Navigation("RegisterationFormParents");
 
-                    b.Navigation("RegistrationCategorys");
+                    b.Navigation("RegistrationFormCategories");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.Test", b =>

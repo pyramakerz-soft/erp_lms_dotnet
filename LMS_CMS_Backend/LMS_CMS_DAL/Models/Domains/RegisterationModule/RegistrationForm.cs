@@ -15,6 +15,6 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
         public ICollection<RegisterationFormParent> RegisterationFormParents { get; set; } = new HashSet<RegisterationFormParent>();
-        public ICollection<RegistrationCategory> RegistrationCategorys { get; set; } = new HashSet<RegistrationCategory>();
+        public ICollection<RegistrationFormCategory> RegistrationFormCategories { get; set; } = new HashSet<RegistrationFormCategory>();
     }
 }

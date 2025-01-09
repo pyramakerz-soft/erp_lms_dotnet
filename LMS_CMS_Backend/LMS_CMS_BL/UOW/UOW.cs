@@ -70,6 +70,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Question> Question_Repository;
         GenericRepo<Test> Test_Repository;
         GenericRepo<MCQQuestionOption> MCQQuestionOption_Repository;
+        GenericRepo<RegistrationFormCategory> RegistrationFormCategory_Repository;
 
          
         public UOW(Octa_DbContext octa_Db)
@@ -663,6 +664,17 @@ namespace LMS_CMS_BL.UOW
                     MCQQuestionOption_Repository = new GenericRepo<MCQQuestionOption>(db);
                 }
                 return MCQQuestionOption_Repository;
+            }
+        }
+        public GenericRepo<RegistrationFormCategory> registrationFormCategory_Repository
+        {
+            get
+            {
+                if (RegistrationFormCategory_Repository == null)
+                {
+                    RegistrationFormCategory_Repository = new GenericRepo<RegistrationFormCategory>(db);
+                }
+                return RegistrationFormCategory_Repository;
             }
         }
 

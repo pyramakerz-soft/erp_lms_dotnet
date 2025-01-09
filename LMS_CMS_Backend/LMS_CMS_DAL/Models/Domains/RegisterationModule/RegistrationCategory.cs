@@ -23,5 +23,6 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         public long RegistrationFormID { get; set; }
         public RegistrationForm RegistrationForm { get; set; }
         public ICollection<CategoryField> CategoryFields { get; set; } = new HashSet<CategoryField>();
+        public ICollection<RegistrationFormCategory> RegistrationFormCategories { get; set; } = new HashSet<RegistrationFormCategory>();
     }
 }

@@ -266,6 +266,19 @@ namespace LMS_CMS_BL.Config
             CreateMap<RegistrationCategoryAddDTO, RegistrationCategory>();
             CreateMap<RegistrationCategoryEditDTO, RegistrationCategory>();
 
+
+            CreateMap<CategoryField, CategoryFieldGetDTO>()
+                .ForMember(dest => dest.FieldTypeID, opt => opt.MapFrom(src => src.FieldType.ID))
+                .ForMember(dest => dest.FieldTypeName, opt => opt.MapFrom(src => src.FieldType.Name))
+                .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.FieldOptions));
+            CreateMap<CategoryFieldAddDTO, CategoryField>();
+            CreateMap<CategoryFieldEditDTO, CategoryField>();
+
+
+            CreateMap<FieldOption, FieldOptionGetDTO>()
+               .ForMember(dest => dest.CategoryFieldID, opt => opt.MapFrom(src => src.CategoryField.ID))
+               .ForMember(dest => dest.CategoryFieldName, opt => opt.MapFrom(src => src.CategoryField.EnName));
+
         }
     }
 }

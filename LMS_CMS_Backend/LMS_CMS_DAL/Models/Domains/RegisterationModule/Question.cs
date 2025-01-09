@@ -11,7 +11,7 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
     public class Question: AuditableEntity
     {
         [Key]
-        public int ID { get; set; }
+        public long ID { get; set; }
         public string Description { get; set; }
         public string? Image { get; set; }
         public string? Video { get; set; }

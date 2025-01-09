@@ -11,7 +11,7 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
     public class RegisterationFormTestAnswer : AuditableEntity
     {
         [Key]
-        public int ID { get; set; }
+        public long ID { get; set; }
         public string? EssayAnswer { get; set; }
         [ForeignKey("Question")]
         [Required]

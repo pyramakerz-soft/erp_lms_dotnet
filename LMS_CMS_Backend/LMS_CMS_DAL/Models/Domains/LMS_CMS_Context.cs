@@ -62,7 +62,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<RegisterationFormParent> RegisterationFormParent { get; set; }
         public DbSet<RegisterationFormState> RegisterationFormState { get; set; }
         public DbSet<InterviewState> InterViewState { get; set; }
-
+        public DbSet<RegistrationFormCategory> RegistrationFormCategory { get; set; }
 
 
 
@@ -130,6 +130,10 @@ namespace LMS_CMS_DAL.Models.Domains
                 .ValueGeneratedNever();
 
             modelBuilder.Entity<FieldType>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+            
+            modelBuilder.Entity<QuestionType>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
@@ -439,6 +443,12 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasForeignKey(p => p.SubjectID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Test>()
+                .HasOne(p => p.Grade)
+                .WithMany(p => p.Tests)
+                .HasForeignKey(p => p.GradeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<RegisterationFormInterview>()
                 .HasOne(p => p.InterviewState)
                 .WithMany(p => p.RegisterationFormInterviews)
@@ -480,11 +490,17 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany(p => p.CategoryFields)
                 .HasForeignKey(p => p.RegistrationCategoryID)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<RegistrationCategory>()
+            
+            modelBuilder.Entity<RegistrationFormCategory>()
                 .HasOne(p => p.RegistrationForm)
-                .WithMany(p => p.RegistrationCategorys)
+                .WithMany(p => p.RegistrationFormCategories)
                 .HasForeignKey(p => p.RegistrationFormID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<RegistrationFormCategory>()
+                .HasOne(p => p.RegistrationCategory)
+                .WithMany(p => p.RegistrationFormCategories)
+                .HasForeignKey(p => p.RegistrationCategoryID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RegisterationFormSubmittion>()

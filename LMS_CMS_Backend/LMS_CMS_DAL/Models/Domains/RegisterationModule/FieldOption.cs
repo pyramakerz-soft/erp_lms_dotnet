@@ -18,10 +18,6 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         [ForeignKey("CategoryField")]
         public long CategoryFieldID { get; set; }
         public CategoryField CategoryField { get; set; }
-
-        public static implicit operator FieldOption(List<FieldOption> v)
-        {
-            throw new NotImplementedException();
-        }
+        public ICollection<RegisterationFormSubmittion> RegisterationFormSubmittions { get; set; } = new HashSet<RegisterationFormSubmittion>();
     }
 }

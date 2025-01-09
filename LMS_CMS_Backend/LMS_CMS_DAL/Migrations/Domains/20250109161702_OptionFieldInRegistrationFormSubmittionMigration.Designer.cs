@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250109161702_OptionFieldInRegistrationFormSubmittionMigration")]
+    partial class OptionFieldInRegistrationFormSubmittionMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2083,10 +2086,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("GradeID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2103,7 +2102,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<long?>("ParentID")
+                    b.Property<long>("ParentID")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Phone")
@@ -2132,9 +2131,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasKey("ID");
 
                     b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.HasIndex("InsertedByUserId");
 
@@ -2202,10 +2198,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("RegisterationFormParentID")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("SelectedFieldOptionID")
+                    b.Property<long>("SelectedFieldOptionID")
                         .HasColumnType("bigint");
 
                     b.Property<string>("TextAnswer")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -3835,7 +3832,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Parent", "Parent")
                         .WithMany("RegisterationFormParents")
                         .HasForeignKey("ParentID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegisterationFormState", "RegisterationFormState")
                         .WithMany("RegisterationFormParents")
@@ -3890,7 +3888,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.FieldOption", "FieldOption")
                         .WithMany("RegisterationFormSubmittions")
                         .HasForeignKey("SelectedFieldOptionID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()

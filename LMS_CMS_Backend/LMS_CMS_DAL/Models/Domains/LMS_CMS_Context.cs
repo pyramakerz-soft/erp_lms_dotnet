@@ -116,7 +116,13 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<RegisterationFormState>()
                .HasIndex(p => p.Name)
                .IsUnique();
+
+            modelBuilder.Entity<RegisterationFormParent>()
+               .HasIndex(p => p.Email)
+               .IsUnique();
+
             ///////////////////////// No Identity: /////////////////////////
+            
             modelBuilder.Entity<Page>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
@@ -513,6 +519,12 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasOne(p => p.CategoryField)
                 .WithMany(p => p.RegisterationFormSubmittions)
                 .HasForeignKey(p => p.CategoryFieldID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormSubmittion>()
+                .HasOne(p => p.FieldOption)
+                .WithMany(p => p.RegisterationFormSubmittions)
+                .HasForeignKey(p => p.SelectedFieldOptionID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<RegisterationFormParent>()

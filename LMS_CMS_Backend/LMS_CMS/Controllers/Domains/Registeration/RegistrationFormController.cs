@@ -34,7 +34,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Registration Form", "Registration" }
         )]
-        public IActionResult GetById(long id)
+        public async Task<IActionResult> GetById(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -61,87 +61,51 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 return NotFound("No Registration Form with this ID");
             }
 
-            //List<RegistrationFormCategory> registrationFormCategory = await Unit_Of_Work.registrationFormCategory_Repository.Select_All_With_IncludesById<RegistrationFormCategory>(
-            //    t => t.IsDeleted != true && t.ID == registrationForm.ID,
-            //    query => query.Include(e => e.RegistrationForm),
-            //    query => query.Include(e => e.RegistrationCategory)
-            //    );
+            List<RegistrationFormCategory> RegistrationFormCategories = await Unit_Of_Work.registrationFormCategory_Repository.Select_All_With_IncludesById
+                <RegistrationFormCategory>(
+                    t => t.RegistrationFormID == id && t.IsDeleted != true,
+                    query => query.Include(rfc => rfc.RegistrationCategory)
+                    .ThenInclude(rc => rc.CategoryFields)
+                    .ThenInclude(cf => cf.FieldOptions)
+                    );
 
-            //List<RegistrationFormCategory> registrationFormCategory = Unit_Of_Work.registrationFormCategory_Repository.FindBy(
-            //    t => t.IsDeleted != true && t.ID == registrationForm.ID);
-
-            //var registrationCategories = Unit_Of_Work.registrationFormCategory_Repository
-            //.FindBy(t => t.RegistrationFormID == id && t.IsDeleted != true)
-            //.Select(rfc => new
-            //{
-            //    Category = rfc.RegistrationCategory,
-            //    Fields = Unit_Of_Work.categoryField_Repository
-            //        .FindBy(cf => cf.RegistrationCategoryID == rfc.RegistrationCategoryID && cf.IsDeleted != true)
-            //        .Select(field => new
-            //        {
-            //            field.EnName,
-            //            field.ArName,
-            //            field.OrderInForm,
-            //            field.IsMandatory,
-            //            FieldType = Unit_Of_Work.fieldType_Repository.First_Or_Default(ft => ft.ID == field.FieldTypeID),
-            //            //Options = Unit_Of_Work.fieldOption_Repository
-            //            //    .FindBy(fo => fo.FieldID == field.ID && fo.IsDeleted != true)
-            //            //    .Select(option => new { option.Name })
-            //            //    .ToList()
-            //        })
-            //        .ToList()
-            //})
-            //.ToList();
-
-            //var response = new
-            //{
-            //    RegistrationForm = new
-            //    {
-            //        registrationForm.ID,
-            //        registrationForm.Name
-            //    },
-            //    RegistrationCategory = registrationCategories
-            //};
-
-
-            var categories = Unit_Of_Work.registrationFormCategory_Repository
-                .FindBy(t => t.RegistrationFormID == id && t.IsDeleted != true)
+            var categories = RegistrationFormCategories
                 .Select(rfc => new RegistrationCategoryGetDTO
                 {
-                    ID = rfc.RegistrationCategory.ID,
-                    EnName = rfc.RegistrationCategory.EnName,
-                    ArName = rfc.RegistrationCategory.ArName,
-                    OrderInForm = rfc.RegistrationCategory.OrderInForm,
-                    InsertedByUserId = rfc.RegistrationCategory.InsertedByUserId,
+                    ID = rfc.RegistrationCategory?.ID ?? 0, 
+                    EnName = rfc.RegistrationCategory?.EnName ?? string.Empty,
+                    ArName = rfc.RegistrationCategory?.ArName ?? string.Empty,
+                    OrderInForm = rfc.RegistrationCategory?.OrderInForm ?? 0,
+                    InsertedByUserId = rfc.RegistrationCategory?.InsertedByUserId,
                     Fields = Unit_Of_Work.categoryField_Repository
                         .FindBy(cf => cf.RegistrationCategoryID == rfc.RegistrationCategoryID && cf.IsDeleted != true)
                         .Select(field => new CategoryFieldGetDTO
                         {
                             ID = field.ID,
-                            EnName = field.EnName,
-                            ArName = field.ArName,
+                            EnName = field.EnName ?? string.Empty, 
+                            ArName = field.ArName ?? string.Empty,  
                             OrderInForm = field.OrderInForm,
                             IsMandatory = field.IsMandatory,
                             InsertedByUserId = field.InsertedByUserId,
                             FieldTypeID = field.FieldTypeID,
                             FieldTypeName = Unit_Of_Work.fieldType_Repository
-                                .First_Or_Default(ft => ft.ID == field.FieldTypeID)?.Name,
+                                .First_Or_Default(ft => ft.ID == field.FieldTypeID)?.Name ?? string.Empty,  
                             RegistrationCategoryID = field.RegistrationCategoryID,
-                            RegistrationCategoryName = rfc.RegistrationCategory.EnName, 
+                            RegistrationCategoryName = rfc.RegistrationCategory?.EnName ?? string.Empty, 
                             Options = Unit_Of_Work.fieldOption_Repository
                                 .FindBy(fo => fo.CategoryFieldID == field.ID && fo.IsDeleted != true)
                                 .Select(option => new FieldOptionGetDTO
                                 {
                                     ID = option.ID,
-                                    Name = option.Name,
+                                    Name = option.Name ?? string.Empty, 
                                     CategoryFieldID = option.CategoryFieldID,
-                                    CategoryFieldName = field.EnName 
+                                    CategoryFieldName = field.EnName ?? string.Empty  
                                 })
-                                .ToList()
+                                .ToList() ?? new List<FieldOptionGetDTO>() // Default to empty list
                         })
-                        .ToList()
+                        .ToList() ?? new List<CategoryFieldGetDTO>() // Default to empty list
                 })
-                .ToList();
+                .ToList() ?? new List<RegistrationCategoryGetDTO>(); // Default to empty list
 
             var response = new RegistrationFormGetDTO
             {

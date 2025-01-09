@@ -13,16 +13,17 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
     {
         [Key]
         public long ID { get; set; }
-        // Those 3 fields are only to make it easy for us when retrieving the data
+        // Those 4 fields are only to make it easy for us when retrieving the data
         public string StudentName { get; set; }
         public string Phone { get; set; }
         public string GradeID { get; set; }
+        public string Email { get; set; }
         [ForeignKey("RegisterationFormState")]
         public long? RegisterationFormStateID { get; set; }
         public RegisterationFormState? RegisterationFormState { get; set; }
         [ForeignKey("Parent")]
-        public long ParentID { get; set; }
-        public Parent Parent { get; set; }
+        public long? ParentID { get; set; }
+        public Parent? Parent { get; set; }
         [ForeignKey("RegistrationForm")]
         public long RegistrationFormID { get; set; }
         public RegistrationForm RegistrationForm { get; set; }

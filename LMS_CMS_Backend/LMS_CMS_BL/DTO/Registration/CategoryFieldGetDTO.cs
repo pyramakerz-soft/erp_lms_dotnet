@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.Registration
 {
-    public class RegistrationCategoryGetDTO
+    public class CategoryFieldGetDTO
     {
         public long ID { get; set; }
         public string EnName { get; set; }
         public string ArName { get; set; }
         public int OrderInForm { get; set; }
+        public bool IsMandatory { get; set; }
         public long? InsertedByUserId { get; set; }
-        public List<CategoryFieldGetDTO> Fields { get; set; }
+        public long FieldTypeID { get; set; }
+        public string FieldTypeName { get; set; }
+        public long RegistrationCategoryID { get; set; }
+        public string RegistrationCategoryName { get; set; }
+        public List<FieldOptionGetDTO> Options { get; set; }
     }
 }

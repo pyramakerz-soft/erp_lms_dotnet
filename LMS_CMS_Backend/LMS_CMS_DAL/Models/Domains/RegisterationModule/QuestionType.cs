@@ -10,7 +10,7 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
     public class QuestionType
     {
         [Key]
-        public int ID { get; set; }
+        public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }

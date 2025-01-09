@@ -10,6 +10,8 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
     public class CategoryField : AuditableEntity
     {
+        [Key]
+        public long ID { get; set; }
         [Required(ErrorMessage = "English Name is required")]
         [StringLength(100, ErrorMessage = "English Name cannot be longer than 100 characters.")]
         public string EnName { get; set; }

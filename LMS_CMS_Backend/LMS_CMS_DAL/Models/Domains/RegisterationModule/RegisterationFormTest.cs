@@ -13,7 +13,7 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
     {
         [Key]
         public long ID { get; set; }
-        public decimal Mark { get; set; }
+        public double Mark { get; set; }
         public bool VisibleToParent { get; set; }
 
         [ForeignKey("Test")]

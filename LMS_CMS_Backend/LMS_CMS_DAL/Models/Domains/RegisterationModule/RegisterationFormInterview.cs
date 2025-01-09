@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,8 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
     public class RegisterationFormInterview : AuditableEntity
     {
+        [Key]
+        public long ID { get; set; }
         [ForeignKey("InterviewState")]
         public long? InterviewStateID { get; set; }
         public InterviewState? InterviewState { get; set; }

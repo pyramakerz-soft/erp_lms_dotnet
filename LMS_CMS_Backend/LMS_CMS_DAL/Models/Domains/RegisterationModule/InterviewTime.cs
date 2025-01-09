@@ -1,6 +1,7 @@
 ﻿using LMS_CMS_DAL.Models.Domains.LMS;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
     public class InterviewTime : AuditableEntity
     {
+        [Key]
+        public long ID { get; set; }
         public string Date { get; set; }
         public string FromTime { get; set; }
         public string ToTime { get; set; }

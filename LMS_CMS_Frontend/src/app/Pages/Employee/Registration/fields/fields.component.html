@@ -111,6 +111,7 @@
 
         <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">Create Categories</h1>
         <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">Edit Categories</h1>
+        
         <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories English</h6>
             <div class="flex justify-start  gap-2 items-start">
@@ -120,6 +121,7 @@
                         [(ngModel)]="field.enName" placeholder="Enter Name of Categories " />
                 </div>
             </div>
+
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories Arabic</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
@@ -128,6 +130,7 @@
                         [(ngModel)]="field.arName" placeholder="Enter Name of Categories " />
                 </div>
             </div>
+
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Field Type</h6>
             <div class="flex flex-col mb-4">
                 <select (ngModelChange)="onInputValueChange()"
@@ -153,7 +156,7 @@
                     (keydown.enter)="addOption()" placeholder="Enter option" />
             </div>
 
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Order in Form </h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Order in Category </h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text"
@@ -161,6 +164,7 @@
                         [(ngModel)]="field.orderInForm" placeholder=" " type="number" min="0" step="1" />
                 </div>
             </div>
+
             <div class="flex items-center">
                 <input type="checkbox" id="i" [(ngModel)]="field.isMandatory"
                     class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" />
@@ -168,6 +172,7 @@
                     IsMendatory
                 </label>
             </div>
+
             <div class="flex justify-end">
                 <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
                     Save

@@ -55,11 +55,13 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<FieldOption> FieldOption { get; set; }
         public DbSet<FieldType> FieldType { get; set; }
         public DbSet<CategoryField> CategoryField { get; set; }
+        public DbSet<RegistrationCategory> RegistrationCategory { get; set; }
         public DbSet<RegisterationFormTest> RegisterationFormTest { get; set; }
         public DbSet<RegistrationForm> RegistrationForm  { get; set; }
         public DbSet<RegisterationFormSubmittion> RegisterationFormSubmittion { get; set; }
         public DbSet<RegisterationFormParent> RegisterationFormParent { get; set; }
         public DbSet<RegisterationFormState> RegisterationFormState { get; set; }
+        public DbSet<InterviewState> InterViewState { get; set; }
         public DbSet<RegistrationFormCategory> RegistrationFormCategory { get; set; }
 
 

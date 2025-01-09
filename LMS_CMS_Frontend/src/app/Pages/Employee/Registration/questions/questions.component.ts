@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { RegistrationCategory } from '../../../../Models/Registration/registration-category';
+import { Test } from '../../../../Models/Registration/test';
+import { Question } from '../../../../Models/Registration/question';
 import { TokenData } from '../../../../Models/token-data';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
@@ -8,15 +9,16 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { QuestionType } from '../../../../Models/Registration/question-type';
 
 @Component({
-  selector: 'app-registration-form-field',
+  selector: 'app-questions',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './registration-form-field.component.html',
-  styleUrl: './registration-form-field.component.css'
+  templateUrl: './questions.component.html',
+  styleUrl: './questions.component.css'
 })
-export class RegistrationFormFieldComponent {
+export class QuestionsComponent {
 
   User_Data_After_Login: TokenData = new TokenData(
     '',
@@ -35,7 +37,6 @@ export class RegistrationFormFieldComponent {
   UserID: number = 0;
   path: string = '';
 
-  Data: RegistrationCategory[] = [];
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
@@ -44,8 +45,17 @@ export class RegistrationFormFieldComponent {
   mode: string = 'Create'
 
   isModalVisible: boolean = false;
+  Data: Question[] = []
+  test: Test = new Test();
+  question: Question = new Question();
 
-  Category: RegistrationCategory = new RegistrationCategory();
+  testId: number = 0;
+
+  QuestionTypes:QuestionType[]=[]
+
+  options:string[]=[]
+  NewOption:string=""
+
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -57,12 +67,12 @@ export class RegistrationFormFieldComponent {
   ) { }
 
   ngOnInit() {
-
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
     this.DomainName = this.ApiServ.GetHeader();
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
+      this.testId = Number(this.activeRoute.snapshot.paramMap.get('id'))
     });
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -78,25 +88,30 @@ export class RegistrationFormFieldComponent {
     this.GetAllData();
   }
 
+  moveToEmployee() {
+
+  }
+
   GetAllData() {
+
+  }
+  GetQuestionType(){
 
   }
 
   Create() {
     this.mode = 'Create';
-    this.Category = new RegistrationCategory();
-    this.Category.orderInForm = 0;
+    this.question = new Question();
     this.openModal();
-
   }
 
   Delete(id: number) {
 
   }
 
-  Edit(row: RegistrationCategory) {
+  Edit(row: Question) {
     this.mode = 'Edie';
-    this.Category = row;
+    this.question = row;
     this.openModal();
   }
 
@@ -122,11 +137,12 @@ export class RegistrationFormFieldComponent {
     this.isModalVisible = true;
   }
 
-  view(id: number) {
-    this.router.navigateByUrl(`Employee/CategoryFields/${id}`)
-  }
-
   onInputValueChange() {
 
+  }
+
+  AddOption(){
+    this.options.push(this.NewOption);
+    this.NewOption=''
   }
 }

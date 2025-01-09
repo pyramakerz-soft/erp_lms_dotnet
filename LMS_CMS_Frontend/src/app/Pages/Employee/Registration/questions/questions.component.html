@@ -1,0 +1,210 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Admission Tests</h1>
+    </div>
+</div>
+
+<div class="flex flex-wrap justify-between mt-5 mb-5">
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Title</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ test.title }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Total Mark</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ test.totalMark }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Year</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ test.academicYearName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">School</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ test.schoolName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Grade</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ test.gradeName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ test.subjectName }}</p>
+    </div>
+</div>
+
+
+<div class="">
+    <div class="flex justify-between items-center">
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Questions</h1>
+        <div class="flex justify-between items-center ">
+            <button (click)="Create()"
+                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+                Add Question
+            </button>
+        </div>
+    </div>
+
+
+    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+            <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                <tr>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        ID
+                    </th>
+                    <th
+                        class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                        Description
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Question Type Name
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Correct Answer Name
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        TestName
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- No Data Row -->
+                <tr *ngIf="Data.length === 0">
+                    <td colspan="17"
+                        class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                        No Data Found
+                    </td>
+                </tr>
+
+                <!-- Data Rows -->
+                <tr *ngFor="let row of Data; let i = index"
+                    [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                    class="border-t border-gray-300 text-xs md:text-sm">
+                    <td
+                        class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e] hover:bg-gray-200">
+                        {{ row.id }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.description }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.questionTypeName }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.correctAnswerName }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.testName }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div class="flex space-x-4">
+                            <button (click)="Delete(row.id)" *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button (click)="Edit(row)" *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isModalVisible}"
+    class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+    <div class="relative bg-white w-[669px] rounded-2xl p-12 gap-4 shadow-md overflow-y-auto max-h-[90vh]">
+        <!-- Close Icon -->
+        <button (click)="closeModal()"
+            class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+        </button>
+
+        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">Create Categories</h1>
+        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">Edit Categories</h1>
+
+        <div class="mt-4 bg-[#F7F7F7] w-[573px] rounded-[24px] p-[16px_24px] gap-[20px]">
+
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Description</h6>
+            <div class="flex justify-start gap-2 items-start">
+                <div class="flex flex-col">
+                    <textarea
+                        class="w-[500px] h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+                        [(ngModel)]="question.description" placeholder="Enter Description">
+                    </textarea>
+                </div>
+            </div>
+
+            <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
+                <div class="flex justify-center w-full">
+                    <label for="file-upload"
+                        class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                        <img src="Images/Icon frame.png" class="w-1/4" alt="Upload Icon">
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
+                            <span class="secondaryTxt">Click to Upload</span> or drag and drop files
+                        </p>
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB each)</p>
+                    </label>
+                    <input id="file-upload" type="file" class="hidden" accept="image/jpeg, image/png" multiple />
+                </div>
+            </div>
+
+            <h6 class="font-medium text-base leading-6 mb-2 mt-3">Question Types</h6>
+            <div class="flex flex-col mb-4">
+                <select (ngModelChange)="onInputValueChange()"
+                    class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3"
+                    id="test" [(ngModel)]="question.questionTypeID">
+                    <option [value]="0" disabled selected hidden>Choose Question Type</option>
+                    <option *ngFor="let type of QuestionTypes" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="QuestionTypes.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <h6 class="font-medium text-base leading-6 mb-2 mt-3">Options</h6>
+            <div class="flex justify-start gap-2 items-start ">
+                <div class="flex flex-col">
+                    <input type="text"
+                        [(ngModel)]="NewOption"
+                        class="w-[450px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                        placeholder="Enter New Option" />
+                </div>
+                <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg" (click)="AddOption()">
+                    Add
+                </button>
+            </div>
+            <div class="w-[500px]">
+                <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+                    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+                        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                            <tr>
+                                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                                    Correct
+                                </th>
+                                <th
+                                    class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                                    Option
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of options; let i = index"
+                                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                                class="border-t border-gray-300 text-xs md:text-sm">
+                                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                    <i class="fa-regular fa-circle-dot"></i>
+                                </td>
+                                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="flex justify-end">
+                <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
+                    Save
+                </button>
+            </div>
+
+
+        </div>
+    </div>
+</div>

@@ -21,7 +21,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                   ('School', N'المدرسة', 7, 'true', 1, 4),
                   ('Academic Year', N'السنة الدراسية', 8, 'true', 1, 4),
                   ('Current Grade', N'الصف الحالي', 9, 'true', 1, 4),
-                  ('Current Grade', N'الصف المنقول منه', 10, 'true', 1, 1),
+                  ('Transferred Grad', N'الصف المنقول منه', 10, 'true', 1, 1),
                   ('Student’s ID No.', N'رقم هوية الطالب', 11, 'true', 1, 1),
                   ('Student’s Passport No.', N'رقم جواز سفر الطالب', 12, 'false', 1, 1),
                   ('Previous School', N'المدرسة السابقة', 13, 'false', 1, 1),

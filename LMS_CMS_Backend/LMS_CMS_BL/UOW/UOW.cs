@@ -63,9 +63,15 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<InterviewState> InterviewState_Repository;
         GenericRepo<RegisterationFormInterview> RegisterationFormInterview_Repository;
         GenericRepo<InterviewTime> InterviewTime_Repository;
+        GenericRepo<TestState> TestState_Repository;
+        GenericRepo<RegisterationFormTest> RegisterationFormTest_Repository;
+        GenericRepo<RegisterationFormTestAnswer> RegisterationFormTestAnswer_Repository;
+        GenericRepo<QuestionType> QuestionType_Repository;
+        GenericRepo<Question> Question_Repository;
+        GenericRepo<Test> Test_Repository;
+        GenericRepo<MCQQuestionOption> MCQQuestionOption_Repository;
 
-
-
+         
         public UOW(Octa_DbContext octa_Db)
         {
             this.octa_Db = octa_Db;
@@ -580,6 +586,83 @@ namespace LMS_CMS_BL.UOW
                     InterviewTime_Repository = new GenericRepo<InterviewTime>(db);
                 }
                 return InterviewTime_Repository;
+            }
+        }
+        public GenericRepo<TestState> testState_Repository
+        {
+            get
+            {
+                if (TestState_Repository == null)
+                {
+                    TestState_Repository = new GenericRepo<TestState>(db);
+                }
+                return TestState_Repository;
+            }
+        }
+        public GenericRepo<RegisterationFormTest> registerationFormTest_Repository
+        {
+            get
+            {
+                if (RegisterationFormTest_Repository == null)
+                {
+                    RegisterationFormTest_Repository = new GenericRepo<RegisterationFormTest>(db);
+                }
+                return RegisterationFormTest_Repository;
+            }
+        }
+        public GenericRepo<RegisterationFormTestAnswer> registerationFormTestAnswer_Repository
+        {
+            get
+            {
+                if (RegisterationFormTestAnswer_Repository == null)
+                {
+                    RegisterationFormTestAnswer_Repository = new GenericRepo<RegisterationFormTestAnswer>(db);
+                }
+                return RegisterationFormTestAnswer_Repository;
+            }
+        } 
+        public GenericRepo<QuestionType> questionType_Repository
+        {
+            get
+            {
+                if (QuestionType_Repository == null)
+                {
+                    QuestionType_Repository = new GenericRepo<QuestionType>(db);
+                }
+                return QuestionType_Repository;
+            }
+        }
+        public GenericRepo<Question> question_Repository
+        {
+            get
+            {
+                if (Question_Repository == null)
+                {
+                    Question_Repository = new GenericRepo<Question>(db);
+                }
+                return Question_Repository;
+            }
+        }
+        public GenericRepo<Test> test_Repository
+        {
+            get
+            {
+                if (Test_Repository == null)
+                {
+                    Test_Repository = new GenericRepo<Test>(db);
+                }
+                return Test_Repository;
+            }
+        }
+        public GenericRepo<MCQQuestionOption> mCQQuestionOption_Repository
+        {
+            get
+            {
+                if (MCQQuestionOption_Repository == null)
+                {
+                    MCQQuestionOption_Repository = new GenericRepo<MCQQuestionOption>(db);
+                }
+                return MCQQuestionOption_Repository;
             }
         }
 

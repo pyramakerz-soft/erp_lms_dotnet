@@ -45,12 +45,16 @@ import { SemesterComponent } from './Pages/Employee/LMS/semester/semester.compon
 import { SemesterViewComponent } from './Pages/Employee/LMS/semester-view/semester-view.component';
 import { RegistrationFormFieldComponent } from './Pages/Employee/Registration/registration-form-field/registration-form-field.component';
 import { FieldsComponent } from './Pages/Employee/Registration/fields/fields.component';
+import { AdmissionTestComponent } from './Pages/Employee/Registration/admission-test/admission-test.component';
+import { QuestionsComponent } from './Pages/Employee/Registration/questions/questions.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
     { path: "Octa/login", component: OctaLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
 
-    
+    { path: "Admission Test", component: AdmissionTestComponent, title: "Admission Test"},
+    { path: "question", component: QuestionsComponent, title: "question"},
+
     { 
         path: "Employee",     
         component: MainLayoutComponent, 

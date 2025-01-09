@@ -59,7 +59,6 @@ export class SchoolService {
     const headers = new HttpHeaders()
     .set('domain-name', this.header)
     .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json');
 
     const formData = new FormData();
     formData.append('id', school.id.toString() ?? '');

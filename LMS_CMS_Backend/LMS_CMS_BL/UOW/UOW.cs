@@ -2,6 +2,7 @@
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,17 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<LMS_CMS_DAL.Models.Domains.LMS.SchoolType> SchoolType_Repository;
         GenericRepo<LMS_CMS_DAL.Models.Octa.SchoolType> SchoolType_Octa_Repository;
         GenericRepo<Classroom> Classroom_Repository;
+        GenericRepo<RegisterationFormState> RegisterationFormState_Repository;
+        GenericRepo<RegisterationFormParent> RegisterationFormParent_Repository;
+        GenericRepo<RegisterationFormSubmittion> RegisterationFormSubmittion_Repository;
+        GenericRepo<RegistrationForm> RegistrationForm_Repository;
+        GenericRepo<RegistrationCategory> RegistrationCategory_Repository;
+        GenericRepo<CategoryField> CategoryField_Repository;
+        GenericRepo<FieldType> FieldType_Repository;
+        GenericRepo<FieldOption> FieldOption_Repository;
+        GenericRepo<InterviewState> InterviewState_Repository;
+        GenericRepo<RegisterationFormInterview> RegisterationFormInterview_Repository;
+        GenericRepo<InterviewTime> InterviewTime_Repository;
 
 
 
@@ -447,6 +459,127 @@ namespace LMS_CMS_BL.UOW
                     Classroom_Repository = new GenericRepo<Classroom>(db);
                 }
                 return Classroom_Repository;
+            }
+        }
+        public GenericRepo<RegisterationFormState> registerationFormState_Repository
+        {
+            get
+            {
+                if (RegisterationFormState_Repository == null)
+                {
+                    RegisterationFormState_Repository = new GenericRepo<RegisterationFormState>(db);
+                }
+                return RegisterationFormState_Repository;
+            }
+        }
+        public GenericRepo<RegisterationFormParent> registerationFormParent_Repository
+        {
+            get
+            {
+                if (RegisterationFormParent_Repository == null)
+                {
+                    RegisterationFormParent_Repository = new GenericRepo<RegisterationFormParent>(db);
+                }
+                return RegisterationFormParent_Repository;
+            }
+        }
+        public GenericRepo<RegisterationFormSubmittion> registerationFormSubmittion_Repository
+        {
+            get
+            {
+                if (RegisterationFormSubmittion_Repository == null)
+                {
+                    RegisterationFormSubmittion_Repository = new GenericRepo<RegisterationFormSubmittion>(db);
+                }
+                return RegisterationFormSubmittion_Repository;
+            }
+        }
+        public GenericRepo<RegistrationForm> registrationForm_Repository
+        {
+            get
+            {
+                if (RegistrationForm_Repository == null)
+                {
+                    RegistrationForm_Repository = new GenericRepo<RegistrationForm>(db);
+                }
+                return RegistrationForm_Repository;
+            }
+        }
+        public GenericRepo<RegistrationCategory> registrationCategory_Repository
+        {
+            get
+            {
+                if (RegistrationCategory_Repository == null)
+                {
+                    RegistrationCategory_Repository = new GenericRepo<RegistrationCategory>(db);
+                }
+                return RegistrationCategory_Repository;
+            }
+        }
+        public GenericRepo<CategoryField> categoryField_Repository
+        {
+            get
+            {
+                if (CategoryField_Repository == null)
+                {
+                    CategoryField_Repository = new GenericRepo<CategoryField>(db);
+                }
+                return CategoryField_Repository;
+            }
+        }
+        public GenericRepo<FieldType> fieldType_Repository
+        {
+            get
+            {
+                if (FieldType_Repository == null)
+                {
+                    FieldType_Repository = new GenericRepo<FieldType>(db);
+                }
+                return FieldType_Repository;
+            }
+        }
+        public GenericRepo<FieldOption> fieldOption_Repository
+        {
+            get
+            {
+                if (FieldOption_Repository == null)
+                {
+                    FieldOption_Repository = new GenericRepo<FieldOption>(db);
+                }
+                return FieldOption_Repository;
+            }
+        }
+        public GenericRepo<InterviewState> interviewState_Repository
+        {
+            get
+            {
+                if (InterviewState_Repository == null)
+                {
+                    InterviewState_Repository = new GenericRepo<InterviewState>(db);
+                }
+                return InterviewState_Repository;
+            }
+        }
+        public GenericRepo<RegisterationFormInterview> registerationFormInterview_Repository
+        {
+            get
+            {
+                if (RegisterationFormInterview_Repository == null)
+                {
+                    RegisterationFormInterview_Repository = new GenericRepo<RegisterationFormInterview>(db);
+                }
+                return RegisterationFormInterview_Repository;
+            }
+        }
+        public GenericRepo<InterviewTime> interviewTime_Repository
+        {
+            get
+            {
+                if (InterviewTime_Repository == null)
+                {
+                    InterviewTime_Repository = new GenericRepo<InterviewTime>(db);
+                }
+                return InterviewTime_Repository;
             }
         }
 

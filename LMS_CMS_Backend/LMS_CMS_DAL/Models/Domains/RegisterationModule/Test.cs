@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
-    public class Test
+    public class Test : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
@@ -29,8 +29,6 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 
         public ICollection<Question> Questions { get; set; } = new HashSet<Question>();
         public ICollection<RegisterationFormTest> RegisterationFormTests { get; set; } = new HashSet<RegisterationFormTest>();
-
-
 
     }
 }

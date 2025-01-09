@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
-    public class FieldType
+    public class FieldType 
     {
         [Key]
         public long ID { get; set; }

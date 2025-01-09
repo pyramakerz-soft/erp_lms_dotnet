@@ -1,5 +1,6 @@
 ﻿using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -83,6 +84,17 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasIndex(p => p.Name)
                 .IsUnique();
 
+            modelBuilder.Entity<TestState>()
+               .HasIndex(p => p.Name)
+               .IsUnique();
+
+            modelBuilder.Entity<InterviewState>()
+               .HasIndex(p => p.Name)
+               .IsUnique();
+
+            modelBuilder.Entity<RegisterationFormState>()
+               .HasIndex(p => p.Name)
+               .IsUnique();
             ///////////////////////// No Identity: /////////////////////////
             modelBuilder.Entity<Page>()
                 .Property(p => p.ID)
@@ -96,6 +108,25 @@ namespace LMS_CMS_DAL.Models.Domains
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
+            modelBuilder.Entity<FieldType>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<MCQQuestionOption>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<InterviewState>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<TestState>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<RegisterationFormState>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
             ///////////////////////// OnDelete: /////////////////////////
             modelBuilder.Entity<Page>()
                  .HasOne(p => p.Parent)
@@ -312,6 +343,157 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasMany(e => e.EmployeeAttachments)
                 .WithOne(ea => ea.Employee)
                 .HasForeignKey(ea => ea.EmployeeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormTest>()
+                .HasOne(p => p.RegisterationFormParent)
+                .WithMany(p => p.RegisterationFormTests)
+                .HasForeignKey(p => p.RegisterationFormParentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<RegisterationFormTest>()
+                .HasOne(p => p.TestState)
+                .WithMany(p => p.RegisterationFormTests)
+                .HasForeignKey(p => p.StateID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormTest>()
+                .HasOne(p => p.Test)
+                .WithMany(p => p.RegisterationFormTests)
+                .HasForeignKey(p => p.TestID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormTestAnswer>()
+                .HasOne(p => p.RegisterationFormParent)
+                .WithMany(p => p.RegisterationFormTestAnswers)
+                .HasForeignKey(p => p.RegisterationFormParentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormTestAnswer>()
+                .HasOne(p => p.Question)
+                .WithMany(p => p.RegisterationFormTestAnswers)
+                .HasForeignKey(p => p.QuestionID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormTestAnswer>()
+                .HasOne(p => p.MCQQuestionOption)
+                .WithMany(p => p.RegisterationFormTestAnswers)
+                .HasForeignKey(p => p.AnswerID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<MCQQuestionOption>()
+                .HasOne(p => p.Question)
+                .WithMany(p => p.MCQQuestionOptions)
+                .HasForeignKey(p => p.Question_ID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Question>()
+                .HasOne(p => p.QuestionType)
+                .WithMany(p => p.Questions)
+                .HasForeignKey(p => p.QuestionTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Question>()
+                .HasOne(p => p.mCQQuestionOption)
+                .WithMany(p => p.Questions)
+                .HasForeignKey(p => p.CorrectAnswerID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Question>()
+                .HasOne(p => p.test)
+                .WithMany(p => p.Questions)
+                .HasForeignKey(p => p.TestID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Test>()
+                .HasOne(p => p.academicYear)
+                .WithMany(p => p.Tests)
+                .HasForeignKey(p => p.AcademicYearID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Test>()
+                .HasOne(p => p.subject)
+                .WithMany(p => p.Tests)
+                .HasForeignKey(p => p.SubjectID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormInterview>()
+                .HasOne(p => p.InterviewState)
+                .WithMany(p => p.RegisterationFormInterviews)
+                .HasForeignKey(p => p.InterviewStateID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormInterview>()
+                .HasOne(p => p.RegisterationFormParent)
+                .WithMany(p => p.RegisterationFormInterviews)
+                .HasForeignKey(p => p.RegisterationFormParentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormInterview>()
+                .HasOne(p => p.InterviewTime)
+                .WithMany(p => p.RegisterationFormInterviews)
+                .HasForeignKey(p => p.InterviewTimeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InterviewTime>()
+                .HasOne(p => p.AcademicYear)
+                .WithMany(p => p.InterviewTimes)
+                .HasForeignKey(p => p.AcademicYearID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<FieldOption>()
+                .HasOne(p => p.CategoryField)
+                .WithMany(p => p.FieldOptions)
+                .HasForeignKey(p => p.CategoryFieldID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CategoryField>()
+                .HasOne(p => p.FieldType)
+                .WithMany(p => p.CategoryFields)
+                .HasForeignKey(p => p.FieldTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CategoryField>()
+                .HasOne(p => p.RegistrationCategory)
+                .WithMany(p => p.CategoryFields)
+                .HasForeignKey(p => p.RegistrationCategoryID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegistrationCategory>()
+                .HasOne(p => p.RegistrationForm)
+                .WithMany(p => p.RegistrationCategorys)
+                .HasForeignKey(p => p.RegistrationFormID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormSubmittion>()
+                .HasOne(p => p.RegisterationFormParent)
+                .WithMany(p => p.RegisterationFormSubmittions)
+                .HasForeignKey(p => p.RegisterationFormParentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormSubmittion>()
+                .HasOne(p => p.CategoryField)
+                .WithMany(p => p.RegisterationFormSubmittions)
+                .HasForeignKey(p => p.CategoryFieldID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormParent>()
+                .HasOne(p => p.RegisterationFormState)
+                .WithMany(p => p.RegisterationFormParents)
+                .HasForeignKey(p => p.RegisterationFormStateID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormParent>()
+                .HasOne(p => p.Parent)
+                .WithMany(p => p.RegisterationFormParents)
+                .HasForeignKey(p => p.ParentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<RegisterationFormParent>()
+                .HasOne(p => p.RegistrationForm)
+                .WithMany(p => p.RegisterationFormParents)
+                .HasForeignKey(p => p.RegistrationFormID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             ///////////////////////// Exception: /////////////////////////

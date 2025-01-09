@@ -17,6 +17,5 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         public string Name { get; set; }
         public ICollection<RegisterationFormTest> RegisterationFormTests { get; set; } = new HashSet<RegisterationFormTest>();
 
-
     }
 }

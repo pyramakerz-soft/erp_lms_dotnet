@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
-    public class RegisterationFormTestAnswer
+    public class RegisterationFormTestAnswer : AuditableEntity
     {
         [Key]
         public int ID { get; set; }
@@ -23,10 +23,10 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         public long? AnswerID { get; set; }
         public MCQQuestionOption MCQQuestionOption { get; set; }
 
-        //[ForeignKey("RegisterationFormParent")]
-        //[Required]
-        //public long RegisterationFormParentID { get; set; }
-        //public RegisterationFormParent RegisterationFormParent { get; set; }
+        [ForeignKey("RegisterationFormParent")]
+        [Required]
+        public long RegisterationFormParentID { get; set; }
+        public RegisterationFormParent RegisterationFormParent { get; set; }
 
     }
 }

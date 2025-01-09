@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
-    public class MCQQuestionOption
+    public class MCQQuestionOption : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
@@ -21,6 +21,8 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         public long Question_ID { get; set; }
         public Question Question { get; set; }
         public ICollection<RegisterationFormTestAnswer> RegisterationFormTestAnswers { get; set; } = new HashSet<RegisterationFormTestAnswer>();
+        public ICollection<Question> Questions { get; set; } = new HashSet<Question>();
+
 
     }
 }

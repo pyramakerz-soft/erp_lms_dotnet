@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
-    public class RegisterationFormTest
+    public class RegisterationFormTest : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
@@ -25,7 +25,11 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         [Required]
         public long StateID { get; set; }
         public TestState TestState { get; set; }
-        //FK
-        //RegisterationFormParentID
+
+        [ForeignKey("RegisterationFormParent")]
+        [Required]
+        public long RegisterationFormParentID { get; set; }
+        public RegisterationFormParent RegisterationFormParent { get; set; }
+
     }
 }

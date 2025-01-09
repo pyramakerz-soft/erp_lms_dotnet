@@ -28,5 +28,8 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         public RegistrationForm RegistrationForm { get; set; }
         public ICollection<RegisterationFormSubmittion> RegisterationFormSubmittions { get; set; } = new HashSet<RegisterationFormSubmittion>();
         public ICollection<RegisterationFormInterview> RegisterationFormInterviews { get; set; } = new HashSet<RegisterationFormInterview>();
+        public ICollection<RegisterationFormTest> RegisterationFormTests { get; set; } = new HashSet<RegisterationFormTest>();
+        public ICollection<RegisterationFormTestAnswer> RegisterationFormTestAnswers { get; set; } = new HashSet<RegisterationFormTestAnswer>();
+
     }
 }

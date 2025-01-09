@@ -27,6 +27,6 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<Semester> Semesters { get; set; } = new HashSet<Semester>();
         public ICollection<Classroom> Classrooms { get; set; } = new HashSet<Classroom>();
         public ICollection<Test> Tests { get; set; } = new HashSet<Test>();
-
+        public ICollection<InterviewTime> InterviewTimes { get; set; } = new HashSet<InterviewTime>();
     }
 }

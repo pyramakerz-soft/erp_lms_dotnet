@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
-    public class RegisterationFormState
+    public class RegisterationFormState 
     {
         [Key]
         public long ID { get; set; }

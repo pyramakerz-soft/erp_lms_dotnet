@@ -35,9 +35,5 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         public ICollection<RegisterationFormTestAnswer> RegisterationFormTestAnswers { get; set; } = new HashSet<RegisterationFormTestAnswer>();
         public ICollection<MCQQuestionOption> MCQQuestionOptions { get; set; } = new HashSet<MCQQuestionOption>();
 
-
-
-
-
     }
 }

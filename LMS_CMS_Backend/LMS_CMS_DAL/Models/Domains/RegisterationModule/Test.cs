@@ -26,6 +26,11 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         [Required]
         public long SubjectID { get; set; }
         public Subject subject { get; set; }
+        
+        [ForeignKey("Grade")]
+        [Required]
+        public long GradeID { get; set; }
+        public Grade Grade { get; set; }
 
         public ICollection<Question> Questions { get; set; } = new HashSet<Question>();
         public ICollection<RegisterationFormTest> RegisterationFormTests { get; set; } = new HashSet<RegisterationFormTest>();

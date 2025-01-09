@@ -436,6 +436,12 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasForeignKey(p => p.SubjectID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Test>()
+                .HasOne(p => p.Grade)
+                .WithMany(p => p.Tests)
+                .HasForeignKey(p => p.GradeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<RegisterationFormInterview>()
                 .HasOne(p => p.InterviewState)
                 .WithMany(p => p.RegisterationFormInterviews)

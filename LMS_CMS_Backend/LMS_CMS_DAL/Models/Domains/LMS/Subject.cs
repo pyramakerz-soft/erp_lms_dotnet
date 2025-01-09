@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LMS_CMS_DAL.Models.Domains.RegisterationModule;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -34,6 +35,9 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("SubjectCategory")]
         public long SubjectCategoryID { get; set; }
         public SubjectCategory SubjectCategory { get; set; }
+
+        public ICollection<Test> Tests { get; set; } = new HashSet<Test>();
+
     }
 }
 

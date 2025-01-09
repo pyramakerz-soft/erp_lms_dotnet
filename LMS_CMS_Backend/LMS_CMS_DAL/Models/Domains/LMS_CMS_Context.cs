@@ -44,6 +44,24 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Classroom> Classroom { get; set; }
         public DbSet<SchoolType> SchoolType { get; set; }
 
+        public DbSet<RegisterationFormTestAnswer> RegisterationFormTestAnswer { get; set; }
+        public DbSet<QuestionType> QuestionType { get; set; }
+        public DbSet<MCQQuestionOption> MCQQuestionOption { get; set; }
+        public DbSet<Question> Question { get; set; }
+        public DbSet<Test> Test { get; set; }
+        public DbSet<TestState> TestState { get; set; }
+        public DbSet<InterviewTime> InterviewTime { get; set; }
+        public DbSet<RegisterationFormInterview> RegisterationFormInterview { get; set; }
+        public DbSet<FieldOption> FieldOption { get; set; }
+        public DbSet<FieldType> FieldType { get; set; }
+        public DbSet<CategoryField> CategoryField { get; set; }
+        public DbSet<RegistrationCategory> RegisterationFormTest { get; set; }
+        public DbSet<RegistrationForm> RegistrationForm  { get; set; }
+        public DbSet<RegisterationFormSubmittion> RegisterationFormSubmittion { get; set; }
+        public DbSet<RegisterationFormParent> RegisterationFormParent { get; set; }
+        public DbSet<RegisterationFormState> RegisterationFormState { get; set; }
+
+
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
             : base(options)

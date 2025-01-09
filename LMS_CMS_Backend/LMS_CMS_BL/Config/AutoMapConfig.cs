@@ -274,10 +274,19 @@ namespace LMS_CMS_BL.Config
             CreateMap<CategoryFieldAddDTO, CategoryField>();
             CreateMap<CategoryFieldEditDTO, CategoryField>();
 
+            CreateMap<FieldType, FieldTypeGetDTO>();
 
             CreateMap<FieldOption, FieldOptionGetDTO>()
                .ForMember(dest => dest.CategoryFieldID, opt => opt.MapFrom(src => src.CategoryField.ID))
                .ForMember(dest => dest.CategoryFieldName, opt => opt.MapFrom(src => src.CategoryField.EnName));
+
+            CreateMap<Test, TestGetDTO>()
+                 .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name))
+                 .ForMember(dest => dest.AcademicYearName, opt => opt.MapFrom(src => src.academicYear.Name))
+                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.subject.en_name))
+                 .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.academicYear.School.ID))
+                 .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.academicYear.School.Name));
+
 
         }
     }

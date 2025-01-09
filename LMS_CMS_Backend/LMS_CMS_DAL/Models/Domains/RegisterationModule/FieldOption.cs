@@ -1,20 +1,22 @@
-﻿using LMS_CMS_DAL.Models.Domains.LMS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
 {
-    public class RegisterationFormState
+    public class FieldOption : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
-        public ICollection<RegisterationFormParent> RegisterationFormParents { get; set; } = new HashSet<RegisterationFormParent>();
+        [ForeignKey("CategoryField")]
+        public long CategoryFieldID { get; set; }
+        public CategoryField CategoryField { get; set; }
     }
 }

@@ -287,6 +287,20 @@ namespace LMS_CMS_BL.Config
                  .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.academicYear.School.ID))
                  .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.academicYear.School.Name));
 
+            CreateMap<TestAddDTO, Test>();
+            CreateMap<TestEditDTO, Test>();
+
+            CreateMap<MCQQuestionOption, MCQQuestionOptionGetDto>();
+            CreateMap<Question, questionGetDTO>()
+               .ForMember(dest => dest.CorrectAnswerName, opt => opt.MapFrom(src => src.mCQQuestionOption.Name))
+               .ForMember(dest => dest.QuestionTypeName, opt => opt.MapFrom(src => src.QuestionType.Name))
+               .ForMember(dest => dest.TestName, opt => opt.MapFrom(src => src.test.Title))
+               .ForMember(dest => dest.options, opt => opt.MapFrom(src => src.MCQQuestionOptions));
+
+            CreateMap<TestAddDTO, Test>();
+            CreateMap<TestEditDTO, Test>();
+
+
 
         }
     }

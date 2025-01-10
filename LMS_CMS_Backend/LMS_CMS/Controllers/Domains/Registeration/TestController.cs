@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.Registration;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -49,8 +51,273 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             List<TestGetDTO> testDTO = mapper.Map<List<TestGetDTO>>(tests);
 
+             return Ok(testDTO);
+        }
+        //////////////////////////////////////////////////////////////////////////////
+
+        [HttpPost]
+        [Authorize_Endpoint_(
+         allowedTypes: new[] { "octa", "employee" },
+         pages: new[] { "Admission Test", "Registration" }
+       )]
+        public IActionResult Add(TestAddDTO newTest)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (newTest == null)
+            {
+                return BadRequest("test cannot be null");
+            }
+            Subject subject = Unit_Of_Work.subject_Repository.First_Or_Default(s=>s.ID==newTest.SubjectID&&s.IsDeleted!=true);
+            if(subject == null)
+            {
+                return BadRequest("this subject not exist");
+            }
+            Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(s => s.ID == newTest.GradeID && s.IsDeleted != true);
+            if (grade == null)
+            {
+                return BadRequest("this grade not exist");
+            }
+            AcademicYear academic = Unit_Of_Work.academicYear_Repository.First_Or_Default(s => s.ID == newTest.AcademicYearID && s.IsDeleted != true);
+            if (academic == null)
+            {
+                return BadRequest("this AcademicYear not exist");
+            }
+            if (subject.GradeID != newTest.GradeID)
+            {
+                return BadRequest("this subject not exist in this grade");
+            }
+            Test test = mapper.Map<Test>(newTest);
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            test.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                test.InsertedByOctaId = userId;
+            }
+            else if (userTypeClaim == "employee")
+            {
+                test.InsertedByUserId = userId;
+            }
+
+            Unit_Of_Work.test_Repository.Add(test);
+            Unit_Of_Work.SaveChanges();
+            return Ok(newTest);
+        }
+        //////////////////////////////////////////////////////////////////////////////
+        ///
+        [HttpGet("{id}")]
+        [Authorize_Endpoint_(
+        allowedTypes: new[] { "octa", "employee" },
+        pages: new[] { "Admission Test", "Registration" }
+        )]
+        public async Task<IActionResult> GetAsyncbyId(int id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            Test tests = await Unit_Of_Work.test_Repository.FindByIncludesAsync(
+                    b => b.IsDeleted != true&&b.ID==id,
+                    query => query.Include(emp => emp.academicYear),
+                    query => query.Include(emp => emp.subject),
+                    query => query.Include(emp => emp.Grade),
+                    query => query.Include(emp => emp.academicYear.School)
+                    );
+
+            if (tests == null )
+            {
+                return NotFound();
+            }
+
+            TestGetDTO testDTO = mapper.Map<TestGetDTO>(tests);
+
             return Ok(testDTO);
         }
+        //////////////////////////////////////////////////////////////////////////////
 
+        [HttpPut]
+        [Authorize_Endpoint_(
+        allowedTypes: new[] { "octa", "employee" },
+        allowEdit: 1,
+       pages: new[] { "Admission Test", "Registration" }
+    )]
+        public IActionResult Edit(TestEditDTO newTest)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID, Type claim not found.");
+            }
+
+            if (newTest == null)
+            {
+                return BadRequest("Building cannot be null");
+            }
+
+            Test test = Unit_Of_Work.test_Repository.First_Or_Default(b => b.ID == newTest.ID && b.IsDeleted != true);
+            if (test == null)
+            {
+                return NotFound("No test with this ID");
+            }
+            Subject subject = Unit_Of_Work.subject_Repository.First_Or_Default(s => s.ID == newTest.SubjectID && s.IsDeleted != true);
+            if (subject == null)
+            {
+                return BadRequest("this subject not exist");
+            }
+            Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(s => s.ID == newTest.GradeID && s.IsDeleted != true);
+            if (grade == null)
+            {
+                return BadRequest("this grade not exist");
+            }
+            AcademicYear academic = Unit_Of_Work.academicYear_Repository.First_Or_Default(s => s.ID == newTest.AcademicYearID && s.IsDeleted != true);
+            if (academic == null)
+            {
+                return BadRequest("this AcademicYear not exist");
+            }
+            if (subject.GradeID != newTest.GradeID)
+            {
+                return BadRequest("this subject not exist in this grade");
+            }
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Admission Test");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (test.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Admission Test page doesn't exist");
+                }
+            }
+
+            mapper.Map(newTest, test);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+             test.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                test.UpdatedByOctaId = userId;
+                if (test.UpdatedByUserId != null)
+                {
+                    test.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                test.UpdatedByUserId = userId;
+                if (test.UpdatedByOctaId != null)
+                {
+                    test.UpdatedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.test_Repository.Update(test);
+            Unit_Of_Work.SaveChanges();
+            return Ok(newTest);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        [HttpDelete("{id}")]
+        [Authorize_Endpoint_(
+          allowedTypes: new[] { "octa", "employee" },
+          allowDelete: 1,
+         pages: new[] { "Admission Test", "Registration" }
+         )]
+        public IActionResult Delete(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (id == 0)
+            {
+                return BadRequest("Enter Category ID");
+            }
+
+            Test test = Unit_Of_Work.test_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+
+
+            if (test == null)
+            {
+                return NotFound();
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Admission Test");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
+                    {
+                        if (test.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Admission Test page doesn't exist");
+                }
+            }
+
+            test.IsDeleted = true;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            test.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                test.DeletedByOctaId = userId;
+                if (test.DeletedByUserId != null)
+                {
+                    test.DeletedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                test.DeletedByUserId = userId;
+                if (test.DeletedByOctaId != null)
+                {
+                    test.DeletedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.test_Repository.Update(test);
+            Unit_Of_Work.SaveChanges();
+            return Ok();
+        }
     }
 }

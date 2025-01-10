@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.Registration
 {
-    public class TestGetDTO
+    public class TestEditDTO
     {
         [Key]
         public long ID { get; set; }
@@ -18,11 +18,5 @@ namespace LMS_CMS_BL.DTO.Registration
         public long GradeID { get; set; }
         public long AcademicYearID { get; set; }
         public long SchoolID { get; set; }
-        public string SchoolName { get; set; }
-        public string SubjectName { get; set; }
-        public string GradeName { get; set; }
-        public string AcademicYearName { get; set; }
-        public long? InsertedByUserId { get; set; }
-
     }
 }

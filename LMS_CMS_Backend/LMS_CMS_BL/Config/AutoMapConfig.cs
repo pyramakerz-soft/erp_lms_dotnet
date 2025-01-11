@@ -297,8 +297,8 @@ namespace LMS_CMS_BL.Config
                .ForMember(dest => dest.TestName, opt => opt.MapFrom(src => src.test.Title))
                .ForMember(dest => dest.options, opt => opt.MapFrom(src => src.MCQQuestionOptions));
 
-            CreateMap<TestAddDTO, Test>();
-            CreateMap<TestEditDTO, Test>();
+            CreateMap<QuestionAddDTO, Question>();
+            CreateMap<QuestionEditDTO, Question>();
 
 
 

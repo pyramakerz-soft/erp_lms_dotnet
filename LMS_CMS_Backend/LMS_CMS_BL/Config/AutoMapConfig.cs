@@ -275,6 +275,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<CategoryFieldEditDTO, CategoryField>();
 
             CreateMap<FieldType, FieldTypeGetDTO>();
+            CreateMap<QuestionType, FieldTypeGetDTO>();
+
 
             CreateMap<FieldOption, FieldOptionGetDTO>()
                .ForMember(dest => dest.CategoryFieldID, opt => opt.MapFrom(src => src.CategoryField.ID))

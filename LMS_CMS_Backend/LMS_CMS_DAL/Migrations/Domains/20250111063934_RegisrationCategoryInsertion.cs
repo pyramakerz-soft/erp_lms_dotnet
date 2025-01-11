@@ -5,7 +5,7 @@
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     /// <inheritdoc />
-    public partial class RegisrationCategoryInsertionMigration : Migration
+    public partial class RegisrationCategoryInsertion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

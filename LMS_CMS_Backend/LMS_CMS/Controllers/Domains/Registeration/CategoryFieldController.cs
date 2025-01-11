@@ -142,6 +142,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpPut]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
+         allowEdit: 1,
         pages: new[] { "Registration Form Field", "Registration" }
         )]
         public async Task<IActionResult> Edit(CategoryFieldEditDTO newField)
@@ -265,7 +266,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     await Unit_Of_Work.SaveChangesAsync();
                 }
             }
-            return Ok(categoryField.ID);
+            return Ok();
         }
     }
 }

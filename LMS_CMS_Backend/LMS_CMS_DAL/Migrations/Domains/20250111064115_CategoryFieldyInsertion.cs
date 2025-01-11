@@ -5,7 +5,7 @@
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     /// <inheritdoc />
-    public partial class CategoryFieldyInsertionMigration : Migration
+    public partial class CategoryFieldyInsertion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

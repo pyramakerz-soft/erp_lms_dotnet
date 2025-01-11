@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace LMS_CMS_PL.Controllers.Domains.Registeration
 {
@@ -205,6 +206,69 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             return Ok(registerationFormParentDTO);
         }
+
+        ///////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetByParentIDIncludeRegistrationFormInterview/{parentID}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee", "parent" },
+            pages: new[] { "Registration Confirmation", "Registration", "Interview Registration" }
+        )]
+        public async Task<IActionResult> GetByParentIDIncludeRegistrationFormInterview(long parentID)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+            List<RegisterationFormParent> registerationFormParents = await Unit_Of_Work.registerationFormParent_Repository.Select_All_With_IncludesById<RegisterationFormParent>(
+                    r => r.IsDeleted != true && r.ParentID == parentID,
+                    query => query.Include(emp => emp.RegisterationFormState),
+                    query => query.Include(emp => emp.RegistrationForm),
+                    query => query.Include(emp => emp.Parent));
+
+            if (registerationFormParents == null || registerationFormParents.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<RegistrationFormParentIncludeRegistrationFormInterviewGetDTO> registerationFormParentDTO = mapper.Map<List<RegistrationFormParentIncludeRegistrationFormInterviewGetDTO>>(registerationFormParents);
+
+            for (int i = 0; i < registerationFormParentDTO.Count; i++)
+            {
+                long gradeId = long.Parse(registerationFormParentDTO[i].GradeID);
+                if (gradeId != 0 || gradeId != null)
+                {
+                    Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == gradeId && g.IsDeleted != true);
+                    registerationFormParentDTO[i].GradeName = grade.Name;
+                }
+
+                RegisterationFormInterview registerationFormInterview = await Unit_Of_Work.registerationFormInterview_Repository.FindByIncludesAsync(
+                    r => r.RegisterationFormParentID == registerationFormParentDTO[i].ID && r.IsDeleted != true,
+                    query => query.Include(r => r.InterviewTime),
+                    query => query.Include(e => e.InterviewState)
+                    );
+
+                if(registerationFormInterview != null)
+                {
+                    registerationFormParentDTO[i].RegistrationFormInterviewStateID = registerationFormInterview.InterviewStateID;
+                    registerationFormParentDTO[i].RegistrationFormInterviewStateName = registerationFormInterview.InterviewState.Name;
+                    registerationFormParentDTO[i].InterviewTimeID = registerationFormInterview.InterviewTimeID;
+                    registerationFormParentDTO[i].InterviewTimeDate = registerationFormInterview.InterviewTime.Date;
+                    registerationFormParentDTO[i].InterviewTimeFromTime = registerationFormInterview.InterviewTime.FromTime;
+                    registerationFormParentDTO[i].InterviewTimeToTime = registerationFormInterview.InterviewTime.ToTime;
+                }
+            }
+
+            return Ok(registerationFormParentDTO);
+        }
+
         ///////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("GetByStateID/{stateID}")]

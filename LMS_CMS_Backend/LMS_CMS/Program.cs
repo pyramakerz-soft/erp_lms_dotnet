@@ -12,6 +12,7 @@ using LMS_CMS_PL.Services;
 using LMS_CMS_DAL.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.FileProviders;
+using System.Text.Json.Serialization;
 
 namespace LMS_CMS
 {
@@ -97,6 +98,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<DbContextFactoryService>();
             builder.Services.AddScoped<GenerateJWTService>();
             builder.Services.AddScoped<FileImageValidationService>();
+            builder.Services.AddScoped<CancelInterviewDayMessageService>();
 
 
             /// 2)
@@ -124,6 +126,14 @@ namespace LMS_CMS
 
             /// For Auto Mapper:
             builder.Services.AddAutoMapper(typeof(AutoMapConfig).Assembly);
+
+
+            /// Json String Enum Converter:
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
 
             var app = builder.Build();

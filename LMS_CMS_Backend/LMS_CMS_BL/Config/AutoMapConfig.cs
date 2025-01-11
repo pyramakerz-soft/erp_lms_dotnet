@@ -317,6 +317,24 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<RegisterationFormParentPutDTO, RegisterationFormParent>();
 
+            CreateMap<InterviewTime, InterviewTimeTableGetDTO>()
+               .ForMember(dest => dest.AcademicYearName, opt => opt.MapFrom(src => src.AcademicYear.Name));
+            CreateMap<InterviewTimeTablePutDTO, InterviewTime>();
+
+            CreateMap<RegisterationFormInterview, RegisterationFormInterviewGetDTO>()
+               .ForMember(dest => dest.InterviewStateName, opt => opt.MapFrom(src => src.InterviewState.Name))
+               .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
+               .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.RegisterationFormParent.Phone))
+               .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.RegisterationFormParent.Email))
+               .ForMember(dest => dest.GradeID, opt => opt.MapFrom(src => src.RegisterationFormParent.GradeID))
+               .ForMember(dest => dest.InterviewTimeDate, opt => opt.MapFrom(src => src.InterviewTime.Date));
+            CreateMap<RegistrationFormInterviewPutDTO, RegisterationFormInterview>();
+            CreateMap<RegisterationFormInterviewAddDTO, RegisterationFormInterview>();
+
+            CreateMap<RegisterationFormParent, RegistrationFormParentIncludeRegistrationFormInterviewGetDTO>()
+               .ForMember(dest => dest.ParentName, opt => opt.MapFrom(src => src.Parent.en_name))
+               .ForMember(dest => dest.RegistrationFormName, opt => opt.MapFrom(src => src.RegistrationForm.Name));
+
         }
     }
 }

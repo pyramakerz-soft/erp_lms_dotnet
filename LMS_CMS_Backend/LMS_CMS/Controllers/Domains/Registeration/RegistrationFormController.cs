@@ -105,9 +105,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                                 })
                                 .ToList() ?? new List<FieldOptionGetDTO>() // Default to empty list
                         })
-                        .ToList() ?? new List<CategoryFieldGetDTO>() // Default to empty list
+                        .ToList() ?? new List<CategoryFieldGetDTO>() 
                 })
-                .ToList() ?? new List<RegistrationCategoryGetDTO>(); // Default to empty list
+                .ToList() ?? new List<RegistrationCategoryGetDTO>();
 
             var response = new RegistrationFormGetDTO
             {
@@ -194,6 +194,22 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             string AcademicYearID = registerationFormParentAddDTO.RegisterationFormSubmittions
                 .FirstOrDefault(s => s.CategoryFieldID == 8)?.TextAnswer ?? string.Empty;
+
+            // Validate 
+            if (string.IsNullOrWhiteSpace(GradeID) || !long.TryParse(GradeID, out long gradeId))
+            {
+                return BadRequest("Invalid or missing GradeID. Please provide a valid numeric value.");
+            }
+
+            if (string.IsNullOrWhiteSpace(SchoolID) || !long.TryParse(SchoolID, out long schoolId))
+            {
+                return BadRequest("Invalid or missing SchoolID. Please provide a valid numeric value.");
+            }
+
+            if (string.IsNullOrWhiteSpace(AcademicYearID) || !long.TryParse(AcademicYearID, out long academicYearId))
+            {
+                return BadRequest("Invalid or missing AcademicYearID. Please provide a valid numeric value.");
+            }
 
             try
             {

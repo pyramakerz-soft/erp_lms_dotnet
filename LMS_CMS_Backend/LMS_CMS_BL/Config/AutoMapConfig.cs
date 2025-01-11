@@ -301,6 +301,21 @@ namespace LMS_CMS_BL.Config
             CreateMap<QuestionEditDTO, Question>();
 
 
+            CreateMap<RegisterationFormParent, RegisterationFormParentGetDTO>()
+               .ForMember(dest => dest.RegisterationFormStateName, opt => opt.MapFrom(src => src.RegisterationFormState.Name))
+               .ForMember(dest => dest.ParentName, opt => opt.MapFrom(src => src.Parent.en_name))
+               .ForMember(dest => dest.RegistrationFormName, opt => opt.MapFrom(src => src.RegistrationForm.Name));
+
+            CreateMap<RegisterationFormSubmittion, RegisterationFormSubmittionGetDTO>()
+              .ForMember(dest => dest.RegistrationFormParentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
+              .ForMember(dest => dest.CategoryFieldName, opt => opt.MapFrom(src => src.CategoryField.EnName))
+              .ForMember(dest => dest.CategoryFieldOrderInForm, opt => opt.MapFrom(src => src.CategoryField.OrderInForm))
+              .ForMember(dest => dest.RegistrationCategoryID, opt => opt.MapFrom(src => src.CategoryField.RegistrationCategory.ID))
+              .ForMember(dest => dest.RegistrationCategoryName, opt => opt.MapFrom(src => src.CategoryField.RegistrationCategory.EnName))
+              .ForMember(dest => dest.RegistrationCategoryOrderInForm, opt => opt.MapFrom(src => src.CategoryField.RegistrationCategory.OrderInForm))
+              .ForMember(dest => dest.SelectedFieldOptionName, opt => opt.MapFrom(src => src.FieldOption.Name));
+
+            CreateMap<RegisterationFormParentPutDTO, RegisterationFormParent>();
 
         }
     }

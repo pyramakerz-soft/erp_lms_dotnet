@@ -319,6 +319,31 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<RegisterationFormParentPutDTO, RegisterationFormParent>();
 
+            CreateMap<RegisterationFormTest, RegisterationFormTestGetDTO>()
+              .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
+              .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.TestState.Name))
+              .ForMember(dest => dest.TestName, opt => opt.MapFrom(src => src.Test.Title));
+
+            CreateMap<RegisterationFormTestEditDTO, RegisterationFormTest>();
+
+            CreateMap<RegisterationFormTestAnswer, RegisterationFormTestAnswerGetDTO>()
+              .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
+              .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Question.Description))
+              .ForMember(dest => dest.Video, opt => opt.MapFrom(src => src.Question.Video))
+              .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Question.Image))
+              .ForMember(dest => dest.CorrectAnswerID, opt => opt.MapFrom(src => src.Question.CorrectAnswerID))
+              .ForMember(dest => dest.CorrectAnswerName, opt => opt.MapFrom(src => src.Question.mCQQuestionOption.Name))
+              .ForMember(dest => dest.QuestionTypeID, opt => opt.MapFrom(src => src.Question.QuestionType.ID))
+              .ForMember(dest => dest.QuestionTypeName, opt => opt.MapFrom(src => src.Question.QuestionType.Name))
+              .ForMember(dest => dest.QuestionTypeID, opt => opt.MapFrom(src => src.Question.QuestionType.ID))
+              .ForMember(dest => dest.AnswerName, opt => opt.MapFrom(src => src.MCQQuestionOption.Name));
+
+            CreateMap<MCQQuestionOption, MCQQuestionOptionGetDto>();
+
+            CreateMap<RegisterationFormTestAnswerAddDTO, RegisterationFormTestAnswer>();
+
+
+
         }
     }
 }

@@ -81,6 +81,46 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             return Ok(questionDTO);
         }
+        //////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("ByTest/{id}")]
+        [Authorize_Endpoint_(
+      allowedTypes: new[] { "octa", "employee" },
+      pages: new[] { "Admission Test", "Registration" }
+  )]
+        public async Task<IActionResult> GetAsyncbyTestId(int id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<Question> questions = await Unit_Of_Work.question_Repository.Select_All_With_IncludesById<Question>(
+                b => b.IsDeleted != true && b.TestID == id,
+                query => query.Include(emp => emp.QuestionType)
+                              .Include(emp => emp.mCQQuestionOption)
+                              .Include(emp => emp.test)
+                              .Include(emp => emp.MCQQuestionOptions)
+            );
+
+            if (questions == null || !questions.Any())
+            {
+                return NotFound();
+            }
+
+            // Map questions to DTO
+            List<questionGetDTO> questionDTO = mapper.Map<List<questionGetDTO>>(questions);
+
+            // Group by QuestionType
+            var groupedByQuestionType = questionDTO
+                .GroupBy(q => new { q.QuestionTypeID, q.QuestionTypeName })
+                .Select(group => new
+                {
+                    QuestionTypeID = group.Key.QuestionTypeID,
+                    QuestionTypeName = group.Key.QuestionTypeName,
+                    Questions = group.ToList() // All questions in this group
+                })
+                .ToList();
+
+            return Ok(groupedByQuestionType);
+        }
 
         //////////////////////////////////////////////////////////////////////////////
 

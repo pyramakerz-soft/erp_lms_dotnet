@@ -275,6 +275,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<CategoryFieldEditDTO, CategoryField>();
 
             CreateMap<FieldType, FieldTypeGetDTO>();
+            CreateMap<QuestionType, FieldTypeGetDTO>();
+
 
             CreateMap<FieldOption, FieldOptionGetDTO>()
                .ForMember(dest => dest.CategoryFieldID, opt => opt.MapFrom(src => src.CategoryField.ID))
@@ -297,8 +299,8 @@ namespace LMS_CMS_BL.Config
                .ForMember(dest => dest.TestName, opt => opt.MapFrom(src => src.test.Title))
                .ForMember(dest => dest.options, opt => opt.MapFrom(src => src.MCQQuestionOptions));
 
-            CreateMap<TestAddDTO, Test>();
-            CreateMap<TestEditDTO, Test>();
+            CreateMap<QuestionAddDTO, Question>();
+            CreateMap<QuestionEditDTO, Question>();
 
 
             CreateMap<RegisterationFormParent, RegisterationFormParentGetDTO>()
@@ -334,6 +336,29 @@ namespace LMS_CMS_BL.Config
             CreateMap<RegisterationFormParent, RegistrationFormParentIncludeRegistrationFormInterviewGetDTO>()
                .ForMember(dest => dest.ParentName, opt => opt.MapFrom(src => src.Parent.en_name))
                .ForMember(dest => dest.RegistrationFormName, opt => opt.MapFrom(src => src.RegistrationForm.Name));
+       
+            CreateMap<RegisterationFormTest, RegisterationFormTestGetDTO>()
+              .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
+              .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.TestState.Name))
+              .ForMember(dest => dest.TestName, opt => opt.MapFrom(src => src.Test.Title));
+
+            CreateMap<RegisterationFormTestEditDTO, RegisterationFormTest>();
+
+            CreateMap<RegisterationFormTestAnswer, RegisterationFormTestAnswerGetDTO>()
+              .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
+              .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Question.Description))
+              .ForMember(dest => dest.Video, opt => opt.MapFrom(src => src.Question.Video))
+              .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Question.Image))
+              .ForMember(dest => dest.CorrectAnswerID, opt => opt.MapFrom(src => src.Question.CorrectAnswerID))
+              .ForMember(dest => dest.CorrectAnswerName, opt => opt.MapFrom(src => src.Question.mCQQuestionOption.Name))
+              .ForMember(dest => dest.QuestionTypeID, opt => opt.MapFrom(src => src.Question.QuestionType.ID))
+              .ForMember(dest => dest.QuestionTypeName, opt => opt.MapFrom(src => src.Question.QuestionType.Name))
+              .ForMember(dest => dest.QuestionTypeID, opt => opt.MapFrom(src => src.Question.QuestionType.ID))
+              .ForMember(dest => dest.AnswerName, opt => opt.MapFrom(src => src.MCQQuestionOption.Name));
+
+            CreateMap<MCQQuestionOption, MCQQuestionOptionGetDto>();
+
+            CreateMap<RegisterationFormTestAnswerAddDTO, RegisterationFormTestAnswer>();
 
         }
     }

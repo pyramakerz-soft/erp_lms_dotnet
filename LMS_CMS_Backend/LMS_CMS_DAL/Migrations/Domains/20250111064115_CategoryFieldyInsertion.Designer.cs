@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LMS_CMS_DAL.Migrations.Domain
+namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20250110082548_correctAnswerisnullable")]
-    partial class correctAnswerisnullable
+    [Migration("20250111064115_CategoryFieldyInsertion")]
+    partial class CategoryFieldyInsertion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1863,7 +1863,10 @@ namespace LMS_CMS_DAL.Migrations.Domain
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.MCQQuestionOption", b =>
                 {
                     b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");

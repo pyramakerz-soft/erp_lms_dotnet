@@ -143,10 +143,6 @@ namespace LMS_CMS_DAL.Models.Domains
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
-            modelBuilder.Entity<MCQQuestionOption>()
-                .Property(p => p.ID)
-                .ValueGeneratedNever();
-
             modelBuilder.Entity<InterviewState>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();

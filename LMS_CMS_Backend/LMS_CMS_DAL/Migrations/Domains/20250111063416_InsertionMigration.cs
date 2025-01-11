@@ -42,7 +42,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 (3, 'Declined');
             ");
 
-             migrationBuilder.Sql(@"
+            migrationBuilder.Sql(@"
                 INSERT INTO InterviewState(ID, Name) VALUES
                 (1, 'Pending'),
                 (2, 'Accepted'),
@@ -53,7 +53,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DELETE FROM QuestionType WHERE ID IN (1,2,3)"); 
+            migrationBuilder.Sql("DELETE FROM QuestionType WHERE ID IN (1,2,3)");
             migrationBuilder.Sql("DELETE FROM FieldType WHERE ID IN (1,2,3,4,5,6)");
             migrationBuilder.Sql("DELETE FROM RegisterationFormState WHERE ID IN (1,2,3,4)");
             migrationBuilder.Sql("DELETE FROM TestState WHERE ID IN (1,2,3)");

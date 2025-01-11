@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20250109114312_RemoveRegistrationFormIDFromRegistrationCategoryMigration")]
-    partial class RemoveRegistrationFormIDFromRegistrationCategoryMigration
+    [Migration("20250111063934_RegisrationCategoryInsertion")]
+    partial class RegisrationCategoryInsertion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1785,7 +1785,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("InterviewState");
+                    b.ToTable("InterViewState");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.InterviewTime", b =>
@@ -1863,7 +1863,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.MCQQuestionOption", b =>
                 {
                     b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -1924,7 +1927,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<long?>("CorrectAnswerID")
-                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -2086,6 +2088,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("GradeID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2102,7 +2108,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<long>("ParentID")
+                    b.Property<long?>("ParentID")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Phone")
@@ -2131,6 +2137,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasKey("ID");
 
                     b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("InsertedByUserId");
 
@@ -2171,10 +2180,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<string>("Answer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("CategoryFieldID")
                         .HasColumnType("bigint");
 
@@ -2202,6 +2207,12 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("RegisterationFormParentID")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("SelectedFieldOptionID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TextAnswer")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -2220,6 +2231,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("RegisterationFormParentID");
+
+                    b.HasIndex("SelectedFieldOptionID");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -2403,9 +2416,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("OrderInForm")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("OrderInForm")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -3731,8 +3743,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.MCQQuestionOption", "mCQQuestionOption")
                         .WithMany("Questions")
                         .HasForeignKey("CorrectAnswerID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
@@ -3828,8 +3839,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Parent", "Parent")
                         .WithMany("RegisterationFormParents")
                         .HasForeignKey("ParentID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegisterationFormState", "RegisterationFormState")
                         .WithMany("RegisterationFormParents")
@@ -3881,6 +3891,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.FieldOption", "FieldOption")
+                        .WithMany("RegisterationFormSubmittions")
+                        .HasForeignKey("SelectedFieldOptionID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
@@ -3888,6 +3903,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("CategoryField");
 
                     b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("FieldOption");
 
                     b.Navigation("InsertedByEmployee");
 
@@ -4374,6 +4391,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 {
                     b.Navigation("FieldOptions");
 
+                    b.Navigation("RegisterationFormSubmittions");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.RegisterationModule.FieldOption", b =>
+                {
                     b.Navigation("RegisterationFormSubmittions");
                 });
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     /// <inheritdoc />
-    public partial class RegistrationTablesMigration : Migration
+    public partial class RegistrationModule : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,7 +24,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 });
 
             migrationBuilder.CreateTable(
-                name: "InterviewState",
+                name: "InterViewState",
                 columns: table => new
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false),
@@ -32,7 +32,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InterviewState", x => x.ID);
+                    table.PrimaryKey("PK_InterViewState", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,6 +106,46 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RegisterationFormState", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RegistrationCategory",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EnName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ArName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OrderInForm = table.Column<int>(type: "int", nullable: false),
+                    InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    UpdatedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RegistrationCategory", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_RegistrationCategory_Employee_DeletedByUserId",
+                        column: x => x.DeletedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegistrationCategory_Employee_InsertedByUserId",
+                        column: x => x.InsertedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegistrationCategory_Employee_UpdatedByUserId",
+                        column: x => x.UpdatedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -219,232 +259,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 });
 
             migrationBuilder.CreateTable(
-                name: "RegisterationFormParent",
-                columns: table => new
-                {
-                    ID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StudentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GradeID = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RegisterationFormStateID = table.Column<long>(type: "bigint", nullable: true),
-                    ParentID = table.Column<long>(type: "bigint", nullable: false),
-                    RegistrationFormID = table.Column<long>(type: "bigint", nullable: false),
-                    InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    UpdatedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RegisterationFormParent", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormParent_Employee_DeletedByUserId",
-                        column: x => x.DeletedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormParent_Employee_InsertedByUserId",
-                        column: x => x.InsertedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormParent_Employee_UpdatedByUserId",
-                        column: x => x.UpdatedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormParent_Parent_ParentID",
-                        column: x => x.ParentID,
-                        principalTable: "Parent",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormParent_RegisterationFormState_RegisterationFormStateID",
-                        column: x => x.RegisterationFormStateID,
-                        principalTable: "RegisterationFormState",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormParent_RegistrationForm_RegistrationFormID",
-                        column: x => x.RegistrationFormID,
-                        principalTable: "RegistrationForm",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RegistrationCategory",
-                columns: table => new
-                {
-                    ID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EnName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ArName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    OrderInForm = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RegistrationFormID = table.Column<long>(type: "bigint", nullable: false),
-                    InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    UpdatedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RegistrationCategory", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_RegistrationCategory_Employee_DeletedByUserId",
-                        column: x => x.DeletedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegistrationCategory_Employee_InsertedByUserId",
-                        column: x => x.InsertedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegistrationCategory_Employee_UpdatedByUserId",
-                        column: x => x.UpdatedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegistrationCategory_RegistrationForm_RegistrationFormID",
-                        column: x => x.RegistrationFormID,
-                        principalTable: "RegistrationForm",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RegisterationFormInterview",
-                columns: table => new
-                {
-                    ID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    InterviewStateID = table.Column<long>(type: "bigint", nullable: true),
-                    RegisterationFormParentID = table.Column<long>(type: "bigint", nullable: false),
-                    InterviewTimeID = table.Column<long>(type: "bigint", nullable: false),
-                    InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    UpdatedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RegisterationFormInterview", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormInterview_Employee_DeletedByUserId",
-                        column: x => x.DeletedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormInterview_Employee_InsertedByUserId",
-                        column: x => x.InsertedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormInterview_Employee_UpdatedByUserId",
-                        column: x => x.UpdatedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormInterview_InterviewState_InterviewStateID",
-                        column: x => x.InterviewStateID,
-                        principalTable: "InterviewState",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormInterview_InterviewTime_InterviewTimeID",
-                        column: x => x.InterviewTimeID,
-                        principalTable: "InterviewTime",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormInterview_RegisterationFormParent_RegisterationFormParentID",
-                        column: x => x.RegisterationFormParentID,
-                        principalTable: "RegisterationFormParent",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RegisterationFormTest",
-                columns: table => new
-                {
-                    ID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Mark = table.Column<double>(type: "float", nullable: false),
-                    VisibleToParent = table.Column<bool>(type: "bit", nullable: false),
-                    TestID = table.Column<long>(type: "bigint", nullable: false),
-                    StateID = table.Column<long>(type: "bigint", nullable: false),
-                    RegisterationFormParentID = table.Column<long>(type: "bigint", nullable: false),
-                    InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    UpdatedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedByUserId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedByOctaId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RegisterationFormTest", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormTest_Employee_DeletedByUserId",
-                        column: x => x.DeletedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormTest_Employee_InsertedByUserId",
-                        column: x => x.InsertedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormTest_Employee_UpdatedByUserId",
-                        column: x => x.UpdatedByUserId,
-                        principalTable: "Employee",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormTest_RegisterationFormParent_RegisterationFormParentID",
-                        column: x => x.RegisterationFormParentID,
-                        principalTable: "RegisterationFormParent",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormTest_TestState_StateID",
-                        column: x => x.StateID,
-                        principalTable: "TestState",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_RegisterationFormTest_Test_TestID",
-                        column: x => x.TestID,
-                        principalTable: "Test",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CategoryField",
                 columns: table => new
                 {
@@ -495,6 +309,68 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         name: "FK_CategoryField_RegistrationCategory_RegistrationCategoryID",
                         column: x => x.RegistrationCategoryID,
                         principalTable: "RegistrationCategory",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RegisterationFormParent",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StudentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GradeID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    RegisterationFormStateID = table.Column<long>(type: "bigint", nullable: true),
+                    ParentID = table.Column<long>(type: "bigint", nullable: true),
+                    RegistrationFormID = table.Column<long>(type: "bigint", nullable: false),
+                    InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    UpdatedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RegisterationFormParent", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormParent_Employee_DeletedByUserId",
+                        column: x => x.DeletedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormParent_Employee_InsertedByUserId",
+                        column: x => x.InsertedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormParent_Employee_UpdatedByUserId",
+                        column: x => x.UpdatedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormParent_Parent_ParentID",
+                        column: x => x.ParentID,
+                        principalTable: "Parent",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormParent_RegisterationFormState_RegisterationFormStateID",
+                        column: x => x.RegisterationFormStateID,
+                        principalTable: "RegisterationFormState",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormParent_RegistrationForm_RegistrationFormID",
+                        column: x => x.RegistrationFormID,
+                        principalTable: "RegistrationForm",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -596,14 +472,133 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 });
 
             migrationBuilder.CreateTable(
+                name: "RegisterationFormInterview",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InterviewStateID = table.Column<long>(type: "bigint", nullable: true),
+                    RegisterationFormParentID = table.Column<long>(type: "bigint", nullable: false),
+                    InterviewTimeID = table.Column<long>(type: "bigint", nullable: false),
+                    InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    UpdatedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RegisterationFormInterview", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormInterview_Employee_DeletedByUserId",
+                        column: x => x.DeletedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormInterview_Employee_InsertedByUserId",
+                        column: x => x.InsertedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormInterview_Employee_UpdatedByUserId",
+                        column: x => x.UpdatedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormInterview_InterViewState_InterviewStateID",
+                        column: x => x.InterviewStateID,
+                        principalTable: "InterViewState",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormInterview_InterviewTime_InterviewTimeID",
+                        column: x => x.InterviewTimeID,
+                        principalTable: "InterviewTime",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormInterview_RegisterationFormParent_RegisterationFormParentID",
+                        column: x => x.RegisterationFormParentID,
+                        principalTable: "RegisterationFormParent",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RegisterationFormTest",
+                columns: table => new
+                {
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Mark = table.Column<double>(type: "float", nullable: false),
+                    VisibleToParent = table.Column<bool>(type: "bit", nullable: false),
+                    TestID = table.Column<long>(type: "bigint", nullable: false),
+                    StateID = table.Column<long>(type: "bigint", nullable: false),
+                    RegisterationFormParentID = table.Column<long>(type: "bigint", nullable: false),
+                    InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    UpdatedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedByUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedByOctaId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RegisterationFormTest", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormTest_Employee_DeletedByUserId",
+                        column: x => x.DeletedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormTest_Employee_InsertedByUserId",
+                        column: x => x.InsertedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormTest_Employee_UpdatedByUserId",
+                        column: x => x.UpdatedByUserId,
+                        principalTable: "Employee",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormTest_RegisterationFormParent_RegisterationFormParentID",
+                        column: x => x.RegisterationFormParentID,
+                        principalTable: "RegisterationFormParent",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormTest_TestState_StateID",
+                        column: x => x.StateID,
+                        principalTable: "TestState",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RegisterationFormTest_Test_TestID",
+                        column: x => x.TestID,
+                        principalTable: "Test",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RegisterationFormSubmittion",
                 columns: table => new
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Answer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TextAnswer = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RegisterationFormParentID = table.Column<long>(type: "bigint", nullable: false),
                     CategoryFieldID = table.Column<long>(type: "bigint", nullable: false),
+                    SelectedFieldOptionID = table.Column<long>(type: "bigint", nullable: true),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
                     InsertedByOctaId = table.Column<long>(type: "bigint", nullable: true),
                     InsertedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -640,6 +635,12 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         principalTable: "Employee",
                         principalColumn: "ID");
                     table.ForeignKey(
+                        name: "FK_RegisterationFormSubmittion_FieldOption_SelectedFieldOptionID",
+                        column: x => x.SelectedFieldOptionID,
+                        principalTable: "FieldOption",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_RegisterationFormSubmittion_RegisterationFormParent_RegisterationFormParentID",
                         column: x => x.RegisterationFormParentID,
                         principalTable: "RegisterationFormParent",
@@ -651,7 +652,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "MCQQuestionOption",
                 columns: table => new
                 {
-                    ID = table.Column<long>(type: "bigint", nullable: false),
+                    ID = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Question_ID = table.Column<long>(type: "bigint", nullable: false),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -694,7 +696,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Video = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CorrectAnswerID = table.Column<long>(type: "bigint", nullable: false),
+                    CorrectAnswerID = table.Column<long>(type: "bigint", nullable: true),
                     QuestionTypeID = table.Column<long>(type: "bigint", nullable: false),
                     TestID = table.Column<long>(type: "bigint", nullable: false),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -851,8 +853,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 column: "UpdatedByUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InterviewState_Name",
-                table: "InterviewState",
+                name: "IX_InterViewState_Name",
+                table: "InterViewState",
                 column: "Name",
                 unique: true);
 
@@ -962,6 +964,12 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 column: "DeletedByUserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RegisterationFormParent_Email",
+                table: "RegisterationFormParent",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RegisterationFormParent_InsertedByUserId",
                 table: "RegisterationFormParent",
                 column: "InsertedByUserId");
@@ -1011,6 +1019,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "IX_RegisterationFormSubmittion_RegisterationFormParentID",
                 table: "RegisterationFormSubmittion",
                 column: "RegisterationFormParentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RegisterationFormSubmittion_SelectedFieldOptionID",
+                table: "RegisterationFormSubmittion",
+                column: "SelectedFieldOptionID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RegisterationFormSubmittion_UpdatedByUserId",
@@ -1086,11 +1099,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "IX_RegistrationCategory_InsertedByUserId",
                 table: "RegistrationCategory",
                 column: "InsertedByUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RegistrationCategory_RegistrationFormID",
-                table: "RegistrationCategory",
-                column: "RegistrationFormID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RegistrationCategory_UpdatedByUserId",
@@ -1190,9 +1198,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 table: "MCQQuestionOption");
 
             migrationBuilder.DropTable(
-                name: "FieldOption");
-
-            migrationBuilder.DropTable(
                 name: "RegisterationFormInterview");
 
             migrationBuilder.DropTable(
@@ -1208,13 +1213,13 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "RegistrationFormCategory");
 
             migrationBuilder.DropTable(
-                name: "InterviewState");
+                name: "InterViewState");
 
             migrationBuilder.DropTable(
                 name: "InterviewTime");
 
             migrationBuilder.DropTable(
-                name: "CategoryField");
+                name: "FieldOption");
 
             migrationBuilder.DropTable(
                 name: "TestState");
@@ -1223,16 +1228,19 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "RegisterationFormParent");
 
             migrationBuilder.DropTable(
-                name: "FieldType");
-
-            migrationBuilder.DropTable(
-                name: "RegistrationCategory");
+                name: "CategoryField");
 
             migrationBuilder.DropTable(
                 name: "RegisterationFormState");
 
             migrationBuilder.DropTable(
                 name: "RegistrationForm");
+
+            migrationBuilder.DropTable(
+                name: "FieldType");
+
+            migrationBuilder.DropTable(
+                name: "RegistrationCategory");
 
             migrationBuilder.DropTable(
                 name: "Question");

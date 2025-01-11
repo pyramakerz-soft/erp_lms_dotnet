@@ -54,6 +54,34 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
              return Ok(testDTO);
         }
         //////////////////////////////////////////////////////////////////////////////
+        [HttpGet("byGradeId/{id}")]
+        [Authorize_Endpoint_(
+         allowedTypes: new[] { "octa", "employee" },
+         pages: new[] { "Admission Test", "Registration" }
+         )]
+        public async Task<IActionResult> GetbyGradeIdAsync(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<Test> tests = await Unit_Of_Work.test_Repository.Select_All_With_IncludesById<Test>(
+                    b => b.IsDeleted != true && b.GradeID==id,
+                    query => query.Include(emp => emp.academicYear),
+                    query => query.Include(emp => emp.subject),
+                    query => query.Include(emp => emp.Grade),
+                    query => query.Include(emp => emp.academicYear.School)
+                    );
+
+            if (tests == null || tests.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<TestGetDTO> testDTO = mapper.Map<List<TestGetDTO>>(tests);
+
+            return Ok(testDTO);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
         [Authorize_Endpoint_(

@@ -13,12 +13,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class FieldTypeController : ControllerBase
+    public class QuestionTypeController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public FieldTypeController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public QuestionTypeController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -33,7 +33,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<FieldType> types =  Unit_Of_Work.fieldType_Repository.Select_All();
+            List<QuestionType> types = Unit_Of_Work.questionType_Repository.Select_All();
 
             if (types == null || types.Count == 0)
             {
@@ -45,6 +45,5 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             return Ok(typesDTO);
         }
 
-        ////////////////////////////////////////////////////////////////////////////////////
     }
 }

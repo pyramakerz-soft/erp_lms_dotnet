@@ -47,6 +47,7 @@ import { RegistrationFormFieldComponent } from './Pages/Employee/Registration/re
 import { FieldsComponent } from './Pages/Employee/Registration/fields/fields.component';
 import { AdmissionTestComponent } from './Pages/Employee/Registration/admission-test/admission-test.component';
 import { QuestionsComponent } from './Pages/Employee/Registration/questions/questions.component';
+import { RegistrationFormComponent } from './Pages/Employee/Registration/registration-form/registration-form.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -92,6 +93,7 @@ export const routes: Routes = [
             { path: "RegistrationFormField", component: RegistrationFormFieldComponent, title: "RegistrationFormField", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "CategoryFields/:id", component: FieldsComponent, title: "CategoryFields", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "School", component: SchoolComponentEmployee, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Registration Form", component: RegistrationFormComponent, title: "Registration Form"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
     { 

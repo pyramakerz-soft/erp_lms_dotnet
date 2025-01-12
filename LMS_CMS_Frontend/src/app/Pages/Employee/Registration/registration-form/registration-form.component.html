@@ -1,0 +1,29 @@
+<div class="flex justify-between space-x-20">
+    <div class="flex-grow">
+        <div class="flex justify-between">
+            <p class="primaryTxt text-2xl font-semibold">{{RegistrationFormData.name}}</p>
+            <div class="w-[500px]">
+                <p>{{currentCategory}} of {{ RegistrationFormData.categories.length }} Completed</p>
+                <div class="border h-[15px] rounded-2xl flex items-center w-full">
+                    <div *ngFor="let category of RegistrationFormData.categories; let i = index" class="h-[15px] rounded-2xl flex-1" 
+                    [ngClass]="{secondaryBg: i <= currentCategory - 1}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="primaryBg py-8 px-4 rounded-lg !important">
+        <div *ngFor="let category of RegistrationFormData.categories; let i = index" class="relative flex flex-col justify-center items-center">
+            <div *ngIf="i > currentCategory - 1" class="w-1 h-5 bg-[#BCBDBD] bottom-[100%]"></div>
+            <div *ngIf="i <= currentCategory - 1" class="p-1 border-4 border-[#FF7519] rounded-full">
+                <div class="flex justify-center items-center text-white px-4 py-4 rounded-full w-12 h-12 secondaryBg">
+                    {{i+1}}
+                </div>
+            </div>
+            <div *ngIf="i > currentCategory - 1" class="flex justify-center items-center text-white px-4 py-4 rounded-full w-12 h-12 bg-[#BCBDBD]">
+                {{i+1}}
+            </div>
+            <div *ngIf="i !== RegistrationFormData.categories.length - 1" class="w-1 h-5 top-[100%]" [ngClass]="{secondaryBg : i <= currentCategory - 1, 'bg-[#BCBDBD]': i > currentCategory - 1}"></div>
+        </div>
+    </div>
+</div>

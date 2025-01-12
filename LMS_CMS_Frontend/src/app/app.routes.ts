@@ -91,7 +91,7 @@ export const routes: Routes = [
             { path: "Category Fields/:id", component: FieldsComponent, title: "CategoryFields", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "School", component: SchoolComponentEmployee, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Admission Test", component: AdmissionTestComponent, title: "Admission Test"},
-            { path: "question", component: QuestionsComponent, title: "question"},
+            { path: "question/:id", component: QuestionsComponent, title: "question"},
         ]
     },
     { 

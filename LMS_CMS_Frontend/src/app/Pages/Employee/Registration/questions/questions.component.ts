@@ -10,6 +10,10 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { QuestionType } from '../../../../Models/Registration/question-type';
+import { TestService } from '../../../../Services/Employee/Registration/test.service';
+import { QuestionService } from '../../../../Services/Employee/Registration/question.service';
+import { QuestionTypeService } from '../../../../Services/Employee/Registration/question-type.service';
+import { QuestionAddEdit } from '../../../../Models/Registration/question-add-edit';
 
 @Component({
   selector: 'app-questions',
@@ -47,10 +51,8 @@ export class QuestionsComponent {
   isModalVisible: boolean = false;
   Data: Question[] = []
   test: Test = new Test();
-  question: Question = new Question();
-
+  question: QuestionAddEdit = new QuestionAddEdit();
   testId: number = 0;
-
   QuestionTypes:QuestionType[]=[]
 
   options:string[]=[]
@@ -64,6 +66,9 @@ export class QuestionsComponent {
     private menuService: MenuService,
     public EditDeleteServ: DeleteEditPermissionService,
     private router: Router,
+    public testServ: TestService,
+    public QuestionServ :QuestionService,
+    public QuestionTypeServ :QuestionTypeService,
   ) { }
 
   ngOnInit() {
@@ -73,10 +78,11 @@ export class QuestionsComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
       this.testId = Number(this.activeRoute.snapshot.paramMap.get('id'))
+      this.getTestInfo()
     });
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName(this.path, items);
+      const settingsPage = this.menuService.findByPageName("Admission Test", items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
@@ -84,8 +90,8 @@ export class QuestionsComponent {
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
       }
     });
-
     this.GetAllData();
+    this.GetQuestionType();
   }
 
   moveToEmployee() {
@@ -93,15 +99,26 @@ export class QuestionsComponent {
   }
 
   GetAllData() {
-
+    this.QuestionServ.GetByTestID(this.testId,this.DomainName).subscribe((d:any)=>{
+      console.log(d)
+      this.Data=d
+    })
   }
   GetQuestionType(){
-
+   this.QuestionTypeServ.Get(this.DomainName).subscribe((d)=>{
+    this.QuestionTypes=d
+   })
+  }
+  getTestInfo(){
+    this.testServ.GetByID(this.testId,this.DomainName).subscribe((d)=>{
+      this.test=d
+    })
   }
 
   Create() {
     this.mode = 'Create';
-    this.question = new Question();
+    this.question = new QuestionAddEdit();
+    this.options=[]
     this.openModal();
   }
 
@@ -111,7 +128,9 @@ export class QuestionsComponent {
 
   Edit(row: Question) {
     this.mode = 'Edie';
-    this.question = row;
+    this.question = row as unknown as QuestionAddEdit;
+    this.options = row.options.map(option => option.name); 
+    console.log(this.question)
     this.openModal();
   }
 
@@ -126,11 +145,26 @@ export class QuestionsComponent {
   }
 
   CreateOREdit() {
-
+    this.question.options=this.options
+     if(this.mode=="Create"){
+      this.QuestionServ.Add(this.question,this.DomainName).subscribe(()=>{
+        this.GetAllData();
+       this.closeModal()
+      })
+     } if(this.mode=="Edit"){
+      this.QuestionServ.Edit(this.question,this.DomainName).subscribe(()=>{
+        this.GetAllData();
+        this.closeModal();
+      })
+    }
   }
 
   closeModal() {
     this.isModalVisible = false;
+  }
+
+  CorrectAnswer(option :string){
+    this.question.correctAnswerName=option;
   }
 
   openModal() {

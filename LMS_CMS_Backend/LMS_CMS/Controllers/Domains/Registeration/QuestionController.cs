@@ -85,9 +85,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet("ByTest/{id}")]
         [Authorize_Endpoint_(
-      allowedTypes: new[] { "octa", "employee" },
-      pages: new[] { "Admission Test", "Registration" }
-  )]
+          allowedTypes: new[] { "octa", "employee" },
+          pages: new[] { "Admission Test", "Registration" }
+      )]
         public async Task<IActionResult> GetAsyncbyTestId(int id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

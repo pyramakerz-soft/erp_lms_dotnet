@@ -420,35 +420,60 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             return Ok();
         }
 
-       // [HttpPost("/Add student to classroom")]
-       // [Authorize_Endpoint_(
-       //      allowedTypes: new[] { "octa", "employee" },
-       //      pages: new[] { "Classroom", "Administrator" }
-       //  )]
-       // public IActionResult Add(long registrationFormParentID, long classrommid)
-       // {
-       //     UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-       //
-       //     var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-       //     long.TryParse(userIdClaim, out long userId);
-       //     var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-       //
-       //     RegisterationFormSubmittion submittionEmail = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(c => c.RegisterationFormParentID == registrationFormParentID && c.IsDeleted != true && c.CategoryFieldID == 1);
-       //     RegisterationFormSubmittion submittionAName = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(c => c.RegisterationFormParentID == registrationFormParentID && c.IsDeleted != true && c.CategoryFieldID == 2);
-       //     RegisterationFormSubmittion submittionEName = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(c => c.RegisterationFormParentID == registrationFormParentID && c.IsDeleted != true && c.CategoryFieldID == 1);
-       //     RegisterationFormParent registerationFormParent =Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(r=>r.ID == registrationFormParentID&&r.IsDeleted!=true);
-       //     if(registerationFormParent == null)
-       //     {
-       //         return NotFound();
-       //     }
-       //     Student student =new Student();
-       //     student.en_name = submittionEName.TextAnswer;
-       //     student.ar_name = submittionAName.TextAnswer;
-       //     student.User_Name = registerationFormParent.StudentName;
-       //     student.Parent_Id = (long)registerationFormParent.ParentID;
-       //
-       //
-       //     return Ok();
-       // }
+        //[HttpPost("/Add student to classroom")]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "Classroom", "Administrator" }
+        //)]
+        //public async Task<IActionResult> AddStudent(long registrationFormParentID, long classrommid)
+        //{
+        //    try
+        //    {
+        //        UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+        //        var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+        //        long.TryParse(userIdClaim, out long userId);
+        //        var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+        //        TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
+        //        var submittionAName = Unit_Of_Work.registerationFormSubmittion_Repository
+        //            .First_Or_Default(c => c.RegisterationFormParentID == registrationFormParentID && c.IsDeleted != true && c.CategoryFieldID == 2);
+
+        //        var submittionEName = Unit_Of_Work.registerationFormSubmittion_Repository
+        //            .First_Or_Default(c => c.RegisterationFormParentID == registrationFormParentID && c.IsDeleted != true && c.CategoryFieldID == 1);
+
+        //        var registerationFormParent = Unit_Of_Work.registerationFormParent_Repository
+        //            .First_Or_Default(r => r.ID == registrationFormParentID && r.IsDeleted != true);
+
+        //        if (registerationFormParent == null)
+        //        {
+        //            return NotFound("Registration form parent not found.");
+        //        }
+
+        //        Student student = new Student
+        //        {
+        //            en_name = submittionEName.TextAnswer,
+        //            ar_name = submittionAName.TextAnswer,
+        //            User_Name = registerationFormParent.StudentName,
+        //            Parent_Id = (long)registerationFormParent.ParentID,
+        //            InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
+        //            InsertedByOctaId = userTypeClaim == "octa" ? userId : null,
+        //            InsertedByUserId = userTypeClaim == "employee" ? userId : null
+        //        };
+
+        //        Unit_Of_Work.student_Repository.Add(student);
+        //        await Unit_Of_Work.SaveChangesAsync();
+
+        //        //StudentAcademicYear studentAcademicYear
+
+        //        return Ok(student);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"An error occurred: {ex.Message}");
+        //    }
+        //}
+
     }
 }

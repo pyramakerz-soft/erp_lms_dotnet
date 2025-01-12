@@ -48,8 +48,8 @@
                     <td
                         class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e] hover:bg-gray-200">
                         {{ row.id }}</td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.enName }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInForm }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
@@ -89,14 +89,20 @@
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="Category.enName" placeholder="Enter Name of Categories " />
+                        [(ngModel)]="Category.enName" placeholder="Enter Name of Categories " 
+                        (ngModelChange)="onInputValueChange({ field: 'enName', value: $event })"/>
+                <span *ngIf="validationErrors['enName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['enName'] }}</span>
+
                 </div>
             </div>
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories Arabic</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="Category.arName" placeholder="Enter Name of Categories " />
+                        [(ngModel)]="Category.arName" placeholder="Enter Name of Categories " 
+                        (ngModelChange)="onInputValueChange({ field: 'arName', value: $event })"/>
+                <span *ngIf="validationErrors['arName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['arName'] }}</span>
+
                 </div>
             </div>
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Order in Form </h6>
@@ -107,7 +113,10 @@
                         placeholder=" " 
                         type="number"
                         min="0" 
-                        step="1" />
+                        step="1" 
+                        (ngModelChange)="onInputValueChange({ field: 'orderInForm', value: $event })"/>
+                <span *ngIf="validationErrors['orderInForm']" class="text-red-500 ml-3 font-normal">{{ validationErrors['orderInForm'] }}</span>
+
                 </div>
             </div>
             <div class="flex justify-end">

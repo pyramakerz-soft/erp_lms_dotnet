@@ -52,9 +52,7 @@ export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
     { path: "Octa/login", component: OctaLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
 
-    { path: "Admission Test", component: AdmissionTestComponent, title: "Admission Test"},
-    { path: "question", component: QuestionsComponent, title: "question"},
-
+    
     { 
         path: "Employee",     
         component: MainLayoutComponent, 
@@ -89,9 +87,11 @@ export const routes: Routes = [
             { path: "Academic Years", component: AcademicYearComponent, title: "Academic Year", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "Semester/:domainName/:Id", component: SemesterComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "SemesterView/:domainName/:Id", component: SemesterViewComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
-            { path: "RegistrationFormField", component: RegistrationFormFieldComponent, title: "RegistrationFormField", canActivate:[noNavigateWithoutLoginGuard ]}, 
-            { path: "CategoryFields/:id", component: FieldsComponent, title: "CategoryFields", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Registration Form Field", component: RegistrationFormFieldComponent, title: "RegistrationFormField", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Category Fields/:id", component: FieldsComponent, title: "CategoryFields", canActivate:[noNavigateWithoutLoginGuard ]}, 
             { path: "School", component: SchoolComponentEmployee, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Admission Test", component: AdmissionTestComponent, title: "Admission Test"},
+            { path: "question", component: QuestionsComponent, title: "question"},
         ]
     },
     { 

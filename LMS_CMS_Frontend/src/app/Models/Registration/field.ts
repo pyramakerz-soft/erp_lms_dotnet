@@ -1,3 +1,5 @@
+import { FieldOption } from "./field-option";
+
 export class Field {
     constructor(
         public id: number = 0,
@@ -9,6 +11,7 @@ export class Field {
         public fieldTypeName: string = '',
         public registrationCategoryName: string = '',
         public registrationCategoryID: number = 0,
+        public options :FieldOption[] =[],
         public insertedByUserId: number = 0
     ) {}
 }

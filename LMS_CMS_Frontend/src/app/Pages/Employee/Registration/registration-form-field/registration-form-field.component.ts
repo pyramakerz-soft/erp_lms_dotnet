@@ -8,6 +8,8 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RegistrationCategoryService } from '../../../../Services/Employee/Registration/registration-category.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registration-form-field',
@@ -47,6 +49,8 @@ export class RegistrationFormFieldComponent {
 
   Category: RegistrationCategory = new RegistrationCategory();
 
+  validationErrors: { [key in keyof RegistrationCategory]?: string } = {};
+  
   constructor(
     public activeRoute: ActivatedRoute,
     public account: AccountService,
@@ -54,6 +58,7 @@ export class RegistrationFormFieldComponent {
     private menuService: MenuService,
     public EditDeleteServ: DeleteEditPermissionService,
     private router: Router,
+    public CategoryServ:RegistrationCategoryService
   ) { }
 
   ngOnInit() {
@@ -79,7 +84,9 @@ export class RegistrationFormFieldComponent {
   }
 
   GetAllData() {
-
+    this.CategoryServ.Get(this.DomainName).subscribe((d)=>{
+      this.Data=d;
+    })
   }
 
   Create() {
@@ -91,11 +98,27 @@ export class RegistrationFormFieldComponent {
   }
 
   Delete(id: number) {
-
-  }
+  Swal.fire({
+        title: 'Are you sure you want to delete this Ctegory?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#FF7519',
+        cancelButtonColor: '#17253E',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.CategoryServ.Delete(id, this.DomainName).subscribe(
+            (data: any) => {
+              this.GetAllData();
+            }
+          );
+        }
+      });
+    }
 
   Edit(row: RegistrationCategory) {
-    this.mode = 'Edie';
+    this.mode = 'Edit';
     this.Category = row;
     this.openModal();
   }
@@ -111,7 +134,19 @@ export class RegistrationFormFieldComponent {
   }
 
   CreateOREdit() {
-
+    if(this.isFormValid()){
+     if(this.mode=="Create"){
+      this.CategoryServ.Add(this.Category,this.DomainName).subscribe(()=>{
+        this.GetAllData();
+       this.closeModal()
+      })
+     } if(this.mode=="Edit"){
+      this.CategoryServ.Edit(this.Category,this.DomainName).subscribe(()=>{
+        this.GetAllData();
+        this.closeModal();
+      })
+     }
+    }
   }
 
   closeModal() {
@@ -123,10 +158,33 @@ export class RegistrationFormFieldComponent {
   }
 
   view(id: number) {
-    this.router.navigateByUrl(`Employee/CategoryFields/${id}`)
+    this.router.navigateByUrl(`Employee/Category Fields/${id}`)
   }
 
-  onInputValueChange() {
+   isFormValid(): boolean {
+      let isValid = true;
+      for (const key in this.Category) {
+        if (this.Category.hasOwnProperty(key)) {
+          const field = key as keyof RegistrationCategory;
+          if (!this.Category[field]) {
+            if(field == "arName" || field == "enName" || field == "orderInForm"){
+              this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+              isValid = false;
+            }
+          } 
+        }
+      }
+      return isValid;
+    }
+    capitalizeField(field: keyof RegistrationCategory): string {
+      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+    }
+    onInputValueChange(event: { field: keyof RegistrationCategory, value: any }) {
+      const { field, value } = event;
+      (this.Category as any)[field] = value;
+      if (value) {
+        this.validationErrors[field] = '';
+      }
+    }
 
-  }
 }

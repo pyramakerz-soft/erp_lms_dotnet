@@ -55,7 +55,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         }
         //////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("{id}")]
+        [HttpGet("ByTest/{id}")]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee" },
        pages: new[] { "Admission Test", "Registration" }
@@ -64,8 +64,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            Question questions = await Unit_Of_Work.question_Repository.FindByIncludesAsync(
-                    b => b.IsDeleted != true &&b.ID==id,
+            List<Question> questions = await Unit_Of_Work.question_Repository.Select_All_With_IncludesById<Question>(
+                    b => b.IsDeleted != true &&b.TestID==id,
                     query => query.Include(emp => emp.QuestionType),
                     query => query.Include(emp => emp.mCQQuestionOption),
                     query => query.Include(emp => emp.test),
@@ -77,17 +77,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 return NotFound();
             }
 
-            questionGetDTO questionDTO = mapper.Map<questionGetDTO>(questions);
+            List<questionGetDTO> questionDTO = mapper.Map<List<questionGetDTO>>(questions);
 
             return Ok(questionDTO);
         }
         //////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("ByTest/{id}")]
+        [HttpGet("ByTestGroupBy/{id}")]
         [Authorize_Endpoint_(
-      allowedTypes: new[] { "octa", "employee" },
-      pages: new[] { "Admission Test", "Registration" }
-  )]
+          allowedTypes: new[] { "octa", "employee" },
+          pages: new[] { "Admission Test", "Registration" }
+      )]
         public async Task<IActionResult> GetAsyncbyTestId(int id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -164,7 +164,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 {
                     return BadRequest("options in msq question is required");
                 }
-                if (newQuestion.CorrectAnswer == "")
+                if (newQuestion.CorrectAnswerName == "")
                 {
                     return BadRequest("CorrectAnswer in msq question is required");
                 }
@@ -200,7 +200,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 }
                await Unit_Of_Work.mCQQuestionOption_Repository.AddAsync(mCQQuestionOption);
                await Unit_Of_Work.SaveChangesAsync();
-                if(newQuestion.CorrectAnswer==item)
+                if(newQuestion.CorrectAnswerName == item)
                 {
                    correctA=mCQQuestionOption.ID;
                 }

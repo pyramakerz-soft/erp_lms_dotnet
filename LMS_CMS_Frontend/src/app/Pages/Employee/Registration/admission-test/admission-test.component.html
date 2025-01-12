@@ -93,58 +93,86 @@
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Title</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
-                    <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="test.title" placeholder="Enter Title " />
+                    <input type="text"
+                        class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                        [(ngModel)]="test.title" placeholder="Enter Title " (ngModelChange)="onInputValueChange({ field: 'title', value: $event })"/>
+                <span *ngIf="validationErrors['title']" class="text-red-500 ml-3 font-normal">{{ validationErrors['title'] }}</span>
                 </div>
             </div>
 
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Total Mark</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
-                    <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="test.title" placeholder="Enter Total Mark " />
+                    <input type="text"
+                        class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                        [(ngModel)]="test.totalMark" placeholder="Enter Total Mark "  (ngModelChange)="onInputValueChange({ field: 'totalMark', value: $event })"/>
+                <span *ngIf="validationErrors['totalMark']" class="text-red-500 ml-3 font-normal">{{ validationErrors['totalMark'] }}</span>
+
                 </div>
             </div>
-            
+
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">School</h6>
             <div class="flex flex-col mb-4">
-                <select (ngModelChange)="onInputValueChange()"
-                class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3" id="test" [(ngModel)]="SchoolId">
+                <select (ngModelChange)="onSchoolChange($event)"
+                    class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                    id="schoolSelect" [(ngModel)]="SchoolId">
                     <option [value]="0" disabled selected hidden>Choose School</option>
                     <option *ngFor="let s of Schools" [value]="s.id">{{ s.name }}</option>
                     <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
-                </select>  
-            </div>
-
-            <!-- <h6 class="font-medium text-base leading-6 mb-1 mt-3">Academic Year</h6>
-            <div class="flex flex-col mb-4">
-                <select (ngModelChange)="onInputValueChange()"
-                class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3" id="test" [(ngModel)]="test.academicYearID">
-                    <option [value]="0" disabled selected hidden>Choose Field Type</option>
-                    <option *ngFor="let type of fieldTypes" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="fieldTypes.length === 0" disabled selected>No Data Found</option>
-                </select>
-            </div> -->
-
-            <!-- <h6 class="font-medium text-base leading-6 mb-1 mt-3">Grade Levels</h6>
-            <div class="flex flex-col mb-4">
-                <select (ngModelChange)="onInputValueChange()"
-                class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3" id="fieldType" [(ngModel)]="field.fieldTypeID">
-                    <option [value]="0" disabled selected hidden>Choose Field Type</option>
-                    <option *ngFor="let type of fieldTypes" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="fieldTypes.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
 
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Academic Year</h6>
+            <div class="flex flex-col mb-4">
+              <select
+                [disabled]="!SchoolId || SchoolId === 0"
+                (ngModelChange)="onInputValueChange({ field: 'academicYearID', value: $event })"
+                class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                id="academicYearSelect"
+                [(ngModel)]="test.academicYearID">
+                <option [value]="0" disabled selected hidden>Choose Academic Year</option>
+                <option *ngFor="let type of AcadenicYears" [value]="type.id">{{ type.name }}</option>
+                <option *ngIf="AcadenicYears.length === 0" disabled>No Data Found</option>
+              </select>
+              <span *ngIf="validationErrors['academicYearID']" class="text-red-500 ml-3 font-normal">
+                {{ validationErrors['academicYearID'] }}
+              </span>
+            </div>
+            
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Grade Levels</h6>
+            <div class="flex flex-col mb-4">
+              <select
+                (ngModelChange)="onGradeChange($event); onInputValueChange({ field: 'gradeID', value: $event })"
+                class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                id="gradeSelect"
+                [(ngModel)]="test.gradeID">
+                <option [value]="0" disabled selected hidden>Choose Grade</option>
+                <option *ngFor="let grade of Grades" [value]="grade.id">{{ grade.name }}</option>
+                <option *ngIf="Grades.length === 0" disabled>No Data Found</option>
+              </select>
+              <span *ngIf="validationErrors['gradeID']" class="text-red-500 ml-3 font-normal">
+                {{ validationErrors['gradeID'] }}
+              </span>
+            </div>
+            
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Subject</h6>
             <div class="flex flex-col mb-4">
-                <select (ngModelChange)="onInputValueChange()"
-                class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3" id="fieldType" [(ngModel)]="field.fieldTypeID">
-                    <option [value]="0" disabled selected hidden>Choose Field Type</option>
-                    <option *ngFor="let type of fieldTypes" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="fieldTypes.length === 0" disabled selected>No Data Found</option>
-                </select>
-            </div> -->
+              <select
+                [disabled]="!test.gradeID || test.gradeID === 0"
+                (ngModelChange)="onInputValueChange({ field: 'subjectID', value: $event })"
+                class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                id="subjectSelect"
+                [(ngModel)]="test.subjectID">
+                <option [value]="0" disabled selected hidden>Choose Subject</option>
+                <option *ngFor="let subject of Subjects" [value]="subject.id">{{ subject.en_name }}</option>
+                <option *ngIf="Subjects.length === 0" disabled>No Data Found</option>
+              </select>
+              <span *ngIf="validationErrors['subjectID']" class="text-red-500 ml-3 font-normal">
+                {{ validationErrors['subjectID'] }}
+              </span>
+            </div>
+            
+
 
             <div class="flex justify-end">
                 <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">

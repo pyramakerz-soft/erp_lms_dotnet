@@ -77,10 +77,8 @@ export class SchoolService {
     } 
 
     formData.forEach((value, key) => {
-      console.log(key, value);
     });
 
-    console.log(`${this.baseUrl}/Schools`)
     return this.http.put(`${this.baseUrl}/Schools`, formData, { headers })
   }
 

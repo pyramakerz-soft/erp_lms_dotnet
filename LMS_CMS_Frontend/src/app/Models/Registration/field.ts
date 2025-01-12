@@ -11,7 +11,7 @@ export class Field {
         public fieldTypeName: string = '',
         public registrationCategoryName: string = '',
         public registrationCategoryID: number = 0,
-        public insertedByUserId: number = 0,
-        public options: FieldOption[] = []
+        public options :FieldOption[] =[],
+        public insertedByUserId: number = 0
     ) {}
 }

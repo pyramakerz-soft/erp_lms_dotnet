@@ -12,11 +12,17 @@ import { School } from '../../../../Models/school';
 import { AcademicYear } from '../../../../Models/LMS/academic-year';
 import { Grade } from '../../../../Models/LMS/grade';
 import { Subject } from '../../../../Models/LMS/subject';
+import { TestService } from '../../../../Services/Employee/Registration/test.service';
+import { SchoolService } from '../../../../Services/Employee/school.service';
+import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
+import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
+import { SubjectService } from '../../../../Services/Employee/LMS/subject.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-admission-test',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admission-test.component.html',
   styleUrl: './admission-test.component.css'
 })
@@ -51,13 +57,15 @@ export class AdmissionTestComponent {
 
   test: Test = new Test();
 
-  Schools:School[]=[];
-  AcadenicYears:AcademicYear[]=[]
-  Grades:Grade[]=[]
-  Subjects:Subject[] = []
+  Schools: School[] = [];
+  AcadenicYears: AcademicYear[] = []
+  Grades: Grade[] = []
+  Subjects: Subject[] = []
 
-  SchoolId:number=0;
-  
+  SchoolId: number = 0;
+
+  validationErrors: { [key in keyof Test]?: string } = {};
+
   constructor(
     public activeRoute: ActivatedRoute,
     public account: AccountService,
@@ -65,6 +73,11 @@ export class AdmissionTestComponent {
     private menuService: MenuService,
     public EditDeleteServ: DeleteEditPermissionService,
     private router: Router,
+    public testServ: TestService,
+    public SchoolServ: SchoolService,
+    public GradeServ: GradeService,
+    public AcadimicYearServ: AcadimicYearService,
+    public SubjectServ: SubjectService,
   ) { }
 
   ngOnInit() {
@@ -75,7 +88,6 @@ export class AdmissionTestComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
     });
-
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
@@ -87,11 +99,64 @@ export class AdmissionTestComponent {
     });
 
     this.GetAllData();
+    this.GetAllSchools();
+    this.GetAllGrades();
+    this.GetAllYears();
+    this.GetAllSubjects();
+  }
+
+  onSchoolChange(selectedSchoolId: number) {
+    this.SchoolId = selectedSchoolId;
+    if (this.SchoolId && this.SchoolId !== 0) {
+      this.AcadenicYears = this.AcadenicYears.filter(a => a.schoolID == selectedSchoolId)
+    } else {
+      this.AcadenicYears = [];
+    }
+  }
+
+  onGradeChange(selectedGradeId: number) {
+    this.test.gradeID = selectedGradeId;
+    if (this.test.gradeID && this.test.gradeID !== 0) {
+      this.Subjects = this.Subjects.filter(s => s.gradeID == selectedGradeId)
+    } else {
+      this.Subjects = [];
+    }
+  }
+
+  onSubjectChange(selectedSubjectId: number) {
+    this.test.subjectID = selectedSubjectId;
   }
 
   GetAllData() {
-
+    this.testServ.Get(this.DomainName).subscribe((d) => {
+      this.Data = d
+    })
   }
+
+  GetAllGrades() {
+    this.GradeServ.Get(this.DomainName).subscribe((d) => {
+      this.Grades = d
+    })
+  }
+
+  GetAllSubjects() {
+    this.SubjectServ.Get(this.DomainName).subscribe((d) => {
+      this.Subjects = d
+    })
+  }
+
+  GetAllSchools() {
+    this.SchoolServ.Get(this.DomainName).subscribe((d) => {
+      this.Schools = d
+    })
+  }
+
+  GetAllYears() {
+    this.AcadimicYearServ.Get(this.DomainName).subscribe((d) => {
+      this.AcadenicYears = d
+    })
+  }
+
 
   Create() {
     this.mode = 'Create';
@@ -100,11 +165,27 @@ export class AdmissionTestComponent {
   }
 
   Delete(id: number) {
-
+    Swal.fire({
+      title: 'Are you sure you want to delete this Test?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.testServ.Delete(id, this.DomainName).subscribe(
+          (data: any) => {
+            this.GetAllData();
+          }
+        );
+      }
+    });
   }
 
   Edit(row: Test) {
-    this.mode = 'Edie';
+    this.mode = 'Edit';
     this.test = row;
     this.openModal();
   }
@@ -120,7 +201,19 @@ export class AdmissionTestComponent {
   }
 
   CreateOREdit() {
-
+    if (this.isFormValid()) {
+      if (this.mode == "Create") {
+        this.testServ.Add(this.test, this.DomainName).subscribe(() => {
+          this.GetAllData();
+          this.closeModal()
+        })
+      } if (this.mode == "Edit") {
+        this.testServ.Edit(this.test, this.DomainName).subscribe(() => {
+          this.GetAllData();
+          this.closeModal();
+        })
+      }
+    }
   }
 
   closeModal() {
@@ -132,10 +225,34 @@ export class AdmissionTestComponent {
   }
 
   view(id: number) {
-
+    this.router.navigateByUrl(`Employee/question/${id}`)
   }
 
-  onInputValueChange(){
-    
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.test) {
+      if (this.test.hasOwnProperty(key)) {
+        const field = key as keyof Test;
+        if (!this.test[field]) {
+          if(field == "title" || field == "totalMark" || field == "subjectID" || field == "gradeID" || field == "academicYearID"){
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          }
+        } 
+      }
+    }
+    return isValid;
+  }
+  capitalizeField(field: keyof Test): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+  onInputValueChange(event: { field: keyof Test, value: any }) {
+    const { field, value } = event;
+    (this.test as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    } else {
+      this.validationErrors[field] = `*${this.capitalizeField(field)} is required`;
+    }
   }
 }

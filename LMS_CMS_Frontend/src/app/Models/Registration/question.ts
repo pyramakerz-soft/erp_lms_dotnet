@@ -1,3 +1,5 @@
+import { QuestionOption } from "./question-option";
+
 export class Question {
     constructor(
         public id: number = 0,
@@ -10,6 +12,7 @@ export class Question {
         public questionTypeName: string = '',
         public correctAnswerName: string = '',
         public testName: string = '',
-        public insertedByUserId: number = 0
+        public insertedByUserId: number = 0,
+        public options :QuestionOption[] =[],
     ) {}
 }

@@ -26,8 +26,8 @@
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Fields</h1>
         <div class="flex justify-between items-center ">
             <button (click)="Create()"
-                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-                Add Field
+            class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+            Add Field
             </button>
         </div>
     </div>
@@ -80,8 +80,11 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.enName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInForm }}</td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.isMandatory }}</td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInForm }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <i *ngIf="row.isMandatory" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+                        <i *ngIf="!row.isMandatory" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.fieldTypeName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
                             <button (click)="Delete(row.id)" *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)">
@@ -118,7 +121,11 @@
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.enName" placeholder="Enter Name of Categories " />
+                        [(ngModel)]="field.enName" placeholder="Enter Name of Categories " 
+                        (ngModelChange)="onInputValueChange({ field: 'enName', value: $event })"/>
+                <span *ngIf="validationErrors['enName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['enName'] }}</span>
+
+                        
                 </div>
             </div>
 
@@ -127,18 +134,26 @@
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.arName" placeholder="Enter Name of Categories " />
+                        [(ngModel)]="field.arName" placeholder="Enter Name of Categories " 
+                        (ngModelChange)="onInputValueChange({ field: 'arName', value: $event })"/>
+                <span *ngIf="validationErrors['arName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['arName'] }}</span>
                 </div>
             </div>
 
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Field Type</h6>
             <div class="flex flex-col mb-4">
-                <select (ngModelChange)="onInputValueChange()"
-                class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3" id="fieldType" [(ngModel)]="field.fieldTypeID">
-                    <option [value]="0" disabled selected hidden>Choose Field Type</option>
-                    <option *ngFor="let type of fieldTypes" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="fieldTypes.length === 0" disabled selected>No Data Found</option>
-                </select>
+              <select
+                (ngModelChange)="onInputValueChange({ field: 'fieldTypeID', value: $event })"
+                class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                id="fieldType"
+                [(ngModel)]="field.fieldTypeID">
+                <option [value]="0" disabled selected hidden>Choose Field Type</option>
+                <option *ngFor="let type of fieldTypes" [value]="type.id">{{ type.name }}</option>
+                <option *ngIf="fieldTypes.length === 0" disabled>No Data Found</option>
+              </select>
+              <span *ngIf="validationErrors['fieldTypeID']" class="text-red-500 ml-3 font-normal">
+                {{ validationErrors['fieldTypeID'] }}
+              </span>
             </div>
 
 
@@ -154,6 +169,9 @@
                 </span>
                 <input type="text" class="flex-grow outline-none text-sm" [(ngModel)]="inputValue"
                     (keydown.enter)="addOption()" placeholder="Enter option" />
+                    <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">
+                        {{ validationErrors['options'] }}
+                      </span>
             </div>
 
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">Order in Category </h6>
@@ -161,13 +179,16 @@
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.orderInForm" placeholder=" " type="number" min="0" step="1" />
+                        [(ngModel)]="field.orderInForm" placeholder=" " type="number" min="0" step="1" 
+                        (ngModelChange)="onInputValueChange({ field: 'orderInForm', value: $event })"/>
+                    <span *ngIf="validationErrors['orderInForm']" class="text-red-500 ml-3 font-normal">{{ validationErrors['orderInForm'] }}</span>
                 </div>
             </div>
 
             <div class="flex items-center">
                 <input type="checkbox" id="i" [(ngModel)]="field.isMandatory"
-                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" />
+                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" 
+                    />
                 <label for="i" class="text-gray-700">
                     IsMendatory
                 </label>

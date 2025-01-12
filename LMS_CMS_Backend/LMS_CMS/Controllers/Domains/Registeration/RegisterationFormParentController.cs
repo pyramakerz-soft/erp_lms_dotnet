@@ -71,6 +71,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == gradeId && g.IsDeleted != true);
                     registerationFormParentDTO[i].GradeName = grade.Name;
                 }
+                long academicYearId = long.Parse(registerationFormParentDTO[i].AcademicYearID);
+                if (academicYearId != 0 || academicYearId != null)
+                {
+                    AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == academicYearId && g.IsDeleted != true);
+                    registerationFormParentDTO[i].AcademicYearName = academicYear.Name;
+                }
             }
 
             return Ok(registerationFormParentDTO);
@@ -202,6 +208,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == gradeId && g.IsDeleted != true);
                     registerationFormParentDTO[i].GradeName = grade.Name;
                 }
+
+                long academicYearId = long.Parse(registerationFormParentDTO[i].AcademicYearID);
+                if (academicYearId != 0 || academicYearId != null)
+                {
+                    AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == academicYearId && g.IsDeleted != true);
+                    registerationFormParentDTO[i].AcademicYearName = academicYear.Name;
+                }
             }
 
             return Ok(registerationFormParentDTO);
@@ -247,6 +260,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 {
                     Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == gradeId && g.IsDeleted != true);
                     registerationFormParentDTO[i].GradeName = grade.Name;
+                }
+
+                long academicYearId = long.Parse(registerationFormParentDTO[i].AcademicYearID);
+                if (academicYearId != 0 || academicYearId != null)
+                {
+                    AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == academicYearId && g.IsDeleted != true);
+                    registerationFormParentDTO[i].AcademicYearName = academicYear.Name;
                 }
 
                 RegisterationFormInterview registerationFormInterview = await Unit_Of_Work.registerationFormInterview_Repository.FindByIncludesAsync(
@@ -309,6 +329,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 {
                     Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == gradeId && g.IsDeleted != true);
                     registerationFormParentDTO[i].GradeName = grade.Name;
+                }
+
+                long academicYearId = long.Parse(registerationFormParentDTO[i].AcademicYearID);
+                if (academicYearId != 0 || academicYearId != null)
+                {
+                    AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == academicYearId && g.IsDeleted != true);
+                    registerationFormParentDTO[i].AcademicYearName = academicYear.Name;
                 }
             }
 
@@ -375,6 +402,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == gradeId && g.IsDeleted != true);
                     registerationFormParentDTO[i].GradeName = grade.Name;
                 }
+
+                long academicYearId = long.Parse(registerationFormParentDTO[i].AcademicYearID);
+                if (academicYearId != 0 || academicYearId != null)
+                {
+                    AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == academicYearId && g.IsDeleted != true);
+                    registerationFormParentDTO[i].AcademicYearName = academicYear.Name;
+                }
             }
 
             return Ok(registerationFormParentDTO);
@@ -439,6 +473,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 {
                     Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == gradeId && g.IsDeleted != true);
                     registerationFormParentDTO[i].GradeName = grade.Name;
+                }
+
+                long academicYearId = long.Parse(registerationFormParentDTO[i].AcademicYearID);
+                if (academicYearId != 0 || academicYearId != null)
+                {
+                    AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == academicYearId && g.IsDeleted != true);
+                    registerationFormParentDTO[i].AcademicYearName = academicYear.Name;
                 }
             }
 

@@ -13,6 +13,8 @@ namespace LMS_CMS_BL.DTO.Registration
         public string Phone { get; set; }
         public string GradeID { get; set; }
         public string GradeName { get; set; }
+        public string AcademicYearID { get; set; }
+        public string AcademicYearName { get; set; }
         public string Email { get; set; }
         public long ParentID { get; set; }
         public string ParentName { get; set; }

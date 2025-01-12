@@ -244,13 +244,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             }
 
             School school = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == long.Parse(SchoolID) && s.IsDeleted != true);
-            if (grade == null)
+            if (school == null)
             {
                 return NotFound("There is no School with this ID");
             }
 
             AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(s => s.ID == long.Parse(AcademicYearID) && s.IsDeleted != true);
-            if (grade == null)
+            if (academicYear == null)
             {
                 return NotFound("There is no Academic Year with this ID");
             }
@@ -293,6 +293,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 Phone = Phone,
                 GradeID = GradeID,
                 Email = ParentEmail,
+                AcademicYearID = AcademicYearID,
                 RegisterationFormStateID = 1, // Pending
                 RegistrationFormID = registerationFormParentAddDTO.RegistrationFormID,
                 ParentID = parentID != 0 ? parentID : (long?)null,

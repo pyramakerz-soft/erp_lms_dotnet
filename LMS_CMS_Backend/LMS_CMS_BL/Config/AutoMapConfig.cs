@@ -331,6 +331,7 @@ namespace LMS_CMS_BL.Config
                .ForMember(dest => dest.GradeID, opt => opt.MapFrom(src => src.RegisterationFormParent.GradeID))
                .ForMember(dest => dest.InterviewTimeDate, opt => opt.MapFrom(src => src.InterviewTime.Date));
             CreateMap<RegistrationFormInterviewPutDTO, RegisterationFormInterview>();
+            CreateMap<RegistrationFormInterviewPutByParentDTO, RegisterationFormInterview>();
             CreateMap<RegisterationFormInterviewAddDTO, RegisterationFormInterview>();
 
             CreateMap<RegisterationFormParent, RegistrationFormParentIncludeRegistrationFormInterviewGetDTO>()

@@ -14,7 +14,7 @@ namespace LMS_CMS_BL.DTO.Registration
         public string Description { get; set; }
         public string? Image { get; set; }
         public string? Video { get; set; }
-        public string? CorrectAnswer { get; set; }
+        public string? correctAnswerName{ get; set; }
         public long QuestionTypeID { get; set; }
         public long TestID { get; set; }
         public List<string> options { get; set; }

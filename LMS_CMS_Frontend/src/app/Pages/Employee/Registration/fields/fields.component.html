@@ -144,6 +144,7 @@
             <div class="flex flex-col mb-4">
               <select
                 (ngModelChange)="onInputValueChange({ field: 'fieldTypeID', value: $event })"
+                
                 class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
                 id="fieldType"
                 [(ngModel)]="field.fieldTypeID">

@@ -127,8 +127,11 @@
                 <div class="flex flex-col">
                     <textarea
                         class="w-[500px] h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
-                        [(ngModel)]="question.description" placeholder="Enter Description">
+                        [(ngModel)]="question.description" placeholder="Enter Description" 
+                        (ngModelChange)="onInputValueChange({ field: 'description', value: $event })"
+                        >
                     </textarea>
+                <span *ngIf="validationErrors['description']" class="text-red-500 ml-3 font-normal">{{ validationErrors['description'] }}</span>
                 </div>
             </div>
 
@@ -148,54 +151,64 @@
 
             <h6 class="font-medium text-base leading-6 mb-2 mt-3">Question Types</h6>
             <div class="flex flex-col mb-4">
-                <select (ngModelChange)="onInputValueChange()"
+                <select 
+                (ngModelChange)="onInputValueChange({ field: 'questionTypeID', value: $event })"
                     class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3"
                     id="test" [(ngModel)]="question.questionTypeID">
                     <option [value]="0" disabled selected hidden>Choose Question Type</option>
                     <option *ngFor="let type of QuestionTypes" [value]="type.id">{{ type.name }}</option>
                     <option *ngIf="QuestionTypes.length === 0" disabled selected>No Data Found</option>
                 </select>
+                <span *ngIf="validationErrors['questionTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['questionTypeID'] }}</span>
             </div>
 
-            <h6 class="font-medium text-base leading-6 mb-2 mt-3">Options</h6>
-            <div class="flex justify-start gap-2 items-start ">
-                <div class="flex flex-col">
-                    <input type="text"
-                        [(ngModel)]="NewOption"
-                        class="w-[450px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        placeholder="Enter New Option" />
+            <div *ngIf="question.questionTypeID ==1||question.questionTypeID==2">
+
+                <h6 class="font-medium text-base leading-6 mb-2 mt-3">Options</h6>
+                <div class="flex justify-start gap-2 items-start ">
+                    <div class="flex flex-col">
+                        <input type="text"
+                            [(ngModel)]="NewOption"
+                            class="w-[450px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                            (ngModelChange)="onInputValueChange({ field: 'options', value: $event })"
+                            placeholder="Enter New Option" />
+                            <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">{{ validationErrors['options'] }}</span>
+                    </div>
+                    <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg" (click)="AddOption()">
+                        Add
+                    </button>
                 </div>
-                <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg" (click)="AddOption()">
-                    Add
-                </button>
-            </div>
-            <div class="w-[500px]">
-                <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-                    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
-                        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
-                            <tr>
-                                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                                    Correct
-                                </th>
-                                <th
-                                    class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                                    Option
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let row of options; let i = index"
-                                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
-                                class="border-t border-gray-300 text-xs md:text-sm">
-                                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                                    <i [ngClass]="{'text-blue-500': question.correctAnswerName === row, 'text-gray-500': question.correctAnswerName !== row}"
-                                    class="fa-regular fa-circle-dot" (click)="CorrectAnswer(row)"></i>
-                                </td>
-                                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="w-[500px]">
+                    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+                        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+                            <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                                <tr>
+                                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                                        Correct
+                                    </th>
+                                    <th
+                                        class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                                        Option
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let row of options; let i = index"
+                                    [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                                    class="border-t border-gray-300 text-xs md:text-sm">
+                                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                        <i [ngClass]="{'secondaryTxt': question.correctAnswerName === row, 'text-gray-500': question.correctAnswerName !== row}"
+                                        (ngModelChange)="onInputValueChange({ field: 'correctAnswerName', value: $event })"
+                                        class="fa-regular fa-circle-dot a-3x" (click)="CorrectAnswer(row)"></i>
+                                    </td>
+                                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row }}</td>
+                                </tr>
+                            </tbody>
+                            <span *ngIf="validationErrors['correctAnswerName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['correctAnswerName'] }}</span>
+                        </table>
+                    </div>
                 </div>
+
             </div>
 
 

@@ -272,7 +272,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 {
                     return BadRequest("options in msq question is required");
                 }
-                if (newQuestion.CorrectAnswer == "")
+                if (newQuestion.correctAnswerName == "")
                 {
                     return BadRequest("CorrectAnswer in msq question is required");
                 }
@@ -319,7 +319,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             }
 
             Unit_Of_Work.question_Repository.Update(question);
-            Unit_Of_Work.SaveChanges();
+            await Unit_Of_Work.SaveChangesAsync();
+
             long corectId = 0;
             List<MCQQuestionOption> Oldoptions = await Unit_Of_Work.mCQQuestionOption_Repository.Select_All_With_IncludesById<MCQQuestionOption>(
                     b => b.IsDeleted != true && b.Question_ID == newQuestion.ID);
@@ -347,17 +348,27 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     }
                     await Unit_Of_Work.mCQQuestionOption_Repository.AddAsync(option);
                     await Unit_Of_Work.SaveChangesAsync();
-                    if (item == newQuestion.CorrectAnswer)
+                    if (item == newQuestion.correctAnswerName)
                     {
                         corectId = option.ID;
                     }
                 }
             }
 
+            if(question.QuestionTypeID == 3)
+            {
+                question.CorrectAnswerID = null;
+                question.mCQQuestionOption = null;
+                Unit_Of_Work.question_Repository.Update(question);
+                await Unit_Of_Work.SaveChangesAsync();
+            }
+            else
+            {
             question.CorrectAnswerID = corectId;
             Unit_Of_Work.question_Repository.Update(question);
-            Unit_Of_Work.SaveChanges();
+            await Unit_Of_Work.SaveChangesAsync();
 
+            }
             return Ok();
         }
         //////////////////////////////////////////////////////////////////////////////

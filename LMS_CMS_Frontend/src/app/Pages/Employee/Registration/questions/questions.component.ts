@@ -14,6 +14,7 @@ import { TestService } from '../../../../Services/Employee/Registration/test.ser
 import { QuestionService } from '../../../../Services/Employee/Registration/question.service';
 import { QuestionTypeService } from '../../../../Services/Employee/Registration/question-type.service';
 import { QuestionAddEdit } from '../../../../Models/Registration/question-add-edit';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-questions',
@@ -58,6 +59,8 @@ export class QuestionsComponent {
   options:string[]=[]
   NewOption:string=""
 
+  validationErrors: { [key in keyof Question]?: string } = {};
+
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -81,6 +84,7 @@ export class QuestionsComponent {
       this.getTestInfo()
     });
 
+    
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName("Admission Test", items);
       if (settingsPage) {
@@ -95,7 +99,7 @@ export class QuestionsComponent {
   }
 
   moveToEmployee() {
-
+    this.router.navigateByUrl("Employee/Admission Test")
   }
 
   GetAllData() {
@@ -123,11 +127,27 @@ export class QuestionsComponent {
   }
 
   Delete(id: number) {
-
+  Swal.fire({
+          title: 'Are you sure you want to delete this question?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#FF7519',
+          cancelButtonColor: '#17253E',
+          confirmButtonText: 'Delete',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.QuestionServ.Delete(id, this.DomainName).subscribe(
+              (data: any) => {
+                this.GetAllData();
+              }
+            );
+          }
+        });
   }
 
   Edit(row: Question) {
-    this.mode = 'Edie';
+    this.mode = 'Edit';
     this.question = row as unknown as QuestionAddEdit;
     this.options = row.options.map(option => option.name); 
     console.log(this.question)
@@ -146,6 +166,9 @@ export class QuestionsComponent {
 
   CreateOREdit() {
     this.question.options=this.options
+    this.question.testID=this.testId
+    if(this.isFormValid()){
+    console.log(this.question)
      if(this.mode=="Create"){
       this.QuestionServ.Add(this.question,this.DomainName).subscribe(()=>{
         this.GetAllData();
@@ -157,6 +180,7 @@ export class QuestionsComponent {
         this.closeModal();
       })
     }
+  }
   }
 
   closeModal() {
@@ -171,12 +195,45 @@ export class QuestionsComponent {
     this.isModalVisible = true;
   }
 
-  onInputValueChange() {
-
-  }
-
   AddOption(){
     this.options.push(this.NewOption);
     this.NewOption=''
   }
+
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.question) {
+      if (this.question.hasOwnProperty(key)) {
+        const field = key as keyof QuestionAddEdit;
+        if (!this.question[field]) {
+          if(field == "description" || field == "questionTypeID" || field == "testID"){
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          }
+        } 
+      }
+    }
+    if(this.question.questionTypeID==1||this.question.questionTypeID){
+      if(this.question.options.length==0){
+        this.validationErrors["options"] = `*${this.capitalizeField("options")} is required`
+      }
+      if(this.question.correctAnswerName==""){
+        this.validationErrors["correctAnswerName"] = `*${this.capitalizeField("correctAnswerName")} is required`
+      }
+    }
+    return isValid;
+  }
+  capitalizeField(field: keyof QuestionAddEdit): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+  onInputValueChange(event: { field: keyof QuestionAddEdit, value: any }) {
+    const { field, value } = event;
+    (this.question as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    } else {
+      this.validationErrors[field] = `*${this.capitalizeField(field)} is required`;
+    }
+  }
+
 }

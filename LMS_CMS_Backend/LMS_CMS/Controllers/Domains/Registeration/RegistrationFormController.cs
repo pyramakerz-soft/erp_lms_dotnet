@@ -126,7 +126,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             allowedTypes: new[] { "octa", "employee", "parent" },
             pages: new[] { "Registration Form", "Registration" }
         )]
-        public async Task<IActionResult> Add(RegisterationFormParentAddDTO registerationFormParentAddDTO)
+        public async Task<IActionResult> Add([FromForm]RegisterationFormParentAddDTO registerationFormParentAddDTO)
         {
             /*
                 1) get the Email (21) and search in the parent table for the id if exists, get it if not skip
@@ -323,12 +323,38 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             for (int i = 0; i < registerationFormParentAddDTO.RegisterationFormSubmittions.Count; i++)
             {
+                var fileFolder = "";
+
+                /// If File
+                if (registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile != null)
+                {
+                    var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/RegistrationForm");
+                    fileFolder = Path.Combine(baseFolder,
+                        registerationFormParentAddDTO.RegistrationFormID.ToString(),
+                        newRegisterationFormParentID.ToString(),
+                        registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID.ToString());
+
+                    if (!Directory.Exists(fileFolder))
+                    {
+                        Directory.CreateDirectory(fileFolder);
+                    }
+
+                    if (registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile.Length > 0)
+                    {
+                        var filePath = Path.Combine(fileFolder, registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile.FileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile.CopyToAsync(stream);
+                        }
+                    }
+                }
+
                 RegisterationFormSubmittion registerationFormSubmittion = new RegisterationFormSubmittion
                 {
                     RegisterationFormParentID = newRegisterationFormParentID,
                     CategoryFieldID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID,
                     SelectedFieldOptionID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID : (long?)null,
-                    TextAnswer = registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer : null,
+                    TextAnswer = registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer : registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile != null ? Path.Combine("Uploads", "RegistrationForm", fileFolder, registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile.FileName) : null,
                     InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
                 }; 
                 if (userTypeClaim == "octa")

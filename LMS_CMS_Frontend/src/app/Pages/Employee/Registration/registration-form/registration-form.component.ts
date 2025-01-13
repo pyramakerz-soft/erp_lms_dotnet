@@ -21,6 +21,7 @@ import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-
 import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { SectionService } from '../../../../Services/Employee/LMS/section.service';
 import { Section } from '../../../../Models/LMS/section';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registration-form',
@@ -36,6 +37,9 @@ export class RegistrationFormComponent {
 
   RegistrationFormData:RegistrationForm = new RegistrationForm()
   registrationForm:RegistrationFormForFormSubmission = new RegistrationFormForFormSubmission()
+  isFormSubmitted: boolean = false
+  isGuardianEmailValid: boolean = true
+  isMotherEmailValid: boolean = true
 
   nationalities = Object.values(countries.countries).map(country => ({
     name: country.name
@@ -49,7 +53,14 @@ export class RegistrationFormComponent {
   selectedAcademicYear: number | null = null;
   Sections:Section[] = []
 
-  currentCategory = 2;
+  selectedOptions: any[] = [];
+
+  currentCategory = 1;
+  modelValue: any;
+
+  emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+  orderCategoty: number[] = []
 
   constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, public schoolService:SchoolService,
     public activeRoute: ActivatedRoute, public registrationFormService: RegistrationFormService, public router:Router, 
@@ -71,6 +82,12 @@ export class RegistrationFormComponent {
     this.registrationFormService.GetById(1, this.DomainName).subscribe(
       (data) => {
         this.RegistrationFormData = data
+        this.RegistrationFormData.categories.sort((a, b) => a.orderInForm - b.orderInForm)
+        this.RegistrationFormData.categories.forEach(element => {
+          element.fields.sort((a, b) => a.orderInForm - b.orderInForm)
+        });
+
+        console.log(this.RegistrationFormData)
       }
     )
   }
@@ -132,7 +149,6 @@ export class RegistrationFormComponent {
 
   handleFileUpload(event:Event, id:number){}
 
-
   FillData(event:Event, fieldId:number , fieldTypeId:number){
     const selectedValue = (event.target as HTMLSelectElement).value;
 
@@ -161,6 +177,44 @@ export class RegistrationFormComponent {
     }
   }
 
+  MultiOptionDataPush(fieldId:number , fieldTypeId:number, optionAnswer:number){
+    if(fieldTypeId == 5){
+      this.registrationForm.registerationFormSubmittions.push({
+        categoryFieldID: fieldId,
+        selectedFieldOptionID: optionAnswer,
+        textAnswer: null
+      })
+    }
+  }
+
+  FillOptionData(){
+    this.selectedOptions.forEach(element => {
+      this.MultiOptionDataPush(element.fieldId, element.fieldTypeId, element.optionId)
+    });
+    this.selectedOptions = []
+  }
+
+  multiOptionHandling(event:Event, fieldId:number , fieldTypeId:number, optionId: number){
+    const checkbox = event.target as HTMLInputElement;
+    
+    if (checkbox.checked) {
+      this.addOptionToArray(fieldId, fieldTypeId, optionId);
+    } else {
+      this.removeOptionFromArray(fieldId, fieldTypeId, optionId);
+    }
+  }
+
+  private addOptionToArray(fieldId: number, fieldTypeId: number, optionId: number): void {
+    const option = { fieldId, fieldTypeId, optionId };
+    this.selectedOptions.push(option);
+  }
+
+  private removeOptionFromArray(fieldId: number, fieldTypeId: number, optionId: number): void {
+    this.selectedOptions = this.selectedOptions.filter(option => 
+      !(option.fieldId === fieldId && option.fieldTypeId === fieldTypeId && option.optionId === optionId)
+    );
+  }
+
   validateNumber(event: any): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
@@ -168,15 +222,124 @@ export class RegistrationFormComponent {
     }
   }
 
-  Save(){
-    this.registrationFormService.Add(this.registrationForm, this.DomainName).subscribe(
-      (data) => {
-        console.log(data)
-      },
-      (error) => {
-        console.log(error)
+  isFieldInvalid(field: any) {
+    if(this.isFormSubmitted){
+      const fieldSubmission = this.registrationForm.registerationFormSubmittions.find(
+        (submission) => submission.categoryFieldID === field.id
+      );
+
+      let fieldData
+      
+      if (field.isMandatory) {
+        this.registrationForm.registerationFormSubmittions.forEach(element => {
+          if(element.categoryFieldID == field.id){
+            fieldData = element
+          }
+        });
+
+        if(fieldData != null){
+          return false
+        } else{
+          if (field.fieldTypeID === 5) {
+            return !this.selectedOptions.some(option => option.fieldId === field.id);
+          } 
+          
+          return !fieldSubmission || !fieldSubmission.textAnswer || !fieldSubmission.selectedFieldOptionID;
+        }
       }
-    )
-    console.log(this.registrationForm)
+      return false;
+    } else{
+      return false
+    }
+  }
+  
+  IsEmailValid(){
+    this.registrationForm.registerationFormSubmittions.forEach(element => {
+      if(element.categoryFieldID == 21){
+        if(element.textAnswer){
+          if( !this.emailPattern.test(element.textAnswer)){
+            this.isGuardianEmailValid = false
+            return false
+          } else{
+            this.isGuardianEmailValid = true
+            return true
+          }
+        }
+        return true
+      }
+      else if(element.categoryFieldID == 28){
+        if(element.textAnswer){
+          if( !this.emailPattern.test(element.textAnswer)){
+            this.isMotherEmailValid = false
+            return false
+          } else{
+            this.isMotherEmailValid = true
+            return true
+          }
+        }
+      }
+      return true
+    });
+
+    return true
+  }
+
+  Save(){
+    this.isFormSubmitted = true;
+
+    this.FillOptionData()
+    
+    let valid = true;
+    let EmptyFieldCat = []
+
+    // Validate all fields
+    for (const cat of this.RegistrationFormData.categories) {
+      for (const field of cat.fields) {
+        if (field.isMandatory && this.isFieldInvalid(field)) {
+          valid = false;
+          EmptyFieldCat.push(cat.orderInForm)
+        }
+      }
+    }
+
+    if (valid) {
+      this.IsEmailValid()
+      if(this.isMotherEmailValid && this.isGuardianEmailValid){
+        this.registrationFormService.Add(this.registrationForm, this.DomainName).subscribe(
+          (data) => {
+            console.log(data)
+          },
+          (error) => {
+            console.log(error.error)
+            if(error.error == "Email Already Exists"){
+              Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Guardian’s Email Already Exists',
+                confirmButtonColor: '#FF7519',
+              });
+              this.goToCategory(2)
+            }
+          }
+        )
+      } else if(!this.isGuardianEmailValid){
+        this.goToCategory(2)
+      } else if(!this.isMotherEmailValid){
+        this.goToCategory(3)
+      }
+    } else{
+      this.goToCategory(EmptyFieldCat[0])
+    }
+  }
+
+ 
+  navigateToNext() {
+    if (this.currentCategory < this.RegistrationFormData.categories.length) {
+      this.currentCategory++;
+    }
+  }
+
+  goToCategory(categoryIndex: number) {
+    this.currentCategory = categoryIndex;
   }
 }

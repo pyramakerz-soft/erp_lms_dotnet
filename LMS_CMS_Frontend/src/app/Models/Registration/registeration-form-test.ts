@@ -7,6 +7,7 @@ export class RegisterationFormTest {
             public testName: string = '',
             public stateID: number = 0,
             public stateName: string = '',
+            public subjectName: string = '',
             public registerationFormParentID: number = 0,
             public insertedByUserId: number = 0,
         ) {}

@@ -48,6 +48,9 @@ export class MainLayoutComponent {
       this.menuItems = [
         {
           label: 'Dashboard Parent', route: '#'
+        },
+        {
+          label: 'Admission Test', route: 'Admission Test'
         }
       ]
     }

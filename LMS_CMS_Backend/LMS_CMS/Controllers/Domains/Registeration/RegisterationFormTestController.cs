@@ -143,6 +143,41 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             Unit_Of_Work.SaveChanges();
             return Ok(newTest);
         }
+
+        [HttpGet("ForParent/{id}")]
+        [Authorize_Endpoint_(
+ allowedTypes: new[] { "octa", "employee", "parent" },
+ pages: new[] { "Registration Confirmation", "Registration" }
+ )]
+        public async Task<IActionResult> GetAsyncForParent(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<RegisterationFormTest> tests = await Unit_Of_Work.registerationFormTest_Repository.Select_All_With_IncludesById<RegisterationFormTest>(
+                    b => b.IsDeleted != true && b.RegisterationFormParentID == id&&b.VisibleToParent==true,
+                    query => query.Include(emp => emp.RegisterationFormParent),
+                    query => query.Include(emp => emp.Test).ThenInclude(s=>s.subject),
+                    query => query.Include(emp => emp.TestState)
+
+                    );
+
+            RegisterationFormParent parent = Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(r => r.ID == id);
+
+            if (tests == null || tests.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<RegisterationFormTestGetDTO> testDTO = mapper.Map<List<RegisterationFormTestGetDTO>>(tests);
+
+            var response = new
+            {
+                StudentName = parent.StudentName,
+                Tests = testDTO
+            };
+
+            return Ok(response);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

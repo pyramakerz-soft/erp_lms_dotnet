@@ -18,6 +18,7 @@ namespace LMS_CMS_BL.DTO.Registration
         public string TestName { get; set; }
         public long StateID { get; set; }
         public string StateName { get; set; }
+        public string SubjectName { get; set; }
         public long RegisterationFormParentID { get; set; }
         public string StudentName { get; set; }
         public long? InsertedByUserId { get; set; }

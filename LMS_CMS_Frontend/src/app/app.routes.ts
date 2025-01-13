@@ -50,6 +50,7 @@ import { QuestionsComponent } from './Pages/Employee/Registration/questions/ques
 import { RegistrationFormComponent } from './Pages/Employee/Registration/registration-form/registration-form.component';
 import { RegistrationConfirmationTestDetailsComponent } from './Pages/Employee/Registration/registration-confirmation-test-details/registration-confirmation-test-details.component';
 import { RegistrationFormTestAnswerComponent } from './Pages/Employee/Registration/registration-form-test-answer/registration-form-test-answer.component';
+import { AdmissionTestParentComponent } from './Pages/Employee/Registration/admission-test-parent/admission-test-parent.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -106,7 +107,8 @@ export const routes: Routes = [
         title: "Parent Home", 
         canActivate:[noNavigateWithoutLoginGuard,navigateIfParentGuard], 
         children: [
-            { path: "", component: HomeParentComponent, title: "ParentHome" }
+            { path: "", component: HomeParentComponent, title: "ParentHome" },
+            { path: "Admission Test", component: AdmissionTestParentComponent, title: "Admission Test" }
         ]
     },
     { 

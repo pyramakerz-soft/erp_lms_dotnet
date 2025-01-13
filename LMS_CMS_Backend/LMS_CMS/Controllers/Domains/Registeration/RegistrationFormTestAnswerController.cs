@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.Registration;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -51,6 +52,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return NotFound();
             }
+            Test test =Unit_Of_Work.test_Repository.First_Or_Default(t=>t.ID== testId&& t.IsDeleted!=true);
+            if(test == null)
+            {
+                return NotFound("there is no test with this id ");
+            }
             var testDTOs = mapper.Map<List<RegisterationFormTestAnswerGetDTO>>(tests);
 
             var groupedByQuestionType = testDTOs
@@ -63,7 +69,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 })
                 .ToList();
 
-            return Ok(groupedByQuestionType);
+            var response = new
+            {
+               TestName = test.Title,
+                QuestionWithAnswer = groupedByQuestionType
+            };
+
+            return Ok(response);
         }
 
         ///////////////////////////////////////////////////////////////

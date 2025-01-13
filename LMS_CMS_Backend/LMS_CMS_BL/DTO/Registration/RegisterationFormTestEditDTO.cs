@@ -11,6 +11,5 @@ namespace LMS_CMS_BL.DTO.Registration
         public long ID { get; set; }
         public double Mark { get; set; }
         public bool VisibleToParent { get; set; }
-        public long StateID { get; set; }
     }
 }

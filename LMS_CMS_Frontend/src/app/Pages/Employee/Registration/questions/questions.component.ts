@@ -84,6 +84,7 @@ export class QuestionsComponent {
       this.getTestInfo()
     });
 
+    
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName("Admission Test", items);
       if (settingsPage) {
@@ -98,7 +99,7 @@ export class QuestionsComponent {
   }
 
   moveToEmployee() {
-
+    this.router.navigateByUrl("Employee/Admission Test")
   }
 
   GetAllData() {

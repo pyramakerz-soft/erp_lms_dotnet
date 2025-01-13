@@ -1,0 +1,113 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{StudentName}}</h1>
+    </div>
+</div>
+
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    TestTitle
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    State
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Mark
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Visible To Parent
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="Data.length === 0">
+                <td colspan="17"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of Data; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e] hover:bg-gray-200">
+                    {{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.testName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <i *ngIf="row.stateID!==2" class="fa-solid fa-circle fa-1x" ></i>           
+                    <i *ngIf="row.stateID === 2" class="fa-solid fa-circle fa-1x text-green-500"></i>
+                    {{ row.stateName }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.mark }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.visibleToParent }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex space-x-4">
+                        <button (click)="View(row)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button (click)="Edit(row)" *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)">
+                            <img src="Images/AddMarkIcon.png" class="w-5" alt="Upload Icon">
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isModalVisible}"
+    class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+    <div class="relative bg-white w-[669px] rounded-2xl p-12 gap-4 shadow-md overflow-y-auto max-h-[90vh]">
+        <!-- Close Icon -->
+        <button (click)="closeModal()"
+            class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+        </button>
+
+        <h1  class="font-semibold text-2xl leading-9">Add Mark To</h1>
+        <div class="mt-4 bg-[#F7F7F7] w-[573px] rounded-[24px] p-[16px_24px] gap-[20px]">
+
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{RegesterForm.testName}}</h6>
+            <div class="flex justify-start gap-2 items-start">
+                <div class="flex flex-col">
+                    <input type="text"
+                        class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                        [(ngModel)]="RegesterForm.mark" placeholder=" " type="number" min="0" step="1" 
+                        />
+                   <span *ngIf="MarkIsEmpty" class="text-red-500 ml-3 font-normal">Mark Is Required</span>
+                </div>
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" id="i" [(ngModel)]="RegesterForm.visibleToParent"
+                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" 
+                    />
+                <label for="i" class="text-gray-700">
+                    Visible To Parent
+                </label>
+            </div>
+
+
+            <div class="flex justify-end">
+                <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="Save()">
+                    Save
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

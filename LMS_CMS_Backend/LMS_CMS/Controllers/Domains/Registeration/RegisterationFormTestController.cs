@@ -44,6 +44,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
                     );
 
+            RegisterationFormParent parent = Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(r=>r.ID==id);
+
             if (tests == null || tests.Count == 0)
             {
                 return NotFound();
@@ -51,7 +53,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             List<RegisterationFormTestGetDTO> testDTO = mapper.Map<List<RegisterationFormTestGetDTO>>(tests);
 
-            return Ok(testDTO);
+            var response = new
+            {
+                StudentName = parent.StudentName,
+                Tests = testDTO
+            };
+
+            return Ok(response);
         }
         //////////////////////////////////////////////////////////////////////////////////
 
@@ -78,19 +86,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             if (newTest == null)
             {
-                return BadRequest("Building cannot be null");
+                return BadRequest("Registration Test  cannot be null");
             }
 
             RegisterationFormTest registerationFormTest = Unit_Of_Work.registerationFormTest_Repository.First_Or_Default(r => r.ID == newTest.ID&&r.IsDeleted!=true);
             if (registerationFormTest == null)
             {
-                return NotFound();
+                return NotFound("Registration Test not found");
             }
-            TestState state = Unit_Of_Work.testState_Repository.First_Or_Default(r => r.ID == newTest.StateID);
-            if (state == null)
-            {
-                return NotFound("this state not exist");
-            }
+            //TestState state = Unit_Of_Work.testState_Repository.First_Or_Default(r => r.ID == newTest.StateID);
+            //if (state == null)
+            //{
+            //    return NotFound("this state not exist");
+            //}
             if (userTypeClaim == "employee")
             {
                 Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Registration Confirmation");

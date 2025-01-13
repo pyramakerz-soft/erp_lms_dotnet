@@ -48,6 +48,8 @@ import { FieldsComponent } from './Pages/Employee/Registration/fields/fields.com
 import { AdmissionTestComponent } from './Pages/Employee/Registration/admission-test/admission-test.component';
 import { QuestionsComponent } from './Pages/Employee/Registration/questions/questions.component';
 import { RegistrationFormComponent } from './Pages/Employee/Registration/registration-form/registration-form.component';
+import { RegistrationConfirmationTestDetailsComponent } from './Pages/Employee/Registration/registration-confirmation-test-details/registration-confirmation-test-details.component';
+import { RegistrationFormTestAnswerComponent } from './Pages/Employee/Registration/registration-form-test-answer/registration-form-test-answer.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -94,6 +96,8 @@ export const routes: Routes = [
             { path: "Registration Form", component: RegistrationFormComponent, title: "Registration Form"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Admission Test", component: AdmissionTestComponent, title: "Admission Test"},
             { path: "question/:id", component: QuestionsComponent, title: "question"},
+            { path: "Registration Confirmation Test/:id", component: RegistrationConfirmationTestDetailsComponent, title: "Registration Confirmation Test"},
+            { path: "Registration Confirmation Test Answer/:Rid/:Pid/:Tid", component: RegistrationFormTestAnswerComponent, title: "Registration Confirmation Test"},
         ]
     },
     { 

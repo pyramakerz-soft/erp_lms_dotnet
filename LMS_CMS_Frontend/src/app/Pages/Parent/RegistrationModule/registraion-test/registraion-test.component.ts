@@ -11,6 +11,11 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { QuestionService } from '../../../../Services/Employee/Registration/question.service';
+import { Question } from '../../../../Models/Registration/question';
+import { TestWithQuestion } from '../../../../Models/Registration/test-with-question';
+import { Answer } from '../../../../Models/Registration/answer';
+import { QuestionOption } from '../../../../Models/Registration/question-option';
 
 @Component({
   selector: 'app-registraion-test',
@@ -32,7 +37,7 @@ export class RegistraionTestComponent {
     '',
     ''
   );
-
+  
   DomainName: string = '';
   UserID: number = 0;
   path: string = '';
@@ -43,20 +48,24 @@ export class RegistraionTestComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  mode: string = 'Create';
 
   isModalVisible: boolean = false;
-  Tid: number = 0;
-  Pid: number = 0;
-  Rid: number = 0;
-
+  TestId: number = 0;
+  registerationFormParentID: number = 0;
+  registerationFormID: number = 0;
+  
   TestName: string = '';
-  Mark:number = 0;
-  Mode : string = 'degree' ;
+  TotalMark:number = 0;
+  mark:number =0
+  mode : string = 'degree' ;
   MarkIsEmpty: boolean = false;
-
+  
+  questions:TestWithQuestion[]=[]
+  
   RegesterForm: RegisterationFormTest = new RegisterationFormTest();
-
+  Answers:Answer[]=[];
+  
+  QuestionsByTest:Question[]=[]
   constructor(
     public activeRoute: ActivatedRoute,
     public account: AccountService,
@@ -65,9 +74,10 @@ export class RegistraionTestComponent {
     public EditDeleteServ: DeleteEditPermissionService,
     private router: Router,
     public registerServ: RegisterationFormTestAnswerService,
-    public registrationserv: RegisterationFormTestService
+    public registrationserv: RegisterationFormTestService,
+    public questionServ :QuestionService
   ) {}
-
+  
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -75,9 +85,9 @@ export class RegistraionTestComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
       this.activeRoute.paramMap.subscribe((params) => {
-        this.Pid = Number(params.get('Pid')); // Retrieve and convert Pid to a number
-        this.Tid = Number(params.get('Tid')); // Retrieve and convert Tid to a number
-        this.Rid = Number(params.get('Rid')); // Retrieve and convert Tid to a number
+        this.registerationFormParentID = Number(params.get('registerationFormParentID')); // Retrieve and convert Pid to a number
+        this.TestId = Number(params.get('TestId')); // Retrieve and convert Tid to a number
+        this.registerationFormID = Number(params.get('registerationFormID')); // Retrieve and convert Tid to a number
       });
     });
 
@@ -90,21 +100,70 @@ export class RegistraionTestComponent {
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
       }
     });
-
+    
     this.GetAllData();
   }
 
   GetAllData() {
     this.registerServ
-      .GetByRegistrationParentId(this.Pid, this.Tid, this.DomainName)
+      .GetByRegistrationParentId(this.registerationFormParentID, this.TestId, this.DomainName)
       .subscribe((d: any) => {
         console.log(d)
         this.Data = d.questionWithAnswer;
         this.TestName = d.testName;
-        this.Mark =d.mark;
-        console.log(this.Data);
+        this.mark =d.mark;
+        this.TotalMark=d.totalmark;
+        console.log("ff",this.Data);
+      },(error)=>{
+          this.mode= 'test';
+          console.log(this.mode)
+          this.questionServ.GetByTestIDGroupBy(this.TestId,this.DomainName).subscribe((d: any) => {
+           this.questions=d;
+           this.questionServ.GetByTestID(this.TestId,this.DomainName).subscribe((q: any) => {
+            this.QuestionsByTest=q;
+            if (this.QuestionsByTest && Array.isArray(this.QuestionsByTest)) {
+              this.Answers = this.QuestionsByTest.map((question: any) => {
+                return new Answer(
+                  question.registerationFormParentID || this.registerationFormParentID, 
+                  '',                                     
+                  0,                                    
+                  question.id || 0                       
+                );
+              });
+            } else {
+              this.Answers = []; 
+            }
+          });
+        });
       });
-  }
+    }
   moveToEmployee() {
+    this.router.navigateByUrl(`Parent/Admission Test`)
   }
+  selectOption(questionId: number,OptionId: number) {
+       const answer = this.Answers.find(a => a.questionID === questionId);
+       if (answer) {
+         answer.answerID = OptionId;
+       } 
+       console.log('Updated Answers:', this.Answers);
+  }
+
+  EssayAnswer(questionId: number, event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    const answer = this.Answers.find(a => a.questionID === questionId);
+    if (answer) {
+      answer.essayAnswer = textarea.value;
+      answer.answerID=null
+    } 
+       
+  }
+
+  Save(){
+    console.log(this.Answers)
+    this.registerServ.Add(this.Answers,this.DomainName).subscribe((a)=>{
+      this.GetAllData();
+     this.router.navigateByUrl(`Parent/Admission Test`)
+    })
+  }
+
 }

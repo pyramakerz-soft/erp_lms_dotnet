@@ -57,6 +57,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return NotFound("there is no test with this id ");
             }
+            RegisterationFormTest registerationFormTest = Unit_Of_Work.registerationFormTest_Repository.First_Or_Default(r=>r.TestID==testId && r.RegisterationFormParentID==id && r.IsDeleted!=true);
+            
             var testDTOs = mapper.Map<List<RegisterationFormTestAnswerGetDTO>>(tests);
 
             var groupedByQuestionType = testDTOs
@@ -71,8 +73,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             var response = new
             {
-               TestName = test.Title,
-               mark =test.TotalMark,
+                TestName = test.Title,
+                Totalmark = test.TotalMark,
+                mark = registerationFormTest.Mark,
                QuestionWithAnswer = groupedByQuestionType
             };
 
@@ -83,7 +86,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpPost]
         [Authorize_Endpoint_(
-       allowedTypes: new[] { "octa", "employee" },
+       allowedTypes: new[] { "octa", "employee","parent" },
        pages: new[] { "Registration Confirmation", "Registration" }
      )]
 

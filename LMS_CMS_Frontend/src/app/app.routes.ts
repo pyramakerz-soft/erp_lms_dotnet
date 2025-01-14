@@ -110,7 +110,7 @@ export const routes: Routes = [
         children: [
             { path: "", component: HomeParentComponent, title: "ParentHome" },
             { path: "Admission Test", component: AdmissionTestParentComponent, title: "Admission Test" },
-            { path: "Test/:Rid/:Pid/:Tid", component: RegistraionTestComponent, title: "Test" }
+            { path: "Test/:registerationFormID/:registerationFormParentID/:TestId", component: RegistraionTestComponent, title: "Test" }
 
         ]
     },

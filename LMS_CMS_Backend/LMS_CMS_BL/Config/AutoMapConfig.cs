@@ -342,6 +342,7 @@ namespace LMS_CMS_BL.Config
               .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
               .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.TestState.Name))
               .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Test.subject.en_name))
+              .ForMember(dest => dest.TotalMark, opt => opt.MapFrom(src => src.Test.TotalMark))
               .ForMember(dest => dest.TestName, opt => opt.MapFrom(src => src.Test.Title));
 
             CreateMap<RegisterationFormTestEditDTO, RegisterationFormTest>();

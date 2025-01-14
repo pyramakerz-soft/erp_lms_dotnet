@@ -2,6 +2,7 @@ export class RegisterationFormTest {
      constructor(
             public id: number = 0,
             public mark:number = 0,
+            public totalMark:number = 0,
             public visibleToParent: boolean = false,
             public testID: number = 0,
             public testName: string = '',

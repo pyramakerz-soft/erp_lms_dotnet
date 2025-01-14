@@ -11,6 +11,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClassroomService } from '../../../../Services/Employee/LMS/classroom.service';
 import { Classroom } from '../../../../Models/LMS/classroom';
+import { Grade } from '../../../../Models/LMS/grade';
+import { School } from '../../../../Models/school';
+import { AcademicYear } from '../../../../Models/LMS/academic-year';
+import { SchoolService } from '../../../../Services/Employee/school.service';
+import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
+import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
 
 @Component({
   selector: 'app-classrooms-accommodation',
@@ -47,7 +53,11 @@ export class ClassroomsAccommodationComponent {
 
   Data: RegisterationFormParent[] = [];
   isModalVisible: boolean = false;
-  RpId:number = 0;
+  RpId: number = 0;
+
+  Grades: Grade[] = [];
+  Schools: School[] = [];
+  Years: AcademicYear[] = [];
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -57,7 +67,10 @@ export class ClassroomsAccommodationComponent {
     public EditDeleteServ: DeleteEditPermissionService,
     private router: Router,
     public registerationFormParentService: RegisterationFormParentService,
-    public classroomServ: ClassroomService
+    public classroomServ: ClassroomService,
+    public SchoolServ: SchoolService,
+    public GradeServ: GradeService,
+    public YearServ: AcadimicYearService
   ) {}
 
   ngOnInit() {
@@ -77,6 +90,9 @@ export class ClassroomsAccommodationComponent {
       }
     });
 
+    this.getAllGrades();
+    this.getAllSchools();
+    this.getAllYears();
     this.GetAllData();
   }
   GetAllData() {
@@ -84,20 +100,22 @@ export class ClassroomsAccommodationComponent {
       .GetAll(this.DomainName)
       .subscribe((data) => {
         console.log(data);
-        this.Data=[]
+        this.Data = [];
         this.Data = data;
       });
   }
 
   Save() {
-    this.classroomServ.AddStudentToClass(this.RpId,this.ClassroomId,this.DomainName).subscribe((d)=>{
-     this.GetAllData();
-     this.closeModal();
-    })
+    this.classroomServ
+      .AddStudentToClass(this.RpId, this.ClassroomId, this.DomainName)
+      .subscribe((d) => {
+        this.GetAllData();
+        this.closeModal();
+      });
   }
   Create(id: number) {
     this.openModal();
-    this.RpId=id;
+    this.RpId = id;
     this.GetClassrooms(id);
   }
 
@@ -106,7 +124,7 @@ export class ClassroomsAccommodationComponent {
       .GetByRegistrationFormParentID(id, this.DomainName)
       .subscribe((data) => {
         this.classrooms = data;
-        console.log(this.classrooms)
+        console.log(this.classrooms);
       });
   }
   openModal() {
@@ -115,5 +133,21 @@ export class ClassroomsAccommodationComponent {
 
   closeModal() {
     this.isModalVisible = false;
+  }
+
+  getAllSchools() {
+    this.SchoolServ.Get(this.DomainName).subscribe((data) => {
+      this.Schools = data;
+    });
+  }
+  getAllGrades() {
+    this.GradeServ.Get(this.DomainName).subscribe((data) => {
+      this.Grades = data;
+    });
+  }
+  getAllYears() {
+    this.YearServ.Get(this.DomainName).subscribe((data) => {
+      this.Years = data;
+    });
   }
 }

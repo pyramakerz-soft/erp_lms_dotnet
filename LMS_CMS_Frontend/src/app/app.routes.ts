@@ -52,6 +52,7 @@ import { RegistrationConfirmationTestDetailsComponent } from './Pages/Employee/R
 import { RegistrationFormTestAnswerComponent } from './Pages/Employee/Registration/registration-form-test-answer/registration-form-test-answer.component';
 import { AdmissionTestParentComponent } from './Pages/Parent/RegistrationModule/admission-test-parent/admission-test-parent.component';
 import { RegistraionTestComponent } from './Pages/Parent/RegistrationModule/registraion-test/registraion-test.component';
+import { ClassroomsAccommodationComponent } from './Pages/Employee/Registration/classrooms-accommodation/classrooms-accommodation.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -100,6 +101,7 @@ export const routes: Routes = [
             { path: "question/:id", component: QuestionsComponent, title: "question"},
             { path: "Registration Confirmation Test/:id", component: RegistrationConfirmationTestDetailsComponent, title: "Registration Confirmation Test"},
             { path: "Registration Confirmation Test Answer/:Rid/:Pid/:Tid", component: RegistrationFormTestAnswerComponent, title: "Registration Confirmation Test"},
+            { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" }
         ]
     },
     { 
@@ -110,8 +112,7 @@ export const routes: Routes = [
         children: [
             { path: "", component: HomeParentComponent, title: "ParentHome" },
             { path: "Admission Test", component: AdmissionTestParentComponent, title: "Admission Test" },
-            { path: "Test/:registerationFormID/:registerationFormParentID/:TestId", component: RegistraionTestComponent, title: "Test" }
-
+            { path: "Test/:registerationFormID/:registerationFormParentID/:TestId", component: RegistraionTestComponent, title: "Test" },
         ]
     },
     { 

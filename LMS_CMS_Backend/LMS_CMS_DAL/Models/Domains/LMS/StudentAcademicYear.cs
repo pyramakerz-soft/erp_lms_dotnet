@@ -23,13 +23,13 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("Grade")]
         public long GradeID { get; set; }
         [ForeignKey("Semester")]
-        public long SemesterID { get; set; }
+        public long? SemesterID { get; set; }
 
         public Student Student { get; set; }
         public School School { get; set; }
         public Classroom Classroom { get; set; }
         public Grade Grade { get; set; }
-        public Semester Semester { get; set; }
+        public Semester? Semester { get; set; }
     }
 }
 

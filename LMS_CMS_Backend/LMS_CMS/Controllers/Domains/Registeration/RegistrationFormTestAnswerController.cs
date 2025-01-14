@@ -30,7 +30,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-     allowedTypes: new[] { "octa", "employee" },
+     allowedTypes: new[] { "octa", "employee" ,"parent"},
      pages: new[] { "Registration Confirmation", "Registration" }
  )]
         public async Task<IActionResult> GetAsync(long id, long testId)
@@ -72,7 +72,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             var response = new
             {
                TestName = test.Title,
-                QuestionWithAnswer = groupedByQuestionType
+               mark =test.TotalMark,
+               QuestionWithAnswer = groupedByQuestionType
             };
 
             return Ok(response);

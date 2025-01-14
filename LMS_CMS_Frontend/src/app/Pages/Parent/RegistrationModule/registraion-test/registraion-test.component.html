@@ -1,0 +1,54 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{TestName}}</h1>
+    </div>
+    <div class="flex justify-between items-center ">
+        <button 
+            class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2">
+            {{Mark}}
+        </button>
+    </div>
+</div>
+
+
+<div *ngFor="let row of Data; let i = index" class="mt-5 ">
+    <div>
+        <div class="primaryBg p-4 rounded-xl text-white mb-4">
+            {{row.questionTypeName}}
+        </div>
+        <div *ngIf="row.questionTypeID !== 3" class="flex justify-between flex-wrap">
+            <div *ngFor="let q of row.questions; let i = index" class="w-[29%]">
+              <div *ngIf="row.questionTypeID !== 3" class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border" 
+                   [ngClass]="{
+                     'border-[#177C03]': q.answerName === q.correctAnswerName,
+                     'border-[#EA3A3D]': q.answerName !== q.correctAnswerName
+                   }">
+                <div>
+                  {{q.description}} ?
+                </div>
+                <div> 
+                  {{q.answerName}} \\{{q.correctAnswerName}}
+                </div>
+              </div>
+              <div *ngIf="q.answerName !== q.correctAnswerName">
+                Correct Answer : {{q.correctAnswerName}}
+              </div>
+            </div>
+          </div>
+        <div *ngIf="row.questionTypeID === 3" class="">
+            <div *ngFor="let q of row.questions; let i = index" >
+            <div class="bg-[#EBEBEB] p-4 rounded-xl mb-2">
+                <div>
+                    {{q.description }} ?
+                </div>
+                <div>
+                    {{q.essayAnswer}}
+                </div>
+            </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+

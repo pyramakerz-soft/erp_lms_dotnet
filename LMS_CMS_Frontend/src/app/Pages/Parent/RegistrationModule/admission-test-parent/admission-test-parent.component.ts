@@ -113,6 +113,6 @@ export class AdmissionTestParentComponent {
     console.log('Selected Student ID:', selectedId);
   }
   View(row:RegisterationFormTest){
-
+    this.router.navigateByUrl(`Parent/Test/${row.id}/${row.registerationFormParentID}/${row.testID}`)
   }
 }

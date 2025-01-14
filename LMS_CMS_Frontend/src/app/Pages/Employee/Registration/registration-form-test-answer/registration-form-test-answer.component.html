@@ -20,20 +20,23 @@
         </div>
         <div *ngIf="row.questionTypeID !== 3" class="flex justify-between flex-wrap">
             <div *ngFor="let q of row.questions; let i = index" class="w-[29%]">
-                <div *ngIf="row.questionTypeID !== 3" class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border border-[#EA3A3D]" [ngClass]="{
-                   ' border-[#177C03] ': q.answerName === q.correctAnswerName
-                }">
-                    <div>
-                        {{q.description}} ?
-                    </div>
-                    <div> 
-                        {{q.answerName}}
-                    </div>
+              <div *ngIf="row.questionTypeID !== 3" class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border" 
+                   [ngClass]="{
+                     'border-[#177C03]': q.answerName === q.correctAnswerName,
+                     'border-[#EA3A3D]': q.answerName !== q.correctAnswerName
+                   }">
+                <div>
+                  {{q.description}} ?
                 </div>
-                <div *ngIf="q.answerName !== q.correctAnswerName"> Correct Answer : {{q.correctAnswerName}}</div>
-
+                <div> 
+                  {{q.answerName}}
+                </div>
+              </div>
+              <div *ngIf="q.answerName !== q.correctAnswerName">
+                Correct Answer : {{q.correctAnswerName}}
+              </div>
             </div>
-        </div>
+          </div>
         <div *ngIf="row.questionTypeID === 3" class="">
             <div *ngFor="let q of row.questions; let i = index" >
             <div class="bg-[#EBEBEB] p-4 rounded-xl mb-2">

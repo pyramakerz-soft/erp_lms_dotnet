@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { RegisterationFormParent } from '../../../Models/Registration/registeration-form-parent';
+import { RegistrationFormParentIncludeRegistrationFormInterview } from '../../../Models/Registration/registration-form-parent-include-registration-form-interview';
 
 @Injectable({
   providedIn: 'root'
@@ -114,5 +115,17 @@ export class RegisterationFormParentService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
     return this.http.get<RegisterationFormParent[]>(`${this.baseUrl}/RegisterationFormParent/GetBySchoolID/${school}`, { headers })
+  }
+
+  GetByParentIDIncludeRegistrationFormInterview(parentID: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<RegistrationFormParentIncludeRegistrationFormInterview[]>(`${this.baseUrl}/RegisterationFormParent/GetByParentIDIncludeRegistrationFormInterview/${parentID}`, { headers })
   }
 }

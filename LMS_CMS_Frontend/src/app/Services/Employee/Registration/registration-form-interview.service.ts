@@ -55,4 +55,22 @@ export class RegistrationFormInterviewService {
     
     return this.http.put(`${this.baseUrl}/RegistrationFormInterview`, body, { headers });
   }
+
+  Add(RegisterationFormParentID:number, InterviewTimeID:number ,DomainName:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+
+    let body = {
+      registerationFormParentID: RegisterationFormParentID, 
+      interviewTimeID: InterviewTimeID
+    }
+    
+    return this.http.post(`${this.baseUrl}/RegistrationFormInterview`, body, { headers });
+  }
 }

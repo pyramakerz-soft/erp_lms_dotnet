@@ -327,12 +327,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
             };
 
-            RegisterationFormParent existsRegisterationFormParent = Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(s => s.Email == ParentEmail && s.Email != null && s.IsDeleted != true);
+            //RegisterationFormParent existsRegisterationFormParent = Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(s => s.Email == ParentEmail && s.Email != null && s.IsDeleted != true);
 
-            if(existsRegisterationFormParent != null)
-            {
-                return BadRequest("Email Already Exists");
-            }
+            //if(existsRegisterationFormParent != null)
+            //{
+            //    return BadRequest("Email Already Exists");
+            //}
 
             if (userTypeClaim == "octa")
             {
@@ -353,8 +353,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             /// If File
             if (filesFieldCat != null)
             {
-
-
                 for (int j = 0; j < filesFieldCat.Count; j++)
                 {
                     var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/RegistrationForm");

@@ -38,6 +38,30 @@ export class InterviewTimeTableService {
     return this.http.get<InterviewTimeTable>(`${this.baseUrl}/InterviewTimeTable/GetInterviewTableByID/${id}`, { headers })
   }
 
+  GetByYearId(id:number, DomainName:string){
+      if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.get<InterviewTimeTable[]>(`${this.baseUrl}/InterviewTimeTable/GetInterviewTableWithYearID/${id}`, { headers })
+  }
+
+  GetBySchoolId(id:number, DomainName:string){
+      if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.get<InterviewTimeTable[]>(`${this.baseUrl}/InterviewTimeTable/GetInterviewTableWithSchoolID/${id}`, { headers })
+  }
+
   Delete(id: number,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 

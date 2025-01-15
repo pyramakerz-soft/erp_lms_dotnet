@@ -65,7 +65,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("GetBySection/{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
+            allowedTypes: new[] { "octa", "employee", "parent" },
             pages: new[] { "Grade", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync(long id)

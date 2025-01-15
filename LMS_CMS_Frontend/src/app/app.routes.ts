@@ -51,6 +51,10 @@ import { RegistrationFormComponent } from './Pages/Employee/Registration/registr
 import { RegistrationConfirmationTestDetailsComponent } from './Pages/Employee/Registration/registration-confirmation-test-details/registration-confirmation-test-details.component';
 import { RegistrationFormTestAnswerComponent } from './Pages/Employee/Registration/registration-form-test-answer/registration-form-test-answer.component';
 import { AdmissionTestParentComponent } from './Pages/Employee/Registration/admission-test-parent/admission-test-parent.component';
+import { RegistrationConfirmationComponent } from './Pages/Employee/Registration/registration-confirmation/registration-confirmation.component';
+import { RegistrationConfirmationDetailsComponent } from './Pages/Employee/Registration/registration-confirmation-details/registration-confirmation-details.component';
+import { InterviewTimeTableComponent } from './Pages/Employee/Registration/interview-time-table/interview-time-table.component';
+import { InterviewRegistrationComponent } from './Pages/Employee/Registration/interview-registration/interview-registration.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -99,6 +103,10 @@ export const routes: Routes = [
             { path: "question/:id", component: QuestionsComponent, title: "question"},
             { path: "Registration Confirmation Test/:id", component: RegistrationConfirmationTestDetailsComponent, title: "Registration Confirmation Test"},
             { path: "Registration Confirmation Test Answer/:Rid/:Pid/:Tid", component: RegistrationFormTestAnswerComponent, title: "Registration Confirmation Test"},
+            { path: "Registration Confirmation", component: RegistrationConfirmationComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Registration Confirmation/:Id", component: RegistrationConfirmationDetailsComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Interview Time Table", component: InterviewTimeTableComponent, title: "Interview Time Table"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Interview Registration/:Id", component: InterviewRegistrationComponent, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard]},  
         ]
     },
     { 

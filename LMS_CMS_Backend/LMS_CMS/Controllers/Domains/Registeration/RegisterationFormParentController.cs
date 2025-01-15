@@ -219,6 +219,56 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             return Ok(registerationFormParentDTO);
         }
+        
+        ///////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetByID/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee", "parent" },
+            pages: new[] { "Registration Confirmation", "Registration" }
+        )]
+        public async Task<IActionResult> GetByID(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+            RegisterationFormParent registerationFormParent = await Unit_Of_Work.registerationFormParent_Repository.FindByIncludesAsync(
+                    r => r.IsDeleted != true && r.ID == id,
+                    query => query.Include(emp => emp.RegisterationFormState),
+                    query => query.Include(emp => emp.RegistrationForm),
+                    query => query.Include(emp => emp.Parent));
+
+            if (registerationFormParent == null)
+            {
+                return NotFound();
+            }
+
+            RegisterationFormParentGetDTO registerationFormParentDTO = mapper.Map<RegisterationFormParentGetDTO>(registerationFormParent);
+
+            long gradeId = long.Parse(registerationFormParentDTO.GradeID);
+            if (gradeId != 0 || gradeId != null)
+            {
+                Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(g => g.ID == gradeId && g.IsDeleted != true);
+                registerationFormParentDTO.GradeName = grade.Name;
+            }
+
+            long academicYearId = long.Parse(registerationFormParentDTO.AcademicYearID);
+            if (academicYearId != 0 || academicYearId != null)
+            {
+                AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(g => g.ID == academicYearId && g.IsDeleted != true);
+                registerationFormParentDTO.AcademicYearName = academicYear.Name;
+            }
+
+            return Ok(registerationFormParentDTO);
+        }
 
         ///////////////////////////////////////////////////////////////////////////////////
 

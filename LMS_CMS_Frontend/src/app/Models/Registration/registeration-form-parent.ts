@@ -14,5 +14,6 @@ export class RegisterationFormParent {
             public parentName: string = '',
             public registrationFormID: number = 0,
             public registrationFormName: string = '',
+            public insertedByUserId: number = 0,
         ) {}
 }

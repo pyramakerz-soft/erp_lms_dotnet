@@ -22,5 +22,6 @@ namespace LMS_CMS_BL.DTO.Registration
         public string ParentName { get; set; }
         public long RegistrationFormID { get; set; }
         public string RegistrationFormName { get; set; }
+        public long InsertedByUserId { get; set; }
     }
 }

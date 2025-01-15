@@ -113,7 +113,9 @@ export class RegistrationConfirmationTestDetailsComponent {
   closeModal() {
     this.isModalVisible = false;
   }
-  moveToEmployee() {
+
+  moveToRegistrationConfirmation() {
+    this.router.navigateByUrl(`Employee/Registration Confirmation`)
   }
 
   Edit(row: RegisterationFormTest) {

@@ -362,8 +362,8 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<RegisterationFormTestAnswerAddDTO, RegisterationFormTestAnswer>();
 
-
-
+            CreateMap<RegisterationFormState, RegistrationFormStateGetDTO>();
+            CreateMap<InterviewState, InterviewStateGetDTO>();
         }
     }
 }

@@ -22,6 +22,7 @@ import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { SectionService } from '../../../../Services/Employee/LMS/section.service';
 import { Section } from '../../../../Models/LMS/section';
 import Swal from 'sweetalert2';
+import { RegistrationFormForFormSubmissionForFiles } from '../../../../Models/Registration/registration-form-for-form-submission-for-files';
 
 @Component({
   selector: 'app-registration-form',
@@ -37,6 +38,7 @@ export class RegistrationFormComponent {
 
   RegistrationFormData:RegistrationForm = new RegistrationForm()
   registrationForm:RegistrationFormForFormSubmission = new RegistrationFormForFormSubmission()
+  registrationFormForFiles:RegistrationFormForFormSubmissionForFiles [] = []
   isFormSubmitted: boolean = false
   isGuardianEmailValid: boolean = true
   isMotherEmailValid: boolean = true
@@ -56,11 +58,10 @@ export class RegistrationFormComponent {
   selectedOptions: any[] = [];
 
   currentCategory = 1;
-  modelValue: any;
 
   emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-  orderCategoty: number[] = []
+  isSuccess:boolean = false
 
   constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, public schoolService:SchoolService,
     public activeRoute: ActivatedRoute, public registrationFormService: RegistrationFormService, public router:Router, 
@@ -86,8 +87,6 @@ export class RegistrationFormComponent {
         this.RegistrationFormData.categories.forEach(element => {
           element.fields.sort((a, b) => a.orderInForm - b.orderInForm)
         });
-
-        console.log(this.RegistrationFormData)
       }
     )
   }
@@ -147,7 +146,14 @@ export class RegistrationFormComponent {
     return el.schoolID == this.selectedSchool
   }
 
-  handleFileUpload(event:Event, id:number){}
+  handleFileUpload(event:any, fieldId:number){
+    const file: File = event.target.files[0];
+
+    this.registrationFormForFiles.push({
+      categoryFieldID: fieldId,
+      selectedFile: file
+    })
+  }
 
   FillData(event:Event, fieldId:number , fieldTypeId:number){
     const selectedValue = (event.target as HTMLSelectElement).value;
@@ -228,29 +234,39 @@ export class RegistrationFormComponent {
         (submission) => submission.categoryFieldID === field.id
       );
 
+      const fieldSubmissionFile = this.registrationFormForFiles.find(
+        (submission) => submission.categoryFieldID === field.id
+      );
+
       let fieldData
       
       if (field.isMandatory) {
-        this.registrationForm.registerationFormSubmittions.forEach(element => {
-          if(element.categoryFieldID == field.id){
-            fieldData = element
-          }
-        });
-
-        if(fieldData != null){
-          return false
-        } else{
-          if (field.fieldTypeID === 5) {
-            return !this.selectedOptions.some(option => option.fieldId === field.id);
-          } 
-          
-          return !fieldSubmission || !fieldSubmission.textAnswer || !fieldSubmission.selectedFieldOptionID;
+        if (field.fieldTypeID !== 6) {
+          fieldData = fieldSubmission;
         }
+
+        if (field.fieldTypeID === 6) {
+          fieldData = fieldSubmissionFile;
+        }
+
+        if (fieldData) {
+          return false;
+        }
+
+        if (field.fieldTypeID === 5) {
+          return !this.selectedOptions.some(option => option.fieldId === field.id);
+        }
+
+        if (field.fieldTypeID === 6) {
+            return !fieldSubmissionFile || !fieldSubmissionFile.selectedFile || 
+                  !this.selectedOptions.some(option => option.fieldId === field.id);
+        }
+
+        return !fieldSubmission || !fieldSubmission.textAnswer || !fieldSubmission.selectedFieldOptionID;
       }
       return false;
-    } else{
-      return false
     }
+    return false
   }
   
   IsEmailValid(){
@@ -305,9 +321,10 @@ export class RegistrationFormComponent {
     if (valid) {
       this.IsEmailValid()
       if(this.isMotherEmailValid && this.isGuardianEmailValid){
-        this.registrationFormService.Add(this.registrationForm, this.DomainName).subscribe(
+        this.registrationFormService.Add(this.registrationForm, this.registrationFormForFiles, this.DomainName).subscribe(
           (data) => {
             console.log(data)
+            this.DoneSuccessfully()
           },
           (error) => {
             console.log(error.error)
@@ -341,5 +358,29 @@ export class RegistrationFormComponent {
 
   goToCategory(categoryIndex: number) {
     this.currentCategory = categoryIndex;
+  }
+
+  DoneSuccessfully(){
+    this.RegistrationFormData = new RegistrationForm()
+    this.registrationForm = new RegistrationFormForFormSubmission()
+    this.registrationFormForFiles = []
+
+    this.isFormSubmitted = false
+    this.isGuardianEmailValid = true
+    this.isMotherEmailValid = true
+
+    this.schools = []
+    this.selectedSchool = null;
+    this.Grades = []
+    this.selectedGrade = null;
+    this.AcademicYears = []
+    this.selectedAcademicYear = null;
+    this.Sections = []
+  
+    this.selectedOptions = [];
+
+    //////
+
+    this.isSuccess = true
   }
 }

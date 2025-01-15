@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.Registration
 {
-    public class RegisterationFormSubmittionGetForRegisterationFormParentAddDTO
+    public class RegisterationFormSubmittionForFiles
     {
-        public string? TextAnswer { get; set; }
+        [FromForm]
         public long CategoryFieldID { get; set; }
-        public long? SelectedFieldOptionID { get; set; }
+        [FromForm]
+        public IFormFile? SelectedFile { get; set; }
     }
 }

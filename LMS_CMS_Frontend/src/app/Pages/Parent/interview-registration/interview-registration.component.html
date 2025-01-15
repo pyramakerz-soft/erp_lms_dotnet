@@ -2,33 +2,6 @@
     <h1 class="primaryTxt font-semibold text-2xl leading-9">Interview Registration</h1>
 </div>
 
-<!--
-interviewTimeDate
-: 
-null
-interviewTimeFromTime
-: 
-null
-interviewTimeID
-: 
-0
-interviewTimeToTime
-: 
-null
-registrationFormID
-: 
-1
-registrationFormInterviewStateID
-: 
-null
-registrationFormInterviewStateName
-: 
-null
-registrationFormName
-: 
-"Registration Form"
-
--->
 <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
     <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
         <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
@@ -91,7 +64,7 @@ registrationFormName
                     <div *ngIf="row.interviewTimeDate">
                         {{ row.interviewTimeDate | date:'MMM d, yyyy' }}
                     </div>
-                    <div *ngIf="!row.interviewTimeDate" (click)="openModal(row.id, row.academicYearID, row.interviewTimeDate)">
+                    <div *ngIf="!row.interviewTimeDate" (click)="openModal(row.id, row.academicYearID)">
                         <p class="underline">Select Date</p>
                     </div>
                 </td>
@@ -120,11 +93,11 @@ registrationFormName
                     </div>
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div *ngIf="row.interviewTimeDate" class="flex space-x-4">
-                        <button (click)="deleteInterview(row.id)">
+                    <div *ngIf="row.registrationFormInterviewID && row.registrationFormInterviewStateID == 1" class="flex space-x-4">
+                        <button (click)="deleteInterview(row.registrationFormInterviewID)">
                             <i class="fa-regular fa-trash-can"></i>
                         </button>
-                        <button (click)="openModal(row.id, row.academicYearID, row.interviewTimeDate)">
+                        <button (click)="openModal(row.id, row.academicYearID, row.registrationFormInterviewID, row.interviewTimeID, row.interviewTimeDate)">
                             <i class="fa-solid fa-pencil"></i>
                         </button>
                     </div>
@@ -135,7 +108,7 @@ registrationFormName
 </div>
 
 
-<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden overflow-auto">
     <div class="relative h-full w-full justify-center content-center">
         <div class="bg-white rounded-2xl p-12 w-[669px] m-auto">
             <div class="flex justify-between items-center">
@@ -148,32 +121,58 @@ registrationFormName
                     <label class="mb-2 primaryTxt font-medium text-base" for="status">Date</label>
                     <div class="text-gray-900 text-sm rounded-lg p-2.5 bg-gray-50 border border-gray-300 w-full flex justify-between"
                     (click)="openModalcalender()">
-                        <p>Choose Date</p>
+                        <p>{{ InterviewTimeID ? (selectedDate | date:'MMM d, yyyy') : "Choose Date"}}</p>
                         <i class="fa-regular fa-calendar flex justify-center items-center"></i>
                     </div>
                 </div>
                 
                 <div class="flex justify-end">
-                    <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Register()">
+                    <button [disabled]="!selectedDate"
+                    class="text-white font-medium px-4 py-2 rounded-lg" [ngClass]="{ 'bg-gray-500 opacity-15': !selectedDate, 'secondaryBg': selectedDate }"
+                    (click)="Register()">
                         Register 
                     </button>
                 </div>
             </div>
     
         </div>
-        <div id="Calender_Modal" class="bg-white rounded-2xl p-4 hidden absolute shadow-lg flex-col w-1/4 m-auto h-auto">
+        <div id="Calender_Modal" class="bg-white rounded-2xl p-4 hidden absolute shadow-lg flex-col w-1/3 m-auto h-auto">
             <div class="flex justify-between items-center w-full">
                 <h1 class="font-semibold text-2xl leading-9">Date</h1>
                 <button (click)="closeModalcalender()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
             </div>
+            <div class="flex flex-col items-center">
             <div>
-                <select id="state" [(ngModel)]="InterviewTimeID"
+                <select id="interviewTime" [(ngModel)]="InterviewTimeID" (change)="ViewDate($event)"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 flex-grow">
-                    <option value="0" disabled selected hidden>Select State</option>
-                    <option *ngFor="let state of interviewTimeTable" [value]="state.id">
-                        {{ state.id }}
+                    <option value="0" disabled selected hidden>Select Interview Time</option>
+                    <option *ngFor="let interviewTime of interviewTimeTable" [value]="interviewTime.id">
+                        {{ interviewTime.date }}
                     </option>
                 </select>
+
+                <div *ngFor="let interviewTime of interviewTimeTable">
+                    <div [ngClass]="{'bg-[#EA3A3D80]': (interviewTime.reserved == interviewTime.capacity)}">{{interviewTime.date}}</div>
+                    <div [ngClass]="{'bg-[#96C68D]': (interviewTime.reserved != interviewTime.capacity)}">{{interviewTime.date}}</div>
+                </div>
+
+
+                <div *ngFor="let month of calendarMonths" class="mb-4">
+                    <h2 class="text-lg font-bold">
+                      {{ getMonthDate(month.month, month.year) | date: 'MMM' }} {{ month.year }}
+                    </h2>
+                    <div class="grid grid-cols-7 gap-2">
+                        <div *ngFor="let day of getDaysInMonth(month.month, month.year)"
+                            [ngClass]="{
+                                'bg-red-400': day.reserved == day.capacity && isDayInInterviewTimeTable(day.id),
+                                'bg-green-400': day.reserved != day.capacity && isDayInInterviewTimeTable(day.id)
+                            }" 
+                            class="text-center p-2 rounded-lg">
+                            {{ day.formattedDate }} 
+                        </div>
+                    </div>
+                </div>
+                  
             </div>
         </div>
     </div>

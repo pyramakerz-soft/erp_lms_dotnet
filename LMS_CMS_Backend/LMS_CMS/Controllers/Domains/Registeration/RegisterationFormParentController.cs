@@ -353,6 +353,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 if(registerationFormInterview != null)
                 {
                     registerationFormParentDTO[i].RegistrationFormInterviewStateID = registerationFormInterview.InterviewStateID;
+                    registerationFormParentDTO[i].RegistrationFormInterviewID = registerationFormInterview.ID;
                     registerationFormParentDTO[i].RegistrationFormInterviewStateName = registerationFormInterview.InterviewState.Name;
                     registerationFormParentDTO[i].InterviewTimeID = registerationFormInterview.InterviewTimeID;
                     registerationFormParentDTO[i].InterviewTimeDate = registerationFormInterview.InterviewTime.Date;

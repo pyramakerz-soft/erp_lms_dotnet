@@ -12,6 +12,7 @@ export class RegistrationFormParentIncludeRegistrationFormInterview {
         public parentName: string = '',
         public registrationFormID: number = 0,
         public registrationFormName: string = '',
+        public registrationFormInterviewID: number = 0,
         public registrationFormInterviewStateID: number = 0,
         public registrationFormInterviewStateName: string = '',
         public insertedByUserId: number = 0,

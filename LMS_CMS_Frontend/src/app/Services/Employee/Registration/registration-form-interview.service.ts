@@ -7,6 +7,7 @@ import { ApiService } from '../../api.service';
   providedIn: 'root'
 })
 export class RegistrationFormInterviewService {
+  
   baseUrl = ""
   header = ""
 
@@ -72,5 +73,36 @@ export class RegistrationFormInterviewService {
     }
     
     return this.http.post(`${this.baseUrl}/RegistrationFormInterview`, body, { headers });
+  }
+
+  EditByParent(RegisterationFormPInterviewID:number, InterviewTimeID:number ,DomainName:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+
+    let body = {
+      id: RegisterationFormPInterviewID, 
+      interviewTimeID: InterviewTimeID
+    }
+    
+    return this.http.put(`${this.baseUrl}/RegistrationFormInterview/EditInterviewDateByParent`, body, { headers });
+  }
+
+  Cancel(id: number, DomainName: string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+
+    return this.http.delete(`${this.baseUrl}/RegistrationFormInterview/CanceledByParent/${id}`, { headers });
   }
 }

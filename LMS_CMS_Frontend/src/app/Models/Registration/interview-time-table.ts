@@ -14,5 +14,7 @@ export class InterviewTimeTable {
         public toDate:string = "",
 
         public days:string[] = [],
+
+        public formattedDate?: number
     ) {}
 }

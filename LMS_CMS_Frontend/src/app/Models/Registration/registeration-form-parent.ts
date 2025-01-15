@@ -7,6 +7,8 @@ export class RegisterationFormParent {
             public gradeName: string = '',
             public academicYearID: number = 0,
             public academicYearName: string = '',
+            public schoolID: number = 0,
+            public schoolName: string = '',
             public email: string = '',
             public registerationFormStateID: number = 0,
             public registerationFormStateName: string = '',

@@ -13,6 +13,7 @@ namespace LMS_CMS_BL.DTO.Registration
     {
         public long ID { get; set; }
         public double Mark { get; set; }
+        public double TotalMark { get; set; }
         public bool VisibleToParent { get; set; }
         public long TestID { get; set; }
         public string TestName { get; set; }

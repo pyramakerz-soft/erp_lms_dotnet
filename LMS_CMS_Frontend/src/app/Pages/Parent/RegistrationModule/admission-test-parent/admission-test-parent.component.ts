@@ -41,6 +41,7 @@ export class AdmissionTestParentComponent {
   UserID: number = 0;
   path: string = '';
 
+  IsStudentSelected: boolean =false;
   Data: RegisterationFormTest[] = [];
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
@@ -110,9 +111,10 @@ export class AdmissionTestParentComponent {
     const selectedId = Number((event.target as HTMLSelectElement).value); 
     this.RegesterFormParentID = selectedId; 
     this.GetAllData();
+    this.IsStudentSelected = true;  // to display the table after selecting a student.
     console.log('Selected Student ID:', selectedId);
   }
   View(row:RegisterationFormTest){
-
+    this.router.navigateByUrl(`Parent/Test/${row.id}/${row.registerationFormParentID}/${row.testID}`)
   }
 }

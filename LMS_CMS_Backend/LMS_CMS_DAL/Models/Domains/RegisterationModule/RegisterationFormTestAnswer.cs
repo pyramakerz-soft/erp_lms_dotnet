@@ -19,9 +19,8 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
         public Question Question { get; set; }
 
         [ForeignKey("MCQQuestionOption")]
-        [Required]
         public long? AnswerID { get; set; }
-        public MCQQuestionOption MCQQuestionOption { get; set; }
+        public MCQQuestionOption? MCQQuestionOption { get; set; }
 
         [ForeignKey("RegisterationFormParent")]
         [Required]

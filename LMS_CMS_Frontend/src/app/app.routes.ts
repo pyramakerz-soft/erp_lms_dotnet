@@ -50,11 +50,13 @@ import { QuestionsComponent } from './Pages/Employee/Registration/questions/ques
 import { RegistrationFormComponent } from './Pages/Employee/Registration/registration-form/registration-form.component';
 import { RegistrationConfirmationTestDetailsComponent } from './Pages/Employee/Registration/registration-confirmation-test-details/registration-confirmation-test-details.component';
 import { RegistrationFormTestAnswerComponent } from './Pages/Employee/Registration/registration-form-test-answer/registration-form-test-answer.component';
-import { AdmissionTestParentComponent } from './Pages/Employee/Registration/admission-test-parent/admission-test-parent.component';
 import { RegistrationConfirmationComponent } from './Pages/Employee/Registration/registration-confirmation/registration-confirmation.component';
 import { RegistrationConfirmationDetailsComponent } from './Pages/Employee/Registration/registration-confirmation-details/registration-confirmation-details.component';
 import { InterviewTimeTableComponent } from './Pages/Employee/Registration/interview-time-table/interview-time-table.component';
 import { InterviewRegistrationComponent } from './Pages/Employee/Registration/interview-registration/interview-registration.component';
+import { AdmissionTestParentComponent } from './Pages/Parent/RegistrationModule/admission-test-parent/admission-test-parent.component';
+import { RegistraionTestComponent } from './Pages/Parent/RegistrationModule/registraion-test/registraion-test.component';
+import { ClassroomsAccommodationComponent } from './Pages/Employee/Registration/classrooms-accommodation/classrooms-accommodation.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -107,6 +109,7 @@ export const routes: Routes = [
             { path: "Registration Confirmation/:Id", component: RegistrationConfirmationDetailsComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Interview Time Table", component: InterviewTimeTableComponent, title: "Interview Time Table"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Interview Registration/:Id", component: InterviewRegistrationComponent, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" }
         ]
     },
     { 
@@ -116,7 +119,8 @@ export const routes: Routes = [
         canActivate:[noNavigateWithoutLoginGuard,navigateIfParentGuard], 
         children: [
             { path: "", component: HomeParentComponent, title: "ParentHome" },
-            { path: "Admission Test", component: AdmissionTestParentComponent, title: "Admission Test" }
+            { path: "Admission Test", component: AdmissionTestParentComponent, title: "Admission Test" },
+            { path: "Test/:registerationFormID/:registerationFormParentID/:TestId", component: RegistraionTestComponent, title: "Test" },
         ]
     },
     { 

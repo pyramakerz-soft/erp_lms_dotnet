@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { Question } from '../../../Models/Registration/question';
 import { QuestionAddEdit } from '../../../Models/Registration/question-add-edit';
+import { TestWithQuestion } from '../../../Models/Registration/test-with-question';
 
 @Injectable({
   providedIn: 'root'
@@ -77,5 +78,17 @@ export class QuestionService {
        .set('Content-Type', 'application/json');
      return this.http.get<Question[]>(`${this.baseUrl}/Question/ByTest/${id}`, { headers })
    }
+
+   GetByTestIDGroupBy(id:number,DomainName:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<TestWithQuestion[]>(`${this.baseUrl}/Question/ByTestGroupBy/${id}`, { headers })
+  }
 
   }

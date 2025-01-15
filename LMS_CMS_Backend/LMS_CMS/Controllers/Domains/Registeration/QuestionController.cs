@@ -29,7 +29,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet]
         [Authorize_Endpoint_(
-         allowedTypes: new[] { "octa", "employee" },
+         allowedTypes: new[] { "octa", "employee"}
+         ,
          pages: new[] { "Admission Test", "Registration" }
          )]
         public async Task<IActionResult> GetAsync()
@@ -57,7 +58,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet("ByTest/{id}")]
         [Authorize_Endpoint_(
-       allowedTypes: new[] { "octa", "employee" },
+       allowedTypes: new[] { "octa", "employee","parent" },
        pages: new[] { "Admission Test", "Registration" }
        )]
         public async Task<IActionResult> GetAsyncbyId(int id)
@@ -85,7 +86,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet("ByTestGroupBy/{id}")]
         [Authorize_Endpoint_(
-          allowedTypes: new[] { "octa", "employee" },
+          allowedTypes: new[] { "octa", "employee" ,"parent"},
           pages: new[] { "Admission Test", "Registration" }
       )]
         public async Task<IActionResult> GetAsyncbyTestId(int id)

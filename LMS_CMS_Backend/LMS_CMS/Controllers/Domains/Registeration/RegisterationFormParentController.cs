@@ -34,7 +34,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
+            allowedTypes: new[] { "octa", "employee" ,"parent"},
             pages: new[] { "Registration Confirmation", "Registration" }
         )]
         public async Task<IActionResult> GetAsync()

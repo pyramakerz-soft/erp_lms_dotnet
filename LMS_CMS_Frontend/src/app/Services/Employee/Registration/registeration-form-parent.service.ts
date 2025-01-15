@@ -39,18 +39,6 @@ export class RegisterationFormParentService {
     return this.http.get<RegisterationFormParent[]>(`${this.baseUrl}/RegisterationFormParent/GetByParentID/${parent}`, { headers })
   }
 
-  GetBySchoolId(school: number, DomainName: string) {
-    if (DomainName != null) {
-      this.header = DomainName
-    }
-    const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders()
-      .set('domain-name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
-    return this.http.get<RegisterationFormParent[]>(`${this.baseUrl}/RegisterationFormParent/GetBySchoolID/${school}`, { headers })
-  }
-
   GetByYearId(year: number, DomainName: string) {
     if (DomainName != null) {
       this.header = DomainName
@@ -102,5 +90,29 @@ export class RegisterationFormParentService {
     }
 
     return this.http.put(`${this.baseUrl}/RegisterationFormParent`, body, { headers });
+  }
+
+  GetAll( DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<RegisterationFormParent[]>(`${this.baseUrl}/RegisterationFormParent`, { headers })
+  }
+
+  GetBySchoolId(school: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<RegisterationFormParent[]>(`${this.baseUrl}/RegisterationFormParent/GetBySchoolID/${school}`, { headers })
   }
 }

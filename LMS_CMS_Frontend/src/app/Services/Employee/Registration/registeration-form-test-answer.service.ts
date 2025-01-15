@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { RegisterationFormTestAnswer } from '../../../Models/Registration/registeration-form-test-answer';
+import { Answer } from '../../../Models/Registration/answer';
 
 @Injectable({
   providedIn: 'root'
@@ -27,5 +28,20 @@ export class RegisterationFormTestAnswerService {
        .set('Content-Type', 'application/json');
      return this.http.get<RegisterationFormTestAnswer[]>(`${this.baseUrl}/RegistrationFormTestAnswer/${RegisterParentID}?testId=${testId}`, { headers })
    }
+
+    Add(answers: Answer[],DomainName:string) {
+       if(DomainName!=null) {
+         this.header=DomainName 
+       }
+       const token = localStorage.getItem("current_token");
+       const headers = new HttpHeaders()
+         .set('domain-name', this.header)
+         .set('Authorization', `Bearer ${token}`)
+         .set('Content-Type', 'application/json');
+       return this.http.post(`${this.baseUrl}/RegistrationFormTestAnswer`, answers, {
+         headers: headers,
+         responseType: 'text' as 'json'
+       });
+     }
    
 }

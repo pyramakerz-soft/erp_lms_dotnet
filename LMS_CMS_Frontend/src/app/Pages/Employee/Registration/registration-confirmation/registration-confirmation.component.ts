@@ -111,14 +111,29 @@ export class RegistrationConfirmationComponent {
     // }
   }
 
-  getRegisterationFormParentData(){
-    this.registerationFormParentServicea.Get(this.DomainName).subscribe(
-      (data) => {
-        this.registerationFormParentData = data;
-      }
-    )
+  // getRegisterationFormParentData(){
+  //   this.registerationFormParentServicea.Get(this.DomainName).subscribe(
+  //     async (data) => {
+  //       this.registerationFormParentData = await data;
+  //     }
+  //   )
+  // }
+
+  getRegisterationFormParentData(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.registerationFormParentServicea.Get(this.DomainName).subscribe(
+        (data) => {
+          this.registerationFormParentData = data;
+          resolve();  // Resolve the promise when data is received
+        },
+        (error) => {
+          reject(error);  // Reject the promise if there's an error
+        }
+      );
+    });
   }
 
+  
   getSchools(){
     this.schoolService.Get(this.DomainName).subscribe(
       (data) => {
@@ -144,13 +159,12 @@ export class RegistrationConfirmationComponent {
   }
   
   async Search() {
-    console.log("-------------------------------");
 
     this.registerationFormParentDataByYear = []
     this.registerationFormParentDataBySchool = []
     this.registerationFormParentDataByState = []
 
-    this.getRegisterationFormParentData()
+    await this.getRegisterationFormParentData()
 
     if (this.selectedSchool !== 0) {
       try {
@@ -180,7 +194,7 @@ export class RegistrationConfirmationComponent {
           this.registerationFormParentServicea.GetByStateId(this.selectedState, this.DomainName)
         );
       } catch (error) {
-        this.registerationFormParentDataByState = []
+        console.error("Error fetching year data:", error);
       }
     }
     
@@ -196,6 +210,7 @@ export class RegistrationConfirmationComponent {
       filteredData = filteredData.filter(item =>
         this.registerationFormParentDataByYear.some(yearItem => yearItem.id === item.id)
       );
+
     }
 
     if (this.selectedState !== 0) {
@@ -209,15 +224,9 @@ export class RegistrationConfirmationComponent {
     (this.selectedState != 0 && this.registerationFormParentDataByState.length == 0)){
       filteredData = []
     }
-
-    console.log(this.registerationFormParentData)
-    // console.log("filtered", filteredData)
-    // this.registerationFormParentData = []
-
-    // console.log(this.registerationFormParentData)
-
+    
     this.registerationFormParentData = filteredData;
-    // console.log(this.registerationFormParentData)
+    console.log(this.registerationFormParentData)
   }
 
   ResetFilter(){

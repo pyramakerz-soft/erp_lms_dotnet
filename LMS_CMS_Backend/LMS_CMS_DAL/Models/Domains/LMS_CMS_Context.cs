@@ -117,10 +117,6 @@ namespace LMS_CMS_DAL.Models.Domains
                .HasIndex(p => p.Name)
                .IsUnique();
 
-            modelBuilder.Entity<RegisterationFormParent>()
-               .HasIndex(p => p.Email)
-               .IsUnique();
-
             ///////////////////////// No Identity: /////////////////////////
             
             modelBuilder.Entity<Page>()

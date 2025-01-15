@@ -41,7 +41,11 @@ export class RegistrationFormService {
     formData.append("registerationFormParentAddDTO.RegistrationFormID", registrationForm.registrationFormID.toString());
 
     registrationForm.registerationFormSubmittions.forEach((field: any, index) => {
-      formData.append(`registerationFormParentAddDTO.RegisterationFormSubmittions[${index}].TextAnswer`, field.textAnswer.toString());
+      if(field.textAnswer != null){
+        formData.append(`registerationFormParentAddDTO.RegisterationFormSubmittions[${index}].TextAnswer`, field.textAnswer.toString());
+      } else{
+        formData.append(`registerationFormParentAddDTO.RegisterationFormSubmittions[${index}].SelectedFieldOptionID`, field.selectedFieldOptionID.toString());
+      }
       formData.append(`registerationFormParentAddDTO.RegisterationFormSubmittions[${index}].categoryFieldID`, field.categoryFieldID.toString());
     });
 

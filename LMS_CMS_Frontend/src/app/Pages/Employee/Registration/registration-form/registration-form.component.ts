@@ -23,6 +23,7 @@ import { SectionService } from '../../../../Services/Employee/LMS/section.servic
 import { Section } from '../../../../Models/LMS/section';
 import Swal from 'sweetalert2';
 import { RegistrationFormForFormSubmissionForFiles } from '../../../../Models/Registration/registration-form-for-form-submission-for-files';
+import { ParentService } from '../../../../Services/parent.service';
 
 @Component({
   selector: 'app-registration-form',
@@ -41,6 +42,7 @@ export class RegistrationFormComponent {
   registrationFormForFiles:RegistrationFormForFormSubmissionForFiles [] = []
   isFormSubmitted: boolean = false
   isGuardianEmailValid: boolean = true
+  isGuardianEmailSameAsParent: boolean = true
   isMotherEmailValid: boolean = true
 
   nationalities = Object.values(countries.countries).map(country => ({
@@ -63,8 +65,10 @@ export class RegistrationFormComponent {
 
   isSuccess:boolean = false
 
+  parent:any = null
+
   constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, public schoolService:SchoolService,
-    public activeRoute: ActivatedRoute, public registrationFormService: RegistrationFormService, public router:Router, 
+    public activeRoute: ActivatedRoute, public registrationFormService: RegistrationFormService, public router:Router, public parentService:ParentService,
     public http: HttpClient, public academicYearServce:AcadimicYearService, public gradeServce:GradeService, public sectionServce:SectionService){}
   
   ngOnInit(){
@@ -72,11 +76,23 @@ export class RegistrationFormComponent {
     this.UserID = this.User_Data_After_Login.id;
 
     this.DomainName = this.ApiServ.GetHeader();
+    
+    if(this.User_Data_After_Login.type == "parent"){
+      this.getParentByID()  
+    }
 
     this.getRegistrationFormData()
     this.getSchools()
 
     this.registrationForm.registrationFormID = 1
+  }
+
+  getParentByID(){
+    this.parentService.GetByID(this.UserID, this.DomainName).subscribe(
+      (data) => {
+        this.parent = data
+      }
+    )
   }
 
   getRegistrationFormData(){
@@ -276,6 +292,14 @@ export class RegistrationFormComponent {
           if( !this.emailPattern.test(element.textAnswer)){
             this.isGuardianEmailValid = false
             return false
+          } else if(this.User_Data_After_Login.type == "parent"){
+            if(element.textAnswer != this.parent.email){
+              this.isGuardianEmailSameAsParent = false
+              return false
+            } else{
+              this.isGuardianEmailSameAsParent = true
+              return true
+            }
           } else{
             this.isGuardianEmailValid = true
             return true
@@ -302,6 +326,9 @@ export class RegistrationFormComponent {
 
   Save(){
     this.isFormSubmitted = true;
+    this.isGuardianEmailValid = true;
+    this.isMotherEmailValid = true;
+    this.isGuardianEmailSameAsParent = true;
 
     this.FillOptionData()
     
@@ -318,9 +345,10 @@ export class RegistrationFormComponent {
       }
     }
 
+
     if (valid) {
       this.IsEmailValid()
-      if(this.isMotherEmailValid && this.isGuardianEmailValid){
+      if(this.isMotherEmailValid && this.isGuardianEmailValid && this.isGuardianEmailSameAsParent){
         this.registrationFormService.Add(this.registrationForm, this.registrationFormForFiles, this.DomainName).subscribe(
           (data) => {
             this.DoneSuccessfully()
@@ -338,7 +366,7 @@ export class RegistrationFormComponent {
             }
           }
         )
-      } else if(!this.isGuardianEmailValid){
+      } else if(!this.isGuardianEmailValid || !this.isGuardianEmailSameAsParent){
         this.goToCategory(2)
       } else if(!this.isMotherEmailValid){
         this.goToCategory(3)

@@ -5,31 +5,31 @@
     </div>
 </div>
 
-<div class="flex justify-between mt-5 items-end">
-    <div>
+<div class="flex justify-between mt-5 items-end space-x-5">
+    <div class="w-1/3">
         <label for="school" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">School</label>
         <select id="school" [(ngModel)]="selectedSchool"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-72">
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
             <option value="0" disabled selected hidden>Select School</option>
             <option *ngFor="let school of SchoolData" [value]="school.id">
                 {{ school.name }}
             </option>
         </select>
     </div>
-    <div>
+    <div class="w-1/3">
         <label for="academicYear" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">Year</label>
         <select id="academicYear" [(ngModel)]="selectedYear"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-72">
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
             <option value="0" disabled selected hidden>Select Year</option>
             <option *ngFor="let academicYear of AcademicYearData" [value]="academicYear.id">
                 {{ academicYear.name }}
             </option>
         </select>
     </div>
-    <div>
+    <div class="w-1/3">
         <label for="state" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">State</label>
         <select id="state" [(ngModel)]="selectedState"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-72">
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
             <option value="0" disabled selected hidden>Select State</option>
             <option *ngFor="let state of StateData" [value]="state.id">
                 {{ state.name }}

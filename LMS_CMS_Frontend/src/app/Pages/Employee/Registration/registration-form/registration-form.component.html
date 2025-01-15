@@ -139,6 +139,9 @@
                         <span *ngIf="(field.id == 21) && isFormSubmitted && !isGuardianEmailValid" class="text-red-500 text-sm mt-1">
                             Guardian’s Email Not Valid.
                         </span>
+                        <span *ngIf="(field.id == 21) && isFormSubmitted && !isGuardianEmailSameAsParent && User_Data_After_Login.type == 'parent'" class="text-red-500 text-sm mt-1">
+                            Email Must Be The Same As Yours.
+                        </span>
                         <span *ngIf="(field.id == 28) && isFormSubmitted && !isMotherEmailValid" class="text-red-500 text-sm mt-1">
                             Mother’s Email Not Valid.
                         </span>

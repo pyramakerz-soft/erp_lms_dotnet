@@ -93,7 +93,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet("GetInterviewTableWithYearID/{yearID}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
+            allowedTypes: new[] { "octa", "employee", "parent" },
             pages: new[] { "Interview Time Table", "Registration" }
         )]
         public async Task<IActionResult> GetInterviewTableWithYearID(long yearID)

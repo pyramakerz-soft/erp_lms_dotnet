@@ -53,7 +53,8 @@ import { RegistrationFormTestAnswerComponent } from './Pages/Employee/Registrati
 import { RegistrationConfirmationComponent } from './Pages/Employee/Registration/registration-confirmation/registration-confirmation.component';
 import { RegistrationConfirmationDetailsComponent } from './Pages/Employee/Registration/registration-confirmation-details/registration-confirmation-details.component';
 import { InterviewTimeTableComponent } from './Pages/Employee/Registration/interview-time-table/interview-time-table.component';
-import { InterviewRegistrationComponent } from './Pages/Employee/Registration/interview-registration/interview-registration.component';
+import { InterviewRegistrationComponent as InterviewRegistrationComponentEmployee} from './Pages/Employee/Registration/interview-registration/interview-registration.component';
+import { InterviewRegistrationComponent as InterviewRegistrationComponentParent} from './Pages/Parent/interview-registration/interview-registration.component';
 import { AdmissionTestParentComponent } from './Pages/Parent/RegistrationModule/admission-test-parent/admission-test-parent.component';
 import { RegistraionTestComponent } from './Pages/Parent/RegistrationModule/registraion-test/registraion-test.component';
 import { ClassroomsAccommodationComponent } from './Pages/Employee/Registration/classrooms-accommodation/classrooms-accommodation.component';
@@ -110,7 +111,7 @@ export const routes: Routes = [
             { path: "Registration Confirmation", component: RegistrationConfirmationComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Registration Confirmation/:Id", component: RegistrationConfirmationDetailsComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Interview Time Table", component: InterviewTimeTableComponent, title: "Interview Time Table"  , canActivate:[noNavigateWithoutLoginGuard]},  
-            { path: "Interview Registration/:Id", component: InterviewRegistrationComponent, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Interview Registration/:Id", component: InterviewRegistrationComponentEmployee, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" }
         ]
     },
@@ -123,6 +124,8 @@ export const routes: Routes = [
             { path: "", component: HomeParentComponent, title: "ParentHome" },
             { path: "Admission Test", component: AdmissionTestParentComponent, title: "Admission Test" },
             { path: "Test/:registerationFormParentID/:TestId", component: RegistraionTestComponent, title: "Test" },
+            { path: "Registration Form", component: RegistrationFormComponent, title: "Registration Form"},  
+            { path: "Interview Registration", component: InterviewRegistrationComponentParent, title: "Interview Registration"},  
         ]
     },
     { 

@@ -50,7 +50,17 @@ export class MainLayoutComponent {
           label: 'Dashboard Parent', route: '#'
         },
         {
-          label: 'Admission Test', route: 'Admission Test'
+          label: 'Registrations', subItems: [
+            {
+              label: 'Admission Test', route: 'Admission Test'
+            },
+            {
+              label: 'Registration Form', route: 'Registration Form'
+            },
+            {
+              label: 'Interview Registration', route: 'Interview Registration'
+            }
+          ]
         }
       ]
     }

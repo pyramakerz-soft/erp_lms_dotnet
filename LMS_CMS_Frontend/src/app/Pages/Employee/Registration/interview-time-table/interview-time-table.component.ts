@@ -15,6 +15,7 @@ import { TokenData } from '../../../../Models/token-data';
 import { InterviewTimeTableService } from '../../../../Services/Employee/Registration/interview-time-table.service';
 import { InterviewTimeTable } from '../../../../Models/Registration/interview-time-table';
 import Swal from 'sweetalert2';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-interview-time-table',
@@ -32,7 +33,7 @@ export class InterviewTimeTableComponent {
   
   SchoolData: School[] = []
   AcademicYearData: AcademicYear[] = []
-
+  
   DomainName: string = "";
   UserID: number = 0;
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
@@ -41,9 +42,11 @@ export class InterviewTimeTableComponent {
   AllowEditForOthers: boolean = false;
   AllowDelete: boolean = false;
   AllowDeleteForOthers: boolean = false;
-
+  
   path: string = ""
-
+  
+  interviewTimeTableByYearData: InterviewTimeTable[] = []
+  interviewTimeTableBySchoolData: InterviewTimeTable[] = []
   selectedYear = 0
   selectedSchool = 0
 
@@ -189,6 +192,40 @@ export class InterviewTimeTableComponent {
         this.getYearsForModalByID();
       }
     )
+  }
+  
+  // getinterviewByYearId(id: number){
+  //   this.interviewTimeTableService.GetByYearId(id, this.DomainName).subscribe(
+  //     (data) => {
+  //       this.interviewTimeTableByYearData = data
+  //     }
+  //   )
+  // }
+  
+  // getinterviewBySchoolId(id: number){
+  //   this.interviewTimeTableService.GetBySchoolId(id, this.DomainName).subscribe(
+  //     (data) => {
+  //       this.interviewTimeTableBySchoolData = data
+  //     }
+  //   )
+  // }
+
+  async getinterviewByYearId(id: number) {
+    try {
+      const data = await lastValueFrom(this.interviewTimeTableService.GetByYearId(id, this.DomainName));
+      this.interviewTimeTableByYearData = data;
+    } catch (error) {
+      console.error('Error fetching year data:', error);
+    }
+  }
+  
+  async getinterviewBySchoolId(id: number) {
+    try {
+      const data = await lastValueFrom(this.interviewTimeTableService.GetBySchoolId(id, this.DomainName));
+      this.interviewTimeTableBySchoolData = data;
+    } catch (error) {
+      console.error('Error fetching school data:', error);
+    }
   }
 
   IsAllowDelete(InsertedByID: number) {
@@ -400,11 +437,45 @@ export class InterviewTimeTableComponent {
     this.selectedYear = 0
     this.selectedSchool = 0
 
+    this.interviewTimeTableBySchoolData = []
+    this.interviewTimeTableByYearData = []
+
     this.getTimeTableData()
   }
 
-  Search(){
+  async Search() {
+    this.interviewTimeTableBySchoolData = []
+    this.interviewTimeTableByYearData = []
+    
+    this.getTimeTableData()
+  
+    if (this.selectedSchool != 0) {
+      await this.getinterviewBySchoolId(this.selectedSchool)
+    }
+    if (this.selectedYear != 0) {
+      await this.getinterviewByYearId(this.selectedYear)
+    }
+  
+    let filteredData = [...this.interviewTimeTableData];
 
+    if (this.selectedSchool !== 0) {
+      filteredData = filteredData.filter(item =>
+        this.interviewTimeTableBySchoolData.some(schoolItem => schoolItem.id === item.id)
+      );
+    }
+
+    if (this.selectedYear !== 0) {
+      filteredData = filteredData.filter(item =>
+        this.interviewTimeTableByYearData.some(yearItem => yearItem.id === item.id)
+      );
+    }
+
+    if((this.selectedSchool != 0 && this.interviewTimeTableBySchoolData.length == 0) ||
+    (this.selectedYear != 0 && this.interviewTimeTableByYearData.length == 0)){
+      filteredData = []
+    }
+    
+    this.interviewTimeTableData = filteredData;
   }
 
   deleteInterview(id:number){

@@ -323,7 +323,6 @@ export class RegistrationFormComponent {
       if(this.isMotherEmailValid && this.isGuardianEmailValid){
         this.registrationFormService.Add(this.registrationForm, this.registrationFormForFiles, this.DomainName).subscribe(
           (data) => {
-            console.log(data)
             this.DoneSuccessfully()
           },
           (error) => {

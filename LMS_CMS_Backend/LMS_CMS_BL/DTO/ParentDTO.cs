@@ -4,15 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LMS_CMS_DAL.Models.Domains.LMS;
-using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 
-namespace LMS_CMS_DAL.Models.Domains
+namespace LMS_CMS_BL.DTO
 {
-    public class Parent : AuditableEntity
+    public class ParentDTO
     {
-        [Key]
-        public long ID { get; set; }
 
         [Required(ErrorMessage = "User_Name is required")]
         [StringLength(100, ErrorMessage = "Username cannot be longer than 100 characters.")]
@@ -32,10 +28,5 @@ namespace LMS_CMS_DAL.Models.Domains
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
         public string Email { get; set; }
-
-        public string? ConfirmationCode { get; set; }
-
-        public ICollection<Student> Students { get; set; } = new HashSet<Student>();
-        public ICollection<RegisterationFormParent> RegisterationFormParents { get; set; } = new HashSet<RegisterationFormParent>();
     }
 }

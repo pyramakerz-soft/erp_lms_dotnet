@@ -115,7 +115,6 @@ baseUrl = ""
         .set('Authorization', `Bearer ${token}`)
         .set('Content-Type', 'application/json');
   
-        console.log(headers)
       return this.http.get(`${this.baseUrl}/Classroom/AddStudentToClassroom/${RegistrationParentId}/${ClassId}`, { headers })
     }
 

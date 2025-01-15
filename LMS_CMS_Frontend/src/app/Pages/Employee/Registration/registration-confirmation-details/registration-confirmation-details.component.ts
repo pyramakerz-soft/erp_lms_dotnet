@@ -94,7 +94,6 @@ export class RegistrationConfirmationDetailsComponent {
     this.registrationFormSubmissionService.GetByRegistrationParentID(this.registrationParentID, this.DomainName).subscribe(
       (data) => {
         this.registrationFormSubmissionConfirmationData = data;
-        console.log(data)
       }
     )
   }
@@ -111,7 +110,6 @@ export class RegistrationConfirmationDetailsComponent {
     this.registrationFormParentService.GetById(this.registrationParentID, this.DomainName).subscribe(
       (data) => {
         this.RegisterationFormParentData = data;
-        console.log(this.RegisterationFormParentData)
         this.selectedState = this.RegisterationFormParentData.registerationFormStateID
       }
     )

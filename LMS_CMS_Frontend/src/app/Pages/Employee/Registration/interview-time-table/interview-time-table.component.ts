@@ -183,9 +183,7 @@ export class InterviewTimeTableComponent {
   getinterviewById(id: number){
     this.interviewTimeTableService.GetById(id, this.DomainName).subscribe(
       (data) => {
-        console.log(data)
         this.interviewTimeTable = data
-        console.log(this.interviewTimeTable)
         this.interviewTimeTable.fromTime = this.convertTo24HourFormat(this.interviewTimeTable.fromTime)
         this.interviewTimeTable.toTime = this.convertTo24HourFormat(this.interviewTimeTable.toTime)
         this.getYearsForModalByID();
@@ -337,7 +335,6 @@ export class InterviewTimeTableComponent {
   }
 
   Save(){
-    console.log(this.interviewTimeTable)
     if(this.isFormValid()){
       const timeCheck = this.isFromTimeAfterToTime(this.interviewTimeTable.fromTime, this.interviewTimeTable.toTime);
       if(timeCheck){

@@ -4,16 +4,11 @@
     <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ TestName }}</h1>
   </div>
   <div class="flex justify-between items-center">
-    <button *ngIf="mode=='degree'"
-      class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2"
-    >
+    <button *ngIf="mode=='degree'" class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2">
       {{ mark }} / {{TotalMark}}
     </button>
-    <button *ngIf="mode=='test'"
-      (click)="Save()"
-      class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2"
-    >
-     Submit
+    <button *ngIf="mode=='test'" (click)="Save()" class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2">
+      Submit
     </button>
   </div>
 </div>
@@ -24,19 +19,12 @@
       <div class="primaryBg p-4 rounded-xl text-white mb-4">
         {{ row.questionTypeName }}
       </div>
-      <div
-        *ngIf="row.questionTypeID !== 3"
-        class="flex justify-start flex-wrap "
-      >
+      <div *ngIf="row.questionTypeID !== 3" class="flex justify-start flex-wrap ">
         <div *ngFor="let q of row.questions; let i = index" class="w-[29%] mr-1">
-          <div
-            *ngIf="row.questionTypeID !== 3"
-            class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border"
-            [ngClass]="{
+          <div *ngIf="row.questionTypeID !== 3" class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border" [ngClass]="{
               'border-[#177C03]': q.answerName === q.correctAnswerName,
               'border-[#EA3A3D]': q.answerName !== q.correctAnswerName
-            }"
-          >
+            }">
             <div>{{ q.description }} ?</div>
             <div>
               {{ q.answerName }}
@@ -67,35 +55,27 @@
       <div class="primaryBg p-4 rounded-xl text-white mb-4">
         {{ row.questionTypeName }}
       </div>
-      <div
-        *ngIf="row.questionTypeID !== 3"
-        class=""
-      >
-      <div *ngFor="let q of row.questions; let questionIndex = index">
-        <div class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border">
-          <div>{{ q.description }}?</div>
-          <div *ngFor="let option of q.options; let optionIndex = index" class="mt-5">
-            <div (click)="selectOption(q.id,option.id)">
-              <i
-                [class.fa-circle]="Answers[questionIndex].answerID !== option.id"
-                [class.fa-circle-dot]="Answers[questionIndex].answerID === option.id"
-                class="fa-regular"
-              ></i>
-              {{ option.name }}
+      <div *ngIf="row.questionTypeID !== 3" class="">
+        <div *ngFor="let q of row.questions; let questionIndex = index">
+          <div class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border">
+            <div>{{ q.description }}?</div>
+            <div *ngFor="let option of q.options; let optionIndex = index" class="mt-5">
+              <div (click)="selectOption(q.id,option.id)">
+                <i [class.fa-circle]="Answers[questionIndex].answerID !== option.id"
+                  [class.fa-circle-dot]="Answers[questionIndex].answerID === option.id" class="fa-regular"></i>
+                {{ option.name }}
+              </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
       <div *ngIf="row.questionTypeID === 3" class="">
         <div *ngFor="let q of row.questions; let i = index">
-          <div class="bg-[#EBEBEB] p-4 rounded-xl mb-2"> 
-            <div>{{ q.description }} ?</div>
+          <div class="bg-[#EBEBEB] p-4 rounded-xl mb-2">
+            <div class="mb-2">{{ q.description }} ?</div>
             <div>
-              <textarea 
-              (input)="EssayAnswer(q.id, $event)" 
-              placeholder="Enter your answer">
-            </textarea>
+              <textarea class="ml-0 pl-0 p-4 text-left resize-none" (input)="EssayAnswer(q.id, $event)"
+                placeholder="Enter your answer"></textarea>
             </div>
           </div>
         </div>

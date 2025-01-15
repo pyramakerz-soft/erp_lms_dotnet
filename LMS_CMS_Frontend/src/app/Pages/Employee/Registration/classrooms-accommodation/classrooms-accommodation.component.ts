@@ -99,7 +99,6 @@ export class ClassroomsAccommodationComponent {
     this.registerationFormParentService
       .GetAll(this.DomainName)
       .subscribe((data) => {
-        console.log(data);
         this.Data = [];
         this.Data = data;
       });
@@ -124,7 +123,6 @@ export class ClassroomsAccommodationComponent {
       .GetByRegistrationFormParentID(id, this.DomainName)
       .subscribe((data) => {
         this.classrooms = data;
-        console.log(this.classrooms);
       });
   }
   openModal() {

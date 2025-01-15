@@ -10,6 +10,8 @@ import { RegisterationFormTest } from '../../../../Models/Registration/registera
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TestWithRegistrationForm } from '../../../../Models/Registration/test-with-registration-form';
+import { TestService } from '../../../../Services/Employee/Registration/test.service';
 
 @Component({
   selector: 'app-registration-confirmation-test-details',
@@ -45,7 +47,7 @@ export class RegistrationConfirmationTestDetailsComponent {
   mode: string = 'Create'
 
   RegisterFormParentID: number = 0;
-  Data: RegisterationFormTest[] = [];
+  Data: TestWithRegistrationForm[] = [];
   RegesterForm: RegisterationFormTest = new RegisterationFormTest();
   isModalVisible: boolean = false;
 
@@ -60,6 +62,7 @@ export class RegistrationConfirmationTestDetailsComponent {
     private menuService: MenuService,
     public EditDeleteServ: DeleteEditPermissionService,
     private router: Router,
+    public testServ: TestService,
     public registrationserv: RegisterationFormTestService
   ) { }
 
@@ -86,15 +89,13 @@ export class RegistrationConfirmationTestDetailsComponent {
   }
 
   GetAllData() {
-    this.registrationserv.GetByRegistrationParentId(this.RegisterFormParentID, this.DomainName).subscribe((d:any) => {
-      console.log(d)
+    this.testServ.GetByRegistrationFormParentIDAndGrade(this.RegisterFormParentID, this.DomainName).subscribe((d:any) => {
       this.Data = d.tests;
       this.StudentName=d.studentName
     })
   }
 
   Save() {
-    console.log(this.RegesterForm.mark)
     if(!this.RegesterForm.mark){
       this.MarkIsEmpty=true
     }
@@ -118,9 +119,15 @@ export class RegistrationConfirmationTestDetailsComponent {
     this.router.navigateByUrl(`Employee/Registration Confirmation`)
   }
 
-  Edit(row: RegisterationFormTest) {
+  Edit(row: TestWithRegistrationForm) {
     this.mode = 'Edit';
-    this.RegesterForm = row;
+    this.RegesterForm.id = row.registrationTestID ;
+    this.RegesterForm.visibleToParent = row.registrationTestVisibleToParent ;
+    this.RegesterForm.mark = row.registrationTestMark ;
+    this.RegesterForm.registerationFormParentID = this.RegisterFormParentID ;
+    this.RegesterForm.testID = row.registrationTestID ;
+    this.RegesterForm.stateID = row.registrationTestStateId ;
+
     this.openModal();
   }
 
@@ -129,8 +136,8 @@ export class RegistrationConfirmationTestDetailsComponent {
     return IsAllow;
   }
 
-  View(row:RegisterationFormTest){
-    this.router.navigateByUrl(`Employee/Registration Confirmation Test Answer/${row.id}/${row.registerationFormParentID}/${row.testID}`)
+  View(row:TestWithRegistrationForm){
+    this.router.navigateByUrl(`Employee/Registration Confirmation Test Answer/${row.registrationTestID}/${this.RegisterFormParentID}/${row.id}`)
   }
 
 }

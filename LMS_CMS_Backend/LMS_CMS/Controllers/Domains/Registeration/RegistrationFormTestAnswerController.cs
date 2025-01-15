@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LMS_CMS_PL.Controllers.Domains.Registeration
 {
@@ -84,15 +85,16 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         ///////////////////////////////////////////////////////////////
 
-        [HttpPost]
+        [HttpPost("{RegisterationFormParentId}/{TestId}")]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee","parent" },
        pages: new[] { "Registration Confirmation", "Registration" }
      )]
 
-        public async Task<IActionResult> Add(IEnumerable<RegisterationFormTestAnswerAddDTO> newAnswersList)
+        public async Task<IActionResult> Add(IEnumerable<RegisterationFormTestAnswerAddDTO> newAnswersList ,long RegisterationFormParentId , long TestId)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
@@ -108,7 +110,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 return BadRequest("Test answers cannot be null or empty.");
             }
 
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
             var addedAnswers = new List<RegisterationFormTestAnswer>();
 
@@ -145,8 +146,30 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
                 addedAnswers.Add(answer);
                 Unit_Of_Work.registerationFormTestAnswer_Repository.Add(answer);
+                Unit_Of_Work.SaveChanges();
             }
+
             Unit_Of_Work.SaveChanges();
+
+            RegisterationFormTest registerationFormTest = new RegisterationFormTest();
+            registerationFormTest.TestID = TestId;
+            registerationFormTest.RegisterationFormParentID = RegisterationFormParentId;
+            registerationFormTest.StateID = 1;
+            registerationFormTest.VisibleToParent = false;
+            registerationFormTest.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                registerationFormTest.InsertedByOctaId = userId;
+            }
+            else if (userTypeClaim == "employee")
+            {
+                registerationFormTest.InsertedByUserId = userId;
+            }
+
+            Unit_Of_Work.registerationFormTest_Repository.Add(registerationFormTest);
+            Unit_Of_Work.SaveChanges();
+
+
             return Ok(newAnswersList);
         }
 

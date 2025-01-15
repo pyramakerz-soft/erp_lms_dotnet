@@ -15,6 +15,7 @@ import { RegisterationFormParentService } from '../../../../Services/Employee/Re
 import { RegisterationFormParent } from '../../../../Models/Registration/registeration-form-parent';
 import { RegisterationFormTestService } from '../../../../Services/Employee/Registration/registeration-form-test.service';
 import { RegisterationFormTest } from '../../../../Models/Registration/registeration-form-test';
+import { TestWithRegistrationForm } from '../../../../Models/Registration/test-with-registration-form';
 
 @Component({
   selector: 'app-admission-test-parent',
@@ -42,7 +43,7 @@ export class AdmissionTestParentComponent {
   path: string = '';
 
   IsStudentSelected: boolean =false;
-  Data: RegisterationFormTest[] = [];
+  Data: TestWithRegistrationForm[] = [];
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
@@ -57,7 +58,7 @@ export class AdmissionTestParentComponent {
   validationErrors: { [key in keyof RegistrationCategory]?: string } = {};
   RegesterFormParentID:number=0;
   Students:RegisterationFormParent[]=[]
- 
+  GradeId:number = 0;
 
   
   constructor(
@@ -101,8 +102,10 @@ export class AdmissionTestParentComponent {
   }
 
   GetAllData() {
-    this.registrationserv.GetByRegistrationParentIdForParent(this.RegesterFormParentID, this.DomainName).subscribe((d:any) => {
-      console.log(d)
+    let CurrentStudent =this.Students.find(s=>s.id==this.RegesterFormParentID)
+    if(CurrentStudent)
+      // console.log(CurrentStudent.gradeID,this.RegesterFormParentID, this.DomainName)
+    this.testServ.GetByRegistrationFormParentIDAndGrade(this.RegesterFormParentID, this.DomainName).subscribe((d:any) => {
       this.Data = d.tests;
     })
   }
@@ -112,9 +115,8 @@ export class AdmissionTestParentComponent {
     this.RegesterFormParentID = selectedId; 
     this.GetAllData();
     this.IsStudentSelected = true;  // to display the table after selecting a student.
-    console.log('Selected Student ID:', selectedId);
   }
-  View(row:RegisterationFormTest){
-    this.router.navigateByUrl(`Parent/Test/${row.id}/${row.registerationFormParentID}/${row.testID}`)
+  View(row:TestWithRegistrationForm){
+    this.router.navigateByUrl(`Parent/Test/${this.RegesterFormParentID}/${row.id}`)
   }
 }

@@ -65,7 +65,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("UserName or Password is Invalid");
             }
-            if (isMatch==false)
+            if (isMatch == false)
             {
                 return BadRequest("UserName or Password is Invalid");
             }
@@ -87,5 +87,7 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             return BadRequest("Unexpected user type.");
         }
+
     }
-}
+        
+ }

@@ -85,9 +85,9 @@ export class RegistraionTestComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
       this.activeRoute.paramMap.subscribe((params) => {
-        this.registerationFormParentID = Number(params.get('registerationFormParentID')); // Retrieve and convert Pid to a number
-        this.TestId = Number(params.get('TestId')); // Retrieve and convert Tid to a number
-        this.registerationFormID = Number(params.get('registerationFormID')); // Retrieve and convert Tid to a number
+        this.registerationFormParentID = Number(params.get('registerationFormParentID'));
+        this.TestId = Number(params.get('TestId')); 
+        // this.registerationFormID = Number(params.get('registerationFormID')); 
       });
     });
 
@@ -108,15 +108,12 @@ export class RegistraionTestComponent {
     this.registerServ
       .GetByRegistrationParentId(this.registerationFormParentID, this.TestId, this.DomainName)
       .subscribe((d: any) => {
-        console.log(d)
         this.Data = d.questionWithAnswer;
         this.TestName = d.testName;
         this.mark =d.mark;
         this.TotalMark=d.totalmark;
-        console.log("ff",this.Data);
       },(error)=>{
           this.mode= 'test';
-          console.log(this.mode)
           this.questionServ.GetByTestIDGroupBy(this.TestId,this.DomainName).subscribe((d: any) => {
            this.questions=d;
            this.questionServ.GetByTestID(this.TestId,this.DomainName).subscribe((q: any) => {
@@ -145,22 +142,21 @@ export class RegistraionTestComponent {
        if (answer) {
          answer.answerID = OptionId;
        } 
-       console.log('Updated Answers:', this.Answers);
   }
 
   EssayAnswer(questionId: number, event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
+    const inputValue = textarea.value.trim();
     const answer = this.Answers.find(a => a.questionID === questionId);
     if (answer) {
-      answer.essayAnswer = textarea.value;
+      answer.essayAnswer = inputValue;
       answer.answerID=null
     } 
        
   }
 
   Save(){
-    console.log(this.Answers)
-    this.registerServ.Add(this.Answers,this.DomainName).subscribe((a)=>{
+    this.registerServ.Add(this.Answers,this.registerationFormParentID,this.TestId,this.DomainName).subscribe((a)=>{
       this.GetAllData();
      this.router.navigateByUrl(`Parent/Admission Test`)
     })

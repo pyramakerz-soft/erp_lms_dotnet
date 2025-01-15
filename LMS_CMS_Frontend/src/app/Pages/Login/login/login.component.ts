@@ -215,4 +215,7 @@ export class LoginComponent {
     }
 
   }
+  SignUp(){
+    this.router.navigateByUrl("SignUp")
+  }
 }

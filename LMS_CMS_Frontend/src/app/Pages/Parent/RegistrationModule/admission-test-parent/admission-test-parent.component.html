@@ -44,14 +44,18 @@
             <tr *ngFor="let row of Data; let i = index"
                 [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
                 class="border-t border-gray-300 text-xs md:text-sm">
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.testName }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <i *ngIf="row.stateID!==2" class="fa-solid fa-circle fa-1x" ></i>           
-                    <i *ngIf="row.stateID === 2" class="fa-solid fa-circle fa-1x text-green-500"></i>
-                    {{ row.stateName }}
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.title }}</td>
+                <td *ngIf="row.registrationTestState!=null" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <i *ngIf="row.registrationTestState!=='Accepted'" class="fa-solid fa-circle fa-1x" ></i>           
+                    <i *ngIf="row.registrationTestState === 'Accepted'" class="fa-solid fa-circle fa-1x text-green-500"></i>
+                    {{ row.registrationTestState }}
+                </td>
+                <td *ngIf="row.registrationTestState==null" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subjectName }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.mark }} / {{row.totalMark}}</td>
+                <td *ngIf="row.registrationTestMark !=null " class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.registrationTestMark }} / {{row.totalMark}}</td>
+                <td *ngIf="row.registrationTestMark ===null " class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">_ _ / {{row.totalMark}}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     <div class="flex space-x-4">
                         <button (click)="View(row)">

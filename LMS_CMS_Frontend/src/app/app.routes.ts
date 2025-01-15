@@ -57,10 +57,12 @@ import { InterviewRegistrationComponent } from './Pages/Employee/Registration/in
 import { AdmissionTestParentComponent } from './Pages/Parent/RegistrationModule/admission-test-parent/admission-test-parent.component';
 import { RegistraionTestComponent } from './Pages/Parent/RegistrationModule/registraion-test/registraion-test.component';
 import { ClassroomsAccommodationComponent } from './Pages/Employee/Registration/classrooms-accommodation/classrooms-accommodation.component';
+import { SignUpComponent } from './Pages/Login/sign-up/sign-up.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
     { path: "Octa/login", component: OctaLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
+    { path: "SignUp", component: SignUpComponent, title: "SignUp", canActivate:[noNavigateToLoginIfLoginGuard] },
 
     
     { 
@@ -120,7 +122,7 @@ export const routes: Routes = [
         children: [
             { path: "", component: HomeParentComponent, title: "ParentHome" },
             { path: "Admission Test", component: AdmissionTestParentComponent, title: "Admission Test" },
-            { path: "Test/:registerationFormID/:registerationFormParentID/:TestId", component: RegistraionTestComponent, title: "Test" },
+            { path: "Test/:registerationFormParentID/:TestId", component: RegistraionTestComponent, title: "Test" },
         ]
     },
     { 

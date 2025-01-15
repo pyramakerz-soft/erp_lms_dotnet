@@ -365,6 +365,9 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<RegisterationFormState, RegistrationFormStateGetDTO>();
             CreateMap<InterviewState, InterviewStateGetDTO>();
+
+            CreateMap<ParentDTO, Parent>();
+
         }
     }
 }

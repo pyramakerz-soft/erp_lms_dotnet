@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { Test } from '../../../Models/Registration/test';
+import { TestWithRegistrationForm } from '../../../Models/Registration/test-with-registration-form';
 
 @Injectable({
   providedIn: 'root'
@@ -76,4 +77,17 @@ export class TestService {
       .set('Content-Type', 'application/json');
     return this.http.get<Test>(`${this.baseUrl}/Test/${id}`, { headers })
   }
+
+  GetByRegistrationFormParentIDAndGrade(RPID:number,DomainName:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<TestWithRegistrationForm[]>(`${this.baseUrl}/Test/byRegistrationFormParentID/${RPID}`, { headers })
+  }
+
 }

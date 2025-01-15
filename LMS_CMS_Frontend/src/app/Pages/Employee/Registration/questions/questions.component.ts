@@ -104,7 +104,6 @@ export class QuestionsComponent {
 
   GetAllData() {
     this.QuestionServ.GetByTestID(this.testId,this.DomainName).subscribe((d:any)=>{
-      console.log(d)
       this.Data=d
     })
   }
@@ -150,7 +149,6 @@ export class QuestionsComponent {
     this.mode = 'Edit';
     this.question = row as unknown as QuestionAddEdit;
     this.options = row.options.map(option => option.name); 
-    console.log(this.question)
     this.openModal();
   }
 
@@ -168,7 +166,6 @@ export class QuestionsComponent {
     this.question.options=this.options
     this.question.testID=this.testId
     if(this.isFormValid()){
-    console.log(this.question)
      if(this.mode=="Create"){
       this.QuestionServ.Add(this.question,this.DomainName).subscribe(()=>{
         this.GetAllData();

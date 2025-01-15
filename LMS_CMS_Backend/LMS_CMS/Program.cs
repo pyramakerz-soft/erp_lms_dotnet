@@ -28,8 +28,8 @@ namespace LMS_CMS
 
 
             // Add services to the container.
-
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -99,6 +99,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<GenerateJWTService>();
             builder.Services.AddScoped<FileImageValidationService>();
             builder.Services.AddScoped<CancelInterviewDayMessageService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
 
             /// 2)

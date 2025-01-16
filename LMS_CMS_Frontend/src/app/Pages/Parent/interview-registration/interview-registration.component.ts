@@ -34,9 +34,12 @@ export class InterviewRegistrationComponent {
   selectedDate = ""
 
   interviewTimeTable:InterviewTimeTable[] = []
+  ToChooseFromInterviewTimeTable:InterviewTimeTable[] = []
 
   calendarMonths: any[] = [];
   today: Date = new Date();
+
+  currentMonth = 0;
 
   constructor(public account: AccountService, public ApiServ: ApiService, public registerationFormParentService:RegisterationFormParentService, 
     public interviewTimeTableService:InterviewTimeTableService, public registrationFormInterview: RegistrationFormInterviewService){}
@@ -54,7 +57,6 @@ export class InterviewRegistrationComponent {
     this.registerationFormParentService.GetByParentIDIncludeRegistrationFormInterview(this.UserID, this.DomainName).subscribe(
       (data) => {
         this.registrationFormParentIncludeRegistrationFormInterview = data
-        console.log(this.registrationFormParentIncludeRegistrationFormInterview)
       }
     )
   }
@@ -65,15 +67,11 @@ export class InterviewRegistrationComponent {
         this.interviewTimeTable = data
         this.filterFutureDates()
         this.generateCalendar()
-        console.log(this.interviewTimeTable)
       }
     )
   }
 
   openModal(id: number, academicYearId: number, registrationFormInterviewID?:number, interviewID?:number, date?:string) {
-    console.log(id)
-    console.log(academicYearId)
-
     if(registrationFormInterviewID && interviewID && date){
       this.registrationFormInterviewID = registrationFormInterviewID
       this.InterviewTimeID = interviewID
@@ -100,6 +98,16 @@ export class InterviewRegistrationComponent {
 
     this.interviewTimeTable = []
 
+    this.calendarMonths = [];
+    this.today = new Date();
+
+    this.ToChooseFromInterviewTimeTable = []
+
+    this.calendarMonths = [];
+    this.today = new Date();
+
+    this.currentMonth = 0;
+
     this.closeModalcalender()
   }
 
@@ -114,7 +122,6 @@ export class InterviewRegistrationComponent {
   }
 
   deleteInterview(id: number) {
-    console.log(id)
     Swal.fire({
           title: 'Are you sure you want to Cancel this Interview Registration?',
           icon: 'warning',
@@ -200,18 +207,12 @@ export class InterviewRegistrationComponent {
   }
 
   generateCalendar() {
-    const dates = this.interviewTimeTable.map((item) => new Date(item.date));
-    // console.log("dates: ", dates)
-    const firstDate = new Date(Math.min(...dates.map((date) => date.getTime())));
-    // console.log("first date: ", firstDate)
-
-    const lastDate = new Date(Math.max(...dates.map((date) => date.getTime())));
-    // console.log("last date: ", lastDate)
+    const dates = this.interviewTimeTable.map((item) => new Date(item.date)); 
+    const lastDate = new Date(Math.max(...dates.map((date) => date.getTime()))); 
 
     let currentMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
     const endMonth = new Date(lastDate.getFullYear(), lastDate.getMonth(), 1);
-
-    // Generate calendar months dynamically
+ 
     while (currentMonth <= endMonth) {
       const month = currentMonth.getMonth();
       const year = currentMonth.getFullYear();
@@ -220,33 +221,29 @@ export class InterviewRegistrationComponent {
     }
   }
 
-  getDaysInMonth(month: number, year: number): InterviewTimeTable[] {
-    const days: InterviewTimeTable[] = [];
+  getDaysInMonth(month: number, year: number): DayWithInterviews[] { 
     const totalDays = new Date(year, month + 1, 0).getDate();
+
+    let plainDays: DayWithInterviews[] = [];
   
     for (let day = 1; day <= totalDays; day++) {
       const date = new Date(year, month, day);
-      const interviewTime = this.interviewTimeTable.find(
-        (item) => new Date(item.date).toDateString() === date.toDateString()
-      );
-  
-      days.push(new InterviewTimeTable(
-        interviewTime?.id || 0,
-        date.toISOString(), 
-        interviewTime?.fromTime || '',
-        interviewTime?.toTime || '',
-        interviewTime?.capacity || 0,
-        interviewTime?.reserved || 0,
-        interviewTime?.academicYearID || 0,
-        interviewTime?.academicYearName || '',
-        interviewTime?.insertedByUserId || 0,
-        interviewTime?.fromDate || '',
-        interviewTime?.toDate || '',
-        interviewTime?.days || [],
-        date.getDate()  
-      ));
+       
+      const dayObj: DayWithInterviews = {
+        day: date.getDate(),
+        interviews: []
+      };
+
+      this.interviewTimeTable.forEach(element => {
+        if(new Date(element.date).toDateString() === date.toDateString()){
+          dayObj.interviews.push(element);
+        }
+      });
+
+      plainDays.push(dayObj); 
     }
-    return days;
+
+    return plainDays;
   }
 
   getMonthDate(month: number, year: number): Date {
@@ -256,4 +253,47 @@ export class InterviewRegistrationComponent {
   isDayInInterviewTimeTable(dayId: number): boolean {
     return this.interviewTimeTable.some(item => item.id === dayId);
   }
+
+  lastMonth(){
+    this.currentMonth--
+  }
+  nextMonth(){
+    this.currentMonth++
+  }
+
+  isGreen(day: DayWithInterviews): boolean {
+    let isgreen=false
+
+    day.interviews.forEach(element => {
+      if(element.reserved != element.capacity){
+        isgreen = true
+      }
+    });
+    return isgreen
+  }
+   
+  showTime(day?: DayWithInterviews) {
+    this.ToChooseFromInterviewTimeTable = []
+    document.getElementById("timePart")?.classList.remove("flex");
+    document.getElementById("timePart")?.classList.add("hidden");
+    if(day){
+      this.ToChooseFromInterviewTimeTable = day.interviews
+      document.getElementById("timePart")?.classList.remove("hidden");
+      document.getElementById("timePart")?.classList.add("flex");
+    } 
+  }
+    
+  ChooseInterviewTime(interview:InterviewTimeTable) {
+    if(interview.capacity != interview.reserved){
+      this.closeModalcalender()
+      this.selectedDate = interview.date
+      this.InterviewTimeID = interview.id
+    }
+  }
+}
+
+  
+interface DayWithInterviews {
+  day: number;  
+  interviews: InterviewTimeTable[];  
 }

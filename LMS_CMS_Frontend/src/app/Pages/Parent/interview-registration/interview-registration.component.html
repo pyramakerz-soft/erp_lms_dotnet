@@ -65,7 +65,7 @@
                         {{ row.interviewTimeDate | date:'MMM d, yyyy' }}
                     </div>
                     <div *ngIf="!row.interviewTimeDate" (click)="openModal(row.id, row.academicYearID)">
-                        <p class="underline">Select Date</p>
+                        <p class="underline cursor-pointer">Select Date</p>
                     </div>
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.interviewTimeFromTime }}</td>
@@ -136,43 +136,53 @@
             </div>
     
         </div>
-        <div id="Calender_Modal" class="bg-white rounded-2xl p-4 hidden absolute shadow-lg flex-col w-1/3 m-auto h-auto">
-            <div class="flex justify-between items-center w-full">
-                <h1 class="font-semibold text-2xl leading-9">Date</h1>
-                <button (click)="closeModalcalender()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
-            </div>
+        <div id="Calender_Modal" class="bg-white rounded-2xl p-4 hidden absolute top-[55%] left-[30%] shadow-lg flex-col  m-auto h-auto">
             <div class="flex flex-col items-center">
-            <div>
-                <select id="interviewTime" [(ngModel)]="InterviewTimeID" (change)="ViewDate($event)"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 flex-grow">
-                    <option value="0" disabled selected hidden>Select Interview Time</option>
-                    <option *ngFor="let interviewTime of interviewTimeTable" [value]="interviewTime.id">
-                        {{ interviewTime.date }}
-                    </option>
-                </select>
+                <div>
+                    <div *ngFor="let month of calendarMonths">
+                        <div *ngIf="month.month == currentMonth">
+                            <div class="flex justify-between">
+                                <h2 class="text-lg font-bold">
+                                {{ getMonthDate(month.month, month.year) | date: 'MMM' }} {{ month.year }}
+                                </h2>
+                                <div class="flex space-x-3 text-3xl">
+                                    <p *ngIf="currentMonth!=0" (click)="lastMonth(); showTime()">&lt;</p>
+                                    <p *ngIf="currentMonth!=calendarMonths.length-1" (click)="nextMonth(); showTime()">&gt;</p>
+                                </div>
+                            </div>
 
-                <div *ngFor="let interviewTime of interviewTimeTable">
-                    <div [ngClass]="{'bg-[#EA3A3D80]': (interviewTime.reserved == interviewTime.capacity)}">{{interviewTime.date}}</div>
-                    <div [ngClass]="{'bg-[#96C68D]': (interviewTime.reserved != interviewTime.capacity)}">{{interviewTime.date}}</div>
-                </div>
+                            <div class="grid grid-cols-7 gap-2">
+                                <div *ngFor="let day of getDaysInMonth(month.month, month.year)">
+                                    <div (click)="showTime(day)"
+                                    *ngIf="isGreen(day) && (day.interviews.length != 0)" class="text-center py-1 px-[5px] rounded-lg bg-[#96C68D]">
+                                        {{ day.day }} 
+                                    </div>
+                                    <div (click)="showTime()"
+                                    *ngIf="!isGreen(day) && (day.interviews.length != 0)" class="text-center py-1 px-[5px] rounded-lg bg-[#EA3A3D80]">
+                                        {{ day.day }} 
+                                    </div>
+                                    <div (click)="showTime()"
+                                    class="text-center py-1 px-[5px] rounded-lg"
+                                        *ngIf="day.interviews.length == 0">
+                                        {{ day.day  }} 
+                                    </div>
+                                </div>
+                            </div>
 
-
-                <div *ngFor="let month of calendarMonths" class="mb-4">
-                    <h2 class="text-lg font-bold">
-                      {{ getMonthDate(month.month, month.year) | date: 'MMM' }} {{ month.year }}
-                    </h2>
-                    <div class="grid grid-cols-7 gap-2">
-                        <div *ngFor="let day of getDaysInMonth(month.month, month.year)"
-                            [ngClass]="{
-                                'bg-red-400': day.reserved == day.capacity && isDayInInterviewTimeTable(day.id),
-                                'bg-green-400': day.reserved != day.capacity && isDayInInterviewTimeTable(day.id)
-                            }" 
-                            class="text-center p-2 rounded-lg">
-                            {{ day.formattedDate }} 
+                            <div id="timePart" class="w-full mt-3 flex" *ngFor="let interview of ToChooseFromInterviewTimeTable">
+                                <div  class="flex justify-between w-full">
+                                    <p class="font-semibold text-xl" (click)="ChooseInterviewTime(interview)">Time</p>
+                                    <div class="flex space-x-3">
+                                        <p *ngIf="interview.capacity != interview.reserved" class="py-1 px-2 bg-[#96C68D] rounded-md">{{interview.fromTime}}</p>
+                                        <p *ngIf="interview.capacity == interview.reserved" class="py-1 px-2 bg-[#EA3A3D80] rounded-md">{{interview.fromTime}}</p>
+                                        <p *ngIf="interview.capacity != interview.reserved" class="py-1 px-2 bg-[#96C68D] rounded-md">{{interview.toTime}}</p>
+                                        <p *ngIf="interview.capacity == interview.reserved" class="py-1 px-2 bg-[#EA3A3D80] rounded-md">{{interview.toTime}}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                  
             </div>
         </div>
     </div>

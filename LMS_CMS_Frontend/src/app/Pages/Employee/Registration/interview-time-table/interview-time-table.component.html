@@ -126,7 +126,7 @@
         <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
             <div class="flex flex-col w-full mb-4">
                 <label class="mb-2" for="school">Choose School</label>
-                <select
+                <select [disabled]="editInterviewTimeTable" [ngClass]="{ 'bg-[#EBEBEB]': editInterviewTimeTable }"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchoolForModal" (change)="onSchoolChange($event)">
                     <option [value]="0" disabled selected hidden>Choose School</option>
                     <option *ngFor="let school of schoolsForModal" [value]="school.id">{{ school.name }}</option>
@@ -135,9 +135,9 @@
             </div>
             <div class="flex flex-col w-full mb-4">
                 <label class="mb-2" for="ac" [ngClass]="{ 'text-gray-400': !selectedSchoolForModal, 'primaryTxt': selectedSchoolForModal }">Choose Academic Year</label>
-                <select
+                <select 
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="ac" [(ngModel)]="interviewTimeTable.academicYearID"
-                [disabled]="!selectedSchoolForModal" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchoolForModal }">
+                [disabled]="!selectedSchoolForModal || editInterviewTimeTable" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchoolForModal || editInterviewTimeTable}">
                     <option [value]="0" disabled selected hidden>Choose Academic Year</option>
                     <option *ngFor="let academicYear of yearsForModal" [value]="academicYear.id">{{ academicYear.name }}</option>
                     <option *ngIf="yearsForModal.length === 0" disabled selected>No Data Found</option>
@@ -169,6 +169,12 @@
                     <label for="{{option}}" class="ml-2">{{ option }}</label>
                 </div>
                 <span *ngIf="validationErrors['days']" class="text-red-500 ml-3 font-normal">{{ validationErrors['days'] }}</span>
+            </div>
+            <div *ngIf="editInterviewTimeTable" class="flex flex-col w-full mb-4">
+                <label class="mb-2 primaryTxt" for="days">Days</label>
+                <div class="rounded-lg border border-solid border-gray-300 px-4 py-3">
+                    <p>{{ interviewTimeTable.date | date:'MMM d, yyyy' }}</p>
+                </div>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="fromTime">From Time</label>

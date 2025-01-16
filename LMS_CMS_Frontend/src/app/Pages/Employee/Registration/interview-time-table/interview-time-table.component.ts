@@ -90,9 +90,9 @@ export class InterviewTimeTableComponent {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
-        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
         this.AllowDelete = settingsPage.allow_Delete;
-        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others;
       }
     });
   }

@@ -28,9 +28,10 @@ export const navigateIfHaveSettingPageGuard: CanActivateFn = (route, state) => {
     router.navigateByUrl('');
     return false;
   }
-
+console.log("guard")
   return roleDetailsService.Get_Pages_With_RoleID(userData.role).pipe(
     map((accessiblePages: any) => {
+console.log(accessiblePages)
       return Array.isArray(accessiblePages) ? accessiblePages : [];
     }),
     switchMap((accessiblePages: any[]) => {

@@ -17,5 +17,7 @@ namespace LMS_CMS_BL.DTO.Registration
         [StringLength(100, ErrorMessage = "Arabic Name cannot be longer than 100 characters.")]
         public string ArName { get; set; }
         public int OrderInForm { get; set; }
+        public int RegistrationFormId { get; set; }
+
     }
 }

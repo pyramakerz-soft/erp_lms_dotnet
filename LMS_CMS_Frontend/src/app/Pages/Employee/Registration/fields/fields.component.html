@@ -42,10 +42,10 @@
                     </th>
                     <th
                         class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                        Name of category English
+                        Name of Field English
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Name of category Arabic
+                        Name of Field Arabic
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Order In Form
@@ -112,16 +112,16 @@
             <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
 
-        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">Create Categories</h1>
-        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">Edit Categories</h1>
+        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">Create Fields</h1>
+        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">Edit Fields</h1>
         
         <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories English</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Fields English</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.enName" placeholder="Enter Name of Categories " 
+                        [(ngModel)]="field.enName" placeholder="Enter Name of Fields " 
                         (ngModelChange)="onInputValueChange({ field: 'enName', value: $event })"/>
                 <span *ngIf="validationErrors['enName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['enName'] }}</span>
 
@@ -129,12 +129,12 @@
                 </div>
             </div>
 
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories Arabic</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Fields Arabic</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.arName" placeholder="Enter Name of Categories " 
+                        [(ngModel)]="field.arName" placeholder="Enter Name of Fields " 
                         (ngModelChange)="onInputValueChange({ field: 'arName', value: $event })"/>
                 <span *ngIf="validationErrors['arName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['arName'] }}</span>
                 </div>
@@ -158,8 +158,8 @@
             </div>
 
 
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Options</h6>
-            <div class="border border-gray-300 rounded-lg w-[500px] px-2 py-2 flex flex-wrap gap-2 mb-4">
+            <h6 *ngIf="field.fieldTypeID==4||field.fieldTypeID==5||field.fieldTypeID==7" class="font-medium text-base leading-6 mb-1 mt-3">Options</h6>
+            <div *ngIf="field.fieldTypeID==4||field.fieldTypeID==5||field.fieldTypeID==7" class="border border-gray-300 rounded-lg w-[500px] px-2 py-2 flex flex-wrap gap-2 mb-4">
                 <span *ngFor="let opt of options; let i = index"
                     class="flex items-centermr-2 mb-1 bg-gray-200  rounded-full px-3 py-1 text-sm">
                     {{ opt }}
@@ -175,7 +175,7 @@
                       </span>
             </div>
 
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Order in Category </h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Order in Field </h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text"

@@ -118,8 +118,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     return BadRequest("Registration Confirmation page doesn't exist");
                 }
             }
-
+            //registerationFormTest.StateID=
             mapper.Map(newTest, registerationFormTest);
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             registerationFormTest.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")

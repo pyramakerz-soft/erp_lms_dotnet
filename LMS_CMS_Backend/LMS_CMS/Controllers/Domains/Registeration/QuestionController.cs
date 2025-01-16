@@ -169,6 +169,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 {
                     return BadRequest("CorrectAnswer in msq question is required");
                 }
+
+
             }
             Question question = mapper.Map<Question>(newQuestion);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -184,6 +186,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             Unit_Of_Work.question_Repository.Add(question);
             Unit_Of_Work.SaveChanges();
+
+            if (newQuestion.QuestionTypeID == 2)
+            {
             long correctA = 0;
             foreach (var item in newQuestion.options)
             {
@@ -215,6 +220,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             question.CorrectAnswerID=correctA;
             Unit_Of_Work.question_Repository.Update(question);
             await Unit_Of_Work.SaveChangesAsync();
+            }
             return Ok(newQuestion);
         }
 

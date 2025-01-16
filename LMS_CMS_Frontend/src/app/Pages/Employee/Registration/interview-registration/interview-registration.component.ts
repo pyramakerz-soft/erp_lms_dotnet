@@ -32,13 +32,12 @@ export class InterviewRegistrationComponent {
   StateData:InterviewState[] = []
 
   constructor(public ApiServ: ApiService, public activeRoute: ActivatedRoute, public router:Router, public interviewStateService: InterviewStateService,
-    public interviewTimeTableService: InterviewTimeTableService, public registrationFormInterviewService: RegistrationFormInterviewService){}
+    public interviewTimeTableService: InterviewTimeTableService, public registrationFormInterviewService: RegistrationFormInterviewService ){}
   
   ngOnInit(){
     this.DomainName = this.ApiServ.GetHeader();
 
     this.interviewTimeID = Number(this.activeRoute.snapshot.paramMap.get('Id'))
-
     this.getRegistrationFormInterviewData()
     this.getInterviewTimeByID()
   }

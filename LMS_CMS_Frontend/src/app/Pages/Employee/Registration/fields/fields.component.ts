@@ -89,7 +89,9 @@ export class FieldsComponent {
     });
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName("Registration Form Field", items);
+      const settingsPage = this.menuService.findByPageName(this.path, items);
+      console.log(this.path)
+      console.log(settingsPage)
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
@@ -127,6 +129,7 @@ export class FieldsComponent {
   Create() {
     this.mode = 'Create';
     this.field = new FieldAddEdit();
+    this.options=[]
     this.openModal();
   }
 
@@ -169,6 +172,7 @@ export class FieldsComponent {
 
   CreateOREdit() {
     this.field.registrationCategoryID=this.CategoryId
+    if(this)
     this.field.options=this.options
     if(this.isFormValid()){
      if(this.mode=="Create"){

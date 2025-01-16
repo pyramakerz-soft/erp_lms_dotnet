@@ -137,10 +137,11 @@ export class RegistraionTestComponent {
   moveToEmployee() {
     this.router.navigateByUrl(`Parent/Admission Test`)
   }
-  selectOption(questionId: number,OptionId: number) {
+  selectOption(questionId: number,OptionId: number , a:number) {
        const answer = this.Answers.find(a => a.questionID === questionId);
        if (answer) {
          answer.answerID = OptionId;
+
        } 
   }
 
@@ -154,6 +155,12 @@ export class RegistraionTestComponent {
     } 
        
   }
+  // Inside your component class
+isCircleDot(answers: any[], questionId: number, optionId: number): boolean {
+  const answer = answers.find(a => a.questionID === questionId);
+  return answer ? answer.answerID === optionId : false;
+}
+
 
   Save(){
     this.registerServ.Add(this.Answers,this.registerationFormParentID,this.TestId,this.DomainName).subscribe((a)=>{

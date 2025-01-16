@@ -86,7 +86,7 @@ export class QuestionsComponent {
 
     
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName("Admission Test", items);
+      const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
@@ -186,6 +186,7 @@ export class QuestionsComponent {
 
   CorrectAnswer(option :string){
     this.question.correctAnswerName=option;
+    this.validationErrors["correctAnswerName"]=''
   }
 
   openModal() {
@@ -195,6 +196,16 @@ export class QuestionsComponent {
   AddOption(){
     this.options.push(this.NewOption);
     this.NewOption=''
+  }
+
+  checkOnType(){
+   if(this.question.questionTypeID==1){
+    this.options=[];
+    this.options.push("True");
+    this.options.push("False");
+   }else{
+    this.options=[]
+   }
   }
 
   isFormValid(): boolean {
@@ -210,7 +221,7 @@ export class QuestionsComponent {
         } 
       }
     }
-    if(this.question.questionTypeID==1||this.question.questionTypeID){
+    if(this.question.questionTypeID==1||this.question.questionTypeID==2){
       if(this.question.options.length==0){
         this.validationErrors["options"] = `*${this.capitalizeField("options")} is required`
       }
@@ -224,6 +235,7 @@ export class QuestionsComponent {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
   onInputValueChange(event: { field: keyof QuestionAddEdit, value: any }) {
+    console.log(event)
     const { field, value } = event;
     (this.question as any)[field] = value;
     if (value) {

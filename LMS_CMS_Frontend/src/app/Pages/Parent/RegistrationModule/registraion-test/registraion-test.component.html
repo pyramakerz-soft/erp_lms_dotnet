@@ -60,9 +60,12 @@
           <div class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border">
             <div>{{ q.description }}?</div>
             <div *ngFor="let option of q.options; let optionIndex = index" class="mt-5">
-              <div (click)="selectOption(q.id,option.id)">
-                <i [class.fa-circle]="Answers[questionIndex].answerID !== option.id"
-                  [class.fa-circle-dot]="Answers[questionIndex].answerID === option.id" class="fa-regular"></i>
+              <div (click)="selectOption(q.id,option.id,optionIndex)">
+               <i [ngClass]="{
+                  'fa-circle-dot': isCircleDot(Answers, q.id, option.id),
+                  'fa-circle': !isCircleDot(Answers, q.id, option.id)
+                }"
+               class="fa-regular"></i>
                 {{ option.name }}
               </div>
             </div>

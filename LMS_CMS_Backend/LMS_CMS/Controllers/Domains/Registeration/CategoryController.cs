@@ -90,6 +90,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             Unit_Of_Work.registrationCategory_Repository.Add(category);
             Unit_Of_Work.SaveChanges();
+
+            RegistrationFormCategory registrationFormCategory = new RegistrationFormCategory();
+            registrationFormCategory.RegistrationCategoryID = category.ID;
+            registrationFormCategory.RegistrationFormID = NewCategory.RegistrationFormId;
+
+            registrationFormCategory.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                registrationFormCategory.InsertedByOctaId = userId;
+            }
+            else if (userTypeClaim == "employee")
+            {
+                registrationFormCategory.InsertedByUserId = userId;
+            }
+
+            Unit_Of_Work.registrationFormCategory_Repository.Add(registrationFormCategory);
+            Unit_Of_Work.SaveChanges();
+
             return Ok(NewCategory);
         }
 

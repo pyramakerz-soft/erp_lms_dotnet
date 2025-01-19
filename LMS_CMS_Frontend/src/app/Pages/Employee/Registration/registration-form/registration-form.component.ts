@@ -165,10 +165,24 @@ export class RegistrationFormComponent {
   handleFileUpload(event:any, fieldId:number){
     const file: File = event.target.files[0];
 
-    this.registrationFormForFiles.push({
-      categoryFieldID: fieldId,
-      selectedFile: file
-    })
+    const existingElement = this.registrationFormForFiles.find(
+      (element) => element.categoryFieldID === fieldId
+    );
+
+    this.registrationFormForFiles = this.registrationFormForFiles.filter(option => 
+      !(option.categoryFieldID === fieldId)
+    );
+  
+    if(file != undefined){
+      if (existingElement) {
+        existingElement.selectedFile = file;
+      } else {
+        this.registrationFormForFiles.push({
+          categoryFieldID: fieldId,
+          selectedFile: file
+        })
+      } 
+    }
   }
 
   FillData(event:Event, fieldId:number , fieldTypeId:number){
@@ -178,9 +192,9 @@ export class RegistrationFormComponent {
     let option = null
 
     if(fieldTypeId == 1 || fieldTypeId == 2 || fieldTypeId == 3 || 
-      (fieldTypeId == 4 && (fieldId == 3 || fieldId == 5 || fieldId == 6 || fieldId == 7 || fieldId == 8 || fieldId == 9 || fieldId == 14))){
+      (fieldTypeId == 7 && (fieldId == 3 || fieldId == 5 || fieldId == 6 || fieldId == 7 || fieldId == 8 || fieldId == 9 || fieldId == 14))){
       answer = selectedValue
-    } else if(fieldTypeId == 4){
+    } else if(fieldTypeId == 5 || fieldTypeId == 7){
       option = parseInt(selectedValue) 
     }
     
@@ -200,7 +214,7 @@ export class RegistrationFormComponent {
   }
 
   MultiOptionDataPush(fieldId:number , fieldTypeId:number, optionAnswer:number){
-    if(fieldTypeId == 5){
+    if(fieldTypeId == 4){
       this.registrationForm.registerationFormSubmittions.push({
         categoryFieldID: fieldId,
         selectedFieldOptionID: optionAnswer,
@@ -216,7 +230,7 @@ export class RegistrationFormComponent {
     this.selectedOptions = []
   }
 
-  multiOptionHandling(event:Event, fieldId:number , fieldTypeId:number, optionId: number){
+  multiCheckBoxesHandling(event:Event, fieldId:number , fieldTypeId:number, optionId: number){
     const checkbox = event.target as HTMLInputElement;
     
     if (checkbox.checked) {
@@ -265,17 +279,18 @@ export class RegistrationFormComponent {
           fieldData = fieldSubmissionFile;
         }
 
+        
         if (fieldData) {
           return false;
         }
 
-        if (field.fieldTypeID === 5) {
+        if (field.fieldTypeID === 4) {
           return !this.selectedOptions.some(option => option.fieldId === field.id);
         }
 
         if (field.fieldTypeID === 6) {
-            return !fieldSubmissionFile || !fieldSubmissionFile.selectedFile || 
-                  !this.selectedOptions.some(option => option.fieldId === field.id);
+          return !fieldSubmissionFile || !fieldSubmissionFile.selectedFile || 
+                !this.selectedOptions.some(option => option.fieldId === field.id);
         }
 
         return !fieldSubmission || !fieldSubmission.textAnswer || !fieldSubmission.selectedFieldOptionID;
@@ -346,6 +361,7 @@ export class RegistrationFormComponent {
     }
 
 
+    console.log(this.registrationForm)
     if (valid) {
       this.IsEmailValid()
       if(this.isMotherEmailValid && this.isGuardianEmailValid && this.isGuardianEmailSameAsParent){

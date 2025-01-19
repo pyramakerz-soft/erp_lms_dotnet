@@ -127,10 +127,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpPost]
         [Authorize_Endpoint_(
-         allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Admission Test", "Registration" }
-       )]
-        public async Task<IActionResult> Add(QuestionAddDTO newQuestion)
+    allowedTypes: new[] { "octa", "employee" },
+    pages: new[] { "Admission Test", "Registration" }
+)]
+        public async Task<IActionResult> Add([FromForm] QuestionAddDTO newQuestion)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

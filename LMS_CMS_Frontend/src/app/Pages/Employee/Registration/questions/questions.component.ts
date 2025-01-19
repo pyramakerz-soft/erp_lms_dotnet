@@ -38,6 +38,7 @@ export class QuestionsComponent {
     ''
   );
 
+  File:any;
   DomainName: string = '';
   UserID: number = 0;
   path: string = '';
@@ -165,6 +166,7 @@ export class QuestionsComponent {
   CreateOREdit() {
     this.question.options=this.options
     this.question.testID=this.testId
+    console.log(this.question)
     if(this.isFormValid()){
      if(this.mode=="Create"){
       this.QuestionServ.Add(this.question,this.DomainName).subscribe(()=>{
@@ -244,5 +246,30 @@ export class QuestionsComponent {
       this.validationErrors[field] = `*${this.capitalizeField(field)} is required`;
     }
   }
+
+  onFileUpload(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const fileType = file.type;
+        const maxSize = 25 * 1024 * 1024; // 25 MB
+
+        if (file.size > maxSize) {
+            alert('File size exceeds the maximum limit of 25 MB.');
+            return;
+        }
+
+        if (fileType.startsWith('image/')) {
+            this.question.video = null;
+            console.log('Image file uploaded:', file);
+        } else if (fileType.startsWith('video/')) {
+            this.question.video = file; 
+            this.question.image = null; 
+            console.log('Video file uploaded:', file);
+        } else {
+            alert('Invalid file type. Please upload an image or video.');
+        }
+    }
+}
 
 }

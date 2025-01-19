@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LMS_CMS_PL.Controllers.Domains.Registeration
 {
@@ -52,6 +53,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             List<questionGetDTO> questionDTO = mapper.Map<List<questionGetDTO>>(questions);
 
+            foreach (var question in questionDTO) 
+            { 
+            
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+
+            if (!string.IsNullOrEmpty(question.Image))
+            {
+                    question.Image = $"{serverUrl}{question.Image.Replace("\\", "/")}";
+            }
+            if (!string.IsNullOrEmpty(question.Video))
+            {
+                question.Video = $"{serverUrl}{question.Video.Replace("\\", "/")}";
+            }
+            }
+
             return Ok(questionDTO);
         }
         //////////////////////////////////////////////////////////////////////////////
@@ -79,6 +95,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             }
 
             List<questionGetDTO> questionDTO = mapper.Map<List<questionGetDTO>>(questions);
+            foreach (var question in questionDTO)
+            {
+
+                string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+
+                if (!string.IsNullOrEmpty(question.Image))
+                {
+                    question.Image = $"{serverUrl}{question.Image.Replace("\\", "/")}";
+                }
+                if (!string.IsNullOrEmpty(question.Video))
+                {
+                    question.Video = $"{serverUrl}{question.Video.Replace("\\", "/")}";
+                }
+            }
 
             return Ok(questionDTO);
         }
@@ -108,7 +138,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             // Map questions to DTO
             List<questionGetDTO> questionDTO = mapper.Map<List<questionGetDTO>>(questions);
+            foreach (var question in questionDTO)
+            {
 
+                string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+
+                if (!string.IsNullOrEmpty(question.Image))
+                {
+                    question.Image = $"{serverUrl}{question.Image.Replace("\\", "/")}";
+                }
+                if (!string.IsNullOrEmpty(question.Video))
+                {
+                    question.Video = $"{serverUrl}{question.Video.Replace("\\", "/")}";
+                }
+            }
             // Group by QuestionType
             var groupedByQuestionType = questionDTO
                 .GroupBy(q => new { q.QuestionTypeID, q.QuestionTypeName })
@@ -159,7 +202,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 return BadRequest("this Test not exist");
             }
 
-            if (newQuestion.QuestionTypeID == 2)
+            if (newQuestion.QuestionTypeID != 3)
             {
                 if (newQuestion.options.Count == 0)
                 {
@@ -187,52 +230,91 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             Unit_Of_Work.question_Repository.Add(question);
             Unit_Of_Work.SaveChanges();
 
-            if (newQuestion.QuestionTypeID == 2)
+            if (newQuestion.QuestionTypeID != 3)
             {
-            long correctA = 0;
-            foreach (var item in newQuestion.options)
-            {
-                MCQQuestionOption mCQQuestionOption=new MCQQuestionOption();
-                mCQQuestionOption.Name = item;
-                mCQQuestionOption.Question_ID=question.ID;
-                mCQQuestionOption.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                if (userTypeClaim == "octa")
+                long correctA = 0;
+                foreach (var item in newQuestion.options)
                 {
-                    mCQQuestionOption.InsertedByOctaId = userId;
+                    MCQQuestionOption mCQQuestionOption=new MCQQuestionOption();
+                    mCQQuestionOption.Name = item;
+                    mCQQuestionOption.Question_ID=question.ID;
+                    mCQQuestionOption.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                    if (userTypeClaim == "octa")
+                    {
+                        mCQQuestionOption.InsertedByOctaId = userId;
+                    }
+                    else if (userTypeClaim == "employee")
+                    {
+                        mCQQuestionOption.InsertedByUserId = userId;
+                    }
+                   await Unit_Of_Work.mCQQuestionOption_Repository.AddAsync(mCQQuestionOption);
+                   await Unit_Of_Work.SaveChangesAsync();
+                    if(newQuestion.CorrectAnswerName == item)
+                    {
+                       correctA=mCQQuestionOption.ID;
+                    }
+
                 }
-                else if (userTypeClaim == "employee")
+                if(correctA==0) 
                 {
-                    mCQQuestionOption.InsertedByUserId = userId;
-                }
-               await Unit_Of_Work.mCQQuestionOption_Repository.AddAsync(mCQQuestionOption);
-               await Unit_Of_Work.SaveChangesAsync();
-                if(newQuestion.CorrectAnswerName == item)
-                {
-                   correctA=mCQQuestionOption.ID;
+                    return BadRequest("correct answer cannot be null");
                 }
 
-            }
-            if(correctA==0) 
-            {
-                return BadRequest("correct answer cannot be null");
+                question.CorrectAnswerID=correctA;
+                Unit_Of_Work.question_Repository.Update(question);
+                await Unit_Of_Work.SaveChangesAsync();
             }
 
-            question.CorrectAnswerID=correctA;
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Questions");
+
+            if (newQuestion.ImageFile != null || newQuestion.VideoFile != null)
+            {
+                var questionFolder = Path.Combine(baseFolder, question.ID.ToString());
+
+                if (!Directory.Exists(questionFolder))
+                {
+                    Directory.CreateDirectory(questionFolder);
+                }
+
+                if (newQuestion.ImageFile != null)
+                {
+                    var imagePath = Path.Combine(questionFolder, newQuestion.ImageFile.FileName);
+
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        newQuestion.ImageFile.CopyTo(stream);
+                    }
+                    question.Image = Path.Combine("Uploads", "Questions", question.ID.ToString(), newQuestion.ImageFile.FileName); 
+
+                }
+
+                if (newQuestion.VideoFile != null)
+                {
+                    var videoPath = Path.Combine(questionFolder, newQuestion.VideoFile.FileName);
+
+                    using (var stream = new FileStream(videoPath, FileMode.Create))
+                    {
+                        await newQuestion.VideoFile.CopyToAsync(stream);
+                    }
+                    question.Video = Path.Combine("Uploads", "Questions", question.ID.ToString(), newQuestion.VideoFile.FileName);
+                }
+            }
+
             Unit_Of_Work.question_Repository.Update(question);
             await Unit_Of_Work.SaveChangesAsync();
-            }
+
             return Ok(newQuestion);
         }
 
         //////////////////////////////////////////////////////////////////////////////
-        
+
         [HttpPut]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
          allowEdit: 1,
          pages: new[] { "Admission Test", "Registration" }
        )]
-        public async Task<IActionResult> Edit(QuestionEditDTO newQuestion)
+        public async Task<IActionResult> Edit([FromForm] QuestionEditDTO newQuestion)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -256,7 +338,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return BadRequest("test cannot be null");
             }
-            Question question =Unit_Of_Work.question_Repository.First_Or_Default(q=>q.ID==newQuestion.ID&&q.IsDeleted!=true);
+            Question question = Unit_Of_Work.question_Repository.First_Or_Default(q => q.ID == newQuestion.ID && q.IsDeleted != true);
             if (question == null)
             {
                 return NotFound("there is no question with this id");
@@ -273,7 +355,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 return BadRequest("this Test not exist");
             }
 
-            if (newQuestion.QuestionTypeID == 2)
+            if (newQuestion.QuestionTypeID != 3)
             {
                 if (newQuestion.options.Count == 0)
                 {
@@ -328,54 +410,99 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             Unit_Of_Work.question_Repository.Update(question);
             await Unit_Of_Work.SaveChangesAsync();
 
-            long corectId = 0;
-            List<MCQQuestionOption> Oldoptions = await Unit_Of_Work.mCQQuestionOption_Repository.Select_All_With_IncludesById<MCQQuestionOption>(
-                    b => b.IsDeleted != true && b.Question_ID == newQuestion.ID);
+            if (newQuestion.QuestionTypeID != 3) { 
 
-            foreach (var i in Oldoptions)
-            {
-                await Unit_Of_Work.mCQQuestionOption_Repository.DeleteAsync(i.ID);
-                await Unit_Of_Work.SaveChangesAsync();
-            }
-            foreach (var item in newQuestion.options)
-            {
-                if (item != "")
+                 long corectId = 0;
+                List<MCQQuestionOption> Oldoptions = await Unit_Of_Work.mCQQuestionOption_Repository.Select_All_With_IncludesById<MCQQuestionOption>(
+                        b => b.IsDeleted != true && b.Question_ID == newQuestion.ID);
+
+                foreach (var i in Oldoptions)
                 {
-                    MCQQuestionOption option = new MCQQuestionOption();
-                    option.Question_ID = newQuestion.ID;
-                    option.Name = item;
-                    option.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                    if (userTypeClaim == "octa")
-                    {
-                        option.InsertedByOctaId = userId;
-                    }
-                    else if (userTypeClaim == "employee")
-                    {
-                        option.InsertedByUserId = userId;
-                    }
-                    await Unit_Of_Work.mCQQuestionOption_Repository.AddAsync(option);
+                    await Unit_Of_Work.mCQQuestionOption_Repository.DeleteAsync(i.ID);
                     await Unit_Of_Work.SaveChangesAsync();
-                    if (item == newQuestion.correctAnswerName)
+                }
+                foreach (var item in newQuestion.options)
+                {
+                    if (item != "")
                     {
-                        corectId = option.ID;
+                        MCQQuestionOption option = new MCQQuestionOption();
+                        option.Question_ID = newQuestion.ID;
+                        option.Name = item;
+                        option.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                        if (userTypeClaim == "octa")
+                        {
+                            option.InsertedByOctaId = userId;
+                        }
+                        else if (userTypeClaim == "employee")
+                        {
+                            option.InsertedByUserId = userId;
+                        }
+                        await Unit_Of_Work.mCQQuestionOption_Repository.AddAsync(option);
+                        await Unit_Of_Work.SaveChangesAsync();
+                        if (item == newQuestion.correctAnswerName)
+                        {
+                            corectId = option.ID;
+                        }
                     }
+                }
+
+                if (question.QuestionTypeID == 3)
+                {
+                    question.CorrectAnswerID = null;
+                    question.mCQQuestionOption = null;
+                }
+                else
+                {
+                    question.CorrectAnswerID = corectId;
+
+                }
+            }
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Questions");
+
+            if (newQuestion.ImageFile != null || newQuestion.VideoFile != null)
+            {
+                var questionFolder = Path.Combine(baseFolder, question.ID.ToString());
+                if (Directory.Exists(questionFolder))
+                {
+                    var files = Directory.GetFiles(questionFolder);
+
+                    foreach (var file in files)
+                    {
+                        System.IO.File.Delete(file);
+                    }
+                }
+
+                if (!Directory.Exists(questionFolder))
+                {
+                    Directory.CreateDirectory(questionFolder);
+                }
+
+                if (newQuestion.ImageFile != null)
+                {
+                    var imagePath = Path.Combine(questionFolder, newQuestion.ImageFile.FileName);
+
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        newQuestion.ImageFile.CopyTo(stream);
+                    }
+                    question.Image = Path.Combine("Uploads", "Questions", question.ID.ToString(), newQuestion.ImageFile.FileName);
+                }
+
+                // Save VideoFile if provided
+                if (newQuestion.VideoFile != null)
+                {
+                    var videoPath = Path.Combine(questionFolder, newQuestion.VideoFile.FileName);
+
+                    using (var stream = new FileStream(videoPath, FileMode.Create))
+                    {
+                        newQuestion.VideoFile.CopyTo(stream);
+                    }
+                    question.Video = Path.Combine("Uploads", "Questions", question.ID.ToString(), newQuestion.VideoFile.FileName);
                 }
             }
 
-            if(question.QuestionTypeID == 3)
-            {
-                question.CorrectAnswerID = null;
-                question.mCQQuestionOption = null;
-                Unit_Of_Work.question_Repository.Update(question);
-                await Unit_Of_Work.SaveChangesAsync();
-            }
-            else
-            {
-            question.CorrectAnswerID = corectId;
             Unit_Of_Work.question_Repository.Update(question);
             await Unit_Of_Work.SaveChangesAsync();
-
-            }
             return Ok();
         }
         //////////////////////////////////////////////////////////////////////////////

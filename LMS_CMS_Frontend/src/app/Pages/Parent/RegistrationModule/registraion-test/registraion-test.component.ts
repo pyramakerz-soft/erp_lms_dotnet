@@ -116,6 +116,7 @@ export class RegistraionTestComponent {
           this.mode= 'test';
           this.questionServ.GetByTestIDGroupBy(this.TestId,this.DomainName).subscribe((d: any) => {
            this.questions=d;
+           console.log(d)
            this.questionServ.GetByTestID(this.TestId,this.DomainName).subscribe((q: any) => {
             this.QuestionsByTest=q;
             if (this.QuestionsByTest && Array.isArray(this.QuestionsByTest)) {

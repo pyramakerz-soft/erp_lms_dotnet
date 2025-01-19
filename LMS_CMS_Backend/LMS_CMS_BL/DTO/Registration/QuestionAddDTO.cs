@@ -18,6 +18,6 @@ namespace LMS_CMS_BL.DTO.Registration
         public string? CorrectAnswerName { get; set; }
         public long QuestionTypeID { get; set; }
         public long TestID { get; set; }
-        public List<string> options { get; set; }
+        public List<string>? options { get; set; }
     }
 }

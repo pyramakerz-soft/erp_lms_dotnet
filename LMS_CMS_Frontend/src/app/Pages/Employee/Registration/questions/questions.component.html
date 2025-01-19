@@ -153,7 +153,20 @@
                         (change)="onFileUpload($event)" />
                 </div>
             </div>
+            <div *ngIf=" mode=='Create' && question.videoFile!=null || mode=='Create'&&question.imageFile!=null">
+                <p class="font-semibold text-sm text-[#6F6F6F] mb-3">{{FileUploaded}}</p>
+            </div>
 
+            <div *ngIf="question.video && mode=='Edit'" class="bg-[#F6F6F6] rounded-md border-dashed border-2 w-[80%] px-6 py-3 lg:py-5">
+                <p class="font-semibold text-sm text-[#6F6F6F] mb-3">video</p>
+                <video *ngIf="question.video" [src]="question.video" class="object-cover w-2/3" controls>
+                </video>
+            </div>
+            <div  *ngIf="question.image && mode=='Edit'" class="bg-[#F6F6F6] rounded-md border-dashed border-2 w-[30%] px-6 py-3 lg:py-5">
+                <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Image</p>
+                <img *ngIf="question.image" [src]="question.image" class="object-cover w-1/2">
+            </div>
+           
             <h6 class="font-medium text-base leading-6 mb-2 mt-3">Question Types</h6>
             <div class="flex flex-col mb-4">
                 <select 

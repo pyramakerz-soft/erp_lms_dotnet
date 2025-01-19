@@ -55,17 +55,25 @@
       <div class="primaryBg p-4 rounded-xl text-white mb-4">
         {{ row.questionTypeName }}
       </div>
-      <div *ngIf="row.questionTypeID !== 3" class="">
+      <div *ngIf="row.questionTypeID !== 3">
         <div *ngFor="let q of row.questions; let questionIndex = index">
           <div class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border">
+            <div *ngIf="q.video" class="bg-[#F6F6F6] rounded-md border-dashed border-2 w-[60%] px-6 py-3 lg:py-5 mb-2">
+              <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Video</p>
+              <video *ngIf="q.video" [src]="q.video" class="object-cover w-full" controls>
+              </video>
+            </div>
+            <div *ngIf="q.image " class="bg-[#F6F6F6] rounded-md border-dashed border-2 w-[60%] px-6 py-3 lg:py-5 mb-2">
+              <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Image</p>
+              <img *ngIf="q.image" [src]="q.image" class="object-cover w-2/3">
+            </div>
             <div>{{ q.description }}?</div>
             <div *ngFor="let option of q.options; let optionIndex = index" class="mt-5">
               <div (click)="selectOption(q.id,option.id,optionIndex)">
-               <i [ngClass]="{
+                <i [ngClass]="{
                   'fa-circle-dot': isCircleDot(Answers, q.id, option.id),
                   'fa-circle': !isCircleDot(Answers, q.id, option.id)
-                }"
-               class="fa-regular"></i>
+                }" class="fa-regular"></i>
                 {{ option.name }}
               </div>
             </div>

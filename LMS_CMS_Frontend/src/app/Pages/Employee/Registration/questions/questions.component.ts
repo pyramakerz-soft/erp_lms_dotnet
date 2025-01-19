@@ -49,6 +49,7 @@ export class QuestionsComponent {
   AllowDeleteForOthers: boolean = false;
 
   mode: string = 'Create'
+  FileUploaded:string =''
 
   isModalVisible: boolean = false;
   Data: Question[] = []
@@ -60,7 +61,7 @@ export class QuestionsComponent {
   options:string[]=[]
   NewOption:string=""
 
-  validationErrors: { [key in keyof Question]?: string } = {};
+  validationErrors: { [key in keyof QuestionAddEdit]?: string } = {};
 
 
   constructor(
@@ -121,6 +122,7 @@ export class QuestionsComponent {
 
   Create() {
     this.mode = 'Create';
+    this.FileUploaded=''
     this.question = new QuestionAddEdit();
     this.options=[]
     this.openModal();
@@ -149,6 +151,7 @@ export class QuestionsComponent {
   Edit(row: Question) {
     this.mode = 'Edit';
     this.question = row as unknown as QuestionAddEdit;
+    console.log(this.question)
     this.options = row.options.map(option => option.name); 
     this.openModal();
   }
@@ -237,7 +240,6 @@ export class QuestionsComponent {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
   onInputValueChange(event: { field: keyof QuestionAddEdit, value: any }) {
-    console.log(event)
     const { field, value } = event;
     (this.question as any)[field] = value;
     if (value) {
@@ -252,24 +254,24 @@ export class QuestionsComponent {
     if (input.files && input.files[0]) {
         const file = input.files[0];
         const fileType = file.type;
-        const maxSize = 25 * 1024 * 1024; // 25 MB
-
-        if (file.size > maxSize) {
-            alert('File size exceeds the maximum limit of 25 MB.');
-            return;
-        }
-
+        this.FileUploaded=file.name
+       
         if (fileType.startsWith('image/')) {
-            this.question.video = null;
-            console.log('Image file uploaded:', file);
+            this.question.videoFile = null;
+            this.question.image=file.name;
+            this.question.imageFile = file; 
         } else if (fileType.startsWith('video/')) {
-            this.question.video = file; 
-            this.question.image = null; 
-            console.log('Video file uploaded:', file);
+            this.question.videoFile = file; 
+            this.question.video=file.name;
+            this.question.imageFile = null; 
         } else {
             alert('Invalid file type. Please upload an image or video.');
         }
     }
 }
 
+
 }
+
+
+

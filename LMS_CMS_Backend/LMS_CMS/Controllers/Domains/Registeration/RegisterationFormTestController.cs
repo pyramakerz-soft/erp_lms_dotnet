@@ -139,7 +139,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     registerationFormTest.UpdatedByOctaId = null;
                 }
             }
-
+            registerationFormTest.StateID = 4;
             Unit_Of_Work.registerationFormTest_Repository.Update(registerationFormTest);
             Unit_Of_Work.SaveChanges();
             return Ok(newTest);

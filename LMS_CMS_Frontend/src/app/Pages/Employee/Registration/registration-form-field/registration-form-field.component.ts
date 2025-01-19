@@ -160,7 +160,7 @@ export class RegistrationFormFieldComponent {
   }
 
   view(id: number) {
-    this.router.navigateByUrl(`Employee/Category Fields/${id}`)
+    this.router.navigateByUrl(`Employee/Registration Form Field/${id}`)
   }
 
    isFormValid(): boolean {

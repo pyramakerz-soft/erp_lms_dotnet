@@ -103,7 +103,7 @@ export const routes: Routes = [
             { path: "School", component: SchoolComponentEmployee, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard]},  
             { path: "Registration Form", component: RegistrationFormComponent, title: "Registration Form"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  //
             { path: "Registration Form Field", component: RegistrationFormFieldComponent, title: "RegistrationFormField", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
-            { path: "Category Fields/:id", component: FieldsComponent, title: "CategoryFields", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},
+            { path: "Registration Form Field/:id", component: FieldsComponent, title: "CategoryFields", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},
             { path: "Admission Test", component: AdmissionTestComponent, title: "Admission Test", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},//
             { path: "Question/:id", component: QuestionsComponent, title: "question", canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},//
             { path: "Registration Confirmation", component: RegistrationConfirmationComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  //

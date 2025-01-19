@@ -286,14 +286,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 if (categoryField.IsMandatory)
                 {
                     bool isThereAFile = false;
-                    for (int j = 0; j < filesFieldCat.Count; j++)
+                    if (filesFieldCat != null)
                     {
-                        if (filesFieldCat[j].SelectedFile.Length > 0)
+                        for (int j = 0; j < filesFieldCat.Count; j++)
                         {
-                            if (filesFieldCat[j].CategoryFieldID == registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID)
+                            if (filesFieldCat[j].SelectedFile.Length > 0)
                             {
-                                isThereAFile = true;
-                                break;
+                                if (filesFieldCat[j].CategoryFieldID == registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID)
+                                {
+                                    isThereAFile = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -396,7 +399,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                         Unit_Of_Work.registerationFormSubmittion_Repository.Add(registerationFormSubmittion);
                     }
                 }
-
                 for (int i = 0; i < registerationFormParentAddDTO.RegisterationFormSubmittions.Count; i++)
                 {
                     RegisterationFormSubmittion registerationFormSubmittion = new RegisterationFormSubmittion
@@ -417,8 +419,31 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     }
                     Unit_Of_Work.registerationFormSubmittion_Repository.Add(registerationFormSubmittion);
                 }
-
             }
+            else
+            {
+                for (int i = 0; i < registerationFormParentAddDTO.RegisterationFormSubmittions.Count; i++)
+                {
+                    RegisterationFormSubmittion registerationFormSubmittion = new RegisterationFormSubmittion
+                    {
+                        RegisterationFormParentID = newRegisterationFormParentID,
+                        CategoryFieldID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID,
+                        SelectedFieldOptionID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID : (long?)null,
+                        TextAnswer = registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer : null,
+                        InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+                    };
+                    if (userTypeClaim == "octa")
+                    {
+                        registerationFormSubmittion.InsertedByOctaId = userId;
+                    }
+                    else if (userTypeClaim == "employee")
+                    {
+                        registerationFormSubmittion.InsertedByOctaId = userId;
+                    }
+                    Unit_Of_Work.registerationFormSubmittion_Repository.Add(registerationFormSubmittion);
+                }
+            }
+
             Unit_Of_Work.SaveChanges();
 
             return Ok(registerationFormParentAddDTO);

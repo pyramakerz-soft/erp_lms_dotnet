@@ -55,7 +55,7 @@
                             [class.error-border]="isFieldInvalid(field)" />
     
                             @if(field.id != 7 && field.id != 8 && field.id != 9){
-                                <select *ngSwitchCase="4" id="{{cat.enName}}_{{field.enName}}"
+                                <select *ngSwitchCase="7" id="{{cat.enName}}_{{field.enName}}"
                                         class="rounded-lg border border-solid border-gray-300 px-4 py-3" 
                                         (change)="FillData($event, field.id, field.fieldTypeID)"
                                         [class.error-border]="isFieldInvalid(field)" >
@@ -118,14 +118,27 @@
                                 </select>
                             }
     
-                            <div *ngSwitchCase="5" class="border rounded-lg p-3">
+                            <div *ngSwitchCase="4" class="border rounded-lg p-3">
                                 <div *ngFor="let option of field.options" class="flex items-center">
                                     <input type="checkbox" 
+                                    id="{{cat.enName}}_{{field.enName}}_{{option.name}}" 
+                                    class="square-check"
+                                    name="{{cat.enName}}_{{field.enName}}"
+                                    [value]="option.id"
+                                    (change)="multiCheckBoxesHandling($event, field.id, field.fieldTypeID, option.id)"
+                                    [class.error-border]="isFieldInvalid(field)" />
+                                    <label for="{{cat.enName}}_{{field.enName}}_{{option.name}}" class="ml-2">{{ option.name }}</label>
+                                </div>
+                            </div>
+    
+                            <div *ngSwitchCase="5" class="border rounded-lg p-3">
+                                <div *ngFor="let option of field.options" class="flex items-center">
+                                    <input type="radio" 
                                     id="{{cat.enName}}_{{field.enName}}_{{option.name}}" 
                                     class="square-radio"
                                     name="{{cat.enName}}_{{field.enName}}"
                                     [value]="option.id"
-                                    (change)="multiOptionHandling($event, field.id, field.fieldTypeID, option.id)"
+                                    (change)="FillData($event, field.id, field.fieldTypeID)"
                                     [class.error-border]="isFieldInvalid(field)" />
                                     <label for="{{cat.enName}}_{{field.enName}}_{{option.name}}" class="ml-2">{{ option.name }}</label>
                                 </div>

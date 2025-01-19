@@ -185,17 +185,19 @@ export class RegistrationFormComponent {
     }
   }
 
-  FillData(event:Event, fieldId:number , fieldTypeId:number){
+  FillData(event:Event, fieldId:number , fieldTypeId:number){ 
     const selectedValue = (event.target as HTMLSelectElement).value;
 
-    let answer = ""
-    let option = null
+    let answer: string | null = null;
+    let option: number | null = null;
 
     if(fieldTypeId == 1 || fieldTypeId == 2 || fieldTypeId == 3 || 
       (fieldTypeId == 7 && (fieldId == 3 || fieldId == 5 || fieldId == 6 || fieldId == 7 || fieldId == 8 || fieldId == 9 || fieldId == 14))){
       answer = selectedValue
+      option = null;
     } else if(fieldTypeId == 5 || fieldTypeId == 7){
       option = parseInt(selectedValue) 
+      answer = null;
     }
     
     const existingElement = this.registrationForm.registerationFormSubmittions.find(
@@ -203,14 +205,20 @@ export class RegistrationFormComponent {
     );
   
     if (existingElement) {
-      existingElement.textAnswer = selectedValue;
+      if (answer !== null) {
+        existingElement.textAnswer = answer;
+        existingElement.selectedFieldOptionID = null;  
+      } else if (option !== null) {
+        existingElement.selectedFieldOptionID = option;
+        existingElement.textAnswer = null;  
+      }
     } else {
       this.registrationForm.registerationFormSubmittions.push({
         categoryFieldID: fieldId,
         selectedFieldOptionID: option,
         textAnswer: answer,
       });
-    }
+    } 
   }
 
   MultiOptionDataPush(fieldId:number , fieldTypeId:number, optionAnswer:number){
@@ -361,7 +369,6 @@ export class RegistrationFormComponent {
     }
 
 
-    console.log(this.registrationForm)
     if (valid) {
       this.IsEmailValid()
       if(this.isMotherEmailValid && this.isGuardianEmailValid && this.isGuardianEmailSameAsParent){

@@ -5,7 +5,7 @@
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     /// <inheritdoc />
-    public partial class RemoveUniqueFromRegistrationFormParentMigration : Migration
+    public partial class AddConfirmCodeInParentAndMakeEmailNotUniqueInRegistrationFormMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,11 +21,21 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(450)");
+
+            migrationBuilder.AddColumn<string>(
+                name: "ConfirmationCode",
+                table: "Parent",
+                type: "nvarchar(max)",
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "ConfirmationCode",
+                table: "Parent");
+
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
                 table: "RegisterationFormParent",

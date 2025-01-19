@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20250115091602_EmailCodeConfirmm")]
-    partial class EmailCodeConfirmm
+    [Migration("20250119071604_AddConfirmCodeInParentAndMakeEmailNotUniqueInRegistrationFormMigration")]
+    partial class AddConfirmCodeInParentAndMakeEmailNotUniqueInRegistrationFormMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2096,7 +2096,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GradeID")
                         .IsRequired()
@@ -2143,9 +2143,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasKey("ID");
 
                     b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.HasIndex("InsertedByUserId");
 

@@ -7,7 +7,6 @@
 <div class="flex justify-between">
 
   <div class="w-[29%]">
-    <div>
       <label for="Schools" class="block mb-2 text-sm font-medium text-gray-900 w-full">Schools</label>
       <select id="Schools" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  p-2.5">
         <option value="" disabled selected hidden>Select a School</option>
@@ -15,11 +14,9 @@
           {{ s.name }}
         </option>
       </select>
-    </div>
   </div>
 
   <div class="w-[29%]">
-    <div>
       <label for="Years" class="block mb-2 text-sm font-medium text-gray-900">Years</label>
       <select id="Years"class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  p-2.5">
         <option value="" disabled selected hidden>Select a Year</option>
@@ -27,19 +24,16 @@
           {{ s.name }}
         </option>
       </select>
-    </div>
   </div>
 
   <div class="w-[29%]">
-    <div>
       <label for="Grades" class="block mb-2 text-sm font-medium text-gray-900">Grades</label>
-      <select id="Grades" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block  p-2.5">
+      <select id="Grades" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg   p-2.5">
         <option value="" disabled selected hidden>Select a Grade</option>
         <option *ngFor="let s of Grades" [value]="s.id">
           {{ s.name }}
         </option>
       </select>
-    </div> 
   </div>
 
 </div>

@@ -11,40 +11,63 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import Swal from 'sweetalert2';
+import { SearchComponent } from '../../../../Component/search/search.component';
 
 @Component({
   selector: 'app-role',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SearchComponent],
   templateUrl: './role.component.html',
-  styleUrl: './role.component.css'
+  styleUrl: './role.component.css',
 })
 export class RoleComponent {
-
-  User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+  User_Data_After_Login: TokenData = new TokenData(
+    '',
+    0,
+    0,
+    0,
+    0,
+    '',
+    '',
+    '',
+    '',
+    ''
+  );
 
   TableData: Role[] = [];
 
-  DomainName: string = "";
+  DomainName: string = '';
   UserID: number = 0;
-  path: string = "";
+  path: string = '';
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  constructor(public roleserv: RoleService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router) { }
+  keysArray: string[] = ['id', 'name'];
+  key: string = 'id';
+  value: any = '';
+
+  constructor(
+    public roleserv: RoleService,
+    public activeRoute: ActivatedRoute,
+    public account: AccountService,
+    public ApiServ: ApiService,
+    private menuService: MenuService,
+    public EditDeleteServ: DeleteEditPermissionService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
 
-    if (this.User_Data_After_Login.type === "employee") {
+    if (this.User_Data_After_Login.type === 'employee') {
       this.DomainName = this.ApiServ.GetHeader();
 
-      this.activeRoute.url.subscribe(url => {
-        this.path = url[0].path
+      this.activeRoute.url.subscribe((url) => {
+        this.path = url[0].path;
       });
     }
 
@@ -54,14 +77,16 @@ export class RoleComponent {
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
-        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
-        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others;
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
       }
     });
   }
   async getAllRoles() {
     try {
-      const data = await firstValueFrom(this.roleserv.Get_Roles(this.DomainName));
+      const data = await firstValueFrom(
+        this.roleserv.Get_Roles(this.DomainName)
+      );
       this.TableData = data;
     } catch (error) {
       this.TableData = [];
@@ -69,13 +94,52 @@ export class RoleComponent {
     }
   }
 
+  async onSearchEvent(event: { key: string; value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Role[] = await firstValueFrom(
+        this.roleserv.Get_Roles(this.DomainName)
+      );
+      this.TableData = data || [];
+
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
+
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+      console.log('Error fetching data:', error);
+    }
+  }
+
   IsAllowDelete(InsertedByID: number) {
-    const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
+    const IsAllow = this.EditDeleteServ.IsAllowDelete(
+      InsertedByID,
+      this.UserID,
+      this.AllowDeleteForOthers
+    );
     return IsAllow;
   }
 
   IsAllowEdit(InsertedByID: number) {
-    const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(
+      InsertedByID,
+      this.UserID,
+      this.AllowEditForOthers
+    );
     return IsAllow;
   }
 
@@ -91,7 +155,7 @@ export class RoleComponent {
       confirmButtonColor: '#FF7519',
       cancelButtonColor: '#17253E',
       confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel'
+      cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
         this.roleserv.Delete(id, this.DomainName).subscribe({
@@ -99,7 +163,8 @@ export class RoleComponent {
             this.getAllRoles();
           },
           error: (error) => {
-            const errorMessage = error?.error || 'An unexpected error occurred.';
+            const errorMessage =
+              error?.error || 'An unexpected error occurred.';
           },
         });
       }
@@ -107,7 +172,6 @@ export class RoleComponent {
   }
 
   Create() {
-    this.router.navigateByUrl("Employee/Role Create")
+    this.router.navigateByUrl('Employee/Role Create');
   }
-  
 }

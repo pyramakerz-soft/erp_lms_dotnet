@@ -11,11 +11,13 @@ import { TokenData } from '../../../../Models/token-data';
 import { EmployeeTypeService } from '../../../../Services/Employee/employee-type.service';
 import { EmployeeService } from '../../../../Services/Employee/employee.service';
 import Swal from 'sweetalert2';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-employee',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule ,SearchComponent],
   templateUrl: './employee.component.html',
   styleUrl: './employee.component.css'
 })
@@ -33,6 +35,10 @@ export class EmployeeComponent {
   AllowDeleteForOthers: boolean = false;
 
   TableData: EmployeeGet[] = []
+
+  keysArray: string[] = ['id', 'user_Name','arabic_Name' ,'en_name' ,'mobile','phone','email','licenseNumber','expireDate','address','role_Name','employeeTypeName','busCompanyName'];
+  key: string= "id";
+  value: any = "";
 
   constructor(public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router, public EmpServ: EmployeeService) { }
 
@@ -129,4 +135,30 @@ export class EmployeeComponent {
     return IsAllow;
   }
   
+   async onSearchEvent(event: { key: string, value: any }) {
+      this.key = event.key;
+      this.value = event.value;
+      try {
+        const data: EmployeeGet[] = await firstValueFrom( this.EmpServ.Get_Employees(this.DomainName));  
+        this.TableData = data || [];
+    
+        if (this.value !== "") {
+          const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+    
+          this.TableData = this.TableData.filter(t => {
+            const fieldValue = t[this.key as keyof typeof t];
+            if (typeof fieldValue === 'string') {
+              return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+            }
+            if (typeof fieldValue === 'number') {
+              return fieldValue === numericValue;
+            }
+            return fieldValue == this.value;
+          });
+        }
+      } catch (error) {
+        this.TableData = [];
+        console.log('Error fetching data:', error);
+      }
+    }
 }

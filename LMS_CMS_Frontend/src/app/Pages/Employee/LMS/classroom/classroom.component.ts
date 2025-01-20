@@ -24,6 +24,7 @@ import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-
 import { FloorService } from '../../../../Services/Employee/LMS/floor.service';
 import { CopyClassroom } from '../../../../Models/LMS/copy-classroom';
 import { Grade } from '../../../../Models/LMS/grade';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-classroom',
@@ -33,7 +34,7 @@ import { Grade } from '../../../../Models/LMS/grade';
   styleUrl: './classroom.component.css'
 })
 export class ClassroomComponent {
-  keysArray: string[] = ['id', 'name','school'];
+  keysArray: string[] = ['id', 'name','academicYearName','floorName','gradeName','number'];
   key: string= "id";
   value: any = "";
 
@@ -143,28 +144,28 @@ export class ClassroomComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
+    try {
+      const data: Classroom[] = await firstValueFrom(this.classroomService.Get(this.DomainName));  
+      this.classroomData = data || [];
   
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.classroomData = this.classroomData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.classroomData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   IsAllowDelete(InsertedByID: number) {

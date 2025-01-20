@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { School } from '../../../../Models/school';
 import { SchoolService } from '../../../../Services/Employee/school.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-building',
@@ -22,7 +23,7 @@ import { SchoolService } from '../../../../Services/Employee/school.service';
   styleUrl: './building.component.css'
 })
 export class BuildingComponent {
-  keysArray: string[] = ['id', 'name','school'];
+  keysArray: string[] = ['id', 'name','schoolName'];
   key: string= "id";
   value: any = "";
 
@@ -119,28 +120,28 @@ export class BuildingComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
+    try {
+      const data: Building[] = await firstValueFrom(this.buildingService.Get(this.DomainName));  
+      this.buildingData = data || [];
   
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.buildingData = this.buildingData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.buildingData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   capitalizeField(field: keyof Building): string {

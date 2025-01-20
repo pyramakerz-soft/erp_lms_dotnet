@@ -15,6 +15,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import Swal from 'sweetalert2';
 import { School } from '../../../../Models/school';
 import { SchoolService } from '../../../../Services/Employee/school.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-semester',
@@ -24,7 +25,7 @@ import { SchoolService } from '../../../../Services/Employee/school.service';
   styleUrl: './semester.component.css'
 })
 export class SemesterComponent {
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'name','dateFrom','dateTo','academicYearName'];
   key: string= "id";
   value: any = "";
 
@@ -122,28 +123,28 @@ export class SemesterComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
+    try {
+      const data: Semester[] = await firstValueFrom(this.semesterService.GetByAcademicYearId(this.academicYearId, this.DomainName));  
+      this.semesterData = data || [];
   
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.semesterData = this.semesterData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.semesterData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   moveToAcademicYear(){

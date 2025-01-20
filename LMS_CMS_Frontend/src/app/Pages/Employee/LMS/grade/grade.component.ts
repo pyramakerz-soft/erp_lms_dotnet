@@ -13,6 +13,7 @@ import { ApiService } from '../../../../Services/api.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import Swal from 'sweetalert2';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-grade',
@@ -22,7 +23,7 @@ import Swal from 'sweetalert2';
   styleUrl: './grade.component.css'
 })
 export class GradeComponent {
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'name','dateFrom','dateTo'];
   key: string= "id";
   value: any = "";
 
@@ -120,28 +121,28 @@ export class GradeComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
+    try {
+      const data: Grade[] = await firstValueFrom(this.gradeService.GetBySectionId(this.sectionId, this.DomainName));  
+      this.gradeData = data || [];
   
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.gradeData = this.gradeData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.gradeData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   moveToSection(){

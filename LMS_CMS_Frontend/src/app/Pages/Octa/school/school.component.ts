@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { SchoolType } from '../../../Models/Octa/school-type';
 import { SchoolTypeService } from '../../../Services/Octa/school-type.service';
 import { SchoolService } from '../../../Services/Employee/school.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-school',
@@ -20,7 +21,7 @@ import { SchoolService } from '../../../Services/Employee/school.service';
 export class SchoolComponent {
   key: string= "id";
   value: any = "";
-  keysArray: string[] = ['id', 'address','schoolName', 'schoolType'];
+  keysArray: string[] = ['id', 'address','name', 'schoolTypeName'];
   DomainData: Domain[] = []
   schoolType: SchoolType[] = []
   DomainName: string = "";
@@ -99,28 +100,28 @@ export class SchoolComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
+    try {
+      const data: School[] = await firstValueFrom(this.schoolService.Get(this.DomainName));  
+      this.schoolData = data || [];
   
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.schoolData = this.schoolData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.schoolData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   deleteSchool(busId: number) {

@@ -5,6 +5,7 @@ import { SearchComponent } from '../../../Component/search/search.component';
 import Swal from 'sweetalert2';
 import { Account } from '../../../Models/Octa/account';
 import { OctaService } from '../../../Services/Octa/octa.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-account',
@@ -14,7 +15,7 @@ import { OctaService } from '../../../Services/Octa/octa.service';
   styleUrl: './account.component.css'
 })
 export class AccountComponent {
-  keysArray: string[] = ['id', 'name','date'];
+  keysArray: string[] = ['id', 'user_Name','arabic_Name' ,'insertedAt'];
   key: string= "id";
   value: any = "";
 
@@ -68,28 +69,28 @@ export class AccountComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
+    try {
+      const data: Account[] = await firstValueFrom( this.octaService.Get());  
+      this.accountData = data || [];
   
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.accountData = this.accountData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.accountData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   capitalizeField(field: keyof Account): string {

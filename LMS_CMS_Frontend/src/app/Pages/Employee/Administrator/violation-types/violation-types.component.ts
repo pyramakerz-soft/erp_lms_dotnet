@@ -15,11 +15,13 @@ import { ViolationAdd } from '../../../../Models/Administrator/violation-add';
 import { EmployeeTypeViolationService } from '../../../../Services/Employee/employee-type-violation.service';
 import Swal from 'sweetalert2';
 import { ViolationEdit } from '../../../../Models/Administrator/violation-edit';
+import { firstValueFrom } from 'rxjs';
+import { SearchComponent } from '../../../../Component/search/search.component';
 
 @Component({
   selector: 'app-violation-types',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule , SearchComponent],
   templateUrl: './violation-types.component.html',
   styleUrl: './violation-types.component.css',
 })
@@ -58,6 +60,10 @@ export class ViolationTypesComponent {
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
+
+  keysArray: string[] = ['id', 'name'];
+  key: string= "id";
+  value: any = "";
 
   constructor(
     public violationServ: ViolationService,
@@ -239,6 +245,33 @@ export class ViolationTypesComponent {
   IsAllowEdit(InsertedByID: number) {
     const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
     return IsAllow;
+  }
+
+  async onSearchEvent(event: { key: string, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Violation[] = await firstValueFrom( this.violationServ.Get_Violations(this.DomainName));  
+      this.Data = data || [];
+  
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+  
+        this.Data = this.Data.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.Data = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
 }

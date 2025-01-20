@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center">
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Schools</h1>
         <div class="flex justify-between items-center ">
-            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+            <app-search [ngClass]="{'hidden': !IsChoosenDomain}" [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             
             <button (click)="openModal()"
             [disabled]="!IsChoosenDomain"
@@ -44,7 +44,7 @@
                         School Name
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        School Name
+                        School Type
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Actions

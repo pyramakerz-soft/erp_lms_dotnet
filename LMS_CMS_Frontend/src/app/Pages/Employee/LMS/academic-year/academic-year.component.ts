@@ -13,6 +13,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { School } from '../../../../Models/school';
 import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
 import Swal from 'sweetalert2';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-academic-year',
@@ -22,7 +23,7 @@ import Swal from 'sweetalert2';
   styleUrl: './academic-year.component.css'
 })
 export class AcademicYearComponent {
-  keysArray: string[] = ['id', 'name','school'];
+  keysArray: string[] = ['id', 'name','dateFrom','dateTo','schoolName','isActive'];
   key: string= "id";
   value: any = "";
 
@@ -98,28 +99,28 @@ export class AcademicYearComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
+    try {
+      const data: AcademicYear[] = await firstValueFrom(this.acadimicYearServicea.Get(this.DomainName));  
+      this.academicYearData = data || [];
   
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.academicYearData = this.academicYearData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.academicYearData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   IsAllowDelete(InsertedByID: number) {

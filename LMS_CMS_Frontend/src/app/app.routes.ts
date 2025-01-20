@@ -80,39 +80,39 @@ export const routes: Routes = [
             { path: "Bus Districts", component: BusDistrictsComponent, title: "Bus Districts"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Categories", component: BusCategoriesComponent, title: "Bus Category"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Companies", component: BusCompaniesComponent, title: "Bus Company"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
-            { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Print Name Tag", component: BusPrintNameTagComponent, title: "Print Name Tag"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
             { path: "Role", component: RoleComponent, title: "Role"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]}, 
-            { path: "Role Create", component: RoleAddEditComponent, title: "Role Create"  , canActivate:[noNavigateWithoutLoginGuard]},  
-            { path: "Role Edit/:id", component: RoleAddEditComponent, title: "Role Create"  , canActivate:[noNavigateWithoutLoginGuard]},  
+            { path: "Role Create", component: RoleAddEditComponent, title: "Role Create"  , canActivate:[noNavigateWithoutLoginGuard]},  //
+            { path: "Role Edit/:id", component: RoleAddEditComponent, title: "Role Edit"  , canActivate:[noNavigateWithoutLoginGuard]},  //
             { path: "Subject Categories", component: SubjectCategoryComponent, title: "Subject Categories"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
             { path: "Subject", component: SubjectComponent, title: "Subjects"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},  
-            { path: "Subject/:domainName/:SubId", component: SubjectViewComponent, title: "Subject", canActivate:[noNavigateWithoutLoginGuard]}, 
+            { path: "Subject/:domainName/:SubId", component: SubjectViewComponent, title: "Subject", canActivate:[noNavigateWithoutLoginGuard , navigateIfHaveSettingPageGuard]}, 
             { path: "Employee", component: EmployeeComponent, title: "Employee", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
-            { path: "Employee Create", component: EmployeeAddEditComponent, title: "Employee Create", canActivate:[noNavigateWithoutLoginGuard ]}, 
-            { path: "Employee Edit/:id", component: EmployeeAddEditComponent, title: "Employee Edit", canActivate:[noNavigateWithoutLoginGuard ]}, 
-            { path: "Employee Details/:id", component: EmployeeViewComponent, title: "Employee Details", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Employee Create", component: EmployeeAddEditComponent, title: "Employee Create", canActivate:[noNavigateWithoutLoginGuard ]}, //
+            { path: "Employee Edit/:id", component: EmployeeAddEditComponent, title: "Employee Edit", canActivate:[noNavigateWithoutLoginGuard ]}, //
+            { path: "Employee Details/:id", component: EmployeeViewComponent, title: "Employee Details", canActivate:[noNavigateWithoutLoginGuard ]}, //
             { path: "Building", component: BuildingComponent, title: "Building", canActivate:[noNavigateWithoutLoginGuard , navigateIfHaveSettingPageGuard]}, 
             { path: "Floor/:domainName/:Id", component: FloorComponent, title: "Floor", canActivate:[noNavigateWithoutLoginGuard , navigateIfHaveSettingPageGuard]}, 
-            { path: "Classroom", component: ClassroomComponent, title: "Classroom", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "Classroom", component: ClassroomComponent, title: "Classroom", canActivate:[noNavigateWithoutLoginGuard , navigateIfHaveSettingPageGuard]}, 
             { path: "Violation Types", component: ViolationTypesComponent, title: "Violation Types", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
             { path: "Section", component: SectionComponent, title: "Section", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
             { path: "Grade/:domainName/:Id", component: GradeComponent, title: "Grade", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
             { path: "Academic Years", component: AcademicYearComponent, title: "Academic Year", canActivate:[noNavigateWithoutLoginGuard , navigateIfHaveSettingPageGuard]}, 
             { path: "Semester/:domainName/:Id", component: SemesterComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
-            { path: "SemesterView/:domainName/:Id", component: SemesterViewComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, 
+            { path: "SemesterView/:domainName/:Id", component: SemesterViewComponent, title: "Semester", canActivate:[noNavigateWithoutLoginGuard ]}, //
             { path: "School", component: SchoolComponentEmployee, title: "Schools"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
-            { path: "Registration Form", component: RegistrationFormComponent, title: "Registration Form"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  //
+            { path: "Registration Form", component: RegistrationFormComponent, title: "Registration Form"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
             { path: "Registration Form Field", component: RegistrationFormFieldComponent, title: "RegistrationFormField", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, 
             { path: "Registration Form Field/:id", component: FieldsComponent, title: "CategoryFields", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},
-            { path: "Admission Test", component: AdmissionTestComponent, title: "Admission Test", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},//
-            { path: "Question/:id", component: QuestionsComponent, title: "question", canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},//
-            { path: "Registration Confirmation", component: RegistrationConfirmationComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  //
-            { path: "Registration Confirmation/:Id", component: RegistrationConfirmationDetailsComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]}, // 
-            { path: "Registration Confirmation Test/:id", component: RegistrationConfirmationTestDetailsComponent, title: "Registration Confirmation Test" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},//
-            { path: "Registration Confirmation Test/:Rid/:Pid/:Tid", component: RegistrationFormTestAnswerComponent, title: "Registration Confirmation Test" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},//
-            { path: "Interview Time Table", component: InterviewTimeTableComponent, title: "Interview Time Table"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  //
-            { path: "Interview Registration/:Id", component: InterviewRegistrationComponentEmployee, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  //
-            { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]} //
+            { path: "Admission Test", component: AdmissionTestComponent, title: "Admission Test", canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},
+            { path: "Question/:id", component: QuestionsComponent, title: "question", canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},
+            { path: "Registration Confirmation", component: RegistrationConfirmationComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
+            { path: "Registration Confirmation/:Id", component: RegistrationConfirmationDetailsComponent, title: "Registration Confirmation"  , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},  
+            { path: "Registration Confirmation Test/:id", component: RegistrationConfirmationTestDetailsComponent, title: "Registration Confirmation Test" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},
+            { path: "Registration Confirmation Test/:Rid/:Pid/:Tid", component: RegistrationFormTestAnswerComponent, title: "Registration Confirmation Test" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},
+            { path: "Interview Time Table", component: InterviewTimeTableComponent, title: "Interview Time Table"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
+            { path: "Interview Registration/:Id", component: InterviewRegistrationComponentEmployee, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
+            { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]} 
         ]
     },
     { 

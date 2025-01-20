@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PagesWithRoleId } from '../../Models/pages-with-role-id';
 import { SideMenuItemComponent } from '../side-menu-item/side-menu-item.component';
@@ -17,7 +17,8 @@ export class SideMenuComponent {
   @Input() menuItemsForEmployee?: PagesWithRoleId[];
 
   @ViewChild('searchInput') searchInput: any;
-  
+  @ViewChildren('details') detailsList!: QueryList<ElementRef>;
+
   IsMenuOpen = false
   IsSearchFocus = false
 
@@ -43,5 +44,9 @@ export class SideMenuComponent {
     if (this.IsSearchFocus) {
       this.focusSearchInput();
     }
+  }
+
+  isAnyDetailsOpen(): boolean {
+    return this.detailsList?.some((details) => details.nativeElement.open);
   }
 }

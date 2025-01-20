@@ -24,11 +24,11 @@ export class NavMenuComponent {
   User_Type: string = "";
   userName: string = "";
   isPopupOpen = false;
-  allTokens: { id: number, key: string; KeyInLocal: string; value: string; UserType:string}[] = [];
+  allTokens: { id: number, key: string; KeyInLocal: string; value: string; UserType: string }[] = [];
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   subscription: Subscription | undefined;
 
-  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, private renderer: Renderer2, private translate: TranslateService ,private communicationService: NewTokenService ,private logOutService:LogOutService) { }
+  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, private renderer: Renderer2, private translate: TranslateService, private communicationService: NewTokenService, private logOutService: LogOutService) { }
 
   ngOnInit() {
     this.GetUserInfo();
@@ -42,16 +42,16 @@ export class NavMenuComponent {
 
   getAllTokens(): void {
     let count = 0;
-    this.allTokens=[];
+    this.allTokens = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key || '');
 
-      if (key && key.includes('token') && key != "current_token"&& key != "token") {
+      if (key && key.includes('token') && key != "current_token" && key != "token") {
         if (value) {
           this.User_Data_After_Login = jwtDecode(value)
-          if(this.User_Data_After_Login.user_Name)
-          this.allTokens.push({ id: count, key: this.User_Data_After_Login.user_Name, KeyInLocal: key, value: value || '' ,UserType:this.User_Data_After_Login.type });
+          if (this.User_Data_After_Login.user_Name)
+            this.allTokens.push({ id: count, key: this.User_Data_After_Login.user_Name, KeyInLocal: key, value: value || '', UserType: this.User_Data_After_Login.type });
           count++;
         }
 
@@ -90,20 +90,30 @@ export class NavMenuComponent {
     this.User_Type = User_Data_After_Login.type
     this.userName = User_Data_After_Login.user_Name
   }
+
   togglePopup(): void {
     this.getAllTokens();
     this.isPopupOpen = !this.isPopupOpen;
-    
-    if (this.isPopupOpen) {
-      this.renderer.addClass(document.body, 'overflow-hidden');
-    } else {
-      this.renderer.removeClass(document.body, 'overflow-hidden');
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const dropdown = document.querySelector('.dropdown-container') as HTMLElement;
+
+    if (dropdown && !dropdown.contains(target)) {
+      this.isPopupOpen = false;
     }
   }
 
-  ngOnDestroy(): void {
-    this.renderer.removeClass(document.body, 'overflow-hidden');
+  // Cleanup event listener
+  ngOnDestroy() {
+    document.removeEventListener('click', this.onDocumentClick);
   }
+
+  // ngOnDestroy(): void {
+  //   this.renderer.removeClass(document.body, 'overflow-hidden');
+  // }
 
   ChangeAccount(id: number): void {
     const tokenObject = this.allTokens.find(s => s.id === id);
@@ -134,7 +144,7 @@ export class NavMenuComponent {
 
   }
 
-   async logOut() {
+  async logOut() {
     // const count = parseInt(localStorage.getItem("count") ?? "0", 10);
     // let currentTokenn = localStorage.getItem("current_token") ?? "";
 
@@ -144,25 +154,25 @@ export class NavMenuComponent {
     // if (currentIndex === -1) {
     //   return;
     // }
-  
+
     // const currentToken = this.allTokens[currentIndex];
     // localStorage.removeItem(currentToken.KeyInLocal);
-  
+
     // this.allTokens.splice(currentIndex, 1);
-  
+
     // if (this.allTokens.length > 0) {
     //   const newToken = this.allTokens[currentIndex] || this.allTokens[currentIndex - 1];
-  
+
     //   localStorage.setItem("current_token", newToken.value);
     // } else {
     //   localStorage.removeItem("current_token");
     // }
-  
+
     // localStorage.setItem("count", this.allTokens.length.toString());
-    this.isPopupOpen=false
-   await this.logOutService.logOut();
+    this.isPopupOpen = false
+    await this.logOutService.logOut();
     this.GetUserInfo();
     this.getAllTokens();
-    this.router.navigateByUrl(""); 
+    this.router.navigateByUrl("");
   }
 }

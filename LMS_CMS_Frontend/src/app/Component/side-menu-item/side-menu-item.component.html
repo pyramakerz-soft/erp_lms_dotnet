@@ -1,14 +1,15 @@
-<details *ngIf="item.isDisplay">
-  <summary  
+<details *ngIf="item.isDisplay" #details class="w-full"
+[ngClass]="{'bg-[#FFFFFF1A] rounded-br-lg rounded-tr-lg border-l mb-3': details.open && item.children && item.children.length > 0}">
+  <summary
     class="flex justify-between px-9 py-3 lg:py-4 items-center space-x-3 rtl:space-x-reverse hover:bg-[rgba(255,255,255,0.1)] ltr:hover:rounded-r-lg rtl:hover:rounded-l-lg ltr:hover:border-l-2 rtl:hover:border-r-2 cursor-pointer"
     (click)="navigateToRoute(item.en_name)">
     <div class="flex items-center space-x-3 rtl:space-x-reverse">
       <img class="w-3 lg:w-fit" src="Icons/Dashboard.png" />
       <p>{{ item.en_name }}</p>
     </div>
-    <img class="w-3 lg:w-fit" src="Icons/Drop-Down.png" />
+    <img *ngIf="item.children && item.children.length > 0" class="w-3 lg:w-fit" src="Icons/Drop-Down.png" />
   </summary>
-  <div *ngIf="item.children && item.children.length > 0" class="pl-8 py-4 flex flex-col space-y-3">
+  <div *ngIf="item.children && item.children.length > 0" class="pl-8 py-2 flex flex-col space-y-3 w-max">
     <app-side-menu-item *ngFor="let child of item.children" [item]="child"></app-side-menu-item>
   </div>
 </details>

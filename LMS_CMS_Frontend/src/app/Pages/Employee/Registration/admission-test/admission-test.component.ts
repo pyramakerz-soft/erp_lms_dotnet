@@ -225,7 +225,7 @@ export class AdmissionTestComponent {
   }
 
   view(id: number) {
-    this.router.navigateByUrl(`Employee/question/${id}`)
+    this.router.navigateByUrl(`Employee/Question/${id}`)
   }
 
   isFormValid(): boolean {

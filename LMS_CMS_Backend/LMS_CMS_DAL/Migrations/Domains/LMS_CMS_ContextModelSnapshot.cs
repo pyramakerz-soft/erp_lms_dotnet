@@ -1546,6 +1546,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
+                    b.Property<string>("ConfirmationCode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -2090,7 +2093,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GradeID")
                         .IsRequired()
@@ -2137,9 +2140,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasKey("ID");
 
                     b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.HasIndex("InsertedByUserId");
 

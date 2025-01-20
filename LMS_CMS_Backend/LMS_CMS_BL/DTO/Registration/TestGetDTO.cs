@@ -22,6 +22,11 @@ namespace LMS_CMS_BL.DTO.Registration
         public string SubjectName { get; set; }
         public string GradeName { get; set; }
         public string AcademicYearName { get; set; }
+        public string? RegistrationTestState { get; set; }
+        public long? RegistrationTestStateId { get; set; }
+        public double? RegistrationTestMark { get; set; }
+        public bool? RegistrationTestVisibleToParent { get; set; }
+        public long? RegistrationTestID { get; set; }
         public long? InsertedByUserId { get; set; }
 
     }

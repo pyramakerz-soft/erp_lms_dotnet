@@ -29,7 +29,7 @@ export class RegisterationFormTestAnswerService {
      return this.http.get<RegisterationFormTestAnswer[]>(`${this.baseUrl}/RegistrationFormTestAnswer/${RegisterParentID}?testId=${testId}`, { headers })
    }
 
-    Add(answers: Answer[],DomainName:string) {
+    Add(answers: Answer[],RegisterationFormParentId:number,TestId:number,DomainName:string) {
        if(DomainName!=null) {
          this.header=DomainName 
        }
@@ -38,7 +38,7 @@ export class RegisterationFormTestAnswerService {
          .set('domain-name', this.header)
          .set('Authorization', `Bearer ${token}`)
          .set('Content-Type', 'application/json');
-       return this.http.post(`${this.baseUrl}/RegistrationFormTestAnswer`, answers, {
+       return this.http.post(`${this.baseUrl}/RegistrationFormTestAnswer/${RegisterationFormParentId}/${TestId}`, answers, {
          headers: headers,
          responseType: 'text' as 'json'
        });

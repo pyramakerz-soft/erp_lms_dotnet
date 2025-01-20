@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Uploads\Attachments\" />
+    <Folder Include="Uploads\Questions\" />
   </ItemGroup>
 
 </Project>

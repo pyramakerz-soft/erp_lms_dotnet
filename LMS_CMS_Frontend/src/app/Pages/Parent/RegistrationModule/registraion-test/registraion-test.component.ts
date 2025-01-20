@@ -20,7 +20,7 @@ import { QuestionOption } from '../../../../Models/Registration/question-option'
 @Component({
   selector: 'app-registraion-test',
   standalone: true,
-  imports: [CommonModule ,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './registraion-test.component.html',
   styleUrl: './registraion-test.component.css',
 })
@@ -37,7 +37,7 @@ export class RegistraionTestComponent {
     '',
     ''
   );
-  
+
   DomainName: string = '';
   UserID: number = 0;
   path: string = '';
@@ -48,24 +48,24 @@ export class RegistraionTestComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-
   isModalVisible: boolean = false;
   TestId: number = 0;
   registerationFormParentID: number = 0;
   registerationFormID: number = 0;
-  
+
   TestName: string = '';
-  TotalMark:number = 0;
-  mark:number =0
-  mode : string = 'degree' ;
+  TotalMark: number = 0;
+  mark: number = 0;
+  mode: string = 'degree';
   MarkIsEmpty: boolean = false;
-  
-  questions:TestWithQuestion[]=[]
-  
+  StateId: number = 0;
+
+  questions: TestWithQuestion[] = [];
+
   RegesterForm: RegisterationFormTest = new RegisterationFormTest();
-  Answers:Answer[]=[];
-  
-  QuestionsByTest:Question[]=[]
+  Answers: Answer[] = [];
+
+  QuestionsByTest: Question[] = [];
   constructor(
     public activeRoute: ActivatedRoute,
     public account: AccountService,
@@ -75,9 +75,9 @@ export class RegistraionTestComponent {
     private router: Router,
     public registerServ: RegisterationFormTestAnswerService,
     public registrationserv: RegisterationFormTestService,
-    public questionServ :QuestionService
+    public questionServ: QuestionService
   ) {}
-  
+
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -85,9 +85,11 @@ export class RegistraionTestComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
       this.activeRoute.paramMap.subscribe((params) => {
-        this.registerationFormParentID = Number(params.get('registerationFormParentID')); // Retrieve and convert Pid to a number
-        this.TestId = Number(params.get('TestId')); // Retrieve and convert Tid to a number
-        this.registerationFormID = Number(params.get('registerationFormID')); // Retrieve and convert Tid to a number
+        this.registerationFormParentID = Number(
+          params.get('registerationFormParentID')
+        );
+        this.TestId = Number(params.get('TestId'));
+        // this.registerationFormID = Number(params.get('registerationFormID'));
       });
     });
 
@@ -100,70 +102,96 @@ export class RegistraionTestComponent {
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
       }
     });
-    
+
     this.GetAllData();
   }
 
   GetAllData() {
     this.registerServ
-      .GetByRegistrationParentId(this.registerationFormParentID, this.TestId, this.DomainName)
-      .subscribe((d: any) => {
-        console.log(d)
-        this.Data = d.questionWithAnswer;
-        this.TestName = d.testName;
-        this.mark =d.mark;
-        this.TotalMark=d.totalmark;
-        console.log("ff",this.Data);
-      },(error)=>{
-          this.mode= 'test';
-          console.log(this.mode)
-          this.questionServ.GetByTestIDGroupBy(this.TestId,this.DomainName).subscribe((d: any) => {
-           this.questions=d;
-           this.questionServ.GetByTestID(this.TestId,this.DomainName).subscribe((q: any) => {
-            this.QuestionsByTest=q;
-            if (this.QuestionsByTest && Array.isArray(this.QuestionsByTest)) {
-              this.Answers = this.QuestionsByTest.map((question: any) => {
-                return new Answer(
-                  question.registerationFormParentID || this.registerationFormParentID, 
-                  '',                                     
-                  0,                                    
-                  question.id || 0                       
-                );
-              });
-            } else {
-              this.Answers = []; 
-            }
-          });
-        });
-      });
-    }
-  moveToEmployee() {
-    this.router.navigateByUrl(`Parent/Admission Test`)
+      .GetByRegistrationParentId(
+        this.registerationFormParentID,
+        this.TestId,
+        this.DomainName
+      )
+      .subscribe(
+        (d: any) => {
+          console.log(d)
+          this.Data = d.questionWithAnswer;
+          this.TestName = d.testName;
+          this.mark = d.mark;
+          this.TotalMark = d.totalmark;
+          this.StateId=d.state
+        },
+        (error) => {
+          this.mode = 'test';
+          this.questionServ
+            .GetByTestIDGroupBy(this.TestId, this.DomainName)
+            .subscribe((d: any) => {
+              this.questions = d.groupedByQuestionType ;
+              this.TestName=d.testName
+              console.log(d);
+              this.questionServ
+                .GetByTestID(this.TestId, this.DomainName)
+                .subscribe((q: any) => {
+                  console.log(q);
+                  this.QuestionsByTest = q;
+                  if (
+                    this.QuestionsByTest &&
+                    Array.isArray(this.QuestionsByTest)
+                  ) {
+                    this.Answers = this.QuestionsByTest.map((question: any) => {
+                      return new Answer(
+                        question.registerationFormParentID ||
+                          this.registerationFormParentID,
+                        '',
+                        0,
+                        question.id || 0
+                      );
+                    });
+                  } else {
+                    this.Answers = [];
+                  }
+                });
+            });
+        }
+      );
   }
-  selectOption(questionId: number,OptionId: number) {
-       const answer = this.Answers.find(a => a.questionID === questionId);
-       if (answer) {
-         answer.answerID = OptionId;
-       } 
-       console.log('Updated Answers:', this.Answers);
+  moveToEmployee() {
+    this.router.navigateByUrl(`Parent/Admission Test`);
+  }
+  selectOption(questionId: number, OptionId: number, a: number) {
+    const answer = this.Answers.find((a) => a.questionID === questionId);
+    if (answer) {
+      answer.answerID = OptionId;
+    }
   }
 
   EssayAnswer(questionId: number, event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    const answer = this.Answers.find(a => a.questionID === questionId);
+    const inputValue = textarea.value.trim();
+    const answer = this.Answers.find((a) => a.questionID === questionId);
     if (answer) {
-      answer.essayAnswer = textarea.value;
-      answer.answerID=null
-    } 
-       
+      answer.essayAnswer = inputValue;
+      answer.answerID = null;
+    }
+  }
+  // Inside your component class
+  isCircleDot(answers: any[], questionId: number, optionId: number): boolean {
+    const answer = answers.find((a) => a.questionID === questionId);
+    return answer ? answer.answerID === optionId : false;
   }
 
-  Save(){
-    console.log(this.Answers)
-    this.registerServ.Add(this.Answers,this.DomainName).subscribe((a)=>{
-      this.GetAllData();
-     this.router.navigateByUrl(`Parent/Admission Test`)
-    })
+  Save() {
+    this.registerServ
+      .Add(
+        this.Answers,
+        this.registerationFormParentID,
+        this.TestId,
+        this.DomainName
+      )
+      .subscribe((a) => {
+        this.GetAllData();
+        this.router.navigateByUrl(`Parent/Admission Test`);
+      });
   }
-
 }

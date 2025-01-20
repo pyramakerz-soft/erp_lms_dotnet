@@ -27,12 +27,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         ///////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("{id}")]
+        [HttpGet("GetByRegistrationParentID/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Registration Confirmation", "Registration" }
         )]
-        public async Task<IActionResult> GetByID(long id)
+        public async Task<IActionResult> GetByRegistrationParentID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -47,7 +47,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             }
 
             List<RegisterationFormSubmittion> registerationFormSubmittions = await Unit_Of_Work.registerationFormSubmittion_Repository.Select_All_With_IncludesById<RegisterationFormSubmittion>(
-                    r => r.IsDeleted != true,
+                    r => r.IsDeleted != true && r.RegisterationFormParentID == id,
                     query => query.Include(emp => emp.RegisterationFormParent),
                     query => query.Include(emp => emp.CategoryField).ThenInclude(f => f.RegistrationCategory),
                     query => query.Include(emp => emp.FieldOption));
@@ -57,7 +57,16 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 return NotFound();
             }
 
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            foreach (var r in registerationFormSubmittions)
+            {
+                if (!string.IsNullOrEmpty(r.TextAnswer) && r.CategoryField.FieldTypeID == 6)
+                {
+                    r.TextAnswer = $"{serverUrl}{r.TextAnswer.Replace("\\", "/")}";
+                }
+            }
             List<RegisterationFormSubmittionGetDTO> registerationFormSubmittionDTO = mapper.Map<List<RegisterationFormSubmittionGetDTO>>(registerationFormSubmittions);
+
 
             return Ok(registerationFormSubmittionDTO);
         }

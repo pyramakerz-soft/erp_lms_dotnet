@@ -7,6 +7,9 @@ export class QuestionAddEdit {
         public questionTypeID: number = 0,
         public correctAnswerName: string = '',
         public testID: number = 0,
+        public imageFile: File |any = null,
+        public videoFile: File |any = null,
         public options :string[] =[],
+        
     ) {}
 }

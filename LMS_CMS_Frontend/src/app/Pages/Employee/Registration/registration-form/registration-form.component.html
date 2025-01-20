@@ -1,4 +1,4 @@
-<div class="flex justify-between space-x-20 items-start">
+<div *ngIf="!isSuccess" class="flex justify-between space-x-20 items-start">
     <div class="flex-grow flex-col space-y-8">
         <div class="flex justify-between items-center">
             <p class="primaryTxt text-2xl font-semibold">{{RegistrationFormData.name}}</p>
@@ -55,7 +55,7 @@
                             [class.error-border]="isFieldInvalid(field)" />
     
                             @if(field.id != 7 && field.id != 8 && field.id != 9){
-                                <select *ngSwitchCase="4" id="{{cat.enName}}_{{field.enName}}"
+                                <select *ngSwitchCase="7" id="{{cat.enName}}_{{field.enName}}"
                                         class="rounded-lg border border-solid border-gray-300 px-4 py-3" 
                                         (change)="FillData($event, field.id, field.fieldTypeID)"
                                         [class.error-border]="isFieldInvalid(field)" >
@@ -118,27 +118,42 @@
                                 </select>
                             }
     
-                            <div *ngSwitchCase="5" class="border rounded-lg p-3">
+                            <div *ngSwitchCase="4" class="border rounded-lg p-3">
                                 <div *ngFor="let option of field.options" class="flex items-center">
                                     <input type="checkbox" 
+                                    id="{{cat.enName}}_{{field.enName}}_{{option.name}}" 
+                                    class="square-check"
+                                    name="{{cat.enName}}_{{field.enName}}"
+                                    [value]="option.id"
+                                    (change)="multiCheckBoxesHandling($event, field.id, field.fieldTypeID, option.id)"
+                                    [class.error-border]="isFieldInvalid(field)" />
+                                    <label for="{{cat.enName}}_{{field.enName}}_{{option.name}}" class="ml-2">{{ option.name }}</label>
+                                </div>
+                            </div>
+    
+                            <div *ngSwitchCase="5" class="border rounded-lg p-3">
+                                <div *ngFor="let option of field.options" class="flex items-center">
+                                    <input type="radio" 
                                     id="{{cat.enName}}_{{field.enName}}_{{option.name}}" 
                                     class="square-radio"
                                     name="{{cat.enName}}_{{field.enName}}"
                                     [value]="option.id"
-                                    (change)="multiOptionHandling($event, field.id, field.fieldTypeID, option.id)"
+                                    (change)="FillData($event, field.id, field.fieldTypeID)"
                                     [class.error-border]="isFieldInvalid(field)" />
                                     <label for="{{cat.enName}}_{{field.enName}}_{{option.name}}" class="ml-2">{{ option.name }}</label>
                                 </div>
                             </div>
                             
-                            <!----------------------------------HANDLE THIS------------------------------------------------------>
                             <input *ngSwitchCase="6" id="{{cat.enName}}_{{field.enName}}" type="file" 
                             class="rounded-lg border border-solid border-gray-300 px-4 py-3" 
-                            (change)="FillData($event, field.id, field.fieldTypeID)" [class.error-border]="isFieldInvalid(field)" />
+                            (change)="handleFileUpload($event, field.id)" [class.error-border]="isFieldInvalid(field)" />
                         </ng-container>
     
                         <span *ngIf="(field.id == 21) && isFormSubmitted && !isGuardianEmailValid" class="text-red-500 text-sm mt-1">
                             Guardian’s Email Not Valid.
+                        </span>
+                        <span *ngIf="(field.id == 21) && isFormSubmitted && !isGuardianEmailSameAsParent && User_Data_After_Login.type == 'parent'" class="text-red-500 text-sm mt-1">
+                            Email Must Be The Same As Yours.
                         </span>
                         <span *ngIf="(field.id == 28) && isFormSubmitted && !isMotherEmailValid" class="text-red-500 text-sm mt-1">
                             Mother’s Email Not Valid.
@@ -178,5 +193,16 @@
             </div>
             <div *ngIf="i !== RegistrationFormData.categories.length - 1" class="w-1 h-5 top-[100%]" [ngClass]="{secondaryBg : i <= currentCategory - 1, 'bg-[#BCBDBD]': i > currentCategory - 1}"></div>
         </div>
+    </div>
+</div>
+
+
+<!-- ------------------------------------------------------------------------------------- -->
+
+<div *ngIf="isSuccess" class="flex justify-center items-center h-full">
+    <div class="w-1/2 flex justify-center items-center flex-col space-y-7">
+        <img src="Images/Success.png">
+        <p class="primaryTxt text-5xl font-semibold">Successfully</p>
+        <p class="text-center font-normal text-base text-[#707070]">Welcome aboard! You’ve successfully signed up for a new account, and we’re excited to have you with us. Your journey starts here! From your account dashboard, you’ll be able to explore all the tools and resources we offer. </p>
     </div>
 </div>

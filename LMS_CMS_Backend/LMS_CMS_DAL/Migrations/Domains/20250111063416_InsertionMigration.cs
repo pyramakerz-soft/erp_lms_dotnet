@@ -56,7 +56,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
             migrationBuilder.Sql("DELETE FROM QuestionType WHERE ID IN (1,2,3)");
             migrationBuilder.Sql("DELETE FROM FieldType WHERE ID IN (1,2,3,4,5,6)");
             migrationBuilder.Sql("DELETE FROM RegisterationFormState WHERE ID IN (1,2,3,4)");
-            migrationBuilder.Sql("DELETE FROM TestState WHERE ID IN (1,2,3)");
             migrationBuilder.Sql("DELETE FROM InterviewState WHERE ID IN (1,2,3)");
         }
     }

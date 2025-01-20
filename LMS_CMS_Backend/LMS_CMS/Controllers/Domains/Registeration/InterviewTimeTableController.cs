@@ -93,7 +93,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet("GetInterviewTableWithYearID/{yearID}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
+            allowedTypes: new[] { "octa", "employee", "parent" },
             pages: new[] { "Interview Time Table", "Registration" }
         )]
         public async Task<IActionResult> GetInterviewTableWithYearID(long yearID)
@@ -293,21 +293,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             if (EditedInterviewTimeTable == null)
             {
                 return BadRequest("Interview Time Table cannot be null");
-            }
-
-            if (EditedInterviewTimeTable.AcademicYearID != 0)
-            {
-                AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(
-                    b => b.ID == EditedInterviewTimeTable.AcademicYearID && b.IsDeleted != true
-                    );
-                if (academicYear == null)
-                {
-                    return BadRequest("No Academic Year with this ID");
-                }
-            }
-            else
-            {
-                return BadRequest("Academic Year id cannot be null");
             }
 
             if (EditedInterviewTimeTable.FromTime > EditedInterviewTimeTable.ToTime)

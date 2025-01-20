@@ -56,6 +56,7 @@ export class SubjectViewComponent {
   GetSubjectById() {
     this.subjectService.GetByID(this.subjectId, this.DomainName).subscribe((data) => {
       this.subject = data;
+      console.log(this.subject)
     })
   }
 

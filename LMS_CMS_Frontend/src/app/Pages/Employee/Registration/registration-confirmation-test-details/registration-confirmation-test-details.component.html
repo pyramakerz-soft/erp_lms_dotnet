@@ -1,6 +1,6 @@
 <div class="flex justify-between items-center">
     <div class="flex justify-between items-center space-x-5">
-        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <i class="fa-solid fa-chevron-left" (click)="moveToRegistrationConfirmation()"></i>
         <h1 class="primaryTxt font-semibold text-2xl leading-9">{{StudentName}}</h1>
     </div>
 </div>
@@ -14,7 +14,7 @@
                     ID
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    TestTitle
+                    Test Title
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
                     State
@@ -45,16 +45,16 @@
                 class="border-t border-gray-300 text-xs md:text-sm">
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e] hover:bg-gray-200">
                     {{ row.id }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.testName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.title }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <i *ngIf="row.stateID!==2" class="fa-solid fa-circle fa-1x" ></i>           
-                    <i *ngIf="row.stateID === 2" class="fa-solid fa-circle fa-1x text-green-500"></i>
-                    {{ row.stateName }}
+                    <i *ngIf="row.registrationTestState!=='Accepted' && row.registrationTestState!=='Done'" class="fa-solid fa-circle fa-1x" ></i>           
+                    <i *ngIf="row.registrationTestState === 'Accepted' || row.registrationTestState === 'Done'" class="fa-solid fa-circle fa-1x text-green-500"></i>
+                    {{ row.registrationTestState }}
                 </td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.mark }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.visibleToParent }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div class="flex space-x-4">
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.registrationTestMark }} / {{row.totalMark}}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.registrationTestVisibleToParent }}</td>
+                <td class="py-5 px-4 border border-[#020202] border-t-0 border-l-0">
+                    <div *ngIf="row.registrationTestID!=null" class="flex space-x-4">
                         <button (click)="View(row)">
                             <i class="fa-solid fa-eye"></i>
                         </button>

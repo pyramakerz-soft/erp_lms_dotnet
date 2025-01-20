@@ -58,14 +58,15 @@ namespace LMS_CMS_PL.Controllers.Domains
                 "employee" => Unit_Of_Work.employee_Repository.First_Or_Default(emp => emp.User_Name == UserInfo.User_Name && emp.IsDeleted != true),
                 "student" => Unit_Of_Work.student_Repository.First_Or_Default(stu => stu.User_Name == UserInfo.User_Name && stu.IsDeleted != true),
                 "parent" => Unit_Of_Work.parent_Repository.First_Or_Default(par => par.User_Name == UserInfo.User_Name && par.IsDeleted != true),
+                _ => null,
             };
-            bool isMatch = BCrypt.Net.BCrypt.Verify(UserInfo.Password, user.Password);
 
             if (user == null)
             {
                 return BadRequest("UserName or Password is Invalid");
             }
-            if (isMatch==false)
+            bool isMatch = BCrypt.Net.BCrypt.Verify(UserInfo.Password, user.Password);
+            if (isMatch == false)
             {
                 return BadRequest("UserName or Password is Invalid");
             }
@@ -87,5 +88,7 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             return BadRequest("Unexpected user type.");
         }
+
     }
-}
+        
+ }

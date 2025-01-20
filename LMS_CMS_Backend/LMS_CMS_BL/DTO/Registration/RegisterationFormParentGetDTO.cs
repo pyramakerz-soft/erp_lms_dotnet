@@ -15,6 +15,8 @@ namespace LMS_CMS_BL.DTO.Registration
         public string GradeName { get; set; }
         public string AcademicYearID { get; set; }
         public string AcademicYearName { get; set; }
+        public long SchoolID { get; set; }
+        public string SchoolName { get; set; }
         public string Email { get; set; }
         public long RegisterationFormStateID { get; set; }
         public string RegisterationFormStateName { get; set; }
@@ -22,5 +24,6 @@ namespace LMS_CMS_BL.DTO.Registration
         public string ParentName { get; set; }
         public long RegistrationFormID { get; set; }
         public string RegistrationFormName { get; set; }
+        public long InsertedByUserId { get; set; }
     }
 }

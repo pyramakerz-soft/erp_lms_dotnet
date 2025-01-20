@@ -1,0 +1,116 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToInterviewTimeTable()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Date {{interviewTimeTable.date | date:'MMM d, yyyy'}}</h1>
+    </div>
+</div>
+
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Student Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Phone
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Grade
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Email
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    State
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="registrationFormInterviewData.length === 0">
+                <td colspan="7" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of registrationFormInterviewData; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.phone }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.gradeName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.email }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex justify-start">
+                        <div *ngIf="row.interviewStateID == 2" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                            <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: green; padding: 4px;"></span>
+                            <p>
+                                {{row.interviewStateName}}
+                            </p>
+                        </div>
+                        <div *ngIf="row.interviewStateID == 3" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                            <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: red; padding: 4px;"></span>
+                            <p>
+                                {{row.interviewStateName}}
+                            </p>
+                        </div>
+                        <div *ngIf="row.interviewStateID == 1" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                            <div class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: gray; padding: 4px;"></div>
+                            <p>
+                                {{row.interviewStateName}}
+                            </p>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex space-x-4">
+                        <button (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px]">
+        <div class="flex justify-between items-center">
+            <h1 class="font-semibold text-2xl leading-9">Create Subject Category</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="p-[16px_24px] mt-6 mb-4 bg-[#F7F7F7] rounded-3xl">
+            <div class="flex flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="status">Status</label>
+                <select id="state" [(ngModel)]="registrationFormInterview.interviewStateID"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 flex-grow">
+                    <option value="0" disabled selected hidden>Select State</option>
+                    <option *ngFor="let state of StateData" [value]="state.id">
+                        {{ state.name }}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Submit()">
+                Submit
+            </button>
+        </div>
+    </div>
+</div>

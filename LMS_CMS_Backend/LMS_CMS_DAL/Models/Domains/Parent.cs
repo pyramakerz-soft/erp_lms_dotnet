@@ -33,6 +33,8 @@ namespace LMS_CMS_DAL.Models.Domains
         [EmailAddress]
         public string Email { get; set; }
 
+        public string? ConfirmationCode { get; set; }
+
         public ICollection<Student> Students { get; set; } = new HashSet<Student>();
         public ICollection<RegisterationFormParent> RegisterationFormParents { get; set; } = new HashSet<RegisterationFormParent>();
     }

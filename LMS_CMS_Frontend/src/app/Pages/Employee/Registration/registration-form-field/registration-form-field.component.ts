@@ -72,6 +72,7 @@ export class RegistrationFormFieldComponent {
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
+      console.log(this.path)
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
@@ -134,6 +135,7 @@ export class RegistrationFormFieldComponent {
   }
 
   CreateOREdit() {
+    this.Category.registrationFormId=1;
     if(this.isFormValid()){
      if(this.mode=="Create"){
       this.CategoryServ.Add(this.Category,this.DomainName).subscribe(()=>{
@@ -158,7 +160,7 @@ export class RegistrationFormFieldComponent {
   }
 
   view(id: number) {
-    this.router.navigateByUrl(`Employee/Category Fields/${id}`)
+    this.router.navigateByUrl(`Employee/Registration Form Field/${id}`)
   }
 
    isFormValid(): boolean {

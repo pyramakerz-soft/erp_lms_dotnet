@@ -52,12 +52,20 @@ export class ClassroomsAccommodationComponent {
   classrooms: Classroom[] = [];
 
   Data: RegisterationFormParent[] = [];
+  OriginalData: RegisterationFormParent[] = [];
+
   isModalVisible: boolean = false;
   RpId: number = 0;
 
   Grades: Grade[] = [];
   Schools: School[] = [];
   Years: AcademicYear[] = [];
+
+  SelectedSchoolId :number =0;
+  SelectedYearId:number =0;
+  SelectedGradeId:number =0;
+  IsSearch:boolean=false;
+
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -99,9 +107,9 @@ export class ClassroomsAccommodationComponent {
     this.registerationFormParentService
       .GetAll(this.DomainName)
       .subscribe((data) => {
-        console.log(data);
         this.Data = [];
         this.Data = data;
+        this.OriginalData=data;
       });
   }
 
@@ -124,7 +132,6 @@ export class ClassroomsAccommodationComponent {
       .GetByRegistrationFormParentID(id, this.DomainName)
       .subscribe((data) => {
         this.classrooms = data;
-        console.log(this.classrooms);
       });
   }
   openModal() {
@@ -149,5 +156,25 @@ export class ClassroomsAccommodationComponent {
     this.YearServ.Get(this.DomainName).subscribe((data) => {
       this.Years = data;
     });
+  }
+
+  Search() {
+    this.IsSearch=true;
+    this.Data=[]
+    this.Data = this.OriginalData.filter((item: any) => {
+      const schoolMatch = this.SelectedSchoolId == 0 || item.schoolID == this.SelectedSchoolId;
+      const yearMatch = this.SelectedYearId == 0 || item.yearID == this.SelectedYearId;
+      const gradeMatch = this.SelectedGradeId == 0 || item.gradeID == this.SelectedGradeId;
+      return schoolMatch && yearMatch && gradeMatch;
+    });
+  
+  }
+
+  ResetFilter(){
+    this.IsSearch=false;
+    this.SelectedGradeId=0;
+    this.SelectedSchoolId=0;
+    this.SelectedYearId=0;
+    this.Data=this.OriginalData
   }
 }

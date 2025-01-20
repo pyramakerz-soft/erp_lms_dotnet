@@ -20,6 +20,7 @@ namespace LMS_CMS_BL.DTO.Registration
         public string ParentName { get; set; }
         public long RegistrationFormID { get; set; }
         public string RegistrationFormName { get; set; }
+        public long? RegistrationFormInterviewID { get; set; }
         public long? RegistrationFormInterviewStateID { get; set; }
         public string? RegistrationFormInterviewStateName { get; set; }
         public long InterviewTimeID { get; set; }

@@ -47,9 +47,9 @@ export class RegistrationFormTestAnswerComponent {
   mode: string = 'Create'
 
   isModalVisible: boolean = false;
-  Tid: number = 0
-  Pid: number = 0
-  Rid: number = 0
+  TestId: number = 0
+  RegisterFormParentID: number = 0
+  RegisterFormID: number = 0
 
   TestName: string = ""
   MarkIsEmpty : boolean=false;
@@ -76,9 +76,9 @@ export class RegistrationFormTestAnswerComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
       this.activeRoute.paramMap.subscribe((params) => {
-        this.Pid = Number(params.get('Pid')); // Retrieve and convert Pid to a number
-        this.Tid = Number(params.get('Tid')); // Retrieve and convert Tid to a number
-        this.Rid = Number(params.get('Rid')); // Retrieve and convert Tid to a number
+        this.RegisterFormParentID = Number(params.get('Pid')); 
+        this.TestId = Number(params.get('Tid')); 
+        this.RegisterFormID = Number(params.get('Rid')); 
       });
     });
 
@@ -96,15 +96,15 @@ export class RegistrationFormTestAnswerComponent {
   }
 
   GetAllData() {
-    this.registerServ.GetByRegistrationParentId(this.Pid, this.Tid, this.DomainName).subscribe((d: any) => {
+    this.registerServ.GetByRegistrationParentId(this.RegisterFormParentID, this.TestId, this.DomainName).subscribe((d: any) => {
       this.Data = d.questionWithAnswer;
-      this.TestName = d.testName
       console.log(this.Data)
+      this.TestName = d.testName
     })
   }
 
   moveToEmployee() {
-    this.router.navigateByUrl(`Employee/Registration Confirmation Test/${this.Tid}`)
+    this.router.navigateByUrl(`Employee/Registration Confirmation Test/${this.RegisterFormParentID}`)
   }
 
   openModal() {
@@ -122,11 +122,10 @@ export class RegistrationFormTestAnswerComponent {
   }
 
   Save() {
-    this.RegesterForm.testID=this.Tid;
-    this.RegesterForm.registerationFormParentID=this.Pid;
-    this.RegesterForm.testID=this.Tid;
-    this.RegesterForm.id=this.Rid;
-    console.log(this.RegesterForm)
+    this.RegesterForm.testID=this.TestId;
+    this.RegesterForm.registerationFormParentID=this.RegisterFormParentID;
+    this.RegesterForm.testID=this.TestId;
+    this.RegesterForm.id=this.RegisterFormID;
     if(!this.RegesterForm.mark){
       this.MarkIsEmpty=true
     }

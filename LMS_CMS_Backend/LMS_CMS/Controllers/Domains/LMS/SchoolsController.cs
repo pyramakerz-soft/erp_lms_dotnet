@@ -36,7 +36,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee"},
+            allowedTypes: new[] { "octa", "employee", "parent"},
              pages: new[] { "School", "Administrator" }
         )]
         public async Task<IActionResult> GetAsync()

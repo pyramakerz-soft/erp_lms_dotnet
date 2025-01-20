@@ -38,6 +38,7 @@ export class QuestionsComponent {
     ''
   );
 
+  File:any;
   DomainName: string = '';
   UserID: number = 0;
   path: string = '';
@@ -48,6 +49,7 @@ export class QuestionsComponent {
   AllowDeleteForOthers: boolean = false;
 
   mode: string = 'Create'
+  FileUploaded:string =''
 
   isModalVisible: boolean = false;
   Data: Question[] = []
@@ -59,7 +61,7 @@ export class QuestionsComponent {
   options:string[]=[]
   NewOption:string=""
 
-  validationErrors: { [key in keyof Question]?: string } = {};
+  validationErrors: { [key in keyof QuestionAddEdit]?: string } = {};
 
 
   constructor(
@@ -86,7 +88,7 @@ export class QuestionsComponent {
 
     
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName("Admission Test", items);
+      const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
@@ -104,7 +106,6 @@ export class QuestionsComponent {
 
   GetAllData() {
     this.QuestionServ.GetByTestID(this.testId,this.DomainName).subscribe((d:any)=>{
-      console.log(d)
       this.Data=d
     })
   }
@@ -121,6 +122,7 @@ export class QuestionsComponent {
 
   Create() {
     this.mode = 'Create';
+    this.FileUploaded=''
     this.question = new QuestionAddEdit();
     this.options=[]
     this.openModal();
@@ -149,8 +151,8 @@ export class QuestionsComponent {
   Edit(row: Question) {
     this.mode = 'Edit';
     this.question = row as unknown as QuestionAddEdit;
-    this.options = row.options.map(option => option.name); 
     console.log(this.question)
+    this.options = row.options.map(option => option.name); 
     this.openModal();
   }
 
@@ -167,8 +169,8 @@ export class QuestionsComponent {
   CreateOREdit() {
     this.question.options=this.options
     this.question.testID=this.testId
-    if(this.isFormValid()){
     console.log(this.question)
+    if(this.isFormValid()){
      if(this.mode=="Create"){
       this.QuestionServ.Add(this.question,this.DomainName).subscribe(()=>{
         this.GetAllData();
@@ -189,6 +191,7 @@ export class QuestionsComponent {
 
   CorrectAnswer(option :string){
     this.question.correctAnswerName=option;
+    this.validationErrors["correctAnswerName"]=''
   }
 
   openModal() {
@@ -198,6 +201,16 @@ export class QuestionsComponent {
   AddOption(){
     this.options.push(this.NewOption);
     this.NewOption=''
+  }
+
+  checkOnType(){
+   if(this.question.questionTypeID==1){
+    this.options=[];
+    this.options.push("True");
+    this.options.push("False");
+   }else{
+    this.options=[]
+   }
   }
 
   isFormValid(): boolean {
@@ -213,7 +226,7 @@ export class QuestionsComponent {
         } 
       }
     }
-    if(this.question.questionTypeID==1||this.question.questionTypeID){
+    if(this.question.questionTypeID==1||this.question.questionTypeID==2){
       if(this.question.options.length==0){
         this.validationErrors["options"] = `*${this.capitalizeField("options")} is required`
       }
@@ -236,4 +249,29 @@ export class QuestionsComponent {
     }
   }
 
+  onFileUpload(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const fileType = file.type;
+        this.FileUploaded=file.name
+       
+        if (fileType.startsWith('image/')) {
+            this.question.videoFile = null;
+            this.question.image=file.name;
+            this.question.imageFile = file; 
+        } else if (fileType.startsWith('video/')) {
+            this.question.videoFile = file; 
+            this.question.video=file.name;
+            this.question.imageFile = null; 
+        } else {
+            alert('Invalid file type. Please upload an image or video.');
+        }
+    }
 }
+
+
+}
+
+
+

@@ -13,6 +13,7 @@ using LMS_CMS_DAL.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace LMS_CMS
 {
@@ -28,8 +29,8 @@ namespace LMS_CMS
 
 
             // Add services to the container.
-
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -99,6 +100,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<GenerateJWTService>();
             builder.Services.AddScoped<FileImageValidationService>();
             builder.Services.AddScoped<CancelInterviewDayMessageService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
 
             /// 2)
@@ -135,6 +137,15 @@ namespace LMS_CMS
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
+            builder.Services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = 104857600; // 100 MB
+            });
+
+            builder.Services.Configure<KestrelServerOptions>(options =>
+            {
+                options.Limits.MaxRequestBodySize = 104857600; // 100 MB
+            }); 
 
             var app = builder.Build();
 

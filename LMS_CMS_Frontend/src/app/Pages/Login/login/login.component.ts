@@ -158,11 +158,11 @@ export class LoginComponent {
         }, (error) => {
           if (error.error === "UserName or Password is Invalid") {
             this.somthingError = "UserName or Password is Invalid"
-          }
-          if (error.status == 400) {
+          }else if (error.status == 400) {
             this.somthingError = "Username, Password or Type maybe wrong"
-          }
-          else {
+          }else if (error.status == 404) {
+            this.somthingError = "Username, Password or Type maybe wrong"
+          } else {
             Swal.fire({
               icon: 'error',
               title: 'Oops...',
@@ -197,6 +197,7 @@ export class LoginComponent {
   }
 
   selectType(type: string) {
+    this.somthingError = ""
     this.userInfo.type = type;
     if (this.userInfo.type == "employee") {
       this.isEmployeeHovered = true;
@@ -214,5 +215,8 @@ export class LoginComponent {
       this.isParentHovered = true;
     }
 
+  }
+  SignUp(){
+    this.router.navigateByUrl("SignUp")
   }
 }

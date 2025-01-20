@@ -126,7 +126,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             allowedTypes: new[] { "octa", "employee", "parent" },
             pages: new[] { "Registration Form", "Registration" }
         )]
-        public async Task<IActionResult> Add([FromForm]RegisterationFormParentAddDTO registerationFormParentAddDTO)
+        public async Task<IActionResult> Add([FromForm] RegisterationFormParentAddDTO registerationFormParentAddDTO,
+            [FromForm] List<RegisterationFormSubmittionForFiles> filesFieldCat = null)
         {
             /*
                 1) get the Email (21) and search in the parent table for the id if exists, get it if not skip
@@ -150,6 +151,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                         ]
                 }
              */
+
+            //List<RegisterationFormSubmittionForFiles> filesFieldCat = new List<RegisterationFormSubmittionForFiles>();
+
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -237,6 +242,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 return BadRequest("Invalid Mother's email Format");
             }
 
+            if (userTypeClaim == "parent")
+            {
+                Parent parentExists = Unit_Of_Work.parent_Repository.Select_By_Id(userId);
+                if(parentExists.Email != ParentEmail)
+                {
+                    return BadRequest("Guardian's Email must be the same as parent Email");
+                }
+            }
+
             Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(s => s.ID == long.Parse(GradeID) && s.IsDeleted != true);
             if (grade == null)
             {
@@ -271,7 +285,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
                 if (categoryField.IsMandatory)
                 {
-                    if (registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID == null && registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer == null)
+                    bool isThereAFile = false;
+                    if (filesFieldCat != null)
+                    {
+                        for (int j = 0; j < filesFieldCat.Count; j++)
+                        {
+                            if (filesFieldCat[j].SelectedFile.Length > 0)
+                            {
+                                if (filesFieldCat[j].CategoryFieldID == registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID)
+                                {
+                                    isThereAFile = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID == null && registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer == null && !isThereAFile)
                     {
                         return BadRequest($"Field {categoryField.EnName} is required");
                     }
@@ -300,12 +330,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
             };
 
-            RegisterationFormParent existsRegisterationFormParent = Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(s => s.Email == ParentEmail && s.Email != null && s.IsDeleted != true);
+            //RegisterationFormParent existsRegisterationFormParent = Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(s => s.Email == ParentEmail && s.Email != null && s.IsDeleted != true);
 
-            if(existsRegisterationFormParent != null)
-            {
-                return BadRequest("Email Already Exists");
-            }
+            //if(existsRegisterationFormParent != null)
+            //{
+            //    return BadRequest("Email Already Exists");
+            //}
 
             if (userTypeClaim == "octa")
             {
@@ -321,52 +351,99 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             long newRegisterationFormParentID = registerationFormParent.ID;
 
-            for (int i = 0; i < registerationFormParentAddDTO.RegisterationFormSubmittions.Count; i++)
-            {
-                var fileFolder = "";
+            var fileFolder = "";
 
-                /// If File
-                if (registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile != null)
+            /// If File
+            if (filesFieldCat != null)
+            {
+                for (int j = 0; j < filesFieldCat.Count; j++)
                 {
                     var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/RegistrationForm");
                     fileFolder = Path.Combine(baseFolder,
-                        registerationFormParentAddDTO.RegistrationFormID.ToString(),
-                        newRegisterationFormParentID.ToString(),
-                        registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID.ToString());
+                    registerationFormParentAddDTO.RegistrationFormID.ToString(),
+                    newRegisterationFormParentID.ToString(),
+                    filesFieldCat[j].CategoryFieldID.ToString());
 
-                    if (!Directory.Exists(fileFolder))
+                    if (filesFieldCat[j].SelectedFile.Length > 0)
                     {
-                        Directory.CreateDirectory(fileFolder);
-                    }
+                        if (!Directory.Exists(fileFolder))
+                        {
+                            Directory.CreateDirectory(fileFolder);
+                        }
 
-                    if (registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile.Length > 0)
-                    {
-                        var filePath = Path.Combine(fileFolder, registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile.FileName);
+                        var filePath = Path.Combine(fileFolder, filesFieldCat[j].SelectedFile.FileName);
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
-                            await registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile.CopyToAsync(stream);
+                            await filesFieldCat[j].SelectedFile.CopyToAsync(stream);
                         }
+
+                        RegisterationFormSubmittion registerationFormSubmittion = new RegisterationFormSubmittion
+                        {
+                            RegisterationFormParentID = newRegisterationFormParentID,
+                            CategoryFieldID = filesFieldCat[j].CategoryFieldID,
+                            SelectedFieldOptionID = (long?)null,
+                            TextAnswer = Path.Combine("Uploads", "RegistrationForm", registerationFormParentAddDTO.RegistrationFormID.ToString(),
+                            newRegisterationFormParentID.ToString(),
+                            filesFieldCat[j].CategoryFieldID.ToString()
+                            , filesFieldCat[j].SelectedFile.FileName),
+                            InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+                        };
+                        if (userTypeClaim == "octa")
+                        {
+                            registerationFormSubmittion.InsertedByOctaId = userId;
+                        }
+                        else if (userTypeClaim == "employee")
+                        {
+                            registerationFormSubmittion.InsertedByOctaId = userId;
+                        }
+                        Unit_Of_Work.registerationFormSubmittion_Repository.Add(registerationFormSubmittion);
                     }
                 }
-
-                RegisterationFormSubmittion registerationFormSubmittion = new RegisterationFormSubmittion
+                for (int i = 0; i < registerationFormParentAddDTO.RegisterationFormSubmittions.Count; i++)
                 {
-                    RegisterationFormParentID = newRegisterationFormParentID,
-                    CategoryFieldID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID,
-                    SelectedFieldOptionID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID : (long?)null,
-                    TextAnswer = registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer : registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile != null ? Path.Combine("Uploads", "RegistrationForm", fileFolder, registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFile.FileName) : null,
-                    InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
-                }; 
-                if (userTypeClaim == "octa")
-                {
-                    registerationFormSubmittion.InsertedByOctaId = userId;
+                    RegisterationFormSubmittion registerationFormSubmittion = new RegisterationFormSubmittion
+                    {
+                        RegisterationFormParentID = newRegisterationFormParentID,
+                        CategoryFieldID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID,
+                        SelectedFieldOptionID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID : (long?)null,
+                        TextAnswer = registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer : null,
+                        InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+                    };
+                    if (userTypeClaim == "octa")
+                    {
+                        registerationFormSubmittion.InsertedByOctaId = userId;
+                    }
+                    else if (userTypeClaim == "employee")
+                    {
+                        registerationFormSubmittion.InsertedByOctaId = userId;
+                    }
+                    Unit_Of_Work.registerationFormSubmittion_Repository.Add(registerationFormSubmittion);
                 }
-                else if (userTypeClaim == "employee")
-                {
-                    registerationFormSubmittion.InsertedByOctaId = userId;
-                }
-                Unit_Of_Work.registerationFormSubmittion_Repository.Add(registerationFormSubmittion);
             }
+            else
+            {
+                for (int i = 0; i < registerationFormParentAddDTO.RegisterationFormSubmittions.Count; i++)
+                {
+                    RegisterationFormSubmittion registerationFormSubmittion = new RegisterationFormSubmittion
+                    {
+                        RegisterationFormParentID = newRegisterationFormParentID,
+                        CategoryFieldID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].CategoryFieldID,
+                        SelectedFieldOptionID = registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].SelectedFieldOptionID : (long?)null,
+                        TextAnswer = registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer != null ? registerationFormParentAddDTO.RegisterationFormSubmittions[i].TextAnswer : null,
+                        InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+                    };
+                    if (userTypeClaim == "octa")
+                    {
+                        registerationFormSubmittion.InsertedByOctaId = userId;
+                    }
+                    else if (userTypeClaim == "employee")
+                    {
+                        registerationFormSubmittion.InsertedByOctaId = userId;
+                    }
+                    Unit_Of_Work.registerationFormSubmittion_Repository.Add(registerationFormSubmittion);
+                }
+            }
+
             Unit_Of_Work.SaveChanges();
 
             return Ok(registerationFormParentAddDTO);

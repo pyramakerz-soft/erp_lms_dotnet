@@ -4,7 +4,8 @@
             <img src="Images/Logo.png">
         </div>
         <div>
-            <input type="text" class="lg:w-[543px] lg:h-[53px] rounded-[8px] border border-gray-300 px-3 lg:px-4 py-2 lg:py-3"
+            <input type="text"
+                class="lg:w-[543px] lg:h-[53px] rounded-[8px] border border-gray-300 px-3 lg:px-4 py-2 lg:py-3"
                 placeholder="Enter Keyword..." />
         </div>
         <div class="relative">
@@ -17,7 +18,8 @@
                 <i class="fa-solid fa-globe text-white text-2xl"></i>
             </div>
             <div class="relative">
-                <button class="lg:flex items-center lg:space-x-2 rtl:space-x-reverse font-semibold text-white" (click)="toggleDropdown()">
+                <button class="lg:flex items-center lg:space-x-2 rtl:space-x-reverse font-semibold text-white"
+                    (click)="toggleDropdown()">
                     <p class="hidden lg:block">{{ selectedLanguage }}</p>
                     <i class="fa-solid fa-caret-down"></i>
                 </button>
@@ -28,7 +30,7 @@
             </div>
         </div>
         <div>
-            <div class="relative">
+            <div class="relative dropdown-container">
                 <div class="flex items-center justify-between space-x-3 rtl:space-x-reverse" (click)="togglePopup()">
                     <img src="Images/Avatar.png" class="cursor-pointer" alt="Profile Photo">
                     <div class="hidden font-semibold text-white lg:flex flex-col space-y-2">
@@ -36,26 +38,30 @@
                             {{userName}}
                         </div>
                         <div class="text-sm">
-                            SchoolX
+                            {{ User_Type.charAt(0).toUpperCase() + User_Type.slice(1).toLowerCase() }}
                         </div>
                     </div>
                 </div>
-                <div *ngIf="isPopupOpen" class="absolute ltr:right-0 rtl:left-0 mt-2 w-60 max-w-xs bg-white rounded-lg shadow-lg p-4 z-50">
+                <div *ngIf="isPopupOpen"
+                    class="absolute ltr:right-0 rtl:left-0 mt-2 w-60 max-w-xs bg-white rounded-lg shadow-lg p-4 z-50">
                     <h3 class="font-semibold text-gray-700">Account Options</h3>
                     <ul class="mt-2">
                         <li *ngFor="let token of allTokens">
-                        <button (click)="ChangeAccount(token.id)" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">
-                            {{ token.key }}
-                        </button>
+                            <button (click)="ChangeAccount(token.id)"
+                                class="text-start w-full hover:bg-gray-100 p-2 rounded-md">
+                                {{ token.key }}
+                            </button>
                         </li>
                     </ul>
-                    <button (click)="gotologin()" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">Add New Account</button>
-                    <button (click)="logOut()" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">Log Out</button>
-                    <button (click)="logOutAll()" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">Log Out From All Accounts</button>
+                    <button (click)="gotologin()" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">Add New
+                        Account</button>
+                    <button (click)="logOut()" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">Log
+                        Out</button>
+                    <button (click)="logOutAll()" class="text-start w-full hover:bg-gray-100 p-2 rounded-md">Log Out
+                        From All Accounts</button>
 
                 </div>
-              </div>
-              
+            </div>
         </div>
     </div>
 </div>

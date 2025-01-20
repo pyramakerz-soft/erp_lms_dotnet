@@ -34,7 +34,7 @@
                     </div>
                     <img class="w-3 lg:w-fit" src="Icons/Drop-Down.png">
                 </summary>
-                <div *ngIf="item.subItems"  class="pl-8 py-4 flex flex-col space-y-3">
+                <div *ngIf="item.subItems"  class="pl-20 py-4 flex flex-col space-y-3">
                     <a *ngFor="let subItem of item.subItems; let i = index" class="cursor-pointer hover:opacity-30" [routerLink]="subItem.route">{{ subItem.label }}</a>
                 </div>
             </details>

@@ -10,11 +10,12 @@ import { ApiService } from '../../../../Services/api.service';
 import { SchoolService } from '../../../../Services/Employee/school.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-school',
   standalone: true,
-  imports: [FormsModule,CommonModule,SearchComponent],
+  imports: [FormsModule,CommonModule,SearchComponent, TranslateModule],
   templateUrl: './school.component.html',
   styleUrl: './school.component.css'
 })

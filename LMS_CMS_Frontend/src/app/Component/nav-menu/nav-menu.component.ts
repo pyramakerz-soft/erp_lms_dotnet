@@ -3,17 +3,18 @@ import { ChangeDetectorRef, Component, HostListener, Renderer2 } from '@angular/
 import { FormsModule } from '@angular/forms';
 import { TokenData } from '../../Models/token-data';
 import { AccountService } from '../../Services/account.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
 import { NewTokenService } from '../../Services/shared/new-token.service';
 import { LogOutService } from '../../Services/shared/log-out.service';
 import { Subscription } from 'rxjs';
+import { LanguageService } from '../../Services/shared/language.service';
 
 @Component({
   selector: 'app-nav-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './nav-menu.component.html',
   styleUrl: './nav-menu.component.css'
 })
@@ -28,7 +29,8 @@ export class NavMenuComponent {
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   subscription: Subscription | undefined;
 
-  constructor(private cdr: ChangeDetectorRef, private router: Router, public account: AccountService, private renderer: Renderer2, private translate: TranslateService, private communicationService: NewTokenService, private logOutService: LogOutService) { }
+  constructor(private router: Router, public account: AccountService, public languageService: LanguageService,
+    private translate: TranslateService, private communicationService: NewTokenService, private logOutService: LogOutService) { }
 
   ngOnInit() {
     this.GetUserInfo();
@@ -75,11 +77,14 @@ export class NavMenuComponent {
     this.selectedLanguage = language === 'ar' ? 'العربية' : 'English';
     this.updateDirection(language);
     this.dropdownOpen = false;
-  }
 
+    const direction = language === 'ar' ? 'rtl' : 'ltr';
+    this.languageService.setLanguage(direction);
+  }
+  
   updateDirection(language: string) {
     const direction = language === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.setAttribute('dir', direction);
+    document.documentElement.setAttribute('dir', direction); 
     this.dropdownOpen = false;
   }
 
@@ -109,11 +114,7 @@ export class NavMenuComponent {
   // Cleanup event listener
   ngOnDestroy() {
     document.removeEventListener('click', this.onDocumentClick);
-  }
-
-  // ngOnDestroy(): void {
-  //   this.renderer.removeClass(document.body, 'overflow-hidden');
-  // }
+  } 
 
   ChangeAccount(id: number): void {
     const tokenObject = this.allTokens.find(s => s.id === id);

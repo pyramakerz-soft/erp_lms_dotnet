@@ -45,3 +45,8 @@ html[dir='rtl'] {
     direction: rtl;
     text-align: right;
 }
+
+* [dir='rtl'] {
+    direction: rtl;
+    text-align: right;
+}

@@ -1,14 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Input, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, Input, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PagesWithRoleId } from '../../Models/pages-with-role-id';
 import { SideMenuItemComponent } from '../side-menu-item/side-menu-item.component';
 import { NewTokenService } from '../../Services/shared/new-token.service';
+import { Subscription } from 'rxjs';
+import { LanguageService } from '../../Services/shared/language.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-side-menu',
   standalone: true,
-  imports: [CommonModule, RouterLink, SideMenuItemComponent],
+  imports: [CommonModule, RouterLink, SideMenuItemComponent, TranslateModule],
   templateUrl: './side-menu.component.html',
   styleUrl: './side-menu.component.css'
 })
@@ -22,7 +25,21 @@ export class SideMenuComponent {
   IsMenuOpen = false
   IsSearchFocus = false
 
-  constructor(private communicationService: NewTokenService) {}
+  isRtl: boolean = false;
+  subscription!: Subscription;
+
+  constructor(private languageService: LanguageService) {} 
+
+  ngOnInit(): void {
+    this.subscription = this.languageService.language$.subscribe(direction => {
+      this.isRtl = direction === 'rtl';
+    });
+    this.isRtl = document.documentElement.dir === 'rtl';
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  } 
 
   toggleMenu() {
     this.IsMenuOpen = !this.IsMenuOpen

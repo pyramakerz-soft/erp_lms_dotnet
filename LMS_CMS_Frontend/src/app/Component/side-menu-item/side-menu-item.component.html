@@ -5,7 +5,7 @@
     (click)="navigateToRoute(item.en_name)">
     <div class="flex items-center space-x-3 rtl:space-x-reverse">
       <img class="w-3 lg:w-fit" src="Icons/Dashboard.png" />
-      <p>{{ item.en_name }}</p>
+      <p>{{ isRtl ? item.ar_name : item.en_name }}</p>
     </div>
     <img *ngIf="item.children && item.children.length > 0" class="w-3 lg:w-fit" src="Icons/Drop-Down.png" />
   </summary>

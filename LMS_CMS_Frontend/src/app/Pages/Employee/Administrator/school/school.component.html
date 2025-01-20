@@ -1,28 +1,28 @@
 <div class="flex justify-between items-center">
-    <h1 class="primaryTxt font-semibold text-2xl leading-9">Schools</h1>
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ 'Schools' | translate }}</h1>
     <div class="flex justify-between items-center ">
         <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
     </div>
 </div>
 
 <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+    <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
         <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
             <tr>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    ID
+                    {{ 'ID' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    School Name
+                    {{ 'School Name' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Address
+                    {{ 'Address' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    School type
+                    {{ 'School type' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Actions
+                    {{ 'Actions' | translate }}
                 </th>
             </tr>
         </thead>
@@ -60,7 +60,7 @@
 <div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
     <div class="bg-white rounded-2xl p-12 w-1/2 max-h-[95%] overflow-y-auto m-auto">
         <div class="flex justify-between items-center">
-            <h1 class="font-semibold text-2xl leading-9">Edit School</h1>
+            <h1 class="font-semibold text-2xl leading-9">{{ 'Edit School' | translate }}</h1>
             <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
         

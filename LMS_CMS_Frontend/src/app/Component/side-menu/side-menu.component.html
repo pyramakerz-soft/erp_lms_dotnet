@@ -10,7 +10,7 @@
 <div *ngIf="IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-full min-h-[100vh] py-10 px-4 flex flex-col   text-sm lg:text-xl">
     <div class="px-7 text-base flex space-x-4 rtl:space-x-reverse items-center" (click)="toggleMenu()">
         <i class="fa-solid fa-angle-left"></i>
-        <p>Lookscout Dashboard</p>
+        <h1 class="uppercase text-sm lg:text-base font-semibold w-max">{{ 'Dashboard' | translate }}</h1>
     </div>
 
     <div class="px-7 mt-6 relative flex items-center w-full">
@@ -18,12 +18,12 @@
             <i class="fa-solid fa-magnifying-glass"></i>
         </span>
         <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 text-sm rounded-md w-full"
-            placeholder="Search here..." [disabled]="!IsMenuOpen"/>
+            placeholder="{{ 'Search' | translate }}" [disabled]="!IsMenuOpen"/>
     </div>
 
     <section class="mt-6 min-w-full">
         <div class="py-4 px-9">
-            <p class="uppercase text-sm lg:text-lg font-semibold">Main Menu</p>
+            <h1 class="uppercase text-sm lg:text-lg font-semibold text-[#FFFFFF]">{{ 'Main Menu' | translate }}</h1>
         </div>
         <div class="text-xl" >
             <details *ngFor="let item of menuItems; let i = index" #details

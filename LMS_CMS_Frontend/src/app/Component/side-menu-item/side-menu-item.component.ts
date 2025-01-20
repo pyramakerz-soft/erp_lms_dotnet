@@ -5,6 +5,7 @@ import { PagesWithRoleId } from '../../Models/pages-with-role-id';
 import { MenuService } from '../../Services/shared/menu.service';
 import { NewTokenService } from '../../Services/shared/new-token.service';
 import { Subscription } from 'rxjs';
+import { LanguageService } from '../../Services/shared/language.service';
 
 @Component({
   selector: 'app-side-menu-item',
@@ -17,9 +18,10 @@ export class SideMenuItemComponent {
   @Input() item!: any;
   @Input() menuItems?: { label: string; route?: string;  subItems?: { label: string; route: string }[]}[] = [];
   @Input() menuItemsForEmployee?: PagesWithRoleId[];
-   subscription: Subscription | undefined;
+  subscription!: Subscription;
+  isRtl: boolean = false;
 
-  constructor(private router: Router ,private menuService: MenuService ,private communicationService: NewTokenService) {}
+  constructor(private router: Router ,private menuService: MenuService ,private communicationService: NewTokenService, private languageService: LanguageService) {}
 
   async ngOnInit() {
     this.subscription = this.communicationService.action$.subscribe((state) => {
@@ -37,7 +39,15 @@ export class SideMenuItemComponent {
 
     });
   
+    this.subscription = this.languageService.language$.subscribe(direction => {
+      this.isRtl = direction === 'rtl';
+    });
+    this.isRtl = document.documentElement.dir === 'rtl';
   }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  } 
 
   navigateToRoute(routName:string): void {
     const routes: Routes = this.router.config;

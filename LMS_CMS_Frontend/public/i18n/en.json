@@ -1,3 +1,14 @@
 {
-    "HELLO": "Welcome"
+    "HELLO": "Welcome",
+    "Dashboard": "Lookscout Dashboard",
+    "Main Menu": "Main Menu",
+    "Search": "Search here...",
+    "Enter Key Word": "Enter Keyword...",
+    "Schools": "Schools",
+    "ID": "ID",
+    "School Name": "School Name",
+    "Address": "Address",
+    "School type": "School type",
+    "Actions":"Actions",
+    "Edit School":"Edit School"
 }

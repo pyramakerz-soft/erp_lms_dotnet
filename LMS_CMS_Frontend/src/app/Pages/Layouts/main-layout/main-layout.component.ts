@@ -36,6 +36,8 @@ export class MainLayoutComponent {
 
   async GetInfo(){
     this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
+
+    console.log(this.User_Data_After_Login.id)
     if (this.User_Data_After_Login.type == "employee") {
       await this.Get_Pages_With_RoleID()
     } else if (this.User_Data_After_Login.type == "student") {
@@ -85,8 +87,7 @@ export class MainLayoutComponent {
       ]
     }
   }
-
-
+ 
   Get_Pages_With_RoleID() {
     this.roleDetailsService.Get_Pages_With_RoleID(this.User_Data_After_Login.role).subscribe(
       (data:any) => {
@@ -96,6 +97,7 @@ export class MainLayoutComponent {
         this.menuItemsForEmployee = [];
       });
   }
+
   Get_All_With_Group_By() {
     this.roleDetailsService.Get_All_Pages().subscribe(
       (data:any) => {

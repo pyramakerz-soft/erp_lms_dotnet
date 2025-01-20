@@ -10,11 +10,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RegistrationCategoryService } from '../../../../Services/Employee/Registration/registration-category.service';
 import Swal from 'sweetalert2';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-registration-form-field',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule ,SearchComponent],
   templateUrl: './registration-form-field.component.html',
   styleUrl: './registration-form-field.component.css'
 })
@@ -49,6 +51,10 @@ export class RegistrationFormFieldComponent {
 
   Category: RegistrationCategory = new RegistrationCategory();
 
+  key: string = "id";
+  value: any = "";
+  keysArray: string[] = ['id','arName', 'enName' ,'orderInForm'];
+
   validationErrors: { [key in keyof RegistrationCategory]?: string } = {};
   
   constructor(
@@ -72,7 +78,6 @@ export class RegistrationFormFieldComponent {
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
-      console.log(this.path)
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;
@@ -189,4 +194,29 @@ export class RegistrationFormFieldComponent {
       }
     }
 
+   async onSearchEvent(event: { key: string, value: any }) {
+       this.key = event.key;
+       this.value = event.value;
+       try {
+         const data: RegistrationCategory[] = await firstValueFrom(this.CategoryServ.Get(this.DomainName));  
+         this.Data = data || [];
+     
+         if (this.value !== "") {
+           const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+     
+           this.Data = this.Data.filter(t => {
+             const fieldValue = t[this.key as keyof typeof t];
+             if (typeof fieldValue === 'string') {
+               return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+             }
+             if (typeof fieldValue === 'number') {
+               return fieldValue === numericValue;
+             }
+             return fieldValue == this.value;
+           });
+         }
+       } catch (error) {
+         this.Data = [];
+       }
+     }
 }

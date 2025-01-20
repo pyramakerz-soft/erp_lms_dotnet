@@ -17,11 +17,13 @@ import { AcademicYear } from '../../../../Models/LMS/academic-year';
 import { SchoolService } from '../../../../Services/Employee/school.service';
 import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-classrooms-accommodation',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule , SearchComponent],
   templateUrl: './classrooms-accommodation.component.html',
   styleUrl: './classrooms-accommodation.component.css',
 })
@@ -66,6 +68,9 @@ export class ClassroomsAccommodationComponent {
   SelectedGradeId:number =0;
   IsSearch:boolean=false;
 
+  key: string = 'id';
+  value: any = '';
+  keysArray: string[] = ['id', 'studentName','gradeName'];
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -176,5 +181,36 @@ export class ClassroomsAccommodationComponent {
     this.SelectedSchoolId=0;
     this.SelectedYearId=0;
     this.Data=this.OriginalData
+  }
+
+  async onSearchEvent(event: { key: string; value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: RegisterationFormParent[] = await firstValueFrom(
+        this.registerationFormParentService
+        .GetAll(this.DomainName)
+      );
+      this.Data = data || [];
+
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
+
+        this.Data = this.Data.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.Data = [];
+    }
   }
 }

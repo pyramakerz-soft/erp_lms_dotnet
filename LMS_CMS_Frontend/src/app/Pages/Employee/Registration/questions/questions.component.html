@@ -38,6 +38,7 @@
     <div class="flex justify-between items-center">
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Questions</h1>
         <div class="flex justify-between items-center ">
+            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="Create()"
                 class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
                 Add Question
@@ -193,6 +194,7 @@
                             placeholder="Enter New Option" />
                             <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">{{ validationErrors['options'] }}</span>
                     </div>
+                    <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
                     <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg" (click)="AddOption()">
                         Add
                     </button>

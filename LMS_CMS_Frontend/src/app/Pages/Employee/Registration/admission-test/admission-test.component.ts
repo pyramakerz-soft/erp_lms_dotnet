@@ -18,11 +18,13 @@ import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
 import { SubjectService } from '../../../../Services/Employee/LMS/subject.service';
 import Swal from 'sweetalert2';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-admission-test',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule ,SearchComponent],
   templateUrl: './admission-test.component.html',
   styleUrl: './admission-test.component.css'
 })
@@ -65,6 +67,11 @@ export class AdmissionTestComponent {
   SchoolId: number = 0;
 
   validationErrors: { [key in keyof Test]?: string } = {};
+
+  key: string = 'id';
+  value: any = '';
+  keysArray: string[] = ['id', 'title', 'totalMark','subjectName' ,'academicYearName'];
+
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -255,4 +262,34 @@ export class AdmissionTestComponent {
       this.validationErrors[field] = `*${this.capitalizeField(field)} is required`;
     }
   }
+
+   async onSearchEvent(event: { key: string; value: any }) {
+      this.key = event.key;
+      this.value = event.value;
+      try {
+        const data: Test[] = await firstValueFrom(
+          this.testServ.Get(this.DomainName)
+        );
+        this.Data = data || [];
+  
+        if (this.value !== '') {
+          const numericValue = isNaN(Number(this.value))
+            ? this.value
+            : parseInt(this.value, 10);
+  
+          this.Data = this.Data.filter((t) => {
+            const fieldValue = t[this.key as keyof typeof t];
+            if (typeof fieldValue === 'string') {
+              return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+            }
+            if (typeof fieldValue === 'number') {
+              return fieldValue === numericValue;
+            }
+            return fieldValue == this.value;
+          });
+        }
+      } catch (error) {
+        this.Data = [];
+      }
+    }
 }

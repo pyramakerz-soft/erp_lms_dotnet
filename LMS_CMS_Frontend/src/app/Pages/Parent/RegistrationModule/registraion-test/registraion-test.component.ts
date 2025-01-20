@@ -128,7 +128,7 @@ export class RegistraionTestComponent {
             .GetByTestIDGroupBy(this.TestId, this.DomainName)
             .subscribe((d: any) => {
               this.questions = d.groupedByQuestionType ;
-              this.TestName=d.testName
+              this.TestName=d.testName;
               console.log(d);
               this.questionServ
                 .GetByTestID(this.TestId, this.DomainName)

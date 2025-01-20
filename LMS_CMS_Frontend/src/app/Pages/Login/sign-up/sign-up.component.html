@@ -1,9 +1,8 @@
 <div class="bg-cover bg-center h-screen" style="background-image: url('Images/login.jpg');">
     <div class="flex flex-col items-center justify-center h-full bg-black bg-opacity-50 p-4">
       <div
-        class="w-full md:w-3/4 lg:w-[528px] md:h-1/2 lg:h-fit py-7 px-8 bg-white border border-gray-200 rounded-3xl shadow mb-2 flex flex-col items-center justify-center">
-  
-        <div class="mb-7 flex justify-center ">
+      class="w-full md:w-3/4 lg:w-[528px] max-h-[90vh] py-7 px-8 bg-white border border-gray-200 rounded-3xl shadow mb-2 flex flex-col items-center justify-center ">
+        <div class="mb-5 flex justify-center ">
           <img src="Images/OctaIcon.png" alt="Avatar">
         </div>
   
@@ -24,7 +23,7 @@
   
         <span *ngIf="somthingError" class="text-red-500 text-sm font-normal">{{ somthingError }}</span>
   
-        <div class="flex flex-col w-full">
+        <div class="flex flex-col w-full overflow-y-auto">
           <div class="mb-2 w-full py-2">
             <label for="user_Name" class="py-6">Username:</label>
             <input class="w-full h-[56px] rounded-[8px] border px-2 mt-1" id="user_Name" type="text"

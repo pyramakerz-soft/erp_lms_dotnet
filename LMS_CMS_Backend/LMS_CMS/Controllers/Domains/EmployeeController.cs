@@ -182,6 +182,10 @@ namespace LMS_CMS_PL.Controllers.Domains
         ///////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Administrator", "Employee Create" }
+        )]
         public async Task<IActionResult> Add([FromForm] EmployeeAddDTO NewEmployee, [FromForm] List<IFormFile> files)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -329,7 +333,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Administrator", "Employee" }
+            pages: new[] { "Administrator", "Employee Edit" }
         )]
         public async Task<IActionResult> EditAsync([FromForm] EmployeePutDTO newEmployee, [FromForm] List<IFormFile> files)
         {

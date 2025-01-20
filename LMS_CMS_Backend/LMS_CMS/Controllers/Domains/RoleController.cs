@@ -96,7 +96,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Role", "Administrator" }
+            pages: new[] { "Role Create", "Administrator" }
         )]
         public async Task<IActionResult> Add(RoleAddDTO NewRoles)
         {
@@ -199,7 +199,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Role", "Administrator" }
+            pages: new[] { "Role Edit", "Administrator" }
         )]
         public async Task<IActionResult> Edit(RolePutDTO newRole)
         {

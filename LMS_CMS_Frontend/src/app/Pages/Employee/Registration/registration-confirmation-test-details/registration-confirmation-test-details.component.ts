@@ -137,7 +137,7 @@ export class RegistrationConfirmationTestDetailsComponent {
   }
 
   View(row:TestWithRegistrationForm){
-    this.router.navigateByUrl(`Employee/Registration Confirmation Test Answer/${row.registrationTestID}/${this.RegisterFormParentID}/${row.id}`)
+    this.router.navigateByUrl(`Employee/Registration Confirmation Test/${row.registrationTestID}/${this.RegisterFormParentID}/${row.id}`)
   }
 
 }

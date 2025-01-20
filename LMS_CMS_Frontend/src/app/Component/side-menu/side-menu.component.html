@@ -7,17 +7,17 @@
     <img *ngFor="let item of menuItems" class="w-3 lg:w-fit" src="Icons/DashboardGray.png" (click)="toggleMenu()">
 </div>
 
-<div *ngIf="IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-full min-h-[100vh] py-10 px-4 flex flex-col items-center text-sm lg:text-xl">
+<div *ngIf="IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-full min-h-[100vh] py-10 px-4 flex flex-col   text-sm lg:text-xl">
     <div class="px-7 text-base flex space-x-4 rtl:space-x-reverse items-center" (click)="toggleMenu()">
         <i class="fa-solid fa-angle-left"></i>
         <p>Lookscout Dashboard</p>
     </div>
 
-    <div class="px-7 mt-6 relative flex items-center">
+    <div class="px-7 mt-6 relative flex items-center w-full">
         <span class="absolute text-[#FFFFFF0D] ltr:ml-2 rtl:mr-2">
             <i class="fa-solid fa-magnifying-glass"></i>
         </span>
-        <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 text-sm rounded-md"
+        <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 text-sm rounded-md w-full"
             placeholder="Search here..." [disabled]="!IsMenuOpen"/>
     </div>
 
@@ -25,21 +25,24 @@
         <div class="py-4 px-9">
             <p class="uppercase text-sm lg:text-lg font-semibold">Main Menu</p>
         </div>
-        <div class="text-xl">
-            <details *ngFor="let item of menuItems; let i = index">
-                <summary [routerLink]="item.route" class="px-9 py-3 lg:py-4 flex space-x-3 rtl:space-x-reverse items-center justify-between hover:bg-[rgba(255,255,255,0.1)] ltr:hover:rounded-r-lg rtl:hover:rounded-l-lg ltr:hover:border-l-2 rtl:hover:border-r-2 cursor-pointer">
-                    <div class="flex items-center space-x-3 rtl:space-x-reverse">
+        <div class="text-xl" >
+            <details *ngFor="let item of menuItems; let i = index" #details
+            [ngClass]="{'bg-[#FFFFFF1A] rounded-br-lg rounded-tr-lg border-l mb-3': details.open && item.subItems}">
+                <summary 
+                [routerLink]="item.route"  
+                class="px-9 py-3 lg:py-4 flex space-x-3 rtl:space-x-reverse items-center justify-between hover:bg-[rgba(255,255,255,0.1)] ltr:hover:rounded-r-lg rtl:hover:rounded-l-lg ltr:hover:border-l-2 rtl:hover:border-r-2 cursor-pointer">
+                    <div class="flex items-center space-x-3 rtl:space-x-reverse w-max">
                         <img class="w-3 lg:w-fit" src="Icons/Dashboard.png">
                         <p>{{ item.label }}</p>
                     </div>
-                    <img class="w-3 lg:w-fit" src="Icons/Drop-Down.png">
+                    <img *ngIf="item.subItems" class="w-3 lg:w-fit" src="Icons/Drop-Down.png">
                 </summary>
-                <div *ngIf="item.subItems"  class="pl-20 py-4 flex flex-col space-y-3">
+                <div *ngIf="item.subItems"  class="pl-20 p-2 flex flex-col space-y-3 w-max">
                     <a *ngFor="let subItem of item.subItems; let i = index" class="cursor-pointer hover:opacity-30" [routerLink]="subItem.route">{{ subItem.label }}</a>
                 </div>
             </details>
         </div>
-        <div class="text-xl">
+        <div class="text-xl w-max">
             <app-side-menu-item *ngFor="let item of menuItemsForEmployee" [item]="item"></app-side-menu-item>
         </div>  
     </section>

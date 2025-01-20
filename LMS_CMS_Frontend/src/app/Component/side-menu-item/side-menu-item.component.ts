@@ -63,5 +63,6 @@ export class SideMenuItemComponent {
       }
     }
     return false;
-  }
+  } 
+  
 }

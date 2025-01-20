@@ -83,7 +83,7 @@ export class RegistrationFormTestAnswerComponent {
     });
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName(this.path, items);
+      const settingsPage = this.menuService.findByPageName("Registration Confirmation Test", items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
         this.AllowDelete = settingsPage.allow_Delete;

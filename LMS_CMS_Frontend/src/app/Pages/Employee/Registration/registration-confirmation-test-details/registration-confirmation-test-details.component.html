@@ -47,8 +47,8 @@
                     {{ row.id }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.title }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <i *ngIf="row.registrationTestState!=='Accepted'" class="fa-solid fa-circle fa-1x" ></i>           
-                    <i *ngIf="row.registrationTestState==='Accepted'" class="fa-solid fa-circle fa-1x text-green-500"></i>
+                    <i *ngIf="row.registrationTestState!=='Accepted' && row.registrationTestState!=='Done'" class="fa-solid fa-circle fa-1x" ></i>           
+                    <i *ngIf="row.registrationTestState === 'Accepted' || row.registrationTestState === 'Done'" class="fa-solid fa-circle fa-1x text-green-500"></i>
                     {{ row.registrationTestState }}
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.registrationTestMark }} / {{row.totalMark}}</td>

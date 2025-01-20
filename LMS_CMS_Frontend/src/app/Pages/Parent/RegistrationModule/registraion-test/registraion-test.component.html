@@ -4,8 +4,11 @@
     <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ TestName }}</h1>
   </div>
   <div class="flex justify-between items-center">
-    <button *ngIf="mode=='degree'" class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2">
-      {{ mark }} / {{TotalMark}}
+    <button *ngIf="mode=='degree'&&StateId==4" class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2">
+      {{ mark }} / {{TotalMark}}   
+    </button>
+    <button *ngIf="mode=='degree'&&StateId!=4" class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2">
+      _ _ / {{TotalMark}}
     </button>
     <button *ngIf="mode=='test'" (click)="Save()" class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2">
       Submit
@@ -22,8 +25,8 @@
       <div *ngIf="row.questionTypeID !== 3" class="flex justify-start flex-wrap ">
         <div *ngFor="let q of row.questions; let i = index" class="w-[29%] mr-1">
           <div *ngIf="row.questionTypeID !== 3" class="bg-[#EBEBEB] p-4 rounded-xl mb-2 border" [ngClass]="{
-              'border-[#177C03]': q.answerName === q.correctAnswerName,
-              'border-[#EA3A3D]': q.answerName !== q.correctAnswerName
+              'border-[#177C03]': q.answerName === q.correctAnswerName&&StateId==4,
+              'border-[#EA3A3D]': q.answerName !== q.correctAnswerName&&StateId==4
             }">
             <div>{{ q.description }} ?</div>
             <div>

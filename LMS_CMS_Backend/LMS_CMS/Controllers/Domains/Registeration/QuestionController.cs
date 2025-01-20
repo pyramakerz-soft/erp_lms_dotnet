@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LMS_CMS_PL.Controllers.Domains.Registeration
 {
@@ -131,6 +132,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                               .Include(emp => emp.MCQQuestionOptions)
             );
 
+            Test test =Unit_Of_Work.test_Repository.First_Or_Default(t=>t.ID==id);
             if (questions == null || !questions.Any())
             {
                 return NotFound();
@@ -163,7 +165,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 })
                 .ToList();
 
-            return Ok(groupedByQuestionType);
+            var response = new
+            {
+                TestName = test.Title,
+                groupedByQuestionType = groupedByQuestionType
+            };
+            return Ok(response);
         }
 
         //////////////////////////////////////////////////////////////////////////////

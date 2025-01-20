@@ -15,7 +15,7 @@ import { TokenData } from '../../../../Models/token-data';
 import { InterviewTimeTableService } from '../../../../Services/Employee/Registration/interview-time-table.service';
 import { InterviewTimeTable } from '../../../../Models/Registration/interview-time-table';
 import Swal from 'sweetalert2';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-interview-time-table',
@@ -25,7 +25,7 @@ import { lastValueFrom } from 'rxjs';
   styleUrl: './interview-time-table.component.css'
 })
 export class InterviewTimeTableComponent {
-  keysArray: string[] = ['id', 'name','date'];
+  keysArray: string[] = ['id', 'date','fromTime' ,'toTime','capacity','reserved','academicYearName'];
   key: string= "id";
   value: any = "";
 
@@ -97,32 +97,36 @@ export class InterviewTimeTableComponent {
     });
   }
 
-  async onSearchEvent(event: { key: string, value: any }) {
+  async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
-  
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
-  
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+    try {
+      const data: InterviewTimeTable[] = await firstValueFrom(
+        this.interviewTimeTableService.Get(this.DomainName)
+      );
+      this.interviewTimeTableData = data || [];
+
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
+
+        this.interviewTimeTableData = this.interviewTimeTableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.interviewTimeTableData = [];
+    }
   }
+  
 
   openModal(InterviewId?: number) {
     if (InterviewId) {

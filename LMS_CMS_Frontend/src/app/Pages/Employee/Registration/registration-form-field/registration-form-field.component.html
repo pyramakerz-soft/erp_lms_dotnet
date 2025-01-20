@@ -2,6 +2,7 @@
     <div class="flex justify-between items-center">
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Registration Form Field</h1>
         <div class="flex justify-between items-center ">
+            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="Create()"
                 class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
                 Create Categories

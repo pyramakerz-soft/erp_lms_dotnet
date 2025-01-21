@@ -10,5 +10,14 @@
     "Address": "Address",
     "School type": "School type",
     "Actions":"Actions",
-    "Edit School":"Edit School"
+    "Edit School":"Edit School",
+    "Report Header 1 English": "Report Header 1 English",
+    "Report Header 1 Arabic": "Report Header 1 Arabic",
+    "Report Header 2 English": "Report Header 2 English",
+    "Report Header 2 Arabic": "Report Header 2 Arabic",
+    "Click To Upload":"Click to Upload",
+    "or drag and drop Icon":"or drag and drop Icon",
+    "Max. File size": "Max. File size",
+    "Enter": "Enter",
+    "Save": "Save"
 }

@@ -37,7 +37,6 @@ export class MainLayoutComponent {
   async GetInfo(){
     this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
 
-    console.log(this.User_Data_After_Login.id)
     if (this.User_Data_After_Login.type == "employee") {
       await this.Get_Pages_With_RoleID()
     } else if (this.User_Data_After_Login.type == "student") {

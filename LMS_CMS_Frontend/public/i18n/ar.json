@@ -10,5 +10,14 @@
     "Address": "العنوان",
     "School type": "نوع المدرسة",
     "Actions": "الإجراءات",
-    "Edit School":"تعديل المدرسة"
+    "Edit School":"تعديل المدرسة",
+    "Report Header 1 English": "عنوان التقرير 1 باللغة الإنجليزية",
+    "Report Header 1 Arabic": "عنوان التقرير 1 باللغة العربية",
+    "Report Header 2 English": "عنوان التقرير 2 باللغة الإنجليزية",
+    "Report Header 2 Arabic": "عنوان التقرير 2 باللغة العربية",
+    "Click To Upload":"انقر لتحميل",
+    "or drag and drop Icon":"أو سحب وإفلات أيقونة",
+    "Max. File size": "الحد الأقصى لحجم الملف",
+    "Enter": "أدخل",
+    "Save": "حفظ"
 }

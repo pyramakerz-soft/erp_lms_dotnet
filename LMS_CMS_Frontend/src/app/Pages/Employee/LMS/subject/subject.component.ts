@@ -21,6 +21,7 @@ import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { Grade } from '../../../../Models/LMS/grade';
 import { AddEditSubjectComponent } from '../../../../Component/Employee/LMS/add-edit-subject/add-edit-subject.component';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-subject',
@@ -30,7 +31,7 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrl: './subject.component.css'
 })
 export class SubjectComponent {
-  keysArray: string[] = ['id', 'name','date'];
+  keysArray: string[] = ['id', 'en_name','ar_name','gradeName','orderInCertificate','creditHours','subjectCode','passByDegree','totalMark','subjectCategoryName','numberOfSessionPerWeek','insertedAt'];
   key: string= "id";
   value: any = "";
 
@@ -89,6 +90,7 @@ export class SubjectComponent {
     this.subjectService.Get(this.DomainName).subscribe(
       (data) => {
         this.subjectData = data;
+        console.log(this.subjectData)
       }
     )
   }
@@ -216,28 +218,28 @@ export class SubjectComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Bus[] = await firstValueFrom(this.busService.Get(this.DomainName));  
-    //   this.busData = data || [];
+    try {
+      const data: Subject[] = await firstValueFrom(this.subjectService.Get(this.DomainName));  
+      this.subjectData = data || [];
   
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
   
-    //     this.busData = this.busData.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.busData = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.subjectData = this.subjectData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.subjectData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   // capitalizeField(field: keyof Subject): string {

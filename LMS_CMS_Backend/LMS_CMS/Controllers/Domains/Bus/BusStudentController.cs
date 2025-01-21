@@ -80,7 +80,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 if (busStudent != null)
                 {
                     var studentAcademicYear = Unit_Of_Work.studentAcademicYear_Repository
-                        .First_Or_Default(s => s.SemesterID == busStudent.SemseterID && s.StudentID == busStudent.StudentID && s.SchoolID == dto.SchoolID);
+                        .First_Or_Default(s => s.StudentID == busStudent.StudentID && s.SchoolID == dto.SchoolID);
                     if (studentAcademicYear != null)
                     {
                         dto.GradeID = studentAcademicYear.GradeID;
@@ -141,8 +141,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             BusStudentGetDTO busStudentDTO = mapper.Map<BusStudentGetDTO>(busStudent);
 
+            //var studentAcademicYear = Unit_Of_Work.studentAcademicYear_Repository
+            //        .First_Or_Default(s => s.SemesterID == busStudent.SemseterID);
             var studentAcademicYear = Unit_Of_Work.studentAcademicYear_Repository
-                    .First_Or_Default(s => s.SemesterID == busStudent.SemseterID);
+                    .First_Or_Default(s => s.StudentID == busStudent.StudentID && s.SchoolID == busStudentDTO.SchoolID);
 
             if (studentAcademicYear != null)
             {

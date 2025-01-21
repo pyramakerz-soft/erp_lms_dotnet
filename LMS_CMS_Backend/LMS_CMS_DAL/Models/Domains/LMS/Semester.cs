@@ -24,6 +24,5 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public long? AcademicYearID { get; set; }
         public AcademicYear? AcademicYear { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
-        public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
     }
 }

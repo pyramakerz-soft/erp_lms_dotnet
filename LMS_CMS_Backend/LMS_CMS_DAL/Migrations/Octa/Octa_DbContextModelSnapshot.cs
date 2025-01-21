@@ -70,7 +70,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("Domains");
+                    b.ToTable("Domains", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Octa.Octa", b =>
@@ -128,7 +128,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
                     b.HasIndex("User_Name")
                         .IsUnique();
 
-                    b.ToTable("Octa");
+                    b.ToTable("Octa", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Octa.Page", b =>
@@ -162,7 +162,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
                     b.HasIndex("en_name")
                         .IsUnique();
 
-                    b.ToTable("Page");
+                    b.ToTable("Page", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Octa.SchoolType", b =>
@@ -210,7 +210,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
 
                     b.HasIndex("UpdatedByUserId");
 
-                    b.ToTable("SchoolType");
+                    b.ToTable("SchoolType", (string)null);
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Octa.Domain", b =>

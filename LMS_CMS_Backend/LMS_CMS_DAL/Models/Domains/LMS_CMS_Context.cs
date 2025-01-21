@@ -290,12 +290,6 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasForeignKey(p => p.GradeID)
                  .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<StudentAcademicYear>()
-                 .HasOne(p => p.Semester)
-                 .WithMany(p => p.StudentAcademicYears)
-                 .HasForeignKey(p => p.SemesterID)
-                 .OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Subject>()
                  .HasOne(p => p.Grade)
                  .WithMany(p => p.Subjects)

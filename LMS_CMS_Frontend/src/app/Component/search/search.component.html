@@ -1,16 +1,16 @@
 <div class="flex justify-between items-center ">
-    <i class="fas fa-search mr-3 text-gray-500" style="width: 22.51px; height: 22.51px; font-size: 22.51px;"
+    <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500" style="width: 22.51px; height: 22.51px; font-size: 22.51px;"
         *ngIf="!IsSearchOpen" (click)="SearchToggle()"></i>
-    <div class="mr-1" *ngIf="IsSearchOpen">
+    <div class="ltr:mr-1 rtl:ml-1" *ngIf="IsSearchOpen">
         <select [(ngModel)]="key"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <option *ngFor="let key of keysArray" [value]="key">{{ formatKey(key) }}</option>
         </select>
     </div>
     <div *ngIf="IsSearchOpen"
-        class="relative flex items-center w-[432px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg px-4 py-3 gap-2 mr-3">
-        <i  class="fas fa-search text-gray-500 absolute left-3 text-sm md:text-base"></i>
-        <input type="text" placeholder="Enter Name..." [(ngModel)]="value" (ngModelChange)="SearchByKeyValue()"
-            class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full pl-10" />
+        class="relative flex items-center w-[432px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg px-4 py-3 gap-2 ltr:mr-3 rtl:ml-3">
+        <i  class="fas fa-search text-gray-500 absolute ltr:left-3 rtl:right-3 text-sm md:text-base"></i>
+        <input type="text" placeholder="{{ 'Enter Name' | translate }}" [(ngModel)]="value" (ngModelChange)="SearchByKeyValue()"
+            class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full ltr:pl-10 rtl:pr-10" />
     </div>
 </div>

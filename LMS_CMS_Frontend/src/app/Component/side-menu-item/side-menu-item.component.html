@@ -9,7 +9,7 @@
     </div>
     <img *ngIf="item.children && item.children.length > 0" class="w-3 lg:w-fit" src="Icons/Drop-Down.png" />
   </summary>
-  <div *ngIf="item.children && item.children.length > 0" class="pl-8 py-2 flex flex-col space-y-3 w-max">
+  <div *ngIf="item.children && item.children.length > 0" class="ltr:pl-8 rtl:pr-8 py-2 flex flex-col space-y-3 w-max">
     <app-side-menu-item *ngFor="let child of item.children" [item]="child"></app-side-menu-item>
   </div>
 </details>

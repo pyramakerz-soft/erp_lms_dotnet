@@ -23,7 +23,7 @@
                     <p class="hidden lg:block">{{ selectedLanguage }}</p>
                     <i class="fa-solid fa-caret-down"></i>
                 </button>
-                <div *ngIf="dropdownOpen" class="absolute mt-2 w-32 bg-white text-gray-700 rounded-md shadow-lg">
+                <div *ngIf="dropdownOpen" class="absolute mt-2 w-32 bg-white text-gray-700 rounded-md shadow-lg z-50">
                     <a class="block px-4 py-2 hover:bg-gray-200" (click)="selectLanguage('en')">English</a>
                     <a class="block px-4 py-2 hover:bg-gray-200" (click)="selectLanguage('ar')">العربية</a>
                 </div>

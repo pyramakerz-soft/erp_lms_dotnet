@@ -18,11 +18,12 @@ import { FieldTypeService } from '../../../../Services/Employee/Registration/fie
 import { FieldAddEdit } from '../../../../Models/Registration/field-add-edit';
 import { firstValueFrom } from 'rxjs';
 import { SearchComponent } from '../../../../Component/search/search.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-fields',
   standalone: true,
-  imports: [CommonModule, FormsModule, SearchComponent],
+  imports: [CommonModule, FormsModule, SearchComponent, TranslateModule],
   templateUrl: './fields.component.html',
   styleUrl: './fields.component.css',
 })

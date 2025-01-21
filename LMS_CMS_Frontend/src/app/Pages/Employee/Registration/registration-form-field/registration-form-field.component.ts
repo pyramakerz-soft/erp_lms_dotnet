@@ -12,11 +12,12 @@ import { RegistrationCategoryService } from '../../../../Services/Employee/Regis
 import Swal from 'sweetalert2';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-registration-form-field',
   standalone: true,
-  imports: [CommonModule, FormsModule ,SearchComponent],
+  imports: [CommonModule, FormsModule ,SearchComponent, TranslateModule],
   templateUrl: './registration-form-field.component.html',
   styleUrl: './registration-form-field.component.css'
 })

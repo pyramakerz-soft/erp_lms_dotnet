@@ -1,35 +1,35 @@
 <div class="">
     <div class="flex justify-between items-center">
-        <h1 class="primaryTxt font-semibold text-2xl leading-9">Registration Form Field</h1>
-        <div class="flex justify-between items-center ">
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ 'Registration Form Field' | translate }}</h1>
+        <div class="flex justify-between items-center">
             <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="Create()"
-                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-                Create Categories
+                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center">
+                {{ 'Create Categories' | translate }}
             </button>
         </div>
     </div>
 
 
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
             <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
                 <tr>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        ID
+                        {{ 'ID' | translate }}
                     </th>
                     <th
                         class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                        Name of category English
+                        {{ 'Name of category English' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Name of category Arabic
+                        {{ 'Name of category Arabic' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Order In Form
+                        {{ 'Order In Form' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Actions
+                        {{ 'Actions' | translate }}
                     </th>
                 </tr>
             </thead>
@@ -53,7 +53,7 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInForm }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div class="flex space-x-4">
+                        <div class="flex space-x-4 rtl:space-x-reverse">
                             <button (click)="view(row.id)">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
@@ -83,35 +83,35 @@
             <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
 
-        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">Create Categories</h1>
-        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">Edit Categories</h1>
+        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">{{ 'Create Categories' | translate }}</h1>
+        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">{{ 'Edit Categories' | translate }}</h1>
         <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories English</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Name of category English' | translate }}</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="Category.enName" placeholder="Enter Name of Categories " 
+                        [(ngModel)]="Category.enName" placeholder="{{ 'Enter' | translate }} {{ 'Name of category English' | translate }}"
                         (ngModelChange)="onInputValueChange({ field: 'enName', value: $event })"/>
                 <span *ngIf="validationErrors['enName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['enName'] }}</span>
 
                 </div>
             </div>
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Name Of Categories Arabic</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Name of category Arabic' | translate }}</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="Category.arName" placeholder="Enter Name of Categories " 
+                        [(ngModel)]="Category.arName" placeholder="{{ 'Enter' | translate }} {{ 'Name of category Arabic' | translate }}" 
                         (ngModelChange)="onInputValueChange({ field: 'arName', value: $event })"/>
                 <span *ngIf="validationErrors['arName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['arName'] }}</span>
 
                 </div>
             </div>
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Order in Form </h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Order In Form' | translate }}</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
                         [(ngModel)]="Category.orderInForm"  
-                        placeholder=" " 
+                        placeholder="{{ 'Enter' | translate }} {{ 'Order In Form' | translate }}"
                         type="number"
                         min="0" 
                         step="1" 
@@ -122,7 +122,7 @@
             </div>
             <div class="flex justify-end">
                 <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
-                    Save
+                    {{ 'Save' | translate }}
                 </button>
             </div>
         </div>

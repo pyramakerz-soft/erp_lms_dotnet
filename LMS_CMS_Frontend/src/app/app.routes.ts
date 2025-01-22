@@ -59,6 +59,9 @@ import { AdmissionTestParentComponent } from './Pages/Parent/RegistrationModule/
 import { RegistraionTestComponent } from './Pages/Parent/RegistrationModule/registraion-test/registraion-test.component';
 import { ClassroomsAccommodationComponent } from './Pages/Employee/Registration/classrooms-accommodation/classrooms-accommodation.component';
 import { SignUpComponent } from './Pages/Login/sign-up/sign-up.component';
+import { SuppliersComponent } from './Pages/Employee/Accounting/suppliers/suppliers.component';
+import { DebitsComponent } from './Pages/Employee/Accounting/debits/debits.component';
+import { CreditsComponent } from './Pages/Employee/Accounting/credits/credits.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -112,7 +115,11 @@ export const routes: Routes = [
             { path: "Registration Confirmation Test/:Rid/:Pid/:Tid", component: RegistrationFormTestAnswerComponent, title: "Registration Confirmation Test" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]},
             { path: "Interview Time Table", component: InterviewTimeTableComponent, title: "Interview Time Table"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
             { path: "Interview Registration/:Id", component: InterviewRegistrationComponentEmployee, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
-            { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]} 
+            { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]} ,
+            { path: "Suppliers", component: SuppliersComponent, title: "Suppliers" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Debits", component: DebitsComponent, title: "Debits" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Credits", component: CreditsComponent, title: "Credits" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+
         ]
     },
     { 

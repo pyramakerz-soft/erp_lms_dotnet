@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using LMS_CMS_BL.DTO.LMS;
+using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
-using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -10,17 +10,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace LMS_CMS_PL.Controllers.Domains.LMS
+namespace LMS_CMS_PL.Controllers.Domains.Accounting
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class SubjectCategoryController : ControllerBase
+    public class CreditController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public SubjectCategoryController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public CreditController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -28,59 +28,61 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject Categories", "LMS" }
-        )]
-        public IActionResult GetAsync()
+           allowedTypes: new[] { "octa", "employee" },
+           pages: new[] { "Credit", "Accounting" }
+       )]
+        public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<SubjectCategory> SubjectCategorys = Unit_Of_Work.subjectCategory_Repository.FindBy(
-                    f => f.IsDeleted != true);
+            List<Credit> Credits = await Unit_Of_Work.credit_Repository.Select_All_With_IncludesById<Credit>(
+                    f => f.IsDeleted != true,
+                    query => query.Include(credit => credit.AccountNumber));
 
-            if (SubjectCategorys == null || SubjectCategorys.Count == 0)
+            if (Credits == null || Credits.Count == 0)
             {
                 return NotFound();
             }
 
-            List<SubjectCategoryGetDTO> SubjectCategorysDTO = mapper.Map<List<SubjectCategoryGetDTO>>(SubjectCategorys);
+            List<CreditGetDTO> CreditsDTO = mapper.Map<List<CreditGetDTO>>(Credits);
 
-            return Ok(SubjectCategorysDTO);
+            return Ok(CreditsDTO);
         }
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject Categories", "LMS" }
+            pages: new[] { "Credit", "Accounting" }
         )]
-        public IActionResult GetById(long id)
+        public async Task<IActionResult> GetById(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             if (id == 0)
             {
-                return BadRequest("Enter Subject Category ID");
+                return BadRequest("Enter Credit ID");
             }
 
-            SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            Credit credit = await Unit_Of_Work.credit_Repository.FindByIncludesAsync(
+                    credit => credit.IsDeleted != true && credit.ID == id,
+                    query => query.Include(credit => credit.AccountNumber));
 
-
-            if (subjectCategory == null)
+            if (credit == null)
             {
                 return NotFound();
             }
 
-            SubjectCategoryGetDTO subjectCategoryGetDTO = mapper.Map<SubjectCategoryGetDTO>(subjectCategory);
+            CreditGetDTO creditGetDTO = mapper.Map<CreditGetDTO>(credit);
 
-            return Ok(subjectCategoryGetDTO);
+            return Ok(creditGetDTO);
         }
 
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Subject Categories", "LMS" }
+           pages: new[] { "Credit", "Accounting" }
        )]
-        public IActionResult Add(SubjectCategoryAddDTO NewSubCat)
+        public IActionResult Add(CreditAddDTO NewCredit)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -93,39 +95,60 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewSubCat == null)
+            if (NewCredit == null)
             {
-                return BadRequest("Subject Category cannot be null");
+                return BadRequest("Credit cannot be null");
             }
-            if (NewSubCat.Name == null)
+
+            if (NewCredit.Name == null)
             {
                 return BadRequest("the name cannot be null");
             }
-            SubjectCategory subjectCat = mapper.Map<SubjectCategory>(NewSubCat);
+
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == NewCredit.AccountNumberID);
+
+            if (account == null)
+            {
+                return NotFound("No Account chart with this Id");
+            }
+            else
+            {
+                if (account.SubTypeID == 1)
+                {
+                    return BadRequest("You can't use main account, only sub account");
+                }
+
+                if (account.LinkFileID != 4)
+                {
+                    return BadRequest("Wrong Link File, it should be Credit file link ");
+                }
+            }
+
+            Credit credit = mapper.Map<Credit>(NewCredit);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            subjectCat.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            credit.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                subjectCat.InsertedByOctaId = userId;
+                credit.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                subjectCat.InsertedByUserId = userId;
+                credit.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.subjectCategory_Repository.Add(subjectCat);
+            Unit_Of_Work.credit_Repository.Add(credit);
             Unit_Of_Work.SaveChanges();
-            return Ok(NewSubCat);
+            return Ok(NewCredit);
         }
 
         [HttpPut]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Subject Categories", "LMS" }
+           pages: new[] { "Credit", "Accounting" }
        )]
-        public IActionResult Edit(SubjectCategoryPutDTO EditedSubjectCategory)
+        public IActionResult Edit(CreditPutDTO EditedCredit)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -140,30 +163,50 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (EditedSubjectCategory == null)
+            if (EditedCredit == null)
             {
-                return BadRequest("Subject Category cannot be null");
+                return BadRequest("Credit cannot be null");
             }
 
-            if (EditedSubjectCategory.Name == null)
+            if (EditedCredit.Name == null)
             {
                 return BadRequest("the name cannot be null");
             }
-            SubjectCategory SubjectCategoryExists = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(s=>s.ID==EditedSubjectCategory.ID&&s.IsDeleted!=true);
-            if (SubjectCategoryExists == null || SubjectCategoryExists.IsDeleted == true)
+
+            Credit CreditExists = Unit_Of_Work.credit_Repository.First_Or_Default(s => s.ID == EditedCredit.ID && s.IsDeleted != true);
+            if (CreditExists == null || CreditExists.IsDeleted == true)
             {
-                return NotFound("No Subject Category with this ID");
+                return NotFound("No Credit with this ID");
+            }
+
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == EditedCredit.AccountNumberID);
+
+            if (account == null)
+            {
+                return NotFound("No Account chart with this Id");
+            }
+            else
+            {
+                if (account.SubTypeID == 1)
+                {
+                    return BadRequest("You can't use main account, only sub account");
+                }
+
+                if (account.LinkFileID != 4)
+                {
+                    return BadRequest("Wrong Link File, it should be Credit file link ");
+                }
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject Categories");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Credit");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (SubjectCategoryExists.InsertedByUserId != userId)
+                        if (CreditExists.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -171,40 +214,40 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Subject Categories page doesn't exist");
+                    return BadRequest("Credit page doesn't exist");
                 }
             }
 
-            mapper.Map(EditedSubjectCategory, SubjectCategoryExists);
+            mapper.Map(EditedCredit, CreditExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            SubjectCategoryExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            CreditExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                SubjectCategoryExists.UpdatedByOctaId = userId;
-                if (SubjectCategoryExists.UpdatedByUserId != null)
+                CreditExists.UpdatedByOctaId = userId;
+                if (CreditExists.UpdatedByUserId != null)
                 {
-                    SubjectCategoryExists.UpdatedByUserId = null;
+                    CreditExists.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                SubjectCategoryExists.UpdatedByUserId = userId;
-                if (SubjectCategoryExists.UpdatedByOctaId != null)
+                CreditExists.UpdatedByUserId = userId;
+                if (CreditExists.UpdatedByOctaId != null)
                 {
-                    SubjectCategoryExists.UpdatedByOctaId = null;
+                    CreditExists.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.subjectCategory_Repository.Update(SubjectCategoryExists);
+            Unit_Of_Work.credit_Repository.Update(CreditExists);
             Unit_Of_Work.SaveChanges();
-            return Ok(EditedSubjectCategory);
+            return Ok(EditedCredit);
         }
 
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Subject Categories", "LMS" }
+            pages: new[] { "Credit", "Accounting" }
         )]
         public IActionResult Delete(long id)
         {
@@ -224,26 +267,25 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (id == 0)
             {
-                return BadRequest("Enter Subject Category ID");
+                return BadRequest("Enter Credit ID");
             }
 
-            SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            Credit credit = Unit_Of_Work.credit_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
-
-            if (subjectCategory == null)
+            if (credit == null)
             {
                 return NotFound();
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject Categories");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Credit");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                     {
-                        if (subjectCategory.InsertedByUserId != userId)
+                        if (credit.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -251,31 +293,31 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Subject Categories page doesn't exist");
+                    return BadRequest("Credit page doesn't exist");
                 }
             }
 
-            subjectCategory.IsDeleted = true;
+            credit.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            subjectCategory.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            credit.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                subjectCategory.DeletedByOctaId = userId;
-                if (subjectCategory.DeletedByUserId != null)
+                credit.DeletedByOctaId = userId;
+                if (credit.DeletedByUserId != null)
                 {
-                    subjectCategory.DeletedByUserId = null;
+                    credit.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                subjectCategory.DeletedByUserId = userId;
-                if (subjectCategory.DeletedByOctaId != null)
+                credit.DeletedByUserId = userId;
+                if (credit.DeletedByOctaId != null)
                 {
-                    subjectCategory.DeletedByOctaId = null;
+                    credit.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.subjectCategory_Repository.Update(subjectCategory);
+            Unit_Of_Work.credit_Repository.Update(credit);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

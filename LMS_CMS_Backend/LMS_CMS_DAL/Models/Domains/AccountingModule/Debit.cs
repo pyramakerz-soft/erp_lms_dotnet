@@ -19,6 +19,6 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         [ForeignKey("AccountNumber")]
         public long AccountNumberID { get; set; }
 
-        public AccountingTreeChart AccountNumber { get; set; }
+        public AccountingTreeChart AccountNumber { get; set; } 
     }
 }

@@ -1,26 +1,26 @@
 ﻿using AutoMapper;
-using LMS_CMS_BL.DTO.LMS;
+using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains;
-using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
-using LMS_CMS_PL.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using LMS_CMS_PL.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
-namespace LMS_CMS_PL.Controllers.Domains.LMS
+namespace LMS_CMS_PL.Controllers.Domains.Accounting
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class SubjectCategoryController : ControllerBase
+    public class AssetController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public SubjectCategoryController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public AssetController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -29,58 +29,60 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject Categories", "LMS" }
+            pages: new[] { "Asset", "Accounting" }
         )]
-        public IActionResult GetAsync()
+        public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<SubjectCategory> SubjectCategorys = Unit_Of_Work.subjectCategory_Repository.FindBy(
-                    f => f.IsDeleted != true);
+            List<Asset> Assets = await Unit_Of_Work.asset_Repository.Select_All_With_IncludesById<Asset>(
+                    f => f.IsDeleted != true,
+            query => query.Include(emp => emp.AccountNumber));
 
-            if (SubjectCategorys == null || SubjectCategorys.Count == 0)
+            if (Assets == null || Assets.Count == 0)
             {
                 return NotFound();
             }
 
-            List<SubjectCategoryGetDTO> SubjectCategorysDTO = mapper.Map<List<SubjectCategoryGetDTO>>(SubjectCategorys);
+            List<AssetGetDTO> AssetGetDTOs = mapper.Map<List<AssetGetDTO>>(Assets);
 
-            return Ok(SubjectCategorysDTO);
+            return Ok(AssetGetDTOs);
         }
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject Categories", "LMS" }
+            pages: new[] { "Asset", "Accounting" }
         )]
-        public IActionResult GetById(long id)
+        public async Task<IActionResult> GetById(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             if (id == 0)
             {
-                return BadRequest("Enter Subject Category ID");
+                return BadRequest("Enter Asset ID");
             }
 
-            SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            Asset asset = await Unit_Of_Work.asset_Repository.FindByIncludesAsync(
+                    asset => asset.IsDeleted != true && asset.ID == id,
+                    query => query.Include(asset => asset.AccountNumber));
 
-
-            if (subjectCategory == null)
+            if (asset == null)
             {
                 return NotFound();
             }
 
-            SubjectCategoryGetDTO subjectCategoryGetDTO = mapper.Map<SubjectCategoryGetDTO>(subjectCategory);
+            AssetGetDTO assetGetDTO = mapper.Map<AssetGetDTO>(asset);
 
-            return Ok(subjectCategoryGetDTO);
+            return Ok(assetGetDTO);
         }
 
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Subject Categories", "LMS" }
+           pages: new[] { "Asset", "Accounting" }
        )]
-        public IActionResult Add(SubjectCategoryAddDTO NewSubCat)
+        public IActionResult Add(AssetAddDTO NewAsset)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -93,39 +95,60 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewSubCat == null)
+            if (NewAsset == null)
             {
-                return BadRequest("Subject Category cannot be null");
+                return BadRequest("Asset cannot be null");
             }
-            if (NewSubCat.Name == null)
+
+            if (NewAsset.Name == null)
             {
                 return BadRequest("the name cannot be null");
             }
-            SubjectCategory subjectCat = mapper.Map<SubjectCategory>(NewSubCat);
+
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == NewAsset.AccountNumberID);
+
+            if (account == null)
+            {
+                return NotFound("No Account chart with this Id");
+            }
+            else
+            {
+                if (account.SubTypeID == 1)
+                {
+                    return BadRequest("You can't use main account, only sub account");
+                }
+
+                if (account.LinkFileID != 9)
+                {
+                    return BadRequest("Wrong Link File, it should be Asset file link ");
+                }
+            }
+
+            Asset asset = mapper.Map<Asset>(NewAsset);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            subjectCat.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            asset.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                subjectCat.InsertedByOctaId = userId;
+                asset.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                subjectCat.InsertedByUserId = userId;
+                asset.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.subjectCategory_Repository.Add(subjectCat);
+            Unit_Of_Work.asset_Repository.Add(asset);
             Unit_Of_Work.SaveChanges();
-            return Ok(NewSubCat);
+            return Ok(NewAsset);
         }
 
         [HttpPut]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Subject Categories", "LMS" }
+           pages: new[] { "Asset", "Accounting" }
        )]
-        public IActionResult Edit(SubjectCategoryPutDTO EditedSubjectCategory)
+        public IActionResult Edit(AssetPutDTO EditedAsset)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -140,30 +163,50 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (EditedSubjectCategory == null)
+            if (EditedAsset == null)
             {
-                return BadRequest("Subject Category cannot be null");
+                return BadRequest("Asset cannot be null");
             }
 
-            if (EditedSubjectCategory.Name == null)
+            if (EditedAsset.Name == null)
             {
                 return BadRequest("the name cannot be null");
             }
-            SubjectCategory SubjectCategoryExists = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(s=>s.ID==EditedSubjectCategory.ID&&s.IsDeleted!=true);
-            if (SubjectCategoryExists == null || SubjectCategoryExists.IsDeleted == true)
+
+            Asset AssetExists = Unit_Of_Work.asset_Repository.First_Or_Default(s => s.ID == EditedAsset.ID && s.IsDeleted != true);
+            if (AssetExists == null || AssetExists.IsDeleted == true)
             {
-                return NotFound("No Subject Category with this ID");
+                return NotFound("No Asset with this ID");
+            }
+
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == EditedAsset.AccountNumberID);
+
+            if (account == null)
+            {
+                return NotFound("No Account chart with this Id");
+            }
+            else
+            {
+                if (account.SubTypeID == 1)
+                {
+                    return BadRequest("You can't use main account, only sub account");
+                }
+
+                if (account.LinkFileID != 9)
+                {
+                    return BadRequest("Wrong Link File, it should be Asset file link");
+                }
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject Categories");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Asset");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (SubjectCategoryExists.InsertedByUserId != userId)
+                        if (AssetExists.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -171,40 +214,40 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Subject Categories page doesn't exist");
+                    return BadRequest("Asset page doesn't exist");
                 }
             }
 
-            mapper.Map(EditedSubjectCategory, SubjectCategoryExists);
+            mapper.Map(EditedAsset, AssetExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            SubjectCategoryExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            AssetExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                SubjectCategoryExists.UpdatedByOctaId = userId;
-                if (SubjectCategoryExists.UpdatedByUserId != null)
+                AssetExists.UpdatedByOctaId = userId;
+                if (AssetExists.UpdatedByUserId != null)
                 {
-                    SubjectCategoryExists.UpdatedByUserId = null;
+                    AssetExists.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                SubjectCategoryExists.UpdatedByUserId = userId;
-                if (SubjectCategoryExists.UpdatedByOctaId != null)
+                AssetExists.UpdatedByUserId = userId;
+                if (AssetExists.UpdatedByOctaId != null)
                 {
-                    SubjectCategoryExists.UpdatedByOctaId = null;
+                    AssetExists.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.subjectCategory_Repository.Update(SubjectCategoryExists);
+            Unit_Of_Work.asset_Repository.Update(AssetExists);
             Unit_Of_Work.SaveChanges();
-            return Ok(EditedSubjectCategory);
+            return Ok(EditedAsset);
         }
 
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Subject Categories", "LMS" }
+            pages: new[] { "Asset", "Accounting" }
         )]
         public IActionResult Delete(long id)
         {
@@ -224,26 +267,25 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (id == 0)
             {
-                return BadRequest("Enter Subject Category ID");
+                return BadRequest("Enter Asset ID");
             }
 
-            SubjectCategory subjectCategory = Unit_Of_Work.subjectCategory_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            Asset asset = Unit_Of_Work.asset_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
-
-            if (subjectCategory == null)
+            if (asset == null)
             {
                 return NotFound();
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject Categories");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Asset");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                     {
-                        if (subjectCategory.InsertedByUserId != userId)
+                        if (asset.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -251,31 +293,31 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
                 else
                 {
-                    return BadRequest("Subject Categories page doesn't exist");
+                    return BadRequest("Asset page doesn't exist");
                 }
             }
 
-            subjectCategory.IsDeleted = true;
+            asset.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            subjectCategory.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            asset.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                subjectCategory.DeletedByOctaId = userId;
-                if (subjectCategory.DeletedByUserId != null)
+                asset.DeletedByOctaId = userId;
+                if (asset.DeletedByUserId != null)
                 {
-                    subjectCategory.DeletedByUserId = null;
+                    asset.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                subjectCategory.DeletedByUserId = userId;
-                if (subjectCategory.DeletedByOctaId != null)
+                asset.DeletedByUserId = userId;
+                if (asset.DeletedByOctaId != null)
                 {
-                    subjectCategory.DeletedByOctaId = null;
+                    asset.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.subjectCategory_Repository.Update(subjectCategory);
+            Unit_Of_Work.asset_Repository.Update(asset);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

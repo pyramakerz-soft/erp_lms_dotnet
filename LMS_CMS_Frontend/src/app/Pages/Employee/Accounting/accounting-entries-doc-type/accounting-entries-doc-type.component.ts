@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { AccountingEntriesDocType } from '../../../../Models/Accounting/accounting-entries-doc-type';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { SearchComponent } from '../../../../Component/search/search.component';
-import { Debit } from '../../../../Models/Accounting/debit';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
@@ -12,17 +12,15 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { Credit } from '../../../../Models/Accounting/credit';
-import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 
 @Component({
-  selector: 'app-credits',
+  selector: 'app-accounting-entries-doc-type',
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
-  templateUrl: './credits.component.html',
-  styleUrl: './credits.component.css'
+  templateUrl: './accounting-entries-doc-type.component.html',
+  styleUrl: './accounting-entries-doc-type.component.css'
 })
-export class CreditsComponent {
+export class AccountingEntriesDocTypeComponent {
 User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
@@ -41,7 +39,7 @@ User_Data_After_Login: TokenData = new TokenData(
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  TableData: Credit[] = [];
+  TableData: AccountingEntriesDocType[] = [];
 
   DomainName: string = '';
   UserID: number = 0;
@@ -54,11 +52,9 @@ User_Data_After_Login: TokenData = new TokenData(
   value: any = '';
   keysArray: string[] = ['id', 'name'];
 
-  credit: Credit = new Credit();
+  accountingEntriesDocType: AccountingEntriesDocType = new AccountingEntriesDocType();
 
-  AccountNumbers:AccountingTreeChart[]=[];
-
-  validationErrors: { [key in keyof Credit]?: string } = {};
+  validationErrors: { [key in keyof AccountingEntriesDocType]?: string } = {};
 
   constructor(
     private router: Router,
@@ -113,9 +109,9 @@ User_Data_After_Login: TokenData = new TokenData(
     });
   }
 
-  Edit(row: Credit) {
+  Edit(row: AccountingEntriesDocType) {
     this.mode = 'Edit';
-    this.credit = row;
+    this.accountingEntriesDocType = row;
     this.openModal();
   }
 
@@ -178,9 +174,9 @@ User_Data_After_Login: TokenData = new TokenData(
   // capitalizeField(field: keyof Supplier?): string {
   //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   // }
-  onInputValueChange(event: { field: keyof Credit; value: any }) {
+  onInputValueChange(event: { field: keyof AccountingEntriesDocType; value: any }) {
     const { field, value } = event;
-    (this.credit as any)[field] = value;
+    (this.accountingEntriesDocType as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }

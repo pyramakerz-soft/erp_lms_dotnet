@@ -13,6 +13,7 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { Debit } from '../../../../Models/Accounting/debit';
+import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 
 @Component({
   selector: 'app-debits',
@@ -55,6 +56,7 @@ export class DebitsComponent {
 
   debit: Debit = new Debit();
 
+  AccountNumbers:AccountingTreeChart[]=[];
   validationErrors: { [key in keyof Debit]?: string } = {};
 
   constructor(

@@ -62,6 +62,15 @@ import { SignUpComponent } from './Pages/Login/sign-up/sign-up.component';
 import { SuppliersComponent } from './Pages/Employee/Accounting/suppliers/suppliers.component';
 import { DebitsComponent } from './Pages/Employee/Accounting/debits/debits.component';
 import { CreditsComponent } from './Pages/Employee/Accounting/credits/credits.component';
+import { AssetsComponent } from './Pages/Employee/Accounting/assets/assets.component';
+import { TuitionFeesTypesComponent } from './Pages/Employee/Accounting/tuition-fees-types/tuition-fees-types.component';
+import { TuitionDiscountTypesComponent } from './Pages/Employee/Accounting/tuition-discount-types/tuition-discount-types.component';
+import { AccountingEntriesDocTypeComponent } from './Pages/Employee/Accounting/accounting-entries-doc-type/accounting-entries-doc-type.component';
+import { JobComponent } from './Pages/Employee/Administrator/job/job.component';
+import { JobCategoriesComponent } from './Pages/Employee/Administrator/job-categories/job-categories.component';
+import { AcademicDegreeComponent } from './Pages/Employee/Administrator/academic-degree/academic-degree.component';
+import { ReasonsforleavingworkComponent } from './Pages/Employee/Administrator/reasonsforleavingwork/reasonsforleavingwork.component';
+import { DepartmentComponent } from './Pages/Employee/Administrator/department/department.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -119,6 +128,15 @@ export const routes: Routes = [
             { path: "Suppliers", component: SuppliersComponent, title: "Suppliers" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Debits", component: DebitsComponent, title: "Debits" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Credits", component: CreditsComponent, title: "Credits" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Assets", component: AssetsComponent, title: "Assets" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Tuition Fees Types", component: TuitionFeesTypesComponent, title: "Tuition Fees Types" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Tuition Discount Types", component: TuitionDiscountTypesComponent, title: "TuitionDiscountTypes" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Accounting Entries Doc Types", component: AccountingEntriesDocTypeComponent, title: "AccountingEntriesDocTypes" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Job", component: JobComponent, title: "Job" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Job Categories", component: JobCategoriesComponent, title: "Job Categories" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Academic Degree", component: AcademicDegreeComponent, title: "Academic Degree" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Reasons for leaving work", component: ReasonsforleavingworkComponent, title: "Reasons for leaving work" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Department", component: DepartmentComponent, title: "Department" , canActivate:[noNavigateWithoutLoginGuard ]} ,
 
         ]
     },

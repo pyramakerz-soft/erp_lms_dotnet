@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { AcademicDegree } from '../../../../Models/Administrator/academic-degree';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { SearchComponent } from '../../../../Component/search/search.component';
-import { Debit } from '../../../../Models/Accounting/debit';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
@@ -12,18 +12,16 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { Credit } from '../../../../Models/Accounting/credit';
-import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 
 @Component({
-  selector: 'app-credits',
+  selector: 'app-academic-degree',
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
-  templateUrl: './credits.component.html',
-  styleUrl: './credits.component.css'
+  templateUrl: './academic-degree.component.html',
+  styleUrl: './academic-degree.component.css'
 })
-export class CreditsComponent {
-User_Data_After_Login: TokenData = new TokenData(
+export class AcademicDegreeComponent {
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -41,7 +39,7 @@ User_Data_After_Login: TokenData = new TokenData(
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  TableData: Credit[] = [];
+  TableData: AcademicDegree[] = [];
 
   DomainName: string = '';
   UserID: number = 0;
@@ -54,11 +52,9 @@ User_Data_After_Login: TokenData = new TokenData(
   value: any = '';
   keysArray: string[] = ['id', 'name'];
 
-  credit: Credit = new Credit();
+  academicDegree: AcademicDegree = new AcademicDegree();
 
-  AccountNumbers:AccountingTreeChart[]=[];
-
-  validationErrors: { [key in keyof Credit]?: string } = {};
+  validationErrors: { [key in keyof AcademicDegree]?: string } = {};
 
   constructor(
     private router: Router,
@@ -113,9 +109,9 @@ User_Data_After_Login: TokenData = new TokenData(
     });
   }
 
-  Edit(row: Credit) {
+  Edit(row: AcademicDegree) {
     this.mode = 'Edit';
-    this.credit = row;
+    this.academicDegree = row;
     this.openModal();
   }
 
@@ -178,41 +174,42 @@ User_Data_After_Login: TokenData = new TokenData(
   // capitalizeField(field: keyof Supplier?): string {
   //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   // }
-  onInputValueChange(event: { field: keyof Credit; value: any }) {
-    const { field, value } = event;
-    (this.credit as any)[field] = value;
-    if (value) {
-      this.validationErrors[field] = '';
-    }
-  }
-
-  async onSearchEvent(event: { key: string; value: any }) {
-  //   this.key = event.key;
-  //   this.value = event.value;
-  //   try {
-  //     const data: Supplier[] = await firstValueFrom(
-       
-  //     );
-  //     this.TableData = data || [];
-
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
-
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
-  }
-}
+ onInputValueChange(event: { field: keyof AcademicDegree; value: any }) {
+     const { field, value } = event;
+     (this.academicDegree as any)[field] = value;
+     if (value) {
+       this.validationErrors[field] = '';
+     }
+   }
+ 
+   async onSearchEvent(event: { key: string; value: any }) {
+   //   this.key = event.key;
+   //   this.value = event.value;
+   //   try {
+   //     const data: Supplier[] = await firstValueFrom(
+        
+   //     );
+   //     this.TableData = data || [];
+ 
+   //     if (this.value !== '') {
+   //       const numericValue = isNaN(Number(this.value))
+   //         ? this.value
+   //         : parseInt(this.value, 10);
+ 
+   //       this.TableData = this.TableData.filter((t) => {
+   //         const fieldValue = t[this.key as keyof typeof t];
+   //         if (typeof fieldValue === 'string') {
+   //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+   //         }
+   //         if (typeof fieldValue === 'number') {
+   //           return fieldValue === numericValue;
+   //         }
+   //         return fieldValue == this.value;
+   //       });
+   //     }
+   //   } catch (error) {
+   //     this.TableData = [];
+   //   }
+   }
+ }
+ 

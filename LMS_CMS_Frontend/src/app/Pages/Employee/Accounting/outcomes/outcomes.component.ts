@@ -13,6 +13,7 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { Outcome } from '../../../../Models/Accounting/outcome';
+import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 
 @Component({
   selector: 'app-outcomes',
@@ -41,6 +42,8 @@ export class OutcomesComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
+  AccountNumbers:AccountingTreeChart[]=[];
+  
   TableData: Outcome[] = [];
 
   DomainName: string = '';

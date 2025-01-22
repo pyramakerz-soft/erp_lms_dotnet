@@ -14,6 +14,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { Supplier } from '../../../../Models/Accounting/supplier';
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
+import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 
 @Component({
   selector: 'app-suppliers',
@@ -57,6 +58,8 @@ export class SuppliersComponent {
   Supplier: Supplier = new Supplier();
 
   validationErrors: { [key in keyof Supplier]?: string } = {};
+  AccountNumbers:AccountingTreeChart[]=[];
+  
 
   constructor(
     private router: Router,

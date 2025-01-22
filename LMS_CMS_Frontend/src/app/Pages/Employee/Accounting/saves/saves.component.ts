@@ -13,6 +13,7 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 
 @Component({
   selector: 'app-saves',
@@ -57,6 +58,8 @@ export class SavesComponent {
 
   validationErrors: { [key in keyof Saves]?: string } = {};
 
+  AccountNumbers:AccountingTreeChart[]=[];
+  
   constructor(
     private router: Router,
     private menuService: MenuService,

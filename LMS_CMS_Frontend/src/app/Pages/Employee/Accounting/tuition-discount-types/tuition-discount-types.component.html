@@ -1,11 +1,11 @@
 <div class="">
   <div class="flex justify-between">
-    <h1 class="font-semibold text-2xl leading-9">Assets</h1>
+    <h1 class="font-semibold text-2xl leading-9">Tuition Discount Types</h1>
     <div class="flex justify-between items-center">
       <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
       <button (click)="Create()"
         class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-        Create Asset
+        Create Tuition Discount Types
       </button>
     </div>
   </div>
@@ -68,6 +68,7 @@
   </div>
 </div>
 
+
 <!-- Modal -->
 <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{ hidden: !isModalVisible }"
   class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
@@ -79,36 +80,25 @@
     </button>
 
     <h1 *ngIf="mode == 'Create'" class="font-semibold text-2xl leading-9">
-      Create Asset
+      Create tuition Discount Types
     </h1>
     <h1 *ngIf="mode == 'Edit'" class="font-semibold text-2xl leading-9">
-      Edit Asset
+      Edit tuition Discount Types
     </h1>
     <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
       <div class="flex flex-col mt-2 gap-2 items-start">
-        <h6 class="font-medium text-base leading-6">Asset Name</h6>
+        <h6 class="font-medium text-base leading-6">tuition Discount Types Name</h6>
         <input type="text" class="w-[404px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
-          [(ngModel)]="asset.name" placeholder="Enter Supplier" (ngModelChange)="
-                onInputValueChange({ field: 'name', value: $event })" />
-        <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors["name"]}}</span>
+          [(ngModel)]="tuitionDiscountTypes.name" placeholder="Enter Supplier" (ngModelChange)="
+              onInputValueChange({ field: 'name', value: $event })" />
+        <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{
+          validationErrors["name"]}}</span>
       </div>
-        <div class="flex flex-col my-4">
-          <label class="mb-2 primaryTxt" for="Account Number">Account Number</label>
-          <select (ngModelChange)="onInputValueChange({ field: 'accountNumberId', value: $event })"
-            class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-[404px] h-[45px]"  id="accountNumberId"
-            [(ngModel)]="asset.accountNumberId">
-            <option [value]="0" disabled selected hidden>Choose Account Number</option>
-            <option *ngFor="let num of AccountNumbers" [value]="num.id">{{ num.name }}</option>
-            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
-          </select>
-          <span *ngIf="validationErrors['accountNumberId']" class="text-red-500 ml-3 font-normal">{{
-            validationErrors['accountNumberId'] }}</span>
-        </div>
-        <div class="flex justify-end">
-          <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
-            Save
-          </button>
-        </div>
+      <div class="flex justify-end">
+        <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
+          Save
+        </button>
+      </div>
     </div>
   </div>
 </div>

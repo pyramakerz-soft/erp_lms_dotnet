@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Accounting;
+<<<<<<< HEAD
 using LMS_CMS_BL.DTO.Administration;
+=======
+>>>>>>> 337321e05d7546533b90f158b397f534dcfb0ef4
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Octa;
@@ -9,7 +12,10 @@ using LMS_CMS_BL.DTO.Registration;
 using LMS_CMS_BL.DTO.Violation;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
+<<<<<<< HEAD
 using LMS_CMS_DAL.Models.Domains.Administration;
+=======
+>>>>>>> 337321e05d7546533b90f158b397f534dcfb0ef4
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -372,6 +378,7 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<ParentDTO, Parent>();
 
+<<<<<<< HEAD
             CreateMap<Department, DepartmentGetDTO>();
             CreateMap<DepartmentGetDTO, Department>();
             CreateMap<DepartmentAddDto, Department>();
@@ -398,6 +405,37 @@ namespace LMS_CMS_BL.Config
             CreateMap<JobAddDto, Job>();
 
 
+=======
+            CreateMap<Debit, DebitGetDTO>()
+                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+            CreateMap<DebitAddDTO, Debit>();
+            CreateMap<DebitPutDTO, Debit>();
+
+            CreateMap<Credit, CreditGetDTO>()
+                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+            CreateMap<CreditAddDTO, Credit>();
+            CreateMap<CreditPutDTO, Credit>();
+
+            CreateMap<Save, SaveGetDTO>()
+                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+            CreateMap<SaveAddDTO, Save>();
+            CreateMap<SavePutDTO, Save>();
+
+            CreateMap<Income, IncomeGetDTO>()
+                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+            CreateMap<IncomeAddDTO, Income>();
+            CreateMap<IncomePutDTO, Income>();
+
+            CreateMap<Outcome, OutcomeGetDTO>()
+                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+            CreateMap<OutcomeAddDTO, Outcome>();
+            CreateMap<OutcomePutDTO, Outcome>();
+
+            CreateMap<Asset, AssetGetDTO>()
+                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+            CreateMap<AssetAddDTO, Asset>();
+            CreateMap<AssetPutDTO, Asset>();
+>>>>>>> 337321e05d7546533b90f158b397f534dcfb0ef4
         }
     }
 }

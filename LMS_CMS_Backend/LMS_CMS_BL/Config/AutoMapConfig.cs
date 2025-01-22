@@ -399,6 +399,11 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
             CreateMap<AssetAddDTO, Asset>();
             CreateMap<AssetPutDTO, Asset>();
+
+            CreateMap<TuitionFeesType, TuitionFeesTypeGetDTO>()
+                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+            CreateMap<TuitionFeesTypeAddDTO, TuitionFeesType>();
+            CreateMap<TuitionFeesTypePutDTO, TuitionFeesType>();
         }
     }
 }

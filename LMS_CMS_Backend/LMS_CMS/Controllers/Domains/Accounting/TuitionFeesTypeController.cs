@@ -15,12 +15,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class TuitionDiscountTypesController : ControllerBase
+    public class TuitionFeesTypeController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public TuitionDiscountTypesController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public TuitionFeesTypeController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -29,30 +29,30 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Tuition Discount Type", "Accounting" }
+            pages: new[] { "Tuition Fees Type", "Accounting" }
         )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<TuitionDiscountType> tuitionDiscountTypes = await Unit_Of_Work.tuitionDiscountType_Repository.Select_All_With_IncludesById<TuitionDiscountType>(
+            List<TuitionFeesType> TuitionFeesTypes = await Unit_Of_Work.tuitionFeesType_Repository.Select_All_With_IncludesById<TuitionFeesType>(
                     f => f.IsDeleted != true,
                     query => query.Include(emp => emp.AccountNumber));
 
-            if (tuitionDiscountTypes == null || tuitionDiscountTypes.Count == 0)
+            if (TuitionFeesTypes == null || TuitionFeesTypes.Count == 0)
             {
                 return NotFound();
             }
 
-            List<TuitionDiscountTypeGetDTO> DTOS = mapper.Map<List<TuitionDiscountTypeGetDTO>>(tuitionDiscountTypes);
+            List<TuitionFeesTypeGetDTO> TuitionFeesTypeGetDTOs = mapper.Map<List<TuitionFeesTypeGetDTO>>(TuitionFeesTypes);
 
-            return Ok(DTOS);
+            return Ok(TuitionFeesTypeGetDTOs);
         }
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Tuition Discount Type", "Accounting" }
+            pages: new[] { "Tuition Fees Type", "Accounting" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -60,29 +60,29 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (id == 0)
             {
-                return BadRequest("Enter Tuition Discount Type ID");
+                return BadRequest("Enter Tuition Fees Type ID");
             }
 
-            TuitionDiscountType tuitionDiscount = await Unit_Of_Work.tuitionDiscountType_Repository.FindByIncludesAsync(
-                    t => t.IsDeleted != true && t.ID == id,
-                    query => query.Include(t => t.AccountNumber));
+            TuitionFeesType tuitionFeesType = await Unit_Of_Work.tuitionFeesType_Repository.FindByIncludesAsync(
+                    TuitionFeesType => TuitionFeesType.IsDeleted != true && TuitionFeesType.ID == id,
+                    query => query.Include(TuitionFeesType => TuitionFeesType.AccountNumber));
 
-            if (tuitionDiscount == null)
+            if (tuitionFeesType == null)
             {
                 return NotFound();
             }
 
-            TuitionDiscountTypeGetDTO DTO = mapper.Map<TuitionDiscountTypeGetDTO>(tuitionDiscount);
+            TuitionFeesTypeGetDTO tuitionFeesTypeGetDTO = mapper.Map<TuitionFeesTypeGetDTO>(tuitionFeesType);
 
-            return Ok(DTO);
+            return Ok(tuitionFeesTypeGetDTO);
         }
 
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Tuition Discount Type", "Accounting" }
-        )]
-        public IActionResult Add(TuitionDiscountTypeAddDTO NewType)
+           pages: new[] { "Tuition Fees Type", "Accounting" }
+       )]
+        public IActionResult Add(TuitionFeesTypeAddDTO NewTuitionFeesType)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -95,17 +95,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewType == null)
+            if (NewTuitionFeesType == null)
             {
-                return BadRequest("type cannot be null");
+                return BadRequest("Tuition Fees Type cannot be null");
             }
 
-            if (NewType.Name == null)
+            if (NewTuitionFeesType.Name == null)
             {
                 return BadRequest("the name cannot be null");
             }
 
-            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == NewType.AccountNumberID);
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == NewTuitionFeesType.AccountNumberID);
 
             if (account == null)
             {
@@ -118,37 +118,37 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     return BadRequest("You can't use main account, only sub account");
                 }
 
-                if (account.LinkFileID != 12)
+                if (account.LinkFileID != 11)
                 {
-                    return BadRequest("Wrong Link File, it should be Tuition DiscountType file link ");
+                    return BadRequest("Wrong Link File, it should be Tuition Fees Type file link");
                 }
             }
 
-            TuitionDiscountType tuitionDiscountType = mapper.Map<TuitionDiscountType>(NewType);
+            TuitionFeesType tuitionFeesType = mapper.Map<TuitionFeesType>(NewTuitionFeesType);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            tuitionDiscountType.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            tuitionFeesType.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                tuitionDiscountType.InsertedByOctaId = userId;
+                tuitionFeesType.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                tuitionDiscountType.InsertedByUserId = userId;
+                tuitionFeesType.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.tuitionDiscountType_Repository.Add(tuitionDiscountType);
+            Unit_Of_Work.tuitionFeesType_Repository.Add(tuitionFeesType);
             Unit_Of_Work.SaveChanges();
-            return Ok(NewType);
+            return Ok(NewTuitionFeesType);
         }
 
         [HttpPut]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-            pages: new[] { "Tuition Discount Type", "Accounting" }
+           pages: new[] { "Tuition Fees Type", "Accounting" }
        )]
-        public IActionResult Edit(TuitionDiscountTypePutDTO newType)
+        public IActionResult Edit(TuitionFeesTypePutDTO EditedTuitionFeesType)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -163,23 +163,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (newType == null)
+            if (EditedTuitionFeesType == null)
             {
-                return BadRequest("Save cannot be null");
+                return BadRequest("Tuition Fees Type cannot be null");
             }
 
-            if (newType.Name == null)
+            if (EditedTuitionFeesType.Name == null)
             {
                 return BadRequest("the name cannot be null");
             }
 
-            TuitionDiscountType tuitionDiscountType = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(s => s.ID == newType.ID && s.IsDeleted != true);
-            if (tuitionDiscountType == null || tuitionDiscountType.IsDeleted == true)
+            TuitionFeesType TuitionFeesTypeExists = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(s => s.ID == EditedTuitionFeesType.ID && s.IsDeleted != true);
+            if (TuitionFeesTypeExists == null || TuitionFeesTypeExists.IsDeleted == true)
             {
-                return NotFound("No tuition Discount Type with this ID");
+                return NotFound("No Tuition Fees Type with this ID");
             }
 
-            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == newType.AccountNumberID);
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == EditedTuitionFeesType.AccountNumberID);
 
             if (account == null)
             {
@@ -192,21 +192,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     return BadRequest("You can't use main account, only sub account");
                 }
 
-                if (account.LinkFileID != 12)
+                if (account.LinkFileID != 11)
                 {
-                    return BadRequest("Wrong Link File, it should be Tuition Discount Type file link ");
+                    return BadRequest("Wrong Link File, it should be Tuition Fees Type file link ");
                 }
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Tuition Discount Type");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Tuition Fees Type");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (tuitionDiscountType.InsertedByUserId != userId)
+                        if (TuitionFeesTypeExists.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -214,40 +214,40 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
                 else
                 {
-                    return BadRequest("Tuition Discount Type page doesn't exist");
+                    return BadRequest("Tuition Fees Type page doesn't exist");
                 }
             }
 
-            mapper.Map(newType, tuitionDiscountType);
+            mapper.Map(EditedTuitionFeesType, TuitionFeesTypeExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            tuitionDiscountType.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            TuitionFeesTypeExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                tuitionDiscountType.UpdatedByOctaId = userId;
-                if (tuitionDiscountType.UpdatedByUserId != null)
+                TuitionFeesTypeExists.UpdatedByOctaId = userId;
+                if (TuitionFeesTypeExists.UpdatedByUserId != null)
                 {
-                    tuitionDiscountType.UpdatedByUserId = null;
+                    TuitionFeesTypeExists.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                tuitionDiscountType.UpdatedByUserId = userId;
-                if (tuitionDiscountType.UpdatedByOctaId != null)
+                TuitionFeesTypeExists.UpdatedByUserId = userId;
+                if (TuitionFeesTypeExists.UpdatedByOctaId != null)
                 {
-                    tuitionDiscountType.UpdatedByOctaId = null;
+                    TuitionFeesTypeExists.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.tuitionDiscountType_Repository.Update(tuitionDiscountType);
+            Unit_Of_Work.tuitionFeesType_Repository.Update(TuitionFeesTypeExists);
             Unit_Of_Work.SaveChanges();
-            return Ok(tuitionDiscountType);
+            return Ok(EditedTuitionFeesType);
         }
 
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Tuition Discount Type", "Accounting" }
+            pages: new[] { "Tuition Fees Type", "Accounting" }
         )]
         public IActionResult Delete(long id)
         {
@@ -267,25 +267,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (id == 0)
             {
-                return BadRequest("Enter Tuition Discount Type ID");
+                return BadRequest("Enter Tuition Fees Type ID");
             }
 
-            TuitionDiscountType tuitionDiscountType = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            TuitionFeesType tuitionFeesType = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
-            if (tuitionDiscountType == null)
+            if (tuitionFeesType == null)
             {
                 return NotFound();
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Tuition Discount Type");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Tuition Fees Type");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                     {
-                        if (tuitionDiscountType.InsertedByUserId != userId)
+                        if (tuitionFeesType.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -293,31 +293,31 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
                 else
                 {
-                    return BadRequest("Tuition Discount Type page doesn't exist");
+                    return BadRequest("Tuition Fees Type page doesn't exist");
                 }
             }
 
-            tuitionDiscountType.IsDeleted = true;
+            tuitionFeesType.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            tuitionDiscountType.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            tuitionFeesType.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                tuitionDiscountType.DeletedByOctaId = userId;
-                if (tuitionDiscountType.DeletedByUserId != null)
+                tuitionFeesType.DeletedByOctaId = userId;
+                if (tuitionFeesType.DeletedByUserId != null)
                 {
-                    tuitionDiscountType.DeletedByUserId = null;
+                    tuitionFeesType.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                tuitionDiscountType.DeletedByUserId = userId;
-                if (tuitionDiscountType.DeletedByOctaId != null)
+                tuitionFeesType.DeletedByUserId = userId;
+                if (tuitionFeesType.DeletedByOctaId != null)
                 {
-                    tuitionDiscountType.DeletedByOctaId = null;
+                    tuitionFeesType.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.tuitionDiscountType_Repository.Update(tuitionDiscountType);
+            Unit_Of_Work.tuitionFeesType_Repository.Update(tuitionFeesType);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

@@ -5,7 +5,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DepartmentController : ControllerBase
+    public class DebitController : ControllerBase
     {
     }
 }

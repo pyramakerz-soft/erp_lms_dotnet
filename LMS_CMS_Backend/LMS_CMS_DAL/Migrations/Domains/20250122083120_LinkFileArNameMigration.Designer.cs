@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250122083120_LinkFileArNameMigration")]
+    partial class LinkFileArNameMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2449,9 +2452,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
-                    b.Property<long?>("AccountNumberID")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -2511,8 +2511,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("AccountNumberID");
 
                     b.HasIndex("DeletedByUserId");
 
@@ -5205,11 +5203,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.LMS.Student", b =>
                 {
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.AccountingTreeChart", "AccountNumber")
-                        .WithMany("Students")
-                        .HasForeignKey("AccountNumberID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId")
@@ -5233,8 +5226,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
-
-                    b.Navigation("AccountNumber");
 
                     b.Navigation("DeletedByEmployee");
 
@@ -6034,8 +6025,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("Outcomes");
 
                     b.Navigation("Saves");
-
-                    b.Navigation("Students");
 
                     b.Navigation("Suppliers");
 

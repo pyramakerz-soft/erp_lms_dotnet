@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LMS_CMS_DAL.Models.Domains.LMS;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,8 +24,11 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public long EndTypeID { get; set; }
         [ForeignKey("Parent")]
         public long? MainAccountNumberID { get; set; }
+        [ForeignKey("LinkFile")]
+        public long? LinkFileID { get; set; }
 
         public AccountingTreeChart Parent { get; set; }
+        public LinkFile LinkFile { get; set; }
         public SubType SubType { get; set; }
         public EndType EndType { get; set; }
         public ICollection<AccountingTreeChart> ChildAccountingTreeCharts { get; set; } = new List<AccountingTreeChart>();
@@ -39,5 +43,6 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public ICollection<Bank> Banks { get; set; } = new List<Bank>();
         public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
         public ICollection<Employee> Employees { get; set; } = new List<Employee>();
+        public ICollection<Student> Students { get; set; } = new List<Student>();
     }
 }

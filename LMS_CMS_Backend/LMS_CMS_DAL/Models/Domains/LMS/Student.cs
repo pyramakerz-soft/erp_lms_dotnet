@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 
 namespace LMS_CMS_DAL.Models.Domains.LMS
@@ -41,6 +42,11 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public long? EmployeeID { get; set; }
 
         public Employee Employee { get; set; }
+
+        [ForeignKey("AccountNumber")]
+        public long? AccountNumberID { get; set; }
+
+        public AccountingTreeChart AccountNumber { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
     }

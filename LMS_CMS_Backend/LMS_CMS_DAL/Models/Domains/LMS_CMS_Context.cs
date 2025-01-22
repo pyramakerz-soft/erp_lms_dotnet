@@ -85,6 +85,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<ReasonForLeavingWork> ReasonsForLeavingWork { get; set; }
         public DbSet<Days> Days { get; set; }
         public DbSet<EmployeeDays> EmployeeDays { get; set; }
+        public DbSet<LinkFile> LinkFile { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -198,6 +199,10 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<AcademicDegree>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
+            
+            modelBuilder.Entity<LinkFile>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
 
             ///////////////////////// OnDelete: /////////////////////////
             modelBuilder.Entity<Page>()
@@ -277,6 +282,12 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasOne(p => p.Employee)
                  .WithMany(p => p.Students)
                  .HasForeignKey(p => p.EmployeeID)
+                 .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Student>()
+                 .HasOne(p => p.AccountNumber)
+                 .WithMany(p => p.Students)
+                 .HasForeignKey(p => p.AccountNumberID)
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AcademicYear>()
@@ -710,6 +721,12 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasOne(p => p.Parent)
                 .WithMany(p => p.ChildAccountingTreeCharts)
                 .HasForeignKey(p => p.MainAccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<AccountingTreeChart>()
+                .HasOne(p => p.LinkFile)
+                .WithMany(p => p.AccountingTreeCharts)
+                .HasForeignKey(p => p.LinkFileID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             ///////////////////////// Exception: /////////////////////////

@@ -97,6 +97,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<EmployeeDays> EmployeeDays_Repository;
         GenericRepo<Country> Country_Repository;
         GenericRepo<Nationality> Nationality_Repository;
+        GenericRepo<LinkFile> LinkFile_Repository;
 
          
         public UOW(Octa_DbContext octa_Db)
@@ -991,6 +992,18 @@ namespace LMS_CMS_BL.UOW
                     Nationality_Repository = new GenericRepo<Nationality>(db);
                 }
                 return Nationality_Repository;
+            }
+        }
+         
+        public GenericRepo<LinkFile> linkFile_Repository
+        {
+            get
+            {
+                if (LinkFile_Repository == null)
+                {
+                    LinkFile_Repository = new GenericRepo<LinkFile>(db);
+                }
+                return LinkFile_Repository;
             }
         }
 

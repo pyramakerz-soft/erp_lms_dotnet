@@ -36,6 +36,11 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public long Parent_Id { get; set; }
 
         public Parent Parent { get; set; }
+
+        [ForeignKey("Employee")]
+        public long? EmployeeID { get; set; }
+
+        public Employee Employee { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
     }

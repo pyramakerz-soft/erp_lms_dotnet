@@ -1,4 +1,6 @@
-﻿using LMS_CMS_DAL.Models.Domains.BusModule;
+﻿using LMS_CMS_DAL.Models.Domains.AccountingModule;
+using LMS_CMS_DAL.Models.Domains.Administration;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
@@ -35,7 +37,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<EmployeeAttachment> EmployeeAttachment { get; set; }
         public DbSet<Violation> Violation { get; set; }
         public DbSet<EmployeeTypeViolation> EmployeeTypeViolation { get; set; }
-
         public DbSet<Subject> Subject { get; set; }
         public DbSet<SubjectCategory> SubjectCategory { get; set; }
         public DbSet<Floor> Floor { get; set; }
@@ -43,7 +44,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Section> Section { get; set; }
         public DbSet<Classroom> Classroom { get; set; }
         public DbSet<SchoolType> SchoolType { get; set; }
-
         public DbSet<RegisterationFormTestAnswer> RegisterationFormTestAnswer { get; set; }
         public DbSet<QuestionType> QuestionType { get; set; }
         public DbSet<MCQQuestionOption> MCQQuestionOption { get; set; }
@@ -63,7 +63,28 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<RegisterationFormState> RegisterationFormState { get; set; }
         public DbSet<InterviewState> InterViewState { get; set; }
         public DbSet<RegistrationFormCategory> RegistrationFormCategory { get; set; }
-
+        public DbSet<EndType> EndTypes { get; set; }
+        public DbSet<AccountingEntriesDocType> AccountingEntriesDocTypes { get; set; }
+        public DbSet<MotionType> MotionTypes { get; set; }
+        public DbSet<SubType> SubTypes { get; set; }
+        public DbSet<AccountingTreeChart> AccountingTreeCharts { get; set; }
+        public DbSet<Credit> Credits { get; set; }
+        public DbSet<Debit> Debits { get; set; }
+        public DbSet<Income> Incomes { get; set; }
+        public DbSet<Outcome> Outcomes { get; set; }
+        public DbSet<Save> Saves { get; set; }
+        public DbSet<Asset> Assets { get; set; }
+        public DbSet<TuitionFeesType> TuitionFeesTypes { get; set; }
+        public DbSet<TuitionDiscountType> TuitionDiscountTypes { get; set; }
+        public DbSet<Bank> Banks { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<AcademicDegree> AcademicDegrees { get; set; }
+        public DbSet<Job> Jobs { get; set; }
+        public DbSet<JobCategory> JobCategories { get; set; }
+        public DbSet<ReasonForLeavingWork> ReasonsForLeavingWork { get; set; }
+        public DbSet<Days> Days { get; set; }
+        public DbSet<EmployeeDays> EmployeeDays { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -88,13 +109,16 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<Student>()
                 .HasIndex(p => p.Email)
                 .IsUnique();
-
             modelBuilder.Entity<Student>()
                 .HasIndex(p => p.User_Name)
                 .IsUnique();
 
             modelBuilder.Entity<Employee>()
                 .HasIndex(p => p.User_Name)
+                .IsUnique();
+            
+            modelBuilder.Entity<Employee>()
+                .HasIndex(p => p.Email)
                 .IsUnique();
 
             modelBuilder.Entity<Violation>()
@@ -150,6 +174,31 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<RegisterationFormState>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
+
+            modelBuilder.Entity<AccountingTreeChart>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+            
+            modelBuilder.Entity<Days>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+            
+            modelBuilder.Entity<SubType>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+            
+            modelBuilder.Entity<MotionType>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+            
+            modelBuilder.Entity<EndType>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+            
+            modelBuilder.Entity<AcademicDegree>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
             ///////////////////////// OnDelete: /////////////////////////
             modelBuilder.Entity<Page>()
                  .HasOne(p => p.Parent)
@@ -176,6 +225,36 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasForeignKey(p => p.BusCompanyID)
                  .OnDelete(DeleteBehavior.Restrict);
              
+            modelBuilder.Entity<Employee>()
+                 .HasOne(p => p.ReasonForLeavingWork)
+                 .WithMany(p => p.Employees)
+                 .HasForeignKey(p => p.ReasonOfLeavingID)
+                 .OnDelete(DeleteBehavior.Restrict);
+             
+            modelBuilder.Entity<Employee>()
+                 .HasOne(p => p.AccountNumber)
+                 .WithMany(p => p.Employees)
+                 .HasForeignKey(p => p.AccountNumberID)
+                 .OnDelete(DeleteBehavior.Restrict);
+             
+            modelBuilder.Entity<Employee>()
+                 .HasOne(p => p.Department)
+                 .WithMany(p => p.Employees)
+                 .HasForeignKey(p => p.DepartmentID)
+                 .OnDelete(DeleteBehavior.Restrict);
+             
+            modelBuilder.Entity<Employee>()
+                 .HasOne(p => p.Job)
+                 .WithMany(p => p.Employees)
+                 .HasForeignKey(p => p.JobID)
+                 .OnDelete(DeleteBehavior.Restrict);
+             
+            modelBuilder.Entity<Employee>()
+                 .HasOne(p => p.AcademicDegree)
+                 .WithMany(p => p.Employees)
+                 .HasForeignKey(p => p.AcademicDegreeID)
+                 .OnDelete(DeleteBehavior.Restrict);
+             
             modelBuilder.Entity<Role_Detailes>()
                  .HasOne(p => p.Role)
                  .WithMany(p => p.Role_Detailes)
@@ -192,6 +271,12 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasOne(p => p.Parent)
                  .WithMany(p => p.Students)
                  .HasForeignKey(p => p.Parent_Id)
+                 .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Student>()
+                 .HasOne(p => p.Employee)
+                 .WithMany(p => p.Students)
+                 .HasForeignKey(p => p.EmployeeID)
                  .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AcademicYear>()
@@ -530,6 +615,102 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany(p => p.RegisterationFormParents)
                 .HasForeignKey(p => p.RegistrationFormID)
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EmployeeDays>()
+                .HasOne(p => p.Employee)
+                .WithMany(p => p.EmployeeDays)
+                .HasForeignKey(p => p.EmployeeID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EmployeeDays>()
+                .HasOne(p => p.Day)
+                .WithMany(p => p.EmployeeDays)
+                .HasForeignKey(p => p.DayID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Job>()
+                .HasOne(p => p.JobCategory)
+                .WithMany(p => p.Jobs)
+                .HasForeignKey(p => p.JobCategoryID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Supplier>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.Suppliers)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Bank>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.Banks)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<TuitionDiscountType>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.TuitionDiscountTypes)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<TuitionFeesType>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.TuitionFeesTypes)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Asset>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.Assets)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Save>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.Saves)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Outcome>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.Outcomes)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Income>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.Incomes)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Debit>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.Debits)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Credit>()
+                .HasOne(p => p.AccountNumber)
+                .WithMany(p => p.Credits)
+                .HasForeignKey(p => p.AccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<AccountingTreeChart>()
+                .HasOne(p => p.SubType)
+                .WithMany(p => p.AccountingTreeCharts)
+                .HasForeignKey(p => p.SubTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<AccountingTreeChart>()
+                .HasOne(p => p.EndType)
+                .WithMany(p => p.AccountingTreeCharts)
+                .HasForeignKey(p => p.EndTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<AccountingTreeChart>()
+                .HasOne(p => p.Parent)
+                .WithMany(p => p.ChildAccountingTreeCharts)
+                .HasForeignKey(p => p.MainAccountNumberID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()
@@ -539,6 +720,18 @@ namespace LMS_CMS_DAL.Models.Domains
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Floor>()
+               .HasOne(f => f.DeletedByEmployee)
+               .WithMany()  
+               .HasForeignKey(f => f.DeletedByUserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<EmployeeDays>()
+               .HasOne(f => f.DeletedByEmployee)
+               .WithMany()  
+               .HasForeignKey(f => f.DeletedByUserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Student>()
                .HasOne(f => f.DeletedByEmployee)
                .WithMany()  
                .HasForeignKey(f => f.DeletedByUserId)

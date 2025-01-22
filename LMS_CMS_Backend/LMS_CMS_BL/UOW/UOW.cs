@@ -1,5 +1,7 @@
 ﻿using LMS_CMS_BL.Repository;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
+using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -71,6 +73,30 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Test> Test_Repository;
         GenericRepo<MCQQuestionOption> MCQQuestionOption_Repository;
         GenericRepo<RegistrationFormCategory> RegistrationFormCategory_Repository;
+        GenericRepo<EndType> EndType_Repository;
+        GenericRepo<AccountingEntriesDocType> AccountingEntriesDocType_Repository;
+        GenericRepo<MotionType> MotionType_Repository;
+        GenericRepo<SubType> SubType_Repository;
+        GenericRepo<AccountingTreeChart> AccountingTreeChart_Repository;
+        GenericRepo<Credit> Credit_Repository;
+        GenericRepo<Debit> Debit_Repository;
+        GenericRepo<Income> Income_Repository;
+        GenericRepo<Outcome> Outcome_Repository;
+        GenericRepo<Save> Save_Repository;
+        GenericRepo<Asset> Asset_Repository;
+        GenericRepo<TuitionFeesType> TuitionFeesType_Repository;
+        GenericRepo<TuitionDiscountType> TuitionDiscountType_Repository;
+        GenericRepo<Bank> Bank_Repository;
+        GenericRepo<Supplier> Supplier_Repository;
+        GenericRepo<Department> Department_Repository;
+        GenericRepo<AcademicDegree> AcademicDegree_Repository;
+        GenericRepo<Job> Job_Repository;
+        GenericRepo<JobCategory> JobCategory_Repository;
+        GenericRepo<ReasonForLeavingWork> ReasonForLeavingWork_Repository;
+        GenericRepo<Days> Days_Repository;
+        GenericRepo<EmployeeDays> EmployeeDays_Repository;
+        GenericRepo<Country> Country_Repository;
+        GenericRepo<Nationality> Nationality_Repository;
 
          
         public UOW(Octa_DbContext octa_Db)
@@ -655,6 +681,7 @@ namespace LMS_CMS_BL.UOW
                 return Test_Repository;
             }
         }
+
         public GenericRepo<MCQQuestionOption> mCQQuestionOption_Repository
         {
             get
@@ -666,6 +693,7 @@ namespace LMS_CMS_BL.UOW
                 return MCQQuestionOption_Repository;
             }
         }
+
         public GenericRepo<RegistrationFormCategory> registrationFormCategory_Repository
         {
             get
@@ -675,6 +703,294 @@ namespace LMS_CMS_BL.UOW
                     RegistrationFormCategory_Repository = new GenericRepo<RegistrationFormCategory>(db);
                 }
                 return RegistrationFormCategory_Repository;
+            }
+        }
+        
+        public GenericRepo<AccountingEntriesDocType> accountingEntriesDocType_Repository
+        {
+            get
+            {
+                if (AccountingEntriesDocType_Repository == null)
+                {
+                    AccountingEntriesDocType_Repository = new GenericRepo<AccountingEntriesDocType>(db);
+                }
+                return AccountingEntriesDocType_Repository;
+            }
+        }
+        
+        public GenericRepo<EndType> endType_Repository
+        {
+            get
+            {
+                if (EndType_Repository == null)
+                {
+                    EndType_Repository = new GenericRepo<EndType>(db);
+                }
+                return EndType_Repository;
+            }
+        }
+        
+        public GenericRepo<SubType> subType_Repository
+        {
+            get
+            {
+                if (SubType_Repository == null)
+                {
+                    SubType_Repository = new GenericRepo<SubType>(db);
+                }
+                return SubType_Repository;
+            }
+        }
+        
+        public GenericRepo<MotionType> motionType_Repository
+        {
+            get
+            {
+                if (MotionType_Repository == null)
+                {
+                    MotionType_Repository = new GenericRepo<MotionType>(db);
+                }
+                return MotionType_Repository;
+            }
+        }
+        
+        public GenericRepo<AccountingTreeChart> accountingTreeChart_Repository
+        {
+            get
+            {
+                if (AccountingTreeChart_Repository == null)
+                {
+                    AccountingTreeChart_Repository = new GenericRepo<AccountingTreeChart>(db);
+                }
+                return AccountingTreeChart_Repository;
+            }
+        }
+        
+        public GenericRepo<Credit> credit_Repository
+        {
+            get
+            {
+                if (Credit_Repository == null)
+                {
+                    Credit_Repository = new GenericRepo<Credit>(db);
+                }
+                return Credit_Repository;
+            }
+        }
+        
+        public GenericRepo<Debit> debit_Repository
+        {
+            get
+            {
+                if (Debit_Repository == null)
+                {
+                    Debit_Repository = new GenericRepo<Debit>(db);
+                }
+                return Debit_Repository;
+            }
+        }
+        
+        public GenericRepo<Income> income_Repository
+        {
+            get
+            {
+                if (Income_Repository == null)
+                {
+                    Income_Repository = new GenericRepo<Income>(db);
+                }
+                return Income_Repository;
+            }
+        }
+        
+        public GenericRepo<Outcome> outcome_Repository
+        {
+            get
+            {
+                if (Outcome_Repository == null)
+                {
+                    Outcome_Repository = new GenericRepo<Outcome>(db);
+                }
+                return Outcome_Repository;
+            }
+        }
+        
+        public GenericRepo<Save> save_Repository
+        {
+            get
+            {
+                if (Save_Repository == null)
+                {
+                    Save_Repository = new GenericRepo<Save>(db);
+                }
+                return Save_Repository;
+            }
+        }
+        
+        public GenericRepo<Asset> asset_Repository
+        {
+            get
+            {
+                if (Asset_Repository == null)
+                {
+                    Asset_Repository = new GenericRepo<Asset>(db);
+                }
+                return Asset_Repository;
+            }
+        }
+        
+        public GenericRepo<TuitionFeesType> tuitionFeesType_Repository
+        {
+            get
+            {
+                if (TuitionFeesType_Repository == null)
+                {
+                    TuitionFeesType_Repository = new GenericRepo<TuitionFeesType>(db);
+                }
+                return TuitionFeesType_Repository;
+            }
+        }
+        
+        public GenericRepo<TuitionDiscountType> tuitionDiscountType_Repository
+        {
+            get
+            {
+                if (TuitionDiscountType_Repository == null)
+                {
+                    TuitionDiscountType_Repository = new GenericRepo<TuitionDiscountType>(db);
+                }
+                return TuitionDiscountType_Repository;
+            }
+        }
+        
+        public GenericRepo<Bank> bank_Repository
+        {
+            get
+            {
+                if (Bank_Repository == null)
+                {
+                    Bank_Repository = new GenericRepo<Bank>(db);
+                }
+                return Bank_Repository;
+            }
+        }
+        
+        public GenericRepo<Supplier> supplier_Repository
+        {
+            get
+            {
+                if (Supplier_Repository == null)
+                {
+                    Supplier_Repository = new GenericRepo<Supplier>(db);
+                }
+                return Supplier_Repository;
+            }
+        }
+        
+        public GenericRepo<Department> department_Repository
+        {
+            get
+            {
+                if (Department_Repository == null)
+                {
+                    Department_Repository = new GenericRepo<Department>(db);
+                }
+                return Department_Repository;
+            }
+        }
+        
+        public GenericRepo<AcademicDegree> academicDegree_Repository
+        {
+            get
+            {
+                if (AcademicDegree_Repository == null)
+                {
+                    AcademicDegree_Repository = new GenericRepo<AcademicDegree>(db);
+                }
+                return AcademicDegree_Repository;
+            }
+        }
+        
+        public GenericRepo<Job> job_Repository
+        {
+            get
+            {
+                if (Job_Repository == null)
+                {
+                    Job_Repository = new GenericRepo<Job>(db);
+                }
+                return Job_Repository;
+            }
+        }
+        
+        public GenericRepo<JobCategory> jobCategory_Repository
+        {
+            get
+            {
+                if (JobCategory_Repository == null)
+                {
+                    JobCategory_Repository = new GenericRepo<JobCategory>(db);
+                }
+                return JobCategory_Repository;
+            }
+        }
+        
+        public GenericRepo<ReasonForLeavingWork> reasonForLeavingWork_Repository
+        {
+            get
+            {
+                if (ReasonForLeavingWork_Repository == null)
+                {
+                    ReasonForLeavingWork_Repository = new GenericRepo<ReasonForLeavingWork>(db);
+                }
+                return ReasonForLeavingWork_Repository;
+            }
+        }
+        
+        public GenericRepo<Days> days_Repository
+        {
+            get
+            {
+                if (Days_Repository == null)
+                {
+                    Days_Repository = new GenericRepo<Days>(db);
+                }
+                return Days_Repository;
+            }
+        }
+        
+        public GenericRepo<EmployeeDays> employeeDays_Repository
+        {
+            get
+            {
+                if (EmployeeDays_Repository == null)
+                {
+                    EmployeeDays_Repository = new GenericRepo<EmployeeDays>(db);
+                }
+                return EmployeeDays_Repository;
+            }
+        }
+        
+        public GenericRepo<Country> country_Repository
+        {
+            get
+            {
+                if (Country_Repository == null)
+                {
+                    Country_Repository = new GenericRepo<Country>(db);
+                }
+                return Country_Repository;
+            }
+        }
+        
+        public GenericRepo<Nationality> nationality_Repository
+        {
+            get
+            {
+                if (Nationality_Repository == null)
+                {
+                    Nationality_Repository = new GenericRepo<Nationality>(db);
+                }
+                return Nationality_Repository;
             }
         }
 

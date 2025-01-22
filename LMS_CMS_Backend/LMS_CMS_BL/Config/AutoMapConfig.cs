@@ -1,6 +1,10 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO;
 using LMS_CMS_BL.DTO.Accounting;
+<<<<<<< HEAD
+using LMS_CMS_BL.DTO.Administration;
+=======
+>>>>>>> 337321e05d7546533b90f158b397f534dcfb0ef4
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Octa;
@@ -8,6 +12,10 @@ using LMS_CMS_BL.DTO.Registration;
 using LMS_CMS_BL.DTO.Violation;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
+<<<<<<< HEAD
+using LMS_CMS_DAL.Models.Domains.Administration;
+=======
+>>>>>>> 337321e05d7546533b90f158b397f534dcfb0ef4
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -369,7 +377,32 @@ namespace LMS_CMS_BL.Config
             CreateMap<InterviewState, InterviewStateGetDTO>();
 
             CreateMap<ParentDTO, Parent>();
+             
+            CreateMap<Department, DepartmentGetDTO>();
+            CreateMap<DepartmentGetDTO, Department>();
+            CreateMap<DepartmentAddDto, Department>();
 
+            CreateMap<JobCategory, JobCategoryGetDto>();
+            CreateMap<JobCategoryGetDto, JobCategory>();
+            CreateMap<JobCategoryAddDto, JobCategory>();
+
+            CreateMap<AcademicDegree, AcademicDegreeGetDTO>();
+            CreateMap<AcademicDegreeGetDTO, AcademicDegree>();
+            CreateMap<AcademicDegreeAddDTO, AcademicDegree>();
+
+            CreateMap<ReasonForLeavingWork, ReasonsForLeavingWorkGetDTO>();
+            CreateMap<ReasonsForLeavingWorkGetDTO, ReasonForLeavingWork>();
+            CreateMap<ReasonsForLeavingWorkAddDTO, ReasonForLeavingWork>();
+
+            CreateMap<AccountingEntriesDocType, AccountingEntriesDocTypeGetDTO>();
+            CreateMap<AccountingEntriesDocTypeGetDTO, AccountingEntriesDocType>();
+            CreateMap<AccountingEntriesDocTypesAddDto, AccountingEntriesDocType>();
+
+            CreateMap<Job, JobGetDTO>()
+              .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.Name));
+            CreateMap<JobGetDTO, Job>();
+            CreateMap<JobAddDto, Job>();
+             
             CreateMap<Debit, DebitGetDTO>()
                 .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
             CreateMap<DebitAddDTO, Debit>();
@@ -399,7 +432,7 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
             CreateMap<AssetAddDTO, Asset>();
             CreateMap<AssetPutDTO, Asset>();
-
+            
             CreateMap<TuitionFeesType, TuitionFeesTypeGetDTO>()
                 .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
             CreateMap<TuitionFeesTypeAddDTO, TuitionFeesType>();

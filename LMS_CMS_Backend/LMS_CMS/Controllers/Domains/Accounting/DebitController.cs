@@ -14,7 +14,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
+<<<<<<< HEAD
+=======
     [Authorize]
+>>>>>>> 337321e05d7546533b90f158b397f534dcfb0ef4
     public class DebitController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;

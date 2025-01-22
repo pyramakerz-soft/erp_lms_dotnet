@@ -15,12 +15,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class DebitController : ControllerBase
+    public class TuitionDiscountTypesController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public DebitController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public TuitionDiscountTypesController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -29,30 +29,30 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Debit", "Accounting" }
+            pages: new[] { "Tuition Discount Type", "Accounting" }
         )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-             
-            List<Debit> Debits = await Unit_Of_Work.debit_Repository.Select_All_With_IncludesById<Debit>(
+
+            List<TuitionDiscountType> tuitionDiscountTypes = await Unit_Of_Work.tuitionDiscountType_Repository.Select_All_With_IncludesById<TuitionDiscountType>(
                     f => f.IsDeleted != true,
                     query => query.Include(emp => emp.AccountNumber));
 
-            if (Debits == null || Debits.Count == 0)
+            if (tuitionDiscountTypes == null || tuitionDiscountTypes.Count == 0)
             {
                 return NotFound();
             }
 
-            List<DebitGetDTO> DebitsDTO = mapper.Map<List<DebitGetDTO>>(Debits);
+            List<TuitionDiscountTypeGetDTO> DTOS = mapper.Map<List<TuitionDiscountTypeGetDTO>>(tuitionDiscountTypes);
 
-            return Ok(DebitsDTO);
+            return Ok(DTOS);
         }
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Debit", "Accounting" }
+            pages: new[] { "Tuition Discount Type", "Accounting" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -60,29 +60,29 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (id == 0)
             {
-                return BadRequest("Enter Debit ID");
+                return BadRequest("Enter Tuition Discount Type ID");
             }
 
-            Debit debit = await Unit_Of_Work.debit_Repository.FindByIncludesAsync(
-                    debit => debit.IsDeleted != true && debit.ID == id,
-                    query => query.Include(debit => debit.AccountNumber));
+            TuitionDiscountType tuitionDiscount = await Unit_Of_Work.tuitionDiscountType_Repository.FindByIncludesAsync(
+                    t => t.IsDeleted != true && t.ID == id,
+                    query => query.Include(t => t.AccountNumber));
 
-            if (debit == null)
+            if (tuitionDiscount == null)
             {
                 return NotFound();
             }
 
-            DebitGetDTO debitGetDTO = mapper.Map<DebitGetDTO>(debit);
+            TuitionDiscountTypeGetDTO DTO = mapper.Map<TuitionDiscountTypeGetDTO>(tuitionDiscount);
 
-            return Ok(debitGetDTO);
+            return Ok(DTO);
         }
 
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Debit", "Accounting" }
-       )]
-        public IActionResult Add(DebitAddDTO NewDebit)
+           pages: new[] { "Save", "Accounting" }
+        )]
+        public IActionResult Add(TuitionDiscountTypeAddDTO N)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -95,17 +95,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (NewDebit == null)
+            if (NewSave == null)
             {
-                return BadRequest("Debit cannot be null");
+                return BadRequest("Save cannot be null");
             }
 
-            if (NewDebit.Name == null)
+            if (NewSave.Name == null)
             {
                 return BadRequest("the name cannot be null");
             }
 
-            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == NewDebit.AccountNumberID);
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == NewSave.AccountNumberID);
 
             if (account == null)
             {
@@ -118,37 +118,37 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     return BadRequest("You can't use main account, only sub account");
                 }
 
-                if (account.LinkFileID != 3)
+                if (account.LinkFileID != 12)
                 {
-                    return BadRequest("Wrong Link File, it should be Debit file link ");
+                    return BadRequest("Wrong Link File, it should be Save file link ");
                 }
             }
 
-            Debit debit = mapper.Map<Debit>(NewDebit);
+            Save save = mapper.Map<Save>(NewSave);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            debit.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            save.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                debit.InsertedByOctaId = userId;
+                save.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                debit.InsertedByUserId = userId;
+                save.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.debit_Repository.Add(debit);
+            Unit_Of_Work.tuitionDiscountType_Repository.Add(save);
             Unit_Of_Work.SaveChanges();
-            return Ok(NewDebit);
+            return Ok(NewSave);
         }
 
         [HttpPut]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Debit", "Accounting" }
+           pages: new[] { "Save", "Accounting" }
        )]
-        public IActionResult Edit(DebitPutDTO EditedDebit)
+        public IActionResult Edit(SavePutDTO EditedSave)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -163,23 +163,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (EditedDebit == null)
+            if (EditedSave == null)
             {
-                return BadRequest("Debit cannot be null");
+                return BadRequest("Save cannot be null");
             }
 
-            if (EditedDebit.Name == null)
+            if (EditedSave.Name == null)
             {
                 return BadRequest("the name cannot be null");
             }
 
-            Debit DebitExists = Unit_Of_Work.debit_Repository.First_Or_Default(s => s.ID == EditedDebit.ID && s.IsDeleted != true);
-            if (DebitExists == null || DebitExists.IsDeleted == true)
+            Save SaveExists = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(s => s.ID == EditedSave.ID && s.IsDeleted != true);
+            if (SaveExists == null || SaveExists.IsDeleted == true)
             {
-                return NotFound("No Debit with this ID");
+                return NotFound("No Save with this ID");
             }
 
-            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == EditedDebit.AccountNumberID);
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == EditedSave.AccountNumberID);
 
             if (account == null)
             {
@@ -192,21 +192,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     return BadRequest("You can't use main account, only sub account");
                 }
 
-                if (account.LinkFileID != 3)
+                if (account.LinkFileID != 5)
                 {
-                    return BadRequest("Wrong Link File, it should be Debit file link ");
+                    return BadRequest("Wrong Link File, it should be Save file link ");
                 }
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Debit");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Save");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (DebitExists.InsertedByUserId != userId)
+                        if (SaveExists.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -214,40 +214,40 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
                 else
                 {
-                    return BadRequest("Debit page doesn't exist");
+                    return BadRequest("Save page doesn't exist");
                 }
             }
 
-            mapper.Map(EditedDebit, DebitExists);
+            mapper.Map(EditedSave, SaveExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            DebitExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            SaveExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                DebitExists.UpdatedByOctaId = userId;
-                if (DebitExists.UpdatedByUserId != null)
+                SaveExists.UpdatedByOctaId = userId;
+                if (SaveExists.UpdatedByUserId != null)
                 {
-                    DebitExists.UpdatedByUserId = null;
+                    SaveExists.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                DebitExists.UpdatedByUserId = userId;
-                if (DebitExists.UpdatedByOctaId != null)
+                SaveExists.UpdatedByUserId = userId;
+                if (SaveExists.UpdatedByOctaId != null)
                 {
-                    DebitExists.UpdatedByOctaId = null;
+                    SaveExists.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.debit_Repository.Update(DebitExists);
+            Unit_Of_Work.tuitionDiscountType_Repository.Update(SaveExists);
             Unit_Of_Work.SaveChanges();
-            return Ok(EditedDebit);
+            return Ok(EditedSave);
         }
 
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Debit", "Accounting" }
+            pages: new[] { "Save", "Accounting" }
         )]
         public IActionResult Delete(long id)
         {
@@ -267,25 +267,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (id == 0)
             {
-                return BadRequest("Enter Debit ID");
+                return BadRequest("Enter Save ID");
             }
 
-            Debit debit = Unit_Of_Work.debit_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            Save save = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
-            if (debit == null)
+            if (save == null)
             {
                 return NotFound();
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Debit");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Save");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                     {
-                        if (debit.InsertedByUserId != userId)
+                        if (save.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -293,31 +293,31 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
                 else
                 {
-                    return BadRequest("Debit page doesn't exist");
+                    return BadRequest("Save page doesn't exist");
                 }
             }
 
-            debit.IsDeleted = true;
+            save.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            debit.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            save.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                debit.DeletedByOctaId = userId;
-                if (debit.DeletedByUserId != null)
+                save.DeletedByOctaId = userId;
+                if (save.DeletedByUserId != null)
                 {
-                    debit.DeletedByUserId = null;
+                    save.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                debit.DeletedByUserId = userId;
-                if (debit.DeletedByOctaId != null)
+                save.DeletedByUserId = userId;
+                if (save.DeletedByOctaId != null)
                 {
-                    debit.DeletedByOctaId = null;
+                    save.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.debit_Repository.Update(debit);
+            Unit_Of_Work.tuitionDiscountType_Repository.Update(save);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

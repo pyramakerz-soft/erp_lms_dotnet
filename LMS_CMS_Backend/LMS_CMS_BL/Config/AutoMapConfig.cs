@@ -378,7 +378,6 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<ParentDTO, Parent>();
 
-<<<<<<< HEAD
             CreateMap<Department, DepartmentGetDTO>();
             CreateMap<DepartmentGetDTO, Department>();
             CreateMap<DepartmentAddDto, Department>();
@@ -405,7 +404,6 @@ namespace LMS_CMS_BL.Config
             CreateMap<JobAddDto, Job>();
 
 
-=======
             CreateMap<Debit, DebitGetDTO>()
                 .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
             CreateMap<DebitAddDTO, Debit>();
@@ -435,7 +433,6 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
             CreateMap<AssetAddDTO, Asset>();
             CreateMap<AssetPutDTO, Asset>();
->>>>>>> 337321e05d7546533b90f158b397f534dcfb0ef4
         }
     }
 }

@@ -71,6 +71,9 @@ import { JobCategoriesComponent } from './Pages/Employee/Administrator/job-categ
 import { AcademicDegreeComponent } from './Pages/Employee/Administrator/academic-degree/academic-degree.component';
 import { ReasonsforleavingworkComponent } from './Pages/Employee/Administrator/reasonsforleavingwork/reasonsforleavingwork.component';
 import { DepartmentComponent } from './Pages/Employee/Administrator/department/department.component';
+import { OutcomesComponent } from './Pages/Employee/Accounting/outcomes/outcomes.component';
+import { IncomesComponent } from './Pages/Employee/Accounting/incomes/incomes.component';
+import { SavesComponent } from './Pages/Employee/Accounting/saves/saves.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -126,18 +129,20 @@ export const routes: Routes = [
             { path: "Interview Registration/:Id", component: InterviewRegistrationComponentEmployee, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
             { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]} ,
             { path: "Suppliers", component: SuppliersComponent, title: "Suppliers" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Debits", component: DebitsComponent, title: "Debits" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Credits", component: CreditsComponent, title: "Credits" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Assets", component: AssetsComponent, title: "Assets" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Tuition Fees Types", component: TuitionFeesTypesComponent, title: "Tuition Fees Types" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Tuition Discount Types", component: TuitionDiscountTypesComponent, title: "TuitionDiscountTypes" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Accounting Entries Doc Types", component: AccountingEntriesDocTypeComponent, title: "AccountingEntriesDocTypes" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Job", component: JobComponent, title: "Job" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Job Categories", component: JobCategoriesComponent, title: "Job Categories" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Debit", component: DebitsComponent, title: "Debits" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Credit", component: CreditsComponent, title: "Credits" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Asset", component: AssetsComponent, title: "Assets" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Tuition Fees Type", component: TuitionFeesTypesComponent, title: "Tuition Fees Types" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Tuition Discount Type", component: TuitionDiscountTypesComponent, title: "TuitionDiscountTypes" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Accounting Entries Doc Type", component: AccountingEntriesDocTypeComponent, title: "AccountingEntriesDocTypes" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Job/:id", component: JobComponent, title: "Job" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Job Category", component: JobCategoriesComponent, title: "Job Categories" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Academic Degree", component: AcademicDegreeComponent, title: "Academic Degree" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Reasons for leaving work", component: ReasonsforleavingworkComponent, title: "Reasons for leaving work" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Reasons For Leaving Work", component: ReasonsforleavingworkComponent, title: "Reasons for leaving work" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Department", component: DepartmentComponent, title: "Department" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-
+            { path: "Outcome", component: OutcomesComponent, title: "Outcome" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Income", component: IncomesComponent, title: "Income" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Save", component: SavesComponent, title: "Save" , canActivate:[noNavigateWithoutLoginGuard ]} ,
         ]
     },
     { 

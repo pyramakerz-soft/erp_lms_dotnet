@@ -93,7 +93,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
                 return BadRequest("Academic Degree cannot be null");
             }
             AcademicDegree academicDegree = mapper.Map<AcademicDegree>(newAcademicDegree);
-
+            List<AcademicDegree> AcademicDegrees = Unit_Of_Work.academicDegree_Repository.Select_All();
+            long Count = AcademicDegrees.Count();
+            academicDegree.ID = Count + 1;
             Unit_Of_Work.academicDegree_Repository.Add(academicDegree);
             Unit_Of_Work.SaveChanges();
             return Ok(newAcademicDegree);

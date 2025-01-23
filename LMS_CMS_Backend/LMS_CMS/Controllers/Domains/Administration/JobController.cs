@@ -52,8 +52,35 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             return Ok(JobsDto);
         }
 
+
         ///////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("ByJobCategory/{id}")]
+        [Authorize_Endpoint_(
+       allowedTypes: new[] { "octa", "employee" },
+       pages: new[] { "Job", "Administrator" }
+       )]
+        public async Task<IActionResult> GetAllByJobCategoryIdAsync(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<Job> jobs = await Unit_Of_Work.job_Repository.Select_All_With_IncludesById<Job>(
+                    b => b.IsDeleted != true && b.JobCategoryID==id,
+                    query => query.Include(emp => emp.JobCategory)
+                    );
+
+            if (jobs == null || jobs.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<JobGetDTO> JobsDto = mapper.Map<List<JobGetDTO>>(jobs);
+
+            return Ok(JobsDto);
+        }
+
+        ///////////////////////////////////////////
+         
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },

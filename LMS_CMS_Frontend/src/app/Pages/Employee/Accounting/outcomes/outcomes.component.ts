@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
-import { Debit } from '../../../../Models/Accounting/debit';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
@@ -14,6 +13,8 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { Outcome } from '../../../../Models/Accounting/outcome';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
+import { OutComeService } from '../../../../Services/Employee/Accounting/out-come.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-outcomes',
@@ -42,8 +43,8 @@ export class OutcomesComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  AccountNumbers:AccountingTreeChart[]=[];
-  
+  AccountNumbers: AccountingTreeChart[] = [];
+
   TableData: Outcome[] = [];
 
   DomainName: string = '';
@@ -55,7 +56,7 @@ export class OutcomesComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'name', 'accountNumberName'];
 
   outcome: Outcome = new Outcome();
 
@@ -69,8 +70,9 @@ export class OutcomesComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
-  ) {}
+    public ApiServ: ApiService,
+    public OutComeServ: OutComeService
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -92,7 +94,11 @@ export class OutcomesComponent {
     this.GetAllData();
   }
 
-  GetAllData() {}
+  GetAllData() {
+    this.OutComeServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d;
+    })
+  }
 
   Create() {
     this.mode = 'Create';
@@ -101,7 +107,7 @@ export class OutcomesComponent {
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this OutCome?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -110,6 +116,9 @@ export class OutcomesComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.OutComeServ.Delete(id,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
     });
   }
@@ -157,28 +166,27 @@ export class OutcomesComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    // for (const key in this.Supplier) {
-    //   if (this.Supplier.hasOwnProperty(key)) {
-    //     const field = key as keyof Supplier;
-    //     if (!this.Supplier[field]) {
-    //       if (
-    //         field == 'arName' ||
-    //         field == 'enName' ||
-    //         field == 'orderInForm'
-    //       ) {
-    //         this.validationErrors[field] = `*${this.capitalizeField(
-    //           field
-    //         )} is required`;
-    //         isValid = false;
-    //       }
-    //     }
-    //   }
-    // }
+    for (const key in this.outcome) {
+      if (this.outcome.hasOwnProperty(key)) {
+        const field = key as keyof Outcome;
+        if (!this.outcome[field]) {
+          if (
+            field == 'name' ||
+            field == 'accountNumberId'
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
     return isValid;
   }
-  // capitalizeField(field: keyof Supplier?): string {
-  //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-  // }
+  capitalizeField(field: keyof Outcome): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
   onInputValueChange(event: { field: keyof Outcome; value: any }) {
     const { field, value } = event;
     (this.outcome as any)[field] = value;
@@ -188,33 +196,33 @@ export class OutcomesComponent {
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
-  //   this.key = event.key;
-  //   this.value = event.value;
-  //   try {
-  //     const data: Supplier[] = await firstValueFrom(
-       
-  //     );
-  //     this.TableData = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Outcome[] = await firstValueFrom(
+        this.OutComeServ.Get(this.DomainName)
+      );
+      this.TableData = data || [];
 
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 }
 

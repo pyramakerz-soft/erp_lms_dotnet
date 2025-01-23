@@ -13,6 +13,8 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
+import { TuitionFeesTypeService } from '../../../../Services/Employee/Accounting/tuition-fees-type.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-tuition-fees-types',
@@ -51,7 +53,7 @@ User_Data_After_Login: TokenData = new TokenData(
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'name', 'accountNumberName'];
 
   tuitionFeesType: TuitionFeesType = new TuitionFeesType();
 
@@ -67,7 +69,8 @@ User_Data_After_Login: TokenData = new TokenData(
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
+    public ApiServ: ApiService ,
+    public TuitionFeesTypeServ :TuitionFeesTypeService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -90,7 +93,11 @@ User_Data_After_Login: TokenData = new TokenData(
     this.GetAllData();
   }
 
-  GetAllData() {}
+  GetAllData() {
+    this.TuitionFeesTypeServ.Get(this.DomainName).subscribe((d)=>{
+      this.TableData=d
+    })
+  }
 
   Create() {
     this.mode = 'Create';
@@ -99,7 +106,7 @@ User_Data_After_Login: TokenData = new TokenData(
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Type?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -108,6 +115,9 @@ User_Data_After_Login: TokenData = new TokenData(
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.TuitionFeesTypeServ.Delete(id,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
     });
   }
@@ -154,29 +164,28 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   isFormValid(): boolean {
-    let isValid = true;
-    // for (const key in this.Supplier) {
-    //   if (this.Supplier.hasOwnProperty(key)) {
-    //     const field = key as keyof Supplier;
-    //     if (!this.Supplier[field]) {
-    //       if (
-    //         field == 'arName' ||
-    //         field == 'enName' ||
-    //         field == 'orderInForm'
-    //       ) {
-    //         this.validationErrors[field] = `*${this.capitalizeField(
-    //           field
-    //         )} is required`;
-    //         isValid = false;
-    //       }
-    //     }
-    //   }
-    // }
+     let isValid = true;
+       for (const key in this.tuitionFeesType) {
+         if (this.tuitionFeesType.hasOwnProperty(key)) {
+           const field = key as keyof TuitionFeesType;
+           if (!this.tuitionFeesType[field]) {
+             if (
+               field == 'name' ||
+               field == 'accountNumberId'
+             ) {
+               this.validationErrors[field] = `*${this.capitalizeField(
+                 field
+               )} is required`;
+               isValid = false;
+             }
+           }
+         }
+       }
     return isValid;
   }
-  // capitalizeField(field: keyof Supplier?): string {
-  //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-  // }
+  capitalizeField(field: keyof TuitionFeesType): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
   onInputValueChange(event: { field: keyof TuitionFeesType; value: any }) {
     const { field, value } = event;
     (this.tuitionFeesType as any)[field] = value;
@@ -186,32 +195,32 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
-  //   this.key = event.key;
-  //   this.value = event.value;
-  //   try {
-  //     const data: Supplier[] = await firstValueFrom(
-       
-  //     );
-  //     this.TableData = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: TuitionFeesType[] = await firstValueFrom(
+        this.TuitionFeesTypeServ.Get(this.DomainName)
+      );
+      this.TableData = data || [];
 
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 }

@@ -12,6 +12,8 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { AccountingEntriesDocTypeService } from '../../../../Services/Employee/Accounting/accounting-entries-doc-type.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-accounting-entries-doc-type',
@@ -64,7 +66,8 @@ User_Data_After_Login: TokenData = new TokenData(
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
+    public ApiServ: ApiService ,
+    public AccountingEntriesDocTypeServ:AccountingEntriesDocTypeService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -87,7 +90,11 @@ User_Data_After_Login: TokenData = new TokenData(
     this.GetAllData();
   }
 
-  GetAllData() {}
+  GetAllData() {
+    this.AccountingEntriesDocTypeServ.Get(this.DomainName).subscribe((d)=>{
+      this.TableData=d
+    })
+  }
 
   Create() {
     this.mode = 'Create';
@@ -105,6 +112,9 @@ User_Data_After_Login: TokenData = new TokenData(
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.AccountingEntriesDocTypeServ.Delete(id,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
     });
   }
@@ -136,8 +146,16 @@ User_Data_After_Login: TokenData = new TokenData(
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.AccountingEntriesDocTypeServ.Add(this.accountingEntriesDocType,this.DomainName).subscribe((d)=>{
+          this.GetAllData();
+          this.closeModal()
+        })
       }
       if (this.mode == 'Edit') {
+        this.AccountingEntriesDocTypeServ.Edit(this.accountingEntriesDocType,this.DomainName).subscribe((d)=>{
+          this.GetAllData();
+          this.closeModal()
+        })
       }
     }
   }
@@ -150,65 +168,64 @@ User_Data_After_Login: TokenData = new TokenData(
     this.isModalVisible = true;
   }
 
-  isFormValid(): boolean {
-    let isValid = true;
-    // for (const key in this.Supplier) {
-    //   if (this.Supplier.hasOwnProperty(key)) {
-    //     const field = key as keyof Supplier;
-    //     if (!this.Supplier[field]) {
-    //       if (
-    //         field == 'arName' ||
-    //         field == 'enName' ||
-    //         field == 'orderInForm'
-    //       ) {
-    //         this.validationErrors[field] = `*${this.capitalizeField(
-    //           field
-    //         )} is required`;
-    //         isValid = false;
-    //       }
-    //     }
-    //   }
-    // }
-    return isValid;
-  }
-  // capitalizeField(field: keyof Supplier?): string {
-  //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-  // }
-  onInputValueChange(event: { field: keyof AccountingEntriesDocType; value: any }) {
-    const { field, value } = event;
-    (this.accountingEntriesDocType as any)[field] = value;
-    if (value) {
-      this.validationErrors[field] = '';
+   isFormValid(): boolean {
+       let isValid = true;
+         for (const key in this.accountingEntriesDocType) {
+           if (this.accountingEntriesDocType.hasOwnProperty(key)) {
+             const field = key as keyof AccountingEntriesDocType;
+             if (!this.accountingEntriesDocType[field]) {
+               if (
+                 field == 'name' 
+               ) {
+                 this.validationErrors[field] = `*${this.capitalizeField(
+                   field
+                 )} is required`;
+                 isValid = false;
+               }
+             }
+           }
+         }
+      return isValid;
+    }
+    capitalizeField(field: keyof AccountingEntriesDocType): string {
+      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+    }
+    onInputValueChange(event: { field: keyof AccountingEntriesDocType; value: any }) {
+      const { field, value } = event;
+      (this.accountingEntriesDocType as any)[field] = value;
+      if (value) {
+        this.validationErrors[field] = '';
+      }
+    }
+  
+    async onSearchEvent(event: { key: string; value: any }) {
+      this.key = event.key;
+      this.value = event.value;
+      try {
+        const data: AccountingEntriesDocType[] = await firstValueFrom(
+          this.AccountingEntriesDocTypeServ.Get(this.DomainName)
+        );
+        this.TableData = data || [];
+  
+        if (this.value !== '') {
+          const numericValue = isNaN(Number(this.value))
+            ? this.value
+            : parseInt(this.value, 10);
+  
+          this.TableData = this.TableData.filter((t) => {
+            const fieldValue = t[this.key as keyof typeof t];
+            if (typeof fieldValue === 'string') {
+              return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+            }
+            if (typeof fieldValue === 'number') {
+              return fieldValue === numericValue;
+            }
+            return fieldValue == this.value;
+          });
+        }
+      } catch (error) {
+        this.TableData = [];
+      }
     }
   }
-
-  async onSearchEvent(event: { key: string; value: any }) {
-  //   this.key = event.key;
-  //   this.value = event.value;
-  //   try {
-  //     const data: Supplier[] = await firstValueFrom(
-       
-  //     );
-  //     this.TableData = data || [];
-
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
-
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
-  }
-}
+  

@@ -12,6 +12,10 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { JobService } from '../../../../Services/Employee/Administration/job.service';
+import { firstValueFrom } from 'rxjs';
+import { JobCategoriesService } from '../../../../Services/Employee/Administration/job-categories.service';
+import { JobCategories } from '../../../../Models/Administrator/job-categories';
 
 @Component({
   selector: 'app-job',
@@ -53,8 +57,9 @@ export class JobComponent {
   keysArray: string[] = ['id', 'name'];
 
   job: Job = new Job();
-
+  JobCategoryID : number = 0;
   validationErrors: { [key in keyof Job]?: string } = {};
+  Category:JobCategories=new JobCategories()
 
   constructor(
     private router: Router,
@@ -64,7 +69,9 @@ export class JobComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
+    public ApiServ: ApiService,
+    public jobServ:JobService,
+    public JobCategoryServ :JobCategoriesService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -73,7 +80,8 @@ export class JobComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
     });
-
+    this.JobCategoryID = Number(this.activeRoute.snapshot.paramMap.get('id'))
+    this.GetJobCategoryInfo()
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
@@ -87,16 +95,27 @@ export class JobComponent {
     this.GetAllData();
   }
 
-  GetAllData() {}
+  GetAllData() {
+    this.jobServ.GetByCtegoty(this.JobCategoryID,this.DomainName).subscribe((d)=>{
+      this.TableData=d
+    })
+  }
+
+  GetJobCategoryInfo(){
+    this.JobCategoryServ.GetById(this.JobCategoryID,this.DomainName).subscribe((d)=>{
+      this.Category=d
+    })
+  }
 
   Create() {
     this.mode = 'Create';
+    this.job=new Job()
     this.openModal();
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Job ?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -105,6 +124,9 @@ export class JobComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.jobServ.Delete(id,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
     });
   }
@@ -134,10 +156,22 @@ export class JobComponent {
   }
 
   CreateOREdit() {
+    console.log("vdf")
+    this.job.JobCategoryId=this.JobCategoryID;
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        console.log("vdf")
+        this.jobServ.Add(this.job,this.DomainName).subscribe((d)=>{
+          this.TableData=d;
+          this.GetAllData()
+          this.closeModal()
+        })
       }
       if (this.mode == 'Edit') {
+        this.jobServ.Edit(this.job,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal()
+        })
       }
     }
   }
@@ -152,28 +186,27 @@ export class JobComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    // for (const key in this.Supplier) {
-    //   if (this.Supplier.hasOwnProperty(key)) {
-    //     const field = key as keyof Supplier;
-    //     if (!this.Supplier[field]) {
-    //       if (
-    //         field == 'arName' ||
-    //         field == 'enName' ||
-    //         field == 'orderInForm'
-    //       ) {
-    //         this.validationErrors[field] = `*${this.capitalizeField(
-    //           field
-    //         )} is required`;
-    //         isValid = false;
-    //       }
-    //     }
-    //   }
-    // }
+    for (const key in this.job) {
+      if (this.job.hasOwnProperty(key)) {
+        const field = key as keyof Job;
+        if (!this.job[field]) {
+          if (
+            field == 'name' ||
+            field == 'JobCategoryId' 
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
     return isValid;
   }
-  // capitalizeField(field: keyof Supplier?): string {
-  //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-  // }
+  capitalizeField(field: keyof Job): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
   onInputValueChange(event: { field: keyof Job; value: any }) {
     const { field, value } = event;
     (this.job as any)[field] = value;
@@ -183,32 +216,35 @@ export class JobComponent {
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
-  //   this.key = event.key;
-  //   this.value = event.value;
-  //   try {
-  //     const data: Supplier[] = await firstValueFrom(
-       
-  //     );
-  //     this.TableData = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Job[] = await firstValueFrom(
+        this.jobServ.GetByCtegoty(this.JobCategoryID,this.DomainName)
+      );
+      this.TableData = data || [];
 
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
+  }
+  moveToBack(){
+    this.router.navigateByUrl(`Employee/Job Category`)
   }
 }

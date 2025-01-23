@@ -14,6 +14,8 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { Debit } from '../../../../Models/Accounting/debit';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
+import { DebitService } from '../../../../Services/Employee/Accounting/debit.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-debits',
@@ -52,7 +54,7 @@ export class DebitsComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'name' ,'accountNumberName'];
 
   debit: Debit = new Debit();
 
@@ -67,7 +69,8 @@ export class DebitsComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
+    public ApiServ: ApiService,
+    public DebitServ :DebitService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -90,7 +93,12 @@ export class DebitsComponent {
     this.GetAllData();
   }
 
-  GetAllData() {}
+  GetAllData() {
+    this.DebitServ.Get(this.DomainName).subscribe((d)=>{
+      this.TableData=d;
+    })
+
+  }
 
   Create() {
     this.mode = 'Create';
@@ -108,6 +116,9 @@ export class DebitsComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.DebitServ.Delete(id,this.DomainName).subscribe((D)=>{
+          this.GetAllData();
+        })
       }
     });
   }
@@ -155,28 +166,28 @@ export class DebitsComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    // for (const key in this.Supplier) {
-    //   if (this.Supplier.hasOwnProperty(key)) {
-    //     const field = key as keyof Supplier;
-    //     if (!this.Supplier[field]) {
-    //       if (
-    //         field == 'arName' ||
-    //         field == 'enName' ||
-    //         field == 'orderInForm'
-    //       ) {
-    //         this.validationErrors[field] = `*${this.capitalizeField(
-    //           field
-    //         )} is required`;
-    //         isValid = false;
-    //       }
-    //     }
-    //   }
-    // }
+    for (const key in this.debit) {
+      if (this.debit.hasOwnProperty(key)) {
+        const field = key as keyof Debit;
+        if (!this.debit[field]) {
+          if (
+            field == 'name' ||
+            field == 'accountNumberId' 
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
     return isValid;
   }
-  // capitalizeField(field: keyof Supplier?): string {
-  //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-  // }
+  capitalizeField(field: keyof Debit): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
   onInputValueChange(event: { field: keyof Debit; value: any }) {
     const { field, value } = event;
     (this.debit as any)[field] = value;
@@ -186,32 +197,32 @@ export class DebitsComponent {
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
-  //   this.key = event.key;
-  //   this.value = event.value;
-  //   try {
-  //     const data: Supplier[] = await firstValueFrom(
-       
-  //     );
-  //     this.TableData = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Debit[] = await firstValueFrom(
+        this.DebitServ.Get(this.DomainName)
+      );
+      this.TableData = data || [];
 
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 }

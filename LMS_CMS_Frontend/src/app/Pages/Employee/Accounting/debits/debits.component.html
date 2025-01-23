@@ -63,7 +63,7 @@
               {{ row.name }}
             </td>
             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                {{ row.name }}
+                {{ row.accountNumberName }}
             </td>
             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
               <div class="flex space-x-4">
@@ -114,7 +114,7 @@
         <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors["name"]}}</span>
       </div>
         <div class="flex flex-col my-4">
-          <label class="mb-2 primaryTxt" for="Account Number">Account Number</label>
+          <label class="mb-2 " for="Account Number">Account Number</label>
           <select (ngModelChange)="onInputValueChange({ field: 'accountNumberId', value: $event })"
             class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-[404px] h-[45px]"  id="accountNumberId"
             [(ngModel)]="debit.accountNumberId">

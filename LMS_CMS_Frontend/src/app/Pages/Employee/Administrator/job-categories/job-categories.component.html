@@ -56,9 +56,6 @@
                 {{ row.id }}
               </td>
               <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                {{ row.name }}
-              </td>
-              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                   {{ row.name }}
               </td>
               <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
@@ -75,6 +72,8 @@
                   >
                     <i class="fa-solid fa-pencil"></i>
                   </button>
+                  <button (click)="view(row.id)" >
+                    <i class="fa-solid fa-eye"></i> </button>
                 </div>
               </td>
             </tr>

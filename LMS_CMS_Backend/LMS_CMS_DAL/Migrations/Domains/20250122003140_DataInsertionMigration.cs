@@ -39,10 +39,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
             ");
 
             migrationBuilder.Sql(@"
-                INSERT INTO EndTypes (ID, Name) VALUES (1, 'تشغيل');
-                INSERT INTO EndTypes (ID, Name) VALUES (2, 'متاجرة');
-                INSERT INTO EndTypes (ID, Name) VALUES (3, 'ارباح و خسائر');
-                INSERT INTO EndTypes (ID, Name) VALUES (4, 'ميزانية عمومية');
+                INSERT INTO EndTypes (ID, Name) VALUES (1, N'تشغيل');
+                INSERT INTO EndTypes (ID, Name) VALUES (2, N'متاجرة');
+                INSERT INTO EndTypes (ID, Name) VALUES (3, N'ارباح و خسائر');
+                INSERT INTO EndTypes (ID, Name) VALUES (4, N'ميزانية عمومية');
             ");
         }
 

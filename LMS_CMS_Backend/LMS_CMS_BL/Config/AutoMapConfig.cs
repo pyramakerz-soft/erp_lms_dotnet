@@ -397,12 +397,7 @@ namespace LMS_CMS_BL.Config
               .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.Name));
             CreateMap<JobGetDTO, Job>();
             CreateMap<JobAddDto, Job>();
-
-            CreateMap<TuitionDiscountType, TuitionDiscountTypeGetDTO>()
-                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
-            CreateMap<TuitionDiscountTypePutDTO, TuitionDiscountType>();
-            CreateMap<TuitionDiscountTypeAddDTO, TuitionDiscountType>();
-
+             
             CreateMap<Debit, DebitGetDTO>()
                 .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
             CreateMap<DebitAddDTO, Debit>();
@@ -443,6 +438,12 @@ namespace LMS_CMS_BL.Config
             CreateMap<SupplierAddDTO, Supplier>();
             CreateMap<SupplierGetDTO, Supplier>();
 
+            CreateMap<TuitionDiscountType, TuitionDiscountTypeGetDTO>()
+                .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+            CreateMap<TuitionDiscountTypePutDTO, TuitionDiscountType>();
+            CreateMap<TuitionDiscountTypeAddDTO, TuitionDiscountType>();
+
+            CreateMap<AccountingTreeChartAddDTO, AccountingTreeChart>();
         }
     }
 }

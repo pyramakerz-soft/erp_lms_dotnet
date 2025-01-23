@@ -25,12 +25,15 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         [ForeignKey("Parent")]
         public long? MainAccountNumberID { get; set; }
         [ForeignKey("LinkFile")]
-        public long? LinkFileID { get; set; }
+        public long? LinkFileID { get; set; } 
+        [ForeignKey("MotionType")]
+        public long MotionTypeID { get; set; }
 
         public AccountingTreeChart Parent { get; set; }
         public LinkFile LinkFile { get; set; }
         public SubType SubType { get; set; }
         public EndType EndType { get; set; }
+        public MotionType MotionType { get; set; }
         public ICollection<AccountingTreeChart> ChildAccountingTreeCharts { get; set; } = new List<AccountingTreeChart>();
         public ICollection<Credit> Credits { get; set; } = new List<Credit>();
         public ICollection<Debit> Debits { get; set; } = new List<Debit>();

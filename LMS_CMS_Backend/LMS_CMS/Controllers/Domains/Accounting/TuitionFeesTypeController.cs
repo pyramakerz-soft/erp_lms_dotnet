@@ -81,7 +81,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            pages: new[] { "Tuition Fees Type", "Accounting" }
-       )]
+        )]
         public IActionResult Add(TuitionFeesTypeAddDTO NewTuitionFeesType)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);

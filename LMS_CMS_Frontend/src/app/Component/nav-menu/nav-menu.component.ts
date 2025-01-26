@@ -93,9 +93,7 @@ export class NavMenuComponent {
     let User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
     User_Data_After_Login = this.account.Get_Data_Form_Token()
     this.User_Type = User_Data_After_Login.type
-    this.userName = User_Data_After_Login.user_Name
-
-    console.log(User_Data_After_Login)
+    this.userName = User_Data_After_Login.user_Name 
   }
 
   togglePopup(): void {

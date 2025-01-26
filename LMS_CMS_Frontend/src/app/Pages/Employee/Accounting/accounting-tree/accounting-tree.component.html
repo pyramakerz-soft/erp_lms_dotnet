@@ -1,0 +1,79 @@
+<div class="flex justify-between">
+    <h1 class="font-semibold text-2xl leading-9">Accounting Tree</h1>
+    <div class="flex justify-between items-center">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> 
+    </div>
+</div>
+
+<div class="mt-7 flex justify-between">
+    <div class="p-6 bg-[#F7F7F7] w-[35%] rounded-3xl"></div>
+    <div class="p-6 bg-[#F7F7F7] w-[60%] rounded-3xl">
+        <div class="mt-6 mb-4 flex flex-wrap justify-between font-medium">
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="id">ID</label>
+                <input id="id" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter ID"/>
+                <span *ngIf="validationErrors['id']" class="text-red-500 ml-3 font-normal">{{ validationErrors['id'] }}</span>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="name">Name</label>
+                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter name"/>
+                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
+            </div>
+            <div class="flex flex-col w-full mb-4">
+                <label class="mb-2 primaryTxt" for="mainAccNo">Main Acc No</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="mainAccNo">
+                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Main Acc No' }}</option>
+                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="motionType">Motion Type</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="motionType">
+                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Motion Type' }}</option>
+                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="subType">Sub Type</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subType">
+                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Sub Type' }}</option>
+                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="endType">End Type</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="endType">
+                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select End Type' }}</option>
+                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2 primaryTxt" for="level">Level</label>
+                <input id="level" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Level"/>
+                <span *ngIf="validationErrors['level']" class="text-red-500 ml-3 font-normal">{{ validationErrors['level'] }}</span>
+            </div>
+            <div class="flex flex-col w-full mb-4">
+                <label class="mb-2 primaryTxt" for="linkFile">Link File</label>
+                <select
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFile">
+                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Link File' }}</option>
+                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                </select>
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()" >
+                Save
+            </button>
+        </div>
+    </div>
+</div>

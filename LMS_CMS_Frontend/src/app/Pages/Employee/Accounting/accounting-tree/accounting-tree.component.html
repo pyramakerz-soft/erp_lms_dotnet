@@ -6,67 +6,78 @@
 </div>
 
 <div class="mt-7 flex justify-between">
-    <div class="p-6 bg-[#F7F7F7] w-[35%] rounded-3xl"></div>
+    <div class="p-6 bg-[#F7F7F7] w-[35%] rounded-3xl overflow-x-auto">
+        <div class="flex space-x-2 items-center w-full">
+            <img src="Icons/Folder.png">
+            <p class="text-2xl">Accounting</p>
+        </div>
+
+        <div *ngIf="TableData && TableData.length > 0">
+            <app-accounting-item [accountingData]="TableData" (Selected)="handleIDSelected($event)"></app-accounting-item>
+        </div>
+    </div>
+
     <div class="p-6 bg-[#F7F7F7] w-[60%] rounded-3xl">
-        <div class="mt-6 mb-4 flex flex-wrap justify-between font-medium">
+        <div class="mt-6 mb-4 flex flex-wrap justify-between font-normal">
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="id">ID</label>
-                <input id="id" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter ID"/>
-                <span *ngIf="validationErrors['id']" class="text-red-500 ml-3 font-normal">{{ validationErrors['id'] }}</span>
+                <label class="mb-2 primaryTxt font-medium" for="id">ID</label>
+                <input (input)="validateNumber($event)" (change)="GetDataByID()"
+                [(ngModel)]="accountingTreeChart.id" id="id" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter ID"/>
+                <span *ngIf="validationErrors['id']" class="text-red-500 ml-3">{{ validationErrors['id'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="name">Name</label>
-                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter name"/>
+                <label class="mb-2 primaryTxt font-medium" for="name">Name</label>
+                <input [(ngModel)]="accountingTreeChart.name" id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter name"/>
                 <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
             </div>
             <div class="flex flex-col w-full mb-4">
-                <label class="mb-2 primaryTxt" for="mainAccNo">Main Acc No</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="mainAccNo">
-                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Main Acc No' }}</option>
-                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                <label class="mb-2 primaryTxt font-medium" for="mainAccNo">Main Acc No</label>
+                <select [(ngModel)]="accountingTreeChart.mainAccountNumberID" (change)="GetMainByID()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto font-normal" id="mainAccNo">
+                    <option [value]="0" disabled selected hidden>Select Main Acc No</option>
+                    <option *ngFor="let acc of MainData" [value]="acc.id">{{ acc.id }} {{ acc.name }}</option>
+                    <option [value]="0">No Main</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="motionType">Motion Type</label>
-                <select
+                <label class="mb-2 primaryTxt font-medium" for="motionType">Motion Type</label>
+                <select [(ngModel)]="accountingTreeChart.motionTypeID" [disabled]="accountingTreeChart.mainAccountNumberID != 0"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="motionType">
-                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Motion Type' }}</option>
-                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                    <option [value]="0" disabled selected hidden>Select Motion Type</option>
+                    <option *ngFor="let type of MotionTypeData" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="MotionTypeData.length === 0" disabled>No Data Found</option>
+
                 </select>
-            </div>
+            </div> 
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="subType">Sub Type</label>
-                <select
+                <label class="mb-2 primaryTxt font-medium" for="subType">Sub Type</label>
+                <select [(ngModel)]="accountingTreeChart.subTypeID" (change)="lockLinkFile()"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subType">
-                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Sub Type' }}</option>
-                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                    <option [value]="0" disabled selected hidden>Select Sub Type</option>
+                    <option *ngFor="let type of SubTypeData" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="SubTypeData.length === 0" disabled>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="endType">End Type</label>
-                <select
+                <label class="mb-2 primaryTxt font-medium" for="endType">End Type</label>
+                <select [(ngModel)]="accountingTreeChart.endTypeID" [disabled]="accountingTreeChart.mainAccountNumberID != 0"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="endType">
-                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select End Type' }}</option>
-                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                    <option [value]="0" disabled selected hidden>Select End Type</option>
+                    <option *ngFor="let type of EndTypeData" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="EndTypeData.length === 0" disabled>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="level">Level</label>
-                <input id="level" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Level"/>
-                <span *ngIf="validationErrors['level']" class="text-red-500 ml-3 font-normal">{{ validationErrors['level'] }}</span>
+                <label class="mb-2 primaryTxt font-medium" for="level">Level</label>
+                <input [(ngModel)]="accountingTreeChart.level" id="level" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" disabled/>
             </div>
             <div class="flex flex-col w-full mb-4">
-                <label class="mb-2 primaryTxt" for="linkFile">Link File</label>
-                <select
+                <label class="mb-2 primaryTxt font-medium" for="linkFile">Link File</label>
+                <select [(ngModel)]="accountingTreeChart.linkFileID" [disabled]="accountingTreeChart.subTypeID == 1"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFile">
-                    <!-- <option *ngIf="!bus.busTypeID" [value]="null" disabled selected hidden>{{ bus.busTypeName || 'Select Link File' }}</option>
-                    <option *ngFor="let type of BusType" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="BusType.length === 0" disabled selected>No Data Found</option> -->
+                    <option *ngIf="accountingTreeChart.subTypeID != 1" [value]="0" disabled selected hidden>Select Link File</option>
+                    <option *ngFor="let type of LinkFileData" [value]="type.id">{{ type.name }}</option>
+                    <option [value]="0">No Link File</option>
                 </select>
             </div>
         </div>

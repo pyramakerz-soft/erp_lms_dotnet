@@ -76,6 +76,9 @@ import { IncomesComponent } from './Pages/Employee/Accounting/incomes/incomes.co
 import { SavesComponent } from './Pages/Employee/Accounting/saves/saves.component';
 import { AccountingTreeComponent } from './Pages/Employee/Accounting/accounting-tree/accounting-tree.component';
 import { BankComponent } from './Pages/Employee/Accounting/bank/bank.component';
+import { AccountingEmployee } from './Models/Accounting/accounting-employee';
+import { AccountingEmployeeComponent } from './Pages/Employee/Accounting/accounting-employee/accounting-employee.component';
+import { AccountingEmployeeEditComponent } from './Pages/Employee/Accounting/accounting-employee-edit/accounting-employee-edit.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -147,7 +150,8 @@ export const routes: Routes = [
             { path: "Save", component: SavesComponent, title: "Save" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Accounting Tree", component: AccountingTreeComponent, title: "Accounting Tree" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Bank", component: BankComponent, title: "Bank" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-        
+            { path: "Employee Accounting", component: AccountingEmployeeComponent, title: "Employee Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Employee Edit Accounting", component: AccountingEmployeeEditComponent, title: "Employee Edit Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
         ]
     },
     { 

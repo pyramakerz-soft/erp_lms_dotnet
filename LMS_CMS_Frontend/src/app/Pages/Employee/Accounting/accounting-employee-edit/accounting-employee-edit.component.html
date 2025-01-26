@@ -1,0 +1,191 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <h1 class="font-semibold text-2xl leading-9">
+            {{ mode == 'Create' ? 'Create Employee' : 'Edit Employee' }}
+        </h1>
+    </div>
+    <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+        Save
+    </button>
+</div>
+
+<div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">User Name</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.en_name" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Address</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.address" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Phone</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.phone" />
+    </div>
+
+    <div *ngIf="mode == 'Create'" class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Mobile Number</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.mobile" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">National Id</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.nationalID" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Passport Number</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.passportNumber" />
+    </div>
+
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Residence number</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.residenceNumber" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">BirthDay Date</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.birthdayDate" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="expireDate">expireDate</label>
+        <input id="expireDate" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Expiry Date" [(ngModel)]="Data.expireDate" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="expireDate">Date of appointment</label>
+        <input id="dateOfAppointment" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Date" [(ngModel)]="Data.dateOfAppointment" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="expireDate">expireDate</label>
+        <input id="expireDate" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Expiry Date" [(ngModel)]="Data.expireDate" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[73%]">
+        <label class="mb-2 primaryTxt" for="monthSalary">Month Salary</label>
+        <input id="monthSalary" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter monthSalary" [(ngModel)]="Data.monthSalary" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[25%]">
+        <label class="mb-2 primaryTxt" for="hasAttendance">Has Attandance</label>
+        <input id="hasAttendance" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter hasAttendance" [(ngModel)]="Data.hasAttendance" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="attendanceTime">Attendance Time</label>
+        <input id="attendanceTime" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter attendanceTime" [(ngModel)]="Data.attendanceTime" />
+    </div>
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="departureTime">Departure Time</label>
+        <input id="departureTime" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter departureTime" [(ngModel)]="Data.departureTime" />
+    </div>
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="delayAllowance">Delay Allowance</label>
+        <input id="delayAllowance" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter delayAllowance" [(ngModel)]="Data.delayAllowance" />
+    </div>
+    
+    <div class="flex flex-col w-full mb-4">
+        <label class="mb-2" for="bus">Choose Account Number</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.accountNumberID">
+            <option [value]="0" disabled selected hidden>Choose Account Number</option>
+            <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
+            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="annualLeaveBalance">Annual Leave Balance</label>
+        <input id="annualLeaveBalance" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter annualLeaveBalance" [(ngModel)]="Data.annualLeaveBalance" />
+    </div>
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="casualLeavesBalance">Casual Leaves Balance</label>
+        <input id="casualLeavesBalance" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter casualLeavesBalance" [(ngModel)]="Data.casualLeavesBalance" />
+    </div>
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="monthlyLeaveRequestBalance">Monthly Leave Request Balance</label>
+        <input id="monthlyLeaveRequestBalance" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter monthlyLeaveRequestBalance" [(ngModel)]="Data.monthlyLeaveRequestBalance" />
+    </div>
+
+    <div class="flex flex-col w-[48%] mb-4">
+        <label class="mb-2" for="bus">Choose Account Number</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.accountNumberID">
+            <option [value]="0" disabled selected hidden>Choose Account Number</option>
+            <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
+            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[48%] mb-4">
+        <label class="mb-2" for="bus">Choose Account Number</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.accountNumberID">
+            <option [value]="0" disabled selected hidden>Choose Account Number</option>
+            <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
+            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[48%] mb-4">
+        <label class="mb-2" for="bus">Choose Account Number</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.accountNumberID">
+            <option [value]="0" disabled selected hidden>Choose Account Number</option>
+            <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
+            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[48%] mb-4">
+        <label class="mb-2" for="bus">Choose Account Number</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.accountNumberID">
+            <option [value]="0" disabled selected hidden>Choose Account Number</option>
+            <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
+            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-full mb-4">
+        <label class="mb-2" for="bus">Choose Account Number</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.accountNumberID">
+            <option [value]="0" disabled selected hidden>Choose Account Number</option>
+            <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
+            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+    
+    <div class="flex flex-col mb-4 w-full">
+        <label class="mb-2 primaryTxt" for="annualLeaveBalance">Annual Leave Balance</label>
+        <input id="annualLeaveBalance" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter annualLeaveBalance" [(ngModel)]="Data.annualLeaveBalance" />
+    </div>
+
+</div>

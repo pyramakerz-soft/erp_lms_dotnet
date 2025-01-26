@@ -54,7 +54,7 @@ export class BankComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' ,"accountNumberName" ,"accountClosingDate","accountOpeningDate" ,"iban", "bankName", "bankAccountName"];
+  keysArray: string[] = ['id', 'name' ,"iban", "bankName", "bankAccountName" ,"accountClosingDate","accountOpeningDate" ,"accountNumberName" ];
 
   bank: Bank = new Bank();
 

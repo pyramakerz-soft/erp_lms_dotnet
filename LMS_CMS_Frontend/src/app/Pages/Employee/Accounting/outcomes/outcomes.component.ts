@@ -15,6 +15,7 @@ import { Outcome } from '../../../../Models/Accounting/outcome';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { OutComeService } from '../../../../Services/Employee/Accounting/out-come.service';
 import { firstValueFrom } from 'rxjs';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-outcomes',
@@ -71,7 +72,9 @@ export class OutcomesComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public OutComeServ: OutComeService
+    public OutComeServ: OutComeService,
+    public accountServ:AccountingTreeChartService ,
+
   ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -92,6 +95,7 @@ export class OutcomesComponent {
     });
 
     this.GetAllData();
+    this.GetAllAccount();
   }
 
   GetAllData() {
@@ -100,8 +104,15 @@ export class OutcomesComponent {
     })
   }
 
+  GetAllAccount(){
+    this.accountServ.GetBySubAndFileLinkID(8,this.DomainName).subscribe((d)=>{
+      this.AccountNumbers=d;
+    })
+  }
   Create() {
     this.mode = 'Create';
+    this.validationErrors={}
+    this.outcome=new Outcome()
     this.openModal();
   }
 
@@ -126,6 +137,7 @@ export class OutcomesComponent {
   Edit(row: Outcome) {
     this.mode = 'Edit';
     this.outcome = row;
+    this.validationErrors={}
     this.openModal();
   }
 
@@ -150,8 +162,16 @@ export class OutcomesComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.OutComeServ.Add(this.outcome,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal()
+        })
       }
       if (this.mode == 'Edit') {
+        this.OutComeServ.Edit(this.outcome,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal()
+        })
       }
     }
   }
@@ -172,7 +192,7 @@ export class OutcomesComponent {
         if (!this.outcome[field]) {
           if (
             field == 'name' ||
-            field == 'accountNumberId'
+            field == 'accountNumberID'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

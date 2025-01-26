@@ -92,7 +92,7 @@
 <!-- Modal -->
 <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{ hidden: !isModalVisible }"
 class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
-<div class="relative bg-white w-[669px] h-[40%] rounded-2xl p-12 gap-4 shadow-md">
+<div class="relative bg-white w-[669px] h-auto rounded-2xl p-12 gap-4 shadow-md">
   <!-- Close Icon -->
   <button (click)="closeModal()"
     class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
@@ -115,15 +115,15 @@ class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h
     </div>
       <div class="flex flex-col my-4">
         <label class="mb-2 " for="Account Number">Account Number</label>
-        <select (ngModelChange)="onInputValueChange({ field: 'accountNumberId', value: $event })"
-          class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-[404px] h-[45px]"  id="accountNumberId"
-          [(ngModel)]="outcome.accountNumberId">
+        <select (ngModelChange)="onInputValueChange({ field: 'accountNumberID', value: $event })"
+          class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-[404px] h-[45px]"  id="accountNumberID"
+          [(ngModel)]="outcome.accountNumberID">
           <option [value]="0" disabled selected hidden>Choose Account Number</option>
           <option *ngFor="let num of AccountNumbers" [value]="num.id">{{ num.name }}</option>
           <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
         </select>
-        <span *ngIf="validationErrors['accountNumberId']" class="text-red-500 ml-3 font-normal">{{
-          validationErrors['accountNumberId'] }}</span>
+        <span *ngIf="validationErrors['accountNumberID']" class="text-red-500 ml-3 font-normal">{{
+          validationErrors['accountNumberID'] }}</span>
       </div>
       <div class="flex justify-end">
         <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">

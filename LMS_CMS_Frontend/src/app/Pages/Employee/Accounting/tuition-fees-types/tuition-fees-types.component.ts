@@ -15,6 +15,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { TuitionFeesTypeService } from '../../../../Services/Employee/Accounting/tuition-fees-type.service';
 import { firstValueFrom } from 'rxjs';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-tuition-fees-types',
@@ -70,7 +71,9 @@ User_Data_After_Login: TokenData = new TokenData(
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService ,
-    public TuitionFeesTypeServ :TuitionFeesTypeService
+    public TuitionFeesTypeServ :TuitionFeesTypeService,
+    public accountServ:AccountingTreeChartService ,
+
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -91,6 +94,7 @@ User_Data_After_Login: TokenData = new TokenData(
     });
 
     this.GetAllData();
+    this.GetAllAccount()
   }
 
   GetAllData() {
@@ -99,8 +103,16 @@ User_Data_After_Login: TokenData = new TokenData(
     })
   }
 
+  GetAllAccount(){
+    this.accountServ.GetBySubAndFileLinkID(11,this.DomainName).subscribe((d)=>{
+      this.AccountNumbers=d;
+    })
+  }
+
   Create() {
     this.mode = 'Create';
+    this.tuitionFeesType = new TuitionFeesType();
+    this.validationErrors ={}
     this.openModal();
   }
 
@@ -124,6 +136,7 @@ User_Data_After_Login: TokenData = new TokenData(
 
   Edit(row: TuitionFeesType) {
     this.mode = 'Edit';
+    this.validationErrors ={}
     this.tuitionFeesType = row;
     this.openModal();
   }
@@ -149,10 +162,19 @@ User_Data_After_Login: TokenData = new TokenData(
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.TuitionFeesTypeServ.Add(this.tuitionFeesType,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal()
+        })
       }
       if (this.mode == 'Edit') {
+        this.TuitionFeesTypeServ.Edit(this.tuitionFeesType,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal()
+        })
       }
     }
+    this.GetAllData()
   }
 
   closeModal() {
@@ -171,7 +193,7 @@ User_Data_After_Login: TokenData = new TokenData(
            if (!this.tuitionFeesType[field]) {
              if (
                field == 'name' ||
-               field == 'accountNumberId'
+               field == 'accountNumberID'
              ) {
                this.validationErrors[field] = `*${this.capitalizeField(
                  field

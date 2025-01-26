@@ -14,6 +14,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { IncomeService } from '../../../../Services/Employee/Accounting/income.service';
 import { firstValueFrom } from 'rxjs';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-incomes',
@@ -68,7 +69,9 @@ export class IncomesComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public IncomeServ: IncomeService
+    public IncomeServ: IncomeService,
+    public accountServ:AccountingTreeChartService ,
+
   ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -89,6 +92,7 @@ export class IncomesComponent {
     });
 
     this.GetAllData();
+    this.GetAllAccount()
   }
 
   GetAllData() {
@@ -97,8 +101,15 @@ export class IncomesComponent {
     })
   }
 
+  GetAllAccount(){
+    this.accountServ.GetBySubAndFileLinkID(7,this.DomainName).subscribe((d)=>{
+      this.AccountNumbers=d;
+    })
+  }
   Create() {
     this.mode = 'Create';
+    this.income = new Income();
+    this.validationErrors={}
     this.openModal();
   }
 
@@ -123,6 +134,7 @@ export class IncomesComponent {
   Edit(row: Income) {
     this.mode = 'Edit';
     this.income = row;
+    this.validationErrors={}
     this.openModal();
   }
 
@@ -147,10 +159,19 @@ export class IncomesComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.IncomeServ.Add(this.income,this.DomainName).subscribe(data => {
+          this.GetAllData();
+          this.closeModal();
+        });
       }
       if (this.mode == 'Edit') {
+        this.IncomeServ.Edit(this.income,this.DomainName).subscribe(data => {
+          this.GetAllData();
+          this.closeModal();
+        });
       }
-    }
+   }
+   this.GetAllData()
   }
 
   closeModal() {
@@ -169,7 +190,7 @@ export class IncomesComponent {
         if (!this.income[field]) {
           if (
             field == 'name' ||
-            field == 'accountNumberId'
+            field == 'accountNumberID'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

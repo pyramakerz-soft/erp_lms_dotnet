@@ -16,6 +16,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { SaveService } from '../../../../Services/Employee/Accounting/save.service';
 import { firstValueFrom } from 'rxjs';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-saves',
@@ -71,7 +72,9 @@ export class SavesComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public SaveServ :SaveService
+    public SaveServ :SaveService,
+    public accountServ:AccountingTreeChartService ,
+
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -92,6 +95,7 @@ export class SavesComponent {
     });
 
     this.GetAllData();
+    this.GetAllAccount()
   }
 
   GetAllData() {
@@ -100,9 +104,16 @@ export class SavesComponent {
       console.log(d)
     })
   }
+  GetAllAccount(){
+    this.accountServ.GetBySubAndFileLinkID(5,this.DomainName).subscribe((d)=>{
+      this.AccountNumbers=d;
+    })
+  }
 
   Create() {
     this.mode = 'Create';
+    this.save = new Saves();
+    this.validationErrors={}
     this.openModal();
   }
 
@@ -127,6 +138,7 @@ export class SavesComponent {
   Edit(row: Saves) {
     this.mode = 'Edit';
     this.save = row;
+    this.validationErrors={}
     this.openModal();
   }
 
@@ -151,10 +163,19 @@ export class SavesComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.SaveServ.Add(this.save,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal();
+        })
       }
       if (this.mode == 'Edit') {
+        this.SaveServ.Edit(this.save,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal();
+        })
       }
     }
+    this.GetAllData()
   }
 
   closeModal() {
@@ -173,7 +194,7 @@ export class SavesComponent {
          if (!this.save[field]) {
            if (
              field == 'name' ||
-             field == 'accountNumberId'
+             field == 'accountNumberID'
            ) {
              this.validationErrors[field] = `*${this.capitalizeField(
                field

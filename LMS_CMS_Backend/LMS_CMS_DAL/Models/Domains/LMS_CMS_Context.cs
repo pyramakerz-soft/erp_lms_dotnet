@@ -86,6 +86,8 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Days> Days { get; set; }
         public DbSet<EmployeeDays> EmployeeDays { get; set; }
         public DbSet<LinkFile> LinkFile { get; set; }
+        public DbSet<EmployeeStudent> EmployeeStudent { get; set; }
+
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -278,12 +280,7 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasForeignKey(p => p.Parent_Id)
                  .OnDelete(DeleteBehavior.Restrict);
             
-            modelBuilder.Entity<Student>()
-                 .HasOne(p => p.Employee)
-                 .WithMany(p => p.Students)
-                 .HasForeignKey(p => p.EmployeeID)
-                 .OnDelete(DeleteBehavior.Restrict);
-            
+          
             modelBuilder.Entity<Student>()
                  .HasOne(p => p.AccountNumber)
                  .WithMany(p => p.Students)
@@ -729,6 +726,19 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasForeignKey(p => p.LinkFileID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<EmployeeStudent>()
+                .HasOne(p => p.employee)
+                .WithMany(p => p.EmployeeStudents)
+                .HasForeignKey(p => p.EmployeeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<EmployeeStudent>()
+                .HasOne(p => p.Student)
+                .WithMany(p => p.EmployeeStudents)
+                .HasForeignKey(p => p.StudentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()
                 .HasOne(b => b.DeletedByEmployee)
@@ -753,6 +763,8 @@ namespace LMS_CMS_DAL.Models.Domains
                .WithMany()  
                .HasForeignKey(f => f.DeletedByUserId)
                .OnDelete(DeleteBehavior.Restrict);
+
+           
         }
     }
 }

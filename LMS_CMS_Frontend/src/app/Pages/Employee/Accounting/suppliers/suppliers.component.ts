@@ -15,6 +15,10 @@ import { Supplier } from '../../../../Models/Accounting/supplier';
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
+import { SupplierService } from '../../../../Services/Employee/Accounting/supplier.service';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
+import { Country } from '../../../../Models/Accounting/country';
+import { CountryService } from '../../../../Services/Employee/Accounting/country.service';
 
 @Component({
   selector: 'app-suppliers',
@@ -53,13 +57,13 @@ export class SuppliersComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'name' , "commercialRegister" ,"taxCard" ,"address" ,"website" ,"email" ,"countryName"];
 
   Supplier: Supplier = new Supplier();
 
   validationErrors: { [key in keyof Supplier]?: string } = {};
   AccountNumbers:AccountingTreeChart[]=[];
-  
+  contries:Country[] = [];
 
   constructor(
     private router: Router,
@@ -69,7 +73,10 @@ export class SuppliersComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
+    public ApiServ: ApiService ,
+    public SupplierServ:SupplierService,
+    public accountServ:AccountingTreeChartService ,
+    public countryServ :CountryService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -90,12 +97,31 @@ export class SuppliersComponent {
     });
 
     this.GetAllData();
+    this.GetAllAccount();
+    this.GetAllCountries();
   }
 
-  GetAllData() {}
+  GetAllData() {
+    this.SupplierServ.Get(this.DomainName).subscribe((d)=>{
+      this.TableData=d;
+    })
+  }
 
+  GetAllAccount(){
+    this.accountServ.GetBySubAndFileLinkID(2,this.DomainName).subscribe((d)=>{
+      this.AccountNumbers=d;
+    })
+  }
+
+  GetAllCountries(){
+    this.countryServ.Get().subscribe((d)=>{
+      this.contries=d;
+      console.log(d)
+    });
+  }
   Create() {
     this.mode = 'Create';
+    this.Supplier=new Supplier()
     this.openModal();
   }
 
@@ -110,6 +136,9 @@ export class SuppliersComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.SupplierServ.Delete(id,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
     });
   }
@@ -141,10 +170,18 @@ export class SuppliersComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.SupplierServ.Add(this.Supplier,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
       if (this.mode == 'Edit') {
+        this.SupplierServ.Edit(this.Supplier,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
+      this.closeModal()
     }
+    this.GetAllData()
   }
 
   closeModal() {
@@ -157,28 +194,44 @@ export class SuppliersComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    // for (const key in this.Supplier) {
-    //   if (this.Supplier.hasOwnProperty(key)) {
-    //     const field = key as keyof Supplier;
-    //     if (!this.Supplier[field]) {
-    //       if (
-    //         field == 'arName' ||
-    //         field == 'enName' ||
-    //         field == 'orderInForm'
-    //       ) {
-    //         this.validationErrors[field] = `*${this.capitalizeField(
-    //           field
-    //         )} is required`;
-    //         isValid = false;
-    //       }
-    //     }
-    //   }
-    // }
+    for (const key in this.Supplier) {
+      if (this.Supplier.hasOwnProperty(key)) {
+        const field = key as keyof Supplier;
+        if (!this.Supplier[field]) {
+          if (
+            field == 'name' ||
+            field == 'countryID' ||
+            field == 'email' ||
+            field == 'website' ||
+            field == 'phone1' ||
+            field == 'taxCard' ||
+            field == 'commercialRegister' ||
+            field == 'accountNumberID'  ||
+            field == 'address'   
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
+    const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+        if (this.Supplier.email && !emailPattern.test(this.Supplier.email)) {
+          isValid = false;
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning!',
+            text: 'Email is not valid.',
+            confirmButtonColor: '#FF7519',
+          });
+        }
     return isValid;
   }
-  // capitalizeField(field: keyof Supplier?): string {
-  //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-  // }
+  capitalizeField(field: keyof Supplier): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
   onInputValueChange(event: { field: keyof Supplier; value: any }) {
     const { field, value } = event;
     (this.Supplier as any)[field] = value;
@@ -188,32 +241,32 @@ export class SuppliersComponent {
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
-  //   this.key = event.key;
-  //   this.value = event.value;
-  //   try {
-  //     const data: Supplier[] = await firstValueFrom(
-       
-  //     );
-  //     this.TableData = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Supplier[] = await firstValueFrom(
+        this.SupplierServ.Get(this.DomainName)
+      );
+      this.TableData = data || [];
 
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 }

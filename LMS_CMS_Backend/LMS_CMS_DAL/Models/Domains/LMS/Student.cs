@@ -38,16 +38,13 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
 
         public Parent Parent { get; set; }
 
-        [ForeignKey("Employee")]
-        public long? EmployeeID { get; set; }
-
-        public Employee Employee { get; set; }
-
         [ForeignKey("AccountNumber")]
         public long? AccountNumberID { get; set; }
 
         public AccountingTreeChart AccountNumber { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
+        public ICollection<EmployeeStudent> EmployeeStudents { get; set; } = new HashSet<EmployeeStudent>();
+
     }
 }

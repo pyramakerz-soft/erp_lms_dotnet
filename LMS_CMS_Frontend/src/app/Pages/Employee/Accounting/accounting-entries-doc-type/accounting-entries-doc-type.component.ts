@@ -67,7 +67,7 @@ User_Data_After_Login: TokenData = new TokenData(
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService ,
-    public AccountingEntriesDocTypeServ:AccountingEntriesDocTypeService
+    public AccountingEntriesDocTypeServ:AccountingEntriesDocTypeService,
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();

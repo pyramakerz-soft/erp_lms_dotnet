@@ -1,32 +1,31 @@
 import { Component } from '@angular/core';
-import { SearchComponent } from '../../../../Component/search/search.component';
+import { Bank } from '../../../../Models/Accounting/bank';
+import { BankService } from '../../../../Services/Employee/Accounting/bank.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { Outcome } from '../../../../Models/Accounting/outcome';
-import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
-import { OutComeService } from '../../../../Services/Employee/Accounting/out-come.service';
-import { firstValueFrom } from 'rxjs';
-import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
-  selector: 'app-outcomes',
+  selector: 'app-bank',
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
-  templateUrl: './outcomes.component.html',
-  styleUrl: './outcomes.component.css'
+  templateUrl: './bank.component.html',
+  styleUrl: './bank.component.css'
 })
-export class OutcomesComponent {
-
-  User_Data_After_Login: TokenData = new TokenData(
+export class BankComponent {
+ User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -44,9 +43,7 @@ export class OutcomesComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  AccountNumbers: AccountingTreeChart[] = [];
-
-  TableData: Outcome[] = [];
+  TableData: Bank[] = [];
 
   DomainName: string = '';
   UserID: number = 0;
@@ -57,11 +54,12 @@ export class OutcomesComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name', 'accountNumberName'];
+  keysArray: string[] = ['id', 'name' ,"iban", "bankName", "bankAccountName" ,"accountClosingDate","accountOpeningDate" ,"accountNumberName" ];
 
-  outcome: Outcome = new Outcome();
+  bank: Bank = new Bank();
 
-  validationErrors: { [key in keyof Outcome]?: string } = {};
+  validationErrors: { [key in keyof Bank]?: string } = {};
+  AccountNumbers:AccountingTreeChart[]=[];
 
   constructor(
     private router: Router,
@@ -71,11 +69,10 @@ export class OutcomesComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService,
-    public OutComeServ: OutComeService,
+    public ApiServ: ApiService ,
+    public BankServ:BankService,
     public accountServ:AccountingTreeChartService ,
-
-  ) { }
+  ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -99,26 +96,27 @@ export class OutcomesComponent {
   }
 
   GetAllData() {
-    this.OutComeServ.Get(this.DomainName).subscribe((d) => {
-      this.TableData = d;
+    this.BankServ.Get(this.DomainName).subscribe((d)=>{
+      this.TableData=d;
     })
   }
 
   GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(8,this.DomainName).subscribe((d)=>{
+    this.accountServ.GetBySubAndFileLinkID(6,this.DomainName).subscribe((d)=>{
       this.AccountNumbers=d;
     })
   }
+
   Create() {
     this.mode = 'Create';
-    this.validationErrors={}
-    this.outcome=new Outcome()
+    this.bank=new Bank()
     this.openModal();
+    this.validationErrors={}
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this OutCome?',
+      title: 'Are you sure you want to delete this Bank?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -127,17 +125,16 @@ export class OutcomesComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.OutComeServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.BankServ.Delete(id,this.DomainName).subscribe((d)=>{
           this.GetAllData()
         })
       }
     });
   }
 
-  Edit(row: Outcome) {
+  Edit(row: Bank) {
     this.mode = 'Edit';
-    this.outcome = row;
-    this.validationErrors={}
+    this.bank = row;
     this.openModal();
   }
 
@@ -161,19 +158,20 @@ export class OutcomesComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      console.log(this.bank)
       if (this.mode == 'Create') {
-        this.OutComeServ.Add(this.outcome,this.DomainName).subscribe((d)=>{
+        this.BankServ.Add(this.bank,this.DomainName).subscribe((d)=>{
           this.GetAllData()
-          this.closeModal()
         })
       }
       if (this.mode == 'Edit') {
-        this.OutComeServ.Edit(this.outcome,this.DomainName).subscribe((d)=>{
+        this.BankServ.Edit(this.bank,this.DomainName).subscribe((d)=>{
           this.GetAllData()
-          this.closeModal()
         })
       }
+      this.closeModal()
     }
+    this.GetAllData()
   }
 
   closeModal() {
@@ -186,13 +184,19 @@ export class OutcomesComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    for (const key in this.outcome) {
-      if (this.outcome.hasOwnProperty(key)) {
-        const field = key as keyof Outcome;
-        if (!this.outcome[field]) {
+    for (const key in this.bank) {
+      if (this.bank.hasOwnProperty(key)) {
+        const field = key as keyof Bank;
+        if (!this.bank[field]) {
           if (
             field == 'name' ||
-            field == 'accountNumberID'
+            field == 'bankAccountName' ||
+            field == 'bankName' ||
+            field == 'iban' ||
+            field == 'accountOpeningDate' ||
+            field == 'accountClosingDate' ||
+            field == 'bankAccountNumber'  ||
+            field == 'accountNumberId'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
@@ -204,12 +208,12 @@ export class OutcomesComponent {
     }
     return isValid;
   }
-  capitalizeField(field: keyof Outcome): string {
+  capitalizeField(field: keyof Bank): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
-  onInputValueChange(event: { field: keyof Outcome; value: any }) {
+  onInputValueChange(event: { field: keyof Bank; value: any }) {
     const { field, value } = event;
-    (this.outcome as any)[field] = value;
+    (this.bank as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
@@ -219,8 +223,8 @@ export class OutcomesComponent {
     this.key = event.key;
     this.value = event.value;
     try {
-      const data: Outcome[] = await firstValueFrom(
-        this.OutComeServ.Get(this.DomainName)
+      const data: Bank[] = await firstValueFrom(
+        this.BankServ.Get(this.DomainName)
       );
       this.TableData = data || [];
 
@@ -245,4 +249,3 @@ export class OutcomesComponent {
     }
   }
 }
-

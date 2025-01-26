@@ -16,6 +16,7 @@ import { Debit } from '../../../../Models/Accounting/debit';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { DebitService } from '../../../../Services/Employee/Accounting/debit.service';
 import { firstValueFrom } from 'rxjs';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-debits',
@@ -70,7 +71,9 @@ export class DebitsComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public DebitServ :DebitService
+    public DebitServ :DebitService,
+    public accountServ:AccountingTreeChartService ,
+
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -91,6 +94,7 @@ export class DebitsComponent {
     });
 
     this.GetAllData();
+    this.GetAllAccount()
   }
 
   GetAllData() {
@@ -99,9 +103,16 @@ export class DebitsComponent {
     })
 
   }
+  GetAllAccount(){
+    this.accountServ.GetBySubAndFileLinkID(3,this.DomainName).subscribe((d)=>{
+      this.AccountNumbers=d;
+    })
+  }
 
   Create() {
     this.mode = 'Create';
+    this.debit = new Debit();
+    this.validationErrors={}
     this.openModal();
   }
 
@@ -150,10 +161,19 @@ export class DebitsComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.DebitServ.Add(this.debit,this.DomainName).subscribe((d)=>{
+          this.GetAllData();
+          this.closeModal();
+        })
       }
       if (this.mode == 'Edit') {
+        this.DebitServ.Edit(this.debit,this.DomainName).subscribe((d)=>{
+          this.GetAllData();
+          this.closeModal();
+        })
       }
     }
+    this.GetAllData();
   }
 
   closeModal() {
@@ -172,7 +192,7 @@ export class DebitsComponent {
         if (!this.debit[field]) {
           if (
             field == 'name' ||
-            field == 'accountNumberId' 
+            field == 'accountNumberID' 
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

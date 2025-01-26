@@ -98,8 +98,10 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Country> Country_Repository;
         GenericRepo<Nationality> Nationality_Repository;
         GenericRepo<LinkFile> LinkFile_Repository;
+        GenericRepo<EmployeeStudent> EmployeeStudent_Repository;
 
-         
+
+
         public UOW(Octa_DbContext octa_Db)
         {
             this.octa_Db = octa_Db;
@@ -145,6 +147,17 @@ namespace LMS_CMS_BL.UOW
                     Student_Repository = new GenericRepo<Student>(db);
                 }
                 return Student_Repository;
+            }
+        }
+        public GenericRepo<EmployeeStudent> employeeStudent_Repository
+        {
+            get
+            {
+                if (EmployeeStudent_Repository == null)
+                {
+                    EmployeeStudent_Repository = new GenericRepo<EmployeeStudent>(db);
+                }
+                return EmployeeStudent_Repository;
             }
         }
         public GenericRepo<Role> role_Repository

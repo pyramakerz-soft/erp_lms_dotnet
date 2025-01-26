@@ -15,6 +15,7 @@ import { Credit } from '../../../../Models/Accounting/credit';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { CreditService } from '../../../../Services/Employee/Accounting/credit.service';
 import { firstValueFrom } from 'rxjs';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-credits',
@@ -70,7 +71,8 @@ User_Data_After_Login: TokenData = new TokenData(
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public CreditServ :CreditService
+    public CreditServ :CreditService,
+    public accountServ:AccountingTreeChartService 
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -91,6 +93,7 @@ User_Data_After_Login: TokenData = new TokenData(
     });
 
     this.GetAllData();
+    this.GetAllAccount()
   }
 
   GetAllData() {
@@ -99,14 +102,21 @@ User_Data_After_Login: TokenData = new TokenData(
     })
   }
 
+  GetAllAccount(){
+    this.accountServ.GetBySubAndFileLinkID(4,this.DomainName).subscribe((d)=>{
+      this.AccountNumbers=d;
+    })
+  }
   Create() {
     this.mode = 'Create';
+    this.credit = new Credit();
+    this.validationErrors={}
     this.openModal();
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Credit?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -149,10 +159,18 @@ User_Data_After_Login: TokenData = new TokenData(
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.CreditServ.Add(this.credit,this.DomainName).subscribe((d)=>{
+          this.closeModal()
+        })
       }
       if (this.mode == 'Edit') {
+        this.CreditServ.Edit(this.credit,this.DomainName).subscribe((d)=>{
+          this.closeModal()
+        })
       }
+      this.GetAllData()
     }
+    this.GetAllData()
   }
 
   closeModal() {
@@ -171,7 +189,7 @@ User_Data_After_Login: TokenData = new TokenData(
         if (!this.credit[field]) {
           if (
             field == 'name' ||
-            field == 'accountNumberId' 
+            field == 'accountNumberID' 
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

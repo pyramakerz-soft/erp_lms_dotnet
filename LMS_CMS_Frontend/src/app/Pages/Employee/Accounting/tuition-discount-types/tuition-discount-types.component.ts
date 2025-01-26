@@ -15,6 +15,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { TuitionDiscountTypeService } from '../../../../Services/Employee/Accounting/tuition-discount-type.service';
 import { firstValueFrom } from 'rxjs';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-tuition-discount-types',
@@ -70,7 +71,8 @@ export class TuitionDiscountTypesComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService ,
-    public tuitionServ :TuitionDiscountTypeService
+    public tuitionServ :TuitionDiscountTypeService,
+    public accountServ:AccountingTreeChartService ,
   ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -91,6 +93,7 @@ export class TuitionDiscountTypesComponent {
     });
 
     this.GetAllData();
+    this.GetAllAccount()
   }
 
   GetAllData() { 
@@ -100,8 +103,15 @@ export class TuitionDiscountTypesComponent {
 
   }
 
+  GetAllAccount(){
+    this.accountServ.GetBySubAndFileLinkID(12,this.DomainName).subscribe((d)=>{
+      this.AccountNumbers=d;
+    })
+  }
   Create() {
     this.mode = 'Create';
+    this.tuitionDiscountTypes = new TuitionDiscountTypes();
+    this.validationErrors={}
     this.openModal();
   }
 
@@ -126,6 +136,7 @@ export class TuitionDiscountTypesComponent {
   Edit(row: TuitionDiscountTypes) {
     this.mode = 'Edit';
     this.tuitionDiscountTypes = row;
+    this.validationErrors={}
     this.openModal();
   }
 
@@ -150,10 +161,19 @@ export class TuitionDiscountTypesComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.tuitionServ.Add(this.tuitionDiscountTypes,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal();
+        })
       }
       if (this.mode == 'Edit') {
+        this.tuitionServ.Edit(this.tuitionDiscountTypes,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+          this.closeModal();
+        })
       }
     }
+    this.GetAllData()
   }
 
   closeModal() {
@@ -172,7 +192,7 @@ export class TuitionDiscountTypesComponent {
         if (!this.tuitionDiscountTypes[field]) {
           if (
             field == 'name' ||
-            field == 'accountNumberId'
+            field == 'accountNumberID'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

@@ -240,7 +240,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             Unit_Of_Work.tuitionDiscountType_Repository.Update(tuitionDiscountType);
             Unit_Of_Work.SaveChanges();
-            return Ok(tuitionDiscountType);
+            return Ok(newType);
         }
 
         [HttpDelete("{id}")]

@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO;
+using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
+using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -25,11 +29,15 @@ namespace LMS_CMS_PL.Controllers.Domains
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly UOW _Unit_Of_Work_Octa;
 
-        public EmployeeController(DbContextFactoryService dbContextFactory, IMapper mapper)
+
+        public EmployeeController(DbContextFactoryService dbContextFactory, IMapper mapper, UOW Unit_Of_Work)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _Unit_Of_Work_Octa = Unit_Of_Work;
+
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +133,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet("{empId}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Administrator", "Employee" }
+            pages: new[] { "Administrator","Accounting", "Employee" }
         )]
         public async Task<IActionResult> GetByIDAsync(long empId)
         {
@@ -473,7 +481,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             // Update employee
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
+                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -601,7 +609,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             }
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
+                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -750,7 +758,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             }
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
+                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -785,7 +793,190 @@ namespace LMS_CMS_PL.Controllers.Domains
             return Ok();
         }
 
-    }
+        //////////////////////////////////////////////////////////////////////////////
+
+        [HttpPut("EmpployeeAccounting")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Administrator", "Employee" }
+        )]
+        public async Task<IActionResult> EditEmployeeAccountingAsync(EmployeeAccountingPut newEmployee)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID, Type claim not found.");
+            }
+
+            Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(s => s.ID == newEmployee.ID && s.IsDeleted != true);
+            if (employee == null || employee.IsDeleted == true)
+            {
+                return NotFound("No Employee with this ID");
+            }
+
+            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == newEmployee.AccountNumberID);
+
+            if (account == null)
+            {
+                return NotFound("No Account chart with this Id");
+            }
+            else
+            {
+                if (account.SubTypeID == 1)
+                {
+                    return BadRequest("You can't use main account, only sub account");
+                }
+
+                if (account.LinkFileID != 10)
+                {
+                    return BadRequest("Wrong Link File, it should be Asset file link");
+                }
+            }
+
+
+            if(newEmployee.AcademicDegreeID != 0 && newEmployee.AcademicDegreeID != null)
+            {
+                AcademicDegree academicDegree = Unit_Of_Work.academicDegree_Repository.First_Or_Default(t => t.ID == newEmployee.AcademicDegreeID);
+
+                if (academicDegree == null)
+                {
+                    return NotFound("No academicDegree with this Id");
+                }
+            }
+            else
+            {
+                newEmployee.AcademicDegreeID = null;
+            }
+
+            if (newEmployee.JobID != 0 && newEmployee.JobID != null)
+            {
+
+                 Job job = Unit_Of_Work.job_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == newEmployee.JobID);
+
+                if (job == null)
+                {
+                    return NotFound("No Job  with this Id");
+                }
+            }
+            else
+            {
+                newEmployee.JobID = null;
+            }
+
+            if (newEmployee.DepartmentID != 0 && newEmployee.DepartmentID != null)
+            {
+                Department department = Unit_Of_Work.department_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == newEmployee.DepartmentID);
+
+                if (department == null)
+                {
+                    return NotFound("No department with this Id");
+                }
+            }
+            else
+            {
+                newEmployee.DepartmentID = null;
+            }
+
+            if (newEmployee.ReasonOfLeavingID != 0 && newEmployee.ReasonOfLeavingID != null)
+            {
+                 ReasonForLeavingWork reasonForLeavingWork = Unit_Of_Work.reasonForLeavingWork_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == newEmployee.ReasonOfLeavingID);
+
+                if (reasonForLeavingWork == null)
+                {
+                    return NotFound("No reasonForLeavingWork with this Id");
+                }
+
+            }
+            else
+            {
+                newEmployee.ReasonOfLeavingID = null;
+            }
+
+            if(newEmployee.Nationality!=0&& newEmployee.Nationality != null)
+            {
+            Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(newEmployee.Nationality);
+            if (nationality == null)
+            {
+                return BadRequest("There is no nationality with this id");
+            }
+
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee Accounting");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (employee.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Employee page doesn't exist");
+                }
+            }
+
+            mapper.Map(newEmployee, employee);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            employee.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                employee.UpdatedByOctaId = userId;
+                if (employee.UpdatedByUserId != null)
+                {
+                    employee.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                employee.UpdatedByUserId = userId;
+                if (employee.UpdatedByOctaId != null)
+                {
+                    employee.UpdatedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.employee_Repository.Update(employee);
+            Unit_Of_Work.SaveChanges();
+
+
+            //////delete all empDays
+            List<EmployeeDays> employeeDays = await Unit_Of_Work.employeeDays_Repository.Select_All_With_IncludesById<EmployeeDays>(
+                    sem => sem.EmployeeID==newEmployee.ID);
+
+             foreach(EmployeeDays day in employeeDays)
+             {
+                Unit_Of_Work.employeeDays_Repository.Delete(day.ID); 
+                Unit_Of_Work.SaveChanges();
+             }
+
+            foreach (var day in newEmployee.Days)
+            {
+                EmployeeDays empDay = new EmployeeDays();
+                empDay.EmployeeID = newEmployee.ID;
+                empDay.DayID = day;
+                Unit_Of_Work.employeeDays_Repository.Add(empDay);
+                Unit_Of_Work.SaveChanges();
+            }
+
+
+            return Ok(newEmployee);
+        }
+    }   
 }
 
 

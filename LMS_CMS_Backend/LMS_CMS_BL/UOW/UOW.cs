@@ -989,7 +989,7 @@ namespace LMS_CMS_BL.UOW
             {
                 if (Nationality_Repository == null)
                 {
-                    Nationality_Repository = new GenericRepo<Nationality>(db);
+                    Nationality_Repository = new GenericRepo<Nationality>(octa_Db);
                 }
                 return Nationality_Repository;
             }

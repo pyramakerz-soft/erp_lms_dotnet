@@ -793,6 +793,44 @@ namespace LMS_CMS_PL.Controllers.Domains
             return Ok();
         }
 
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("getByAccountingEmployee/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Accounting", "Employee" }
+        )]
+        public async Task<IActionResult> GetByAccounting(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+          
+            List<Employee> employees = await Unit_Of_Work.employee_Repository.Select_All_With_IncludesById<Employee>(
+                    sem => sem.IsDeleted != true && sem.ID == id,
+                    query => query.Include(emp => emp.ReasonForLeavingWork),
+                    query => query.Include(emp => emp.AccountNumber),
+                    query => query.Include(emp => emp.Job),
+                    query => query.Include(emp => emp.Department),
+                    query => query.Include(emp => emp.AccountNumber),
+                    query => query.Include(emp => emp.AcademicDegree));
+
+            if (employees == null || employees.Count == 0)
+            {
+                return NotFound("There is no employees with this id");
+            }
+
+            List<EmployeeAccountingGetDTO> employeeDTOs = mapper.Map<List<EmployeeAccountingGetDTO>>(employees);
+            foreach (var employeeDTO in employeeDTOs)
+            {
+                Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(employeeDTO.Nationality);
+                if (nationality != null)
+                {
+                    employeeDTO.NationalityName = nationality.Name;
+                }
+
+            }
+
+            return Ok(employeeDTOs);
+        }
         //////////////////////////////////////////////////////////////////////////////
 
         [HttpPut("EmpployeeAccounting")]
@@ -973,6 +1011,24 @@ namespace LMS_CMS_PL.Controllers.Domains
                 Unit_Of_Work.SaveChanges();
             }
 
+            //////delete all empStudents
+            List<EmployeeStudent> employeeStudents = await Unit_Of_Work.employeeStudent_Repository.Select_All_With_IncludesById<EmployeeStudent>(
+                    sem => sem.EmployeeID == newEmployee.ID);
+
+            foreach (EmployeeStudent emp in employeeStudents)
+            {
+                Unit_Of_Work.employeeStudent_Repository.Delete(emp.ID);
+                Unit_Of_Work.SaveChanges();
+            }
+
+            foreach (var empStudent in newEmployee.Students)
+            {
+                EmployeeStudent emp = new EmployeeStudent();
+                emp.EmployeeID = newEmployee.ID;
+                emp.StudentID = empStudent;
+                Unit_Of_Work.employeeStudent_Repository.Add(emp);
+                Unit_Of_Work.SaveChanges();
+            }
 
             return Ok(newEmployee);
         }

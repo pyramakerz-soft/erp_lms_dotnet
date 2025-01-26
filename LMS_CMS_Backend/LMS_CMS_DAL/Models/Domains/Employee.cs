@@ -103,7 +103,8 @@ namespace LMS_CMS_DAL.Models.Domains
         public ICollection<Bus> DriverAssistant { get; set; } = new HashSet<Bus>();
         public ICollection<EmployeeAttachment> EmployeeAttachments { get; set; } = new HashSet<EmployeeAttachment>();
         public ICollection<Floor> Floors { get; set; } = new HashSet<Floor>();
-        public ICollection<Student> Students { get; set; } = new HashSet<Student>();
         public ICollection<EmployeeDays> EmployeeDays { get; set; } = new HashSet<EmployeeDays>();
+        public ICollection<EmployeeStudent> EmployeeStudents { get; set; } = new HashSet<EmployeeStudent>();
+
     }
 }

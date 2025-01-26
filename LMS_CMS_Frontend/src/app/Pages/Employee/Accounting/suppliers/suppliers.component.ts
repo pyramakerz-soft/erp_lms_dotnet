@@ -15,6 +15,7 @@ import { Supplier } from '../../../../Models/Accounting/supplier';
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
+import { SupplierService } from '../../../../Services/Employee/Accounting/supplier.service';
 
 @Component({
   selector: 'app-suppliers',
@@ -69,7 +70,8 @@ export class SuppliersComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
+    public ApiServ: ApiService ,
+    public SupplierServ:SupplierService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -92,7 +94,11 @@ export class SuppliersComponent {
     this.GetAllData();
   }
 
-  GetAllData() {}
+  GetAllData() {
+    this.SupplierServ.Get(this.DomainName).subscribe((d)=>{
+      this.TableData=d;
+    })
+  }
 
   Create() {
     this.mode = 'Create';
@@ -110,6 +116,9 @@ export class SuppliersComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.SupplierServ.Delete(id,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
     });
   }
@@ -141,10 +150,18 @@ export class SuppliersComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
+        this.SupplierServ.Add(this.Supplier,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
       if (this.mode == 'Edit') {
+        this.SupplierServ.Edit(this.Supplier,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
+      this.closeModal()
     }
+    this.GetAllData()
   }
 
   closeModal() {
@@ -157,28 +174,34 @@ export class SuppliersComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    // for (const key in this.Supplier) {
-    //   if (this.Supplier.hasOwnProperty(key)) {
-    //     const field = key as keyof Supplier;
-    //     if (!this.Supplier[field]) {
-    //       if (
-    //         field == 'arName' ||
-    //         field == 'enName' ||
-    //         field == 'orderInForm'
-    //       ) {
-    //         this.validationErrors[field] = `*${this.capitalizeField(
-    //           field
-    //         )} is required`;
-    //         isValid = false;
-    //       }
-    //     }
-    //   }
-    // }
+    for (const key in this.Supplier) {
+      if (this.Supplier.hasOwnProperty(key)) {
+        const field = key as keyof Supplier;
+        if (!this.Supplier[field]) {
+          if (
+            field == 'name' ||
+            field == 'countryID' ||
+            field == 'email' ||
+            field == 'website' ||
+            field == 'phone1' ||
+            field == 'taxcard' ||
+            field == 'commercialRegister' ||
+            field == 'accountNumberId'  ||
+            field == 'address'   
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
     return isValid;
   }
-  // capitalizeField(field: keyof Supplier?): string {
-  //   return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-  // }
+  capitalizeField(field: keyof Supplier): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
   onInputValueChange(event: { field: keyof Supplier; value: any }) {
     const { field, value } = event;
     (this.Supplier as any)[field] = value;
@@ -188,32 +211,32 @@ export class SuppliersComponent {
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
-  //   this.key = event.key;
-  //   this.value = event.value;
-  //   try {
-  //     const data: Supplier[] = await firstValueFrom(
-       
-  //     );
-  //     this.TableData = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Supplier[] = await firstValueFrom(
+        this.SupplierServ.Get(this.DomainName)
+      );
+      this.TableData = data || [];
 
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 }

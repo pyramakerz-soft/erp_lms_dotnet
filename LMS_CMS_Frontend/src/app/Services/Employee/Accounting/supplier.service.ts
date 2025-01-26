@@ -27,6 +27,7 @@ export class SupplierService {
     return this.http.get<Supplier[]>(`${this.baseUrl}/Supplier`, { headers });
   }
 
+  
   Add(supplier: Supplier, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName;

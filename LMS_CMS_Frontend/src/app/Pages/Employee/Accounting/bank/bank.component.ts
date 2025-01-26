@@ -1,34 +1,31 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { Bank } from '../../../../Models/Accounting/bank';
+import { BankService } from '../../../../Services/Employee/Accounting/bank.service';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SearchComponent } from '../../../../Component/search/search.component';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BusType } from '../../../../Models/Bus/bus-type';
+import { firstValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { Supplier } from '../../../../Models/Accounting/supplier';
-import Swal from 'sweetalert2';
-import { firstValueFrom } from 'rxjs';
-import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
-import { SupplierService } from '../../../../Services/Employee/Accounting/supplier.service';
-import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
-import { Country } from '../../../../Models/Accounting/country';
-import { CountryService } from '../../../../Services/Employee/Accounting/country.service';
 
 @Component({
-  selector: 'app-suppliers',
+  selector: 'app-bank',
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
-  templateUrl: './suppliers.component.html',
-  styleUrl: './suppliers.component.css',
+  templateUrl: './bank.component.html',
+  styleUrl: './bank.component.css'
 })
-export class SuppliersComponent {
-  User_Data_After_Login: TokenData = new TokenData(
+export class BankComponent {
+ User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -46,7 +43,7 @@ export class SuppliersComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  TableData: Supplier[] = [];
+  TableData: Bank[] = [];
 
   DomainName: string = '';
   UserID: number = 0;
@@ -57,13 +54,12 @@ export class SuppliersComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' , "commercialRegister" ,"taxCard" ,"address" ,"website" ,"email" ,"countryName"];
+  keysArray: string[] = ['id', 'name' ,"accountNumberName" ,"accountClosingDate","accountOpeningDate" ,"iban", "bankName", "bankAccountName"];
 
-  Supplier: Supplier = new Supplier();
+  bank: Bank = new Bank();
 
-  validationErrors: { [key in keyof Supplier]?: string } = {};
+  validationErrors: { [key in keyof Bank]?: string } = {};
   AccountNumbers:AccountingTreeChart[]=[];
-  contries:Country[] = [];
 
   constructor(
     private router: Router,
@@ -74,9 +70,8 @@ export class SuppliersComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService ,
-    public SupplierServ:SupplierService,
+    public BankServ:BankService,
     public accountServ:AccountingTreeChartService ,
-    public countryServ :CountryService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -98,36 +93,30 @@ export class SuppliersComponent {
 
     this.GetAllData();
     this.GetAllAccount();
-    this.GetAllCountries();
   }
 
   GetAllData() {
-    this.SupplierServ.Get(this.DomainName).subscribe((d)=>{
+    this.BankServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData=d;
     })
   }
 
   GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(2,this.DomainName).subscribe((d)=>{
+    this.accountServ.GetBySubAndFileLinkID(6,this.DomainName).subscribe((d)=>{
       this.AccountNumbers=d;
     })
   }
 
-  GetAllCountries(){
-    this.countryServ.Get().subscribe((d)=>{
-      this.contries=d;
-      console.log(d)
-    });
-  }
   Create() {
     this.mode = 'Create';
-    this.Supplier=new Supplier()
+    this.bank=new Bank()
     this.openModal();
+    this.validationErrors={}
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Bank?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -136,16 +125,16 @@ export class SuppliersComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.SupplierServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.BankServ.Delete(id,this.DomainName).subscribe((d)=>{
           this.GetAllData()
         })
       }
     });
   }
 
-  Edit(row: Supplier) {
+  Edit(row: Bank) {
     this.mode = 'Edit';
-    this.Supplier = row;
+    this.bank = row;
     this.openModal();
   }
 
@@ -169,13 +158,14 @@ export class SuppliersComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      console.log(this.bank)
       if (this.mode == 'Create') {
-        this.SupplierServ.Add(this.Supplier,this.DomainName).subscribe((d)=>{
+        this.BankServ.Add(this.bank,this.DomainName).subscribe((d)=>{
           this.GetAllData()
         })
       }
       if (this.mode == 'Edit') {
-        this.SupplierServ.Edit(this.Supplier,this.DomainName).subscribe((d)=>{
+        this.BankServ.Edit(this.bank,this.DomainName).subscribe((d)=>{
           this.GetAllData()
         })
       }
@@ -194,20 +184,19 @@ export class SuppliersComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    for (const key in this.Supplier) {
-      if (this.Supplier.hasOwnProperty(key)) {
-        const field = key as keyof Supplier;
-        if (!this.Supplier[field]) {
+    for (const key in this.bank) {
+      if (this.bank.hasOwnProperty(key)) {
+        const field = key as keyof Bank;
+        if (!this.bank[field]) {
           if (
             field == 'name' ||
-            field == 'countryID' ||
-            field == 'email' ||
-            field == 'website' ||
-            field == 'phone1' ||
-            field == 'taxCard' ||
-            field == 'commercialRegister' ||
-            field == 'accountNumberID'  ||
-            field == 'address'   
+            field == 'bankAccountName' ||
+            field == 'bankName' ||
+            field == 'iban' ||
+            field == 'accountOpeningDate' ||
+            field == 'accountClosingDate' ||
+            field == 'bankAccountNumber'  ||
+            field == 'accountNumberId'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
@@ -217,24 +206,14 @@ export class SuppliersComponent {
         }
       }
     }
-    const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-        if (this.Supplier.email && !emailPattern.test(this.Supplier.email)) {
-          isValid = false;
-          Swal.fire({
-            icon: 'warning',
-            title: 'Warning!',
-            text: 'Email is not valid.',
-            confirmButtonColor: '#FF7519',
-          });
-        }
     return isValid;
   }
-  capitalizeField(field: keyof Supplier): string {
+  capitalizeField(field: keyof Bank): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
-  onInputValueChange(event: { field: keyof Supplier; value: any }) {
+  onInputValueChange(event: { field: keyof Bank; value: any }) {
     const { field, value } = event;
-    (this.Supplier as any)[field] = value;
+    (this.bank as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
@@ -244,8 +223,8 @@ export class SuppliersComponent {
     this.key = event.key;
     this.value = event.value;
     try {
-      const data: Supplier[] = await firstValueFrom(
-        this.SupplierServ.Get(this.DomainName)
+      const data: Bank[] = await firstValueFrom(
+        this.BankServ.Get(this.DomainName)
       );
       this.TableData = data || [];
 

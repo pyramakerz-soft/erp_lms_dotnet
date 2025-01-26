@@ -466,6 +466,9 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.ReasonForLeavingWork, opt => opt.MapFrom(src => src.ReasonForLeavingWork.Name))
                 .ForMember(dest => dest.AcademicDegreeName, opt => opt.MapFrom(src => src.AcademicDegree.Name));
 
+            CreateMap<Country, CountriesGetDTO>();
+
+
         }
     }
 }

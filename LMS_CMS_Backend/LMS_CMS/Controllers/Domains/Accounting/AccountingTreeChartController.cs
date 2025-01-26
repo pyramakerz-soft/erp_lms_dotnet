@@ -29,6 +29,205 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             this.mapper = mapper;
         }
 
+        private async Task<List<AccountingTreeChart>> GetAllChildrenAsync(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var node = await Unit_Of_Work.accountingTreeChart_Repository.FindByIncludesAsync(
+                tree => tree.IsDeleted != true && tree.ID == id,
+                query => query.Include(tree => tree.ChildAccountingTreeCharts)
+            );
+
+            if (node == null)
+            {
+                return new List<AccountingTreeChart>();
+            }
+
+            if (!node.ChildAccountingTreeCharts.Any())
+            {
+                // Log or handle the case where there are no direct children
+                Console.WriteLine($"Node with ID {id} has no children.");
+            }
+
+            var children = new List<AccountingTreeChart>();
+            AddChildren(node, children);
+            return children;
+        }
+
+        private void AddChildren(AccountingTreeChart node, List<AccountingTreeChart> children)
+        {
+            // Add direct children
+            children.AddRange(node.ChildAccountingTreeCharts);
+
+            // Recursively add each child's children
+            foreach (var child in node.ChildAccountingTreeCharts)
+            {
+                AddChildren(child, children);
+            }
+        }
+
+        private List<AccountingTreeChartGetDTO> BuildHierarchy(List<AccountingTreeChart> accountingTreeCharts, long? parentId = null)
+        {
+            return accountingTreeCharts
+                .Where(ac => ac.MainAccountNumberID == parentId)
+                .Select(ac => new AccountingTreeChartGetDTO
+                {
+                    ID = ac.ID,
+                    Name = ac.Name,
+                    Level = ac.Level,
+                    SubTypeID = ac.SubTypeID,
+                    SubTypeName = ac.SubType?.Name ?? "",
+                    EndTypeID = ac.EndTypeID,
+                    EndTypeName = ac.EndType?.Name ?? "",
+                    MainAccountNumberID = ac.MainAccountNumberID ?? 0,
+                    MainAccountNumberName = ac.Parent?.Name ?? "",
+                    LinkFileID = ac.LinkFileID ?? 0,
+                    LinkFileName = ac.LinkFile?.Name ?? "",
+                    MotionTypeID = ac.MotionTypeID,
+                    MotionTypeName = ac.MotionType?.Name ?? "",
+                    InsertedByUserId = ac.InsertedByUserId ?? 0,
+                    Children = BuildHierarchy(accountingTreeCharts, ac.ID) 
+                }).ToList();
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        
+        [HttpGet]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Accounting" }
+        )]
+        public async Task<IActionResult> GetAll()
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<AccountingTreeChart> accountingTreeCharts = await Unit_Of_Work.accountingTreeChart_Repository.Select_All_With_IncludesById<AccountingTreeChart>(
+                    f => f.IsDeleted != true,
+                    query => query.Include(ac => ac.LinkFile),
+                    query => query.Include(ac => ac.MotionType),
+                    query => query.Include(ac => ac.SubType),
+                    query => query.Include(ac => ac.EndType),
+                    query => query.Include(ac => ac.Parent)
+                    );
+
+            if (accountingTreeCharts == null || accountingTreeCharts.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<AccountingTreeChartGetDTO> accountingTreeChartsDTO = BuildHierarchy(accountingTreeCharts);
+
+            return Ok(accountingTreeChartsDTO);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Accounting" }
+        )]
+        public async Task<IActionResult> GetById(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (id == 0)
+            {
+                return BadRequest("Enter Account Tree Chart ID");
+            }
+
+            AccountingTreeChart accountingTreeChart = await Unit_Of_Work.accountingTreeChart_Repository.FindByIncludesAsync(
+                    acc => acc.IsDeleted != true && acc.ID == id,
+                    query => query.Include(ac => ac.LinkFile),
+                    query => query.Include(ac => ac.MotionType),
+                    query => query.Include(ac => ac.SubType),
+                    query => query.Include(ac => ac.EndType),
+                    query => query.Include(ac => ac.Parent)
+                    );
+
+            if (accountingTreeChart == null)
+            {
+                return NotFound();
+            }
+
+            AccountingTreeChartGetDTO accountingTreeChartGetDTO = mapper.Map<AccountingTreeChartGetDTO>(accountingTreeChart);
+
+            return Ok(accountingTreeChartGetDTO);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetBySubAndLinkFileId/{linkFileID}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Accounting" }
+        )]
+        public async Task<IActionResult> GetBySubAndLinkFileId(long linkFileID)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            
+            if (linkFileID == 0)
+            {
+                return BadRequest("Enter Link File ID");
+            } 
+
+            LinkFile linkFile = Unit_Of_Work.linkFile_Repository.Select_By_Id(linkFileID);
+            if (linkFile == null)
+            {
+                return NotFound("No Link File with this Id");
+            }
+
+            List<AccountingTreeChart> accountingTreeCharts = await Unit_Of_Work.accountingTreeChart_Repository.Select_All_With_IncludesById<AccountingTreeChart>(
+                    f => f.IsDeleted != true && f.SubTypeID == 2 && f.LinkFileID == linkFileID,
+                    query => query.Include(ac => ac.LinkFile),
+                    query => query.Include(ac => ac.MotionType),
+                    query => query.Include(ac => ac.SubType),
+                    query => query.Include(ac => ac.EndType),
+                    query => query.Include(ac => ac.Parent)
+                    );
+
+            if (accountingTreeCharts == null || accountingTreeCharts.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<AccountingTreeChartGetDTO> accountingTreeChartsDTO = mapper.Map<List<AccountingTreeChartGetDTO>>(accountingTreeCharts);
+
+            return Ok(accountingTreeChartsDTO);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetByMainId")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Accounting" }
+        )]
+        public async Task<IActionResult> GetByMainId()
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<AccountingTreeChart> accountingTreeCharts = await Unit_Of_Work.accountingTreeChart_Repository.Select_All_With_IncludesById<AccountingTreeChart>(
+                    f => f.IsDeleted != true && f.SubTypeID == 1,
+                    query => query.Include(ac => ac.LinkFile),
+                    query => query.Include(ac => ac.MotionType),
+                    query => query.Include(ac => ac.SubType),
+                    query => query.Include(ac => ac.EndType),
+                    query => query.Include(ac => ac.Parent)
+                    );
+
+            if (accountingTreeCharts == null || accountingTreeCharts.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<AccountingTreeChartGetDTO> accountingTreeChartsDTO = mapper.Map<List<AccountingTreeChartGetDTO>>(accountingTreeCharts);
+
+            return Ok(accountingTreeChartsDTO);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+
         [HttpPost]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
@@ -217,6 +416,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         public async Task<IActionResult> Edit(AccountingTreeChartAddDTO EditedAccountingTreeChart)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
@@ -234,14 +434,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return BadRequest("Accounting tree chart cannot be null");
             }
 
+            if (EditedAccountingTreeChart.Name == null)
+            {
+                return BadRequest("Name cannot be null");
+            }
+
             AccountingTreeChart accountExists = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == EditedAccountingTreeChart.ID);
             if (accountExists == null)
             {
                 return BadRequest("No Accounting Tree with this ID");
             }
 
+            SubType subtype = Unit_Of_Work.subType_Repository.Select_By_Id(EditedAccountingTreeChart.SubTypeID);
+            if (subtype == null)
+            {
+                return BadRequest("No SubType with this ID");
+            }
+
             // 1) If He want to change from main to sub or from sub to main
-            if(accountExists.SubTypeID == 1 && EditedAccountingTreeChart.SubTypeID == 2)
+            if (accountExists.SubTypeID == 1 && EditedAccountingTreeChart.SubTypeID == 2)
             {
                 return BadRequest("You can't change subType from Main to Sub");
             }
@@ -251,12 +462,51 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 EditedAccountingTreeChart.LinkFileID = null;
             }
 
+            if (EditedAccountingTreeChart.SubTypeID == 2)
+            {
+                if (EditedAccountingTreeChart.LinkFileID == 0 || EditedAccountingTreeChart.LinkFileID == null)
+                {
+                    return BadRequest("Link File cannot be null");
+                }
+
+                if (EditedAccountingTreeChart.MainAccountNumberID == null || EditedAccountingTreeChart.MainAccountNumberID == 0)
+                {
+                    return BadRequest("Main Account Number ID cannot be null");
+                }
+
+                LinkFile linkFile = Unit_Of_Work.linkFile_Repository.Select_By_Id(EditedAccountingTreeChart.LinkFileID);
+                if (linkFile == null)
+                {
+                    return NotFound("No Link File with this Id");
+                }
+            }
+
+            if (userTypeClaim == "employee")
+            {
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Accounting");
+                if (page != null)
+                {
+                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
+                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
+                    {
+                        if (accountExists.InsertedByUserId != userId)
+                        {
+                            return Unauthorized();
+                        }
+                    }
+                }
+                else
+                {
+                    return BadRequest("Accounting page doesn't exist");
+                }
+            }
+
+            bool isEndTypeDiff = false;
+            bool isMotionTypeDiff = false;
+
             // If Account Main Changed
             List<AccountingTreeChart> Children = new List<AccountingTreeChart>();
             Children = await GetAllChildrenAsync(EditedAccountingTreeChart.ID);
-
-            bool differentEndTypeID = false;
-            bool differentMotionID = false;
 
             if (EditedAccountingTreeChart.MainAccountNumberID != accountExists.MainAccountNumberID)
             {
@@ -264,277 +514,245 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 {
                     return BadRequest("You can't choose this main account as it's one of this account children");
                 }
-                 
-                AccountingTreeChart mainAccountExists = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.SubTypeID == 1 && t.ID == EditedAccountingTreeChart.MainAccountNumberID);
-                if (accountExists == null)
-                {
-                    return BadRequest("No Main Accounting Tree with this ID");
-                }
 
-                if (mainAccountExists.EndTypeID != accountExists.EndTypeID || mainAccountExists.MotionTypeID != accountExists.MotionTypeID)
+                // From main = null ---> main = value
+                // From main = value ---> main = new value
+                if (accountExists.MainAccountNumberID == null && EditedAccountingTreeChart.MainAccountNumberID != null)
                 {
-                    if (EditedAccountingTreeChart.MotionTypeID != mainAccountExists.MotionTypeID)
+                    AccountingTreeChart mainAccountNewExists = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.SubTypeID == 1 && t.ID == EditedAccountingTreeChart.MainAccountNumberID);
+                    if (mainAccountNewExists == null)
                     {
-                        differentMotionID = true;
-                        EditedAccountingTreeChart.MotionTypeID = mainAccountExists.MotionTypeID;
+                        return BadRequest("No Main Accounting Tree with this ID");
                     }
 
-                    if (EditedAccountingTreeChart.EndTypeID != mainAccountExists.EndTypeID)
+                    if (mainAccountNewExists.EndTypeID != EditedAccountingTreeChart.EndTypeID)
                     {
-                        differentEndTypeID = true;
-                        EditedAccountingTreeChart.EndTypeID = mainAccountExists.EndTypeID;
+                        EditedAccountingTreeChart.EndTypeID = mainAccountNewExists.EndTypeID;
+                        isEndTypeDiff = true;
+                    }
+                    if (mainAccountNewExists.MotionTypeID != EditedAccountingTreeChart.MotionTypeID)
+                    {
+                        EditedAccountingTreeChart.MotionTypeID = mainAccountNewExists.MotionTypeID;
+                        isMotionTypeDiff = true;
                     }
 
-                    EditedAccountingTreeChart.MotionTypeID = mainAccountExists.MotionTypeID;
-                    EditedAccountingTreeChart.EndTypeID = mainAccountExists.EndTypeID;
-
-                    for(int i = 0; i < Children.Count; i++)
+                    for (int i = 0; i < Children.Count; i++)
                     {
-                        Children[i].EndTypeID = mainAccountExists.EndTypeID;
-                        Children[i].MotionTypeID = mainAccountExists.MotionTypeID;
-                        Children[i].Level = mainAccountExists.Level + 1;
-                         
-                        TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-                        Children[i].UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                        if (userTypeClaim == "octa")
-                        {
-                            Children[i].UpdatedByOctaId = userId;
-                            if (Children[i].UpdatedByUserId != null)
-                            {
-                                Children[i].UpdatedByUserId = null;
-                            }
-                        }
-                        else if (userTypeClaim == "employee")
-                        {
-                            Children[i].UpdatedByUserId = userId;
-                            if (Children[i].UpdatedByOctaId != null)
-                            {
-                                Children[i].UpdatedByOctaId = null;
-                            }
-                        }
+                        Children[i].Level = mainAccountNewExists.Level + 1;
 
+                        if(accountExists.EndTypeID != mainAccountNewExists.EndTypeID || accountExists.MotionTypeID != mainAccountNewExists.MotionTypeID)
+                        {
+                            Children[i].EndTypeID = mainAccountNewExists.EndTypeID;
+                            Children[i].MotionTypeID = mainAccountNewExists.MotionTypeID;
+
+                            Children[i].UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                            if (userTypeClaim == "octa")
+                            {
+                                Children[i].UpdatedByOctaId = userId;
+                                if (Children[i].UpdatedByUserId != null)
+                                {
+                                    Children[i].UpdatedByUserId = null;
+                                }
+                            }
+                            else if (userTypeClaim == "employee")
+                            {
+                                Children[i].UpdatedByUserId = userId;
+                                if (Children[i].UpdatedByOctaId != null)
+                                {
+                                    Children[i].UpdatedByOctaId = null;
+                                }
+                            }
+
+                        }
                         Unit_Of_Work.accountingTreeChart_Repository.Update(Children[i]);
                     }
                     Unit_Of_Work.SaveChanges();
                 }
+
+                // From main = value ---> main = null
+                if (accountExists.MainAccountNumberID != null && EditedAccountingTreeChart.MainAccountNumberID == null)
+                {
+                    if (EditedAccountingTreeChart.MotionTypeID == null || EditedAccountingTreeChart.MotionTypeID == 0)
+                    {
+                        return BadRequest("Motion Type Can't be null");
+                    }
+                    if (EditedAccountingTreeChart.EndTypeID == null || EditedAccountingTreeChart.EndTypeID == 0)
+                    {
+                        return BadRequest("End Type Can't be null");
+                    }
+
+                    // Can Change End Type and Motion type But change children also
+                    if (accountExists.MotionTypeID != EditedAccountingTreeChart.MotionTypeID || accountExists.EndTypeID != EditedAccountingTreeChart.EndTypeID)
+                    {
+                        for (int i = 0; i < Children.Count; i++)
+                        {
+                            Children[i].Level = 2;
+                            Children[i].EndTypeID = (long)EditedAccountingTreeChart.EndTypeID;
+                            Children[i].MotionTypeID = (long)EditedAccountingTreeChart.MotionTypeID;
+
+                            Children[i].UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                            if (userTypeClaim == "octa")
+                            {
+                                Children[i].UpdatedByOctaId = userId;
+                                if (Children[i].UpdatedByUserId != null)
+                                {
+                                    Children[i].UpdatedByUserId = null;
+                                }
+                            }
+                            else if (userTypeClaim == "employee")
+                            {
+                                Children[i].UpdatedByUserId = userId;
+                                if (Children[i].UpdatedByOctaId != null)
+                                {
+                                    Children[i].UpdatedByOctaId = null;
+                                }
+                            }
+
+                            Unit_Of_Work.accountingTreeChart_Repository.Update(Children[i]);
+                        }
+                        Unit_Of_Work.SaveChanges();
+                    }
+                }
             }
             else
             {
+                if (EditedAccountingTreeChart.EndTypeID != null || EditedAccountingTreeChart.EndTypeID != 0)
+                {
+                    EndType endType = Unit_Of_Work.endType_Repository.Select_By_Id(EditedAccountingTreeChart.EndTypeID);
+                    if (endType == null)
+                    {
+                        return NotFound("No End Type with this Id");
+                    }
+                }
 
+                if (EditedAccountingTreeChart.MotionTypeID != null || EditedAccountingTreeChart.MotionTypeID != 0)
+                {
+                    MotionType motionType = Unit_Of_Work.motionType_Repository.Select_By_Id(EditedAccountingTreeChart.MotionTypeID);
+                    if (motionType == null)
+                    {
+                        return NotFound("No Motion Type with this Id");
+                    }
+                }
+
+                if (EditedAccountingTreeChart.MainAccountNumberID == null){
+                    if(EditedAccountingTreeChart.MotionTypeID == null || EditedAccountingTreeChart.MotionTypeID == 0)
+                    {
+                        return BadRequest("Motion Type Can't be null");
+                    } 
+                    if(EditedAccountingTreeChart.EndTypeID == null || EditedAccountingTreeChart.EndTypeID == 0)
+                    {
+                        return BadRequest("End Type Can't be null");
+                    }  
+
+                    // Can Change End Type and Motion type But change children also
+                    if(accountExists.MotionTypeID != EditedAccountingTreeChart.MotionTypeID || accountExists.EndTypeID != EditedAccountingTreeChart.EndTypeID)
+                    {
+                        for(int i = 0; i < Children.Count; i++)
+                        {
+                            Children[i].EndTypeID = (long)EditedAccountingTreeChart.EndTypeID;
+                            Children[i].MotionTypeID = (long)EditedAccountingTreeChart.MotionTypeID;
+
+                            Children[i].UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                            if (userTypeClaim == "octa")
+                            {
+                                Children[i].UpdatedByOctaId = userId;
+                                if (Children[i].UpdatedByUserId != null)
+                                {
+                                    Children[i].UpdatedByUserId = null;
+                                }
+                            }
+                            else if (userTypeClaim == "employee")
+                            {
+                                Children[i].UpdatedByUserId = userId;
+                                if (Children[i].UpdatedByOctaId != null)
+                                {
+                                    Children[i].UpdatedByOctaId = null;
+                                }
+                            }
+
+                            Unit_Of_Work.accountingTreeChart_Repository.Update(Children[i]);
+                        }
+                        Unit_Of_Work.SaveChanges();
+                    }
+                }
+                else if (EditedAccountingTreeChart.MainAccountNumberID != null)
+                {
+                    AccountingTreeChart accountingTreeChartEx = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(
+                    acc => acc.IsDeleted != true && acc.ID == EditedAccountingTreeChart.MainAccountNumberID);
+
+                    if(accountingTreeChartEx == null)
+                    {
+                        return NotFound("No Main Acc with this ID");
+                    }
+
+                    if(accountingTreeChartEx.EndTypeID != EditedAccountingTreeChart.EndTypeID)
+                    {
+                        EditedAccountingTreeChart.EndTypeID = accountingTreeChartEx.EndTypeID;
+                        isEndTypeDiff = true;
+                    }
+                    if(accountingTreeChartEx.MotionTypeID != EditedAccountingTreeChart.MotionTypeID)
+                    {
+                        EditedAccountingTreeChart.MotionTypeID = accountingTreeChartEx.MotionTypeID;
+                        isMotionTypeDiff = true;
+                    }
+                }
             }
 
-            return Ok(Children.Count);
+            mapper.Map(EditedAccountingTreeChart, accountExists);
 
-            
-            
-
-
-            //int level = 0;
-            //bool isExistsMainAccountNumberID = false;
-
-            //if (EditedAccountingTreeChart.Name == null)
-            //{
-            //    return BadRequest("Name cannot be null");
-            //}
-
-            //if (EditedAccountingTreeChart.SubTypeID != 0 || EditedAccountingTreeChart.SubTypeID != null)
-            //{
-            //    SubType subType = Unit_Of_Work.subType_Repository.Select_By_Id(EditedAccountingTreeChart.SubTypeID);
-            //    if (subType == null)
-            //    {
-            //        return NotFound("No SubType with this Id");
-            //    }
-            //    if (EditedAccountingTreeChart.SubTypeID == 2)
-            //    {
-            //        if (EditedAccountingTreeChart.LinkFileID == 0 || EditedAccountingTreeChart.LinkFileID == null)
-            //        {
-            //            return BadRequest("Link File cannot be null");
-            //        }
-
-            //        if (EditedAccountingTreeChart.MainAccountNumberID == null || EditedAccountingTreeChart.MainAccountNumberID == 0)
-            //        {
-            //            return BadRequest("Main Account Number ID cannot be null");
-            //        }
-
-            //        LinkFile linkFile = Unit_Of_Work.linkFile_Repository.Select_By_Id(EditedAccountingTreeChart.LinkFileID);
-            //        if (linkFile == null)
-            //        {
-            //            return NotFound("No Link File with this Id");
-            //        }
-            //    }
-            //}
-
-            //if (EditedAccountingTreeChart.MainAccountNumberID == null || EditedAccountingTreeChart.MainAccountNumberID == 0)
-            //{
-            //    if (EditedAccountingTreeChart.MotionTypeID == null || EditedAccountingTreeChart.MotionTypeID == 0)
-            //    {
-            //        return BadRequest("Motion type cannot be null");
-            //    }
-
-            //    if (EditedAccountingTreeChart.EndTypeID == null || EditedAccountingTreeChart.EndTypeID == 0)
-            //    {
-            //        return BadRequest("End type cannot be null");
-            //    }
-
-            //    MotionType motion = Unit_Of_Work.motionType_Repository.Select_By_Id(EditedAccountingTreeChart.MotionTypeID);
-            //    if (motion == null)
-            //    {
-            //        return NotFound("No Motion Type with this Id");
-            //    }
-
-            //    EndType endType = Unit_Of_Work.endType_Repository.Select_By_Id(EditedAccountingTreeChart.EndTypeID);
-            //    if (endType == null)
-            //    {
-            //        return NotFound("No End Type with this Id");
-            //    }
-
-            //    level = 1;
-            //    motionID = EditedAccountingTreeChart.MotionTypeID;
-            //    endTypeID = EditedAccountingTreeChart.EndTypeID;
-            //    EditedAccountingTreeChart.MainAccountNumberID = null;
-            //}
-            //else
-            //{
-            //    isExistsMainAccountNumberID = true;
-
-            //    AccountingTreeChart MainAccount = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == EditedAccountingTreeChart.MainAccountNumberID);
-            //    if (MainAccount == null)
-            //    {
-            //        return NotFound("No Account chart with this Id");
-            //    }
-
-            //    level = MainAccount.Level + 1;
-            //    motionID = MainAccount.MotionTypeID;
-            //    endTypeID = MainAccount.EndTypeID;
-
-            //    if (EditedAccountingTreeChart.EndTypeID != 0 || EditedAccountingTreeChart.EndTypeID != null)
-            //    {
-            //        if (EditedAccountingTreeChart.EndTypeID != endTypeID)
-            //        {
-            //            differentEndTypeID = true;
-            //        }
-            //    }
-
-            //    if (EditedAccountingTreeChart.MotionTypeID != 0 || EditedAccountingTreeChart.MotionTypeID != null)
-            //    {
-            //        if (EditedAccountingTreeChart.MotionTypeID != motionID)
-            //        {
-            //            differentMotionID = true;
-            //        }
-            //    }
-            //}
-
-            //mapper.Map(EditedAccountingTreeChart, accountExists);
-
-            //if (accountExists.SubTypeID == 1)
-            //{
-            //    accountExists.LinkFileID = null;
-            //}
-            //accountExists.Level = level;
-            //accountExists.MotionTypeID = (long)motionID;
-            //accountExists.EndTypeID = (long)endTypeID;
-
-            //if (userTypeClaim == "employee")
-            //{
-            //    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Accounting");
-            //    if (page != null)
-            //    {
-            //        Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-            //        if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-            //        {
-            //            if (accountExists.InsertedByUserId != userId)
-            //            {
-            //                return Unauthorized();
-            //            }
-            //        }
-            //    }
-            //    else
-            //    {
-            //        return BadRequest("Accounting page doesn't exist");
-            //    }
-            //}
-
-            //TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            //accountExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            //if (userTypeClaim == "octa")
-            //{
-            //    accountExists.UpdatedByOctaId = userId;
-            //    if (accountExists.UpdatedByUserId != null)
-            //    {
-            //        accountExists.UpdatedByUserId = null;
-            //    }
-            //}
-            //else if (userTypeClaim == "employee")
-            //{
-            //    accountExists.UpdatedByUserId = userId;
-            //    if (accountExists.UpdatedByOctaId != null)
-            //    {
-            //        accountExists.UpdatedByOctaId = null;
-            //    }
-            //}
-
-            //Unit_Of_Work.accountingTreeChart_Repository.Update(accountExists);
-            //Unit_Of_Work.SaveChanges();
-
-            //if (isExistsMainAccountNumberID)
-            //{
-            //    if (differentMotionID && differentEndTypeID)
-            //    {
-            //        return Ok(new { message = "Done But We Chosed Motion Type and End Type from Parent.", data = accountExists });
-            //    }
-            //    else if (differentMotionID)
-            //    {
-            //        return Ok(new { message = "Done But We Chosed Motion Type from Parent.", data = accountExists });
-            //    }
-            //    else if (differentEndTypeID)
-            //    {
-            //        return Ok(new { message = "Done But We Chosed End Type from Parent.", data = accountExists });
-            //    }
-            //    else
-            //    {
-            //        return Ok(accountExists);
-            //    }
-            //}
-            //else
-            //{
-            //    return Ok(accountExists);
-            //}
-        }
-
-        private async Task<List<AccountingTreeChart>> GetAllChildrenAsync(long id)
-        {
-            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-            
-            var node = await Unit_Of_Work.accountingTreeChart_Repository.FindByIncludesAsync(
-                tree => tree.IsDeleted != true && tree.ID == id,
-                query => query.Include(tree => tree.ChildAccountingTreeCharts)
-            ); 
-
-            if (node == null)
+            if (accountExists.SubTypeID == 1)
             {
-                return new List<AccountingTreeChart>(); 
+                accountExists.LinkFileID = null;
             }
 
-            if (!node.ChildAccountingTreeCharts.Any())
+            if(accountExists.MainAccountNumberID != null)
             {
-                // Log or handle the case where there are no direct children
-                Console.WriteLine($"Node with ID {id} has no children.");
+                AccountingTreeChart acc = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(
+                    acc => acc.IsDeleted != true && acc.ID == accountExists.MainAccountNumberID
+                    );
+                accountExists.Level = acc.Level + 1;
+            }
+            else
+            {
+                accountExists.Level = 1;
             }
 
-            var children = new List<AccountingTreeChart>();
-            AddChildren(node, children);
-            return children;
-        }
-
-        private void AddChildren(AccountingTreeChart node, List<AccountingTreeChart> children)
-        {
-            // Add direct children
-            children.AddRange(node.ChildAccountingTreeCharts);
-
-            // Recursively add each child's children
-            foreach (var child in node.ChildAccountingTreeCharts)
+            accountExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
             {
-                AddChildren(child, children);
+                accountExists.UpdatedByOctaId = userId;
+                if (accountExists.UpdatedByUserId != null)
+                {
+                    accountExists.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                accountExists.UpdatedByUserId = userId;
+                if (accountExists.UpdatedByOctaId != null)
+                {
+                    accountExists.UpdatedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.accountingTreeChart_Repository.Update(accountExists);
+            Unit_Of_Work.SaveChanges();
+
+            if (isEndTypeDiff && isMotionTypeDiff)
+            {
+                return Ok(new { message = "Done But We Chosed Motion Type and End Type from Parent.", data = accountExists });
+            }
+            else if (isMotionTypeDiff)
+            {
+                return Ok(new { message = "Done But We Chosed Motion Type from Parent.", data = accountExists });
+            }
+            else if (isEndTypeDiff)
+            {
+                return Ok(new { message = "Done But We Chosed End Type from Parent.", data = accountExists });
+            }
+            else
+            {
+                return Ok(accountExists);
             }
         }
     }

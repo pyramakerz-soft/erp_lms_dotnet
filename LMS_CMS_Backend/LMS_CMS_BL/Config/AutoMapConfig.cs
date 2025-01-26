@@ -444,6 +444,13 @@ namespace LMS_CMS_BL.Config
             CreateMap<TuitionDiscountTypeAddDTO, TuitionDiscountType>();
 
             CreateMap<AccountingTreeChartAddDTO, AccountingTreeChart>();
+            CreateMap<AccountingTreeChart, AccountingTreeChartGetDTO>()
+                .ForMember(dest => dest.MainAccountNumberName, opt => opt.MapFrom(src => src.Parent.Name))
+                .ForMember(dest => dest.EndTypeName, opt => opt.MapFrom(src => src.EndType.Name))
+                .ForMember(dest => dest.LinkFileName, opt => opt.MapFrom(src => src.LinkFile.Name))
+                .ForMember(dest => dest.SubTypeName, opt => opt.MapFrom(src => src.SubType.Name))
+                .ForMember(dest => dest.MotionTypeName, opt => opt.MapFrom(src => src.MotionType.Name))
+                ;
         }
     }
 }

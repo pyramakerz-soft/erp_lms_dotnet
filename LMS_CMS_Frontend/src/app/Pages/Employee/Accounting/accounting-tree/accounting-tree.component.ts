@@ -12,15 +12,25 @@ import { SearchComponent } from '../../../../Component/search/search.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
+import { AccountingItemComponent } from '../../../../Component/Employee/Accounting/accounting-item/accounting-item.component';
+import { LinkFileService } from '../../../../Services/Employee/Accounting/link-file.service';
+import { MotionTypeService } from '../../../../Services/Employee/Accounting/motion-type.service';
+import { SubTypeService } from '../../../../Services/Employee/Accounting/sub-type.service';
+import { EndTypeService } from '../../../../Services/Employee/Accounting/end-type.service';
+import { LinkFile } from '../../../../Models/Accounting/link-file';
+import { MotionType } from '../../../../Models/Accounting/motion-type';
+import { SubType } from '../../../../Models/Accounting/sub-type';
+import { EndType } from '../../../../Models/Accounting/end-type';
 
 @Component({
   selector: 'app-accounting-tree',
   standalone: true,
-  imports: [SearchComponent, FormsModule, CommonModule],
+  imports: [SearchComponent, FormsModule, CommonModule, AccountingItemComponent],
   templateUrl: './accounting-tree.component.html',
   styleUrl: './accounting-tree.component.css'
 })
 export class AccountingTreeComponent {
+
   User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
@@ -40,19 +50,26 @@ export class AccountingTreeComponent {
   AllowDeleteForOthers: boolean = false;
 
   TableData: AccountingTreeChart[] = [];
+  MainData: AccountingTreeChart[] = [];
+  LinkFileData: LinkFile[] = [];
+  MotionTypeData: MotionType[] = [];
+  SubTypeData: SubType[] = [];
+  EndTypeData: EndType[] = [];
 
   DomainName: string = '';
   UserID: number = 0;
-
+  
   isModalVisible: boolean = false;
   mode: string = '';
-
+  
   path: string = '';
   key: string = 'id';
   value: any = '';
   keysArray: string[] = ['id', 'name'];
-
+  
   accountingTreeChart: AccountingTreeChart = new AccountingTreeChart();
+  mainAccountingTreeChart: AccountingTreeChart = new AccountingTreeChart();
+  isEdit: boolean = false;
 
   validationErrors: { [key in keyof AccountingTreeChart]?: string } = {};
 
@@ -65,7 +82,11 @@ export class AccountingTreeComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public accountingTreeChartService: AccountingTreeChartService
+    public accountingTreeChartService: AccountingTreeChartService,
+    public linkFileService: LinkFileService,
+    public motionTypeService: MotionTypeService,
+    public subTypeService: SubTypeService,
+    public endTypeService: EndTypeService
   ) { }
 
   ngOnInit() {
@@ -87,14 +108,105 @@ export class AccountingTreeComponent {
     });
 
     this.GetAllData();
+    this.GetMainData();
+    this.GetLinkFileData();
+    this.GetMotionTypeData();
+    this.GetSubTypeData();
+    this.GetEndTypeData();
   }
 
   GetAllData() {
     this.accountingTreeChartService.Get(this.DomainName).subscribe(
-      (data) => {
-        console.log(data)
+      (data) => { 
+        this.TableData = data
       }
     )
+  }
+  
+  GetMainData() {
+    this.accountingTreeChartService.GetByMainID(this.DomainName).subscribe(
+      (data) => { 
+        this.MainData = data
+      }
+    )
+  }
+  
+  GetDataByID() {
+    let id = this.accountingTreeChart.id 
+    if(this.accountingTreeChart.id && this.accountingTreeChart.id != null && this.accountingTreeChart.id != 0){
+      this.accountingTreeChartService.GetByID(this.accountingTreeChart.id, this.DomainName).subscribe(
+        (data) => { 
+          this.isEdit = true
+          this.accountingTreeChart = data
+        },
+        (err) =>{
+          this.isEdit = false
+          this.accountingTreeChart = new AccountingTreeChart()
+          this.accountingTreeChart.id = id
+        }
+      )
+    } else{
+      this.accountingTreeChart = new AccountingTreeChart()
+    } 
+  }
+  
+  GetMainByID() {
+    if(this.accountingTreeChart.mainAccountNumberID == 0 || this.accountingTreeChart.mainAccountNumberID == null){
+      this.mainAccountingTreeChart = new AccountingTreeChart()
+      this.accountingTreeChart.motionTypeID = 0
+      this.accountingTreeChart.endTypeID = 0
+      this.accountingTreeChart.level = 1
+    } else{
+      this.accountingTreeChartService.GetByID(this.accountingTreeChart.mainAccountNumberID, this.DomainName).subscribe(
+        (data) => { 
+          this.mainAccountingTreeChart = data
+          this.accountingTreeChart.motionTypeID = this.mainAccountingTreeChart.motionTypeID
+          this.accountingTreeChart.endTypeID = this.mainAccountingTreeChart.endTypeID
+          this.accountingTreeChart.level = this.mainAccountingTreeChart.level + 1
+        }
+      )
+    }
+  }
+  
+  GetLinkFileData() {
+    this.linkFileService.Get(this.DomainName).subscribe(
+      (data) => { 
+        this.LinkFileData = data
+      }
+    )
+  }
+  
+  GetMotionTypeData() {
+    this.motionTypeService.Get(this.DomainName).subscribe(
+      (data) => { 
+        this.MotionTypeData = data
+      }
+    )
+  }
+  
+  GetSubTypeData() {
+    this.subTypeService.Get(this.DomainName).subscribe(
+      (data) => { 
+        this.SubTypeData = data
+      }
+    )
+  }
+  
+  GetEndTypeData() {
+    this.endTypeService.Get(this.DomainName).subscribe(
+      (data) => { 
+        this.EndTypeData = data
+      }
+    )
+  }
+
+  lockLinkFile(){
+    this.accountingTreeChart.linkFileID = 0
+  }
+
+  handleIDSelected(accounting: number) {
+    this.accountingTreeChart.id = accounting
+    this.GetDataByID()
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
@@ -127,7 +239,20 @@ export class AccountingTreeComponent {
     // }
   }
 
-  Save(){
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+        event.target.value = '';
+    }
+  }
 
+  Save(){
+    console.log(this.accountingTreeChart)
+    console.log(this.isEdit)
+    // this.accountingTreeChartService.Add(this.accountingTreeChart, this.DomainName).subscribe(
+    //   (data) => {
+    //     console.log(data)
+    //   }
+    // )
   }
 }

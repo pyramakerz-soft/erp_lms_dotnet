@@ -469,6 +469,11 @@ namespace LMS_CMS_BL.Config
             CreateMap<Country, CountriesGetDTO>();
 
 
+            CreateMap<SubType, SubTypeGetDTO>();
+            CreateMap<MotionType, MotionTypeGetDTO1>();
+            CreateMap<EndType, EndTypeGetDTO>();
+            CreateMap<LinkFile, LinkFileGetDTO>();
+
         }
     }
 }

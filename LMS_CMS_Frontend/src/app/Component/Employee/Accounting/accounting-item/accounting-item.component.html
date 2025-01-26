@@ -1,0 +1,23 @@
+<div *ngFor="let accounting of accountingData" [ngClass]="{ 'ml-11': accounting.level != 1, 'my-4':  accounting.subTypeID == 1 }">
+    <div>
+        <div class="flex items-center space-x-2 p-2 rounded"
+        [ngClass]="{ 'primaryBg text-white': accounting.level == 1 && accounting.subTypeID == 1, 'bg-[#FBEADF] text-[#333333]': accounting.level != 1 && accounting.subTypeID == 1}">
+            <div *ngIf="accounting.subTypeID == 1" class="px-3 py-[6px] rounded" 
+            (click)="toggleChildren(accounting)"
+            [ngClass]="{ 'bg-white secondaryTxt': accounting.level == 1 && accounting.subTypeID == 1, 'bg-[#FBEADF] text-[#919191] border-2 border-[#919191]': accounting.level != 1 && accounting.subTypeID == 1 }">
+                <i class="fa-solid" [ngClass]="{
+                    'fa-chevron-down': !accounting.isOpen,
+                    'fa-chevron-up': accounting.isOpen
+                  }"></i>
+            </div>
+            <div class="flex items-center space-x-2" (click)="getData(accounting)">
+                <p>{{accounting.id}}</p>
+                <p>{{accounting.name}}</p>
+            </div>
+        </div>
+
+        <app-accounting-item *ngIf="accounting.isOpen && accounting.children && accounting.children.length > 0"
+            [accountingData]="accounting.children" (Selected)="Selected.emit($event)">
+        </app-accounting-item>
+    </div>
+</div>

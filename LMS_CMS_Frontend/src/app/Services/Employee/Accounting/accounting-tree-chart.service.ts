@@ -35,10 +35,10 @@ export class AccountingTreeChartService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get(`${this.baseUrl}/AccountingTreeChart/${id}`, { headers })
+    return this.http.get<AccountingTreeChart>(`${this.baseUrl}/AccountingTreeChart/${id}`, { headers })
   }
   
-  GetByMainID(id: number,DomainName:string) {
+  GetByMainID(DomainName:string) {
      if(DomainName!=null) {
       this.header=DomainName 
     }

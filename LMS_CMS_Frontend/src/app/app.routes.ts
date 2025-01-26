@@ -74,6 +74,7 @@ import { DepartmentComponent } from './Pages/Employee/Administrator/department/d
 import { OutcomesComponent } from './Pages/Employee/Accounting/outcomes/outcomes.component';
 import { IncomesComponent } from './Pages/Employee/Accounting/incomes/incomes.component';
 import { SavesComponent } from './Pages/Employee/Accounting/saves/saves.component';
+import { AccountingTreeComponent } from './Pages/Employee/Accounting/accounting-tree/accounting-tree.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -143,6 +144,7 @@ export const routes: Routes = [
             { path: "Outcome", component: OutcomesComponent, title: "Outcome" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Income", component: IncomesComponent, title: "Income" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Save", component: SavesComponent, title: "Save" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Accounting Tree", component: AccountingTreeComponent, title: "Accounting Tree" , canActivate:[noNavigateWithoutLoginGuard ]} ,
         ]
     },
     { 

@@ -8,16 +8,20 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { SearchComponent } from '../../../../Component/search/search.component';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-accounting-tree',
   standalone: true,
-  imports: [],
+  imports: [SearchComponent, FormsModule, CommonModule],
   templateUrl: './accounting-tree.component.html',
   styleUrl: './accounting-tree.component.css'
 })
 export class AccountingTreeComponent {
-User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -60,8 +64,10 @@ User_Data_After_Login: TokenData = new TokenData(
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
-  ) {}
+    public ApiServ: ApiService,
+    public accountingTreeChartService: AccountingTreeChartService
+  ) { }
+
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -83,5 +89,45 @@ User_Data_After_Login: TokenData = new TokenData(
     this.GetAllData();
   }
 
-  GetAllData() {}
+  GetAllData() {
+    this.accountingTreeChartService.Get(this.DomainName).subscribe(
+      (data) => {
+        console.log(data)
+      }
+    )
+  }
+
+  async onSearchEvent(event: { key: string; value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    // try {
+    //   const data: Asset[] = await firstValueFrom(
+    //     this.AssetServ.Get(this.DomainName)
+    //   );
+    //   this.TableData = data || [];
+
+    //   if (this.value !== '') {
+    //     const numericValue = isNaN(Number(this.value))
+    //       ? this.value
+    //       : parseInt(this.value, 10);
+
+    //     this.TableData = this.TableData.filter((t) => {
+    //       const fieldValue = t[this.key as keyof typeof t];
+    //       if (typeof fieldValue === 'string') {
+    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+    //       }
+    //       if (typeof fieldValue === 'number') {
+    //         return fieldValue === numericValue;
+    //       }
+    //       return fieldValue == this.value;
+    //     });
+    //   }
+    // } catch (error) {
+    //   this.TableData = [];
+    // }
+  }
+
+  Save(){
+
+  }
 }

@@ -744,7 +744,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     }
                 }
 
-                if (EditedAccountingTreeChart.MainAccountNumberID == null){
+                if (EditedAccountingTreeChart.MainAccountNumberID == null && EditedAccountingTreeChart.MainAccountNumberID == 0)
+                {
                     if(EditedAccountingTreeChart.MotionTypeID == null || EditedAccountingTreeChart.MotionTypeID == 0)
                     {
                         return BadRequest("Motion Type Can't be null");
@@ -785,7 +786,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                         Unit_Of_Work.SaveChanges();
                     }
                 }
-                else if (EditedAccountingTreeChart.MainAccountNumberID != null)
+                else if (EditedAccountingTreeChart.MainAccountNumberID != null && EditedAccountingTreeChart.MainAccountNumberID != 0)
                 {
                     AccountingTreeChart accountingTreeChartEx = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(
                     acc => acc.IsDeleted != true && acc.ID == EditedAccountingTreeChart.MainAccountNumberID);
@@ -815,7 +816,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 accountExists.LinkFileID = null;
             }
 
-            if(accountExists.MainAccountNumberID != null)
+            if(accountExists.MainAccountNumberID != null && accountExists.MainAccountNumberID != 0)
             {
                 AccountingTreeChart acc = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(
                     acc => acc.IsDeleted != true && acc.ID == accountExists.MainAccountNumberID

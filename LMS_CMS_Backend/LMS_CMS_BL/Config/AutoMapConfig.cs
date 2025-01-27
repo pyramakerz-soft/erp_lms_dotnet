@@ -472,6 +472,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<Nationality, NationalityGetDTO>();
             CreateMap<Days, DayGetDTO>();
             CreateMap<ReasonForLeavingWork, ReasonForLeavingWorkGetDTO>();
+            CreateMap<AccountingStudentPutDTO, Student>();
+
 
             CreateMap<SubType, SubTypeGetDTO>();
             CreateMap<MotionType, MotionTypeGetDTO1>();

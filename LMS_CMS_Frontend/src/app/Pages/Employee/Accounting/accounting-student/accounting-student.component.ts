@@ -54,10 +54,9 @@ User_Data_After_Login: TokenData = new TokenData(
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name', 'accountNumberName'];
+  keysArray: string[] = ['id', 'user_Name', 'en_name' ,'ar_name' ,'mobile' ,'phone' ,'email'];
   AccountNumbers:AccountingTreeChart[]=[];
   
-
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -100,7 +99,7 @@ User_Data_After_Login: TokenData = new TokenData(
 
 
   Edit(row: Student) {
-    this.router.navigateByUrl(`Employee/Employee Edit Accounting/${row.id}`)
+    this.router.navigateByUrl(`Employee/Student Edit Accounting/${row.id}`)
   }
 
   async onSearchEvent(event: { key: string; value: any }) {

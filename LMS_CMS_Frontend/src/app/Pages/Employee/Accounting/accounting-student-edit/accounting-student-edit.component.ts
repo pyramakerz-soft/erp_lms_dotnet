@@ -63,32 +63,9 @@ User_Data_After_Login: TokenData = new TokenData(
   value: any = '';
   keysArray: string[] = ['id', 'name', 'accountNumberName'];
   AccountNumbers:AccountingTreeChart[]=[];
-  
   StudentId:number =1;
-
   nationalities:Nationality[]=[]
-  departments:Department[]=[]
-  Jobs:Job[]=[]
-  academicDegree:AcademicDegree[]=[]
-  days:Day[]=[]
-  Reasons:Reasonsforleavingwork[]=[]
-  JobCategories:JobCategories[]=[]
-  JobCategoryId:number=0;
-  EndDate:boolean=false;
-  selectedDays: { id: number; name: string }[] = [];
 
-  isDropdownOpen = false;
-
-  attendanceTime = {
-    hours: '',
-    minutes: '',
-    period: 'AM'
-  };
-  departureTime = {
-    hour: '',
-    minute: '',
-    periods: 'AM'
-  };
 
   constructor(
     private router: Router,
@@ -130,12 +107,11 @@ User_Data_After_Login: TokenData = new TokenData(
   GetAllData() {
    this.StudentServ.GetByID(this.StudentId,this.DomainName).subscribe((d:any)=>{
     this.Data=d;
-    console.log(this.Data)
     this.StudentId = Number(this.activeRoute.snapshot.paramMap.get('id'))
    })
   }
   GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(10,this.DomainName).subscribe((d)=>{
+    this.accountServ.GetBySubAndFileLinkID(13,this.DomainName).subscribe((d)=>{
       this.AccountNumbers=d;
     })
   }
@@ -151,7 +127,10 @@ User_Data_After_Login: TokenData = new TokenData(
     this.router.navigateByUrl(`Employee/Student Accounting`)
   }
   Save(){
-   
+   this.StudentServ.EditAccountingEmployee(this.Data,this.DomainName).subscribe((d)=>{
+    this.GetAllData();
+    this.router.navigateByUrl(`Employee/Student Accounting`)
+   })
   }
  
 

@@ -146,7 +146,6 @@ User_Data_After_Login: TokenData = new TokenData(
   GetAllData() {
    this.employeeServ.GetAcountingEmployee(this.EmployeeId,this.DomainName).subscribe((d:any)=>{
     this.Data=d;
-    console.log(this.Data)
     this.JobCategoryId=this.Data.jobCategoryId;
     this.EmployeeId = Number(this.activeRoute.snapshot.paramMap.get('id'))
     this.GetAllJobs()

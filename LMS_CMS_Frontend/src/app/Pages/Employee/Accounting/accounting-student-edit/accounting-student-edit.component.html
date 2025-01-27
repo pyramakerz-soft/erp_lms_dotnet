@@ -1,0 +1,48 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+        <h1 class="font-semibold text-2xl leading-9">
+            {{Data.user_Name}}
+        </h1>
+    </div>
+    <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+        Save
+    </button>
+</div>
+
+<div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap py-3">
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">User Name</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.user_Name " />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Address</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User Name" [(ngModel)]="Data.address" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Phone</label>
+        <input id="phone" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User phone" [(ngModel)]="Data.phone" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="mobile">Mobile Number</label>
+        <input id="mobile" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter User mobile" [(ngModel)]="Data.mobile" />
+    </div>
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="bus">Choose Nationality</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.nationality">
+            <option [value]=0 disabled selected hidden>Choose Nationality</option>
+            <option *ngFor="let National of nationalities" [value]="National.id">{{ National.name }}</option>
+            <option *ngIf="nationalities.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+</div>

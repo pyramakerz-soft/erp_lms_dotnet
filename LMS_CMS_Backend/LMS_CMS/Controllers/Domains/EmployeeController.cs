@@ -804,7 +804,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
           
-            List<Employee> employees = await Unit_Of_Work.employee_Repository.Select_All_With_IncludesById<Employee>(
+            Employee employee = await Unit_Of_Work.employee_Repository.FindByIncludesAsync(
                     sem => sem.IsDeleted != true && sem.ID == id,
                     query => query.Include(emp => emp.ReasonForLeavingWork),
                     query => query.Include(emp => emp.AccountNumber),
@@ -813,23 +813,34 @@ namespace LMS_CMS_PL.Controllers.Domains
                     query => query.Include(emp => emp.AccountNumber),
                     query => query.Include(emp => emp.AcademicDegree));
 
-            if (employees == null || employees.Count == 0)
+            if (employee == null )
             {
                 return NotFound("There is no employees with this id");
             }
 
-            List<EmployeeAccountingGetDTO> employeeDTOs = mapper.Map<List<EmployeeAccountingGetDTO>>(employees);
-            foreach (var employeeDTO in employeeDTOs)
+            EmployeeAccountingGetDTO employeeDTO = mapper.Map<EmployeeAccountingGetDTO>(employee);
+            Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(employeeDTO.Nationality);
+            if (nationality != null)
             {
-                Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(employeeDTO.Nationality);
-                if (nationality != null)
-                {
-                    employeeDTO.NationalityName = nationality.Name;
-                }
-
+                employeeDTO.NationalityName = nationality.Name;
             }
 
-            return Ok(employeeDTOs);
+            List<EmployeeDays > days = await Unit_Of_Work.employeeDays_Repository.Select_All_With_IncludesById<EmployeeDays>(
+                sem => sem.IsDeleted != true && sem.EmployeeID == id
+                );
+
+            if(days != null &&days.Count>0)
+            {
+              employeeDTO.Days = days.Select(day => day.DayID).ToList();
+
+            }
+            else
+            {
+                employeeDTO.Days =new List<long> { };
+            }
+
+
+            return Ok(employeeDTO);
         }
         //////////////////////////////////////////////////////////////////////////////
 
@@ -1002,35 +1013,41 @@ namespace LMS_CMS_PL.Controllers.Domains
                 Unit_Of_Work.SaveChanges();
              }
 
-            foreach (var day in newEmployee.Days)
+            if (newEmployee.Days != null &&newEmployee.Days.Count != 0)
             {
-                EmployeeDays empDay = new EmployeeDays();
-                empDay.EmployeeID = newEmployee.ID;
-                empDay.DayID = day;
-                Unit_Of_Work.employeeDays_Repository.Add(empDay);
-                Unit_Of_Work.SaveChanges();
-            }
+                foreach (var day in newEmployee.Days)
+                {
+                    if (day != 0)
+                    {
+                    EmployeeDays empDay = new EmployeeDays();
+                    empDay.EmployeeID = newEmployee.ID;
+                    empDay.DayID = day;
+                    Unit_Of_Work.employeeDays_Repository.Add(empDay);
+                    Unit_Of_Work.SaveChanges();
+                    }
+                }
 
+            }
             //////delete all empStudents
-            List<EmployeeStudent> employeeStudents = await Unit_Of_Work.employeeStudent_Repository.Select_All_With_IncludesById<EmployeeStudent>(
-                    sem => sem.EmployeeID == newEmployee.ID);
-
-            foreach (EmployeeStudent emp in employeeStudents)
-            {
-                Unit_Of_Work.employeeStudent_Repository.Delete(emp.ID);
-                Unit_Of_Work.SaveChanges();
-            }
-
-            foreach (var empStudent in newEmployee.Students)
-            {
-                EmployeeStudent emp = new EmployeeStudent();
-                emp.EmployeeID = newEmployee.ID;
-                emp.StudentID = empStudent;
-                Unit_Of_Work.employeeStudent_Repository.Add(emp);
-                Unit_Of_Work.SaveChanges();
-            }
-
-            return Ok(newEmployee);
+          //List<EmployeeStudent> employeeStudents = await Unit_Of_Work.employeeStudent_Repository.Select_All_With_IncludesById<EmployeeStudent>(
+          //        sem => sem.EmployeeID == newEmployee.ID);
+          //
+          //foreach (EmployeeStudent emp in employeeStudents)
+          //{
+          //    Unit_Of_Work.employeeStudent_Repository.Delete(emp.ID);
+          //    Unit_Of_Work.SaveChanges();
+          //}
+          //
+          //foreach (var empStudent in newEmployee.Students)
+          //{
+          //    EmployeeStudent emp = new EmployeeStudent();
+          //    emp.EmployeeID = newEmployee.ID;
+          //    emp.StudentID = empStudent;
+          //    Unit_Of_Work.employeeStudent_Repository.Add(emp);
+          //    Unit_Of_Work.SaveChanges();
+          //}
+          //
+          return Ok(newEmployee);
         }
     }   
 }

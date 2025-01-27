@@ -4,6 +4,7 @@ import { ApiService } from '../api.service';
 import { Employee } from '../../Models/Employee/employee';
 import { EmployeeGet } from '../../Models/Employee/employee-get';
 import { EditPass } from '../../Models/Employee/edit-pass';
+import { AccountingEmployee } from '../../Models/Accounting/accounting-employee';
 
 @Injectable({
   providedIn: 'root'
@@ -179,4 +180,28 @@ export class EmployeeService {
     return this.http.put(`${this.baseUrl}/Employee/${editpass.Id}`, editpass, { headers });
   }
 
+  EditAccountingEmployee(employee:AccountingEmployee,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header) 
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.put(`${this.baseUrl}/Employee/EmpployeeAccounting`, employee, { headers });
+  }
+  
+
+  GetAcountingEmployee(id :number ,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header) 
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.get<AccountingEmployee>(`${this.baseUrl}/Employee/getByAccountingEmployee/${id}`, { headers });
+  }
 }

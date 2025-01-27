@@ -151,7 +151,7 @@ export const routes: Routes = [
             { path: "Accounting Tree", component: AccountingTreeComponent, title: "Accounting Tree" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Bank", component: BankComponent, title: "Bank" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Employee Accounting", component: AccountingEmployeeComponent, title: "Employee Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Employee Edit Accounting", component: AccountingEmployeeEditComponent, title: "Employee Edit Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Employee Edit Accounting/:id", component: AccountingEmployeeEditComponent, title: "Employee Edit Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
         ]
     },
     { 

@@ -21,51 +21,65 @@
         <div class="mt-6 mb-4 flex flex-wrap justify-between font-normal">
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt font-medium" for="id">ID</label>
-                <input (input)="validateNumber($event)" (change)="GetDataByID()"
+                <input (input)="validateNumber($event)"
+                (ngModelChange)="onInputValueChange({ field: 'id', value: $event }); GetDataByID()"
                 [(ngModel)]="accountingTreeChart.id" id="id" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter ID"/>
                 <span *ngIf="validationErrors['id']" class="text-red-500 ml-3">{{ validationErrors['id'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt font-medium" for="name">Name</label>
-                <input [(ngModel)]="accountingTreeChart.name" id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter name"/>
+                <input [(ngModel)]="accountingTreeChart.name"
+                (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"
+                 id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter name"/>
                 <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
             </div>
             <div class="flex flex-col w-full mb-4">
                 <label class="mb-2 primaryTxt font-medium" for="mainAccNo">Main Acc No</label>
-                <select [(ngModel)]="accountingTreeChart.mainAccountNumberID" (change)="GetMainByID()"
+                <select [(ngModel)]="accountingTreeChart.mainAccountNumberID" 
+                (ngModelChange)="onInputValueChange({ field: 'mainAccountNumberID', value: $event })"
+                (change)="GetMainByID()"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto font-normal" id="mainAccNo">
                     <option [value]="0" disabled selected hidden>Select Main Acc No</option>
                     <option *ngFor="let acc of MainData" [value]="acc.id">{{ acc.id }} {{ acc.name }}</option>
-                    <option [value]="0">No Main</option>
+                    <option *ngIf="accountingTreeChart.subTypeID != 2" [value]="0">No Main</option>
                 </select>
+                <span *ngIf="validationErrors['mainAccountNumberID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['mainAccountNumberID'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt font-medium" for="motionType">Motion Type</label>
-                <select [(ngModel)]="accountingTreeChart.motionTypeID" [disabled]="accountingTreeChart.mainAccountNumberID != 0"
+                <select [(ngModel)]="accountingTreeChart.motionTypeID"
+                (ngModelChange)="onInputValueChange({ field: 'motionTypeID', value: $event })" 
+                [disabled]="accountingTreeChart.mainAccountNumberID != 0"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="motionType">
                     <option [value]="0" disabled selected hidden>Select Motion Type</option>
                     <option *ngFor="let type of MotionTypeData" [value]="type.id">{{ type.name }}</option>
                     <option *ngIf="MotionTypeData.length === 0" disabled>No Data Found</option>
-
                 </select>
+                <span *ngIf="validationErrors['motionTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['motionTypeID'] }}</span>
             </div> 
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt font-medium" for="subType">Sub Type</label>
                 <select [(ngModel)]="accountingTreeChart.subTypeID" (change)="lockLinkFile()"
+                (ngModelChange)="onInputValueChange({ field: 'subTypeID', value: $event })"
+                [disabled]="isEdit == true && this.accountingTreeChart.subTypeName == 'Main'"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subType">
                     <option [value]="0" disabled selected hidden>Select Sub Type</option>
                     <option *ngFor="let type of SubTypeData" [value]="type.id">{{ type.name }}</option>
                     <option *ngIf="SubTypeData.length === 0" disabled>No Data Found</option>
                 </select>
+                <span *ngIf="validationErrors['subTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['subTypeID'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt font-medium" for="endType">End Type</label>
-                <select [(ngModel)]="accountingTreeChart.endTypeID" [disabled]="accountingTreeChart.mainAccountNumberID != 0"
+                <select [(ngModel)]="accountingTreeChart.endTypeID"
+                (ngModelChange)="onInputValueChange({ field: 'endTypeID', value: $event })" 
+                [disabled]="accountingTreeChart.mainAccountNumberID != 0"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="endType">
                     <option [value]="0" disabled selected hidden>Select End Type</option>
                     <option *ngFor="let type of EndTypeData" [value]="type.id">{{ type.name }}</option>
                     <option *ngIf="EndTypeData.length === 0" disabled>No Data Found</option>
                 </select>
+                <span *ngIf="validationErrors['endTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['endTypeID'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt font-medium" for="level">Level</label>
@@ -73,12 +87,15 @@
             </div>
             <div class="flex flex-col w-full mb-4">
                 <label class="mb-2 primaryTxt font-medium" for="linkFile">Link File</label>
-                <select [(ngModel)]="accountingTreeChart.linkFileID" [disabled]="accountingTreeChart.subTypeID == 1"
+                <select [(ngModel)]="accountingTreeChart.linkFileID"
+                (ngModelChange)="onInputValueChange({ field: 'linkFileID', value: $event })"
+                 [disabled]="accountingTreeChart.subTypeID == 1"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFile">
                     <option *ngIf="accountingTreeChart.subTypeID != 1" [value]="0" disabled selected hidden>Select Link File</option>
                     <option *ngFor="let type of LinkFileData" [value]="type.id">{{ type.name }}</option>
-                    <option [value]="0">No Link File</option>
+                    <option *ngIf="accountingTreeChart.subTypeID != 2" [value]="0">No Link File</option>
                 </select>
+                <span *ngIf="validationErrors['linkFileID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['linkFileID'] }}</span>
             </div>
         </div>
         <div class="flex justify-end">

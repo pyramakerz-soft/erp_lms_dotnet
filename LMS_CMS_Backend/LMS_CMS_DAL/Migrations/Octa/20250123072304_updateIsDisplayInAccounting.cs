@@ -15,11 +15,6 @@ namespace LMS_CMS_DAL.Migrations.Octa
                 SET IsDisplay = 1
                 WHERE ID = 48;
             ");
-
-            migrationBuilder.Sql(@"
-                INSERT INTO Page(ID, en_name, ar_name, Page_ID, IsDisplay) VALUES  
-                (64, 'Accounting Tree', N'شجرة الحسابات', 48, 1);
-            ");
         }
 
         /// <inheritdoc />
@@ -30,8 +25,6 @@ namespace LMS_CMS_DAL.Migrations.Octa
                 SET IsDisplay = 0
                 WHERE ID = 48;
             ");
-
-            migrationBuilder.Sql("DELETE FROM Page WHERE ID IN (64)");
         }
     }
 }

@@ -131,18 +131,30 @@ export class AccountingTreeComponent {
     )
   }
   
+  GetMainDataChildFiltered(id:number) {
+    this.accountingTreeChartService.GetMainDataChildFiltered(id, this.DomainName).subscribe(
+      (data) => { 
+        this.MainData = data
+      }
+    )
+  }
+  
   GetDataByID() {
     let id = this.accountingTreeChart.id 
+    this.validationErrors = {}
     if(this.accountingTreeChart.id && this.accountingTreeChart.id != null && this.accountingTreeChart.id != 0){
       this.accountingTreeChartService.GetByID(this.accountingTreeChart.id, this.DomainName).subscribe(
         (data) => { 
           this.isEdit = true
           this.accountingTreeChart = data
+          if(this.accountingTreeChart.id)
+          this.GetMainDataChildFiltered(this.accountingTreeChart.id)
         },
         (err) =>{
           this.isEdit = false
           this.accountingTreeChart = new AccountingTreeChart()
           this.accountingTreeChart.id = id
+          this.GetMainData()
         }
       )
     } else{
@@ -246,13 +258,84 @@ export class AccountingTreeComponent {
     }
   }
 
+  capitalizeField(field: keyof AccountingTreeChart): string {
+      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.accountingTreeChart) {
+      if (this.accountingTreeChart.hasOwnProperty(key)) {
+        const field = key as keyof AccountingTreeChart;
+        if (!this.accountingTreeChart[field]) {
+          if(field == "name" || field == "subTypeID" || field == "id" 
+            || (this.accountingTreeChart.subTypeID == 2 && (field == "linkFileID" || field == "mainAccountNumberID"))
+            || ((this.accountingTreeChart.mainAccountNumberID == 0 ) && (field == "motionTypeID" || field == "endTypeID"))){
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          }
+        } else {
+          if(field == "name"){
+            if(this.accountingTreeChart.name.length > 100){
+              this.validationErrors[field] = `*${this.capitalizeField(field)} cannot be longer than 100 characters`
+              isValid = false;
+            }
+          } else{
+            this.validationErrors[field] = '';
+          }
+        }
+      }
+    }
+    return isValid;
+  }
+
+  onInputValueChange(event: { field: keyof AccountingTreeChart, value: any }) {
+    const { field, value } = event;
+    
+    (this.accountingTreeChart as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    }
+    if(field == "subTypeID"){
+      this.validationErrors["linkFileID"] = ''
+      this.validationErrors["mainAccountNumberID"] = ''
+    }
+    if(field == "mainAccountNumberID"){
+      this.validationErrors["motionTypeID"] = ''
+      this.validationErrors["endTypeID"] = ''
+    }
+  }
+
   Save(){
     console.log(this.accountingTreeChart)
     console.log(this.isEdit)
-    // this.accountingTreeChartService.Add(this.accountingTreeChart, this.DomainName).subscribe(
-    //   (data) => {
-    //     console.log(data)
-    //   }
-    // )
+    console.log(this.validationErrors)
+    if(this.isFormValid()){}
+    if(this.isFormValid())
+    {
+      if(this.isEdit){
+        this.accountingTreeChartService.Edit(this.accountingTreeChart, this.DomainName).subscribe(
+          (data) => {
+            console.log(data)
+            this.GetAllData()
+            this.validationErrors = {}; 
+            this.accountingTreeChart = new AccountingTreeChart()
+          }, (error) => {
+            console.log(error)
+          }
+        )
+      } else{
+        this.accountingTreeChartService.Add(this.accountingTreeChart, this.DomainName).subscribe(
+          (data) => {
+            console.log(data)
+            this.GetAllData()
+            this.validationErrors = {}; 
+            this.accountingTreeChart = new AccountingTreeChart()
+          }, (error) => {
+            console.log(error)
+          }
+        )
+      }
+    }
   }
 }

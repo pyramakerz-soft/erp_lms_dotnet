@@ -90,8 +90,32 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }).ToList();
         }
 
+        private List<AccountingTreeChartGetDTO> RemoveChildById(List<AccountingTreeChartGetDTO> children, long id)
+        {
+            return children
+                .Where(child => child.ID != id)
+                .Select(child => new AccountingTreeChartGetDTO
+                {
+                    ID = child.ID,
+                    Name = child.Name,
+                    Level = child.Level,
+                    SubTypeID = child.SubTypeID,
+                    SubTypeName = child.SubTypeName,
+                    EndTypeID = child.EndTypeID,
+                    EndTypeName = child.EndTypeName,
+                    MainAccountNumberID = child.MainAccountNumberID,
+                    MainAccountNumberName = child.MainAccountNumberName,
+                    LinkFileID = child.LinkFileID,
+                    LinkFileName = child.LinkFileName,
+                    MotionTypeID = child.MotionTypeID,
+                    MotionTypeName = child.MotionTypeName,
+                    InsertedByUserId = child.InsertedByUserId,
+                    Children = RemoveChildById(child.Children, id)  
+                }).ToList();
+        }
+
         ///////////////////////////////////////////////////////////////////////////////////////
-        
+
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
@@ -224,6 +248,92 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             List<AccountingTreeChartGetDTO> accountingTreeChartsDTO = mapper.Map<List<AccountingTreeChartGetDTO>>(accountingTreeCharts);
 
             return Ok(accountingTreeChartsDTO);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetMainDataChildFiltered/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Accounting" }
+        )]
+        public async Task<IActionResult> GetMainDataChildFiltered(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<AccountingTreeChart> accountingTreeCharts = await Unit_Of_Work.accountingTreeChart_Repository.Select_All_With_IncludesById<AccountingTreeChart>(
+                    f => f.IsDeleted != true && f.SubTypeID == 1,
+                    query => query.Include(ac => ac.LinkFile),
+                    query => query.Include(ac => ac.MotionType),
+                    query => query.Include(ac => ac.SubType),
+                    query => query.Include(ac => ac.EndType),
+                    query => query.Include(ac => ac.Parent)
+                    );
+
+            if (accountingTreeCharts == null || accountingTreeCharts.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<AccountingTreeChartGetDTO> accountingTreeChartsDTO = BuildHierarchy(accountingTreeCharts);
+
+            accountingTreeChartsDTO = accountingTreeChartsDTO
+                .Where(ac => ac.ID != id)
+                .Select(ac => new AccountingTreeChartGetDTO
+                {
+                    ID = ac.ID,
+                    Name = ac.Name,
+                    Level = ac.Level,
+                    SubTypeID = ac.SubTypeID,
+                    SubTypeName = ac.SubTypeName,
+                    EndTypeID = ac.EndTypeID,
+                    EndTypeName = ac.EndTypeName,
+                    MainAccountNumberID = ac.MainAccountNumberID,
+                    MainAccountNumberName = ac.MainAccountNumberName,
+                    LinkFileID = ac.LinkFileID,
+                    LinkFileName = ac.LinkFileName,
+                    MotionTypeID = ac.MotionTypeID,
+                    MotionTypeName = ac.MotionTypeName,
+                    InsertedByUserId = ac.InsertedByUserId,
+                    Children = RemoveChildById(ac.Children, id)
+                }).ToList();
+
+            List<AccountingTreeChartGetDTO> flatList = new List<AccountingTreeChartGetDTO>();
+
+            void FlattenHierarchy(IEnumerable<AccountingTreeChartGetDTO> nodes)
+            {
+                foreach (var node in nodes)
+                {
+                    flatList.Add(new AccountingTreeChartGetDTO
+                    {
+                        ID = node.ID,
+                        Name = node.Name,
+                        Level = node.Level,
+                        SubTypeID = node.SubTypeID,
+                        SubTypeName = node.SubTypeName,
+                        EndTypeID = node.EndTypeID,
+                        EndTypeName = node.EndTypeName,
+                        MainAccountNumberID = node.MainAccountNumberID,
+                        MainAccountNumberName = node.MainAccountNumberName,
+                        LinkFileID = node.LinkFileID,
+                        LinkFileName = node.LinkFileName,
+                        MotionTypeID = node.MotionTypeID,
+                        MotionTypeName = node.MotionTypeName,
+                        InsertedByUserId = node.InsertedByUserId
+                    });
+
+                    // Recursively process children
+                    if (node.Children != null && node.Children.Any())
+                    {
+                        FlattenHierarchy(node.Children);
+                    }
+                }
+            }
+
+            // Initiate flattening process
+            FlattenHierarchy(accountingTreeChartsDTO);
+
+            return Ok(flatList);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -517,7 +627,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
                 // From main = null ---> main = value
                 // From main = value ---> main = new value
-                if (accountExists.MainAccountNumberID == null && EditedAccountingTreeChart.MainAccountNumberID != null)
+                if (accountExists.MainAccountNumberID == null && (EditedAccountingTreeChart.MainAccountNumberID != null && EditedAccountingTreeChart.MainAccountNumberID != 0))
                 {
                     AccountingTreeChart mainAccountNewExists = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.SubTypeID == 1 && t.ID == EditedAccountingTreeChart.MainAccountNumberID);
                     if (mainAccountNewExists == null)

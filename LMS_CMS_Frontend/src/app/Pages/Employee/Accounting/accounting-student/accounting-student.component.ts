@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { Student } from '../../../../Models/student';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { TokenData } from '../../../../Models/token-data';
@@ -14,17 +15,16 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { EmployeeService } from '../../../../Services/Employee/employee.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { Employee } from '../../../../Models/Employee/employee';
-import { EmployeeGet } from '../../../../Models/Employee/employee-get';
+import { StudentService } from '../../../../Services/student.service';
 
 @Component({
-  selector: 'app-accounting-employee',
+  selector: 'app-accounting-student',
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
-  templateUrl: './accounting-employee.component.html',
-  styleUrl: './accounting-employee.component.css'
+  templateUrl: './accounting-student.component.html',
+  styleUrl: './accounting-student.component.css'
 })
-export class AccountingEmployeeComponent {
+export class AccountingStudentComponent {
 User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
@@ -43,7 +43,7 @@ User_Data_After_Login: TokenData = new TokenData(
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  TableData: EmployeeGet[] = [];
+  TableData: Student[] = [];
 
   DomainName: string = '';
   UserID: number = 0;
@@ -67,7 +67,7 @@ User_Data_After_Login: TokenData = new TokenData(
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService ,
-    public EmployeeServ: EmployeeService,
+    public StudentServ: StudentService,
     public accountServ:AccountingTreeChartService ,
 
   ) {}
@@ -93,13 +93,13 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   GetAllData() {
-    this.EmployeeServ.Get_Employees(this.DomainName).subscribe((d)=>{
+    this.StudentServ.GetAll(this.DomainName).subscribe((d)=>{
       this.TableData=d
     })
   }
 
 
-  Edit(row: EmployeeGet) {
+  Edit(row: Student) {
     this.router.navigateByUrl(`Employee/Employee Edit Accounting/${row.id}`)
   }
 
@@ -107,8 +107,8 @@ User_Data_After_Login: TokenData = new TokenData(
     this.key = event.key;
     this.value = event.value;
     try {
-      const data: EmployeeGet[] = await firstValueFrom(
-        this.EmployeeServ.Get_Employees(this.DomainName)
+      const data: Student[] = await firstValueFrom(
+        this.StudentServ.GetAll(this.DomainName)
       );
       this.TableData = data || [];
 

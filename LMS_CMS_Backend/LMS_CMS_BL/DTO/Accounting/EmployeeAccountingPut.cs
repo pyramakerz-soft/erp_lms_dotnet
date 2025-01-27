@@ -14,8 +14,6 @@ namespace LMS_CMS_BL.DTO.Accounting
         [Required(ErrorMessage = "User_Name is required")]
         [StringLength(100, ErrorMessage = "Username cannot be longer than 100 characters.")]
         public string User_Name { get; set; }
-        [Required(ErrorMessage = "Password is required")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters.")]
         public string? Mobile { get; set; }
         public string? Phone { get; set; }
         public string? NationalID { get; set; }
@@ -40,8 +38,7 @@ namespace LMS_CMS_BL.DTO.Accounting
         public long? DepartmentID { get; set; }
         public long? AccountNumberID { get; set; }
         public long? ReasonOfLeavingID { get; set; }
-        public List<int> Days { get; set; }
-        public List<int> Students { get; set; }
+        public List<int>? Days { get; set; }
 
     }
 }

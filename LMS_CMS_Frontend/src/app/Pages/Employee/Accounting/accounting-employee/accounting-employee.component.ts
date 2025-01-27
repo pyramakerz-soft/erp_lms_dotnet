@@ -100,7 +100,6 @@ User_Data_After_Login: TokenData = new TokenData(
 
 
   Edit(row: EmployeeGet) {
-    this.mode = 'Edit';
     this.router.navigateByUrl(`Employee/Employee Edit Accounting/${row.id}`)
   }
 

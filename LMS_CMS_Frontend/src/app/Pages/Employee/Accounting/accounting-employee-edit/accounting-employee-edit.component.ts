@@ -202,12 +202,13 @@ User_Data_After_Login: TokenData = new TokenData(
     });
   }
   moveToEmployee(){
-
+    this.router.navigateByUrl(`Employee/Employee Accounting`)
   }
   Save(){
     this.getFormattedTime()
    this.employeeServ.EditAccountingEmployee(this.Data,this.DomainName).subscribe((d)=>{
     this.GetAllData();
+    this.router.navigateByUrl(`Employee/Employee Accounting`)
    });
   }
  

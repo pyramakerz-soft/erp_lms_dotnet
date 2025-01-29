@@ -16,6 +16,18 @@ export class StudentService {
     this.header = ApiServ.GetHeader()
   }
 
+  GetAll(DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<Student[]>(`${this.baseUrl}/Student`, { headers })
+  }
   GetByID(id:number,DomainName?:string){
     if(DomainName!=null) {
       this.header=DomainName 
@@ -39,4 +51,17 @@ export class StudentService {
 
     return this.http.get<Student[]>(`${this.baseUrl}/Student/Get_By_ClassID/${id}`, { headers })
   }
+
+  EditAccountingEmployee(student:Student,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('domain-name', this.header) 
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+    return this.http.put(`${this.baseUrl}/Student/StudentAccounting`, student, { headers });
+  }
+    
 }

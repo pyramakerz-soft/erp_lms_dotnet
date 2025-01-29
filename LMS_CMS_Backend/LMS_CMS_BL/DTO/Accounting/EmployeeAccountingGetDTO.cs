@@ -53,7 +53,10 @@ namespace LMS_CMS_BL.DTO.Accounting
         public string? DepartmentName { get; set; }
         public long? JobID { get; set; }
         public string JobName { get; set; }
+        public long? JobCategoryId { get; set; }
         public long? AcademicDegreeID { get; set; }
         public string AcademicDegreeName { get; set; }
+        public List<long>? Days { get; set; }
+
     }
 }

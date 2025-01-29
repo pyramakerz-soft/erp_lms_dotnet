@@ -1,34 +1,34 @@
 <div class="flex justify-between items-center">
-    <div class="flex justify-between items-center space-x-5">
-        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
-        <h1 class="primaryTxt font-semibold text-2xl leading-9">Admission Tests</h1>
+    <div class="flex justify-between items-center space-x-5 rtl:space-x-reverse">
+        <i class="fa-solid fa-chevron-left rtl:rotate-180" (click)="moveToEmployee()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ 'Admission Test' | translate }}</h1>
     </div>
 </div>
 
 
 <div class="flex flex-wrap justify-between mt-5 mb-5">
     <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
-        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Title</p>
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">{{ 'Title' | translate }}</p>
         <p class="font-medium text-base text-[#1E1E1E]">{{ test.title }}</p>
     </div>
     <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
-        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Total Mark</p>
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">{{ 'Total Mark' | translate }}</p>
         <p class="font-medium text-base text-[#1E1E1E]">{{ test.totalMark }}</p>
     </div>
     <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
-        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Year</p>
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">{{ 'Academic Year' | translate }}</p>
         <p class="font-medium text-base text-[#1E1E1E]">{{ test.academicYearName }}</p>
     </div>
     <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
-        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">School</p>
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">{{ 'School' | translate }}</p>
         <p class="font-medium text-base text-[#1E1E1E]">{{ test.schoolName }}</p>
     </div>
     <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
-        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Grade</p>
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">{{ 'Grade' | translate }}</p>
         <p class="font-medium text-base text-[#1E1E1E]">{{ test.gradeName }}</p>
     </div>
     <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
-        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject</p>
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">{{ 'Subject' | translate }}</p>
         <p class="font-medium text-base text-[#1E1E1E]">{{ test.subjectName }}</p>
     </div>
 </div>
@@ -36,39 +36,39 @@
 
 <div class="">
     <div class="flex justify-between items-center">
-        <h1 class="primaryTxt font-semibold text-2xl leading-9">Questions</h1>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ 'Questions' | translate }}</h1>
         <div class="flex justify-between items-center ">
             <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="Create()"
                 class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-                Add Question
+                {{ 'Add' | translate }} {{ 'Question' | translate }}
             </button>
         </div>
     </div>
 
 
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
             <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
                 <tr>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        ID
+                        {{ 'ID' | translate }}
                     </th>
                     <th
                         class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                        Description
+                        {{ 'Description' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Question Type Name
+                        {{ 'Question Type' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Correct Answer Name
+                        {{ 'Correct Answer' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        TestName
+                        {{ 'Test Name' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Actions
+                        {{ 'Actions' | translate }}
                     </th>
                 </tr>
             </thead>
@@ -77,7 +77,7 @@
                 <tr *ngIf="Data.length === 0">
                     <td colspan="17"
                         class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                        No Data Found
+                        {{ 'No Data Found' | translate }}
                     </td>
                 </tr>
 
@@ -93,7 +93,7 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.correctAnswerName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.testName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div class="flex space-x-4">
+                        <div class="flex space-x-4 rtl:space-x-reverse">
                             <button (click)="Delete(row.id)" *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
@@ -112,24 +112,24 @@
 <!-- Modal -->
 <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isModalVisible}"
     class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
-    <div class="relative bg-white w-[669px] rounded-2xl p-12 gap-4 shadow-md overflow-y-auto max-h-[90vh]">
+    <div class="relative bg-white rounded-2xl p-12 gap-4 shadow-md overflow-y-auto max-h-[90vh]">
         <!-- Close Icon -->
         <button (click)="closeModal()"
             class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
             <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
 
-        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">Create Categories</h1>
-        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">Edit Categories</h1>
+        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">{{ 'Create' | translate }} {{ 'Question' | translate }}</h1>
+        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">{{ 'Edit' | translate }} {{ 'Question' | translate }}</h1>
 
-        <div class="mt-4 bg-[#F7F7F7] w-[573px] rounded-[24px] p-[16px_24px] gap-[20px]">
+        <div class="mt-4 bg-[#F7F7F7] rounded-[24px] p-[16px_24px] gap-[20px]">
 
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Description</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Description' | translate }}</h6>
             <div class="flex justify-start gap-2 items-start">
                 <div class="flex flex-col">
                     <textarea
                         class="w-[500px] h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
-                        [(ngModel)]="question.description" placeholder="Enter Description" 
+                        [(ngModel)]="question.description" placeholder="{{ 'Enter' | translate }} {{ 'Description' | translate }}" 
                         (ngModelChange)="onInputValueChange({ field: 'description', value: $event })"
                         >
                     </textarea>
@@ -143,9 +143,9 @@
                         class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
                         <img src="Images/Icon frame.png" class="w-1/4" alt="Upload Icon">
                         <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
-                            <span class="secondaryTxt">Click to Upload</span> or drag and drop files
+                            <span class="secondaryTxt">{{ 'Click To Upload' | translate }}</span> {{ 'or drag and drop Icon' | translate }}
                         </p>
-                        <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB each)</p>
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> ({{ 'Max. File size' | translate }}: 25 MB)</p>
                     </label>
                     <input id="file-upload"
                         type="file"
@@ -168,48 +168,48 @@
                 <img *ngIf="question.image" [src]="question.image" class="object-cover w-1/2">
             </div>
            
-            <h6 class="font-medium text-base leading-6 mb-2 mt-3">Question Types</h6>
+            <h6 class="font-medium text-base leading-6 mb-2 mt-3">{{ 'Question Type' | translate }}</h6>
             <div class="flex flex-col mb-4">
                 <select 
                 (ngModelChange)="onInputValueChange({ field: 'questionTypeID', value: $event })" 
                 (ngModelChange)="checkOnType()"
                     class="rounded-lg border border-solid border-gray-300  py-1 overflow-y-auto w-[500px] h-[45px]  mb-3"
                     id="test" [(ngModel)]="question.questionTypeID">
-                    <option [value]="0" disabled selected hidden>Choose Question Type</option>
+                    <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Question Type' | translate }}</option>
                     <option *ngFor="let type of QuestionTypes" [value]="type.id">{{ type.name }}</option>
-                    <option *ngIf="QuestionTypes.length === 0" disabled selected>No Data Found</option>
+                    <option *ngIf="QuestionTypes.length === 0" disabled selected>{{ 'No Data Found' | translate }}/option>
                 </select>
                 <span *ngIf="validationErrors['questionTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['questionTypeID'] }}</span>
             </div>
 
             <div *ngIf="question.questionTypeID ==1||question.questionTypeID==2">
 
-                <h6 class="font-medium text-base leading-6 mb-2 mt-3">Options</h6>
-                <div class="flex justify-start gap-2 items-start ">
+                <h6 class="font-medium text-base leading-6 mb-2 mt-3">{{ 'Options' | translate }}</h6>
+                <div class="flex justify-start gap-2 items-center">
                     <div class="flex flex-col">
                         <input type="text"
                             [(ngModel)]="NewOption"
-                            class="w-[450px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                            class="w-[450px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
                             (ngModelChange)="onInputValueChange({ field: 'options', value: $event })"
-                            placeholder="Enter New Option" />
+                            placeholder="{{ 'Enter' | translate }} {{ 'Options' | translate }}" />
                             <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">{{ validationErrors['options'] }}</span>
                     </div>
                     <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
                     <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg" (click)="AddOption()">
-                        Add
+                        {{ 'Add' | translate }}
                     </button>
                 </div>
                 <div class="w-[500px]">
                     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-                        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+                        <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
                             <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
                                 <tr>
                                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                                        Correct
+                                        {{ 'Correct' | translate }}
                                     </th>
                                     <th
                                         class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                                        Option
+                                        {{ 'Option' | translate }}
                                     </th>
                                 </tr>
                             </thead>
@@ -235,7 +235,7 @@
 
             <div class="flex justify-end">
                 <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
-                    Save
+                    {{ 'Save' | translate }}
                 </button>
             </div>
 

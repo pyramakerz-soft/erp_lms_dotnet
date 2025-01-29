@@ -92,6 +92,8 @@ export class RegistrationConfirmationTestDetailsComponent {
     this.testServ.GetByRegistrationFormParentIDAndGrade(this.RegisterFormParentID, this.DomainName).subscribe((d:any) => {
       this.Data = d.tests;
       this.StudentName=d.studentName
+
+      console.log(d)
     })
   }
 

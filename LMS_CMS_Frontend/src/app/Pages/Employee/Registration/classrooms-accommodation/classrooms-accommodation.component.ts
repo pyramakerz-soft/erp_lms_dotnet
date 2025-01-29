@@ -19,11 +19,12 @@ import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-classrooms-accommodation',
   standalone: true,
-  imports: [CommonModule, FormsModule , SearchComponent],
+  imports: [CommonModule, FormsModule , SearchComponent, TranslateModule],
   templateUrl: './classrooms-accommodation.component.html',
   styleUrl: './classrooms-accommodation.component.css',
 })

@@ -16,11 +16,14 @@ import { FormsModule } from '@angular/forms';
 import { RegisterationFormParentService } from '../../../../Services/Employee/Registration/registeration-form-parent.service';
 import { RegisterationFormParent } from '../../../../Models/Registration/registeration-form-parent';
 import Swal from 'sweetalert2';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../../../Services/shared/language.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-registration-confirmation-details',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './registration-confirmation-details.component.html',
   styleUrl: './registration-confirmation-details.component.css'
 })
@@ -41,11 +44,13 @@ export class RegistrationConfirmationDetailsComponent {
 
   selectedState = 0
   StateData: RegistrationFormState[] = []
-
+  isRtl: boolean = false;
+  subscription!: Subscription;
+  
   constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
     private menuService: MenuService, public activeRoute: ActivatedRoute, public router:Router, public stateService: RegistrationFormStateService,
     public registrationFormSubmissionService: RegistrationFormSubmissionService, public registrationFormParentService: RegisterationFormParentService
-    , public registrationFormService: RegistrationFormService){}
+    , public registrationFormService: RegistrationFormService, private languageService: LanguageService){}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -71,7 +76,15 @@ export class RegistrationConfirmationDetailsComponent {
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
       }
     });
+    this.subscription = this.languageService.language$.subscribe(direction => {
+      this.isRtl = direction === 'rtl';
+    });
+    this.isRtl = document.documentElement.dir === 'rtl';
   }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  } 
 
   IsAllowEdit(InsertedByID: number) {
     const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);

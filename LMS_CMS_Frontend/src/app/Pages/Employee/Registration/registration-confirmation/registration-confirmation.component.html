@@ -1,45 +1,45 @@
 <div class="flex justify-between items-center">
-    <h1 class="primaryTxt font-semibold text-2xl leading-9">Registration Confirmation</h1>
-    <div class="flex justify-between items-center space-x-4">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ 'Registration Confirmation' | translate }}</h1>
+    <div class="flex justify-between items-center">
         <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
     </div>
 </div>
 
-<div class="flex justify-between mt-5 items-end space-x-5">
+<div class="flex justify-between mt-5 items-end space-x-5 rtl:space-x-reverse">
     <div class="w-1/3">
-        <label for="school" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">School</label>
+        <label for="school" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'School' | translate }}</label>
         <select id="school" [(ngModel)]="selectedSchool"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
-            <option value="0" disabled selected hidden>Select School</option>
+            <option value="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'School' | translate }}</option>
             <option *ngFor="let school of SchoolData" [value]="school.id">
                 {{ school.name }}
             </option>
         </select>
     </div>
     <div class="w-1/3">
-        <label for="academicYear" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">Year</label>
+        <label for="academicYear" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'Academic Year' | translate }}</label>
         <select id="academicYear" [(ngModel)]="selectedYear"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
-            <option value="0" disabled selected hidden>Select Year</option>
+            <option value="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Academic Year' | translate }}</option>
             <option *ngFor="let academicYear of AcademicYearData" [value]="academicYear.id">
                 {{ academicYear.name }}
             </option>
         </select>
     </div>
     <div class="w-1/3">
-        <label for="state" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">State</label>
+        <label for="state" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'State' | translate }}</label>
         <select id="state" [(ngModel)]="selectedState"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
-            <option value="0" disabled selected hidden>Select State</option>
+            <option value="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'State' | translate }}</option>
             <option *ngFor="let state of StateData" [value]="state.id">
                 {{ state.name }}
             </option>
         </select>
     </div>
 
-    <div class="flex space-x-4 items-center">
+    <div class="flex space-x-4 rtl:space-x-reverse items-center">
         <button class="secondaryBg text-white font-medium px-4 py-3 rounded-lg text-xl" (click)="Search()">
-            Search
+            {{ 'SearchBTN' | translate }}
         </button>
         <div class="rounded-full p-2 border-4" (click)="ResetFilter()">
             <i class="fa-solid fa-rotate-left secondaryTxt text-2xl w-8 h-8 text-center hover:cursor-pointer rounded-full"></i>
@@ -48,41 +48,41 @@
 </div>
 
 <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+    <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
         <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
             <tr>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    ID
+                    {{ 'ID' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Student Name
+                    {{ 'Student Name' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Phone
+                    {{ 'Phone' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Grade
+                    {{ 'Grade' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Year
+                    {{ 'Academic Year' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Email
+                    {{ 'Email' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Registration State
+                    {{ 'Registration State' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Admission Test Fees
+                    {{ 'Admission Test Fees' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Seat reservation fee
+                    {{ 'Seat reservation fee' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Tuition fees
+                    {{ 'Tuition fees' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Actions
+                    {{ 'Actions' | translate }}
                 </th>
             </tr>
         </thead>
@@ -90,7 +90,7 @@
             <!-- No Data Row -->
             <tr *ngIf="registerationFormParentData.length === 0">
                 <td colspan="11" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                    No Data Found
+                    {{ 'No Data Found' | translate }}
                 </td>
             </tr>
 
@@ -107,19 +107,19 @@
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.email }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     <div class="flex justify-start">
-                        <div *ngIf="row.registerationFormStateID == 2" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 2" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: green; padding: 4px;"></span>
                             <p>
                                 {{row.registerationFormStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registerationFormStateID == 3" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 3" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: red; padding: 4px;"></span>
                             <p>
                                 {{row.registerationFormStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registerationFormStateID == 1 || row.registerationFormStateID == 4" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 1 || row.registerationFormStateID == 4" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <div class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: gray; padding: 4px;"></div>
                             <p>
                                 {{row.registerationFormStateName}}
@@ -129,19 +129,19 @@
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     <div class="flex justify-start">
-                        <div *ngIf="row.registerationFormStateID == 2" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 2" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: green; padding: 4px;"></span>
                             <p>
                                 {{row.registerationFormStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registerationFormStateID == 3" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 3" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: red; padding: 4px;"></span>
                             <p>
                                 {{row.registerationFormStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registerationFormStateID == 1 || row.registerationFormStateID == 4" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 1 || row.registerationFormStateID == 4" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <div class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: gray; padding: 4px;"></div>
                             <p>
                                 {{row.registerationFormStateName}}
@@ -151,19 +151,19 @@
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     <div class="flex justify-start">
-                        <div *ngIf="row.registerationFormStateID == 2" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 2" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: green; padding: 4px;"></span>
                             <p>
                                 {{row.registerationFormStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registerationFormStateID == 3" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 3" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: red; padding: 4px;"></span>
                             <p>
                                 {{row.registerationFormStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registerationFormStateID == 1 || row.registerationFormStateID == 4" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 1 || row.registerationFormStateID == 4" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <div class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: gray; padding: 4px;"></div>
                             <p>
                                 {{row.registerationFormStateName}}
@@ -173,19 +173,19 @@
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     <div class="flex justify-start">
-                        <div *ngIf="row.registerationFormStateID == 2" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 2" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: green; padding: 4px;"></span>
                             <p>
                                 {{row.registerationFormStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registerationFormStateID == 3" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 3" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: red; padding: 4px;"></span>
                             <p>
                                 {{row.registerationFormStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registerationFormStateID == 1 || row.registerationFormStateID == 4" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                        <div *ngIf="row.registerationFormStateID == 1 || row.registerationFormStateID == 4" class="border flex space-x-2 rtl:space-x-reverse items-center justify-between rounded-md shadow px-2 py-1 ">
                             <div class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: gray; padding: 4px;"></div>
                             <p>
                                 {{row.registerationFormStateName}}
@@ -194,7 +194,7 @@
                     </div>
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div class="flex space-x-4">
+                    <div class="flex space-x-4 rtl:space-x-reverse">
                         <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="moveToRegistrationFormSubmission(row.id)">
                             <i class="fa-regular fa-eye text-[#6F6F6F]"></i>
                         </button>

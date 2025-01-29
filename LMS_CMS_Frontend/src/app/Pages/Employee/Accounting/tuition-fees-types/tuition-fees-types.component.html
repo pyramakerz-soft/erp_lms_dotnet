@@ -108,15 +108,15 @@ class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h
   <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
     <div class="flex flex-col mt-2 gap-2 items-start">
       <h6 class="font-medium text-base leading-6">tuition Fees Type Name</h6>
-      <input type="text" class="w-[404px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
-        [(ngModel)]="tuitionFeesType.name" placeholder="Enter Supplier" (ngModelChange)="
+      <input type="text" class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2"
+        [(ngModel)]="tuitionFeesType.name" placeholder="Enter Name" (ngModelChange)="
               onInputValueChange({ field: 'name', value: $event })" />
       <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors["name"]}}</span>
     </div>
       <div class="flex flex-col my-4">
         <label class="mb-2 " for="Account Number">Account Number</label>
         <select (ngModelChange)="onInputValueChange({ field: 'accountNumberID', value: $event })"
-          class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-[404px] h-[45px]"  id="accountNumberID"
+          class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-full h-[45px]"  id="accountNumberID"
           [(ngModel)]="tuitionFeesType.accountNumberID">
           <option [value]="0" disabled selected hidden>Choose Account Number</option>
           <option *ngFor="let num of AccountNumbers" [value]="num.id">{{ num.name }}</option>

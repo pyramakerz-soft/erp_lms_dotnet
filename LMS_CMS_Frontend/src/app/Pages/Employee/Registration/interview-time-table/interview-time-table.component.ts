@@ -16,11 +16,12 @@ import { InterviewTimeTableService } from '../../../../Services/Employee/Registr
 import { InterviewTimeTable } from '../../../../Models/Registration/interview-time-table';
 import Swal from 'sweetalert2';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-interview-time-table',
   standalone: true,
-  imports: [FormsModule,CommonModule,SearchComponent],
+  imports: [FormsModule,CommonModule,SearchComponent, TranslateModule],
   templateUrl: './interview-time-table.component.html',
   styleUrl: './interview-time-table.component.css'
 })

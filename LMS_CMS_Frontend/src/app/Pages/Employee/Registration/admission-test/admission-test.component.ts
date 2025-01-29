@@ -19,12 +19,14 @@ import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-
 import { SubjectService } from '../../../../Services/Employee/LMS/subject.service';
 import Swal from 'sweetalert2';
 import { SearchComponent } from '../../../../Component/search/search.component';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../../../Services/shared/language.service';
 
 @Component({
   selector: 'app-admission-test',
   standalone: true,
-  imports: [CommonModule, FormsModule ,SearchComponent],
+  imports: [CommonModule, FormsModule ,SearchComponent, TranslateModule],
   templateUrl: './admission-test.component.html',
   styleUrl: './admission-test.component.css'
 })
@@ -71,7 +73,8 @@ export class AdmissionTestComponent {
   key: string = 'id';
   value: any = '';
   keysArray: string[] = ['id', 'title', 'totalMark','subjectName' ,'academicYearName'];
-
+  isRtl: boolean = false;
+  subscription!: Subscription;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -85,6 +88,7 @@ export class AdmissionTestComponent {
     public GradeServ: GradeService,
     public AcadimicYearServ: AcadimicYearService,
     public SubjectServ: SubjectService,
+    private languageService: LanguageService
   ) { }
 
   ngOnInit() {
@@ -110,6 +114,15 @@ export class AdmissionTestComponent {
     this.GetAllGrades();
     this.GetAllYears();
     this.GetAllSubjects();
+
+    this.subscription = this.languageService.language$.subscribe(direction => {
+      this.isRtl = direction === 'rtl';
+    });
+    this.isRtl = document.documentElement.dir === 'rtl';
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   onSchoolChange(selectedSchoolId: number) {

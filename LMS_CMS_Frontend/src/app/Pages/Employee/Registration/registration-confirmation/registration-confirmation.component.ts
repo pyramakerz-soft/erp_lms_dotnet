@@ -17,11 +17,12 @@ import { SchoolService } from '../../../../Services/Employee/school.service';
 import { RegistrationFormStateService } from '../../../../Services/Employee/Registration/registration-form-state.service';
 import { RegistrationFormState } from '../../../../Models/Registration/registration-form-state';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-registration-confirmation',
   standalone: true,
-  imports: [FormsModule,CommonModule,SearchComponent],
+  imports: [FormsModule,CommonModule,SearchComponent, TranslateModule],
   templateUrl: './registration-confirmation.component.html',
   styleUrl: './registration-confirmation.component.css'
 })

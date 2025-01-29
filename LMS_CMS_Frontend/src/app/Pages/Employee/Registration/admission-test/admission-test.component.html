@@ -1,47 +1,47 @@
 <div class="">
     <div class="flex justify-between items-center">
-        <h1 class="primaryTxt font-semibold text-2xl leading-9">Admission Test</h1>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ 'Admission Test' | translate }}</h1>
         <div class="flex justify-between items-center ">
             <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="Create()"
                 class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-                Create Test
+                {{ 'Create Test' | translate }}
             </button>
         </div>
     </div>
 
 
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
             <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
                 <tr>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        ID
+                        {{ 'ID' | translate }}
                     </th>
                     <th
                         class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                        Title
+                        {{ 'Title' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Total Mark
+                        {{ 'Total Mark' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Subject Name
+                        {{ 'Subject Name' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Academic Year
+                        {{ 'Academic Year' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Actions
+                        {{ 'Actions' | translate }}
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <!-- No Data Row -->
                 <tr *ngIf="Data.length === 0">
-                    <td colspan="17"
+                    <td colspan="6"
                         class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                        No Data Found
+                        {{ 'No Data Found' | translate }}
                     </td>
                 </tr>
 
@@ -57,7 +57,7 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subjectName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.academicYearName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div class="flex space-x-4">
+                        <div class="flex space-x-4 rtl:space-x-reverse">
                             <button (click)="view(row.id)">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
@@ -87,43 +87,43 @@
             <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
 
-        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">Create Test</h1>
-        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">Edit Test</h1>
+        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">{{ 'Create Test' | translate }}</h1>
+        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">{{ 'Edit Test' | translate }}</h1>
 
         <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Title</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Title' | translate }}</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="test.title" placeholder="Enter Title " (ngModelChange)="onInputValueChange({ field: 'title', value: $event })"/>
+                        [(ngModel)]="test.title" placeholder="{{ 'Enter' | translate }} {{ 'Title' | translate }}" (ngModelChange)="onInputValueChange({ field: 'title', value: $event })"/>
                 <span *ngIf="validationErrors['title']" class="text-red-500 ml-3 font-normal">{{ validationErrors['title'] }}</span>
                 </div>
             </div>
 
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Total Mark</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Total Mark' | translate }}</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="test.totalMark" placeholder="Enter Total Mark "  (ngModelChange)="onInputValueChange({ field: 'totalMark', value: $event })"/>
+                        [(ngModel)]="test.totalMark" placeholder="{{ 'Enter' | translate }} {{ 'Total Mark' | translate }}"  (ngModelChange)="onInputValueChange({ field: 'totalMark', value: $event })"/>
                 <span *ngIf="validationErrors['totalMark']" class="text-red-500 ml-3 font-normal">{{ validationErrors['totalMark'] }}</span>
 
                 </div>
             </div>
 
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">School</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'School' | translate }}</h6>
             <div class="flex flex-col mb-4">
                 <select (ngModelChange)="onSchoolChange($event)"
                     class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
                     id="schoolSelect" [(ngModel)]="SchoolId">
-                    <option [value]="0" disabled selected hidden>Choose School</option>
+                    <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'School' | translate }}</option>
                     <option *ngFor="let s of Schools" [value]="s.id">{{ s.name }}</option>
-                    <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
+                    <option *ngIf="Schools.length === 0" disabled selected>{{ 'No Data Found' | translate }}</option>
                 </select>
             </div>
 
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Academic Year</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Academic Year' | translate }}</h6>
             <div class="flex flex-col mb-4">
               <select
                 [disabled]="!SchoolId || SchoolId === 0"
@@ -131,32 +131,32 @@
                 class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
                 id="academicYearSelect"
                 [(ngModel)]="test.academicYearID">
-                <option [value]="0" disabled selected hidden>Choose Academic Year</option>
+                <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Academic Year' | translate }}</option>
                 <option *ngFor="let type of AcadenicYears" [value]="type.id">{{ type.name }}</option>
-                <option *ngIf="AcadenicYears.length === 0" disabled>No Data Found</option>
+                <option *ngIf="AcadenicYears.length === 0" disabled>{{ 'No Data Found' | translate }}</option>
               </select>
               <span *ngIf="validationErrors['academicYearID']" class="text-red-500 ml-3 font-normal">
                 {{ validationErrors['academicYearID'] }}
               </span>
             </div>
             
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Grade Levels</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Grade' | translate }}</h6>
             <div class="flex flex-col mb-4">
               <select
                 (ngModelChange)="onGradeChange($event); onInputValueChange({ field: 'gradeID', value: $event })"
                 class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
                 id="gradeSelect"
                 [(ngModel)]="test.gradeID">
-                <option [value]="0" disabled selected hidden>Choose Grade</option>
+                <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Grade' | translate }}</option>
                 <option *ngFor="let grade of Grades" [value]="grade.id">{{ grade.name }}</option>
-                <option *ngIf="Grades.length === 0" disabled>No Data Found</option>
+                <option *ngIf="Grades.length === 0" disabled>{{ 'No Data Found' | translate }}</option>
               </select>
               <span *ngIf="validationErrors['gradeID']" class="text-red-500 ml-3 font-normal">
                 {{ validationErrors['gradeID'] }}
               </span>
             </div>
             
-            <h6 class="font-medium text-base leading-6 mb-1 mt-3">Subject</h6>
+            <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Subject' | translate }}</h6>
             <div class="flex flex-col mb-4">
               <select
                 [disabled]="!test.gradeID || test.gradeID === 0"
@@ -164,9 +164,9 @@
                 class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
                 id="subjectSelect"
                 [(ngModel)]="test.subjectID">
-                <option [value]="0" disabled selected hidden>Choose Subject</option>
-                <option *ngFor="let subject of Subjects" [value]="subject.id">{{ subject.en_name }}</option>
-                <option *ngIf="Subjects.length === 0" disabled>No Data Found</option>
+                <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Subject' | translate }}</option>
+                <option *ngFor="let subject of Subjects" [value]="subject.id">{{ isRtl ? subject.ar_name : subject.en_name }}</option>
+                <option *ngIf="Subjects.length === 0" disabled>{{ 'No Data Found' | translate }}</option>
               </select>
               <span *ngIf="validationErrors['subjectID']" class="text-red-500 ml-3 font-normal">
                 {{ validationErrors['subjectID'] }}
@@ -177,7 +177,7 @@
 
             <div class="flex justify-end">
                 <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
-                    Save
+                    {{ 'Save' | translate }}
                 </button>
             </div>
         </div>

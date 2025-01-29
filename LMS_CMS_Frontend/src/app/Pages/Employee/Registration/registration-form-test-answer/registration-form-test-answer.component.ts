@@ -12,11 +12,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RegisterationFormTest } from '../../../../Models/Registration/registeration-form-test';
 import { RegisterationFormTestService } from '../../../../Services/Employee/Registration/registeration-form-test.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-registration-form-test-answer',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './registration-form-test-answer.component.html',
   styleUrl: './registration-form-test-answer.component.css'
 })

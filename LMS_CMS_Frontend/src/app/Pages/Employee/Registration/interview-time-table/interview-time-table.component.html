@@ -1,40 +1,40 @@
 <div class="flex justify-between items-center">
-    <h1 class="primaryTxt font-semibold text-2xl leading-9"> Interview Time Table</h1>
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">{{ 'Interview Time Table' | translate }}</h1>
     <div class="flex justify-between items-center ">
         <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
         
         <button (click)="openModal()"
         class="secondaryBg text-white rounded-lg px-4 py-3 flex items-center justify-center">
-            Create Time
+            {{ 'Create' | translate }} {{ 'Time' | translate }}
         </button>
     </div>
 </div>
 
-<div class="flex justify-between mt-5 items-end space-x-5">
+<div class="flex justify-between mt-5 items-end space-x-5 rtl:space-x-reverse">
     <div class="w-1/2">
-        <label for="school" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">School</label>
+        <label for="school" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'School' | translate }}</label>
         <select id="school" [(ngModel)]="selectedSchool"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
-            <option value="0" disabled selected hidden>Select School</option>
+            <option value="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'School' | translate }}</option>
             <option *ngFor="let school of SchoolData" [value]="school.id">
                 {{ school.name }}
             </option>
         </select>
     </div>
     <div class="w-1/2">
-        <label for="academicYear" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">Year</label>
+        <label for="academicYear" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'Academic Year' | translate }}</label>
         <select id="academicYear" [(ngModel)]="selectedYear"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
-            <option value="0" disabled selected hidden>Select Year</option>
+            <option value="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Academic Year' | translate }}</option>
             <option *ngFor="let academicYear of AcademicYearData" [value]="academicYear.id">
                 {{ academicYear.name }}
             </option>
         </select>
     </div>
 
-    <div class="flex space-x-4 items-center">
+    <div class="flex space-x-4 rtl:space-x-reverse items-center">
         <button class="secondaryBg text-white font-medium px-4 py-3 rounded-lg text-xl" (click)="Search()">
-            Search
+            {{ 'SearchBTN' | translate }}
         </button>
         <div class="rounded-full p-2 border-4" (click)="ResetFilter()">
             <i class="fa-solid fa-rotate-left secondaryTxt text-2xl w-8 h-8 text-center hover:cursor-pointer rounded-full"></i>
@@ -45,32 +45,32 @@
 
 
 <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+    <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
         <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
             <tr>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    ID
+                    {{ 'ID' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Date
+                    {{ 'Date' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    From Time
+                    {{ 'From' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    To Time
+                    {{ 'To' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Capacity
+                    {{ 'Capacity' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Reserved
+                    {{ 'Reserved' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Year
+                    {{ 'Academic Year' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Actions
+                    {{ 'Actions' | translate }}
                 </th>
             </tr>
         </thead>
@@ -78,7 +78,7 @@
             <!-- No Data Row -->
             <tr *ngIf="interviewTimeTableData.length === 0">
                 <td colspan="8" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                    No Data Found
+                    {{ 'No Data Found' | translate }}
                 </td>
             </tr>
 
@@ -95,7 +95,7 @@
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.reserved }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.academicYearName }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div class="flex space-x-4">
+                    <div class="flex space-x-4 rtl:space-x-reverse">
                         <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
                             (click)="deleteInterview(row.id)">
                             <i class="fa-regular fa-trash-can"></i>
@@ -118,48 +118,48 @@
 <div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
     <div class="bg-white rounded-2xl p-12 w-1/2 max-h-[95%] overflow-y-auto">
         <div class="flex justify-between items-center">
-            <h1 *ngIf="!editInterviewTimeTable" class="font-semibold text-2xl leading-9">Create Time</h1>
-            <h1 *ngIf="editInterviewTimeTable" class="font-semibold text-2xl leading-9">Edit Time</h1>
+            <h1 *ngIf="!editInterviewTimeTable" class="font-semibold text-2xl leading-9">{{ 'Create' | translate }} {{ 'Time' | translate }}</h1>
+            <h1 *ngIf="editInterviewTimeTable" class="font-semibold text-2xl leading-9">{{ 'Edit' | translate }} {{ 'Time' | translate }}</h1>
             <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
         
         <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
             <div class="flex flex-col w-full mb-4">
-                <label class="mb-2" for="school">Choose School</label>
+                <label class="mb-2" for="school">{{ 'School' | translate }}</label>
                 <select [disabled]="editInterviewTimeTable" [ngClass]="{ 'bg-[#EBEBEB]': editInterviewTimeTable }"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchoolForModal" (change)="onSchoolChange($event)">
-                    <option [value]="0" disabled selected hidden>Choose School</option>
+                    <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'School' | translate }}</option>
                     <option *ngFor="let school of schoolsForModal" [value]="school.id">{{ school.name }}</option>
-                    <option *ngIf="schoolsForModal.length === 0" disabled selected>No Data Found</option>
+                    <option *ngIf="schoolsForModal.length === 0" disabled selected>{{ 'No Data Found' | translate }}</option>
                 </select>
             </div>
             <div class="flex flex-col w-full mb-4">
-                <label class="mb-2" for="ac" [ngClass]="{ 'text-gray-400': !selectedSchoolForModal, 'primaryTxt': selectedSchoolForModal }">Choose Academic Year</label>
+                <label class="mb-2" for="ac" [ngClass]="{ 'text-gray-400': !selectedSchoolForModal, 'primaryTxt': selectedSchoolForModal }">{{ 'Academic Year' | translate }}</label>
                 <select 
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="ac" [(ngModel)]="interviewTimeTable.academicYearID"
                 [disabled]="!selectedSchoolForModal || editInterviewTimeTable" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchoolForModal || editInterviewTimeTable}">
-                    <option [value]="0" disabled selected hidden>Choose Academic Year</option>
+                    <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Academic Year' | translate }}</option>
                     <option *ngFor="let academicYear of yearsForModal" [value]="academicYear.id">{{ academicYear.name }}</option>
-                    <option *ngIf="yearsForModal.length === 0" disabled selected>No Data Found</option>
+                    <option *ngIf="yearsForModal.length === 0" disabled selected>{{ 'No Data Found' | translate }}</option>
                 </select>
                 <span *ngIf="validationErrors['academicYearID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['academicYearID'] }}</span>
             </div>
             <div *ngIf="!editInterviewTimeTable" class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="fromDate">From Date</label>
+                <label class="mb-2 primaryTxt" for="fromDate">{{ 'From' | translate }} {{ 'Date' | translate }}</label>
                 <input id="fromDate" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 [(ngModel)]="interviewTimeTable.fromDate" 
                 (ngModelChange)="onInputValueChange({ field: 'fromDate', value: $event })"/>
                 <span *ngIf="validationErrors['fromDate']" class="text-red-500 ml-3 font-normal">{{ validationErrors['fromDate'] }}</span>
             </div>
             <div *ngIf="!editInterviewTimeTable" class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="toDate">To Date</label>
+                <label class="mb-2 primaryTxt" for="toDate">{{ 'To' | translate }} {{ 'Date' | translate }}</label>
                 <input id="toDate" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 [(ngModel)]="interviewTimeTable.toDate" 
                 (ngModelChange)="onInputValueChange({ field: 'toDate', value: $event })"/>
                 <span *ngIf="validationErrors['toDate']" class="text-red-500 ml-3 font-normal">{{ validationErrors['toDate'] }}</span>
             </div>
             <div *ngIf="!editInterviewTimeTable" class="flex flex-col w-full mb-4">
-                <label class="mb-2 primaryTxt" for="days">Days</label>
+                <label class="mb-2 primaryTxt" for="days">{{ 'Days' | translate }}</label>
                 <div *ngFor="let option of days" class="flex items-center">
                     <input type="checkbox" 
                     id="{{option}}" 
@@ -171,28 +171,28 @@
                 <span *ngIf="validationErrors['days']" class="text-red-500 ml-3 font-normal">{{ validationErrors['days'] }}</span>
             </div>
             <div *ngIf="editInterviewTimeTable" class="flex flex-col w-full mb-4">
-                <label class="mb-2 primaryTxt" for="days">Days</label>
+                <label class="mb-2 primaryTxt" for="days">{{ 'Days' | translate }}</label>
                 <div class="rounded-lg border border-solid border-gray-300 px-4 py-3">
                     <p>{{ interviewTimeTable.date | date:'MMM d, yyyy' }}</p>
                 </div>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="fromTime">From Time</label>
+                <label class="mb-2 primaryTxt" for="fromTime">{{ 'From' | translate }} {{ 'Time' | translate }}</label>
                 <input id="fromTime" type="time" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 [(ngModel)]="interviewTimeTable.fromTime" 
                 (ngModelChange)="onInputValueChange({ field: 'fromTime', value: $event })"/>
                 <span *ngIf="validationErrors['fromTime']" class="text-red-500 ml-3 font-normal">{{ validationErrors['fromTime'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="toTime">To Time</label>
+                <label class="mb-2 primaryTxt" for="toTime">{{ 'To' | translate }} {{ 'Time' | translate }}</label>
                 <input id="toTime" type="time" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 [(ngModel)]="interviewTimeTable.toTime" 
                 (ngModelChange)="onInputValueChange({ field: 'toTime', value: $event })"/>
                 <span *ngIf="validationErrors['toTime']" class="text-red-500 ml-3 font-normal">{{ validationErrors['toTime'] }}</span>
             </div>
             <div class="flex flex-col mb-4 w-full">
-                <label class="mb-2 primaryTxt" for="number">Capacity</label>
-                <input id="number" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Capacity"
+                <label class="mb-2 primaryTxt" for="number">{{ 'Capacity' | translate }}</label>
+                <input id="number" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="{{ 'Enter' | translate }} {{ 'Capacity' | translate }}"
                 [(ngModel)]="interviewTimeTable.capacity" 
                 (ngModelChange)="onInputValueChange({ field: 'capacity', value: $event })" (input)="validateNumber($event)"/>
                 <span *ngIf="validationErrors['capacity']" class="text-red-500 ml-3 font-normal">{{ validationErrors['capacity'] }}</span>
@@ -201,7 +201,7 @@
 
         <div class="flex justify-end">
             <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
-                Save
+                {{ 'Save' | translate }}
             </button>
         </div>
     </div>

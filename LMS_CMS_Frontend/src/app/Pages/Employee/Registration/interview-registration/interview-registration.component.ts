@@ -13,11 +13,12 @@ import { RegistrationFormInterviewService } from '../../../../Services/Employee/
 import { FormsModule } from '@angular/forms';
 import { InterviewState } from '../../../../Models/Registration/interview-state';
 import { InterviewStateService } from '../../../../Services/Employee/Registration/interview-state.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-interview-registration',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './interview-registration.component.html',
   styleUrl: './interview-registration.component.css'
 })

@@ -24,11 +24,14 @@ import { Section } from '../../../../Models/LMS/section';
 import Swal from 'sweetalert2';
 import { RegistrationFormForFormSubmissionForFiles } from '../../../../Models/Registration/registration-form-for-form-submission-for-files';
 import { ParentService } from '../../../../Services/parent.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../../../../Services/shared/language.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-registration-form',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule,CommonModule, TranslateModule],
   templateUrl: './registration-form.component.html',
   styleUrl: './registration-form.component.css'
 })
@@ -66,10 +69,12 @@ export class RegistrationFormComponent {
   isSuccess:boolean = false
 
   parent:any = null
+  isRtl: boolean = false;
+  subscription!: Subscription;
 
   constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, public schoolService:SchoolService,
     public activeRoute: ActivatedRoute, public registrationFormService: RegistrationFormService, public router:Router, public parentService:ParentService,
-    public http: HttpClient, public academicYearServce:AcadimicYearService, public gradeServce:GradeService, public sectionServce:SectionService){}
+    public http: HttpClient, public academicYearServce:AcadimicYearService, public gradeServce:GradeService, public sectionServce:SectionService, private languageService: LanguageService){}
   
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -85,8 +90,17 @@ export class RegistrationFormComponent {
     this.getSchools()
 
     this.registrationForm.registrationFormID = 1
+
+    this.subscription = this.languageService.language$.subscribe(direction => {
+      this.isRtl = direction === 'rtl';
+    });
+    this.isRtl = document.documentElement.dir === 'rtl';
   }
 
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  } 
+  
   getParentByID(){
     this.parentService.GetByID(this.UserID, this.DomainName).subscribe(
       (data) => {

@@ -17,11 +17,12 @@ import { QuestionAddEdit } from '../../../../Models/Registration/question-add-ed
 import Swal from 'sweetalert2';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-questions',
   standalone: true,
-  imports: [CommonModule, FormsModule, SearchComponent],
+  imports: [CommonModule, FormsModule, SearchComponent, TranslateModule],
   templateUrl: './questions.component.html',
   styleUrl: './questions.component.css',
 })

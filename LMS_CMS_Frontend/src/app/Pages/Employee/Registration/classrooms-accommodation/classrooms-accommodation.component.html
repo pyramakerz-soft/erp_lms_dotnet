@@ -1,36 +1,36 @@
 <div class="">
-  <div class="flex justify-between">
-    <h1 class="font-semibold text-2xl leading-9">Classrooms Accommodation</h1>
+  <div class="flex justify-between items-center">
+    <h1 class="font-semibold text-2xl leading-9">{{ 'Classrooms Accommodation' | translate }}</h1>
     <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
   </div>
 </div>
 
-<div class="flex justify-between mt-5 items-end space-x-5">
+<div class="flex justify-between mt-5 items-end space-x-5 rtl:space-x-reverse">
   <div class="w-1/3">
-      <label for="Schools" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">Schools</label>
+      <label for="Schools" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'School' | translate }}</label>
       <select id="Schools"  [(ngModel)]="SelectedSchoolId" (change)="Search()"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
-          <option value="0" disabled selected hidden>Select School</option>
+          <option value="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'School' | translate }}</option>
           <option *ngFor="let s of Schools" [value]="s.id">
             {{ s.name }}
           </option>
       </select>
   </div>
   <div class="w-1/3">
-      <label for="Years" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">Years</label>
+      <label for="Years" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'Academic Year' | translate }}</label>
       <select id="Years" [(ngModel)]="SelectedYearId" (change)="Search()"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
-          <option [value]=0 disabled selected hidden>Select a Year</option>
+          <option [value]=0 disabled selected hidden>{{ 'Choose' | translate }} {{ 'Academic Year' | translate }}</option>
       <option *ngFor="let s of Years" [value]="s.id">
         {{ s.name }}
       </option>
       </select>
   </div>
   <div class="w-1/3">
-      <label for="Grades" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">Grades</label>
+      <label for="Grades" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'Grade' | translate }}</label>
       <select id="Grades" [(ngModel)]="SelectedGradeId" (change)="Search()"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
-          <option [value]=0 disabled selected hidden>Select a Grade</option>
+          <option [value]=0 disabled selected hidden>{{ 'Choose' | translate }} {{ 'Grade' | translate }}</option>
       <option *ngFor="let s of Grades" [value]="s.id">
         {{ s.name }}
       </option>
@@ -45,29 +45,29 @@
 </div>
 
 <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-  <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+  <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
     <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
       <tr>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-          Id
+          {{ 'ID' | translate }}
         </th>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-          Student Name
+          {{ 'Student Name' | translate }}
         </th>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-          Grade
+          {{ 'Grade' | translate }}
         </th>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-          Admission Status
+          {{ 'Admission Status' | translate }}
         </th>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-          رسوم حجز المقعد
+          {{ 'Seat reservation fee' | translate }}
         </th>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-          الرسوم الدراسية
+          {{ 'Tuition fees' | translate }}
         </th>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-          Actions
+          {{ 'Actions' | translate }}
         </th>
       </tr>
     </thead>
@@ -75,7 +75,7 @@
       <!-- No Data Row -->
       <tr *ngIf="Data.length === 0">
         <td colspan="17" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-          No Data Found
+          {{ 'No Data Found' | translate }}
         </td>
       </tr>
 
@@ -101,7 +101,7 @@
           done
         </td>
         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-          <div class="flex space-x-4">
+          <div class="flex space-x-4 rtl:space-x-reverse">
             <button (click)="Create(row.id)">
               <img src="Images/classroom.png" class="w-5" alt="Upload Icon" />
             </button>
@@ -122,22 +122,22 @@
       <i class="fa-solid fa-xmark text-2xl"></i>
     </button>
 
-    <h1 class="font-semibold text-2xl leading-9">Add Student To Classroom</h1>
+    <h1 class="font-semibold text-2xl leading-9">{{ 'Add' | translate }} {{ 'Student' | translate }} {{ 'To' | translate }} {{ 'Classroom' | translate }}</h1>
     <div class="mt-4 bg-[#F7F7F7] w-[573px] rounded-[24px] p-[16px_24px] gap-[20px]">
-      <h6 class="font-medium text-base leading-6 mb-1 mt-3">Classroom</h6>
+      <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Classroom' | translate }}</h6>
       <div class="flex justify-start gap-2 items-start">
         <div class="flex flex-col">
           <div class="flex flex-col mb-4">
             <select class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
               id="subjectSelect" [(ngModel)]="ClassroomId">
               <option [value]="0" disabled selected hidden>
-                Choose Classroom
+                {{ 'Choose' | translate }} {{ 'Classroom' | translate }}
               </option>
               <option *ngFor="let row of classrooms" [value]="row.id">
                 {{ row.name }}
               </option>
               <option *ngIf="classrooms.length === 0" disabled>
-                No Data Found
+              {{ 'No Data Found' | translate }}
               </option>
             </select>
           </div>
@@ -146,7 +146,7 @@
 
       <div class="flex justify-end">
         <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="Save()">
-          Save
+          {{ 'Save' | translate }}
         </button>
       </div>
     </div>

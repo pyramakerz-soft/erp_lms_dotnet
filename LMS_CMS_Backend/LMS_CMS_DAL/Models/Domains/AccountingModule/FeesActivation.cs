@@ -1,0 +1,30 @@
+﻿using LMS_CMS_DAL.Models.Domains.LMS;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LMS_CMS_DAL.Models.Domains.AccountingModule
+{
+    public class FeesActivation : AuditableEntity
+    {
+        [Key]
+        public long ID { get; set; }
+        public int Amount { get; set; }
+        public int Discount { get; set; }
+        public int Net { get; set; }
+        [ForeignKey("TuitionFeesType")]
+        public long FeeTypeID { get; set; }
+        [ForeignKey("TuitionDiscountType")]
+        public long FeeDiscountTypeID { get; set; }
+        [ForeignKey("Student")]
+        public long StudentID { get; set; }
+
+        public TuitionFeesType TuitionFeesType { get; set; }
+        public TuitionDiscountType TuitionDiscountType { get; set; }
+        public Student Student { get; set; }
+    }
+}

@@ -50,6 +50,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
         public ICollection<EmployeeStudent> EmployeeStudents { get; set; } = new HashSet<EmployeeStudent>();
-
+        public ICollection<InstallmentDeductionMaster> InstallmentDeductionMasters { get; set; } = new HashSet<InstallmentDeductionMaster>();
+        public ICollection<FeesActivation> FeesActivations { get; set; } = new HashSet<FeesActivation>();
     }
 }

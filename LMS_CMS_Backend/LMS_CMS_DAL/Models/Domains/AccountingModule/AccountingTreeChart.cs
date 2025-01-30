@@ -47,5 +47,6 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
         public ICollection<Employee> Employees { get; set; } = new List<Employee>();
         public ICollection<Student> Students { get; set; } = new List<Student>();
+        public ICollection<AccountingEntriesDetails> AccountingEntriesDetails { get; set; } = new List<AccountingEntriesDetails>();
     }
 }

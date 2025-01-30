@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.AccountingModule
 {
-    public class AccountingEntriesDocType : AuditableEntity
+    public class ReceivableDocType : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
@@ -15,6 +15,6 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
 
-        public ICollection<AccountingEntriesMaster> AccountingEntriesMasters { get; set; } = new HashSet<AccountingEntriesMaster>();
+        public ICollection<ReceivableMaster> ReceivableMasters { get; set; } = new HashSet<ReceivableMaster>();
     }
 }

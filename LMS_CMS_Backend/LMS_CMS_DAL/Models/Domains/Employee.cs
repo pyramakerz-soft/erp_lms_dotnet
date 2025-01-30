@@ -105,6 +105,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public ICollection<Floor> Floors { get; set; } = new HashSet<Floor>();
         public ICollection<EmployeeDays> EmployeeDays { get; set; } = new HashSet<EmployeeDays>();
         public ICollection<EmployeeStudent> EmployeeStudents { get; set; } = new HashSet<EmployeeStudent>();
+        public ICollection<InstallmentDeductionMaster> InstallmentDeductionMasters { get; set; } = new HashSet<InstallmentDeductionMaster>();
 
     }
 }

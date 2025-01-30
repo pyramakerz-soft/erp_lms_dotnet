@@ -20,5 +20,6 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public long AccountNumberID { get; set; }
 
         public AccountingTreeChart AccountNumber { get; set; }
+        public ICollection<FeesActivation> FeesActivations { get; set; } = new HashSet<FeesActivation>();
     }
 }

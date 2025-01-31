@@ -99,7 +99,17 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Nationality> Nationality_Repository;
         GenericRepo<LinkFile> LinkFile_Repository;
         GenericRepo<EmployeeStudent> EmployeeStudent_Repository;
-
+        GenericRepo<PayableDocType> PayableDocType_Repository;
+        GenericRepo<ReceivableDocType> ReceivableDocType_Repository;
+        GenericRepo<PayableMaster> PayableMaster_Repository;
+        GenericRepo<ReceivableMaster> ReceivableMaster_Repository;
+        GenericRepo<PayableDetails> PayableDetails_Repository;
+        GenericRepo<ReceivableDetails> ReceivableDetails_Repository;
+        GenericRepo<InstallmentDeductionMaster> InstallmentDeductionMaster_Repository;
+        GenericRepo<InstallmentDeductionDetails> InstallmentDeductionDetails_Repository;
+        GenericRepo<FeesActivation> FeesActivation_Repository;
+        GenericRepo<AccountingEntriesMaster> AccountingEntriesMaster_Repository;
+        GenericRepo<AccountingEntriesDetails> AccountingEntriesDetails_Repository;
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -1017,6 +1027,138 @@ namespace LMS_CMS_BL.UOW
                     LinkFile_Repository = new GenericRepo<LinkFile>(db);
                 }
                 return LinkFile_Repository;
+            }
+        }
+         
+        public GenericRepo<FeesActivation> feesActivation_Repository
+        {
+            get
+            {
+                if (FeesActivation_Repository == null)
+                {
+                    FeesActivation_Repository = new GenericRepo<FeesActivation>(db);
+                }
+                return FeesActivation_Repository;
+            }
+        }
+         
+        public GenericRepo<InstallmentDeductionMaster> installmentDeductionMaster_Repository
+        {
+            get
+            {
+                if (InstallmentDeductionMaster_Repository == null)
+                {
+                    InstallmentDeductionMaster_Repository = new GenericRepo<InstallmentDeductionMaster>(db);
+                }
+                return InstallmentDeductionMaster_Repository;
+            }
+        }
+         
+        public GenericRepo<InstallmentDeductionDetails> installmentDeductionDetails_Repository
+        {
+            get
+            {
+                if (InstallmentDeductionDetails_Repository == null)
+                {
+                    InstallmentDeductionDetails_Repository = new GenericRepo<InstallmentDeductionDetails>(db);
+                }
+                return InstallmentDeductionDetails_Repository;
+            }
+        }
+         
+        public GenericRepo<PayableDocType> payableDocType_Repository
+        {
+            get
+            {
+                if (PayableDocType_Repository == null)
+                {
+                    PayableDocType_Repository = new GenericRepo<PayableDocType>(db);
+                }
+                return PayableDocType_Repository;
+            }
+        }
+         
+        public GenericRepo<PayableMaster> payableMaster_Repository
+        {
+            get
+            {
+                if (PayableMaster_Repository == null)
+                {
+                    PayableMaster_Repository = new GenericRepo<PayableMaster>(db);
+                }
+                return PayableMaster_Repository;
+            }
+        }
+         
+        public GenericRepo<PayableDetails> payableDetails_Repository
+        {
+            get
+            {
+                if (PayableDetails_Repository == null)
+                {
+                    PayableDetails_Repository = new GenericRepo<PayableDetails>(db);
+                }
+                return PayableDetails_Repository;
+            }
+        }
+         
+        public GenericRepo<ReceivableDocType> receivableDocType_Repository
+        {
+            get
+            {
+                if (ReceivableDocType_Repository == null)
+                {
+                    ReceivableDocType_Repository = new GenericRepo<ReceivableDocType>(db);
+                }
+                return ReceivableDocType_Repository;
+            }
+        }
+         
+        public GenericRepo<ReceivableMaster> receivableMaster_Repository
+        {
+            get
+            {
+                if (ReceivableMaster_Repository == null)
+                {
+                    ReceivableMaster_Repository = new GenericRepo<ReceivableMaster>(db);
+                }
+                return ReceivableMaster_Repository;
+            }
+        }
+         
+        public GenericRepo<ReceivableDetails> receivableDetails_Repository
+        {
+            get
+            {
+                if (ReceivableDetails_Repository == null)
+                {
+                    ReceivableDetails_Repository = new GenericRepo<ReceivableDetails>(db);
+                }
+                return ReceivableDetails_Repository;
+            }
+        }
+         
+        public GenericRepo<AccountingEntriesMaster> accountingEntriesMaster_Repository
+        {
+            get
+            {
+                if (AccountingEntriesMaster_Repository == null)
+                {
+                    AccountingEntriesMaster_Repository = new GenericRepo<AccountingEntriesMaster>(db);
+                }
+                return AccountingEntriesMaster_Repository;
+            }
+        }
+         
+        public GenericRepo<AccountingEntriesDetails> accountingEntriesDetails_Repository
+        {
+            get
+            {
+                if (AccountingEntriesDetails_Repository == null)
+                {
+                    AccountingEntriesDetails_Repository = new GenericRepo<AccountingEntriesDetails>(db);
+                }
+                return AccountingEntriesDetails_Repository;
             }
         }
 

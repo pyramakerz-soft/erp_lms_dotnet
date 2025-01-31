@@ -14,12 +14,12 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public long ID { get; set; }
         public int CreditAmount { get; set; }
         public int DebitAmount { get; set; }
-        public string Note { get; set; }
+        public string? Note { get; set; }
         [ForeignKey("AccountingTreeChart")]
         public long AccountingTreeChartID { get; set; }
         [ForeignKey("AccountingEntriesMaster")]
         public long AccountingEntriesMasterID { get; set; }
-        public long SubAccountingID { get; set; }
+        public long? SubAccountingID { get; set; }
 
         public AccountingTreeChart AccountingTreeChart { get; set; }
         public AccountingEntriesMaster AccountingEntriesMaster { get; set; }

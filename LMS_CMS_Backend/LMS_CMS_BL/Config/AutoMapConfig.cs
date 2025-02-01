@@ -480,6 +480,12 @@ namespace LMS_CMS_BL.Config
             CreateMap<EndType, EndTypeGetDTO>();
             CreateMap<LinkFile, LinkFileGetDTO>();
 
+            CreateMap<EmployeeStudent, EmployeeStudentGetDTO>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.employee.User_Name))
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name));
+            CreateMap<EmployeeStudentAddDTO, EmployeeStudent>();
+
+
         }
     }
 }

@@ -81,6 +81,7 @@ import { AccountingEmployeeComponent } from './Pages/Employee/Accounting/account
 import { AccountingEmployeeEditComponent } from './Pages/Employee/Accounting/accounting-employee-edit/accounting-employee-edit.component';
 import { AccountingStudentComponent } from './Pages/Employee/Accounting/accounting-student/accounting-student.component';
 import { AccountingStudentEditComponent } from './Pages/Employee/Accounting/accounting-student-edit/accounting-student-edit.component';
+import { AddChildComponent } from './Pages/Employee/Accounting/add-child/add-child.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -156,6 +157,7 @@ export const routes: Routes = [
             { path: "Employee Edit Accounting/:id", component: AccountingEmployeeEditComponent, title: "Employee Edit Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Student Accounting", component: AccountingStudentComponent, title: "Student Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Student Edit Accounting/:id", component: AccountingStudentEditComponent, title: "Student Edit Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Add Children", component: AddChildComponent, title: "Add Children" , canActivate:[noNavigateWithoutLoginGuard ]} ,
       
         ]
     },

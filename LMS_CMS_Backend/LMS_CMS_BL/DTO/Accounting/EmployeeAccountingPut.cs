@@ -39,6 +39,7 @@ namespace LMS_CMS_BL.DTO.Accounting
         public long? AccountNumberID { get; set; }
         public long? ReasonOfLeavingID { get; set; }
         public List<int>? Days { get; set; }
+        public List<long>? Students { get; set; }
 
     }
 }

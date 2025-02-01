@@ -36,6 +36,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public string? Note { get; set; }
+        public string? NationalID { get; set; }
         public long? Nationality { get; set; }
 
         [ForeignKey("Parent")]

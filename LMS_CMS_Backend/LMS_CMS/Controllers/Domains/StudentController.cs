@@ -234,5 +234,32 @@ namespace LMS_CMS_PL.Controllers.Domains
             return Ok(newStudent);
         }
 
+        ////
+
+        [HttpGet("SearchByNationality/{NationalID}")]
+        public async Task<IActionResult> GetByNationalityAsync(string NationalID)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            Student student = await Unit_Of_Work.student_Repository.FindByIncludesAsync(
+                query => query.IsDeleted != true && query.NationalID == NationalID,
+                query => query.Include(stu => stu.AccountNumber));
+
+            if (student == null || student.IsDeleted == true)
+            {
+                return NotFound("No Student found");
+            }
+
+            StudentGetDTO StudentDTO = mapper.Map<StudentGetDTO>(student);
+            Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(StudentDTO.Nationality);
+            if (nationality != null)
+            {
+                StudentDTO.NationalityName = nationality.Name;
+            }
+
+
+            return Ok(StudentDTO);
+        }
+
     }
 }

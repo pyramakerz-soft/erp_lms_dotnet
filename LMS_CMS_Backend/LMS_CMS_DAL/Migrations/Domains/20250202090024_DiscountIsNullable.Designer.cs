@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250202090024_DiscountIsNullable")]
+    partial class DiscountIsNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,6 +90,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("SubAccountingID");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -1052,6 +1057,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("LinkFileID");
 
+                    b.HasIndex("LinkFileTypeID");
+
                     b.HasIndex("PayableMasterID");
 
                     b.HasIndex("UpdatedByUserId");
@@ -1172,6 +1179,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasKey("ID");
 
+                    b.HasIndex("BankOrSaveID");
+
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("InsertedByUserId");
@@ -1245,6 +1254,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("LinkFileID");
+
+                    b.HasIndex("LinkFileTypeID");
 
                     b.HasIndex("ReceivableMasterID");
 
@@ -1365,6 +1376,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("bigint");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("BankOrSaveID");
 
                     b.HasIndex("DeletedByUserId");
 
@@ -4964,6 +4977,56 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Bank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Credit", "Credit")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Debit", "Debit")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Income", "Income")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Outcome", "Outcome")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Save", "Save")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.TuitionDiscountType", "TuitionDiscountType")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.TuitionFeesType", "TuitionFeesType")
+                        .WithMany()
+                        .HasForeignKey("SubAccountingID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
@@ -4972,9 +5035,29 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("AccountingTreeChart");
 
+                    b.Navigation("Asset");
+
+                    b.Navigation("Bank");
+
+                    b.Navigation("Credit");
+
+                    b.Navigation("Debit");
+
                     b.Navigation("DeletedByEmployee");
 
+                    b.Navigation("Income");
+
                     b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("Outcome");
+
+                    b.Navigation("Save");
+
+                    b.Navigation("Supplier");
+
+                    b.Navigation("TuitionDiscountType");
+
+                    b.Navigation("TuitionFeesType");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -5445,6 +5528,56 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Bank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Credit", "Credit")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Debit", "Debit")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Income", "Income")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Outcome", "Outcome")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Save", "Save")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.TuitionDiscountType", "TuitionDiscountType")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.TuitionFeesType", "TuitionFeesType")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.PayableMaster", "PayableMaster")
                         .WithMany("PayableDetails")
                         .HasForeignKey("PayableMasterID")
@@ -5455,13 +5588,33 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
+                    b.Navigation("Asset");
+
+                    b.Navigation("Bank");
+
+                    b.Navigation("Credit");
+
+                    b.Navigation("Debit");
+
                     b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("Income");
 
                     b.Navigation("InsertedByEmployee");
 
                     b.Navigation("LinkFile");
 
+                    b.Navigation("Outcome");
+
                     b.Navigation("PayableMaster");
+
+                    b.Navigation("Save");
+
+                    b.Navigation("Supplier");
+
+                    b.Navigation("TuitionDiscountType");
+
+                    b.Navigation("TuitionFeesType");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -5489,6 +5642,16 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AccountingModule.PayableMaster", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Bank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("BankOrSaveID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Save", "Save")
+                        .WithMany()
+                        .HasForeignKey("BankOrSaveID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -5513,6 +5676,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
+                    b.Navigation("Bank");
+
                     b.Navigation("DeletedByEmployee");
 
                     b.Navigation("InsertedByEmployee");
@@ -5520,6 +5685,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("LinkFile");
 
                     b.Navigation("PayableDocType");
+
+                    b.Navigation("Save");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -5540,6 +5707,56 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Bank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Credit", "Credit")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Debit", "Debit")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Income", "Income")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Outcome", "Outcome")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Save", "Save")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.TuitionDiscountType", "TuitionDiscountType")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.TuitionFeesType", "TuitionFeesType")
+                        .WithMany()
+                        .HasForeignKey("LinkFileTypeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.ReceivableMaster", "ReceivableMaster")
                         .WithMany("ReceivableDetails")
                         .HasForeignKey("ReceivableMasterID")
@@ -5550,13 +5767,33 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
+                    b.Navigation("Asset");
+
+                    b.Navigation("Bank");
+
+                    b.Navigation("Credit");
+
+                    b.Navigation("Debit");
+
                     b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("Income");
 
                     b.Navigation("InsertedByEmployee");
 
                     b.Navigation("LinkFile");
 
+                    b.Navigation("Outcome");
+
                     b.Navigation("ReceivableMaster");
+
+                    b.Navigation("Save");
+
+                    b.Navigation("Supplier");
+
+                    b.Navigation("TuitionDiscountType");
+
+                    b.Navigation("TuitionFeesType");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -5584,6 +5821,16 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AccountingModule.ReceivableMaster", b =>
                 {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Bank", "Bank")
+                        .WithMany()
+                        .HasForeignKey("BankOrSaveID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Save", "Save")
+                        .WithMany()
+                        .HasForeignKey("BankOrSaveID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
                         .HasForeignKey("DeletedByUserId");
@@ -5608,6 +5855,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
+                    b.Navigation("Bank");
+
                     b.Navigation("DeletedByEmployee");
 
                     b.Navigation("InsertedByEmployee");
@@ -5615,6 +5864,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("LinkFile");
 
                     b.Navigation("ReceivableDocType");
+
+                    b.Navigation("Save");
 
                     b.Navigation("UpdatedByEmployee");
                 });

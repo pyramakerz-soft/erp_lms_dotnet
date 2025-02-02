@@ -27,6 +27,11 @@ import { Reasonsforleavingwork } from '../../../../Models/Administrator/reasonsf
 import { ReasonsforleavingworkService } from '../../../../Services/Employee/Administration/reasonsforleavingwork.service';
 import { JobCategoriesService } from '../../../../Services/Employee/Administration/job-categories.service';
 import { JobCategories } from '../../../../Models/Administrator/job-categories';
+import { EmplyeeStudent } from '../../../../Models/Accounting/emplyee-student';
+import { EmployeeStudentService } from '../../../../Services/Employee/Accounting/employee-student.service';
+import { StudentService } from '../../../../Services/student.service';
+import Swal from 'sweetalert2';
+import { Student } from '../../../../Models/student';
 
 @Component({
   selector: 'app-accounting-employee-edit',
@@ -36,7 +41,7 @@ import { JobCategories } from '../../../../Models/Administrator/job-categories';
   styleUrl: './accounting-employee-edit.component.css'
 })
 export class AccountingEmployeeEditComponent {
-User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -66,19 +71,24 @@ User_Data_After_Login: TokenData = new TokenData(
   key: string = 'id';
   value: any = '';
   keysArray: string[] = ['id', 'name', 'accountNumberName'];
-  AccountNumbers:AccountingTreeChart[]=[];
-  
-  EmployeeId:number =1;
+  AccountNumbers: AccountingTreeChart[] = [];
 
-  nationalities:Nationality[]=[]
-  departments:Department[]=[]
-  Jobs:Job[]=[]
-  academicDegree:AcademicDegree[]=[]
-  days:Day[]=[]
-  Reasons:Reasonsforleavingwork[]=[]
-  JobCategories:JobCategories[]=[]
-  JobCategoryId:number=0;
-  EndDate:boolean=false;
+  EmployeeId: number = 1;
+
+  nationalities: Nationality[] = []
+  departments: Department[] = []
+  Jobs: Job[] = []
+  academicDegree: AcademicDegree[] = []
+  days: Day[] = []
+  Reasons: Reasonsforleavingwork[] = []
+  JobCategories: JobCategories[] = []
+  JobCategoryId: number = 0;
+  EndDate: boolean = false;
+  emplyeeStudent: EmplyeeStudent = new EmplyeeStudent();
+  TableData: EmplyeeStudent[] = [];
+  Student:Student=new Student();
+  NationalID : string ="";
+
   selectedDays: { id: number; name: string }[] = [];
 
   isDropdownOpen = false;
@@ -102,18 +112,20 @@ User_Data_After_Login: TokenData = new TokenData(
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
+    public ApiServ: ApiService,
     public EmployeeServ: EmployeeService,
-    public accountServ:AccountingTreeChartService ,
-    public employeeServ:EmployeeService,
-    public NationalityServ :NationalityService ,
-    public DepartmentServ :DepartmentService ,
-    public JobServ :JobService,
-    public AcademicDegreeServ:AcademicDegreeService ,
-    public DaysServ :DaysService,
-    public ReasonsServ:ReasonsforleavingworkService  ,
-    public jobCategoryServ :JobCategoriesService
-  ) {}
+    public accountServ: AccountingTreeChartService,
+    public employeeServ: EmployeeService,
+    public NationalityServ: NationalityService,
+    public DepartmentServ: DepartmentService,
+    public JobServ: JobService,
+    public AcademicDegreeServ: AcademicDegreeService,
+    public DaysServ: DaysService,
+    public ReasonsServ: ReasonsforleavingworkService,
+    public jobCategoryServ: JobCategoriesService,
+    public EmplyeeStudentServ: EmployeeStudentService,
+    public StudentServ: StudentService,
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -144,77 +156,90 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   GetAllData() {
-   this.employeeServ.GetAcountingEmployee(this.EmployeeId,this.DomainName).subscribe((d:any)=>{
-    this.Data=d;
-    this.JobCategoryId=this.Data.jobCategoryId;
-    this.EmployeeId = Number(this.activeRoute.snapshot.paramMap.get('id'))
-    this.GetAllJobs()
-    this.selectedDays=this.days
-    this.selectedDays = this.days.filter(day => this.Data.days.includes(day.id));
-    this.parseDepartureTime(this.Data.departureTime);
-    this.parseAttendanceTime(this.Data.attendanceTime);
-   })
+    this.employeeServ.GetAcountingEmployee(this.EmployeeId, this.DomainName).subscribe((d: any) => {
+      this.Data = d;
+      this.JobCategoryId = this.Data.jobCategoryId;
+      this.EmployeeId = Number(this.activeRoute.snapshot.paramMap.get('id'))
+      this.GetAllJobs()
+      this.selectedDays = this.days
+      this.selectedDays = this.days.filter(day => this.Data.days.includes(day.id));
+      this.parseDepartureTime(this.Data.departureTime);
+      this.parseAttendanceTime(this.Data.attendanceTime);
+
+    })
+    this.EmplyeeStudentServ.Get(this.EmployeeId, this.DomainName).subscribe((d) => {
+      this.TableData = d
+    })
+
   }
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(10,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(10, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
 
-  GetAllDepartment(){
-    this.DepartmentServ.Get(this.DomainName).subscribe((d)=>{
-      this.departments=d;
+  GetAllDepartment() {
+    this.DepartmentServ.Get(this.DomainName).subscribe((d) => {
+      this.departments = d;
     })
   }
-  GetAllJobs(){
-    this.Jobs=[]
-    this.JobServ.GetByCtegoty(this.JobCategoryId,this.DomainName).subscribe((d)=>{
-      this.Jobs=d;
+
+  GetAllJobs() {
+    this.Jobs = []
+    this.JobServ.GetByCtegoty(this.JobCategoryId, this.DomainName).subscribe((d) => {
+      this.Jobs = d;
     });
   }
 
-  GetAllJobCategories(){
-    this.jobCategoryServ.Get(this.DomainName).subscribe((d)=>{
-      this.JobCategories=d;
-    });
-  }
-  GetAllNationalitys(){
-    this.NationalityServ.Get().subscribe((d)=>{
-      this.nationalities=d;
-    });
-  }
-  GetAllAcademicDegrees(){
-    this.AcademicDegreeServ.Get(this.DomainName).subscribe((d)=>{
-      this.academicDegree=d;
-    });
-  }
-  GetAllDays(){
-    this.DaysServ.Get(this.DomainName).subscribe((d)=>{
-      this.days=d;
+  GetAllJobCategories() {
+    this.jobCategoryServ.Get(this.DomainName).subscribe((d) => {
+      this.JobCategories = d;
     });
   }
 
-  
-  GetAllReasons(){
-    this.ReasonsServ.Get(this.DomainName).subscribe((d)=>{
-      this.Reasons=d;
+  GetAllNationalitys() {
+    this.NationalityServ.Get().subscribe((d) => {
+      this.nationalities = d;
     });
   }
-  moveToEmployee(){
+
+  GetAllAcademicDegrees() {
+    this.AcademicDegreeServ.Get(this.DomainName).subscribe((d) => {
+      this.academicDegree = d;
+    });
+  }
+
+  GetAllDays() {
+    this.DaysServ.Get(this.DomainName).subscribe((d) => {
+      this.days = d;
+    });
+  }
+
+
+  GetAllReasons() {
+    this.ReasonsServ.Get(this.DomainName).subscribe((d) => {
+      this.Reasons = d;
+    });
+  }
+
+  moveToEmployee() {
     this.router.navigateByUrl(`Employee/Employee Accounting`)
   }
-  Save(){
+
+  Save() {
     this.getFormattedTime()
-   this.employeeServ.EditAccountingEmployee(this.Data,this.DomainName).subscribe((d)=>{
-    this.GetAllData();
-    this.router.navigateByUrl(`Employee/Employee Accounting`)
-   });
+    this.employeeServ.EditAccountingEmployee(this.Data, this.DomainName).subscribe((d) => {
+      this.GetAllData();
+      this.router.navigateByUrl(`Employee/Employee Accounting`)
+    });
   }
- 
+
   onIsActiveChange(event: Event) {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.EndDate = isChecked
   }
+
   onHasAttendanceChange(event: Event) {
     const isChecked = (event.target as HTMLInputElement).checked;
     this.Data.hasAttendance = isChecked
@@ -225,13 +250,11 @@ User_Data_After_Login: TokenData = new TokenData(
       this.selectedDays.push(day);
       this.Data.days.push(day.id);
     }
-
-    // Keep dropdown open for multi-select
   }
 
   removeDay(dayId: number) {
     this.selectedDays = this.selectedDays.filter((day) => day.id !== dayId);
-    this.Data.days = this.Data.days.filter((id) => id!== dayId);
+    this.Data.days = this.Data.days.filter((id) => id !== dayId);
   }
 
   toggleDropdown() {
@@ -241,25 +264,27 @@ User_Data_After_Login: TokenData = new TokenData(
   getFormattedTime() {
     const { hours, minutes, period } = this.attendanceTime;
     if (hours && minutes && period) {
-      this.Data.attendanceTime= `${hours}:${minutes} ${period}`;
+      this.Data.attendanceTime = `${hours}:${minutes} ${period}`;
     }
 
     const { hour, minute, periods } = this.departureTime;
     if (hour && minute && periods) {
-      this.Data.departureTime= `${hours}:${minutes} ${period}`;
+      this.Data.departureTime = `${hours}:${minutes} ${period}`;
     }
 
   }
+
   parseDepartureTime(departureTimeString: string) {
     const [time, period] = departureTimeString.split(' ');
     const [hour, minute] = time.split(':');
-  
+
     this.departureTime = {
       hour: hour || '',
       minute: minute || '',
       periods: period || 'AM'
     };
   }
+
   parseAttendanceTime(attendanceTimeString: string) {
     const [time, period] = attendanceTimeString.split(' ');
     const [hour, minute] = time.split(':');
@@ -269,9 +294,60 @@ User_Data_After_Login: TokenData = new TokenData(
       period: period || 'AM'
     };
   }
-  OnSelectJobCategory(){
-    this.JobCategoryId=this.Data.jobCategoryId;
+
+  OnSelectJobCategory() {
+    this.JobCategoryId = this.Data.jobCategoryId;
     this.GetAllJobs();
   }
+
+  SelectChild(nationalId: string) {
+    this.Student = new Student()
+    this.emplyeeStudent = new EmplyeeStudent()
+    this.StudentServ.GetByNationalID(nationalId, this.DomainName).subscribe((d) => {
+      this.Student = d
+      this.emplyeeStudent.studentID = d.id
+      this.emplyeeStudent.employeeID = this.UserID
+    })
+  }
+
+
+  CreateOREdit() {
+    if (this.emplyeeStudent.studentID != 0) {
+     var EmployeeStudent=new EmplyeeStudent()
+     EmployeeStudent.studentName= this.Student.user_Name;
+     EmployeeStudent.studentID=this.emplyeeStudent.id;
+     this.TableData.push(EmployeeStudent)
+     this.Data.students.push(this.emplyeeStudent.studentID)
+     this.closeModal()
+    }
+    else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'There is no student with this National Id',
+        confirmButtonColor: '#FF7519',
+      });
+    }
+  }
+
+  closeModal() {
+    this.isModalVisible = false;
+  }
+
+  openModal() {
+    this.isModalVisible = true;
+  }
+
+  Create() {
+    this.mode = 'Create';
+    this.Student=new Student()
+    this.NationalID=""
+    this.emplyeeStudent = new EmplyeeStudent()
+    this.openModal();
+  }
+
+  DeleteChild(id:number){
+    this.TableData = this.TableData.filter((student) => student.id !== id);
+    this.Data.students = this.Data.students.filter((id) => id !== id);  }
 }
 

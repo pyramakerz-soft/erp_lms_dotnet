@@ -42,7 +42,6 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             List<Student> students = await Unit_Of_Work.student_Repository.Select_All_With_IncludesById<Student>(
                 query => query.IsDeleted != true,
-
                 query => query.Include(stu => stu.AccountNumber));
 
             if (students == null || students.Count == 0)

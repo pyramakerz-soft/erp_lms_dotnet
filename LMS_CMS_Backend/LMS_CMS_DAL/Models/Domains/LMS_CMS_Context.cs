@@ -899,244 +899,50 @@ namespace LMS_CMS_DAL.Models.Domains
                .OnDelete(DeleteBehavior.Restrict);
 
 
-            ///////////////////////// Optional ID According to other field: ///////////////////////// 
+            ///////////////////////// Optional ID According to other field: /////////////////////////  
             modelBuilder.Entity<ReceivableMaster>()
-                .HasOne(r => r.Bank)
-                 .WithMany()
-                 .HasForeignKey(r => r.BankOrSaveID)
-                 .OnDelete(DeleteBehavior.Restrict)   
-                 .IsRequired(false); 
-
-            modelBuilder.Entity<ReceivableMaster>()
-                .HasOne(r => r.Save)
-                .WithMany()
-                .HasForeignKey(r => r.BankOrSaveID)
-                .OnDelete(DeleteBehavior.Restrict)  
-                .IsRequired(false);
-            
-            modelBuilder.Entity<PayableMaster>()
-                .HasOne(r => r.Bank)
-                 .WithMany()
-                 .HasForeignKey(r => r.BankOrSaveID)
-                 .OnDelete(DeleteBehavior.Restrict)   
-                 .IsRequired(false); 
+                .Ignore(r => r.Bank)
+                .Ignore(r => r.Save);
 
             modelBuilder.Entity<PayableMaster>()
-                .HasOne(r => r.Save)
-                .WithMany()
-                .HasForeignKey(r => r.BankOrSaveID)
-                .OnDelete(DeleteBehavior.Restrict)  
-                .IsRequired(false);
+                .Ignore(r => r.Bank)
+                .Ignore(r => r.Save);
 
             modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.Credit)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.Debit)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.Income)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.Outcome)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.Save)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.Asset)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.TuitionFeesType)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.TuitionDiscountType)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.Bank)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<ReceivableDetails>()
-                .HasOne(r => r.Supplier)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
+               .Ignore(r => r.Bank)
+               .Ignore(r => r.Credit)
+               .Ignore(r => r.Debit)
+               .Ignore(r => r.Income)
+               .Ignore(r => r.Outcome)
+               .Ignore(r => r.Asset)
+               .Ignore(r => r.TuitionFeesType)
+               .Ignore(r => r.TuitionDiscountType)
+               .Ignore(r => r.Supplier)
+               .Ignore(r => r.Save);
 
             modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.Credit)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.Debit)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.Income)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.Outcome)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.Save)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.Asset)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.TuitionFeesType)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.TuitionDiscountType)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.Bank)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<PayableDetails>()
-                .HasOne(r => r.Supplier)
-                .WithMany()
-                .HasForeignKey(r => r.LinkFileTypeID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
+               .Ignore(r => r.Bank)
+               .Ignore(r => r.Credit)
+               .Ignore(r => r.Debit)
+               .Ignore(r => r.Income)
+               .Ignore(r => r.Outcome)
+               .Ignore(r => r.Asset)
+               .Ignore(r => r.TuitionFeesType)
+               .Ignore(r => r.TuitionDiscountType)
+               .Ignore(r => r.Supplier)
+               .Ignore(r => r.Save);
 
             modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.Credit)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.Debit)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.Income)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.Outcome)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.Save)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.Asset)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.TuitionFeesType)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.TuitionDiscountType)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.Bank)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
-
-            modelBuilder.Entity<AccountingEntriesDetails>()
-                .HasOne(r => r.Supplier)
-                .WithMany()
-                .HasForeignKey(r => r.SubAccountingID)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(false);
+               .Ignore(r => r.Bank)
+               .Ignore(r => r.Credit)
+               .Ignore(r => r.Debit)
+               .Ignore(r => r.Income)
+               .Ignore(r => r.Outcome)
+               .Ignore(r => r.Asset)
+               .Ignore(r => r.TuitionFeesType)
+               .Ignore(r => r.TuitionDiscountType)
+               .Ignore(r => r.Supplier)
+               .Ignore(r => r.Save);
         }
     }
 }

@@ -485,7 +485,27 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name));
             CreateMap<EmployeeStudentAddDTO, EmployeeStudent>();
 
+            CreateMap<ReceivableDocType, ReceivableDocTypeGetDTO>();
+            CreateMap<ReceivableDocTypePutDTO, ReceivableDocType>();
+            CreateMap<ReceivableDocTypeAddDTO, ReceivableDocType>();
 
+            CreateMap<PayableDocType, PayableDocTypeGetDTO>();
+            CreateMap<PayableDocTypePutDTO, PayableDocType>();
+            CreateMap<PayableDocTypeAddDTO, PayableDocType>();
+
+            CreateMap<ReceivableMaster, ReceivableMasterGetDTO>()
+                .ForMember(dest => dest.ReceivableDocTypesName, opt => opt.MapFrom(src => src.ReceivableDocType.Name))
+                .ForMember(dest => dest.LinkFileName, opt => opt.MapFrom(src => src.LinkFile.Name))
+                .ForMember(dest => dest.BankOrSaveName, opt => opt.Ignore()); 
+            CreateMap<ReceivableMasterAddDTO, ReceivableMaster>();
+            CreateMap<ReceivablePutDTO, ReceivableMaster>();
+
+            CreateMap<PayableMaster, PayableMasterGetDTO>()
+                .ForMember(dest => dest.PayableDocTypesName, opt => opt.MapFrom(src => src.PayableDocType.Name))
+                .ForMember(dest => dest.LinkFileName, opt => opt.MapFrom(src => src.LinkFile.Name))
+                .ForMember(dest => dest.BankOrSaveName, opt => opt.Ignore()); 
+            CreateMap<PayableMasterAddDTO, PayableMaster>();
+            CreateMap<PayableMasterPutDTO, PayableMaster>();
         }
     }
 }

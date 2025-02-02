@@ -21,7 +21,9 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public long LinkFileID { get; set; }
         public long BankOrSaveID { get; set; }
 
+        [NotMapped]
         public Bank Bank { get; set; }
+        [NotMapped]
         public Save Save { get; set; }
         public PayableDocType PayableDocType { get; set; }
         public LinkFile LinkFile { get; set; }

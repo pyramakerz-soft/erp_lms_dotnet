@@ -1,27 +1,25 @@
 ﻿using AutoMapper;
-using LMS_CMS_BL.DTO.Administration;
+using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.UOW;
-using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using LMS_CMS_DAL.Models.Domains.AccountingModule;
-using LMS_CMS_BL.DTO.Accounting;
 
 namespace LMS_CMS_PL.Controllers.Domains.Accounting
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class AccountingEntriesDocTypesController : ControllerBase
+    public class ReceivableDocTypeController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public AccountingEntriesDocTypesController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public ReceivableDocTypeController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -31,56 +29,63 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
         [HttpGet]
         [Authorize_Endpoint_(
-       allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Accounting Entries Doc Type", "Accounting" }
-       )]
+           allowedTypes: new[] { "octa", "employee" },
+           pages: new[] { "Receivable Doc Type", "Accounting" }
+           )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<AccountingEntriesDocType> accountingEntriesDocTypes = await Unit_Of_Work.accountingEntriesDocType_Repository.Select_All_With_IncludesById<AccountingEntriesDocType>(
+            List<ReceivableDocType> ReceivableDocTypes = await Unit_Of_Work.receivableDocType_Repository.Select_All_With_IncludesById<ReceivableDocType>(
                     b => b.IsDeleted != true);
 
-            if (accountingEntriesDocTypes == null || accountingEntriesDocTypes.Count == 0)
+            if (ReceivableDocTypes == null || ReceivableDocTypes.Count == 0)
             {
                 return NotFound();
             }
 
-            List<AccountingEntriesDocTypeGetDTO> DTOs = mapper.Map<List<AccountingEntriesDocTypeGetDTO>>(accountingEntriesDocTypes);
+            List<ReceivableDocTypeGetDTO> DTOs = mapper.Map<List<ReceivableDocTypeGetDTO>>(ReceivableDocTypes);
 
             return Ok(DTOs);
         }
 
         //////////////////////////////////////////////////////////////////////////////
+        ///
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Accounting Entries Doc Type", "Accounting" }
+       pages: new[] { "Receivable Doc Type", "Accounting" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            AccountingEntriesDocType accountingEntriesDocType = Unit_Of_Work.accountingEntriesDocType_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            if(id == 0 || id == null)
+            {
+                return BadRequest("Enter Doc Type ID");
+            }
+
+            ReceivableDocType ReceivableDocType = Unit_Of_Work.receivableDocType_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
 
-            if (accountingEntriesDocType == null)
+            if (ReceivableDocType == null)
             {
                 return NotFound();
             }
 
-            AccountingEntriesDocTypeGetDTO dto = mapper.Map<AccountingEntriesDocTypeGetDTO>(accountingEntriesDocType);
+            ReceivableDocTypeGetDTO dto = mapper.Map<ReceivableDocTypeGetDTO>(ReceivableDocType);
 
             return Ok(dto);
         }
+
         //////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Accounting Entries Doc Type", "Accounting" }
+         pages: new[] { "Receivable Doc Type", "Accounting" }
         )]
-        public IActionResult Add(AccountingEntriesDocTypesAddDto newAcc)
+        public IActionResult Add(ReceivableDocTypeAddDTO newDoc)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -93,37 +98,38 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (newAcc == null)
+            if (newDoc == null)
             {
-                return BadRequest("Accounting Entries Doc Type cannot be null");
+                return BadRequest("Receivable Doc Type cannot be null");
             }
-            AccountingEntriesDocType accountingEntriesDocTypes = mapper.Map<AccountingEntriesDocType>(newAcc);
+
+            ReceivableDocType ReceivableDocType = mapper.Map<ReceivableDocType>(newDoc);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            accountingEntriesDocTypes.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            ReceivableDocType.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                accountingEntriesDocTypes.InsertedByOctaId = userId;
+                ReceivableDocType.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                accountingEntriesDocTypes.InsertedByUserId = userId;
+                ReceivableDocType.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.accountingEntriesDocType_Repository.Add(accountingEntriesDocTypes);
+            Unit_Of_Work.receivableDocType_Repository.Add(ReceivableDocType);
             Unit_Of_Work.SaveChanges();
-            return Ok(newAcc);
+            return Ok(newDoc);
         }
 
         //////////////////////////////////////////////////////////////////////////////
 
         [HttpPut]
         [Authorize_Endpoint_(
-        allowedTypes: new[] { "octa", "employee" },
-        allowEdit: 1,
-       pages: new[] { "Accounting Entries Doc Type", "Accounting" }
-    )]
-        public IActionResult Edit(AccountingEntriesDocTypeGetDTO newAcc)
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Receivable Doc Type", "Accounting" }
+        )]
+        public IActionResult Edit(ReceivableDocTypePutDTO newDoc)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -138,26 +144,26 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (newAcc == null)
+            if (newDoc == null)
             {
-                return BadRequest("Accounting Entries Doc Type cannot be null");
+                return BadRequest("Receivable Doc Type cannot be null");
             }
 
-            AccountingEntriesDocType accountingEntriesDocType = Unit_Of_Work.accountingEntriesDocType_Repository.First_Or_Default(d => d.ID == newAcc.ID && d.IsDeleted != true);
-            if (accountingEntriesDocType == null)
+            ReceivableDocType ReceivableDocType = Unit_Of_Work.receivableDocType_Repository.First_Or_Default(d => d.ID == newDoc.ID && d.IsDeleted != true);
+            if (ReceivableDocType == null)
             {
-                return NotFound("There is no department with this id");
+                return NotFound("There is no Receivable Doc Type with this id");
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Accounting Entries Doc Type");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Receivable Doc Type");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (accountingEntriesDocType.InsertedByUserId != userId)
+                        if (ReceivableDocType.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -165,43 +171,43 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
                 else
                 {
-                    return BadRequest("Accounting Entries Doc Type page doesn't exist");
+                    return BadRequest("Receivable Doc Type page doesn't exist");
                 }
             }
 
-            mapper.Map(newAcc, accountingEntriesDocType);
+            mapper.Map(newDoc, ReceivableDocType);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            accountingEntriesDocType.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            ReceivableDocType.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                accountingEntriesDocType.UpdatedByOctaId = userId;
-                if (accountingEntriesDocType.UpdatedByUserId != null)
+                ReceivableDocType.UpdatedByOctaId = userId;
+                if (ReceivableDocType.UpdatedByUserId != null)
                 {
-                    accountingEntriesDocType.UpdatedByUserId = null;
+                    ReceivableDocType.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                accountingEntriesDocType.UpdatedByUserId = userId;
-                if (accountingEntriesDocType.UpdatedByOctaId != null)
+                ReceivableDocType.UpdatedByUserId = userId;
+                if (ReceivableDocType.UpdatedByOctaId != null)
                 {
-                    accountingEntriesDocType.UpdatedByOctaId = null;
+                    ReceivableDocType.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.accountingEntriesDocType_Repository.Update(accountingEntriesDocType);
+            Unit_Of_Work.receivableDocType_Repository.Update(ReceivableDocType);
             Unit_Of_Work.SaveChanges();
-            return Ok(newAcc);
+            return Ok(newDoc);
         }
 
         //////////////////////////////////////////////////////////////////////////////////
 
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
-          allowedTypes: new[] { "octa", "employee" },
-          allowDelete: 1,
-       pages: new[] { "Accounting Entries Doc Type", "Accounting" }
-         )]
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Receivable Doc Type", "Accounting" }
+        )]
         public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -220,26 +226,26 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (id == 0)
             {
-                return BadRequest("Enter Payable Doc Type ID");
+                return BadRequest("Enter Receivable Doc Type ID");
             }
 
-            AccountingEntriesDocType accountingEntriesDocType = Unit_Of_Work.accountingEntriesDocType_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
+            ReceivableDocType ReceivableDocType = Unit_Of_Work.receivableDocType_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
 
-            if (accountingEntriesDocType == null)
+            if (ReceivableDocType == null)
             {
                 return NotFound();
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Accounting Entries Doc Type");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Receivable Doc Type");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
                     {
-                        if (accountingEntriesDocType.InsertedByUserId != userId)
+                        if (ReceivableDocType.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -247,31 +253,31 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
                 else
                 {
-                    return BadRequest("Accounting Entries Doc Type page doesn't exist");
+                    return BadRequest("Receivable Doc Type page doesn't exist");
                 }
             }
 
-            accountingEntriesDocType.IsDeleted = true;
+            ReceivableDocType.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            accountingEntriesDocType.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            ReceivableDocType.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                accountingEntriesDocType.DeletedByOctaId = userId;
-                if (accountingEntriesDocType.DeletedByUserId != null)
+                ReceivableDocType.DeletedByOctaId = userId;
+                if (ReceivableDocType.DeletedByUserId != null)
                 {
-                    accountingEntriesDocType.DeletedByUserId = null;
+                    ReceivableDocType.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                accountingEntriesDocType.DeletedByUserId = userId;
-                if (accountingEntriesDocType.DeletedByOctaId != null)
+                ReceivableDocType.DeletedByUserId = userId;
+                if (ReceivableDocType.DeletedByOctaId != null)
                 {
-                    accountingEntriesDocType.DeletedByOctaId = null;
+                    ReceivableDocType.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.accountingEntriesDocType_Repository.Update(accountingEntriesDocType);
+            Unit_Of_Work.receivableDocType_Repository.Update(ReceivableDocType);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

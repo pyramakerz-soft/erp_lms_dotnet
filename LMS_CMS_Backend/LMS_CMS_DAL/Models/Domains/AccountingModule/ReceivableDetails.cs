@@ -22,15 +22,25 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
          
         public ReceivableMaster ReceivableMaster { get; set; }
         public LinkFile LinkFile { get; set; }
+        [NotMapped]
         public Credit Credit { get; set; }
+        [NotMapped]
         public Debit Debit { get; set; }
+        [NotMapped]
         public Income Income { get; set; }
+        [NotMapped]
         public Outcome Outcome { get; set; }
+        [NotMapped]
         public Save Save { get; set; }
+        [NotMapped]
         public Asset Asset { get; set; }
+        [NotMapped]
         public TuitionFeesType TuitionFeesType { get; set; }
+        [NotMapped]
         public TuitionDiscountType TuitionDiscountType { get; set; }
+        [NotMapped]
         public Bank Bank { get; set; }
+        [NotMapped]
         public Supplier Supplier { get; set; }
     }
 }

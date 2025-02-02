@@ -485,6 +485,13 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name));
             CreateMap<EmployeeStudentAddDTO, EmployeeStudent>();
 
+            CreateMap<FeesActivation, FeesActivationGetDTO>()
+                .ForMember(dest => dest.FeeTypeName, opt => opt.MapFrom(src => src.TuitionFeesType.Name))
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name))
+                .ForMember(dest => dest.FeeDiscountTypeName, opt => opt.MapFrom(src => src.TuitionDiscountType.Name));
+            CreateMap<FeesActivationAdddDTO, FeesActivation>();
+            CreateMap<FeesActivationGetDTO, FeesActivation>();
+
 
         }
     }

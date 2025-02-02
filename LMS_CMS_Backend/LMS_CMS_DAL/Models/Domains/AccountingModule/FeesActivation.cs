@@ -19,12 +19,12 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         [ForeignKey("TuitionFeesType")]
         public long FeeTypeID { get; set; }
         [ForeignKey("TuitionDiscountType")]
-        public long FeeDiscountTypeID { get; set; }
+        public long? FeeDiscountTypeID { get; set; }
         [ForeignKey("Student")]
         public long StudentID { get; set; }
 
         public TuitionFeesType TuitionFeesType { get; set; }
-        public TuitionDiscountType TuitionDiscountType { get; set; }
+        public TuitionDiscountType? TuitionDiscountType { get; set; }
         public Student Student { get; set; }
     }
 }

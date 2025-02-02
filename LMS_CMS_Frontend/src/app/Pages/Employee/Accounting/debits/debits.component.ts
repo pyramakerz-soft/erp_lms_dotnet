@@ -178,6 +178,7 @@ export class DebitsComponent {
 
   closeModal() {
     this.isModalVisible = false;
+    this.GetAllData();
   }
 
   openModal() {

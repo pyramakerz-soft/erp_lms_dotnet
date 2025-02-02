@@ -39,6 +39,7 @@ export class AccountingEmployee {
         public academicDegreeID: number = 0,
         public academicDegreeName: string = '',
         public days:number[]=[],
+        public students:number[]=[],
         public accountNumberName: string = '',
         public accountNumberID :number =0,
         public insertedByUserId :number =0,

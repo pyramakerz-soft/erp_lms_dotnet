@@ -57,6 +57,8 @@ namespace LMS_CMS_BL.DTO.Accounting
         public long? AcademicDegreeID { get; set; }
         public string AcademicDegreeName { get; set; }
         public List<long>? Days { get; set; }
+        public List<long>? Students { get; set; }
+
 
     }
 }

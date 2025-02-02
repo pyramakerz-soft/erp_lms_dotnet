@@ -7,6 +7,7 @@ using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -839,6 +840,19 @@ namespace LMS_CMS_PL.Controllers.Domains
                 employeeDTO.Days =new List<long> { };
             }
 
+            List<EmployeeStudent> students = await Unit_Of_Work.employeeStudent_Repository.Select_All_With_IncludesById<EmployeeStudent>(
+               sem => sem.IsDeleted != true && sem.EmployeeID == id
+               );
+
+            if (students != null && students.Count > 0)
+            {
+                employeeDTO.Students = students.Select(day => day.StudentID).ToList();
+
+            }
+            else
+            {
+                employeeDTO.Students = new List<long> { };
+            }
 
             return Ok(employeeDTO);
         }
@@ -871,27 +885,33 @@ namespace LMS_CMS_PL.Controllers.Domains
                 return NotFound("No Employee with this ID");
             }
 
-            AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == newEmployee.AccountNumberID);
-
-            if (account == null)
+            if (newEmployee.AccountNumberID != 0 && newEmployee.AccountNumberID != null)
             {
-                return NotFound("No Account chart with this Id");
+                AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == newEmployee.AccountNumberID);
+
+                if (account == null)
+                {
+                    return NotFound("No Account chart with this Id");
+                }
+                else
+                {
+                    if (account.SubTypeID == 1)
+                    {
+                        return BadRequest("You can't use main account, only sub account");
+                    }
+
+                    if (account.LinkFileID != 10)
+                    {
+                        return BadRequest("Wrong Link File, it should be Asset file link");
+                    }
+                }
             }
             else
             {
-                if (account.SubTypeID == 1)
-                {
-                    return BadRequest("You can't use main account, only sub account");
-                }
-
-                if (account.LinkFileID != 10)
-                {
-                    return BadRequest("Wrong Link File, it should be Asset file link");
-                }
+                newEmployee.AccountNumberID = null;
             }
 
-
-            if(newEmployee.AcademicDegreeID != 0 && newEmployee.AcademicDegreeID != null)
+            if (newEmployee.AcademicDegreeID != 0 && newEmployee.AcademicDegreeID != null)
             {
                 AcademicDegree academicDegree = Unit_Of_Work.academicDegree_Repository.First_Or_Default(t => t.ID == newEmployee.AcademicDegreeID);
 
@@ -1040,11 +1060,16 @@ namespace LMS_CMS_PL.Controllers.Domains
           
           foreach (var empStudent in newEmployee.Students)
           {
-              EmployeeStudent emp = new EmployeeStudent();
-              emp.EmployeeID = newEmployee.ID;
-              emp.StudentID = empStudent;
-              Unit_Of_Work.employeeStudent_Repository.Add(emp);
-              Unit_Of_Work.SaveChanges();
+                Student student = Unit_Of_Work.student_Repository.First_Or_Default(s => s.ID == empStudent && s.IsDeleted != true);
+                if (student != null)
+                {
+                  EmployeeStudent emp = new EmployeeStudent();
+                  emp.EmployeeID = newEmployee.ID;
+                  emp.StudentID = empStudent;
+                  Unit_Of_Work.employeeStudent_Repository.Add(emp);
+                  Unit_Of_Work.SaveChanges();
+
+                }
           }
           
           return Ok(newEmployee);

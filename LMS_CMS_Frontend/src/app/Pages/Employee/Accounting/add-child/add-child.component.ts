@@ -55,7 +55,7 @@ User_Data_After_Login: TokenData = new TokenData(
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'studentName'];
   NationalID : string ="";
   Student:Student=new Student();
   emplyeeStudent: EmplyeeStudent = new EmplyeeStudent();
@@ -108,6 +108,7 @@ User_Data_After_Login: TokenData = new TokenData(
     this.emplyeeStudent = new EmplyeeStudent()
     this.openModal();
   }
+  
 
   Delete(id: number) {
     Swal.fire({
@@ -120,7 +121,9 @@ User_Data_After_Login: TokenData = new TokenData(
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-       
+       this.EmplyeeStudentServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.GetAllData()
+       })
       }
     });
   }

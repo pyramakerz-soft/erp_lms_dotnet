@@ -18,6 +18,7 @@ using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using LMS_CMS_DAL.Models.Octa;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -491,6 +492,18 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.FeeDiscountTypeName, opt => opt.MapFrom(src => src.TuitionDiscountType.Name));
             CreateMap<FeesActivationAdddDTO, FeesActivation>();
             CreateMap<FeesActivationGetDTO, FeesActivation>();
+
+
+            CreateMap<InstallmentDeductionMaster, InstallmentDeductionMasterGetDTO>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.User_Name))
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name));
+            CreateMap<InstallmentDeductionMasterGetDTO, InstallmentDeductionMaster>();
+            CreateMap<InstallmentDeductionMasterAddDTO, InstallmentDeductionMaster>();
+
+            CreateMap<InstallmentDeductionDetails, InstallmentDeductionDetailsGetDTO>()
+               .ForMember(dest => dest.FeeTypeName, opt => opt.MapFrom(src => src.TuitionFeesType.Name));
+            CreateMap<InstallmentDeductionDetailsGetDTO, InstallmentDeductionDetails>();
+            CreateMap<InstallmentDeductionDetailsAddDTO, InstallmentDeductionDetails>();
 
 
         }

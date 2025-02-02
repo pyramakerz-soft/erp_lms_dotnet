@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -61,6 +62,10 @@ namespace LMS_CMS_BL.Repository
         public async Task<TEntity> Select_By_IdAsync(params object[] keyValues)
         {
             return await db.Set<TEntity>().FindAsync(keyValues);
+        }
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await db.Set<TEntity>().CountAsync(predicate);
         }
 
         public void Add(TEntity entity)
@@ -127,6 +132,20 @@ namespace LMS_CMS_BL.Repository
             }
 
             return await query.Where(predicate).ToListAsync();
+        }
+
+        public IQueryable<TEntity> Select_All_With_IncludesById_Pagination<TEntity>(
+            Expression<Func<TEntity, bool>> filter,
+            params Func<IQueryable<TEntity>, IQueryable<TEntity>>[] includes) where TEntity : class
+        {
+            IQueryable<TEntity> query = db.Set<TEntity>().Where(filter);
+
+            foreach (var include in includes)
+            {
+                query = include(query);
+            }
+
+            return query; // Return IQueryable to support Skip & Take
         }
 
         public async Task<List<T>> FindByAsync<T>(Expression<Func<T, bool>> predicate) where T : class

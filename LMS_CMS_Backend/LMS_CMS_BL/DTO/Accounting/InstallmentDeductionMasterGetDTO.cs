@@ -19,6 +19,6 @@ namespace LMS_CMS_BL.DTO.Accounting
         public string? EmployeeName { get; set; }
         public long StudentID { get; set; }
         public string? StudentName { get; set; }
-
+        public long InsertedByUserId { get; set; }
     }
 }

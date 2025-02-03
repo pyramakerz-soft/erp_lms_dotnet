@@ -17,6 +17,6 @@ namespace LMS_CMS_BL.DTO.Accounting
         public string? InstallmentDeductionMasterName { get; set; }
         public long FeeTypeID { get; set; }
         public string? FeeTypeName { get; set; }
-
+        public long InsertedByUserId { get; set; }
     }
 }

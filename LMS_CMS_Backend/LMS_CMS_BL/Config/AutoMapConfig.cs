@@ -526,6 +526,24 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.BankOrSaveName, opt => opt.Ignore()); 
             CreateMap<PayableMasterAddDTO, PayableMaster>();
             CreateMap<PayableMasterPutDTO, PayableMaster>();
+
+            CreateMap<AccountingEntriesMaster, AccountingEntriesMasterGetDTO>()
+                .ForMember(dest => dest.AccountingEntriesDocTypeName, opt => opt.MapFrom(src => src.AccountingEntriesDocType.Name));
+            CreateMap<AccountingEntriesMasterPutDTO, AccountingEntriesMaster>();
+            CreateMap<AccountingEntriesMasterAddDTO, AccountingEntriesMaster>();
+
+            CreateMap<ReceivableDetails, ReceivableDetailsGetDTO>();
+            CreateMap<ReceivableDetailsAddDTO, ReceivableDetails>();
+            CreateMap<ReceivableDetailsPutDTO, ReceivableDetails>();
+            
+            CreateMap<PayableDetails, PayableDetailsGetDTO>();
+            CreateMap<PayableDetailsAddDTO, PayableDetails>();
+            CreateMap<PayableDetailsPutDTO, PayableDetails>();
+
+            CreateMap<AccountingEntriesDetails, AccountingEntriesDetailsGetDTO>()
+                .ForMember(dest => dest.AccountingTreeChartName, opt => opt.MapFrom(src => src.AccountingTreeChart.Name));
+            CreateMap<AccountingEntriesDetailsAddDTO, AccountingEntriesDetails>();
+            CreateMap<AccountingEntriesDetailsPutDTO, AccountingEntriesDetails>();
         }
     }
 }

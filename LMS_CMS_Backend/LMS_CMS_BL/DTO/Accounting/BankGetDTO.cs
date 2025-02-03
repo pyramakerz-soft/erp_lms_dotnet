@@ -20,6 +20,6 @@ namespace LMS_CMS_BL.DTO.Accounting
         public string AccountClosingDate { get; set; }
         public long AccountNumberID { get; set; }
         public string? AccountNumberName { get; set; }
-
+        public long InsertedByUserId { get; set; }
     }
 }

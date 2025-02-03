@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LMS_CMS_DAL.Models.Domains.LMS;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -43,5 +44,9 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public Bank Bank { get; set; }
         [NotMapped]
         public Supplier Supplier { get; set; }
+        [NotMapped]
+        public Employee Employee { get; set; }
+        [NotMapped]
+        public Student Student { get; set; }
     }
 }

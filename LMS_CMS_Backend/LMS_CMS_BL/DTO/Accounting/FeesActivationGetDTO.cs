@@ -21,6 +21,6 @@ namespace LMS_CMS_BL.DTO.Accounting
         public string? FeeDiscountTypeName { get; set; }
         public long StudentID { get; set; }
         public string? StudentName { get; set; }
-
+        public long InsertedByUserId { get; set; }
     }
 }

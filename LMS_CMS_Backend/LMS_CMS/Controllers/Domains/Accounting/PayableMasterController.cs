@@ -273,20 +273,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return BadRequest("Link File Must be Save or Bank");
             }
-
-            PayableMaster PayableMaster = mapper.Map<PayableMaster>(newMaster);
-            if (newMaster.LinkFileID == 6) // Bank
-            {
-                PayableMaster.BankOrSaveID = newMaster.BankOrSaveID;
-                PayableMaster.Bank = Unit_Of_Work.bank_Repository.First_Or_Default(t => t.ID == newMaster.BankOrSaveID);
-                PayableMaster.Save = null;
-            }
-            else if (newMaster.LinkFileID == 5) // Save
-            {
-                PayableMaster.BankOrSaveID = newMaster.BankOrSaveID;
-                PayableMaster.Save = Unit_Of_Work.save_Repository.First_Or_Default(t => t.ID == newMaster.BankOrSaveID);
-                PayableMaster.Bank = null;
-            }
+             
 
             if (userTypeClaim == "employee")
             {
@@ -296,7 +283,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
                     if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
                     {
-                        if (PayableMaster.InsertedByUserId != userId)
+                        if (Payable.InsertedByUserId != userId)
                         {
                             return Unauthorized();
                         }
@@ -309,6 +296,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             }
 
             mapper.Map(newMaster, Payable);
+            if (newMaster.LinkFileID == 6) // Bank
+            {
+                Payable.BankOrSaveID = newMaster.BankOrSaveID;
+                Payable.Bank = Unit_Of_Work.bank_Repository.First_Or_Default(t => t.ID == newMaster.BankOrSaveID);
+                Payable.Save = null;
+            }
+            else if (newMaster.LinkFileID == 5) // Save
+            {
+                Payable.BankOrSaveID = newMaster.BankOrSaveID;
+                Payable.Save = Unit_Of_Work.save_Repository.First_Or_Default(t => t.ID == newMaster.BankOrSaveID);
+                Payable.Bank = null;
+            }
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             Payable.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")

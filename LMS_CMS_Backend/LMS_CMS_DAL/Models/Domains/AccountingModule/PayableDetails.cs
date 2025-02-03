@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LMS_CMS_DAL.Models.Domains.LMS;
 
 namespace LMS_CMS_DAL.Models.Domains.AccountingModule
 {
@@ -42,5 +43,9 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public Bank Bank { get; set; }
         [NotMapped]
         public Supplier Supplier { get; set; }
+        [NotMapped]
+        public Employee Employee { get; set; }
+        [NotMapped]
+        public Student Student { get; set; }
     }
 }

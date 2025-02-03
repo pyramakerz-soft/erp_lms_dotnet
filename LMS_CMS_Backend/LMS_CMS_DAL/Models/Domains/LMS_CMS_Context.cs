@@ -918,6 +918,8 @@ namespace LMS_CMS_DAL.Models.Domains
                .Ignore(r => r.TuitionFeesType)
                .Ignore(r => r.TuitionDiscountType)
                .Ignore(r => r.Supplier)
+               .Ignore(r => r.Employee)
+               .Ignore(r => r.Student)
                .Ignore(r => r.Save);
 
             modelBuilder.Entity<PayableDetails>()
@@ -930,6 +932,8 @@ namespace LMS_CMS_DAL.Models.Domains
                .Ignore(r => r.TuitionFeesType)
                .Ignore(r => r.TuitionDiscountType)
                .Ignore(r => r.Supplier)
+               .Ignore(r => r.Employee)
+               .Ignore(r => r.Student)
                .Ignore(r => r.Save);
 
             modelBuilder.Entity<AccountingEntriesDetails>()
@@ -942,6 +946,8 @@ namespace LMS_CMS_DAL.Models.Domains
                .Ignore(r => r.TuitionFeesType)
                .Ignore(r => r.TuitionDiscountType)
                .Ignore(r => r.Supplier)
+               .Ignore(r => r.Employee)
+               .Ignore(r => r.Student)
                .Ignore(r => r.Save);
         }
     }

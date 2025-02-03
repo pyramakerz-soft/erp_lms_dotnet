@@ -493,6 +493,7 @@ namespace LMS_CMS_BL.Config
             CreateMap<FeesActivation, FeesActivationGetDTO>()
                 .ForMember(dest => dest.FeeTypeName, opt => opt.MapFrom(src => src.TuitionFeesType.Name))
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name))
+                .ForMember(dest => dest.AcademicYearName, opt => opt.MapFrom(src => src.AcademicYear.Name))
                 .ForMember(dest => dest.FeeDiscountTypeName, opt => opt.MapFrom(src => src.TuitionDiscountType.Name));
             CreateMap<FeesActivationAdddDTO, FeesActivation>();
             CreateMap<FeesActivationGetDTO, FeesActivation>();
@@ -544,6 +545,14 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.AccountingTreeChartName, opt => opt.MapFrom(src => src.AccountingTreeChart.Name));
             CreateMap<AccountingEntriesDetailsAddDTO, AccountingEntriesDetails>();
             CreateMap<AccountingEntriesDetailsPutDTO, AccountingEntriesDetails>();
+            CreateMap<StudentAcademicYear, StudentAcademicYearGetDTO>()
+               .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name))
+               .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.School.Name))
+               .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name))
+               .ForMember(dest => dest.ClassName, opt => opt.MapFrom(src => src.Classroom.Name))
+               .ForMember(dest => dest.SectionId, opt => opt.MapFrom(src => src.Grade.Section.ID))
+               .ForMember(dest => dest.SectionName, opt => opt.MapFrom(src => src.Grade.Section.Name));
+
         }
     }
 }

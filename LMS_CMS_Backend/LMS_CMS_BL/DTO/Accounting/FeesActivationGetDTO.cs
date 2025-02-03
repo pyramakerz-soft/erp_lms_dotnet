@@ -22,5 +22,8 @@ namespace LMS_CMS_BL.DTO.Accounting
         public long StudentID { get; set; }
         public string? StudentName { get; set; }
         public long InsertedByUserId { get; set; }
+        public long? AcademicYearId { get; set; }
+        public string AcademicYearName { get; set; }
+         
     }
 }

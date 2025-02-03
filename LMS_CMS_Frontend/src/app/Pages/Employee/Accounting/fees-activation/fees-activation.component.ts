@@ -23,6 +23,10 @@ import { SchoolService } from '../../../../Services/Employee/school.service';
 import { SectionService } from '../../../../Services/Employee/LMS/section.service';
 import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { ClassroomService } from '../../../../Services/Employee/LMS/classroom.service';
+import { TuitionFeesType } from '../../../../Models/Accounting/tuition-fees-type';
+import { TuitionFeesTypeService } from '../../../../Services/Employee/Accounting/tuition-fees-type.service';
+import { TuitionDiscountTypes } from '../../../../Models/Accounting/tuition-discount-types';
+import { TuitionDiscountTypeService } from '../../../../Services/Employee/Accounting/tuition-discount-type.service';
 
 @Component({
   selector: 'app-fees-activation',
@@ -70,6 +74,9 @@ export class FeesActivationComponent {
   ClassRooms: Classroom[] = [];
   Students: StudentAcademicYear[] = [];
 
+  FeesTypes:TuitionFeesType[]=[]
+  FeesDiscountType :TuitionDiscountTypes[]=[]
+
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -83,7 +90,9 @@ export class FeesActivationComponent {
     public SchoolServ :SchoolService ,
     public SectionServ:SectionService ,
     public GradeServ : GradeService ,
-    public ClassRoomServ : ClassroomService
+    public ClassRoomServ : ClassroomService ,
+    public TuitionFeesTypeServ :TuitionFeesTypeService ,
+    public FeesDiscountTypeServ :TuitionDiscountTypeService
   ) {}
 
   ngOnInit() {
@@ -247,6 +256,22 @@ export class FeesActivationComponent {
 
   Search(){
 
+  }
+
+  GetAllTuitionFeesType(){
+    this.TuitionFeesTypeServ.Get(this.DomainName).subscribe((d)=>{
+      this.FeesTypes=d
+    })
+  }
+
+  GetAllDiscountType(){
+    this.FeesDiscountTypeServ.Get(this.DomainName).subscribe((d)=>{
+      this.FeesDiscountType=d
+    })
+  }
+
+  GetAllAcademicYear(){
+    
   }
   
 }

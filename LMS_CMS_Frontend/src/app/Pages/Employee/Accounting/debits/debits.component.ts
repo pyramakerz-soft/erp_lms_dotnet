@@ -73,8 +73,8 @@ export class DebitsComponent {
     public ApiServ: ApiService,
     public DebitServ :DebitService,
     public accountServ:AccountingTreeChartService ,
-
   ) {}
+  
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;

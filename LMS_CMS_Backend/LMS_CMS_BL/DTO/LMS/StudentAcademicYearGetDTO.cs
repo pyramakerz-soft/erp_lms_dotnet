@@ -20,5 +20,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public string GradeName { get; set; }
         public long SectionId { get; set; }
         public string SectionName { get; set; }
+        public long? InsertedByUserId { get; set; }
+
     }
 }

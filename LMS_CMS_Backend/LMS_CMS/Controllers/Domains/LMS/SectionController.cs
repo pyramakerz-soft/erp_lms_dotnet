@@ -97,6 +97,40 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [HttpGet("BySchoolID/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Section", "Administrator" }
+        )]
+        public async Task<IActionResult> GetAsyncBySchoolID(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+            List<Section> Sections = await Unit_Of_Work.section_Repository.Select_All_With_IncludesById<Section>(
+                    sem => sem.IsDeleted != true&&sem.SchoolID==id,
+                    query => query.Include(emp => emp.school));
+
+            if (Sections == null || Sections.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<SectionGetDTO> SectionDTO = mapper.Map<List<SectionGetDTO>>(Sections);
+
+            return Ok(SectionDTO);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },

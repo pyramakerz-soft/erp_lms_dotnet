@@ -38,21 +38,58 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<FeesActivation> feesActivations = await Unit_Of_Work.feesActivation_Repository.Select_All_With_IncludesById<FeesActivation>(
+            // Get all students
+            List<StudentAcademicYear> studentsAcademicYear = await Unit_Of_Work.studentAcademicYear_Repository
+                .Select_All_With_IncludesById<StudentAcademicYear>(
+                    sem => sem.IsDeleted != true,
+                    query => query.Include(emp => emp.Student),
+                    query => query.Include(emp => emp.Grade).ThenInclude(g => g.Section),
+                    query => query.Include(emp => emp.Classroom),
+                    query => query.Include(emp => emp.School)
+                );
+
+            // Get all fees activations
+            List<FeesActivation> feesActivations = await Unit_Of_Work.feesActivation_Repository
+                .Select_All_With_IncludesById<FeesActivation>(
                     f => f.IsDeleted != true,
                     query => query.Include(Income => Income.Student),
                     query => query.Include(Income => Income.TuitionDiscountType),
                     query => query.Include(Income => Income.AcademicYear),
-                    query => query.Include(Income => Income.TuitionFeesType));
+                    query => query.Include(Income => Income.TuitionFeesType)
+                );
 
-            if (feesActivations == null || feesActivations.Count == 0)
-            {
-                return NotFound();
-            }
+            // Perform left join: Get all students and match with feesActivations where available
+            var result = studentsAcademicYear
+                .GroupJoin(
+                    feesActivations,
+                    student => student.StudentID, // Key from StudentAcademicYear
+                    fee => fee.StudentID,        // Key from FeesActivation
+                    (student, fees) => new
+                    {
+                        student,
+                        fee = fees.FirstOrDefault() // Get the first match if exists, otherwise null
+                    }
+                )
+                .Select(joined => new FeesActivationGetDTO
+                {
+                    StudentID = joined.student.StudentID,
+                    StudentName = joined.student.Student.User_Name,
+                    AcademicYearId = joined.student.GradeID, // Assuming GradeID represents the academic year
+                    AcademicYearName = joined.student.Grade?.Name ?? "",
 
-            List<FeesActivationGetDTO> DTOs = mapper.Map<List<FeesActivationGetDTO>>(feesActivations);
+                    // Fees Information (nullable when no matching fee exists)
+                    ID = joined.fee?.ID ?? 0,
+                    Amount = joined.fee?.Amount ?? 0,
+                    Discount = joined.fee?.Discount ?? 0,
+                    Net = joined.fee?.Net ?? 0,
+                    FeeTypeID = joined.fee?.FeeTypeID ?? 0,
+                    FeeTypeName = joined.fee?.TuitionFeesType?.Name ?? null,
+                    FeeDiscountTypeID = joined.fee?.FeeDiscountTypeID,
+                    FeeDiscountTypeName = joined.fee?.TuitionDiscountType?.Name ?? null
+                })
+                .ToList();
 
-            return Ok(DTOs);
+            return Ok(result);
         }
 
         /////

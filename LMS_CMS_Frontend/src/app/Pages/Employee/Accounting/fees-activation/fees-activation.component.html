@@ -1,0 +1,144 @@
+<div class="flex justify-between">
+    <h1 class="font-semibold text-2xl leading-9">Fees Activation</h1>
+    <div class="flex justify-between items-center">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+    </div>
+</div>
+
+<div class="flex justify-start mt-5 flex-wrap p-3">
+
+    <div class="w-[31%] mr-5 mb-3">
+        <label for="Schools" class=" mb-2 text-sm font-medium text-gray-900">School</label>
+        <select [(ngModel)]="SchoolId" (change)="SchoolIsChanged($event)"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option [value]="0" disabled hidden>Select a School</option>
+            <option *ngFor="let S of Schools" [value]="S.id">{{ S.name }}</option>
+        </select>
+    </div>
+
+    <div class="w-[31%] mr-5 mb-3">
+        <label for="Sections" class=" mb-2 text-sm font-medium text-gray-900">Section</label>
+        <select [(ngModel)]="SectionId" [disabled]="SchoolId == 0" (change)="SectionIsChanged($event)"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option [value]="0" disabled hidden>Select a Section</option>
+            <option *ngFor="let S of Sections" [value]="S.id">{{ S.name }}</option>
+        </select>
+    </div>
+
+    <div class="w-[31%] mr-5 mb-3">
+        <label for="Grades" class=" mb-2 text-sm font-medium text-gray-900">Grade Level</label>
+        <select [(ngModel)]="GradeId" [disabled]="SectionId == 0" (change)="GradeIsChanged($event)"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option [value]="0" disabled hidden>Select a Grade</option>
+            <option *ngFor="let S of Grades" [value]="S.id">{{ S.name }}</option>
+        </select>
+    </div>
+
+    <div class="w-[42%] mr-5 mb-3">
+        <label for="ClassRooms" class=" mb-2 text-sm font-medium text-gray-900">Classroom</label>
+        <select [(ngModel)]="ClassRoomId" [disabled]="GradeId == 0" (change)="ClassRoomIsChanged($event)"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option [value]="0" disabled hidden>Select a Classroom</option>
+            <option *ngFor="let S of ClassRooms" [value]="S.id">{{ S.name }}</option>
+        </select>
+    </div>
+
+    <div class="w-[42%] mr-5 mb-3">
+        <label for="Students" class=" mb-2 text-sm font-medium text-gray-900">Students</label>
+        <select [(ngModel)]="StudentId" 
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option [value]="0" disabled hidden>Select a Student</option>
+            <option *ngFor="let S of Students" [value]="S.studentID">{{ S.studentName }}</option>
+        </select>
+    </div>
+
+    <div class="w-[10%] mr-5 mb-3 flex items-center">
+        <button (click)="Search()" class="secondaryBg text-white font-medium px-5 py-3 rounded-lg mt-4">
+            Search
+        </button>
+    </div>
+
+</div>
+
+
+
+<div>
+    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+        <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+            <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                <tr>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        ID
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Student Name
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Fees Type
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Fees Discount Type
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Amount
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Discount
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Net
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- No Data Row -->
+                <tr *ngIf="TableData.length === 0">
+                    <td colspan="11"
+                        class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                        No Data Found
+                    </td>
+                </tr>
+
+                <!-- Data Rows -->
+                <tr *ngFor="let row of TableData; let i = index"
+                    [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                    class="border-t border-gray-300 text-xs md:text-sm">
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ row.id }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ row.studentName}}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ row.feeTypeName }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ row.feeDiscountTypeName }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ row.amount }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ row.discount }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ row.net }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div class="flex space-x-4">
+                            <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row.id)">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -272,21 +272,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             else
             {
                 return BadRequest("Link File Must be Save or Bank");
-            }
-
-            ReceivableMaster ReceivableMaster = mapper.Map<ReceivableMaster>(newMaster);
-            if (newMaster.LinkFileID == 6) // Bank
-            {
-                ReceivableMaster.BankOrSaveID = newMaster.BankOrSaveID;
-                ReceivableMaster.Bank = Unit_Of_Work.bank_Repository.First_Or_Default(t => t.ID == newMaster.BankOrSaveID);
-                ReceivableMaster.Save = null;
-            }
-            else if (newMaster.LinkFileID == 5) // Save
-            {
-                ReceivableMaster.BankOrSaveID = newMaster.BankOrSaveID;
-                ReceivableMaster.Save = Unit_Of_Work.save_Repository.First_Or_Default(t => t.ID == newMaster.BankOrSaveID);
-                ReceivableMaster.Bank = null;
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
@@ -309,6 +295,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             }
 
             mapper.Map(newMaster, Receivable);
+
+            if (newMaster.LinkFileID == 6) // Bank
+            {
+                Receivable.BankOrSaveID = newMaster.BankOrSaveID;
+                Receivable.Bank = Unit_Of_Work.bank_Repository.First_Or_Default(t => t.ID == newMaster.BankOrSaveID);
+                Receivable.Save = null;
+            }
+            else if (newMaster.LinkFileID == 5) // Save
+            {
+                Receivable.BankOrSaveID = newMaster.BankOrSaveID;
+                Receivable.Save = Unit_Of_Work.save_Repository.First_Or_Default(t => t.ID == newMaster.BankOrSaveID);
+                Receivable.Bank = null;
+            }
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             Receivable.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")

@@ -528,6 +528,23 @@ namespace LMS_CMS_BL.Config
             CreateMap<PayableMasterAddDTO, PayableMaster>();
             CreateMap<PayableMasterPutDTO, PayableMaster>();
 
+            CreateMap<AccountingEntriesMaster, AccountingEntriesMasterGetDTO>()
+                .ForMember(dest => dest.AccountingEntriesDocTypeName, opt => opt.MapFrom(src => src.AccountingEntriesDocType.Name));
+            CreateMap<AccountingEntriesMasterPutDTO, AccountingEntriesMaster>();
+            CreateMap<AccountingEntriesMasterAddDTO, AccountingEntriesMaster>();
+
+            CreateMap<ReceivableDetails, ReceivableDetailsGetDTO>();
+            CreateMap<ReceivableDetailsAddDTO, ReceivableDetails>();
+            CreateMap<ReceivableDetailsPutDTO, ReceivableDetails>();
+            
+            CreateMap<PayableDetails, PayableDetailsGetDTO>();
+            CreateMap<PayableDetailsAddDTO, PayableDetails>();
+            CreateMap<PayableDetailsPutDTO, PayableDetails>();
+
+            CreateMap<AccountingEntriesDetails, AccountingEntriesDetailsGetDTO>()
+                .ForMember(dest => dest.AccountingTreeChartName, opt => opt.MapFrom(src => src.AccountingTreeChart.Name));
+            CreateMap<AccountingEntriesDetailsAddDTO, AccountingEntriesDetails>();
+            CreateMap<AccountingEntriesDetailsPutDTO, AccountingEntriesDetails>();
             CreateMap<StudentAcademicYear, StudentAcademicYearGetDTO>()
                .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name))
                .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.School.Name))

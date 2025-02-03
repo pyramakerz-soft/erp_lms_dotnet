@@ -3,6 +3,7 @@ using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -129,6 +130,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return BadRequest("Income cannot be null");
             }
 
+            Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(e => e.ID == newMaster.EmployeeID && e.IsDeleted != true);
+            if (employee == null) 
+            {
+                return NotFound();
+            }
+
+
+            Student student = Unit_Of_Work.student_Repository.First_Or_Default(e => e.ID == newMaster.StudentID && e.IsDeleted != true);
+            if (student == null)
+            {
+                return NotFound();
+            }
 
             InstallmentDeductionMaster installmentDeductionMaster = mapper.Map<InstallmentDeductionMaster>(newMaster);
 
@@ -175,6 +188,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             if (master == null || master.IsDeleted == true)
             {
                 return NotFound("No master with this ID");
+            }
+
+            Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(e => e.ID == newMaster.EmployeeID && e.IsDeleted != true);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            Student student = Unit_Of_Work.student_Repository.First_Or_Default(e => e.ID == newMaster.StudentID && e.IsDeleted != true);
+            if (student == null)
+            {
+                return NotFound();
             }
 
             if (userTypeClaim == "employee")

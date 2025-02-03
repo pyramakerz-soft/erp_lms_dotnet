@@ -15,6 +15,7 @@ namespace LMS_CMS_BL.DTO.Accounting
         public long FeeTypeID { get; set; }
         public long? FeeDiscountTypeID { get; set; }
         public long StudentID { get; set; }
+        public long AcademicYearId { get; set; }
 
     }
 }

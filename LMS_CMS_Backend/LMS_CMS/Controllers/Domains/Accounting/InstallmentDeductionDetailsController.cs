@@ -99,6 +99,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return BadRequest("Details cannot be null");
             }
 
+            InstallmentDeductionMaster installmentDeductionMaster = Unit_Of_Work.installmentDeductionMaster_Repository.First_Or_Default(m => m.ID == NewDetails.InstallmentDeductionMasterID && m.IsDeleted != true);
+            if (installmentDeductionMaster == null)
+            {
+                return  NotFound();
+            }
+
+            TuitionFeesType tuitionFeesType = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(m => m.ID == NewDetails.FeeTypeID && m.IsDeleted != true);
+            if (tuitionFeesType == null)
+            {
+                return NotFound();
+            }
 
             InstallmentDeductionDetails installmentDeductionDetails = mapper.Map<InstallmentDeductionDetails>(NewDetails);
 
@@ -145,6 +156,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             if (detail == null || detail.IsDeleted == true)
             {
                 return NotFound("No detail with this ID");
+            }
+
+            InstallmentDeductionMaster installmentDeductionMaster = Unit_Of_Work.installmentDeductionMaster_Repository.First_Or_Default(m => m.ID == NewDetails.InstallmentDeductionMasterID && m.IsDeleted != true);
+            if (installmentDeductionMaster == null)
+            {
+                return NotFound();
+            }
+
+            TuitionFeesType tuitionFeesType = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(m => m.ID == NewDetails.FeeTypeID && m.IsDeleted != true);
+            if (tuitionFeesType == null)
+            {
+                return NotFound();
             }
 
             if (userTypeClaim == "employee")

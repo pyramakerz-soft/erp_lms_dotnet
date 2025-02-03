@@ -42,6 +42,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     f => f.IsDeleted != true,
                     query => query.Include(Income => Income.Student),
                     query => query.Include(Income => Income.TuitionDiscountType),
+                    query => query.Include(Income => Income.AcademicYear),
                     query => query.Include(Income => Income.TuitionFeesType));
 
             if (feesActivations == null || feesActivations.Count == 0)
@@ -91,7 +92,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return NotFound();
             }
 
-            if(newActivation.FeeDiscountTypeID!=0 && newActivation.FeeDiscountTypeID != null)
+            AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(t => t.ID == newActivation.AcademicYearId && t.IsDeleted != true);
+            if (academicYear == null)
+            {
+                return NotFound();
+            }
+
+            if (newActivation.FeeDiscountTypeID!=0 && newActivation.FeeDiscountTypeID != null)
             {
                 TuitionDiscountType tuitionDiscountType = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.ID == newActivation.FeeDiscountTypeID && t.IsDeleted != true);
                 if (tuitionDiscountType == null)
@@ -158,6 +165,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             }
             TuitionFeesType tuitionFeesType = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(t => t.ID == newActivation.FeeTypeID && t.IsDeleted != true);
             if (tuitionFeesType == null)
+            {
+                return NotFound();
+            }
+
+            AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(t => t.ID == newActivation.AcademicYearId && t.IsDeleted != true);
+            if (academicYear == null)
             {
                 return NotFound();
             }

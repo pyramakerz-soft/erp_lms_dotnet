@@ -1,14 +1,15 @@
 <div class="flex justify-between">
     <h1 class="font-semibold text-2xl leading-9">Fees Activation</h1>
-    <div class="flex justify-between items-center">
+    <!-- <div class="flex justify-between items-center">
         <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
-    </div>
+    </div> -->
 </div>
 
 <div class="flex justify-start mt-5 flex-wrap p-3">
 
     <div class="w-[31%] mr-5 mb-3">
-        <label for="Schools" class=" mb-2 text-sm font-medium text-gray-900">School</label>
+        <label for="Schools" class=" mb-2 text-sm font-medium text-gray-900">School <i
+                class="fa fa-asterisk text-red-500 text-xs"></i></label>
         <select [(ngModel)]="SchoolId" (change)="SchoolIsChanged($event)"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
             <option [value]="0" disabled hidden>Select a School</option>
@@ -17,7 +18,9 @@
     </div>
 
     <div class="w-[31%] mr-5 mb-3">
-        <label for="Sections" class=" mb-2 text-sm font-medium text-gray-900">Section</label>
+        <label for="Sections" class=" mb-2 text-sm font-medium text-gray-900">Section <i
+                class="fa fa-asterisk text-red-500 text-xs"></i>
+        </label>
         <select [(ngModel)]="SectionId" [disabled]="SchoolId == 0" (change)="SectionIsChanged($event)"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
             <option [value]="0" disabled hidden>Select a Section</option>
@@ -26,7 +29,8 @@
     </div>
 
     <div class="w-[31%] mr-5 mb-3">
-        <label for="Grades" class=" mb-2 text-sm font-medium text-gray-900">Grade Level</label>
+        <label for="Grades" class=" mb-2 text-sm font-medium text-gray-900">Grade Level <i
+                class="fa fa-asterisk text-red-500 text-xs"></i></label>
         <select [(ngModel)]="GradeId" [disabled]="SectionId == 0" (change)="GradeIsChanged($event)"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
             <option [value]="0" disabled hidden>Select a Grade</option>
@@ -36,7 +40,7 @@
 
     <div class="w-[42%] mr-5 mb-3">
         <label for="ClassRooms" class=" mb-2 text-sm font-medium text-gray-900">Classroom</label>
-        <select [(ngModel)]="ClassRoomId" [disabled]="GradeId == 0" (change)="ClassRoomIsChanged($event)"
+        <select [(ngModel)]="ClassRoomId" (change)="ClassRoomIsChanged($event)" [disabled]="!IsOpenStudentandClassroom"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
             <option [value]="0" disabled hidden>Select a Classroom</option>
             <option *ngFor="let S of ClassRooms" [value]="S.id">{{ S.name }}</option>
@@ -45,7 +49,7 @@
 
     <div class="w-[42%] mr-5 mb-3">
         <label for="Students" class=" mb-2 text-sm font-medium text-gray-900">Students</label>
-        <select [(ngModel)]="StudentId" 
+        <select [(ngModel)]="StudentId" (change)="StudentChanged($event)" [disabled]="!IsOpenStudentandClassroom"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
             <option [value]="0" disabled hidden>Select a Student</option>
             <option *ngFor="let S of Students" [value]="S.studentID">{{ S.studentName }}</option>
@@ -53,16 +57,82 @@
     </div>
 
     <div class="w-[10%] mr-5 mb-3 flex items-center">
-        <button (click)="Search()" class="secondaryBg text-white font-medium px-5 py-3 rounded-lg mt-4">
+        <button  (click)="Search()" class="secondaryBg text-white font-medium px-5 py-3 rounded-lg mt-4">
             Search
         </button>
     </div>
 
 </div>
 
+<div *ngIf="IsSearch" class="flex justify-start mt-5 flex-wrap p-3 bg-[#F7F7F7]">
 
+    <div class="w-[22%] mr-5 mb-3">
+        <label for="FeesTypes" class=" mb-2 text-sm font-medium text-gray-900">Fees Types</label>
+        <select [(ngModel)]="Fees.feeTypeID"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option [value]="0" disabled hidden>Select a Type</option>
+            <option *ngFor="let S of FeesTypes" [value]="S.id">{{ S.name }}</option>
+        </select>
+    </div>
 
-<div>
+    <div class="w-[22%] mr-5 mb-3">
+        <label for="FeesDiscountType" class=" mb-2 text-sm font-medium text-gray-900">Fees Discount Type</label>
+        <select [(ngModel)]="Fees.feeDiscountTypeID" [disabled]="SchoolId == 0" 
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option [value]="0" disabled hidden>Select a Type</option>
+            <option *ngFor="let S of FeesDiscountType" [value]="S.id">{{ S.name }}</option>
+        </select>
+    </div>
+
+    <div class="w-[22%] mr-5 mb-3">
+        <label for="Grades" class=" mb-2 text-sm font-medium text-gray-900">Date</label>
+        <input type="date" [(ngModel)]="Fees.date"
+            class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter date">
+    </div>
+
+    <div class="w-[22%] mr-5 mb-3">
+        <label for="academicYear" class=" mb-2 text-sm font-medium text-gray-900">Academic Year</label>
+        <select [(ngModel)]="Fees.academicYearId" 
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option [value]="0" disabled hidden>Select a Year</option>
+            <option *ngFor="let S of academicYear" [value]="S.id">{{ S.name }}</option>
+        </select>
+    </div>
+
+    <div class="w-[20%] mr-5 mb-3">
+        <label class="mb-2 text-sm font-medium text-gray-900">Amount</label>
+        <input type="number" [(ngModel)]="Fees.amount" (input)="CalculateNet()"
+            class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter Amount">
+    </div>
+
+    <div class="w-[20%] mr-5 mb-3">
+        <label class="mb-2 text-sm font-medium text-gray-900">Discount Percentage</label>
+        <input type="number" [(ngModel)]="DiscountPercentage" (input)="CalculateDiscountFromPercentage()"
+            class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter Percentage">
+    </div>
+
+    <div class="w-[20%] mr-5 mb-3">
+        <label class="mb-2 text-sm font-medium text-gray-900">Discount</label>
+        <input type="number" [(ngModel)]="Fees.discount" (input)="CalculatePercentageFromDiscount()"
+            class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter Discount">
+    </div>
+
+    <div class="w-[20%] mr-5 mb-3">
+        <label class="mb-2 text-sm font-medium text-gray-900">Net</label>
+        <input type="number" [(ngModel)]="Fees.net" disabled
+            class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter Net"
+            readonly>
+    </div>
+
+    <div class="w-[10%] mr-5 mb-3 flex items-center">
+        <button (click)="Activate()" class="secondaryBg text-white font-medium px-5 py-3 rounded-lg mt-4">
+            Activation
+        </button>
+    </div>
+
+</div>
+
+<div *ngIf="IsSearch || IsOpenTable">
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
         <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
             <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
@@ -89,6 +159,12 @@
                         Net
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Date
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Academic Year
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Actions
                     </th>
                 </tr>
@@ -96,7 +172,7 @@
             <tbody>
                 <!-- No Data Row -->
                 <tr *ngIf="TableData.length === 0">
-                    <td colspan="11"
+                    <td colspan="10"
                         class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                         No Data Found
                     </td>
@@ -107,32 +183,70 @@
                     [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
                     class="border-t border-gray-300 text-xs md:text-sm">
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.id }}
+                        {{ row.feeActivationID }}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         {{ row.studentName}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.feeTypeName }}
+                        <ng-container *ngIf="editingRowId === row.feeActivationID; else textModeFeesTypes">
+                            <select [(ngModel)]="row.feeTypeID" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                                <option *ngFor="let S of FeesTypes" [value]="S.id">{{ S.name }}</option>
+                            </select>
+                        </ng-container>
+                        <ng-template #textModeFeesTypes>{{ row.feeTypeName }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.feeDiscountTypeName }}
+                        <ng-container *ngIf="editingRowId === row.feeActivationID; else textModeFeesDiscountType">
+                            <select [(ngModel)]="row.feeDiscountTypeID" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                                <option *ngFor="let S of FeesDiscountType" [value]="S.id">{{ S.name }}</option>
+                            </select>
+                        </ng-container>
+                        <ng-template #textModeFeesDiscountType>{{ row.feeDiscountTypeName }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.amount }}
+                        <ng-container *ngIf="editingRowId === row.feeActivationID; else textMode">
+                            <input [(ngModel)]="row.amount"  (input)="CalculateNetForEdit(row)" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        </ng-container>
+                        <ng-template #textMode>{{ row.amount }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.discount }}
+                        <ng-container *ngIf="editingRowId === row.feeActivationID; else textModeDiscount">
+                            <input [(ngModel)]="row.discount" (input)="CalculateNetForEdit(row)" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        </ng-container>
+                        <ng-template #textModeDiscount>{{ row.discount }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.net }}
+                        <ng-container *ngIf="editingRowId === row.feeActivationID; else textModeNet">
+                            <input [(ngModel)]="row.net" class="w-full border border-gray-300 px-2 py-1 rounded-md" readonly>
+                        </ng-container>
+                        <ng-template #textModeNet>{{ row.net }}</ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <ng-container *ngIf="editingRowId === row.feeActivationID; else textModeDate">
+                            <input type="date" [(ngModel)]="row.date" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        </ng-container>
+                        <ng-template #textModeDate>{{ row.date }}</ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <ng-container *ngIf="editingRowId === row.feeActivationID; else textModeAcademicYear">
+                            <select [(ngModel)]="row.academicYearId" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                                <option *ngFor="let S of academicYear" [value]="S.id" >
+                                    {{ S.name }}
+                                </option>
+                            </select>
+                        </ng-container>
+                        <ng-template #textModeAcademicYear>{{ row.academicYearName }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
-                            <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row.id)">
+                            <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row.feeActivationID)">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
-                            <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)">
+                            <button *ngIf="editingRowId === row.feeActivationID" (click)="Save(row)">
+                                <i class="far fa-check-circle secondaryTxt"></i>
+                            </button>
+                            <button *ngIf="editingRowId !== row.feeActivationID" (click)="Edit(row.feeActivationID)">
                                 <i class="fa-solid fa-pencil"></i>
                             </button>
                         </div>

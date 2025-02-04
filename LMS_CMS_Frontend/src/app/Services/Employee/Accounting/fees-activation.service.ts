@@ -3,6 +3,7 @@ import { FeesActivation } from '../../../Models/Accounting/fees-activation';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../../api.service';
 import { Observable } from 'rxjs';
+import { FeesActivationAddPut } from '../../../Models/Accounting/fees-activation-add-put';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class FeesActivationService {
     return this.http.get<FeesActivation[]>(`${this.baseUrl}/FeesActivation`, { headers })
   }
 
-   Add(fees: FeesActivation, DomainName: string): Observable<any> {
+   Add(fees: FeesActivationAddPut[], DomainName: string): Observable<any> {
       if (DomainName != null) {
         this.header = DomainName
       }
@@ -44,7 +45,7 @@ export class FeesActivationService {
       });
     }
   
-    Edit(fees: FeesActivation, DomainName: string): Observable<FeesActivation> {
+    Edit(fees: FeesActivationAddPut, DomainName: string): Observable<FeesActivationAddPut> {
       if (DomainName != null) {
         this.header = DomainName
       }
@@ -53,7 +54,7 @@ export class FeesActivationService {
         .set('domain-name', this.header)
         .set('Authorization', `Bearer ${token}`)
         .set('Content-Type', 'application/json');
-      return this.http.put<FeesActivation>(`${this.baseUrl}/FeesActivation`, fees, { headers });
+      return this.http.put<FeesActivationAddPut>(`${this.baseUrl}/FeesActivation`, fees, { headers });
     }
   
     Delete(id: number, DomainName: string) {

@@ -31,14 +31,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
         [HttpGet]
         [Authorize_Endpoint_(
-           allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Accounting", "Fees Activation" }
-       )]
+       allowedTypes: new[] { "octa", "employee" },
+       pages: new[] { "Accounting", "Fees Activation" }
+   )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            // Get all students
             List<StudentAcademicYear> studentsAcademicYear = await Unit_Of_Work.studentAcademicYear_Repository
                 .Select_All_With_IncludesById<StudentAcademicYear>(
                     sem => sem.IsDeleted != true,
@@ -48,7 +47,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     query => query.Include(emp => emp.School)
                 );
 
-            // Get all fees activations
             List<FeesActivation> feesActivations = await Unit_Of_Work.feesActivation_Repository
                 .Select_All_With_IncludesById<FeesActivation>(
                     f => f.IsDeleted != true,
@@ -58,40 +56,43 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     query => query.Include(Income => Income.TuitionFeesType)
                 );
 
-            // Perform left join: Get all students and match with feesActivations where available
             var result = studentsAcademicYear
-                .GroupJoin(
-                    feesActivations,
-                    student => student.StudentID, // Key from StudentAcademicYear
-                    fee => fee.StudentID,        // Key from FeesActivation
-                    (student, fees) => new
+                .SelectMany(student =>
+                    feesActivations
+                        .Where(fee => fee.StudentID == student.StudentID) 
+                        .DefaultIfEmpty(), 
+                    (student, fee) => new FeesActivationGetDTO
                     {
-                        student,
-                        fee = fees.FirstOrDefault() // Get the first match if exists, otherwise null
+                        StudentAcademicYearID = student.ID,
+                        StudentID = student.StudentID,
+                        StudentName = student.Student.User_Name,
+                        SchoolID = student.SchoolID,
+                        SchoolName = student.School?.Name ?? "",
+                        ClassID = student.ClassID,
+                        ClassName = student.Classroom?.Name ?? "",
+                        GradeID = student.GradeID,
+                        GradeName = student.Grade?.Name ?? "",
+                        SectionId = student.Grade?.Section?.ID ?? 0,
+                        SectionName = student.Grade?.Section?.Name ?? "",
+
+                        FeeActivationID = fee?.ID ?? 0,
+                        Amount = fee?.Amount ?? 0,
+                        Discount = fee?.Discount ?? 0,
+                        Net = fee?.Net ?? 0,
+                        AcademicYearId =fee?.ID ?? 0,
+                        AcademicYearName = fee?.AcademicYear?.Name?? "",
+                        Date = fee?.Date ?? "",
+                        FeeTypeID = fee?.FeeTypeID ?? 0,
+                        FeeTypeName = fee?.TuitionFeesType?.Name ?? null,
+                        FeeDiscountTypeID = fee?.FeeDiscountTypeID?? 0,
+                        FeeDiscountTypeName = fee?.TuitionDiscountType?.Name ?? null,
+                        InsertedByUserId = fee?.InsertedByUserId ?? 0,
                     }
                 )
-                .Select(joined => new FeesActivationGetDTO
-                {
-                    StudentID = joined.student.StudentID,
-                    StudentName = joined.student.Student.User_Name,
-                    AcademicYearId = joined.student.GradeID, // Assuming GradeID represents the academic year
-                    AcademicYearName = joined.student.Grade?.Name ?? "",
-
-                    // Fees Information (nullable when no matching fee exists)
-                    ID = joined.fee?.ID ?? 0,
-                    Amount = joined.fee?.Amount ?? 0,
-                    Discount = joined.fee?.Discount ?? 0,
-                    Net = joined.fee?.Net ?? 0,
-                    FeeTypeID = joined.fee?.FeeTypeID ?? 0,
-                    FeeTypeName = joined.fee?.TuitionFeesType?.Name ?? null,
-                    FeeDiscountTypeID = joined.fee?.FeeDiscountTypeID,
-                    FeeDiscountTypeName = joined.fee?.TuitionDiscountType?.Name ?? null
-                })
                 .ToList();
 
             return Ok(result);
         }
-
         /////
 
         [HttpPost]
@@ -99,7 +100,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
              allowedTypes: new[] { "octa", "employee" },
              pages: new[] { "Fees Activation", "Accounting" }
          )]
-        public IActionResult Add(FeesActivationAdddDTO newActivation)
+        public IActionResult Add(List<FeesActivationAdddDTO> newActivations)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -111,60 +112,63 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-
-            if (newActivation == null)
+            foreach (var newActivation in newActivations)
             {
-                return BadRequest("Debit cannot be null");
-            }
+                if (newActivation == null)
+                {
+                    return BadRequest("Debit cannot be null");
+                }
 
-            TuitionFeesType tuitionFeesType = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(t => t.ID == newActivation.FeeTypeID && t.IsDeleted != true);
-            if (tuitionFeesType == null)
-            {
-                return NotFound();
-            }
-
-            Student student = Unit_Of_Work.student_Repository.First_Or_Default(t => t.ID == newActivation.StudentID && t.IsDeleted != true);
-            if (student == null)
-            {
-                return NotFound();
-            }
-
-            AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(t => t.ID == newActivation.AcademicYearId && t.IsDeleted != true);
-            if (academicYear == null)
-            {
-                return NotFound();
-            }
-
-            if (newActivation.FeeDiscountTypeID!=0 && newActivation.FeeDiscountTypeID != null)
-            {
-                TuitionDiscountType tuitionDiscountType = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.ID == newActivation.FeeDiscountTypeID && t.IsDeleted != true);
-                if (tuitionDiscountType == null)
+                TuitionFeesType tuitionFeesType = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(t => t.ID == newActivation.FeeTypeID && t.IsDeleted != true);
+                if (tuitionFeesType == null)
                 {
                     return NotFound();
                 }
 
-            }
-            else
-            {
-                newActivation.FeeDiscountTypeID = null;
+                Student student = Unit_Of_Work.student_Repository.First_Or_Default(t => t.ID == newActivation.StudentID && t.IsDeleted != true);
+                if (student == null)
+                {
+                    return NotFound();
+                }
+
+                AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(t => t.ID == newActivation.AcademicYearId && t.IsDeleted != true);
+                if (academicYear == null)
+                {
+                    return NotFound();
+                }
+
+                if (newActivation.FeeDiscountTypeID!=0 && newActivation.FeeDiscountTypeID != null)
+                {
+                    TuitionDiscountType tuitionDiscountType = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.ID == newActivation.FeeDiscountTypeID && t.IsDeleted != true);
+                    if (tuitionDiscountType == null)
+                    {
+                        return NotFound();
+                    }
+
+                }
+                else
+                {
+                    newActivation.FeeDiscountTypeID = null;
+                }
+
+                FeesActivation feesActivation = mapper.Map<FeesActivation>(newActivation);
+
+                TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+                feesActivation.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "octa")
+                {
+                    feesActivation.InsertedByOctaId = userId;
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    feesActivation.InsertedByUserId = userId;
+                }
+
+                Unit_Of_Work.feesActivation_Repository.Add(feesActivation);
+                Unit_Of_Work.SaveChanges();
             }
 
-            FeesActivation feesActivation = mapper.Map<FeesActivation>(newActivation);
-
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            feesActivation.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "octa")
-            {
-                feesActivation.InsertedByOctaId = userId;
-            }
-            else if (userTypeClaim == "employee")
-            {
-                feesActivation.InsertedByUserId = userId;
-            }
-
-            Unit_Of_Work.feesActivation_Repository.Add(feesActivation);
-            Unit_Of_Work.SaveChanges();
-            return Ok(newActivation);
+            return Ok(newActivations);
         }
 
         //////
@@ -195,7 +199,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return BadRequest("Income cannot be null");
             }
 
-            FeesActivation feesActivation = Unit_Of_Work.feesActivation_Repository.First_Or_Default(f=>f.ID==newActivation.ID && f.IsDeleted !=true);
+            FeesActivation feesActivation = Unit_Of_Work.feesActivation_Repository.First_Or_Default(f=>f.ID==newActivation.FeeActivationID && f.IsDeleted !=true);
             if (feesActivation == null) 
             {
                 return NotFound();

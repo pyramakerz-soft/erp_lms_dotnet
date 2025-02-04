@@ -27,6 +27,10 @@ import { TuitionFeesType } from '../../../../Models/Accounting/tuition-fees-type
 import { TuitionFeesTypeService } from '../../../../Services/Employee/Accounting/tuition-fees-type.service';
 import { TuitionDiscountTypes } from '../../../../Models/Accounting/tuition-discount-types';
 import { TuitionDiscountTypeService } from '../../../../Services/Employee/Accounting/tuition-discount-type.service';
+import { AcademicYear } from '../../../../Models/LMS/academic-year';
+import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-year.service';
+import { FeesActivationAddPut } from '../../../../Models/Accounting/fees-activation-add-put';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-fees-activation',
@@ -37,16 +41,14 @@ import { TuitionDiscountTypeService } from '../../../../Services/Employee/Accoun
 })
 export class FeesActivationComponent {
 
-  User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
+  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  TableDataStudent: StudentAcademicYear[] = [];
-  TableDataStudentOriginal: StudentAcademicYear[] = [];
-
+  TableDataStudentOriginal: FeesActivation[] = [];
   TableData: FeesActivation[] = [];
 
   DomainName: string = '';
@@ -58,24 +60,39 @@ export class FeesActivationComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' ,'accountNumberName'];
+  keysArray: string[] = ['feeActivationID', 'amount', 'discount', "net", "date", "feeTypeName", "feeDiscountTypeName", "studentName", "academicYearName"];
 
-  Fees:FeesActivation=new FeesActivation()
+  Fees: FeesActivationAddPut = new FeesActivationAddPut()
+  FeesForEdit: FeesActivationAddPut = new FeesActivationAddPut()
+  FeesForAdd: FeesActivationAddPut[] = []
+
 
   SchoolId: number = 0;
   SectionId: number = 0;
   GradeId: number = 0;
   ClassRoomId: number = 0;
   StudentId: number = 0;
-  
-  Schools:School[]=[]
+
+  Schools: School[] = []
   Sections: Section[] = [];
   Grades: Grade[] = [];
   ClassRooms: Classroom[] = [];
+
+  StudentsOriginal: StudentAcademicYear[] = [];
   Students: StudentAcademicYear[] = [];
 
-  FeesTypes:TuitionFeesType[]=[]
-  FeesDiscountType :TuitionDiscountTypes[]=[]
+  FeesTypes: TuitionFeesType[] = []
+  FeesDiscountType: TuitionDiscountTypes[] = []
+  academicYear: AcademicYear[] = []
+  DiscountPercentage: number = 0
+
+  IsSearch: boolean = false
+
+  IsOpenStudentandClassroom: boolean = false
+
+  IsEdit = false;
+  editingRowId: any = 0;
+  IsOpenTable:boolean=false;
 
   constructor(
     private router: Router,
@@ -83,17 +100,18 @@ export class FeesActivationComponent {
     public activeRoute: ActivatedRoute,
     public account: AccountService,
     public ApiServ: ApiService,
-    public accountServ:AccountingTreeChartService ,
-    public StudentAcademicYearServ :StudentAcademicYearService ,
+    public accountServ: AccountingTreeChartService,
+    public StudentAcademicYearServ: StudentAcademicYearService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public feesActivationServ : FeesActivationService ,
-    public SchoolServ :SchoolService ,
-    public SectionServ:SectionService ,
-    public GradeServ : GradeService ,
-    public ClassRoomServ : ClassroomService ,
-    public TuitionFeesTypeServ :TuitionFeesTypeService ,
-    public FeesDiscountTypeServ :TuitionDiscountTypeService
-  ) {}
+    public feesActivationServ: FeesActivationService,
+    public SchoolServ: SchoolService,
+    public SectionServ: SectionService,
+    public GradeServ: GradeService,
+    public ClassRoomServ: ClassroomService,
+    public TuitionFeesTypeServ: TuitionFeesTypeService,
+    public FeesDiscountTypeServ: TuitionDiscountTypeService,
+    public AcademicYearServ: AcadimicYearService
+  ) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -115,20 +133,22 @@ export class FeesActivationComponent {
 
     this.GetAllStudentData();
     this.GetAllSchools();
-    this.GetAllFeesData()
+    this.GetAllFeesData();
+    this.GetAllTuitionFeesType();
+    this.GetAllDiscountType()
   }
 
-  GetAllStudentData(){
-     this.StudentAcademicYearServ.Get(this.DomainName).subscribe((d)=>{
-       this.TableDataStudent=d;
-       this.TableDataStudentOriginal=d;
-       this.Students=d
-     })
+  GetAllStudentData() {
+    this.StudentAcademicYearServ.Get(this.DomainName).subscribe((d) => {
+      this.Students = d
+      this.StudentsOriginal = d
+    })
   }
 
-  GetAllFeesData(){
-    this.feesActivationServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d
+  GetAllFeesData() {
+    this.feesActivationServ.Get(this.DomainName).subscribe((d) => {
+      this.TableDataStudentOriginal = d;
+      // this.TableData = d
     })
   }
 
@@ -143,8 +163,9 @@ export class FeesActivationComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.feesActivationServ.Delete(id,this.DomainName).subscribe((D)=>{
-          
+        this.feesActivationServ.Delete(id, this.DomainName).subscribe((D) => {
+          this.GetAllFeesData();
+          this.GetStudents();
         })
       }
     });
@@ -169,36 +190,66 @@ export class FeesActivationComponent {
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
+    this.IsOpenTable=true
     this.key = event.key;
     this.value = event.value;
+
+    try {
+      await Promise.all([
+        new Promise<void>((resolve) => {
+          this.GetAllFeesData();
+          resolve();
+        }),
+        this.GetStudents()
+      ]);
+
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
+
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      this.TableData = [];
+    }
   }
 
-  GetAllSchools(){
-    this.SchoolServ.Get(this.DomainName).subscribe((d)=>{
-      this.Schools=d
+  GetAllSchools() {
+    this.SchoolServ.Get(this.DomainName).subscribe((d) => {
+      this.Schools = d
     })
   }
 
-  GetAllSectionsBySchoolID(){
-    this.SectionServ.GetBySchoolId(this.SchoolId,this.DomainName).subscribe((d)=>{
-      this.Sections=d
+  GetAllSectionsBySchoolID() {
+    this.SectionServ.GetBySchoolId(this.SchoolId, this.DomainName).subscribe((d) => {
+      this.Sections = d
     })
   }
 
-  GetAllGradeBySectionId(){
-    this.GradeServ.GetBySectionId(this.SectionId, this.DomainName).subscribe((d)=>{
-      console.log(d)
-      this.Grades=d
+  GetAllGradeBySectionId() {
+    this.GradeServ.GetBySectionId(this.SectionId, this.DomainName).subscribe((d) => {
+      this.Grades = d
     })
   }
 
-  GetAllClassRoomByGradeID(){
-    this.ClassRoomServ.GetByGradeId(this.GradeId,this.DomainName).subscribe((d)=>{
-      this.ClassRooms=d
+  GetAllClassRoomByGradeID() {
+    this.ClassRoomServ.GetByGradeId(this.GradeId, this.DomainName).subscribe((d) => {
+      this.ClassRooms = d
     })
   }
 
-  
+
   SchoolIsChanged(event: Event) {
     this.SchoolId = Number((event.target as HTMLSelectElement).value);
     this.SectionId = 0;
@@ -211,8 +262,13 @@ export class FeesActivationComponent {
     this.Students = [];
     this.GetAllSectionsBySchoolID();
     this.GetStudents();
+    this.GetAllAcademicYear();
+    this.IsOpenStudentandClassroom = false;
+    this.IsOpenTable=false
+    this.key=""
+    this.value=""
   }
-  
+
   SectionIsChanged(event: Event) {
     this.SectionId = Number((event.target as HTMLSelectElement).value);
     this.GradeId = 0;
@@ -224,7 +280,7 @@ export class FeesActivationComponent {
     this.GetAllGradeBySectionId();
     this.GetStudents();
   }
-  
+
   GradeIsChanged(event: Event) {
     this.GradeId = Number((event.target as HTMLSelectElement).value);
     this.ClassRoomId = 0;
@@ -233,45 +289,180 @@ export class FeesActivationComponent {
     this.Students = [];
     this.GetAllClassRoomByGradeID();
     this.GetStudents();
+    this.IsOpenStudentandClassroom = true
   }
-  
+
   ClassRoomIsChanged(event: Event) {
     this.ClassRoomId = Number((event.target as HTMLSelectElement).value);
     this.StudentId = 0;
     this.GetStudents();
   }
-  
-  GetStudents() {
-    console.log(this.Students)
-    this.Students = [];
-    this.Students = this.TableDataStudentOriginal.filter((item: StudentAcademicYear) => {
-      return (
-        (this.SchoolId == 0 || item.schoolID == this.SchoolId) &&
-        (this.SectionId == 0 || item.sectionId == this.SectionId) &&
-        (this.GradeId == 0 || item.gradeID == this.GradeId) &&
-        (this.ClassRoomId == 0 || item.classID == this.ClassRoomId)
-      );
+
+  StudentChanged(event: Event) {
+    this.StudentId = Number((event.target as HTMLSelectElement).value);
+    this.GetStudents();
+  }
+
+  async GetStudents() {
+    this.TableDataStudentOriginal = await firstValueFrom(
+      this.feesActivationServ.Get(this.DomainName)
+    );
+    this.TableData = this.TableDataStudentOriginal || [];
+
+    if (this.StudentId == 0) {
+      this.Students = [];
+      this.Students = this.StudentsOriginal.filter((item: StudentAcademicYear) => {
+        return (
+          (this.SchoolId == 0 || item.schoolID == this.SchoolId) &&
+          (this.SectionId == 0 || item.sectionId == this.SectionId) &&
+          (this.GradeId == 0 || item.gradeID == this.GradeId) &&
+          (this.ClassRoomId == 0 || item.classID == this.ClassRoomId)
+        );
+      });
+
+      this.TableData = [];
+      this.TableData = this.TableDataStudentOriginal.filter((item: FeesActivation) => {
+        return (
+          (this.SchoolId == 0 || item.schoolID == this.SchoolId) &&
+          (this.SectionId == 0 || item.sectionId == this.SectionId) &&
+          (this.GradeId == 0 || item.gradeID == this.GradeId) &&
+          (this.ClassRoomId == 0 || item.classID == this.ClassRoomId)
+        );
+      });
+    }
+    else {
+      this.TableData = [];
+      this.TableData = this.TableDataStudentOriginal.filter(s => s.studentID == this.StudentId);
+    }
+
+  }
+
+  Search() {
+    this.IsOpenTable=false
+    if (this.SchoolId == 0 || this.SectionId == 0 || this.GradeId == 0) {
+      if (this.SchoolId == 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning!',
+          text: 'School Is Required',
+          confirmButtonColor: '#FF7519',
+        });
+      }
+      else if (this.SchoolId == 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning!',
+          text: 'School Is Required',
+          confirmButtonColor: '#FF7519',
+        });
+      }
+      else if (this.SectionId == 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning!',
+          text: 'Section Is Required',
+          confirmButtonColor: '#FF7519',
+        });
+      }
+      else if (this.GradeId == 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning!',
+          text: 'Grade Is Required',
+          confirmButtonColor: '#FF7519',
+        });
+      }
+    }
+    else {
+      this.IsSearch = true
+      this.GetAllAcademicYear()
+    }
+  }
+
+  GetAllTuitionFeesType() {
+    this.TuitionFeesTypeServ.Get(this.DomainName).subscribe((d) => {
+      this.FeesTypes = d
+    })
+  }
+
+  GetAllDiscountType() {
+    this.FeesDiscountTypeServ.Get(this.DomainName).subscribe((d) => {
+      this.FeesDiscountType = d
+    })
+  }
+
+  GetAllAcademicYear() {
+    this.AcademicYearServ.GetBySchoolId(this.SchoolId, this.DomainName).subscribe((d) => {
+      this.academicYear = d
+    })
+  }
+
+  async Activate() {
+    this.FeesForAdd = [];
+    this.Students.forEach(stu => {
+      var fee: FeesActivationAddPut = new FeesActivationAddPut();
+      fee.academicYearId = this.Fees.academicYearId;
+      fee.amount = this.Fees.amount;
+      fee.date = this.Fees.date;
+      fee.discount = this.Fees.discount;
+      fee.feeDiscountTypeID = this.Fees.feeDiscountTypeID;
+      fee.feeTypeID = this.Fees.feeTypeID;
+      fee.net = this.Fees.net;
+      fee.studentID = stu.studentID;
+
+      this.FeesForAdd.push(fee);
     });
+    try {
+      await lastValueFrom(this.feesActivationServ.Add(this.FeesForAdd, this.DomainName));
+      this.GetStudents();
+    } catch (error) {
+      console.error("Error while activating fees:", error);
+    }
   }
 
-  Search(){
-
+  CalculateDiscountFromPercentage() {
+    if (this.DiscountPercentage >= 0) {
+      this.Fees.discount = (this.Fees.amount * this.DiscountPercentage) / 100;
+      this.CalculateNet();
+    }
   }
 
-  GetAllTuitionFeesType(){
-    this.TuitionFeesTypeServ.Get(this.DomainName).subscribe((d)=>{
-      this.FeesTypes=d
+  CalculatePercentageFromDiscount() {
+    this.DiscountPercentage = 0
+    if (this.Fees.amount > 0) {
+      this.DiscountPercentage = (this.Fees.discount / this.Fees.amount) * 100;
+      this.CalculateNet();
+    }
+  }
+
+  CalculateNet() {
+    this.Fees.net = this.Fees.amount - this.Fees.discount;
+  }
+
+  CalculateNetForEdit(row: FeesActivation) {
+    row.net = row.amount - row.discount;
+  }
+
+  Edit(id: number) {
+    this.IsEdit = true
+    this.editingRowId = id
+  }
+
+  Save(row: FeesActivation) {
+    this.editingRowId = null;
+    var fee: FeesActivationAddPut = new FeesActivationAddPut()
+    fee.academicYearId = row.academicYearId;
+    fee.amount = row.amount;
+    fee.date = row.date;
+    fee.discount = row.discount;
+    fee.feeDiscountTypeID = row.feeDiscountTypeID;
+    fee.feeTypeID = row.feeTypeID;
+    fee.net = row.net;
+    fee.studentID = row.studentID;
+    fee.feeActivationID = row.feeActivationID;
+    this.feesActivationServ.Edit(fee, this.DomainName).subscribe((d) => {
+      this.GetAllFeesData();
+      this.GetStudents();
     })
   }
-
-  GetAllDiscountType(){
-    this.FeesDiscountTypeServ.Get(this.DomainName).subscribe((d)=>{
-      this.FeesDiscountType=d
-    })
-  }
-
-  GetAllAcademicYear(){
-    
-  }
-  
 }

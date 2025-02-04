@@ -61,6 +61,42 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             return Ok(AcademicYearDTOs);
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("BySchoolId/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee", "parent" },
+            pages: new[] { "Academic Years", "Administrator" , "Fees Activation" }
+        )]
+        public async Task<IActionResult> GetBySchoolIdAsync(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            List<AcademicYear> academicYear = await Unit_Of_Work.academicYear_Repository.Select_All_With_IncludesById<AcademicYear>(
+                    sem => sem.IsDeleted != true && sem.SchoolID==id,
+                    query => query.Include(emp => emp.School));
+
+            if (academicYear == null || academicYear.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<AcademicYearGet> AcademicYearDTOs = mapper.Map<List<AcademicYearGet>>(academicYear);
+
+            return Ok(AcademicYearDTOs);
+        }
+
         //////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("{id}")]

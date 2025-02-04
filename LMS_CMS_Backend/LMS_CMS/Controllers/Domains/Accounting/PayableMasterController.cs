@@ -33,15 +33,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
            allowedTypes: new[] { "octa", "employee" },
            pages: new[] { "Payable", "Accounting" }
         )]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 10;
+
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<PayableMaster> Payables = await Unit_Of_Work.payableMaster_Repository.Select_All_With_IncludesById<PayableMaster>(
+            int totalRecords = await Unit_Of_Work.payableMaster_Repository
+                .CountAsync(f => f.IsDeleted != true);
+
+            List<PayableMaster> Payables = await Unit_Of_Work.payableMaster_Repository.Select_All_With_IncludesById_Pagination<PayableMaster>(
                     t => t.IsDeleted != true,
                     query => query.Include(Master => Master.PayableDocType),
                     query => query.Include(Master => Master.LinkFile)
-                    );
+                    )
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             if (Payables == null || Payables.Count == 0)
             {
@@ -70,7 +79,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
             }
 
-            return Ok(DTOs);
+            var paginationMetadata = new
+            {
+                TotalRecords = totalRecords,
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+
+            return Ok(new { Data = DTOs, Pagination = paginationMetadata });
         }
 
         //////////////////////////////////////////////////////////////////////////////

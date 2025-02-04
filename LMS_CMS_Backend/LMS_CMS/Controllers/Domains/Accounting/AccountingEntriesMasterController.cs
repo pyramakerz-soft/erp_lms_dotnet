@@ -33,14 +33,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
            allowedTypes: new[] { "octa", "employee" },
            pages: new[] { "Accounting Entries", "Accounting" }
         )]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 10;
+
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<AccountingEntriesMaster> AccountingEntriesMasters = await Unit_Of_Work.accountingEntriesMaster_Repository.Select_All_With_IncludesById<AccountingEntriesMaster>(
+            int totalRecords = await Unit_Of_Work.accountingEntriesMaster_Repository
+                .CountAsync(f => f.IsDeleted != true);
+
+            List<AccountingEntriesMaster> AccountingEntriesMasters = await Unit_Of_Work.accountingEntriesMaster_Repository.Select_All_With_IncludesById_Pagination<AccountingEntriesMaster>(
                     t => t.IsDeleted != true,
                     query => query.Include(Master => Master.AccountingEntriesDocType)
-                    );
+                    )
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             if (AccountingEntriesMasters == null || AccountingEntriesMasters.Count == 0)
             {
@@ -49,7 +58,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             List<AccountingEntriesMasterGetDTO> DTOs = mapper.Map<List<AccountingEntriesMasterGetDTO>>(AccountingEntriesMasters);
 
-            return Ok(DTOs);
+            var paginationMetadata = new
+            {
+                TotalRecords = totalRecords,
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+
+            return Ok(new { Data = DTOs, Pagination = paginationMetadata });
         }
 
         //////////////////////////////////////////////////////////////////////////////

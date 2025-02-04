@@ -34,15 +34,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
            allowedTypes: new[] { "octa", "employee" },
            pages: new[] { "Receivable", "Accounting" }
         )]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 10;
+
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<ReceivableMaster> Receivables = await Unit_Of_Work.receivableMaster_Repository.Select_All_With_IncludesById<ReceivableMaster>(
+            int totalRecords = await Unit_Of_Work.receivableMaster_Repository
+                .CountAsync(f => f.IsDeleted != true);
+
+            List<ReceivableMaster> Receivables = await Unit_Of_Work.receivableMaster_Repository.Select_All_With_IncludesById_Pagination<ReceivableMaster>(
                     t => t.IsDeleted != true ,
                     query => query.Include(Master => Master.ReceivableDocType),
-                    query => query.Include(Master => Master.LinkFile) 
-                    );
+                    query => query.Include(Master => Master.LinkFile)
+                    )
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             if (Receivables == null || Receivables.Count == 0)
             {
@@ -71,7 +80,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
             }
 
-            return Ok(DTOs);
+            var paginationMetadata = new
+            {
+                TotalRecords = totalRecords,
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+
+            return Ok(new { Data = DTOs, Pagination = paginationMetadata });
         }
 
         //////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250204075652_DateInFeesActivation")]
+    partial class DateInFeesActivation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -634,8 +637,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("AcademicYearId")
                         .HasColumnType("bigint");
 
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
 
                     b.Property<string>("Date")
                         .IsRequired()
@@ -650,8 +653,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<float>("Discount")
-                        .HasColumnType("real");
+                    b.Property<int>("Discount")
+                        .HasColumnType("int");
 
                     b.Property<long?>("FeeDiscountTypeID")
                         .HasColumnType("bigint");
@@ -671,8 +674,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<float>("Net")
-                        .HasColumnType("real");
+                    b.Property<int>("Net")
+                        .HasColumnType("int");
 
                     b.Property<long>("StudentID")
                         .HasColumnType("bigint");

@@ -386,11 +386,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 }
                 if (NewAccountingTreeChart.SubTypeID == 2)
                 {
-                    if (NewAccountingTreeChart.LinkFileID == 0 || NewAccountingTreeChart.LinkFileID == null)
-                    {
-                        return BadRequest("Link File cannot be null");
-                    }
-
                     if(NewAccountingTreeChart.MainAccountNumberID == null || NewAccountingTreeChart.MainAccountNumberID == 0)
                     {
                         return BadRequest("Main Account Number ID cannot be null");
@@ -577,12 +572,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             }
 
             if (EditedAccountingTreeChart.SubTypeID == 2)
-            {
-                if (EditedAccountingTreeChart.LinkFileID == 0 || EditedAccountingTreeChart.LinkFileID == null)
-                {
-                    return BadRequest("Link File cannot be null");
-                }
-
+            { 
                 if (EditedAccountingTreeChart.MainAccountNumberID == null || EditedAccountingTreeChart.MainAccountNumberID == 0)
                 {
                     return BadRequest("Main Accounting Number ID cannot be null");

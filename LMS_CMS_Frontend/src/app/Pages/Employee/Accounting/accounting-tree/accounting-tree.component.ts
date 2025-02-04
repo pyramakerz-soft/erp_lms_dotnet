@@ -269,7 +269,7 @@ export class AccountingTreeComponent {
         const field = key as keyof AccountingTreeChart;
         if (!this.accountingTreeChart[field]) {
           if(field == "name" || field == "subTypeID" || field == "id" 
-            || (this.accountingTreeChart.subTypeID == 2 && (field == "linkFileID" || field == "mainAccountNumberID"))
+            || (this.accountingTreeChart.subTypeID == 2 && field == "mainAccountNumberID")
             || ((this.accountingTreeChart.mainAccountNumberID == 0 ) && (field == "motionTypeID" || field == "endTypeID"))){
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
@@ -297,7 +297,6 @@ export class AccountingTreeComponent {
       this.validationErrors[field] = '';
     }
     if(field == "subTypeID"){
-      this.validationErrors["linkFileID"] = ''
       this.validationErrors["mainAccountNumberID"] = ''
     }
     if(field == "mainAccountNumberID"){

@@ -1,0 +1,62 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToReceivable()"></i>
+        <h1 *ngIf="isCreate" class="primaryTxt font-semibold text-2xl leading-9"> Create Receivable</h1>
+        <h1 *ngIf="isEdit" class="primaryTxt font-semibold text-2xl leading-9"> Edit Receivable</h1>
+        <h1 *ngIf="isView" class="primaryTxt font-semibold text-2xl leading-9"> Receivable</h1>
+    </div>
+</div>
+
+<div class="mt-6">
+    <div class="flex justify-between">
+        <div class="flex flex-col w-[30%]">
+            <label class="mb-2 primaryTxt" for="receivableDocTypesID">Doc Type</label>
+            <select (ngModelChange)="onInputValueChange({ field: 'receivableDocTypesID', value: $event })"
+            class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="receivableDocTypesID" [(ngModel)]="receivable.receivableDocTypesID">
+                <option [value]="0" disabled selected hidden>Choose Doc Type</option>
+                <option *ngFor="let dataType of dataTypesData" [value]="dataType.id">{{ dataType.name }}</option>
+                <option *ngIf="dataTypesData.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
+        <div class="flex flex-col w-[30%]">
+            <label class="mb-2 primaryTxt font-medium" for="DocType">Doc Number</label>
+            <input id="DocType" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                (input)="validateNumber($event)" 
+                placeholder="Enter Doc Type" [(ngModel)]="receivable.docNumber" />
+        </div>
+        <div class="flex flex-col w-[30%]"> 
+            <div class="mb-2 flex justify-evenly">
+                <div class="flex space-x-2 items-center">
+                    <input type="radio" 
+                    id="save" 
+                    class="square-radio"
+                    name="linkFile"
+                    [(ngModel)]="receivable.linkFileID"
+                    (ngModelChange)="getSaveData()"
+                    [value]="5"/>
+                    <label for="save" class="ml-2">Save ID</label>
+                </div>
+
+                <div class="flex space-x-2 items-center">
+                    <input type="radio" 
+                    id="bank" 
+                    class="square-radio"
+                    name="linkFile"
+                    [(ngModel)]="receivable.linkFileID"
+                    (ngModelChange)="getBankData()"
+                    [value]="6"/>
+                    <label for="bank" class="ml-2">Bank ID</label>
+                </div> 
+            </div> 
+            <select (ngModelChange)="onInputValueChange({ field: 'bankOrSaveID', value: $event })"
+            class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bankOrSaveID" 
+            [(ngModel)]="receivable.bankOrSaveID">
+                <option [value]="0" disabled selected hidden>Choose Data</option>
+                <option *ngFor="let bankOrSave of bankOrSaveData" [value]="bankOrSave.id">{{ bankOrSave.name }}</option>
+                <option *ngIf="bankOrSaveData.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()"> Save </button>

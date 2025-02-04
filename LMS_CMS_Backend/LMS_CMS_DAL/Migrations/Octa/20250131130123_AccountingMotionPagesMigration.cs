@@ -17,13 +17,13 @@ namespace LMS_CMS_DAL.Migrations.Octa
                 (67, 'Add Children', N'إضافة الأطفال', 48, 1),
                 (68, 'Fees Activation', N'تفعيل الرسوم', 48, 1),
                 (69, 'Receivable', N'مستحق القبض', 48, 1),
-                (70, 'Receivable Details', N'تفاصيل المستحقات', 48, 1),
+                (70, 'Receivable Details', N'تفاصيل المستحقات', 48, 0),
                 (71, 'Payable', N'مستحق الدفع', 48, 1),
-                (72, 'Payable Details', N'تفاصيل الدفع', 48, 1),
+                (72, 'Payable Details', N'تفاصيل الدفع', 48, 0),
                 (73, 'Installment Deduction', N'خصم الأقساط', 48, 1),
-                (74, 'Installment Deduction Details', N'تفاصيل خصم الأقساط', 48, 1),
+                (74, 'Installment Deduction Details', N'تفاصيل خصم الأقساط', 48, 0),
                 (75, 'Accounting Entries', N'القيود المحاسبية', 48, 1),
-                (76, 'Accounting Entries Details', N'تفاصيل القيود المحاسبية', 48, 1);
+                (76, 'Accounting Entries Details', N'تفاصيل القيود المحاسبية', 48, 0);
             ");
         }
 

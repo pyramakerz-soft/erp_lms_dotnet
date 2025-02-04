@@ -83,6 +83,8 @@ import { AccountingStudentComponent } from './Pages/Employee/Accounting/accounti
 import { AccountingStudentEditComponent } from './Pages/Employee/Accounting/accounting-student-edit/accounting-student-edit.component';
 import { AddChildComponent } from './Pages/Employee/Accounting/add-child/add-child.component';
 import { FeesActivationComponent } from './Pages/Employee/Accounting/fees-activation/fees-activation.component';
+import { ReceivableComponent } from './Pages/Employee/Accounting/receivable/receivable.component';
+import { ReceivableDetailsComponent } from './Pages/Employee/Accounting/receivable-details/receivable-details.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -159,8 +161,11 @@ export const routes: Routes = [
             { path: "Student Accounting", component: AccountingStudentComponent, title: "Student Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Student Edit Accounting/:id", component: AccountingStudentEditComponent, title: "Student Edit Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Add Children", component: AddChildComponent, title: "Add Children" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Fees Activation", component: FeesActivationComponent, title: "Add Children" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-      
+            { path: "Fees Activation", component: FeesActivationComponent, title: "Fees Activation" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Receivable", component: ReceivableComponent, title: "Receivable" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Receivable Details", component: ReceivableDetailsComponent, title: "Receivable Details" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Receivable Details/:id", component: ReceivableDetailsComponent, title: "Edit Receivable Details" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Receivable Details/View/:id", component: ReceivableDetailsComponent, title: "View Receivable Details" , canActivate:[noNavigateWithoutLoginGuard ]},
         ]
     },
     { 

@@ -158,7 +158,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             Unit_Of_Work.installmentDeductionMaster_Repository.Add(installmentDeductionMaster);
             Unit_Of_Work.SaveChanges();
-            return Ok(newMaster);
+            return Ok(installmentDeductionMaster.ID);
         }
 
         ///////

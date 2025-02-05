@@ -18,3 +18,7 @@
     border-radius: 100%;
     background-color: #FF7519;  
 }
+
+button[disabled] {
+    cursor: not-allowed !important; 
+}

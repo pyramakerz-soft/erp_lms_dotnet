@@ -29,17 +29,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
         ///////////////////////////////////////////
 
-        [HttpGet]
+        [HttpGet("GetByMasterID/{id}")]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            pages: new[] { "Payable Details", "Accounting" }
         )]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             List<PayableDetails> PayableDetails = await Unit_Of_Work.payableDetails_Repository.Select_All_With_IncludesById<PayableDetails>(
-                    t => t.IsDeleted != true,
+                    t => t.IsDeleted != true && t.PayableMasterID == id,
                     query => query.Include(Master => Master.PayableMaster),
                     query => query.Include(Master => Master.LinkFile)
                     );

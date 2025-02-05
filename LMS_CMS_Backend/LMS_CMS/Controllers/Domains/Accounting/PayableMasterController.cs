@@ -220,7 +220,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             Unit_Of_Work.payableMaster_Repository.Add(PayableMaster);
             Unit_Of_Work.SaveChanges();
-            return Ok(newMaster);
+            return Ok(new PayableMasterPutDTO { ID = PayableMaster.ID });
         }
 
         //////////////////////////////////////////////////////////////////////////////

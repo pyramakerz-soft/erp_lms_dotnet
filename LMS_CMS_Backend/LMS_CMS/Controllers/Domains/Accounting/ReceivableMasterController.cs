@@ -220,7 +220,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             Unit_Of_Work.receivableMaster_Repository.Add(ReceivableMaster);
             Unit_Of_Work.SaveChanges();
-            return Ok(newMaster);
+            return Ok(new ReceivablePutDTO { ID = ReceivableMaster.ID });
         }
 
         //////////////////////////////////////////////////////////////////////////////

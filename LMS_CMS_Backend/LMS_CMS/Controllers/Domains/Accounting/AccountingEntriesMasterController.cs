@@ -146,7 +146,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             Unit_Of_Work.accountingEntriesMaster_Repository.Add(AccountingEntriesMaster);
             Unit_Of_Work.SaveChanges();
-            return Ok(newMaster);
+            return Ok(new AccountingEntriesMasterPutDTO { ID = AccountingEntriesMaster.ID });
         }
 
         //////////////////////////////////////////////////////////////////////////////

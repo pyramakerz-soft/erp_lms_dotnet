@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Receivable } from '../../../Models/Accounting/receivable';
+import { ReceivableDetails } from '../../../Models/Accounting/receivable-details';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../../api.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ReceivableService {
+export class ReceivableDetailsService {
 
   baseUrl = ""
   header = ""
@@ -16,7 +16,7 @@ export class ReceivableService {
   }
 
 
-  Get(DomainName: string, pageNumber:number, pageSize:number) {
+  Get(DomainName: string, id:number) {
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -25,7 +25,7 @@ export class ReceivableService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<{ data: Receivable[], pagination: any }>(`${this.baseUrl}/ReceivableMaster?pageNumber=${pageNumber}&pageSize=${pageSize}`, { headers });
+    return this.http.get<ReceivableDetails[]>(`${this.baseUrl}/ReceivableDetails/GetByMasterID/${id}`, { headers });
   }
   
   GetByID(id:number, DomainName: string) {
@@ -37,10 +37,10 @@ export class ReceivableService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<Receivable>(`${this.baseUrl}/ReceivableMaster/${id}`, { headers });
+    return this.http.get<ReceivableDetails>(`${this.baseUrl}/ReceivableDetails/${id}`, { headers });
   }
 
-  Add(Receivable: Receivable, DomainName: string){
+  Add(ReceivableDetails: ReceivableDetails, DomainName: string){
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -50,13 +50,13 @@ export class ReceivableService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
 
-    return this.http.post<any>(`${this.baseUrl}/ReceivableMaster`, Receivable, {
+    return this.http.post<any>(`${this.baseUrl}/ReceivableDetails`, ReceivableDetails, {
       headers: headers,
       responseType: 'text' as 'json'
     });
   }
 
-  Edit(Receivable: Receivable, DomainName: string){
+  Edit(ReceivableDetails: ReceivableDetails, DomainName: string){
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -65,7 +65,7 @@ export class ReceivableService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.put<any>(`${this.baseUrl}/ReceivableMaster`, Receivable, { headers });
+    return this.http.put<any>(`${this.baseUrl}/ReceivableDetails`, ReceivableDetails, { headers });
   }
 
   Delete(id: number, DomainName: string) {
@@ -77,7 +77,6 @@ export class ReceivableService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.delete(`${this.baseUrl}/ReceivableMaster/${id}`, { headers })
+    return this.http.delete(`${this.baseUrl}/ReceivableDetails/${id}`, { headers })
   }
-
 }

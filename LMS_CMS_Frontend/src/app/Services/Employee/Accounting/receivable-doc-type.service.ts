@@ -26,4 +26,56 @@ export class ReceivableDocTypeService {
       .set('Content-Type', 'application/json');
     return this.http.get<ReceivableDocType[]>(`${this.baseUrl}/ReceivableDocType`, { headers });
   }
+
+  GetByID(id: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<ReceivableDocType>(`${this.baseUrl}/ReceivableDocType/${id}`, { headers });
+  }
+
+  Add(Receivable: ReceivableDocType, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+
+    return this.http.post<any>(`${this.baseUrl}/ReceivableDocType`, Receivable, {
+      headers: headers,
+      responseType: 'text' as 'json'
+    });
+  }
+
+  Edit(Receivable: ReceivableDocType, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.put<any>(`${this.baseUrl}/ReceivableDocType`, Receivable, { headers });
+  }
+
+  Delete(id: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.delete(`${this.baseUrl}/ReceivableDocType/${id}`, { headers })
+  }
 }

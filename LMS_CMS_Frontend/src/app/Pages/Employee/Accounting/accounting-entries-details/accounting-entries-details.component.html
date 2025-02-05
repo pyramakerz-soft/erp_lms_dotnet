@@ -111,33 +111,33 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <input id="debitAmount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                        (input)="validateNumber($event)" [(ngModel)]="newDetails.debitAmount" 
+                        (ngModelChange)="onInputValueChangeForDetails({ field: 'debitAmount', value: $event })"/>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <input id="creditAmount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                         (input)="validateNumber($event)" [(ngModel)]="newDetails.creditAmount" 
                         (ngModelChange)="onInputValueChangeForDetails({ field: 'creditAmount', value: $event })"/>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input id="debitAmount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                        (input)="validateNumber($event)" [(ngModel)]="newDetails.debitAmount" 
-                        (ngModelChange)="onInputValueChangeForDetails({ field: 'debitAmount', value: $event })"/>
-                    </td>
-                    <!-- <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <select (change)="GetLinkFilesTypeData()"
-                        (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileID', value: $event })"
-                        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFileID" [(ngModel)]="newDetails.linkFileID">
-                            <option [value]="0" disabled selected hidden>Choose Link File</option>
-                            <option *ngFor="let linkFile of linkFilesData" [value]="linkFile.id">{{ linkFile.name }}</option>
-                            <option *ngIf="linkFilesData.length === 0" disabled selected>No Data Found</option>
+                        <select (change)="GetSubAccountData($event)"
+                        (ngModelChange)="onInputValueChangeForDetails({ field: 'accountingTreeChartID', value: $event })"
+                        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="accountingTreeChartID" [(ngModel)]="newDetails.accountingTreeChartID">
+                            <option [value]="0" disabled selected hidden>Choose Account</option>
+                            <option *ngFor="let acc of AccountingTreeChartData" [value]="acc.id">{{ acc.name }}</option>
+                            <option *ngIf="AccountingTreeChartData.length === 0" disabled selected>No Data Found</option>
                         </select>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <select [disabled]="this.newDetails.linkFileID == 0"
-                        (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileTypeID', value: $event })"
-                        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFileTypeID" [(ngModel)]="newDetails.linkFileTypeID">
-                            <option [value]="0" disabled selected hidden>Choose Link File Data</option>
-                            <option *ngFor="let linkFile of linkFileTypesData" [value]="linkFile.id">{{ linkFile.name }}</option>
-                            <option *ngIf="linkFileTypesData.length === 0" disabled selected>No Data Found</option>
+                        <select [disabled]="this.newDetails.accountingTreeChartID == 0"
+                        (ngModelChange)="onInputValueChangeForDetails({ field: 'subAccountingID', value: $event })"
+                        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subAccountingID" [(ngModel)]="newDetails.subAccountingID">
+                            <option [value]="null" disabled selected hidden>Choose Sub Account Data</option>
+                            <option *ngFor="let sub of subAccountData" [value]="sub.id">{{ sub.name }}</option>
+                            <option *ngIf="subAccountData.length === 0" disabled selected>No Data Found</option>
                         </select>
-                    </td> -->
+                    </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <textarea id="notes" class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3" 
                             placeholder="Add Notes" [(ngModel)]="newDetails.note">

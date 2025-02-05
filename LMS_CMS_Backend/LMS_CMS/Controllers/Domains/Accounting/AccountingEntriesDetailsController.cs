@@ -285,102 +285,106 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (AccountingTreeChart.LinkFileID != null)
             {
-                if (AccountingTreeChart.LinkFileID == 6) // Bank
-                {
-                    Bank Bank = Unit_Of_Work.bank_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (Bank == null)
+                if(newDetails.SubAccountingID != null || newDetails.SubAccountingID != 0)
+                { 
+                    if (AccountingTreeChart.LinkFileID == 6) // Bank
                     {
-                        return BadRequest("There is no Bank with this ID in the database.");
+                        Bank Bank = Unit_Of_Work.bank_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (Bank == null)
+                        {
+                            return BadRequest("There is no Bank with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 5) // Save
+                    {
+                        Save Save = Unit_Of_Work.save_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (Save == null)
+                        {
+                            return BadRequest("There is no Save with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 2) // Supplier
+                    {
+                        Supplier supplier = Unit_Of_Work.supplier_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (supplier == null)
+                        {
+                            return BadRequest("There is no Supplier with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 3) // Debit
+                    {
+                        Debit debit = Unit_Of_Work.debit_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (debit == null)
+                        {
+                            return BadRequest("There is no Debit with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 4) // Credit
+                    {
+                        Credit credit = Unit_Of_Work.credit_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (credit == null)
+                        {
+                            return BadRequest("There is no Credit with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 7) // Income
+                    {
+                        Income income = Unit_Of_Work.income_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (income == null)
+                        {
+                            return BadRequest("There is no Income with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 8) // Outcome
+                    {
+                        Outcome outcome = Unit_Of_Work.outcome_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (outcome == null)
+                        {
+                            return BadRequest("There is no Outcome with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 9) // Asset
+                    {
+                        Asset asset = Unit_Of_Work.asset_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (asset == null)
+                        {
+                            return BadRequest("There is no Asset with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 10) // Employee
+                    {
+                        Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (employee == null)
+                        {
+                            return BadRequest("There is no Employee with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 11) // Fee
+                    {
+                        TuitionFeesType fee = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (fee == null)
+                        {
+                            return BadRequest("There is no Fee with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 12) // Discount
+                    {
+                        TuitionDiscountType discount = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (discount == null)
+                        {
+                            return BadRequest("There is no Discount with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 13) // Student
+                    {
+                        Student student = Unit_Of_Work.student_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
+                        if (student == null)
+                        {
+                            return BadRequest("There is no Student with this ID in the database.");
+                        }
                     }
                 }
-                else if (AccountingTreeChart.LinkFileID == 5) // Save
-                {
-                    Save Save = Unit_Of_Work.save_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (Save == null)
-                    {
-                        return BadRequest("There is no Save with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 2) // Supplier
-                {
-                    Supplier supplier = Unit_Of_Work.supplier_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (supplier == null)
-                    {
-                        return BadRequest("There is no Supplier with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 3) // Debit
-                {
-                    Debit debit = Unit_Of_Work.debit_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (debit == null)
-                    {
-                        return BadRequest("There is no Debit with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 4) // Credit
-                {
-                    Credit credit = Unit_Of_Work.credit_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (credit == null)
-                    {
-                        return BadRequest("There is no Credit with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 7) // Income
-                {
-                    Income income = Unit_Of_Work.income_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (income == null)
-                    {
-                        return BadRequest("There is no Income with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 8) // Outcome
-                {
-                    Outcome outcome = Unit_Of_Work.outcome_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (outcome == null)
-                    {
-                        return BadRequest("There is no Outcome with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 9) // Asset
-                {
-                    Asset asset = Unit_Of_Work.asset_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (asset == null)
-                    {
-                        return BadRequest("There is no Asset with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 10) // Employee
-                {
-                    Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (employee == null)
-                    {
-                        return BadRequest("There is no Employee with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 11) // Fee
-                {
-                    TuitionFeesType fee = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (fee == null)
-                    {
-                        return BadRequest("There is no Fee with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 12) // Discount
-                {
-                    TuitionDiscountType discount = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (discount == null)
-                    {
-                        return BadRequest("There is no Discount with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 13) // Student
-                {
-                    Student student = Unit_Of_Work.student_Repository.First_Or_Default(t => t.ID == newDetails.SubAccountingID);
-                    if (student == null)
-                    {
-                        return BadRequest("There is no Student with this ID in the database.");
-                    }
-                }
+
 
                 AccountingEntriesDetails = mapper.Map<AccountingEntriesDetails>(newDetails);
 
@@ -538,102 +542,106 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (AccountingTreeChart.LinkFileID != null)
             {
-                if (AccountingTreeChart.LinkFileID == 6) // Bank
+                if (newDetail.SubAccountingID != null || newDetail.SubAccountingID != 0)
                 {
-                    Bank Bank = Unit_Of_Work.bank_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (Bank == null)
+                    if (AccountingTreeChart.LinkFileID == 6) // Bank
                     {
-                        return BadRequest("There is no Bank with this ID in the database.");
+                        Bank Bank = Unit_Of_Work.bank_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (Bank == null)
+                        {
+                            return BadRequest("There is no Bank with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 5) // Save
+                    {
+                        Save Save = Unit_Of_Work.save_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (Save == null)
+                        {
+                            return BadRequest("There is no Save with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 2) // Supplier
+                    {
+                        Supplier supplier = Unit_Of_Work.supplier_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (supplier == null)
+                        {
+                            return BadRequest("There is no Supplier with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 3) // Debit
+                    {
+                        Debit debit = Unit_Of_Work.debit_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (debit == null)
+                        {
+                            return BadRequest("There is no Debit with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 4) // Credit
+                    {
+                        Credit credit = Unit_Of_Work.credit_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (credit == null)
+                        {
+                            return BadRequest("There is no Credit with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 7) // Income
+                    {
+                        Income income = Unit_Of_Work.income_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (income == null)
+                        {
+                            return BadRequest("There is no Income with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 8) // Outcome
+                    {
+                        Outcome outcome = Unit_Of_Work.outcome_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (outcome == null)
+                        {
+                            return BadRequest("There is no Outcome with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 9) // Asset
+                    {
+                        Asset asset = Unit_Of_Work.asset_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (asset == null)
+                        {
+                            return BadRequest("There is no Asset with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 10) // Employee
+                    {
+                        Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (employee == null)
+                        {
+                            return BadRequest("There is no Employee with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 11) // Fee
+                    {
+                        TuitionFeesType fee = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (fee == null)
+                        {
+                            return BadRequest("There is no Fee with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 12) // Discount
+                    {
+                        TuitionDiscountType discount = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (discount == null)
+                        {
+                            return BadRequest("There is no Discount with this ID in the database.");
+                        }
+                    }
+                    else if (AccountingTreeChart.LinkFileID == 13) // Student
+                    {
+                        Student student = Unit_Of_Work.student_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
+                        if (student == null)
+                        {
+                            return BadRequest("There is no Student with this ID in the database.");
+                        }
                     }
                 }
-                else if (AccountingTreeChart.LinkFileID == 5) // Save
-                {
-                    Save Save = Unit_Of_Work.save_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (Save == null)
-                    {
-                        return BadRequest("There is no Save with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 2) // Supplier
-                {
-                    Supplier supplier = Unit_Of_Work.supplier_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (supplier == null)
-                    {
-                        return BadRequest("There is no Supplier with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 3) // Debit
-                {
-                    Debit debit = Unit_Of_Work.debit_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (debit == null)
-                    {
-                        return BadRequest("There is no Debit with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 4) // Credit
-                {
-                    Credit credit = Unit_Of_Work.credit_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (credit == null)
-                    {
-                        return BadRequest("There is no Credit with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 7) // Income
-                {
-                    Income income = Unit_Of_Work.income_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (income == null)
-                    {
-                        return BadRequest("There is no Income with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 8) // Outcome
-                {
-                    Outcome outcome = Unit_Of_Work.outcome_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (outcome == null)
-                    {
-                        return BadRequest("There is no Outcome with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 9) // Asset
-                {
-                    Asset asset = Unit_Of_Work.asset_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (asset == null)
-                    {
-                        return BadRequest("There is no Asset with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 10) // Employee
-                {
-                    Employee employee = Unit_Of_Work.employee_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (employee == null)
-                    {
-                        return BadRequest("There is no Employee with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 11) // Fee
-                {
-                    TuitionFeesType fee = Unit_Of_Work.tuitionFeesType_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (fee == null)
-                    {
-                        return BadRequest("There is no Fee with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 12) // Discount
-                {
-                    TuitionDiscountType discount = Unit_Of_Work.tuitionDiscountType_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (discount == null)
-                    {
-                        return BadRequest("There is no Discount with this ID in the database.");
-                    }
-                }
-                else if (AccountingTreeChart.LinkFileID == 13) // Student
-                {
-                    Student student = Unit_Of_Work.student_Repository.First_Or_Default(t => t.ID == newDetail.SubAccountingID);
-                    if (student == null)
-                    {
-                        return BadRequest("There is no Student with this ID in the database.");
-                    }
-                }
+
 
                 mapper.Map(newDetail, AccountingEntriesDetails);
 

@@ -20,6 +20,8 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import Swal from 'sweetalert2';
+import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
+import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 
 @Component({
   selector: 'app-accounting-entries-details',
@@ -53,6 +55,8 @@ export class AccountingEntriesDetailsComponent {
   dataTypesData: AccountingEntriesDocType[] = []
   bankOrSaveData: any[] = []
   accountingEntriesDetailsData: AccountingEntriesDetails[] = []
+  AccountingTreeChartData: AccountingTreeChart[] = []
+  subAccountData: any[] = []
   newDetails:AccountingEntriesDetails = new AccountingEntriesDetails()
   totalCredit: number = 0;
   totalDebit: number = 0;
@@ -68,7 +72,7 @@ export class AccountingEntriesDetailsComponent {
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public accountingEntriesDocTypeService:AccountingEntriesDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public accountingEntriesService:AccountingEntriesService,
     public bankService:BankService, public saveService:SaveService, public accountingEntriesDetailsService:AccountingEntriesDetailsService, public linkFileService:LinkFileService,
-    public dataAccordingToLinkFileService: DataAccordingToLinkFileService){}
+    public dataAccordingToLinkFileService: DataAccordingToLinkFileService, public accountingTreeChartService:AccountingTreeChartService){}
     
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -119,6 +123,37 @@ export class AccountingEntriesDetailsComponent {
         this.dataTypesData = data
       }
     )
+  }
+
+  GetAccountingTreeChartData(){
+    this.accountingTreeChartService.GetBySubID(this.DomainName).subscribe(
+      (data) => { 
+        this.AccountingTreeChartData = data
+      }
+    )
+  }
+
+  GetSubAccountData(event: Event) {
+    this.subAccountData = []
+    const target = event.target as HTMLSelectElement;
+    const selectedValue = target ? target.value : null;
+
+    if (selectedValue) {
+      this.accountingTreeChartService.GetByID(+selectedValue, this.DomainName).subscribe(
+        (data) => { 
+          if(data.linkFileID){
+            this.dataAccordingToLinkFileService.Get(this.DomainName, data.linkFileID).subscribe(
+              (data) => {
+                this.subAccountData = data
+              }
+            )
+          } else{
+            this.newDetails.subAccountingID = null
+            this.editedRowData.subAccountingID = null
+          }
+        }
+      )
+    }
   }
   
   GetAccountingEntriesByID(){
@@ -176,14 +211,16 @@ export class AccountingEntriesDetailsComponent {
       this.validationErrorsForDetails[field] = '';
     }
     
-    // if((this.newDetails.amount || this.editedRowData.amount) && 
-    // (!isNaN(this.newDetails.amount) || !isNaN(this.editedRowData.amount)) && 
-    // (this.newDetails.linkFileID || this.editedRowData.linkFileID) && 
-    // (this.newDetails.linkFileTypeID || this.editedRowData.linkFileTypeID)){
-    //   this.isDetailsValid = true
-    // } else{
-    //   this.isDetailsValid = false
-    // } 
+    console.log(this.newDetails.creditAmount)
+    if((this.newDetails.creditAmount || this.editedRowData.creditAmount) && 
+    (this.newDetails.debitAmount || this.editedRowData.debitAmount) && 
+    (!isNaN(this.newDetails.creditAmount) || !isNaN(this.editedRowData.creditAmount)) && 
+    (!isNaN(this.newDetails.debitAmount) || !isNaN(this.editedRowData.debitAmount)) && 
+    (this.newDetails.accountingTreeChartID || this.editedRowData.accountingTreeChartID)){
+      this.isDetailsValid = true
+    } else{
+      this.isDetailsValid = false
+    } 
   }
 
   validateNumber(event: any): void {
@@ -191,6 +228,7 @@ export class AccountingEntriesDetailsComponent {
     if (isNaN(value) || value === '') {
         event.target.value = '';
     }
+
   }
 
   Save(){
@@ -234,10 +272,12 @@ export class AccountingEntriesDetailsComponent {
     this.editingRowId = null; 
     this.editedRowData = new AccountingEntriesDetails(); 
     this.isNewDetails = true 
-    // call sub data
+    this.GetAccountingTreeChartData()
   }
 
   SaveNewDetails(){
+    console.log(this.newDetails)
+
     this.newDetails.accountingEntriesMasterID = this.AccountingEntriesID
     this.accountingEntriesDetailsService.Add(this.newDetails, this.DomainName).subscribe(
       (data) => {

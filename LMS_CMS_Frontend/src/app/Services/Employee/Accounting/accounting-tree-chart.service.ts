@@ -50,6 +50,18 @@ export class AccountingTreeChartService {
     return this.http.get<AccountingTreeChart[]>(`${this.baseUrl}/AccountingTreeChart/GetByMainId`, { headers })
   }
   
+  GetBySubID(DomainName:string) {
+     if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<AccountingTreeChart[]>(`${this.baseUrl}/AccountingTreeChart/GetBySubId`, { headers })
+  }
+  
   GetMainDataChildFiltered(id: number, DomainName: string) {
     if(DomainName!=null) {
       this.header=DomainName 

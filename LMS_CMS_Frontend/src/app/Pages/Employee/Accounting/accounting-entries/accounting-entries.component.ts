@@ -1,26 +1,26 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { TokenData } from '../../../../Models/token-data';
+import { AccountingEntries } from '../../../../Models/Accounting/accounting-entries';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SearchComponent } from '../../../../Component/search/search.component';
-import { TokenData } from '../../../../Models/token-data';
+import { AccountingEntriesService } from '../../../../Services/Employee/Accounting/accounting-entries.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { Receivable } from '../../../../Models/Accounting/receivable';
-import { ReceivableService } from '../../../../Services/Employee/Accounting/receivable.service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-receivable',
+  selector: 'app-accounting-entries',
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
-  templateUrl: './receivable.component.html',
-  styleUrl: './receivable.component.css'
+  templateUrl: './accounting-entries.component.html',
+  styleUrl: './accounting-entries.component.css'
 })
-export class ReceivableComponent { 
+export class AccountingEntriesComponent {
   User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   AllowEdit: boolean = false;
@@ -37,7 +37,7 @@ export class ReceivableComponent {
   key: string = 'id';
   value: any = '';
 
-  receivableData: Receivable[] = []
+  accountingEntriesData: AccountingEntries[] = []
 
   CurrentPage:number = 1
   PageSize:number = 10
@@ -46,9 +46,9 @@ export class ReceivableComponent {
 
   isDeleting:boolean = false;
 
-  constructor(
+constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, 
-    public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public receivableService:ReceivableService){}
+    public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public accountingEntriesService:AccountingEntriesService){}
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -68,7 +68,7 @@ export class ReceivableComponent {
       }
     });
 
-    this.GetReceivableDate(this.DomainName, this.CurrentPage, this.PageSize)
+    this.GetAccountingEntriesDate(this.DomainName, this.CurrentPage, this.PageSize)
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
@@ -119,14 +119,14 @@ export class ReceivableComponent {
     return IsAllow;
   }
 
-  GetReceivableDate(DomainName: string, pageNumber:number, pageSize:number){
-    this.receivableService.Get(DomainName, pageNumber, pageSize).subscribe(
+  GetAccountingEntriesDate(DomainName: string, pageNumber:number, pageSize:number){
+    this.accountingEntriesService.Get(DomainName, pageNumber, pageSize).subscribe(
       (data) => {
         this.CurrentPage = data.pagination.currentPage
         this.PageSize = data.pagination.pageSize
         this.TotalPages = data.pagination.totalPages
         this.TotalRecords = data.pagination.totalRecords 
-        this.receivableData = data.data
+        this.accountingEntriesData = data.data
       }, 
       (error) => { 
         if(error.status == 404){
@@ -144,7 +144,7 @@ export class ReceivableComponent {
               } else{
                 this.CurrentPage = Math.ceil(lastPage) 
               }
-              this.GetReceivableDate(this.DomainName, this.CurrentPage, this.PageSize)
+              this.GetAccountingEntriesDate(this.DomainName, this.CurrentPage, this.PageSize)
             }
           } 
         }
@@ -154,7 +154,7 @@ export class ReceivableComponent {
 
   changeCurrentPage(currentPage:number){
     this.CurrentPage = currentPage
-    this.GetReceivableDate(this.DomainName, this.CurrentPage, this.PageSize)
+    this.GetAccountingEntriesDate(this.DomainName, this.CurrentPage, this.PageSize)
   }
 
   validatePageSize(event: any) { 
@@ -167,18 +167,18 @@ export class ReceivableComponent {
   Create(id?:number, isEdit?:boolean){
     if(id){
       if(isEdit){
-        this.router.navigateByUrl(`Employee/Receivable Details/${id}`)
+        this.router.navigateByUrl(`Employee/Accounting Entries Details/${id}`)
       }else{
-        this.router.navigateByUrl(`Employee/Receivable Details/View/${id}`)
+        this.router.navigateByUrl(`Employee/Accounting Entries Details/View/${id}`)
       }
     } else{
-      this.router.navigateByUrl("Employee/Receivable Details")
+      this.router.navigateByUrl("Employee/Accounting Entries Details")
     }
   }
 
   Delete(id:number){
     Swal.fire({
-      title: 'Are you sure you want to delete this Receivable?',
+      title: 'Are you sure you want to delete this Accounting Entries?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -187,12 +187,12 @@ export class ReceivableComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.receivableService.Delete(id,this.DomainName).subscribe((D)=>{
+        this.accountingEntriesService.Delete(id,this.DomainName).subscribe((D)=>{
           this.isDeleting = true
-          this.GetReceivableDate(this.DomainName, this.CurrentPage, this.PageSize);
+          this.GetAccountingEntriesDate(this.DomainName, this.CurrentPage, this.PageSize);
           if(this.TotalRecords == 1){
             this.TotalRecords = 0
-            this.receivableData = []
+            this.accountingEntriesData = []
           }
         })
       }

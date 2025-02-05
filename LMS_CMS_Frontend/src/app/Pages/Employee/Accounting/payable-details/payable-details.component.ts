@@ -1,34 +1,35 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Payable } from '../../../../Models/Accounting/payable';
+import { PayableDocType } from '../../../../Models/Accounting/payable-doc-type';
+import { PayableDetails } from '../../../../Models/Accounting/payable-details';
+import { LinkFile } from '../../../../Models/Accounting/link-file';
+import { TokenData } from '../../../../Models/token-data';
+import { PayableService } from '../../../../Services/Employee/Accounting/payable.service';
+import { PayableDocTypeService } from '../../../../Services/Employee/Accounting/payable-doc-type.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
-import { ReceivableService } from '../../../../Services/Employee/Accounting/receivable.service';
+import { BankService } from '../../../../Services/Employee/Accounting/bank.service';
+import { DataAccordingToLinkFileService } from '../../../../Services/Employee/Accounting/data-according-to-link-file.service';
+import { LinkFileService } from '../../../../Services/Employee/Accounting/link-file.service';
+import { ReceivableDetailsService } from '../../../../Services/Employee/Accounting/receivable-details.service';
+import { SaveService } from '../../../../Services/Employee/Accounting/save.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { TokenData } from '../../../../Models/token-data';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Receivable } from '../../../../Models/Accounting/receivable';
-import { ReceivableDocType } from '../../../../Models/Accounting/receivable-doc-type';
-import { ReceivableDocTypeService } from '../../../../Services/Employee/Accounting/receivable-doc-type.service';
-import { BankService } from '../../../../Services/Employee/Accounting/bank.service';
-import { SaveService } from '../../../../Services/Employee/Accounting/save.service';
-import { ReceivableDetailsService } from '../../../../Services/Employee/Accounting/receivable-details.service';
-import { ReceivableDetails } from '../../../../Models/Accounting/receivable-details';
-import { LinkFile } from '../../../../Models/Accounting/link-file';
-import { LinkFileService } from '../../../../Services/Employee/Accounting/link-file.service';
-import { DataAccordingToLinkFileService } from '../../../../Services/Employee/Accounting/data-according-to-link-file.service';
+import { PayableDetailsService } from '../../../../Services/Employee/Accounting/payable-details.service';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-receivable-details',
+  selector: 'app-payable-details',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './receivable-details.component.html',
-  styleUrl: './receivable-details.component.css'
+  templateUrl: './payable-details.component.html',
+  styleUrl: './payable-details.component.css'
 })
-export class ReceivableDetailsComponent {
+export class PayableDetailsComponent {
   User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   AllowEdit: boolean = false;
@@ -40,20 +41,20 @@ export class ReceivableDetailsComponent {
   UserID: number = 0;
 
   path: string = '';
-  ReceivableID: number = 0;
+  PayableID: number = 0;
 
   isCreate:boolean = false
   isEdit:boolean = false
   isView:boolean = false
 
-  receivable:Receivable = new Receivable()
-  validationErrors: { [key in keyof Receivable]?: string } = {};
-  validationErrorsForDetails: { [key in keyof ReceivableDetails]?: string } = {};
+  payable:Payable = new Payable()
+  validationErrors: { [key in keyof Payable]?: string } = {};
+  validationErrorsForDetails: { [key in keyof PayableDetails]?: string } = {};
   
-  dataTypesData: ReceivableDocType[] = []
+  dataTypesData: PayableDocType[] = []
   bankOrSaveData: any[] = []
-  receivableDetailsData: ReceivableDetails[] = []
-  newDetails:ReceivableDetails = new ReceivableDetails()
+  payableDetailsData: PayableDetails[] = []
+  newDetails:PayableDetails = new PayableDetails()
   linkFilesData: LinkFile[] = []
   linkFileTypesData: any[] = []
   totalAmount: number = 0;
@@ -62,27 +63,27 @@ export class ReceivableDetailsComponent {
   isDetailsValid:boolean = false
 
   editingRowId: number | null = null;
-  editedRowData:ReceivableDetails = new ReceivableDetails()
+  editedRowData:PayableDetails = new PayableDetails() 
 
   constructor(
-    private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public receivableDocTypeService:ReceivableDocTypeService,
-    public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public receivableService:ReceivableService,
-    public bankService:BankService, public saveService:SaveService, public receivableDetailsService:ReceivableDetailsService, public linkFileService:LinkFileService,
+    private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public payableDocTypeService:PayableDocTypeService,
+    public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public payableService:PayableService,
+    public bankService:BankService, public saveService:SaveService, public payableDetailsService:PayableDetailsService, public linkFileService:LinkFileService,
     public dataAccordingToLinkFileService: DataAccordingToLinkFileService){}
-  
+    
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
 
     this.DomainName = this.ApiServ.GetHeader();
 
-    this.ReceivableID = Number(this.activeRoute.snapshot.paramMap.get('id'))
+    this.PayableID = Number(this.activeRoute.snapshot.paramMap.get('id'))
 
-    if(!this.ReceivableID){
+    if(!this.PayableID){
       this.isCreate = true
     }else{
-      this.GetReceivableByID()
-      this.GetReceivableDetails()
+      this.GetPayableByID()
+      this.GetPayableDetails()
     }
 
     this.activeRoute.url.subscribe(url => {
@@ -90,12 +91,12 @@ export class ReceivableDetailsComponent {
       if(url[1].path == "View"){ 
         this.isView = true
       } else{
-        if(this.ReceivableID){
+        if(this.PayableID){
           this.isEdit = true
         }
       } 
     });
- 
+  
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
@@ -109,25 +110,25 @@ export class ReceivableDetailsComponent {
     this.GetDocType()
   }
 
-  moveToReceivable() {
-    this.router.navigateByUrl("Employee/Receivable")
+  moveToPayable() {
+    this.router.navigateByUrl("Employee/Payable")
   }
   
   GetDocType(){
-    this.receivableDocTypeService.Get(this.DomainName).subscribe(
-      (data) => {
+    this.payableDocTypeService.Get(this.DomainName).subscribe(
+      (data) => { 
         this.dataTypesData = data
       }
     )
   }
   
-  GetReceivableByID(){
-    this.receivableService.GetByID(this.ReceivableID, this.DomainName).subscribe(
+  GetPayableByID(){
+    this.payableService.GetByID(this.PayableID, this.DomainName).subscribe(
       (data) => {
-        this.receivable = data
-        if(this.receivable.linkFileID==5){
+        this.payable = data
+        if(this.payable.linkFileID==5){
           this.getSaveData() 
-        } else if(this.receivable.linkFileID==6){
+        } else if(this.payable.linkFileID==6){
           this.getBankData()
         }
       }
@@ -162,17 +163,17 @@ export class ReceivableDetailsComponent {
     return IsAllow;
   }
 
-  capitalizeField(field: keyof Receivable): string {
+  capitalizeField(field: keyof Payable): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
   isFormValid(): boolean {
     let isValid = true;
-    for (const key in this.receivable) {
-      if (this.receivable.hasOwnProperty(key)) {
-        const field = key as keyof Receivable;
-        if (!this.receivable[field]) {
-          if(field == "receivableDocTypesID" || field == "linkFileID" || field == "bankOrSaveID" || field == "date"){
+    for (const key in this.payable) {
+      if (this.payable.hasOwnProperty(key)) {
+        const field = key as keyof Payable;
+        if (!this.payable[field]) {
+          if(field == "payableDocTypeID" || field == "linkFileID" || field == "bankOrSaveID" || field == "date"){
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
           }
@@ -184,19 +185,19 @@ export class ReceivableDetailsComponent {
     return isValid;
   }
 
-  onInputValueChange(event: { field: keyof Receivable, value: any }) {
+  onInputValueChange(event: { field: keyof Payable, value: any }) {
     const { field, value } = event;
-    (this.receivable as any)[field] = value;
+    (this.payable as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
 
     if(field == "linkFileID"){
-      this.receivable.bankOrSaveID = 0
+      this.payable.bankOrSaveID = 0
     }
   }
 
-  onInputValueChangeForDetails(event: { field: keyof ReceivableDetails, value: any }) {
+  onInputValueChangeForDetails(event: { field: keyof PayableDetails, value: any }) {
     const { field, value } = event;
     (this.newDetails as any)[field] = value;
     if (value) {
@@ -224,38 +225,37 @@ export class ReceivableDetailsComponent {
   }
 
   Save() {
-    if(this.isFormValid()){ 
+    if(this.isFormValid()){
       if(this.isCreate){
-        this.receivableService.Add(this.receivable, this.DomainName).subscribe(
+        this.payableService.Add(this.payable, this.DomainName).subscribe(
           (data) => {
             let id = JSON.parse(data).id
-            this.router.navigateByUrl(`Employee/Receivable Details/${id}`)
+            this.router.navigateByUrl(`Employee/Payable Details/${id}`)
           }
         )
       } else if(this.isEdit){
-        this.receivableService.Edit(this.receivable, this.DomainName).subscribe(
+        this.payableService.Edit(this.payable, this.DomainName).subscribe(
           (data) => {
-            this.GetReceivableByID()
+            this.GetPayableByID()
           }
         )
       }
     }
-  }
+  } 
 
-
-  GetReceivableDetails(){
-    this.receivableDetailsService.Get(this.DomainName, this.ReceivableID).subscribe(
+  GetPayableDetails(){
+    this.payableDetailsService.Get(this.DomainName, this.PayableID).subscribe(
       (data) => {
-        this.receivableDetailsData = data
+        this.payableDetailsData = data
         let total = 0
-        this.receivableDetailsData.forEach(element => {
+        this.payableDetailsData.forEach(element => {
           total = total + element.amount
         });
         this.totalAmount = total
       }
     )
   }
-  
+
   GetLinkFiles(){
     this.linkFileService.Get(this.DomainName).subscribe(
       (data) => {
@@ -272,32 +272,32 @@ export class ReceivableDetailsComponent {
     )
   }
 
-  AddReceivableDetails(){
+  AddPayableDetails(){
     this.isDetailsValid = false
     this.editingRowId = null; 
-    this.editedRowData = new ReceivableDetails(); 
+    this.editedRowData = new PayableDetails(); 
     this.isNewDetails = true
     this.GetLinkFiles()
   }
   
   SaveNewDetails(){
-    this.newDetails.receivableMasterID = this.ReceivableID
-    this.receivableDetailsService.Add(this.newDetails, this.DomainName).subscribe(
+    this.newDetails.payableMasterID = this.PayableID
+    this.payableDetailsService.Add(this.newDetails, this.DomainName).subscribe(
       (data) => {
         this.isNewDetails = false
-        this.newDetails = new ReceivableDetails()
-        this.GetReceivableDetails()
+        this.newDetails = new PayableDetails()
+        this.GetPayableDetails()
         this.editingRowId = null; 
-        this.editedRowData = new ReceivableDetails(); 
+        this.editedRowData = new PayableDetails(); 
         this.isDetailsValid = false
       }
     )
   }
-  
-  EditDetail(row: ReceivableDetails) {
+
+  EditDetail(row: PayableDetails) {
     this.isNewDetails = false
     this.isDetailsValid = true
-    this.newDetails = new ReceivableDetails()
+    this.newDetails = new PayableDetails()
     this.GetLinkFiles()
     this.editingRowId = row.id
     this.editedRowData = { ...row }
@@ -308,25 +308,25 @@ export class ReceivableDetailsComponent {
         }
       )
     }
- 
+  
   }
 
   SaveEditedDetail() {
-    this.receivableDetailsService.Edit(this.editedRowData, this.DomainName).subscribe(
+    this.payableDetailsService.Edit(this.editedRowData, this.DomainName).subscribe(
       (data) =>{
         this.editingRowId = null; 
-        this.editedRowData = new ReceivableDetails(); 
+        this.editedRowData = new PayableDetails(); 
         this.isDetailsValid = false
         this.isNewDetails = false
-        this.newDetails = new ReceivableDetails()
-        this.GetReceivableDetails()
+        this.newDetails = new PayableDetails()
+        this.GetPayableDetails()
       }
     )
   } 
 
   DeleteDetail(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Receivable Detail?',
+      title: 'Are you sure you want to delete this Payable Detail?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -335,9 +335,9 @@ export class ReceivableDetailsComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.receivableDetailsService.Delete(id, this.DomainName).subscribe(
+        this.payableDetailsService.Delete(id, this.DomainName).subscribe(
           (data) => {
-            this.GetReceivableDetails()
+            this.GetPayableDetails()
           }
         )
       }

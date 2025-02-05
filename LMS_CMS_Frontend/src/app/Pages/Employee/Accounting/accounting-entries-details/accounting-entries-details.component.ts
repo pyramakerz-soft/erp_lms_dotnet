@@ -1,0 +1,302 @@
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TokenData } from '../../../../Models/token-data';
+import { AccountingEntries } from '../../../../Models/Accounting/accounting-entries';
+import { AccountingEntriesDetails } from '../../../../Models/Accounting/accounting-entries-details';
+import { AccountingEntriesDocType } from '../../../../Models/Accounting/accounting-entries-doc-type';
+import { LinkFile } from '../../../../Models/Accounting/link-file';
+import { AccountingEntriesDocTypeService } from '../../../../Services/Employee/Accounting/accounting-entries-doc-type.service';
+import { AccountingEntriesService } from '../../../../Services/Employee/Accounting/accounting-entries.service';
+import { AccountingEntriesDetailsService } from '../../../../Services/Employee/Accounting/accounting-entries-details.service';
+import { BankService } from '../../../../Services/Employee/Accounting/bank.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { AccountService } from '../../../../Services/account.service';
+import { ApiService } from '../../../../Services/api.service';
+import { DataAccordingToLinkFileService } from '../../../../Services/Employee/Accounting/data-according-to-link-file.service';
+import { LinkFileService } from '../../../../Services/Employee/Accounting/link-file.service';
+import { SaveService } from '../../../../Services/Employee/Accounting/save.service';
+import { DomainService } from '../../../../Services/Employee/domain.service';
+import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
+import { MenuService } from '../../../../Services/shared/menu.service';
+import Swal from 'sweetalert2';
+
+@Component({
+  selector: 'app-accounting-entries-details',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './accounting-entries-details.component.html',
+  styleUrl: './accounting-entries-details.component.css'
+})
+export class AccountingEntriesDetailsComponent {
+  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
+
+  AllowEdit: boolean = false;
+  AllowDelete: boolean = false;
+  AllowEditForOthers: boolean = false;
+  AllowDeleteForOthers: boolean = false; 
+
+  DomainName: string = '';
+  UserID: number = 0;
+
+  path: string = '';
+  AccountingEntriesID: number = 0;
+
+  isCreate:boolean = false
+  isEdit:boolean = false
+  isView:boolean = false
+
+  accountingEntries:AccountingEntries = new AccountingEntries()
+  validationErrors: { [key in keyof AccountingEntries]?: string } = {};
+  validationErrorsForDetails: { [key in keyof AccountingEntriesDetails]?: string } = {};
+   
+  dataTypesData: AccountingEntriesDocType[] = []
+  bankOrSaveData: any[] = []
+  accountingEntriesDetailsData: AccountingEntriesDetails[] = []
+  newDetails:AccountingEntriesDetails = new AccountingEntriesDetails()
+  totalCredit: number = 0;
+  totalDebit: number = 0;
+  theDifference: number = 0;
+
+  isNewDetails:boolean = false
+  isDetailsValid:boolean = false
+
+  editingRowId: number | null = null;
+  editedRowData:AccountingEntriesDetails = new AccountingEntriesDetails() 
+
+  constructor(
+    private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public accountingEntriesDocTypeService:AccountingEntriesDocTypeService,
+    public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public accountingEntriesService:AccountingEntriesService,
+    public bankService:BankService, public saveService:SaveService, public accountingEntriesDetailsService:AccountingEntriesDetailsService, public linkFileService:LinkFileService,
+    public dataAccordingToLinkFileService: DataAccordingToLinkFileService){}
+    
+  ngOnInit(){
+    this.User_Data_After_Login = this.account.Get_Data_Form_Token();
+    this.UserID = this.User_Data_After_Login.id;
+
+    this.DomainName = this.ApiServ.GetHeader();
+
+    this.AccountingEntriesID = Number(this.activeRoute.snapshot.paramMap.get('id'))
+
+    if(!this.AccountingEntriesID){
+      this.isCreate = true
+    }else{
+      this.GetAccountingEntriesByID()
+      this.GetAccountingEntriesDetails()
+    }
+
+    this.activeRoute.url.subscribe(url => {
+      this.path = url[0].path
+      if(url[1].path == "View"){ 
+        this.isView = true
+      } else{
+        if(this.AccountingEntriesID){
+          this.isEdit = true
+        }
+      } 
+    });
+  
+    this.menuService.menuItemsForEmployee$.subscribe((items) => {
+      const settingsPage = this.menuService.findByPageName(this.path, items);
+      if (settingsPage) {
+        this.AllowEdit = settingsPage.allow_Edit;
+        this.AllowDelete = settingsPage.allow_Delete;
+        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+      }
+    });
+
+    this.GetDocType()
+  }
+
+  moveToAccountingEntries() {
+    this.router.navigateByUrl("Employee/Accounting Entries")
+  }
+
+  GetDocType(){
+    this.accountingEntriesDocTypeService.Get(this.DomainName).subscribe(
+      (data) => { 
+        this.dataTypesData = data
+      }
+    )
+  }
+  
+  GetAccountingEntriesByID(){
+    this.accountingEntriesService.GetByID(this.AccountingEntriesID, this.DomainName).subscribe(
+      (data) => {
+        this.accountingEntries = data 
+      }
+    )
+  } 
+  
+  IsAllowDelete(InsertedByID: number) {
+    const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
+    return IsAllow;
+  }
+
+  IsAllowEdit(InsertedByID: number) {
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
+    return IsAllow;
+  }
+
+  capitalizeField(field: keyof AccountingEntries): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.accountingEntries) {
+      if (this.accountingEntries.hasOwnProperty(key)) {
+        const field = key as keyof AccountingEntries;
+        if (!this.accountingEntries[field]) {
+          if(field == "accountingEntriesDocTypeID" || field == "date"){
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          }
+        } else { 
+          this.validationErrors[field] = '';
+        }
+      }
+    }
+    return isValid;
+  }
+
+  onInputValueChange(event: { field: keyof AccountingEntries, value: any }) {
+    const { field, value } = event;
+    (this.accountingEntries as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    } 
+  }
+
+  onInputValueChangeForDetails(event: { field: keyof AccountingEntriesDetails, value: any }) {
+    const { field, value } = event;
+    (this.newDetails as any)[field] = value;
+    if (value) {
+      this.validationErrorsForDetails[field] = '';
+    }
+    
+    // if((this.newDetails.amount || this.editedRowData.amount) && 
+    // (!isNaN(this.newDetails.amount) || !isNaN(this.editedRowData.amount)) && 
+    // (this.newDetails.linkFileID || this.editedRowData.linkFileID) && 
+    // (this.newDetails.linkFileTypeID || this.editedRowData.linkFileTypeID)){
+    //   this.isDetailsValid = true
+    // } else{
+    //   this.isDetailsValid = false
+    // } 
+  }
+
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+        event.target.value = '';
+    }
+  }
+
+  Save(){
+    if(this.isFormValid()){
+      if(this.isCreate){
+        this.accountingEntriesService.Add(this.accountingEntries, this.DomainName).subscribe(
+          (data) => {
+            let id = JSON.parse(data).id
+            this.router.navigateByUrl(`Employee/Accounting Entries Details/${id}`)
+          }
+        )
+      } else if(this.isEdit){
+        this.accountingEntriesService.Edit(this.accountingEntries, this.DomainName).subscribe(
+          (data) => {
+            this.GetAccountingEntriesByID()
+          }
+        )
+      }
+    }
+  }
+
+  GetAccountingEntriesDetails(){
+    this.accountingEntriesDetailsService.Get(this.DomainName, this.AccountingEntriesID).subscribe(
+      (data) => {
+        this.accountingEntriesDetailsData = data
+        let totalCredit = 0
+        let totalDebit = 0
+        this.accountingEntriesDetailsData.forEach(element => {
+          totalCredit = totalCredit + element.creditAmount
+          totalDebit = totalDebit + element.debitAmount
+        });
+        this.totalCredit = totalCredit
+        this.totalDebit = totalDebit
+        this.theDifference = this.totalCredit - this.totalDebit
+      }
+    )
+  }
+
+  AddAccountingEntriesDetails(){
+    this.isDetailsValid = false
+    this.editingRowId = null; 
+    this.editedRowData = new AccountingEntriesDetails(); 
+    this.isNewDetails = true 
+    // call sub data
+  }
+
+  SaveNewDetails(){
+    this.newDetails.accountingEntriesMasterID = this.AccountingEntriesID
+    this.accountingEntriesDetailsService.Add(this.newDetails, this.DomainName).subscribe(
+      (data) => {
+        this.isNewDetails = false
+        this.newDetails = new AccountingEntriesDetails()
+        this.GetAccountingEntriesDetails()
+        this.editingRowId = null; 
+        this.editedRowData = new AccountingEntriesDetails(); 
+        this.isDetailsValid = false
+      }
+    )
+  }
+
+  EditDetail(row: AccountingEntriesDetails) {
+    this.isNewDetails = false
+    this.isDetailsValid = true
+    this.newDetails = new AccountingEntriesDetails() 
+    this.editingRowId = row.id
+    this.editedRowData = { ...row }
+    // if(this.editedRowData.linkFileID){
+    //   this.dataAccordingToLinkFileService.Get(this.DomainName, +this.editedRowData.linkFileID).subscribe(
+    //     (data) => {
+    //       this.linkFileTypesData = data
+    //     }
+    //   )
+    // }
+  
+  }
+
+  SaveEditedDetail() {
+    this.accountingEntriesDetailsService.Edit(this.editedRowData, this.DomainName).subscribe(
+      (data) =>{
+        this.editingRowId = null; 
+        this.editedRowData = new AccountingEntriesDetails(); 
+        this.isDetailsValid = false
+        this.isNewDetails = false
+        this.newDetails = new AccountingEntriesDetails()
+        this.GetAccountingEntriesDetails()
+      }
+    )
+  } 
+
+  DeleteDetail(id: number) {
+    Swal.fire({
+      title: 'Are you sure you want to delete this Accounting Entries Detail?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.accountingEntriesDetailsService.Delete(id, this.DomainName).subscribe(
+          (data) => {
+            this.GetAccountingEntriesDetails()
+          }
+        )
+      }
+    });
+  }
+}

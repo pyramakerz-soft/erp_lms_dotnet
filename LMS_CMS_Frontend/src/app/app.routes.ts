@@ -85,6 +85,8 @@ import { AddChildComponent } from './Pages/Employee/Accounting/add-child/add-chi
 import { FeesActivationComponent } from './Pages/Employee/Accounting/fees-activation/fees-activation.component';
 import { ReceivableComponent } from './Pages/Employee/Accounting/receivable/receivable.component';
 import { ReceivableDetailsComponent } from './Pages/Employee/Accounting/receivable-details/receivable-details.component';
+import { InstallmentDeductionDetailComponent } from './Pages/Employee/Accounting/installment-deduction-detail/installment-deduction-detail.component';
+import { InstallmentDeductionMasterComponent } from './Pages/Employee/Accounting/installment-deduction-master/installment-deduction-master.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -166,6 +168,10 @@ export const routes: Routes = [
             { path: "Receivable Details", component: ReceivableDetailsComponent, title: "Receivable Details" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Receivable Details/:id", component: ReceivableDetailsComponent, title: "Edit Receivable Details" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Receivable Details/View/:id", component: ReceivableDetailsComponent, title: "View Receivable Details" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Installment Deduction", component: InstallmentDeductionMasterComponent, title: "Installment Deduction" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Installment Deduction Details/View/:id", component: InstallmentDeductionDetailComponent, title: "View Installment Deduction Details" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Installment Deduction Details/Edit/:id", component: InstallmentDeductionDetailComponent, title: "View Installment Deduction Details" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Installment Deduction Details", component: InstallmentDeductionDetailComponent, title: "View Installment Deduction Details" , canActivate:[noNavigateWithoutLoginGuard ]},
         ]
     },
     { 

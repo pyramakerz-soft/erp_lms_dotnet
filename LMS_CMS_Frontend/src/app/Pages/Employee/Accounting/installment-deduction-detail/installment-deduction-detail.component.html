@@ -1,0 +1,189 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToMaster()"></i>
+        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">
+            Create Installment Deduction
+        </h1>
+        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">
+            Edit Installment Deduction
+        </h1>
+        <h1 *ngIf="mode=='View'" class="font-semibold text-2xl leading-9">
+            View Installment Deduction
+        </h1>
+    </div>
+</div>
+
+
+<div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap py-3">
+    <div class="flex flex-col mb-4 w-[24%]">
+        <label class="mb-2 primaryTxt" for="name">Doc Number</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Doc Number" [(ngModel)]="Data.docNumber" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[24%]">
+        <label class="mb-2 primaryTxt" for="name">Date</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Date" [(ngModel)]="Data.date" />
+    </div>
+
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2" for="bus">Students</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student"
+            [(ngModel)]="Data.studentID">
+            <option [value]=0 disabled selected hidden>Choose Student</option>
+            <option *ngFor="let stu of students" [value]="stu.id">{{ stu.user_Name }}</option>
+            <option *ngIf="students.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2" for="bus">Employees</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="employee"
+            [(ngModel)]="Data.employeeID">
+            <option [value]=0 disabled selected hidden>Choose Employee</option>
+            <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.user_Name }}</option>
+            <option *ngIf="employees.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col mb-4 w-full">
+        <label class="mb-2 primaryTxt" for="name">Notes</label>
+        <div class="flex justify-start gap-2 items-start">
+            <div class="flex flex-col w-full">
+                <textarea
+                    class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+                    [(ngModel)]="Data.notes" placeholder="Enter Notes"></textarea>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div *ngIf="mode!='View'" class="flex justify-end mb-3">
+    <button class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="Save()">
+        Save
+    </button>
+</div>
+
+<div *ngIf="mode=='Edit'" class="flex justify-end">
+    <button class="secondaryTxt secondaryBorder px-1 py-2 rounded-lg flex items-center space-x-1"
+        (click)="AddDetail()">
+        <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
+        <p>Add</p>
+    </button>
+</div>
+
+<div *ngIf="mode!='Create'">
+    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+        <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+            <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                <tr>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        ID
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Student Name
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Fees Type
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Amount
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Due Date
+                    </th>
+                    <th *ngIf="mode=='Edit'" class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- No Data Row -->
+                <tr *ngIf="TableData.length === 0 && IsOpenToAdd==false">
+                    <td colspan="11"
+                        class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                        No Data Found
+                    </td>
+                </tr>
+
+                <!-- Data Rows -->
+                <tr *ngFor="let row of TableData; let i = index"
+                    [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                    class="border-t border-gray-300 text-xs md:text-sm">
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ row.id }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ Data.studentName }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <ng-container *ngIf="editingRowId === row.id; else textModeFeesType">
+                            <select [(ngModel)]="row.feeTypeID" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                                <option *ngFor="let S of FeesType" [value]="S.id">{{ S.name }}</option>
+                            </select>
+                        </ng-container>
+                        <ng-template #textModeFeesType>{{ row.feeTypeName }}</ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <ng-container *ngIf="editingRowId === row.id; else textMode">
+                            <input [(ngModel)]="row.amount" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        </ng-container>
+                        <ng-template #textMode>{{ row.amount }}</ng-template>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <ng-container *ngIf="editingRowId === row.id; else textModeDate">
+                            <input [(ngModel)]="row.date" type="date" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        </ng-container>
+                        <ng-template #textModeDate>{{ row.date }}</ng-template>
+                    </td>
+                    <td *ngIf="mode=='Edit'" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div class="flex space-x-4">
+                            <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row.id)">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button *ngIf="editingRowId === row.id" (click)="SaveEdit(row)">
+                                <i class="far fa-check-circle secondaryTxt"></i>
+                            </button>
+                            <button *ngIf="editingRowId !== row.id" (click)="Edit(row.id)">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Data Rows -->
+                <tr *ngIf="IsOpenToAdd==true"
+                    class="border-t border-gray-300 text-xs md:text-sm bg-[#F7F7F7]">
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        ___
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ Data.studentName }}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <select [(ngModel)]="Detail.feeTypeID" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                            <option *ngFor="let S of FeesType" [value]="S.id">{{ S.name }}</option>
+                        </select>
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <input [(ngModel)]="Detail.amount" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <input type="date" [(ngModel)]="Detail.date" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div class="flex space-x-4">
+                            <button (click)="CancelAdd()">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button (click)="SaveRow()">
+                                <i class="far fa-check-circle secondaryTxt"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

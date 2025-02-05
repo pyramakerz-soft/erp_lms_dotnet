@@ -26,4 +26,56 @@ export class PayableDocTypeService {
       .set('Content-Type', 'application/json');
     return this.http.get<PayableDocType[]>(`${this.baseUrl}/PayableDocType`, { headers });
   }
+
+  GetByID(id: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<PayableDocType>(`${this.baseUrl}/PayableDocType/${id}`, { headers });
+  }
+
+  Add(Payable: PayableDocType, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+
+    return this.http.post<any>(`${this.baseUrl}/PayableDocType`, Payable, {
+      headers: headers,
+      responseType: 'text' as 'json'
+    });
+  }
+
+  Edit(Payable: PayableDocType, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.put<any>(`${this.baseUrl}/PayableDocType`, Payable, { headers });
+  }
+
+  Delete(id: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.delete(`${this.baseUrl}/PayableDocType/${id}`, { headers })
+  }
 }

@@ -91,6 +91,8 @@ import { AccountingEntriesComponent } from './Pages/Employee/Accounting/accounti
 import { AccountingEntriesDetailsComponent } from './Pages/Employee/Accounting/accounting-entries-details/accounting-entries-details.component';
 import { InstallmentDeductionDetailComponent } from './Pages/Employee/Accounting/installment-deduction-detail/installment-deduction-detail.component';
 import { InstallmentDeductionMasterComponent } from './Pages/Employee/Accounting/installment-deduction-master/installment-deduction-master.component';
+import { PayableDocTypeComponent } from './Pages/Employee/Accounting/payable-doc-type/payable-doc-type.component';
+import { ReceivableDocTypeComponent } from './Pages/Employee/Accounting/receivable-doc-type/receivable-doc-type.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -184,6 +186,8 @@ export const routes: Routes = [
             { path: "Installment Deduction Details/View/:id", component: InstallmentDeductionDetailComponent, title: "View Installment Deduction Details" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Installment Deduction Details/Edit/:id", component: InstallmentDeductionDetailComponent, title: "View Installment Deduction Details" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Installment Deduction Details", component: InstallmentDeductionDetailComponent, title: "View Installment Deduction Details" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Payable Doc Type", component: PayableDocTypeComponent, title: "Payable Doc Type" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Receivable Doc Type", component: ReceivableDocTypeComponent, title: "Receivable Doc Type" , canActivate:[noNavigateWithoutLoginGuard ]},
         ]
     },
     { 

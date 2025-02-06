@@ -137,7 +137,9 @@ User_Data_After_Login: TokenData = new TokenData(
   Edit(row: TuitionFeesType) {
     this.mode = 'Edit';
     this.validationErrors ={}
-    this.tuitionFeesType = row;
+    this.TuitionFeesTypeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.tuitionFeesType=d
+    })
     this.openModal();
   }
 

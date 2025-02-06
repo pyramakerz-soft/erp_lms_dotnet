@@ -136,7 +136,9 @@ export class OutcomesComponent {
 
   Edit(row: Outcome) {
     this.mode = 'Edit';
-    this.outcome = row;
+    this.OutComeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.outcome=d
+    })
     this.validationErrors={}
     this.openModal();
   }

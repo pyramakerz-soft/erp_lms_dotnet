@@ -122,7 +122,9 @@ export class PayableDocTypeComponent {
 
   Edit(row: PayableDocType) {
     this.mode = 'Edit';
-    this.data = row;
+    this.PayableDocTypeServ.GetByID(row.id,this.DomainName).subscribe((d)=>{
+      this.data=d
+    })
     this.openModal();
   }
 

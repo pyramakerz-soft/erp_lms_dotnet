@@ -122,7 +122,10 @@ export class ReceivableDocTypeComponent {
 
   Edit(row: ReceivableDocType) {
     this.mode = 'Edit';
-    this.data = row;
+    this.ReceivableDocTypeServ.GetByID(row.id,this.DomainName).subscribe((d)=>{
+      this.data=d
+    })
+    this.validationErrors={}
     this.openModal();
   }
 

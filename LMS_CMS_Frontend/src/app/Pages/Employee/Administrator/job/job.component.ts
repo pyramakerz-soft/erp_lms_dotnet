@@ -111,6 +111,7 @@ export class JobComponent {
     this.mode = 'Create';
     this.job=new Job()
     this.openModal();
+    this.validationErrors={}
   }
 
   Delete(id: number) {
@@ -133,7 +134,10 @@ export class JobComponent {
 
   Edit(row: Job) {
     this.mode = 'Edit';
-    this.job = row;
+    this.jobServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.job=d
+    })
+    this.validationErrors={}
     this.openModal();
   }
 

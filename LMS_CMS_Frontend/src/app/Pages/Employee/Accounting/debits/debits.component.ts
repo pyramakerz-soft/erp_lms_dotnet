@@ -134,9 +134,11 @@ export class DebitsComponent {
     });
   }
 
-  Edit(row: Debit) {
+  Edit(id:number) {
     this.mode = 'Edit';
-    this.debit = row;
+    this.DebitServ.GetById(id,this.DomainName).subscribe((d)=>{
+      this.debit=d
+    })
     this.openModal();
   }
 

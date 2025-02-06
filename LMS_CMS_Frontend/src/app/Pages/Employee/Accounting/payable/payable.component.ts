@@ -12,6 +12,7 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import Swal from 'sweetalert2';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-payable',
@@ -31,7 +32,7 @@ User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '',
   DomainName: string = '';
   UserID: number = 0;
 
-  keysArray: string[] = [];
+  keysArray: string[] = ['id', 'docNumber' ,"date", "payableDocTypesName" ,"linkFileName"];
 
   path: string = '';
   key: string = 'id';
@@ -74,31 +75,31 @@ User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '',
   async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Supplier[] = await firstValueFrom(
-    //     this.SupplierServ.Get(this.DomainName)
-    //   );
-    //   this.TableData = data || [];
+    try {
+      const data: any = await firstValueFrom(
+        this.payableService.Get(this.DomainName, this.CurrentPage, this.PageSize)
+      );
+      this.payableData = data.data || [];
 
-    //   if (this.value !== '') {
-    //     const numericValue = isNaN(Number(this.value))
-    //       ? this.value
-    //       : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-    //     this.TableData = this.TableData.filter((t) => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.TableData = [];
-    // }
+        this.payableData = this.payableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.payableData = [];
+    }
   }
 
   IsAllowDelete(InsertedByID: number) {

@@ -134,7 +134,9 @@ export class AssetsComponent {
 
   Edit(row: Asset) {
     this.mode = 'Edit';
-    this.asset = row;
+    this.AssetServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.asset=d
+    })
     this.openModal();
   }
 

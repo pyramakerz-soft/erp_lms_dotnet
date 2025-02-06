@@ -100,6 +100,7 @@ export class DepartmentComponent {
     this.mode = 'Create';
     this.department=new Department();
     this.openModal();
+    this.validationErrors={}
   }
 
   Delete(id: number) {
@@ -122,7 +123,10 @@ export class DepartmentComponent {
 
   Edit(row: Department) {
     this.mode = 'Edit';
-    this.department = row;
+    this.DepartmentServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.department=d
+    })
+    this.validationErrors={}
     this.openModal();
   }
 

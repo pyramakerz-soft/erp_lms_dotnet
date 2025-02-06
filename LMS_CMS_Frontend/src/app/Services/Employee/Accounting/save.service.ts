@@ -29,6 +29,18 @@ export class SaveService {
     return this.http.get<Saves[]>(`${this.baseUrl}/Save`, { headers })
   }
 
+  GetById(id:number , DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<Saves>(`${this.baseUrl}/Save/${id}`, { headers })
+  }
+
   Add(save: Saves, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName

@@ -135,9 +135,11 @@ export class SavesComponent {
     });
   }
 
-  Edit(row: Saves) {
+  Edit(id: number) {
     this.mode = 'Edit';
-    this.save = row;
+    this.SaveServ.GetById(id,this.DomainName).subscribe((d)=>{
+      this.save=d
+    })
     this.validationErrors={}
     this.openModal();
   }

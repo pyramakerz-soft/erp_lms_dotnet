@@ -134,6 +134,9 @@ export class IncomesComponent {
   Edit(row: Income) {
     this.mode = 'Edit';
     this.income = row;
+    this.IncomeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.income=d
+    })
     this.validationErrors={}
     this.openModal();
   }

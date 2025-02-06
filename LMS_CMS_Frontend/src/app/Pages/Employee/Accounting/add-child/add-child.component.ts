@@ -26,7 +26,7 @@ import { StudentService } from '../../../../Services/student.service';
 })
 export class AddChildComponent {
 
-User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -56,8 +56,8 @@ User_Data_After_Login: TokenData = new TokenData(
   key: string = 'id';
   value: any = '';
   keysArray: string[] = ['id', 'studentName'];
-  NationalID : string ="";
-  Student:Student=new Student();
+  NationalID: string = "";
+  Student: Student = new Student();
   emplyeeStudent: EmplyeeStudent = new EmplyeeStudent();
 
   validationErrors: { [key in keyof EmplyeeStudent]?: string } = {};
@@ -70,10 +70,10 @@ User_Data_After_Login: TokenData = new TokenData(
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
-    public EmplyeeStudentServ:EmployeeStudentService,
-    public StudentServ:StudentService,
-  ) {}
+    public ApiServ: ApiService,
+    public EmplyeeStudentServ: EmployeeStudentService,
+    public StudentServ: StudentService,
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -96,19 +96,19 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   GetAllData() {
-    this.EmplyeeStudentServ.Get(this.UserID ,this.DomainName).subscribe((d)=>{
-      this.TableData=d
+    this.EmplyeeStudentServ.Get(this.UserID, this.DomainName).subscribe((d) => {
+      this.TableData = d
     })
   }
 
   Create() {
     this.mode = 'Create';
-    this.Student=new Student()
-    this.NationalID=""
+    this.Student = new Student()
+    this.NationalID = ""
     this.emplyeeStudent = new EmplyeeStudent()
     this.openModal();
   }
-  
+
 
   Delete(id: number) {
     Swal.fire({
@@ -121,9 +121,9 @@ User_Data_After_Login: TokenData = new TokenData(
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-       this.EmplyeeStudentServ.Delete(id,this.DomainName).subscribe((d)=>{
-        this.GetAllData()
-       })
+        this.EmplyeeStudentServ.Delete(id, this.DomainName).subscribe((d) => {
+          this.GetAllData()
+        })
       }
     });
   }
@@ -137,20 +137,20 @@ User_Data_After_Login: TokenData = new TokenData(
     return IsAllow;
   }
   CreateOREdit() {
-    if (this.emplyeeStudent.studentID !=0) {
-        this.EmplyeeStudentServ.Add(this.emplyeeStudent,this.DomainName).subscribe((d)=>{
-          this.GetAllData();
-          this.closeModal()
-        })
-      }
-      else{
-         Swal.fire({
-                icon: 'warning',
-                title: 'Warning!',
-                text: 'There is no student with this National Id',
-                confirmButtonColor: '#FF7519',
-              });
-      }
+    if (this.emplyeeStudent.studentID != 0) {
+      this.EmplyeeStudentServ.Add(this.emplyeeStudent, this.DomainName).subscribe((d) => {
+        this.GetAllData();
+        this.closeModal()
+      })
+    }
+    else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'There is no student with this National Id',
+        confirmButtonColor: '#FF7519',
+      });
+    }
   }
 
   closeModal() {
@@ -161,77 +161,76 @@ User_Data_After_Login: TokenData = new TokenData(
     this.isModalVisible = true;
   }
 
-   isFormValid(): boolean {
-       let isValid = true;
-         for (const key in this.emplyeeStudent) {
-           if (this.emplyeeStudent.hasOwnProperty(key)) {
-             const field = key as keyof EmplyeeStudent;
-             if (!this.emplyeeStudent[field]) {
-               if (
-                 field == 'employeeID' ||
-                 field == 'studentID' 
-               ) {
-                 this.validationErrors[field] = `*${this.capitalizeField(
-                   field
-                 )} is required`;
-                 isValid = false;
-               }
-             }
-           }
-         }
-      return isValid;
-    }
-    capitalizeField(field: keyof EmplyeeStudent): string {
-      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
-    }
-    onInputValueChange(event: { field: keyof EmplyeeStudent; value: any }) {
-      const { field, value } = event;
-      (this.emplyeeStudent as any)[field] = value;
-      if (value) {
-        this.validationErrors[field] = '';
-      }
-    }
-
-    SelectChild(nationalId:string){
-      console.log(nationalId)
-      this.Student=new Student()
-      this.emplyeeStudent = new EmplyeeStudent()
-      this.StudentServ.GetByNationalID(nationalId,this.DomainName).subscribe((d)=>{
-        console.log(d)
-        this.Student=d
-        this.emplyeeStudent.studentID=d.id
-        this.emplyeeStudent.employeeID=this.UserID
-      })
-    }
-  
-    async onSearchEvent(event: { key: string; value: any }) {
-      this.key = event.key;
-      this.value = event.value;
-      try {
-        const data: EmplyeeStudent[] = await firstValueFrom(
-          this.EmplyeeStudentServ.Get(this.UserID ,this.DomainName)
-        );
-        this.TableData = data || [];
-  
-        if (this.value !== '') {
-          const numericValue = isNaN(Number(this.value))
-            ? this.value
-            : parseInt(this.value, 10);
-  
-          this.TableData = this.TableData.filter((t) => {
-            const fieldValue = t[this.key as keyof typeof t];
-            if (typeof fieldValue === 'string') {
-              return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-            }
-            if (typeof fieldValue === 'number') {
-              return fieldValue === numericValue;
-            }
-            return fieldValue == this.value;
-          });
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.emplyeeStudent) {
+      if (this.emplyeeStudent.hasOwnProperty(key)) {
+        const field = key as keyof EmplyeeStudent;
+        if (!this.emplyeeStudent[field]) {
+          if (
+            field == 'employeeID' ||
+            field == 'studentID'
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
         }
-      } catch (error) {
-        this.TableData = [];
       }
+    }
+    return isValid;
+  }
+  capitalizeField(field: keyof EmplyeeStudent): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+  onInputValueChange(event: { field: keyof EmplyeeStudent; value: any }) {
+    const { field, value } = event;
+    (this.emplyeeStudent as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
     }
   }
-  
+
+  SelectChild(nationalId: string) {
+    console.log(nationalId)
+    this.Student = new Student()
+    this.emplyeeStudent = new EmplyeeStudent()
+    this.StudentServ.GetByNationalID(nationalId, this.DomainName).subscribe((d) => {
+      console.log(d)
+      this.Student = d
+      this.emplyeeStudent.studentID = d.id
+      this.emplyeeStudent.employeeID = this.UserID
+    })
+  }
+
+  async onSearchEvent(event: { key: string; value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: EmplyeeStudent[] = await firstValueFrom(
+        this.EmplyeeStudentServ.Get(this.UserID, this.DomainName)
+      );
+      this.TableData = data || [];
+
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
+
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
+  }
+}

@@ -123,7 +123,9 @@ export class AcademicDegreeComponent {
 
   Edit(row: AcademicDegree) {
     this.mode = 'Edit';
-    this.academicDegree = row;
+    this.AcademicDegreeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.academicDegree=d
+    })
     this.openModal();
   }
 

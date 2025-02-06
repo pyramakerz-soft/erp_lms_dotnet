@@ -121,9 +121,11 @@ User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
     });
   }
 
-  Edit(row: Credit) {
+  Edit(id:number) {
     this.mode = 'Edit';
-    this.credit = row;
+    this.CreditServ.GetById(id,this.DomainName).subscribe((d)=>{
+      this.credit=d
+    })
     this.openModal();
   }
 

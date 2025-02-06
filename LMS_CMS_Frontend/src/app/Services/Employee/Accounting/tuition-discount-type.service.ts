@@ -28,6 +28,18 @@ export class TuitionDiscountTypeService {
     return this.http.get<TuitionDiscountTypes[]>(`${this.baseUrl}/TuitionDiscountTypes`, { headers })
   }
 
+  GetById(id:number ,DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<TuitionDiscountTypes>(`${this.baseUrl}/TuitionDiscountTypes/${id}`, { headers })
+  }
+
   Add(Type: TuitionDiscountTypes, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName

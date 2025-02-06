@@ -86,7 +86,7 @@
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="RegesterForm.mark" placeholder=" " type="number" min="0" step="1" 
+                        [(ngModel)]="RegesterForm.mark" placeholder=" "  (input)="validateNumber($event)" min="0" step="1" 
                         />
                    <span *ngIf="MarkIsEmpty" class="text-red-500 ml-3 font-normal">Mark Is Required</span>
                 </div>

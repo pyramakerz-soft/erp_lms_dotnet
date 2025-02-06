@@ -88,6 +88,13 @@ export class RegistrationConfirmationTestDetailsComponent {
     });
   }
 
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+        event.target.value = '';
+    }
+  }
+
   GetAllData() {
     this.testServ.GetByRegistrationFormParentIDAndGrade(this.RegisterFormParentID, this.DomainName).subscribe((d:any) => {
       this.Data = d.tests;

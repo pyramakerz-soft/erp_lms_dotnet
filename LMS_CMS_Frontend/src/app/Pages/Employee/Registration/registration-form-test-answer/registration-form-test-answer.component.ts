@@ -138,4 +138,10 @@ export class RegistrationFormTestAnswerComponent {
     }
   }
 
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+        event.target.value = '';
+    }
+  }
 }

@@ -17,7 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-registration-form-field',
   standalone: true,
-  imports: [CommonModule, FormsModule ,SearchComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, SearchComponent, TranslateModule],
   templateUrl: './registration-form-field.component.html',
   styleUrl: './registration-form-field.component.css'
 })
@@ -54,10 +54,10 @@ export class RegistrationFormFieldComponent {
 
   key: string = "id";
   value: any = "";
-  keysArray: string[] = ['id','arName', 'enName' ,'orderInForm'];
+  keysArray: string[] = ['id', 'arName', 'enName', 'orderInForm'];
 
   validationErrors: { [key in keyof RegistrationCategory]?: string } = {};
-  
+
   constructor(
     public activeRoute: ActivatedRoute,
     public account: AccountService,
@@ -65,7 +65,7 @@ export class RegistrationFormFieldComponent {
     private menuService: MenuService,
     public EditDeleteServ: DeleteEditPermissionService,
     private router: Router,
-    public CategoryServ:RegistrationCategoryService
+    public CategoryServ: RegistrationCategoryService
   ) { }
 
   ngOnInit() {
@@ -91,8 +91,8 @@ export class RegistrationFormFieldComponent {
   }
 
   GetAllData() {
-    this.CategoryServ.Get(this.DomainName).subscribe((d)=>{
-      this.Data=d;
+    this.CategoryServ.Get(this.DomainName).subscribe((d) => {
+      this.Data = d;
     })
   }
 
@@ -105,24 +105,24 @@ export class RegistrationFormFieldComponent {
   }
 
   Delete(id: number) {
-  Swal.fire({
-        title: 'Are you sure you want to delete this Ctegory?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#FF7519',
-        cancelButtonColor: '#17253E',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.CategoryServ.Delete(id, this.DomainName).subscribe(
-            (data: any) => {
-              this.GetAllData();
-            }
-          );
-        }
-      });
-    }
+    Swal.fire({
+      title: 'Are you sure you want to delete this Ctegory?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.CategoryServ.Delete(id, this.DomainName).subscribe(
+          (data: any) => {
+            this.GetAllData();
+          }
+        );
+      }
+    });
+  }
 
   Edit(row: RegistrationCategory) {
     this.mode = 'Edit';
@@ -141,19 +141,19 @@ export class RegistrationFormFieldComponent {
   }
 
   CreateOREdit() {
-    this.Category.registrationFormId=1;
-    if(this.isFormValid()){
-     if(this.mode=="Create"){
-      this.CategoryServ.Add(this.Category,this.DomainName).subscribe(()=>{
-        this.GetAllData();
-       this.closeModal()
-      })
-     } if(this.mode=="Edit"){
-      this.CategoryServ.Edit(this.Category,this.DomainName).subscribe(()=>{
-        this.GetAllData();
-        this.closeModal();
-      })
-     }
+    this.Category.registrationFormId = 1;
+    if (this.isFormValid()) {
+      if (this.mode == "Create") {
+        this.CategoryServ.Add(this.Category, this.DomainName).subscribe(() => {
+          this.GetAllData();
+          this.closeModal()
+        })
+      } if (this.mode == "Edit") {
+        this.CategoryServ.Edit(this.Category, this.DomainName).subscribe(() => {
+          this.GetAllData();
+          this.closeModal();
+        })
+      }
     }
   }
 
@@ -169,55 +169,62 @@ export class RegistrationFormFieldComponent {
     this.router.navigateByUrl(`Employee/Registration Form Field/${id}`)
   }
 
-   isFormValid(): boolean {
-      let isValid = true;
-      for (const key in this.Category) {
-        if (this.Category.hasOwnProperty(key)) {
-          const field = key as keyof RegistrationCategory;
-          if (!this.Category[field]) {
-            if(field == "arName" || field == "enName" || field == "orderInForm"){
-              this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
-              isValid = false;
-            }
-          } 
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.Category) {
+      if (this.Category.hasOwnProperty(key)) {
+        const field = key as keyof RegistrationCategory;
+        if (!this.Category[field]) {
+          if (field == "arName" || field == "enName" || field == "orderInForm") {
+            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+            isValid = false;
+          }
         }
       }
-      return isValid;
     }
-    capitalizeField(field: keyof RegistrationCategory): string {
-      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+    return isValid;
+  }
+  capitalizeField(field: keyof RegistrationCategory): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+  onInputValueChange(event: { field: keyof RegistrationCategory, value: any }) {
+    const { field, value } = event;
+    (this.Category as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
     }
-    onInputValueChange(event: { field: keyof RegistrationCategory, value: any }) {
-      const { field, value } = event;
-      (this.Category as any)[field] = value;
-      if (value) {
-        this.validationErrors[field] = '';
-      }
-    }
+  }
 
-   async onSearchEvent(event: { key: string, value: any }) {
-       this.key = event.key;
-       this.value = event.value;
-       try {
-         const data: RegistrationCategory[] = await firstValueFrom(this.CategoryServ.Get(this.DomainName));  
-         this.Data = data || [];
-     
-         if (this.value !== "") {
-           const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
-     
-           this.Data = this.Data.filter(t => {
-             const fieldValue = t[this.key as keyof typeof t];
-             if (typeof fieldValue === 'string') {
-               return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-             }
-             if (typeof fieldValue === 'number') {
-               return fieldValue === numericValue;
-             }
-             return fieldValue == this.value;
-           });
-         }
-       } catch (error) {
-         this.Data = [];
-       }
-     }
+  async onSearchEvent(event: { key: string, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: RegistrationCategory[] = await firstValueFrom(this.CategoryServ.Get(this.DomainName));
+      this.Data = data || [];
+
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+
+        this.Data = this.Data.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.Data = [];
+    }
+  }
+
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = '';
+    }
+  }
 }

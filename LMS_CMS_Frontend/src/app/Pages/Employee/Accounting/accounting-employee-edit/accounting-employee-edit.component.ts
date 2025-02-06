@@ -349,5 +349,12 @@ export class AccountingEmployeeEditComponent {
   DeleteChild(id:number){
     this.TableData = this.TableData.filter((student) => student.id !== id);
     this.Data.students = this.Data.students.filter((id) => id !== id);  }
+
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+        event.target.value = '';
+    }
+  }  
 }
 

@@ -97,7 +97,7 @@
     </div>
 
     <div class="flex items-center space-x-2">
-        <input type="number" class="rounded-lg border py-3 px-4 w-[73px]" [(ngModel)]="PageSize" min="1" (input)="validatePageSize($event)" (ngModelChange)="changeCurrentPage(CurrentPage)">
+        <input  (input)="validateNumber($event)" class="rounded-lg border py-3 px-4 w-[73px]" [(ngModel)]="PageSize" min="1" (input)="validatePageSize($event)" (ngModelChange)="changeCurrentPage(CurrentPage)">
         <p>items Per Page</p>
     </div>
 

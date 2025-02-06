@@ -101,25 +101,25 @@
 
     <div class="w-[20%] mr-5 mb-3">
         <label class="mb-2 text-sm font-medium text-gray-900">Amount</label>
-        <input type="number" [(ngModel)]="Fees.amount" (input)="CalculateNet()"
+        <input  (input)="validateNumber($event)" [(ngModel)]="Fees.amount" (input)="CalculateNet()"
             class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter Amount">
     </div>
 
     <div class="w-[20%] mr-5 mb-3">
         <label class="mb-2 text-sm font-medium text-gray-900">Discount Percentage</label>
-        <input type="number" [(ngModel)]="DiscountPercentage" (input)="CalculateDiscountFromPercentage()"
+        <input  (input)="validateNumber($event)" [(ngModel)]="DiscountPercentage" (input)="CalculateDiscountFromPercentage()"
             class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter Percentage">
     </div>
 
     <div class="w-[20%] mr-5 mb-3">
         <label class="mb-2 text-sm font-medium text-gray-900">Discount</label>
-        <input type="number" [(ngModel)]="Fees.discount" (input)="CalculatePercentageFromDiscount()"
+        <input  (input)="validateNumber($event)" [(ngModel)]="Fees.discount" (input)="CalculatePercentageFromDiscount()"
             class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter Discount">
     </div>
 
     <div class="w-[20%] mr-5 mb-3">
         <label class="mb-2 text-sm font-medium text-gray-900">Net</label>
-        <input type="number" [(ngModel)]="Fees.net" disabled
+        <input  (input)="validateNumber($event)" [(ngModel)]="Fees.net" disabled
             class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2" placeholder="Enter Net"
             readonly>
     </div>

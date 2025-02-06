@@ -112,7 +112,7 @@
                     <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
                         [(ngModel)]="Category.orderInForm"  
                         placeholder="{{ 'Enter' | translate }} {{ 'Order In Form' | translate }}"
-                        type="number"
+                        (input)="validateNumber($event)"
                         min="0" 
                         step="1" 
                         (ngModelChange)="onInputValueChange({ field: 'orderInForm', value: $event })"/>

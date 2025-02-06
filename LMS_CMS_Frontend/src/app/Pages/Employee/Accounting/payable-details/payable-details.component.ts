@@ -208,7 +208,7 @@ export class PayableDetailsComponent {
     }
     
     if((this.newDetails.amount || this.editedRowData.amount) && 
-    (!isNaN(this.newDetails.amount) || !isNaN(this.editedRowData.amount)) && 
+    (!isNaN(this.newDetails.amount?this.newDetails.amount:0) && !isNaN(this.editedRowData.amount?this.editedRowData.amount:0)) && 
     (this.newDetails.linkFileID || this.editedRowData.linkFileID) && 
     (this.newDetails.linkFileTypeID || this.editedRowData.linkFileTypeID)){
       this.isDetailsValid = true
@@ -249,7 +249,7 @@ export class PayableDetailsComponent {
         this.payableDetailsData = data
         let total = 0
         this.payableDetailsData.forEach(element => {
-          total = total + element.amount
+          total = total + (element.amount?element.amount:0)
         });
         this.totalAmount = total
       }
@@ -264,7 +264,7 @@ export class PayableDetailsComponent {
     )
   }
   
-  GetLinkFilesTypeData(){
+  GetLinkFilesTypeData(){ 
     this.dataAccordingToLinkFileService.Get(this.DomainName, +this.newDetails.linkFileID).subscribe(
       (data) => {
         this.linkFileTypesData = data

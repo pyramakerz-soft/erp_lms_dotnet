@@ -1,8 +1,8 @@
 export class AccountingEntriesDetails {
     constructor(
         public id: number = 0,
-        public creditAmount: number = 0,
-        public debitAmount: number = 0,
+        public creditAmount: number|null = null,
+        public debitAmount: number|null = null,
         public note: string|null = null,
         public subAccountingID: number|null = null,
         public subAccountingName: string = '', 

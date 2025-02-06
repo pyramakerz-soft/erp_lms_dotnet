@@ -135,6 +135,8 @@ export class AccountingEntriesDetailsComponent {
 
   GetSubAccountData(event: Event) {
     this.subAccountData = []
+    this.newDetails.subAccountingID = null
+    this.editedRowData.subAccountingID = null
     const target = event.target as HTMLSelectElement;
     const selectedValue = target ? target.value : null;
 
@@ -210,12 +212,11 @@ export class AccountingEntriesDetailsComponent {
     if (value) {
       this.validationErrorsForDetails[field] = '';
     }
-    
-    console.log(this.newDetails.creditAmount)
+     
     if((this.newDetails.creditAmount || this.editedRowData.creditAmount) && 
     (this.newDetails.debitAmount || this.editedRowData.debitAmount) && 
-    (!isNaN(this.newDetails.creditAmount) || !isNaN(this.editedRowData.creditAmount)) && 
-    (!isNaN(this.newDetails.debitAmount) || !isNaN(this.editedRowData.debitAmount)) && 
+    (!isNaN(this.newDetails.creditAmount?this.newDetails.creditAmount:0) && !isNaN(this.newDetails.debitAmount?this.newDetails.debitAmount:0)) && 
+    (!isNaN(this.editedRowData.creditAmount? this.editedRowData.creditAmount:0) && !isNaN(this.editedRowData.debitAmount?this.editedRowData.debitAmount:0)) &&  
     (this.newDetails.accountingTreeChartID || this.editedRowData.accountingTreeChartID)){
       this.isDetailsValid = true
     } else{
@@ -257,8 +258,8 @@ export class AccountingEntriesDetailsComponent {
         let totalCredit = 0
         let totalDebit = 0
         this.accountingEntriesDetailsData.forEach(element => {
-          totalCredit = totalCredit + element.creditAmount
-          totalDebit = totalDebit + element.debitAmount
+          totalCredit = totalCredit + (element.creditAmount?element.creditAmount:0)
+          totalDebit = totalDebit + (element.debitAmount?element.debitAmount:0)
         });
         this.totalCredit = totalCredit
         this.totalDebit = totalDebit
@@ -297,14 +298,23 @@ export class AccountingEntriesDetailsComponent {
     this.newDetails = new AccountingEntriesDetails() 
     this.editingRowId = row.id
     this.editedRowData = { ...row }
-    // if(this.editedRowData.linkFileID){
-    //   this.dataAccordingToLinkFileService.Get(this.DomainName, +this.editedRowData.linkFileID).subscribe(
-    //     (data) => {
-    //       this.linkFileTypesData = data
-    //     }
-    //   )
-    // }
-  
+    this.GetAccountingTreeChartData() 
+    if (this.editedRowData.accountingTreeChartID) {
+      this.accountingTreeChartService.GetByID(+this.editedRowData.accountingTreeChartID, this.DomainName).subscribe(
+        (data) => { 
+          if(data.linkFileID){
+            this.dataAccordingToLinkFileService.Get(this.DomainName, data.linkFileID).subscribe(
+              (data) => {
+                this.subAccountData = data
+              }
+            )
+          } else{
+            this.newDetails.subAccountingID = null
+            this.editedRowData.subAccountingID = null
+          }
+        }
+      )
+    }
   }
 
   SaveEditedDetail() {

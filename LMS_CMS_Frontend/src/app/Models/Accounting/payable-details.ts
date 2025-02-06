@@ -1,7 +1,7 @@
 export class PayableDetails {
     constructor(
         public id: number = 0,
-        public amount: number = 0,
+        public amount: number|null = null,
         public notes: string|null = null,
         public payableMasterID: number = 0,
         public linkFileID: number = 0,

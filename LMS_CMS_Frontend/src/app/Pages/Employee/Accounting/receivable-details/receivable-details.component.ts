@@ -206,8 +206,8 @@ export class ReceivableDetailsComponent {
       this.newDetails.linkFileTypeID = 0
     }
     
-    if((this.newDetails.amount || this.editedRowData.amount) && 
-    (!isNaN(this.newDetails.amount) || !isNaN(this.editedRowData.amount)) && 
+    if((this.newDetails.amount || this.editedRowData.amount) &&  
+    (!isNaN(this.newDetails.amount?this.newDetails.amount:0) && !isNaN(this.editedRowData.amount?this.editedRowData.amount:0)) && 
     (this.newDetails.linkFileID || this.editedRowData.linkFileID) && 
     (this.newDetails.linkFileTypeID || this.editedRowData.linkFileTypeID)){
       this.isDetailsValid = true
@@ -249,7 +249,7 @@ export class ReceivableDetailsComponent {
         this.receivableDetailsData = data
         let total = 0
         this.receivableDetailsData.forEach(element => {
-          total = total + element.amount
+          total = total + (element.amount?element.amount:0)
         });
         this.totalAmount = total
       }

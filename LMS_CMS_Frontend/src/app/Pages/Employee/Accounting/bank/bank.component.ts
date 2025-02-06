@@ -134,7 +134,10 @@ export class BankComponent {
 
   Edit(row: Bank) {
     this.mode = 'Edit';
-    this.bank = row;
+    this.BankServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.bank=d
+    })
+    this.validationErrors={}
     this.openModal();
   }
 

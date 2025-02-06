@@ -28,6 +28,18 @@ export class AssetService {
         .set('Content-Type', 'application/json');
       return this.http.get<Asset[]>(`${this.baseUrl}/Asset`, { headers })
     }
+
+    GetById(id:number ,DomainName:string) {
+      if(DomainName!=null) {
+        this.header=DomainName 
+      }
+      const token = localStorage.getItem("current_token");
+      const headers = new HttpHeaders()
+        .set('domain-name', this.header)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/json');
+      return this.http.get<Asset>(`${this.baseUrl}/Asset/${id}`, { headers })
+    }
   
     Add(asset: Asset,DomainName:string): Observable<any> {
       if(DomainName!=null) {

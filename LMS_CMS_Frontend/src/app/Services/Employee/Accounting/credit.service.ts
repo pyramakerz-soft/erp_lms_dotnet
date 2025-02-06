@@ -29,6 +29,18 @@ export class CreditService {
      return this.http.get<Credit[]>(`${this.baseUrl}/Credit`, { headers })
    }
  
+   GetById(id:number ,DomainName:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<Credit>(`${this.baseUrl}/Credit/${id}`, { headers })
+  }
+
    Add(credit: Credit,DomainName:string): Observable<any> {
      if(DomainName!=null) {
        this.header=DomainName 

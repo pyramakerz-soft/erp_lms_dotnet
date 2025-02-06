@@ -121,7 +121,9 @@ User_Data_After_Login: TokenData = new TokenData(
 
   Edit(row: AccountingEntriesDocType) {
     this.mode = 'Edit';
-    this.accountingEntriesDocType = row;
+    this.AccountingEntriesDocTypeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.accountingEntriesDocType=d
+    })
     this.openModal();
   }
 

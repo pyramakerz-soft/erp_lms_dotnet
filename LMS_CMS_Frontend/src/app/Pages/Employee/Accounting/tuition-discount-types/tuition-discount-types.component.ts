@@ -135,7 +135,9 @@ export class TuitionDiscountTypesComponent {
 
   Edit(row: TuitionDiscountTypes) {
     this.mode = 'Edit';
-    this.tuitionDiscountTypes = row;
+    this.tuitionServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.tuitionDiscountTypes=d
+    })
     this.validationErrors={}
     this.openModal();
   }

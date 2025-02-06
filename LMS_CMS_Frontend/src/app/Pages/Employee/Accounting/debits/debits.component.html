@@ -75,7 +75,7 @@
                 </button>
                 <button
                   *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)"
-                  (click)="Edit(row)"
+                  (click)="Edit(row.id)"
                 >
                   <i class="fa-solid fa-pencil"></i>
                 </button>

@@ -189,7 +189,7 @@
   
                 <div class="flex flex-col w-[48%]">
                   <h6 class="font-medium text-base leading-6 mb-1 mt-3">Bank Account Number</h6>
-                  <input type="number"
+                  <input  (input)="validateNumber($event)"
                       class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
                       [(ngModel)]="bank.bankAccountName" placeholder="Enter Number"
                       (ngModelChange)="onInputValueChange({ field: 'bankAccountNumber', value: $event })" />

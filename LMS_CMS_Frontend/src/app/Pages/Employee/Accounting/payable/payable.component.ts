@@ -119,6 +119,13 @@ User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '',
     return IsAllow;
   }
 
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+        event.target.value = '';
+    }
+  }
+  
   GetPayableDate(DomainName: string, pageNumber:number, pageSize:number){
     this.payableService.Get(DomainName, pageNumber, pageSize).subscribe(
       (data) => {

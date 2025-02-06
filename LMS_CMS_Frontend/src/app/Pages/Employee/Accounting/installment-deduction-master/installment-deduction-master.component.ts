@@ -199,4 +199,11 @@ export class InstallmentDeductionMasterComponent {
   View(id:number){
     this.router.navigateByUrl(`Employee/Installment Deduction Details/View/${id}`)
   }
+
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+        event.target.value = '';
+    }
+  }
 }

@@ -12,6 +12,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { Receivable } from '../../../../Models/Accounting/receivable';
 import { ReceivableService } from '../../../../Services/Employee/Accounting/receivable.service';
 import Swal from 'sweetalert2';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-receivable',
@@ -31,7 +32,7 @@ export class ReceivableComponent {
   DomainName: string = '';
   UserID: number = 0;
 
-  keysArray: string[] = [];
+  keysArray: string[] = ['id', 'docNumber' ,"date", "receivableDocTypesName" ,"linkFileName"];
 
   path: string = '';
   key: string = 'id';
@@ -74,31 +75,31 @@ export class ReceivableComponent {
   async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
-    // try {
-    //   const data: Supplier[] = await firstValueFrom(
-    //     this.SupplierServ.Get(this.DomainName)
-    //   );
-    //   this.TableData = data || [];
+    try {
+      const data: any = await firstValueFrom(
+        this.receivableService.Get(this.DomainName, this.CurrentPage, this.PageSize)
+      );
+      this.receivableData = data.data || [];
 
-    //   if (this.value !== '') {
-    //     const numericValue = isNaN(Number(this.value))
-    //       ? this.value
-    //       : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-    //     this.TableData = this.TableData.filter((t) => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.TableData = [];
-    // }
+        this.receivableData = this.receivableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.receivableData = [];
+    }
   }
 
   validateNumber(event: any): void {

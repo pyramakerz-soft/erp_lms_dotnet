@@ -104,7 +104,7 @@ export const routes: Routes = [
         path: "Employee",     
         component: MainLayoutComponent, 
         title: "Employee Home", 
-        canActivate:[noNavigateWithoutLoginGuard,navigateIfEmployeeGuard], 
+        canActivate:[navigateIfEmployeeGuard], 
         children: [
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }, 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     

@@ -276,13 +276,13 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasOne(p => p.Role)
                  .WithMany(p => p.Role_Detailes)
                  .HasForeignKey(p => p.Role_ID)
-                 .OnDelete(DeleteBehavior.Restrict);
+                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Role_Detailes>()
                  .HasOne(p => p.Page)
                  .WithMany(p => p.Role_Detailes)
                  .HasForeignKey(p => p.Page_ID)
-                 .OnDelete(DeleteBehavior.Restrict);
+                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Student>()
                  .HasOne(p => p.Parent)

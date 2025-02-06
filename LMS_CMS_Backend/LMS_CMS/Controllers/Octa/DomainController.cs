@@ -377,9 +377,26 @@ namespace LMS_CMS_PL.Controllers.Octa
                 }
             }
 
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            //// Add all pages to Admin role
+            foreach (var pageId in addedPageIds)
+            {
+                Role_Detailes roleDetail = new Role_Detailes
+                {
+                    Role_ID = 1, // Admin Role
+                    Page_ID = pageId,
+                    Allow_Edit = true,
+                    Allow_Delete = true,
+                    Allow_Edit_For_Others = true,
+                    Allow_Delete_For_Others = true,
+                };
+                roleDetail.InsertedByOctaId = userId;
+                roleDetail.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                Unit_Of_Work.role_Detailes_Repository.Add(roleDetail);
+            } 
+
             Unit_Of_Work.SaveChanges();
 
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             existingDomain.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             existingDomain.UpdatedByUserId = userId;
 

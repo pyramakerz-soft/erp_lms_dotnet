@@ -66,6 +66,7 @@ export class TestService {
       .set('Content-Type', 'application/json');
     return this.http.get<Test[]>(`${this.baseUrl}/Test`, { headers })
   }
+  
   GetByID(id:number,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 

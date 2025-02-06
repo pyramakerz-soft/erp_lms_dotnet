@@ -126,7 +126,9 @@ export class RegistrationFormFieldComponent {
 
   Edit(row: RegistrationCategory) {
     this.mode = 'Edit';
-    this.Category = row;
+    this.CategoryServ.GetByID(row.id,this.DomainName).subscribe((d)=>{
+      this.Category=d
+    })
     this.openModal();
   }
 

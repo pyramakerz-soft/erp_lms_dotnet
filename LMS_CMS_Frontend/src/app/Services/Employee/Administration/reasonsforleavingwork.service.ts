@@ -28,6 +28,18 @@ export class ReasonsforleavingworkService {
     return this.http.get<Reasonsforleavingwork[]>(`${this.baseUrl}/ReasonsForLeavingWork`, { headers })
   }
 
+  GetById(id:number ,DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<Reasonsforleavingwork>(`${this.baseUrl}/ReasonsForLeavingWork/${id}`, { headers })
+  }
+
   Add(Degree: Reasonsforleavingwork, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName

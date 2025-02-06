@@ -206,7 +206,9 @@ export class AdmissionTestComponent {
 
   Edit(row: Test) {
     this.mode = 'Edit';
-    this.test = row;
+    this.testServ.GetByID(row.id,this.DomainName).subscribe((d)=>{
+      this.test=d
+    })
     this.openModal();
   }
 

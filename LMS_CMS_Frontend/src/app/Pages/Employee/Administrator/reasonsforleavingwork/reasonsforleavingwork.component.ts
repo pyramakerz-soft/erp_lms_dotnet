@@ -123,8 +123,10 @@ export class ReasonsforleavingworkComponent {
 
   Edit(row: Reasonsforleavingwork) {
     this.mode = 'Edit';
-    this.reasonsforleavingwork = row;
-    this.reasonsforleavingwork=new Reasonsforleavingwork()
+    this.reasonServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.reasonsforleavingwork=d
+    })
+    this.validationErrors={}
     this.openModal();
   }
 

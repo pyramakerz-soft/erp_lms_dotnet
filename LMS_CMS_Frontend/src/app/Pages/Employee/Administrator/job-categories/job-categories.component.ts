@@ -124,7 +124,9 @@ User_Data_After_Login: TokenData = new TokenData(
 
   Edit(row: JobCategories) {
     this.mode = 'Edit';
-    this.jobCategories = row;
+    this.JobCategoryServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.jobCategories=d
+    })
     this.openModal();
   }
 

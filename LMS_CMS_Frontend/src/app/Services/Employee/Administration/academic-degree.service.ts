@@ -29,6 +29,18 @@ export class AcademicDegreeService {
     return this.http.get<AcademicDegree[]>(`${this.baseUrl}/AcademicDegree`, { headers })
   }
 
+  GetById(id:number ,DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<AcademicDegree>(`${this.baseUrl}/AcademicDegree/${id}`, { headers })
+  }
+
   Add(Degree: AcademicDegree, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName

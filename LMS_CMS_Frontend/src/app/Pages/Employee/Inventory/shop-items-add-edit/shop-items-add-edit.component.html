@@ -1,0 +1,187 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5 rtl:space-x-reverse">
+        <i class="fa-solid fa-chevron-left rtl:rotate-180" (click)="moveToBack()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Shop Items</h1>
+    </div>
+</div>
+
+<div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap py-3">
+
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">English Name</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter English Name" [(ngModel)]="Data.enName" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Arabic Name</label>
+        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Arabic Name" [(ngModel)]="Data.arName" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <h6 class="font-medium text-base leading-6 mb-1 mt-3">English Description</h6>
+        <div class="flex justify-start gap-2 items-start">
+            <div class="flex flex-col w-full">
+                <textarea
+                    class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+                    [(ngModel)]="Data.enDescription" placeholder="Description"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <h6 class="font-medium text-base leading-6 mb-1 mt-3">Arabic Description</h6>
+        <div class="flex justify-start gap-2 items-start">
+            <div class="flex flex-col w-full">
+                <textarea
+                    class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+                    [(ngModel)]="Data.arDescription" placeholder="Enter Description"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="name">Purchase Price</label>
+        <input id="name" type="number" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Price" [(ngModel)]="Data.purchasePrice" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="name">Sales Price</label>
+        <input id="name" type="number" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Price" [(ngModel)]="Data.salesPrice" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[33%]">
+        <label class="mb-2 primaryTxt" for="name">Vat for Foreign</label>
+        <input id="name" type="number" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter Vat" [(ngModel)]="Data.vATForForeign" />
+    </div>
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="bus">Category</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="CategoryId">
+            <option [value]=null disabled selected hidden>Choose Category</option>
+            <option *ngFor="let c of Categories" [value]="c.id">{{ c.name }}</option>
+            <option *ngIf="Categories.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="bus">Sub Category</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.SubCategoryId">
+            <option [value]=null disabled selected hidden>Choose Sub Category</option>
+            <option *ngFor="let Acc of SubCategories" [value]="Acc.id">{{ Acc.name }}</option>
+            <option *ngIf="SubCategories.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="School">Schools</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="School"
+            [(ngModel)]="Data.SchoolID">
+            <option [value]=null disabled selected hidden>Choose School</option>
+            <option *ngFor="let s of Schools" [value]="s.id">{{ s.name }}</option>
+            <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="bus">Grade Level</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.GradeID">
+            <option [value]=null disabled selected hidden>Choose Grade Level</option>
+            <option *ngFor="let g of Grades" [value]="g.id">{{ g.name }}</option>
+            <option *ngIf="Grades.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[49%] mb-4">
+        <label class="mb-2" for="bus">Gender</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
+            [(ngModel)]="Data.genderId">
+            <option [value]=null disabled selected hidden>Choose Gender</option>
+            <option *ngFor="let g of Grades" [value]="g.id">{{ g.name }}</option>
+            <option *ngIf="Grades.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="mb-2 primaryTxt" for="name">Limit</label>
+        <input id="name" type="number" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter limit" [(ngModel)]="Data.limit" />
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="font-medium text-base leading-6 mb-1 mt-3">Colors</label>
+        <div class="border border-gray-300 rounded-lg w-[500px] px-2 py-2 flex flex-wrap gap-2 mb-4">
+            <span *ngFor="let opt of colors; let i = index"
+                class="flex items-centermr-2 mb-1 bg-gray-200  rounded-full px-3 py-1 text-sm">
+                {{ opt }}
+                <button type="button" class="ml-2 text-white bg-[#6F6F6F] rounded-full px-1" (click)="removeOption(i)">
+                    &times;
+                </button>
+            </span>
+            <input type="text" class="flex-grow outline-none text-sm" [(ngModel)]="inputValue"
+                (keydown.enter)="addOption()" placeholder="Enter color" />
+        </div>
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="font-medium text-base leading-6 mb-1 mt-3">Size</label>
+        <div class="border border-gray-300 rounded-lg w-[500px] px-2 py-2 flex flex-wrap gap-2 mb-4">
+            <span *ngFor="let opt of Sizes; let i = index"
+                class="flex items-centermr-2 mb-1 bg-gray-200  rounded-full px-3 py-1 text-sm">
+                {{ opt }}
+                <button type="button" class="ml-2 text-white bg-[#6F6F6F] rounded-full px-1" (click)="removeOption(i)">
+                    &times;
+                </button>
+            </span>
+            <input type="text" class="flex-grow outline-none text-sm" [(ngModel)]="inputValue"
+                (keydown.enter)="addOption()" placeholder="Enter option" />
+        </div>
+    </div>
+
+    <div class="flex w-full space-x-5 items-center mb-4">
+        <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.availableInShop">
+        <label for="exception" class="text-sm">Available In Shop</label>
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="font-medium text-base leading-6 mb-1 mt-3">Main Image</label>
+        <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
+            <div class="flex justify-center w-full">
+                <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                    <img src="Images/Icon frame.png" class="w-1/4" alt="Upload Icon">
+                    <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
+                        <span class="secondaryTxt">Click to Upload</span> or drag and drop files
+                    </p>
+                    <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB each)</p>
+                </label>
+                <input id="file-upload" type="file" class="hidden" accept="image/jpeg, image/png" multiple
+                    (change)="onImageFileSelected($event)" />
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col mb-4 w-[49%]">
+        <label class="font-medium text-base leading-6 mb-1 mt-3">Other Image</label>
+        <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
+            <div class="flex justify-center w-full">
+                <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                    <img src="Images/Icon frame.png" class="w-1/4" alt="Upload Icon">
+                    <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
+                        <span class="secondaryTxt">Click to Upload</span> or drag and drop files
+                    </p>
+                    <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB each)</p>
+                </label>
+                <input id="file-upload" type="file" class="hidden" accept="image/jpeg, image/png" multiple
+                    (change)="onImageFileSelected($event)" />
+            </div>
+        </div>
+    </div>
+</div>

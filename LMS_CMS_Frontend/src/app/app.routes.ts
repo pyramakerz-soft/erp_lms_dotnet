@@ -93,6 +93,11 @@ import { InstallmentDeductionDetailComponent } from './Pages/Employee/Accounting
 import { InstallmentDeductionMasterComponent } from './Pages/Employee/Accounting/installment-deduction-master/installment-deduction-master.component';
 import { PayableDocTypeComponent } from './Pages/Employee/Accounting/payable-doc-type/payable-doc-type.component';
 import { ReceivableDocTypeComponent } from './Pages/Employee/Accounting/receivable-doc-type/receivable-doc-type.component';
+import { CategoriesComponent } from './Pages/Employee/Inventory/categories/categories.component';
+import { SubCategoryComponent } from './Pages/Employee/Inventory/sub-category/sub-category.component';
+import { ShopItemsComponent } from './Pages/Employee/Inventory/shop-items/shop-items.component';
+import { ShopItemsAddEditComponent } from './Pages/Employee/Inventory/shop-items-add-edit/shop-items-add-edit.component';
+import { StoresComponent } from './Pages/Employee/Inventory/stores/stores.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -188,6 +193,13 @@ export const routes: Routes = [
             { path: "Installment Deduction Details", component: InstallmentDeductionDetailComponent, title: "View Installment Deduction Details" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Payable Doc Type", component: PayableDocTypeComponent, title: "Payable Doc Type" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Receivable Doc Type", component: ReceivableDocTypeComponent, title: "Receivable Doc Type" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Inventory categories", component: CategoriesComponent, title: "Inventory categories" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Sub_categories", component: SubCategoryComponent, title: "Sub_categories" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Shop Items", component: ShopItemsComponent, title: "Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Create Shop Items", component: ShopItemsAddEditComponent, title: "Create Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Shop Items/:id", component: ShopItemsAddEditComponent, title: "Edit Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Store", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard ]},
+
         ]
     },
     { 

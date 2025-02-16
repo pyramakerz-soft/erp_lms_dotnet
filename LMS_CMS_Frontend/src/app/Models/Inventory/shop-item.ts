@@ -1,0 +1,28 @@
+export class ShopItem {
+    constructor(
+        public id: number = 0,
+        public enName: string = '',
+        public arName: string = '',
+        public enDescription: string = '',
+        public arDescription: string = '',
+        public purchasePrice: number =0,
+        public salesPrice: number =0,
+        public vATForForeign: number =0,
+        public genderId: number =0,
+        public genderName: string = '',
+        public limit: number =0,
+        public availableInShop: boolean =false,
+        public MainImageFile:  File|null = null,
+        public OtherImageFile: File|null = null,
+        public MainImage:  string = '',
+        public OtherImage: string = '',
+        public SubCategoryName: string = '',
+        public SchoolName: string = '',
+        public GradeName: string = '',
+        public SubCategoryId: number =0,
+        public SchoolID: number =0,
+        public GradeID: number =0,
+        public insertedByUserId :number =0,
+        public insertedAt :string ="",
+    ) {}
+}

@@ -93,52 +93,42 @@
                 <div class="flex flex-col">
                     <input type="text" class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
                         [(ngModel)]="violation.violationName" placeholder="Enter new Violation" />
-                        <div class="mt-4">
-                            <div class="flex flex-col mb-1">
-                                <label class="mb-3" for="ac">Employee Type</label>
-                                <div class="relative">
-                                    <div 
-                                        class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer" 
-                                        (click)="toggleDropdown()"
-                                        tabindex="0"
-                                    >
-                                        <div *ngIf="empTypesSelected.length > 0; else placeholder">
-                                            <div class="flex flex-wrap">
-                                                <span 
-                                                    class="mr-2 mb-1 bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center"
-                                                    *ngFor="let selected of empTypesSelected"
-                                                >
-                                                    {{ selected.name }}
-                                                    <span 
-                                                        class="ml-2 cursor-pointer text-red-500"
-                                                        (click)="removeSelected(selected.id)"
-                                                    >
-                                                        &times;
-                                                    </span>
+                    <div class="mt-4">
+                        <div class="flex flex-col mb-1">
+                            <label class="mb-3" for="ac">Employee Type</label>
+                            <div class="relative">
+                                <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer"
+                                    (click)="toggleDropdown()" tabindex="0">
+                                    <div *ngIf="empTypesSelected.length > 0; else placeholder">
+                                        <div class="flex flex-wrap">
+                                            <span
+                                                class="mr-2 mb-1 bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center"
+                                                *ngFor="let selected of empTypesSelected">
+                                                {{ selected.name }}
+                                                <span class="ml-2 cursor-pointer text-red-500"
+                                                    (click)="removeSelected(selected.id)">
+                                                    &times;
                                                 </span>
-                                            </div>
+                                            </span>
                                         </div>
-                                        <ng-template #placeholder>
-                                            <span class="text-gray-400">Choose Employee Type</span>
-                                        </ng-template>
                                     </div>
-                                    <div 
-                                        class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full shadow-md z-10"
-                                        *ngIf="dropdownOpen"
-                                    >
-                                        <ul>
-                                            <li 
-                                                *ngFor="let employeeType of empTypes"
-                                                class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                                (click)="selectEmployeeType(employeeType)"
-                                            >
-                                                {{ employeeType.name }}
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    <ng-template #placeholder>
+                                        <span class="text-gray-400">Choose Employee Type</span>
+                                    </ng-template>
+                                </div>
+                                <div class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full shadow-md z-10"
+                                    *ngIf="dropdownOpen">
+                                    <ul>
+                                        <li *ngFor="let employeeType of empTypes"
+                                            class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                            (click)="selectEmployeeType(employeeType)">
+                                            {{ employeeType.name }}
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </div>
             </div>
             <div class="flex justify-end">

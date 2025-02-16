@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace LMS_CMS_DAL.Migrations.Domain
+namespace LMS_CMS_DAL.Migrations.Domains
 {
     /// <inheritdoc />
     public partial class RemoveOnDeleteRestrictFromRoleDetailsMigration : Migration

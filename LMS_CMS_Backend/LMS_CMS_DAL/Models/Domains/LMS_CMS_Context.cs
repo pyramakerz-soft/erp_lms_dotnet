@@ -1,6 +1,7 @@
 ﻿using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
@@ -98,6 +99,17 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<InstallmentDeductionMaster> InstallmentDeductionMaster { get; set; }
         public DbSet<InstallmentDeductionDetails> InstallmentDeductionDetails { get; set; }
         public DbSet<FeesActivation> FeesActivation { get; set; }
+        public DbSet<Gender> Gender { get; set; }
+        public DbSet<InventorySubCategories> InventorySubCategories { get; set; }
+        public DbSet<InventoryCategories> InventoryCategories { get; set; }
+        public DbSet<StoreCategories> StoreCategories { get; set; }
+        public DbSet<Store> Store { get; set; }
+        public DbSet<ShopItemSize> ShopItemSize { get; set; }
+        public DbSet<ShopItemColor> ShopItemColor { get; set; }
+        public DbSet<ShopItem> ShopItem { get; set; }
+        public DbSet<SalesItemAttachment> SalesItemAttachment { get; set; }
+        public DbSet<SalesItem> SalesItem { get; set; }
+        public DbSet<Sales> Sales { get; set; }
 
 
 
@@ -216,6 +228,11 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<LinkFile>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
+
+            modelBuilder.Entity<Gender>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
 
             ///////////////////////// OnDelete: /////////////////////////
             modelBuilder.Entity<Page>()
@@ -858,6 +875,102 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasOne(p => p.ReceivableMaster)
                 .WithMany(p => p.ReceivableDetails)
                 .HasForeignKey(p => p.ReceivableMasterID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InventorySubCategories>()
+                .HasOne(p => p.InventoryCategories)
+                .WithMany(p => p.InventorySubCategories)
+                .HasForeignKey(p => p.InventoryCategoriesID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<StoreCategories>()
+                .HasOne(p => p.InventoryCategories)
+                .WithMany(p => p.StoreCategories)
+                .HasForeignKey(p => p.InventoryCategoriesID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<StoreCategories>()
+                .HasOne(p => p.Store)
+                .WithMany(p => p.StoreCategories)
+                .HasForeignKey(p => p.StoreID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<ShopItemSize>()
+                .HasOne(p => p.ShopItem)
+                .WithMany(p => p.ShopItemSize)
+                .HasForeignKey(p => p.ShopItemID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<ShopItemColor>()
+                .HasOne(p => p.ShopItem)
+                .WithMany(p => p.ShopItemColor)
+                .HasForeignKey(p => p.ShopItemID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<SalesItemAttachment>()
+                .HasOne(p => p.SalesItem)
+                .WithMany(p => p.SalesItemAttachment)
+                .HasForeignKey(p => p.SalesItemID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<SalesItem>()
+                .HasOne(p => p.ShopItem)
+                .WithMany(p => p.SalesItem)
+                .HasForeignKey(p => p.ShopItemID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<SalesItem>()
+                .HasOne(p => p.Sales)
+                .WithMany(p => p.SalesItem)
+                .HasForeignKey(p => p.SalesID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Sales>()
+                .HasOne(p => p.Store)
+                .WithMany(p => p.Sales)
+                .HasForeignKey(p => p.StoreID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Sales>()
+                .HasOne(p => p.Student)
+                .WithMany(p => p.Sales)
+                .HasForeignKey(p => p.StudentID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Sales>()
+                .HasOne(p => p.Save)
+                .WithMany(p => p.Sales)
+                .HasForeignKey(p => p.SaveID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Sales>()
+                .HasOne(p => p.Bank)
+                .WithMany(p => p.Sales)
+                .HasForeignKey(p => p.BankID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<ShopItem>()
+                .HasOne(p => p.Gender)
+                .WithMany(p => p.ShopItem)
+                .HasForeignKey(p => p.GenderID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<ShopItem>()
+                .HasOne(p => p.InventorySubCategories)
+                .WithMany(p => p.ShopItem)
+                .HasForeignKey(p => p.InventorySubCategoriesID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<ShopItem>()
+                .HasOne(p => p.School)
+                .WithMany(p => p.ShopItem)
+                .HasForeignKey(p => p.SchoolID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<ShopItem>()
+                .HasOne(p => p.Grade)
+                .WithMany(p => p.ShopItem)
+                .HasForeignKey(p => p.GradeID)
                 .OnDelete(DeleteBehavior.Restrict);
 
 

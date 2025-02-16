@@ -1,4 +1,5 @@
 ﻿using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using System;
 using System.Collections.Generic;
@@ -26,5 +27,6 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<Subject> Subjects { get; set; } = new HashSet<Subject>();
         public ICollection<Classroom> Classrooms { get; set; } = new HashSet<Classroom>();
         public ICollection<Test> Tests { get; set; } = new HashSet<Test>();
+        public ICollection<ShopItem> ShopItem { get; set; } = new HashSet<ShopItem>();
     }
 }

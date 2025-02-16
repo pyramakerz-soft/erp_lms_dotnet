@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LMS_CMS_DAL.Models.Domains.Inventory;
 
-namespace LMS_CMS_DAL.Models.Domains.AccountingModule
+namespace LMS_CMS_DAL.Models.Domains.Inventory
 {
-    public class Save : AuditableEntity
+    public class InventorySubCategories : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
@@ -17,11 +16,11 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
 
-        [ForeignKey("AccountNumber")]
-        public long AccountNumberID { get; set; }
+        [ForeignKey("InventoryCategories")]
+        public long InventoryCategoriesID { get; set; }
 
-        public AccountingTreeChart AccountNumber { get; set; }
-        public ICollection<Sales> Sales { get; set; } = new HashSet<Sales>();
+        public InventoryCategories InventoryCategories { get; set; }
+        public ICollection<ShopItem> ShopItem { get; set; } = new HashSet<ShopItem>(); 
 
     }
 }

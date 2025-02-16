@@ -48,11 +48,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
 
             return Ok(JobCategoryDto);
         }
+
         //////////////////////////////////////////////////////////////////////////////
+         
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Job Category", "Administrator" }
+        pages: new[] { "Job Category", "Administrator" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {

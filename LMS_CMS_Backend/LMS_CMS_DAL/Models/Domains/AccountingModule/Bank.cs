@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LMS_CMS_DAL.Models.Domains.Inventory;
 
 namespace LMS_CMS_DAL.Models.Domains.AccountingModule
 {
@@ -26,5 +27,7 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public long AccountNumberID { get; set; }
 
         public AccountingTreeChart AccountNumber { get; set; }
+        public ICollection<Sales> Sales { get; set; } = new HashSet<Sales>();
+
     }
 }

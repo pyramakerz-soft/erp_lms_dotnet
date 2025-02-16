@@ -3,6 +3,7 @@ using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
@@ -110,6 +111,17 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<FeesActivation> FeesActivation_Repository;
         GenericRepo<AccountingEntriesMaster> AccountingEntriesMaster_Repository;
         GenericRepo<AccountingEntriesDetails> AccountingEntriesDetails_Repository;
+        GenericRepo<Gender> Gender_Repository;
+        GenericRepo<ShopItem> ShopItem_Repository;
+        GenericRepo<Sales> Sales_Repository;
+        GenericRepo<SalesItem> SalesItem_Repository;
+        GenericRepo<SalesItemAttachment> SalesItemAttachment_Repository;
+        GenericRepo<Store> Store_Repository;
+        GenericRepo<ShopItemSize> ShopItemSize_Repository;
+        GenericRepo<ShopItemColor> ShopItemColor_Repository;
+        GenericRepo<StoreCategories> StoreCategories_Repository;
+        GenericRepo<InventorySubCategories> InventorySubCategories_Repository;
+        GenericRepo<InventoryCategories> InventoryCategories_Repository;
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -1159,6 +1171,138 @@ namespace LMS_CMS_BL.UOW
                     AccountingEntriesDetails_Repository = new GenericRepo<AccountingEntriesDetails>(db);
                 }
                 return AccountingEntriesDetails_Repository;
+            }
+        }
+        
+        public GenericRepo<Gender> gender_Repository
+        {
+            get
+            {
+                if (Gender_Repository == null)
+                {
+                    Gender_Repository = new GenericRepo<Gender>(db);
+                }
+                return Gender_Repository;
+            }
+        }
+        
+        public GenericRepo<Sales> sales_Repository
+        {
+            get
+            {
+                if (Sales_Repository == null)
+                {
+                    Sales_Repository = new GenericRepo<Sales>(db);
+                }
+                return Sales_Repository;
+            }
+        }
+        
+        public GenericRepo<SalesItem> salesItem_Repository
+        {
+            get
+            {
+                if (SalesItem_Repository == null)
+                {
+                    SalesItem_Repository = new GenericRepo<SalesItem>(db);
+                }
+                return SalesItem_Repository;
+            }
+        }
+        
+        public GenericRepo<SalesItemAttachment> salesItemAttachment_Repository
+        {
+            get
+            {
+                if (SalesItemAttachment_Repository == null)
+                {
+                    SalesItemAttachment_Repository = new GenericRepo<SalesItemAttachment>(db);
+                }
+                return SalesItemAttachment_Repository;
+            }
+        }
+        
+        public GenericRepo<ShopItem> shopItem_Repository
+        {
+            get
+            {
+                if (ShopItem_Repository == null)
+                {
+                    ShopItem_Repository = new GenericRepo<ShopItem>(db);
+                }
+                return ShopItem_Repository;
+            }
+        }
+        
+        public GenericRepo<Store> store_Repository
+        {
+            get
+            {
+                if (Store_Repository == null)
+                {
+                    Store_Repository = new GenericRepo<Store>(db);
+                }
+                return Store_Repository;
+            }
+        }
+        
+        public GenericRepo<ShopItemSize> shopItemSize_Repository
+        {
+            get
+            {
+                if (ShopItemSize_Repository == null)
+                {
+                    ShopItemSize_Repository = new GenericRepo<ShopItemSize>(db);
+                }
+                return ShopItemSize_Repository;
+            }
+        }
+        
+        public GenericRepo<ShopItemColor> shopItemColor_Repository
+        {
+            get
+            {
+                if (ShopItemColor_Repository == null)
+                {
+                    ShopItemColor_Repository = new GenericRepo<ShopItemColor>(db);
+                }
+                return ShopItemColor_Repository;
+            }
+        }
+        
+        public GenericRepo<InventoryCategories> inventoryCategories_Repository
+        {
+            get
+            {
+                if (InventoryCategories_Repository == null)
+                {
+                    InventoryCategories_Repository = new GenericRepo<InventoryCategories>(db);
+                }
+                return InventoryCategories_Repository;
+            }
+        }
+        
+        public GenericRepo<InventorySubCategories> inventorySubCategories_Repository
+        {
+            get
+            {
+                if (InventorySubCategories_Repository == null)
+                {
+                    InventorySubCategories_Repository = new GenericRepo<InventorySubCategories>(db);
+                }
+                return InventorySubCategories_Repository;
+            }
+        }
+        
+        public GenericRepo<StoreCategories> storeCategories_Repository
+        {
+            get
+            {
+                if (StoreCategories_Repository == null)
+                {
+                    StoreCategories_Repository = new GenericRepo<StoreCategories>(db);
+                }
+                return StoreCategories_Repository;
             }
         }
 

@@ -1,55 +1,56 @@
 ﻿using AutoMapper;
-using LMS_CMS_BL.DTO.Administration;
 using LMS_CMS_BL.DTO.Inventory;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
-using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Controllers.Domains.Inventory
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class InventoryCategoriesController : ControllerBase
+    public class InventorySubCategoriesController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public InventoryCategoriesController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public InventorySubCategoriesController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
         }
-
 
         ///////////////////////////////////////////
 
         [HttpGet]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Inventory Categories", "Inventory" }
+           pages: new[] { "Inventory Sub Categories", "Inventory" }
         )]
         public async Task<IActionResult> GetAsync()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<InventoryCategories> InventoryCategories = await Unit_Of_Work.inventoryCategories_Repository.Select_All_With_IncludesById<InventoryCategories>(
-                    b => b.IsDeleted != true);
+            List<InventorySubCategories> InventorySubCategories = await Unit_Of_Work.inventorySubCategories_Repository.Select_All_With_IncludesById<InventorySubCategories>(
+                    b => b.IsDeleted != true,
+                    query => query.Include(sub => sub.InventoryCategories)
+                    );
 
-            if (InventoryCategories == null || InventoryCategories.Count == 0)
+            if (InventorySubCategories == null || InventorySubCategories.Count == 0)
             {
                 return NotFound();
             }
 
-            List<InventoryCategoriesGetDto> inventoryCategoriesGetDto = mapper.Map<List<InventoryCategoriesGetDto>>(InventoryCategories);
+            List<InventorySubCategoriesGetDTO> inventorySubCategoriesGetDTO = mapper.Map<List<InventorySubCategoriesGetDTO>>(InventorySubCategories);
 
-            return Ok(inventoryCategoriesGetDto);
+            return Ok(inventorySubCategoriesGetDTO);
         }
 
         //////////////////////////////////////////////////////////////////////////////
@@ -57,22 +58,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Inventory Categories", "Inventory" }
+            pages: new[] { "Inventory Sub Categories", "Inventory" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            InventoryCategories InventoryCategories = Unit_Of_Work.inventoryCategories_Repository.First_Or_Default(d => d.ID == id && d.IsDeleted != true);
+            InventorySubCategories InventorySubCategories = await Unit_Of_Work.inventorySubCategories_Repository.FindByIncludesAsync(
+                d => d.ID == id && d.IsDeleted != true,
+                query => query.Include(sub => sub.InventoryCategories)
+                );
 
-            if (InventoryCategories == null)
+            if (InventorySubCategories == null)
             {
                 return NotFound();
             }
 
-            InventoryCategoriesGetDto InventoryCategoriesDTO = mapper.Map<InventoryCategoriesGetDto>(InventoryCategories);
+            InventorySubCategoriesGetDTO InventorySubCategoriesDTO = mapper.Map<InventorySubCategoriesGetDTO>(InventorySubCategories);
 
-            return Ok(InventoryCategoriesDTO);
+            return Ok(InventorySubCategoriesDTO);
         }
 
         //////////////////////////////////////////////////////////////////////////////
@@ -80,9 +84,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Inventory Categories", "Inventory" }
+           pages: new[] { "Inventory Sub Categories", "Inventory" }
         )]
-        public IActionResult Add(InventoryCategoriesAddDTO newCategory)
+        public IActionResult Add(InventorySubCategoriesAddDTO newCategory)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -97,22 +101,31 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (newCategory == null)
             {
-                return BadRequest("Inventory Categories cannot be null");
+                return BadRequest("Inventory Sub Categories cannot be null");
             }
-            InventoryCategories InventoryCategories = mapper.Map<InventoryCategories>(newCategory);
+
+            InventoryCategories invCat = Unit_Of_Work.inventoryCategories_Repository.First_Or_Default(
+                d => d.ID == newCategory.InventoryCategoriesID && d.IsDeleted != true
+                );
+            if(invCat == null)
+            {
+                return NotFound("No Inventory Categories With this ID");
+            }
+
+            InventorySubCategories InventorySubCategories = mapper.Map<InventorySubCategories>(newCategory);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            InventoryCategories.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            InventorySubCategories.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                InventoryCategories.InsertedByOctaId = userId;
+                InventorySubCategories.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                InventoryCategories.InsertedByUserId = userId;
+                InventorySubCategories.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.inventoryCategories_Repository.Add(InventoryCategories);
+            Unit_Of_Work.inventorySubCategories_Repository.Add(InventorySubCategories);
             Unit_Of_Work.SaveChanges();
             return Ok(newCategory);
         }
@@ -123,9 +136,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Inventory Categories", "Inventory" }
+            pages: new[] { "Inventory Sub Categories", "Inventory" }
         )]
-        public IActionResult Edit(InventoryCategoriesPutDTO newCategory)
+        public IActionResult Edit(InventorySubCategoriesPutDTO newCategory)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -142,18 +155,26 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (newCategory == null)
             {
-                return BadRequest("Inventory Categories cannot be null");
+                return BadRequest("Inventory Sub Categories cannot be null");
             }
 
-            InventoryCategories category = Unit_Of_Work.inventoryCategories_Repository.First_Or_Default(d => d.ID == newCategory.ID && d.IsDeleted != true);
+            InventorySubCategories category = Unit_Of_Work.inventorySubCategories_Repository.First_Or_Default(d => d.ID == newCategory.ID && d.IsDeleted != true);
             if (category == null)
             {
-                return NotFound("There is no Inventory Categories with this id");
+                return NotFound("There is no Inventory Sub Categories with this id");
+            }
+
+            InventoryCategories invCat = Unit_Of_Work.inventoryCategories_Repository.First_Or_Default(
+               d => d.ID == newCategory.InventoryCategoriesID && d.IsDeleted != true
+               );
+            if (invCat == null)
+            {
+                return NotFound("No Inventory Categories With this ID");
             }
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Inventory Categories");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Inventory Sub Categories");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -167,7 +188,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
                 else
                 {
-                    return BadRequest("Inventory Categories page doesn't exist");
+                    return BadRequest("Inventory Sub Categories page doesn't exist");
                 }
             }
 
@@ -191,7 +212,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            Unit_Of_Work.inventoryCategories_Repository.Update(category);
+            Unit_Of_Work.inventorySubCategories_Repository.Update(category);
             Unit_Of_Work.SaveChanges();
             return Ok(newCategory);
         }
@@ -202,7 +223,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Inventory Categories", "Inventory" }
+            pages: new[] { "Inventory Sub Categories", "Inventory" }
          )]
         public IActionResult Delete(long id)
         {
@@ -222,11 +243,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (id == 0)
             {
-                return BadRequest("Enter Category ID");
+                return BadRequest("Enter Sub Category ID");
             }
 
-            InventoryCategories category = Unit_Of_Work.inventoryCategories_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
-
+            InventorySubCategories category = Unit_Of_Work.inventorySubCategories_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == id);
 
             if (category == null)
             {
@@ -235,7 +255,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Inventory Categories");
+                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Inventory Sub Categories");
                 if (page != null)
                 {
                     Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
@@ -249,7 +269,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
                 else
                 {
-                    return BadRequest("Inventory Categories page doesn't exist");
+                    return BadRequest("Inventory Sub Categories page doesn't exist");
                 }
             }
 
@@ -273,7 +293,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            Unit_Of_Work.inventoryCategories_Repository.Update(category);
+            Unit_Of_Work.inventorySubCategories_Repository.Update(category);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

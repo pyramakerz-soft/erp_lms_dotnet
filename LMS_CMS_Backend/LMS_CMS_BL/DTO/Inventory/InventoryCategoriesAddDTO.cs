@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.Inventory
 {
-    public class InventoryCategoriesGetDto
+    public class InventoryCategoriesAddDTO
     {
-        public long ID { get; set; }
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
-        public long InsertedByUserId { get; set; }
     }
 }

@@ -582,6 +582,15 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
             CreateMap<ShopItemSize, ShopItemSizeGetDTO>()
                 .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+
+            CreateMap<Sales, SalesGetDTO>()
+                .ForMember(dest => dest.SaveName, opt => opt.MapFrom(src => src.Save.Name))
+                .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.Bank.Name))
+                .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name));
+            CreateMap<SalesAddDTO, Sales>();
+            CreateMap<SalesGetDTO, Sales>();
+
         }
-    }
+    } 
 }

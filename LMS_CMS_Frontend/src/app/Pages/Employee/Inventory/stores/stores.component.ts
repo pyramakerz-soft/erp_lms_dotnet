@@ -14,6 +14,10 @@ import { EmployeeTypeViolationService } from '../../../../Services/Employee/empl
 import { ViolationService } from '../../../../Services/Employee/violation.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { StoresService } from '../../../../Services/Employee/Inventory/stores.service';
+import { InventoryCategoryService } from '../../../../Services/Employee/Inventory/inventory-category.service';
+import { StoreAdd } from '../../../../Models/Inventory/store-add';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-stores',
@@ -41,7 +45,7 @@ export class StoresComponent {
   path: string = '';
 
   TableData: Store[] = [];
-  store: Store = new Store();
+  store: StoreAdd = new StoreAdd();
 
   isModalVisible: boolean = false;
   mode: string = 'Create';
@@ -61,7 +65,7 @@ export class StoresComponent {
   value: any = "";
 
   validationErrors: { [key in keyof Store]?: string } = {};
-
+  
   constructor(
     public violationServ: ViolationService,
     public empTypeVioletionServ: EmployeeTypeViolationService,
@@ -70,7 +74,9 @@ export class StoresComponent {
     public ApiServ: ApiService,
     private menuService: MenuService,
     public EditDeleteServ: DeleteEditPermissionService,
-    private router: Router
+    private router: Router ,
+    public StoresServ :StoresService , 
+    public CategoryServ : InventoryCategoryService
   ) { }
 
   ngOnInit() {
@@ -81,6 +87,7 @@ export class StoresComponent {
       this.path = url[0].path;
     });
     this.GetAllData();
+    this.GetAllCategories();
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
@@ -93,12 +100,20 @@ export class StoresComponent {
   }
 
   GetAllData() {
+   this.StoresServ.Get(this.DomainName).subscribe((d)=>{
+    this.TableData=d
+   })
+  }
 
+  GetAllCategories(){
+    this.CategoryServ.Get(this.DomainName).subscribe((d)=>{
+      this.Categories=d
+    })
   }
 
   Create() {
     this.mode = 'Create';
-    this.store = new Store();
+    this.store = new StoreAdd();
     this.dropdownOpen = false;
     this.openModal();
     this.CategoriesSelected = [];
@@ -108,13 +123,24 @@ export class StoresComponent {
     this.isModalVisible = true;
   }
 
-  Edit(id: number): void {
+  Edit(row: Store): void {
     this.mode = 'Edit';
+    this.store.id = row.id;
+    this.store.name=  row.name;
+    this.store.categoriesIds=  row.storeCategories.map(s=>s.id);
+    this.CategoriesSelected=row.storeCategories
+    this.openModal();
+    this.dropdownOpen = false;
   }
 
   selectCategory(category:Category){
-
+    if (!this.CategoriesSelected.some((e) => e.id === category.id)) {
+      this.CategoriesSelected.push(category);
+    }
+    this.store.categoriesIds.push(category.id);
+    this.dropdownOpen = false; 
   }
+
 
   Delete(id: number): void {
     Swal.fire({
@@ -127,7 +153,9 @@ export class StoresComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-
+        this.StoresServ.Delete(id,this.DomainName).subscribe((d)=>{
+          this.GetAllData()
+        })
       }
     });
   }
@@ -137,19 +165,34 @@ export class StoresComponent {
   }
 
   CreateOREdit() {
-
+    console.log(this.store)
+    if (this.isFormValid()) {
+      if (this.mode == 'Create') {
+        this.StoresServ.Add(this.store,this.DomainName).subscribe((d)=>{
+          this.GetAllData();
+          this.closeModal();
+        })
+      }
+      if (this.mode == 'Edit') {
+        this.StoresServ.Edit(this.store,this.DomainName).subscribe((d)=>{
+          this.GetAllData();
+          this.closeModal();
+        })
+      }
+    }
+    this.GetAllData();
   }
 
   toggleDropdown(): void {
     this.dropdownOpen = !this.dropdownOpen;
   }
 
-  select(employeeType: EmployeeTypeGet): void {
-
-  }
 
   removeSelected(id: number): void {
-
+    this.CategoriesSelected = this.CategoriesSelected.filter((e) => e.id !== id);
+    this.store.categoriesIds = this.store.categoriesIds.filter(
+      (i) => i !== id
+    );
   }
 
   IsAllowDelete(InsertedByID: number) {
@@ -163,37 +206,37 @@ export class StoresComponent {
   }
 
   async onSearchEvent(event: { key: string, value: any }) {
-    // this.key = event.key;
-    // this.value = event.value;
-    // try {
-    //   const data: Violation[] = await firstValueFrom( this.violationServ.Get_Violations(this.DomainName));  
-    //   this.Data = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Store[] = await firstValueFrom(this.StoresServ.Get(this.DomainName));  
+      this.TableData = data || [];
 
-    //   if (this.value !== "") {
-    //     const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 
-    //     this.Data = this.Data.filter(t => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.Data = [];
-    //   console.log('Error fetching data:', error);
-    // }
+        this.TableData = this.TableData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+      console.log('Error fetching data:', error);
+    }
   }
 
   isFormValid(): boolean {
       let isValid = true;
       for (const key in this.store) {
         if (this.store.hasOwnProperty(key)) {
-          const field = key as keyof Store;
+          const field = key as keyof StoreAdd;
           if (!this.store[field]) {
             if (
               field == 'name' 

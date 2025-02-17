@@ -193,12 +193,12 @@ export const routes: Routes = [
             { path: "Installment Deduction Details", component: InstallmentDeductionDetailComponent, title: "View Installment Deduction Details" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Payable Doc Type", component: PayableDocTypeComponent, title: "Payable Doc Type" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Receivable Doc Type", component: ReceivableDocTypeComponent, title: "Receivable Doc Type" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Inventory categories", component: CategoriesComponent, title: "Inventory categories" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Sub_categories", component: SubCategoryComponent, title: "Sub_categories" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Inventory Categories", component: CategoriesComponent, title: "Inventory categories" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Inventory Sub Categories/:id", component: SubCategoryComponent, title: "Sub_categories" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Shop Items", component: ShopItemsComponent, title: "Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Create Shop Items", component: ShopItemsAddEditComponent, title: "Create Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Shop Items/:id", component: ShopItemsAddEditComponent, title: "Edit Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Store", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Stores", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard ]},
 
         ]
     },

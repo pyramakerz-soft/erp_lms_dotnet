@@ -555,6 +555,14 @@ namespace LMS_CMS_BL.Config
                .ForMember(dest => dest.SectionId, opt => opt.MapFrom(src => src.Grade.Section.ID))
                .ForMember(dest => dest.SectionName, opt => opt.MapFrom(src => src.Grade.Section.Name));
 
+            CreateMap<Store, InventoryStoreGetDTO>();
+            CreateMap<InventoryStoreAddDTO, Store>();
+            CreateMap<StoreCategoriesEditDTO, Store>();
+            CreateMap<StoreCategories, InventoryCategoriesGetDto>()
+               .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.InventoryCategories.ID))
+               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.InventoryCategories.Name));
+
+
             CreateMap<InventoryCategories, InventoryCategoriesGetDto>();
             CreateMap<InventoryCategoriesAddDTO, InventoryCategories>();
             CreateMap<InventoryCategoriesPutDTO, InventoryCategories>();
@@ -579,6 +587,14 @@ namespace LMS_CMS_BL.Config
             CreateMap<ShopItemSize, ShopItemSizeGetDTO>()
                 .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
             CreateMap<ShopItemSizeAddDTO, ShopItemSize>();
+
+            CreateMap<Sales, SalesGetDTO>()
+                .ForMember(dest => dest.SaveName, opt => opt.MapFrom(src => src.Save.Name))
+                .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.Bank.Name))
+                .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name));
+            CreateMap<SalesAddDTO, Sales>();
+            CreateMap<SalesGetDTO, Sales>();
         }
-    }
+    } 
 }

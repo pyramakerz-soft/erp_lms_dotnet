@@ -1,4 +1,4 @@
-
+<!-- 
 <div class="mt-6">
     <div class="flex justify-between">
       <h1 class="font-semibold text-2xl leading-9">Shop Items</h1>
@@ -37,7 +37,6 @@
             </tr>
           </thead>
           <tbody>
-            <!-- No Data Row -->
             <tr *ngIf="TableData.length === 0">
               <td
                 colspan="11"
@@ -47,7 +46,6 @@
               </td>
             </tr>
   
-            <!-- Data Rows -->
             <tr
               *ngFor="let row of TableData; let i = index"
               [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
@@ -81,4 +79,4 @@
       </div>
     </div>
   </div>
-  
+   -->

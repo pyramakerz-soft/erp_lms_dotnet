@@ -53,7 +53,14 @@
                             {{ row.name }}
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            {{ row.name }}
+                            <div class="flex justify-start">
+                                <div *ngFor="let emp of row.storeCategories; let j = index">
+                                    <div class="mr-2 border border-[#EAECF0] border-t-0 border-l-0 bg-[#EBEBEB] p-1">
+                                        {{emp.name}}
+                                    </div>
+    
+                                </div>
+                            </div>
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <div class="flex space-x-4">
@@ -61,7 +68,7 @@
                                     (click)="Delete(row.id)">
                                     <i class="fa-regular fa-trash-can"></i>
                                 </button>
-                                <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="Edit(row.id)">
+                                <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="Edit(row)">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                             </div>
@@ -119,7 +126,7 @@
                                     </div>
                                 </div>
                                 <ng-template #placeholder>
-                                    <span class="text-gray-400">Choose Category</span>
+                                    <span >Choose Category</span>
                                 </ng-template>
                             </div>
                             <div class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full shadow-md z-10"

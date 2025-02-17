@@ -53,6 +53,32 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             return Ok(inventorySubCategoriesGetDTO);
         }
 
+        ///////////////////////////////////////////
+
+        [HttpGet("ByCategoryId/{id}")]
+        [Authorize_Endpoint_(
+           allowedTypes: new[] { "octa", "employee" },
+           pages: new[] { "Inventory Sub Categories", "Inventory" }
+        )]
+        public async Task<IActionResult> GetAsync(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<InventorySubCategories> InventorySubCategories = await Unit_Of_Work.inventorySubCategories_Repository.Select_All_With_IncludesById<InventorySubCategories>(
+                    b => b.IsDeleted != true&&b.InventoryCategoriesID==id,
+                    query => query.Include(sub => sub.InventoryCategories)
+                    );
+
+            if (InventorySubCategories == null || InventorySubCategories.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<InventorySubCategoriesGetDTO> inventorySubCategoriesGetDTO = mapper.Map<List<InventorySubCategoriesGetDTO>>(InventorySubCategories);
+
+            return Ok(inventorySubCategoriesGetDTO);
+        }
+
         //////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("{id}")]

@@ -558,9 +558,9 @@ namespace LMS_CMS_BL.Config
             CreateMap<Store, InventoryStoreGetDTO>();
             CreateMap<InventoryStoreAddDTO, Store>();
             CreateMap<StoreCategoriesEditDTO, Store>();
-            CreateMap<StoreCategories, StoreCategoriesGetDTO>()
-               .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
-               .ForMember(dest => dest.InventoryCategoriesName, opt => opt.MapFrom(src => src.InventoryCategories.Name));
+            CreateMap<StoreCategories, InventoryCategoriesGetDto>()
+               .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.InventoryCategories.ID))
+               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.InventoryCategories.Name));
 
 
             CreateMap<InventoryCategories, InventoryCategoriesGetDto>();

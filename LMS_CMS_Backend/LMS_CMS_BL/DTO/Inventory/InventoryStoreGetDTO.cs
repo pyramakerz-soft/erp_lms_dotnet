@@ -11,7 +11,7 @@ namespace LMS_CMS_BL.DTO.Inventory
     {
         public long ID { get; set; }
         public string Name { get; set; }
-        public List<StoreCategoriesGetDTO> StoreCategories { get; set; }
+        public List<InventoryCategoriesGetDto> StoreCategories { get; set; }
 
     }
 }

@@ -13,6 +13,9 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { InventoryCategoryService } from '../../../../Services/Employee/Inventory/inventory-category.service';
+import { InventorySubCategoriesService } from '../../../../Services/Employee/Inventory/inventory-sub-categories.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-sub-category',
@@ -66,7 +69,9 @@ export class SubCategoryComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
+    public ApiServ: ApiService ,
+    public CategoryServ :InventoryCategoryService ,
+    public InventorySubCategoryServ :InventorySubCategoriesService
   ) {}
   
   ngOnInit() {
@@ -89,10 +94,18 @@ export class SubCategoryComponent {
     });
 
     this.GetAllData();
+    this.GetCategoryInfo();
   }
 
   GetAllData() {
-   
+   this.InventorySubCategoryServ.GetByCategoryId(this.CategoryId,this.DomainName).subscribe((d)=>{
+    this.TableData=d
+   })
+  }
+  GetCategoryInfo(){
+    this.CategoryServ.GetById(this.CategoryId,this.DomainName).subscribe((d)=>{
+      this.category=d
+    })
   }
  
   Create() {
@@ -103,7 +116,7 @@ export class SubCategoryComponent {
   }
 
   moveToCategory(){
-   this.router.navigateByUrl(`Employee/Inventory categories`)
+   this.router.navigateByUrl(`Employee/Inventory Categories`)
   }
 
   Delete(id: number) {
@@ -117,7 +130,9 @@ export class SubCategoryComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-       
+       this.InventorySubCategoryServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.GetAllData()
+       })
       }
     });
   }
@@ -149,10 +164,16 @@ export class SubCategoryComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
-      
+        this.InventorySubCategoryServ.Add(this.SubCategory,this.DomainName).subscribe((d)=>{
+          this.GetAllData();
+          this.closeModal();
+        })
       }
       if (this.mode == 'Edit') {
-
+        this.InventorySubCategoryServ.Edit(this.SubCategory,this.DomainName).subscribe((d)=>{
+          this.GetAllData();
+          this.closeModal();
+        })
       }
     }
     this.GetAllData();
@@ -201,30 +222,30 @@ export class SubCategoryComponent {
   async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
-  //   try {
-  //     const data: Category[] = await firstValueFrom(
-        
-  //     );
-  //     this.TableData = data || [];
+    try {
+      const data: SubCategory[] = await firstValueFrom(
+        this.InventorySubCategoryServ.Get(this.DomainName)
+      );
+      this.TableData = data || [];
 
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 }

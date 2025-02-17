@@ -569,11 +569,16 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.InventorySubCategoriesName, opt => opt.MapFrom(src => src.InventorySubCategories.Name)) 
                 .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.School.Name)) 
                 .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name));
+            CreateMap<ShopItemAddDTO, ShopItem>();
+            CreateMap<ShopItemPutDTO, ShopItem>();
 
             CreateMap<ShopItemColor, ShopItemColorGetDTO>()
                 .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+            CreateMap<ShopItemColorAddDTO, ShopItemColor>();
+
             CreateMap<ShopItemSize, ShopItemSizeGetDTO>()
                 .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+            CreateMap<ShopItemSizeAddDTO, ShopItemSize>();
         }
     }
 }

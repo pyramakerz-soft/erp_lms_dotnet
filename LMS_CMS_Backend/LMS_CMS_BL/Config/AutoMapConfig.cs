@@ -4,6 +4,7 @@ using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.DTO.Administration;
 
 using LMS_CMS_BL.DTO.Bus;
+using LMS_CMS_BL.DTO.Inventory;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Octa;
 using LMS_CMS_BL.DTO.Registration;
@@ -12,6 +13,7 @@ using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
@@ -552,6 +554,15 @@ namespace LMS_CMS_BL.Config
                .ForMember(dest => dest.ClassName, opt => opt.MapFrom(src => src.Classroom.Name))
                .ForMember(dest => dest.SectionId, opt => opt.MapFrom(src => src.Grade.Section.ID))
                .ForMember(dest => dest.SectionName, opt => opt.MapFrom(src => src.Grade.Section.Name));
+
+
+            CreateMap<Store, InventoryStoreGetDTO>();
+            CreateMap<InventoryStoreAddDTO, Store>();
+            CreateMap<StoreCategoriesEditDTO, Store>();
+            CreateMap<StoreCategories, StoreCategoriesGetDTO>()
+               .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
+               .ForMember(dest => dest.InventoryCategoriesName, opt => opt.MapFrom(src => src.InventoryCategories.Name));
+
 
         }
     }

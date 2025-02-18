@@ -30,6 +30,8 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long GradeID { get; set; }
         public IFormFile? MainImageFile { get; set; }
         public IFormFile? OtherImageFile { get; set; }
+        public string? MainImage { get; set; }
+        public string? OtherImage { get; set; }
         public string[]? ShopItemColors { get; set; }
         public string[]? ShopItemSizes { get; set; }
     }

@@ -13,6 +13,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long ID { get; set; } 
         public string Name { get; set; } 
         public long ShopItemID { get; set; }
-        public long ShopItemName { get; set; }
+        public string ShopItemName { get; set; }
     }
 }

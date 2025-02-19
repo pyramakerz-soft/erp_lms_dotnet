@@ -10,14 +10,15 @@ namespace LMS_CMS_BL.DTO.Inventory
 {
     public class SalesAddDTO
     {
-        [Required(ErrorMessage = "Name is required")]
-        [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
-        public string Name { get; set; }
+        //[Required(ErrorMessage = "Name is required")]
+        //[StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
+        //public string Name { get; set; }
         public int InvoiceNumber { get; set; }
         public string Date { get; set; }
         public bool IsCash { get; set; }
         public bool IsVisa { get; set; }
-        public int Amount { get; set; }
+        public int CashAmount { get; set; }
+        public int VisaAmount { get; set; }
         public int Remaining { get; set; }
         public string Notes { get; set; }
         public long StoreID { get; set; }

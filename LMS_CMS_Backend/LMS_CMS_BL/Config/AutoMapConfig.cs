@@ -595,6 +595,11 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name));
             CreateMap<SalesAddDTO, Sales>();
             CreateMap<SalesGetDTO, Sales>();
+
+            CreateMap<SalesItem, SalesItemGetDTO>()
+                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+            CreateMap<SalesItemGetDTO, SalesItem>();
+            CreateMap<SalesItemAddDTO, SalesItem>();
         }
     } 
 }

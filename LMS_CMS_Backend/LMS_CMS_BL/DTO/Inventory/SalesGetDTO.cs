@@ -11,12 +11,13 @@ namespace LMS_CMS_BL.DTO.Inventory
     public class SalesGetDTO
     {
         public long ID { get; set; }
-        public string Name { get; set; }
+        //public string Name { get; set; }
         public int InvoiceNumber { get; set; }
         public string Date { get; set; }
         public bool IsCash { get; set; }
         public bool IsVisa { get; set; }
-        public int Amount { get; set; }
+        public int CashAmount { get; set; }
+        public int VisaAmount { get; set; }
         public int Remaining { get; set; }
         public string Notes { get; set; }
         public long StoreID { get; set; }

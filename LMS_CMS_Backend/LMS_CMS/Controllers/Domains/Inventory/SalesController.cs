@@ -179,7 +179,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.sales_Repository.Add(sale);
             await Unit_Of_Work.SaveChangesAsync();
 
-            return Ok(newSale);
+            return Ok(sale.ID);
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -208,11 +208,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             if (newSale == null)
             {
                 return BadRequest("Store cannot be null");
-            }
-
-            if (newSale.Name == null)
-            {
-                return BadRequest("the name cannot be null");
             }
 
             Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newSale.BankID && b.IsDeleted != true);

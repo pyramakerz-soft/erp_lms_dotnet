@@ -98,6 +98,8 @@ import { SubCategoryComponent } from './Pages/Employee/Inventory/sub-category/su
 import { ShopItemsComponent } from './Pages/Employee/Inventory/shop-items/shop-items.component';
 import { ShopItemsAddEditComponent } from './Pages/Employee/Inventory/shop-items-add-edit/shop-items-add-edit.component';
 import { StoresComponent } from './Pages/Employee/Inventory/stores/stores.component';
+import { SalesComponent } from './Pages/Employee/Inventory/sales/sales.component';
+import { SalesItemComponent } from './Pages/Employee/Inventory/sales-item/sales-item.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -199,6 +201,10 @@ export const routes: Routes = [
             { path: "Create Shop Items", component: ShopItemsAddEditComponent, title: "Create Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Shop Items/:id", component: ShopItemsAddEditComponent, title: "Edit Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Stores", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Sales", component: SalesComponent, title: "Sales" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Sales Item", component: SalesItemComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Sales Item/View/:id", component: SalesItemComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Sales Item/Edit/:id", component: SalesItemComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
 
         ]
     },

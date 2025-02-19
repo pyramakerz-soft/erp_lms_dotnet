@@ -1,17 +1,13 @@
-<!-- 
+
 <div class="mt-6">
     <div class="flex justify-between">
       <h1 class="font-semibold text-2xl leading-9">Shop Items</h1>
       <div class="flex justify-between items-center">
         <app-search
           [keysArray]="keysArray"
-          (searchEvent)="onSearchEvent($event)"
-        ></app-search>
-        <button
-          (click)="Create()"
-          class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2"
-        >
-          Create Sub-Category
+          (searchEvent)="onSearchEvent($event)" ></app-search>
+        <button (click)="Create()" class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+          Create Shop Items
         </button>
       </div>
     </div>
@@ -28,7 +24,47 @@
               </th>
               <th
                 class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                Name
+                English Name
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Arabic Name
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Purchase Price
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Sales Price
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                VAT For Foreign
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Limit
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Available In Shop
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Gender
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Grade
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                School
+              </th>
+              <th
+                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Inventory Sub Categories
               </th>
               <th
                 class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
@@ -39,7 +75,7 @@
           <tbody>
             <tr *ngIf="TableData.length === 0">
               <td
-                colspan="11"
+                colspan="12"
                 class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm"
               >
                 No Data Found
@@ -55,8 +91,38 @@
                 {{ row.id }}
               </td>
               <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                {{ row.name }}
+                {{ row.enName }}
               </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.arName }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.purchasePrice }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.salesPrice }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.vatForForeign }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.limit }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.availableInShop }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.genderName }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.gradeName }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.schoolName }}
+              </td>
+              <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                {{ row.inventorySubCategoriesName }}
+              </td> 
               <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                 <div class="flex space-x-4">
                   <button
@@ -79,4 +145,4 @@
       </div>
     </div>
   </div>
-   -->
+  

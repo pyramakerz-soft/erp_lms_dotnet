@@ -626,9 +626,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     {
                         newShopItem.MainImage = null;
                         string existingFilePath = Path.Combine(oldShopItemFolder, "MainImage");
-
-                        Console.WriteLine(existingFilePath);
-                        Console.WriteLine(System.IO.File.Exists(existingFilePath));
+                         
                         if (System.IO.File.Exists(existingFilePath))
                         {
                             System.IO.File.Delete(existingFilePath); // Delete the old file

@@ -212,26 +212,26 @@ export class ShopItemsAddEditComponent {
     this.Data.availableInShop = isChecked
   }
 
-  onImageFileSelected(event: any) {
-    const file: File = event.target.files[0];
+  // onImageFileSelected(event: any) {
+  //   const file: File = event.target.files[0];
     
-    if (file) {
-      if (file.size > 25 * 1024 * 1024) {
-        this.validationErrors['MainImage'] = 'The file size exceeds the maximum limit of 25 MB.';
-        this.Data.MainImageFile = null;
-        return; 
-      }
-      if (file.type === 'image/jpeg' || file.type === 'image/png') {
-        this.Data.MainImageFile = file; 
-        this.validationErrors['MainImage'] = ''; 
+  //   if (file) {
+  //     if (file.size > 25 * 1024 * 1024) {
+  //       this.validationErrors['MainImage'] = 'The file size exceeds the maximum limit of 25 MB.';
+  //       this.Data.MainImageFile = null;
+  //       return; 
+  //     }
+  //     if (file.type === 'image/jpeg' || file.type === 'image/png') {
+  //       this.Data.MainImageFile = file; 
+  //       this.validationErrors['MainImage'] = ''; 
 
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-      } else {
-        this.validationErrors['MainImage'] = 'Invalid file type. Only JPEG, JPG and PNG are allowed.';
-        this.Data.MainImageFile = null;
-        return; 
-      }
-    }
-  }
+  //       const reader = new FileReader();
+  //       reader.readAsDataURL(file);
+  //     } else {
+  //       this.validationErrors['MainImage'] = 'Invalid file type. Only JPEG, JPG and PNG are allowed.';
+  //       this.Data.MainImageFile = null;
+  //       return; 
+  //     }
+  //   }
+  // }
 }

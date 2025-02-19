@@ -13,6 +13,7 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { ShopItemService } from '../../../../Services/Employee/Inventory/shop-item.service';
 
 @Component({
   selector: 'app-shop-items',
@@ -63,7 +64,8 @@ User_Data_After_Login: TokenData = new TokenData(
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService
+    public ApiServ: ApiService,
+    public shopItemService:ShopItemService
   ) {}
   
   ngOnInit() {
@@ -88,11 +90,15 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   GetAllData() {
-   
+   this.shopItemService.Get(this.DomainName).subscribe(
+    data =>{
+      this.TableData = data 
+    }
+   )
   }
  
   Create() {
-    this.router.navigateByUrl(`Employee/Create Shop Items`)
+    this.router.navigateByUrl(`Employee/Shop Item/Create`)
   }
 
   Delete(id: number) {
@@ -106,13 +112,17 @@ User_Data_After_Login: TokenData = new TokenData(
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-       
+        this.shopItemService.Delete(id, this.DomainName).subscribe(
+          data => {
+            this.GetAllData()
+          }
+        )
       }
     });
   }
 
   Edit(id:number) {
-  
+    this.router.navigateByUrl(`Employee/Shop Item/${id}`)
   }
 
   IsAllowDelete(InsertedByID: number) {

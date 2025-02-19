@@ -133,8 +133,7 @@ namespace LMS_CMS_PL.Controllers.Domains
 
         [HttpGet("{empId}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Administrator","Accounting", "Employee" }
+            allowedTypes: new[] { "octa", "employee" }
         )]
         public async Task<IActionResult> GetByIDAsync(long empId)
         {

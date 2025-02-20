@@ -104,7 +104,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             SalesGetDTO DTO = mapper.Map<SalesGetDTO>(sale);
-
+            if (sale.Attachments != null)
+            {
+                DTO.Attachments = sale.Attachments.Select(filePath =>
+                    $"{Request.Scheme}://{Request.Host}/{sale.ID}/{Path.GetFileName(filePath)}"
+                ).ToList();
+            }
             return Ok(DTO);
         }
 
@@ -112,10 +117,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpPost]
         [Authorize_Endpoint_(
-        allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Sales", "Inventory" }
-    )]
-        public async Task<IActionResult> Add(SalesAddDTO newSale)
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Sales", "Inventory" }
+        )]
+        public async Task<IActionResult> Add([FromForm] SalesAddDTO newSale)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -123,50 +128,55 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-            if (userIdClaim == null || userTypeClaim == null)
+            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(userTypeClaim))
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
 
             if (newSale == null)
             {
-                return BadRequest("sale cannot be null");
+                return BadRequest("Sale cannot be null.");
             }
 
-            Store store =Unit_Of_Work.store_Repository.First_Or_Default(b=>b.ID==newSale.BankID&&b.IsDeleted!=true);
-            if (store == null) 
-            { 
-                return NotFound();
+            Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newSale.BankID && b.IsDeleted!= true);
+            if (store == null)
+            {
+                return NotFound("Store not found.");
             }
 
             Student student = Unit_Of_Work.student_Repository.First_Or_Default(b => b.ID == newSale.StudentID && b.IsDeleted != true);
             if (student == null)
             {
-                return NotFound();
+                return NotFound("Student not found.");
             }
 
-            if (newSale.BankID != 0 && newSale.BankID != null)
+            if (newSale.BankID != 0)
             {
                 Bank bank = Unit_Of_Work.bank_Repository.First_Or_Default(b => b.ID == newSale.BankID && b.IsDeleted != true);
                 if (bank == null)
                 {
-                    return NotFound();
+                    return NotFound("Bank not found.");
                 }
             }
 
-            if (newSale.SaveID != 0 && newSale.SaveID != null)
+            if (newSale.SaveID != 0)
             {
                 Save save = Unit_Of_Work.save_Repository.First_Or_Default(b => b.ID == newSale.SaveID && b.IsDeleted != true);
                 if (save == null)
                 {
-                    return NotFound();
+                    return NotFound("Save not found.");
                 }
             }
 
             Sales sale = mapper.Map<Sales>(newSale);
+            if (sale == null)
+            {
+                return BadRequest("Failed to map sale object.");
+            }
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             sale.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
             if (userTypeClaim == "octa")
             {
                 sale.InsertedByOctaId = userId;
@@ -178,9 +188,45 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             Unit_Of_Work.sales_Repository.Add(sale);
             await Unit_Of_Work.SaveChangesAsync();
+            long SaleID = 0;
+            SaleID = sale.ID;
+
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Sales");
+            var saleFolder = Path.Combine(baseFolder, sale.ID.ToString());
+
+            if (!Directory.Exists(saleFolder))
+            {
+                Directory.CreateDirectory(saleFolder);
+            }
+
+            if (sale.Attachments == null)
+            {
+                sale.Attachments = new List<string>();
+            }
+
+            if (newSale.Attachment != null)
+            {
+                foreach (var item in newSale.Attachment)
+                {
+                    if (item != null)
+                    {
+                        var filePath = Path.Combine(saleFolder, item.FileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await item.CopyToAsync(stream);
+                        }
+
+                        sale.Attachments.Add(Path.Combine("Uploads", "Sales", SaleID.ToString(), item.FileName));
+                    }
+                }
+            }
+
+            Unit_Of_Work.sales_Repository.Update(sale);
+            await Unit_Of_Work.SaveChangesAsync();
 
             return Ok(sale.ID);
         }
+
 
         /////////////////////////////////////////////////////////////////////////////
 
@@ -190,7 +236,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         allowEdit: 1,
          pages: new[] { "Sales", "Inventory" }
     )]
-        public async Task<IActionResult> EditAsync(SalesGetDTO newSale)
+        public async Task<IActionResult> EditAsync([FromForm] SaleEditDTO newSale)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -267,6 +313,52 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             mapper.Map(newSale, sale);
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Sales");
+            var saleFolder = Path.Combine(baseFolder, sale.ID.ToString());
+
+            if (!Directory.Exists(saleFolder))
+            {
+                Directory.CreateDirectory(saleFolder);
+            }
+
+            if (sale.Attachments == null)
+            {
+                sale.Attachments = new List<string>();
+            }
+
+            // Add new attachments
+            if (newSale.NewAttachments != null)
+            {
+                foreach (var item in newSale.NewAttachments)
+                {
+                    if (item != null)
+                    {
+                        var filePath = Path.Combine(saleFolder, item.FileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await item.CopyToAsync(stream);
+                        }
+
+                        sale.Attachments.Add(Path.Combine("Uploads", "Sales", newSale.ID.ToString(), item.FileName));
+                    }
+                }
+            }
+
+            // Remove selected files
+            if (newSale.DeletedAttachments != null)
+            {
+                foreach (var file in newSale.DeletedAttachments)
+                {
+                    var filePath = Path.Combine(saleFolder, file);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath); 
+                    }
+                    sale.Attachments.Remove(file);
+                }
+            }
+
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             sale.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
@@ -373,5 +465,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.SaveChanges();
             return Ok();
         }
+
+    
     }
 }

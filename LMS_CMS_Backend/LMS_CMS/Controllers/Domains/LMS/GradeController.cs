@@ -32,8 +32,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Grade", "Administrator" }
+            allowedTypes: new[] { "octa", "employee" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -65,8 +64,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("GetBySection/{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee", "parent" },
-            pages: new[] { "Grade", "Administrator" }
+            allowedTypes: new[] { "octa", "employee", "parent" }
         )]
         public async Task<IActionResult> GetAsync(long id)
         {
@@ -94,6 +92,53 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             return Ok(GradeDTO);
         }
+
+        ///////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetBySchool/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" }
+        )]
+        public async Task<IActionResult> GetBySchool(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if(id == 0 || id == null)
+            {
+                return BadRequest("Please Enter School ID");
+            }
+
+            School school = Unit_Of_Work.school_Repository.First_Or_Default( d => d.IsDeleted != true && d.ID == id);
+
+            if (school == null) 
+            {
+                return NotFound("There is no School with this ID");
+            }
+
+            List<Grade> Grades = await Unit_Of_Work.grade_Repository.Select_All_With_IncludesById<Grade>(
+                    sem => sem.IsDeleted != true && sem.Section.SchoolID == id,
+                    query => query.Include(emp => emp.Section));
+
+            if (Grades == null || Grades.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<GradeGetDTO> GradeDTO = mapper.Map<List<GradeGetDTO>>(Grades);
+
+            return Ok(GradeDTO);
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("{id}")]

@@ -576,6 +576,7 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.Gender.Name)) 
                 .ForMember(dest => dest.InventorySubCategoriesName, opt => opt.MapFrom(src => src.InventorySubCategories.Name)) 
                 .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.School.Name)) 
+                .ForMember(dest => dest.InventoryCategoriesID, opt => opt.MapFrom(src => src.InventorySubCategories.InventoryCategoriesID)) 
                 .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name));
             CreateMap<ShopItemAddDTO, ShopItem>();
             CreateMap<ShopItemPutDTO, ShopItem>();
@@ -600,6 +601,8 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
             CreateMap<SalesItemGetDTO, SalesItem>();
             CreateMap<SalesItemAddDTO, SalesItem>();
+
+            CreateMap<Gender, GenderGetDTO>();
         }
     } 
 }

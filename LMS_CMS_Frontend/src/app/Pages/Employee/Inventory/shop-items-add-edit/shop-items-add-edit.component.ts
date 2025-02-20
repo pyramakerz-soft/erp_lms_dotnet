@@ -17,15 +17,21 @@ import { Grade } from '../../../../Models/LMS/grade';
 import { School } from '../../../../Models/school';
 import { SchoolService } from '../../../../Services/Employee/school.service';
 import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
+import { InventorySubCategoriesService } from '../../../../Services/Employee/Inventory/inventory-sub-categories.service';
+import { Gender } from '../../../../Models/gender';
+import { InventoryCategoryService } from '../../../../Services/Employee/Inventory/inventory-category.service';
+import { GenderService } from '../../../../Services/Employee/Inventory/gender.service';
+import { ShopItemService } from '../../../../Services/Employee/Inventory/shop-item.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-shop-items-add-edit',
   standalone: true,
-  imports: [FormsModule, CommonModule, SearchComponent],
+  imports: [FormsModule, CommonModule],
   templateUrl: './shop-items-add-edit.component.html',
   styleUrl: './shop-items-add-edit.component.css'
 })
-export class ShopItemsAddEditComponent {
+export class ShopItemsAddEditComponent { 
   User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
@@ -38,26 +44,13 @@ export class ShopItemsAddEditComponent {
     '',
     ''
   );
-
-  AllowEdit: boolean = false;
-  AllowDelete: boolean = false;
-  AllowEditForOthers: boolean = false;
-  AllowDeleteForOthers: boolean = false;
-
-  TableData: SubCategory[] = [];
-
+ 
   DomainName: string = '';
   UserID: number = 0;
 
-  isModalVisible: boolean = false;
-  mode: string = '';
+  mode: string = ''; 
 
-  path: string = '';
-  key: string = 'id';
-  value: any = '';
-  keysArray: string[] = ['id', 'name'];
-
-  Data: ShopItem = new ShopItem();
+  ShopItem: ShopItem = new ShopItem();
   ShopItemId: number = 0;
   validationErrors: { [key in keyof ShopItem]?: string } = {};
 
@@ -67,93 +60,192 @@ export class ShopItemsAddEditComponent {
   inputValueSize: string = '';
   Sizes: string[] = [];
 
+  Grades: Grade[] = []
+  Gender: Gender[] = []
+  SchoolId: number = 0;
+  Schools: School[] = []
   CategoryId: number = 0;
   Categories: Category[] = []
-  SubCategories: SubCategory[] = []
-  Grades: Grade[] = []
-  Gender: SubCategory[] = []
-  Schools: School[] = []
+  InventorySubCategories: SubCategory[] = []
+  gender: Gender[] = []
 
   constructor(
-    private router: Router,
-    private menuService: MenuService,
+    private router: Router, 
     public activeRoute: ActivatedRoute,
     public account: AccountService,
-    public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
     public SchoolServ: SchoolService,
-    public GradeServ: GradeService
+    public GradeServ: GradeService,
+    public inventorySubCategoriesService: InventorySubCategoriesService,
+    public inventoryCategoryService: InventoryCategoryService,
+    public genderService: GenderService,
+    public shopItemService: ShopItemService
   ) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
-    this.DomainName = this.ApiServ.GetHeader();
-    this.activeRoute.url.subscribe((url) => {
-      this.path = url[0].path;
-    });
+    this.DomainName = this.ApiServ.GetHeader(); 
 
     this.ShopItemId = Number(this.activeRoute.snapshot.paramMap.get('id'));
     if (!this.ShopItemId) {
       this.mode = "Create"
     } else {
       this.mode = "Edit"
+      this.GetShopItemData();
     }
-
-    this.menuService.menuItemsForEmployee$.subscribe((items) => {
-      const settingsPage = this.menuService.findByPageName(this.path, items);
-      if (settingsPage) {
-        this.AllowEdit = settingsPage.allow_Edit;
-        this.AllowDelete = settingsPage.allow_Delete;
-        this.AllowDeleteForOthers = settingsPage.allow_Delete_For_Others;
-        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
-      }
-    });
-
-    this.GetAllData();
-    this.GetAllSchools();
-    this.GetAllGrades();
+ 
+    this.GetAllSchools(); 
+    this.GetAllCategories();
+    this.GetAllGenders();
   }
 
-  GetAllData() {
+  GetShopItemData() {
+    this.shopItemService.GetById(this.ShopItemId, this.DomainName).subscribe(
+      data =>{
+        this.ShopItem = data 
+        
+        this.CategoryId = this.ShopItem.inventoryCategoriesID
+        if (this.CategoryId) {
+          this.GetSubCategoryData(); 
+        }
 
+        this.SchoolId = this.ShopItem.schoolID
+        if (this.SchoolId) {
+          this.GetAllGrades(); 
+        }
+ 
+        this.ShopItem.shopItemColors.forEach((element: { name: string; }) => {
+          this.colors.push(element.name)
+        });
+
+        console.log(data)
+        this.ShopItem.shopItemSizes.forEach((element: { name: string; }) => {
+          this.Sizes.push(element.name)
+        });
+      }
+    )
+  }
+
+  GetSubCategoryData() {
+    this.inventorySubCategoriesService.GetByCategoryId(this.CategoryId, this.DomainName).subscribe(
+      data => {
+        this.InventorySubCategories = data
+      }
+    )
+  }
+
+  GetAllCategories() {
+    this.inventoryCategoryService.Get(this.DomainName).subscribe(
+      data => {
+        this.Categories = data
+      }
+    )
+  }
+ 
+  GetAllSchools() {
+    this.SchoolServ.Get(this.DomainName).subscribe((d) => {
+      this.Schools = d
+    })
+  }
+
+  GetAllGrades() {
+    this.GradeServ.GetBySchoolId(this.SchoolId, this.DomainName).subscribe((d) => {
+      this.Grades = d
+    })
+  }
+
+  GetAllGenders() {
+    this.genderService.Get(this.DomainName).subscribe((d) => {
+      this.gender = d 
+    })
   }
 
   moveToBack() {
-    this.router.navigateByUrl(`Employee/Shop Items`)
+    this.router.navigateByUrl(`Employee/Shop`)
+  }
+
+  onCategoryChange(event: Event) {
+    this.InventorySubCategories = []
+    this.ShopItem.inventorySubCategoriesID = 0
+    const selectedValue = (event.target as HTMLSelectElement).value; 
+    this.CategoryId = Number(selectedValue)
+    if (this.CategoryId) {
+      this.GetSubCategoryData(); 
+    }
+  }
+
+  onSchoolChange(event: Event) {
+    this.Grades = []
+    this.ShopItem.gradeID = 0
+    const selectedValue = (event.target as HTMLSelectElement).value; 
+    this.SchoolId = Number(selectedValue)
+    if (this.SchoolId) {
+      this.GetAllGrades(); 
+    }
+  }
+
+  validateNumber(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+        event.target.value = '';
+    }
   }
 
   Save() {
+    this.ShopItem.shopItemColors = []
+    this.ShopItem.shopItemSizes = []
+    if(this.colors.length != 0){ 
+      this.colors.forEach( element => {
+        this.ShopItem.shopItemColors.push(element)
+      });
+    }
+    if(this.Sizes.length != 0){ 
+      this.Sizes.forEach( element => {
+        this.ShopItem.shopItemSizes.push(element)
+      });
+    }
+    // console.log(this.ShopItem)
     if (this.isFormValid()) {
+      console.log(this.ShopItem)
       if (this.mode == 'Create') {
+        this.shopItemService.Add(this.ShopItem, this.DomainName).subscribe(
+          data => {
+            this.router.navigateByUrl(`Employee/Shop`)
 
+            Swal.fire({
+              title: "Added Successfully!",
+              icon: "success"
+            });
+          }
+        )
       }
       if (this.mode == 'Edit') {
-
+        this.shopItemService.Edit(this.ShopItem, this.DomainName).subscribe(
+          data => {
+            this.router.navigateByUrl(`Employee/Shop`) 
+            
+            Swal.fire({
+              title: "Edited Successfully!",
+              icon: "success"
+            });
+          }
+        )
       }
     }
   }
 
   isFormValid(): boolean {
     let isValid = true;
-    for (const key in this.Data) {
-      if (this.Data.hasOwnProperty(key)) {
+    for (const key in this.ShopItem) {
+      if (this.ShopItem.hasOwnProperty(key)) {
         const field = key as keyof ShopItem;
-        if (!this.Data[field]) {
-          if (
-            field == 'enName' ||
-            field == 'arName' ||
-            field == 'enDescription' ||
-            field == 'arDescription' ||
-            field == 'purchasePrice' ||
-            field == 'salesPrice'
-
-          ) {
-            this.validationErrors[field] = `*${this.capitalizeField(
-              field
-            )} is required`;
+        if (!this.ShopItem[field]) {
+          if (field == 'enName'|| field == 'arName'|| field == 'enDescription'|| field == 'arDescription'|| field == 'purchasePrice'|| field == 'salesPrice' 
+            || field == 'vatForForeign'|| field == 'genderID'|| field == 'limit'|| field == 'inventorySubCategoriesID'|| field == 'schoolID'|| field == 'gradeID') {
+            this.validationErrors[field] = `*${this.capitalizeField( field )} is required`;
             isValid = false;
           }
         }
@@ -161,26 +253,27 @@ export class ShopItemsAddEditComponent {
     }
     return isValid;
   }
+
   capitalizeField(field: keyof ShopItem): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
   onInputValueChange(event: { field: keyof ShopItem; value: any }) {
     const { field, value } = event;
-    (this.Data as any)[field] = value;
+    (this.ShopItem as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
   }
 
-  addOption() {
+  addColor() {
     if (this.inputValue.trim() !== '') {
       this.colors.push(this.inputValue.trim());
       this.inputValue = '';
     }
   }
 
-  removeOption(index: number) {
+  removeColor(index: number) {
     this.colors.splice(index, 1);
   }
 
@@ -191,47 +284,58 @@ export class ShopItemsAddEditComponent {
     }
   }
 
-  removeSixe(index: number) {
+  removeSize(index: number) {
     this.Sizes.splice(index, 1);
   }
-
-  GetAllSchools() {
-    this.SchoolServ.Get(this.DomainName).subscribe((d) => {
-      this.Schools = d
-    })
-  }
-
-  GetAllGrades() {
-    this.GradeServ.Get(this.DomainName).subscribe((d) => {
-      this.Grades = d
-    })
-  }
-
-  onIsExceptionChange(event: Event) {
+ 
+  onAvailableInShopkChange(event: Event) {
     const isChecked = (event.target as HTMLInputElement).checked;
-    this.Data.availableInShop = isChecked
+    this.ShopItem.availableInShop = isChecked
   }
 
-  // onImageFileSelected(event: any) {
-  //   const file: File = event.target.files[0];
+  onImageMainFileSelected(event: any) {
+    const file: File = event.target.files[0];
     
-  //   if (file) {
-  //     if (file.size > 25 * 1024 * 1024) {
-  //       this.validationErrors['MainImage'] = 'The file size exceeds the maximum limit of 25 MB.';
-  //       this.Data.MainImageFile = null;
-  //       return; 
-  //     }
-  //     if (file.type === 'image/jpeg' || file.type === 'image/png') {
-  //       this.Data.MainImageFile = file; 
-  //       this.validationErrors['MainImage'] = ''; 
+    if (file) {
+      if (file.size > 25 * 1024 * 1024) {
+        this.validationErrors['mainImageFile'] = 'The file size exceeds the maximum limit of 25 MB.';
+        this.ShopItem.mainImageFile = null;
+        return; 
+      }
+      if (file.type === 'image/jpeg' || file.type === 'image/png') {
+        this.ShopItem.mainImageFile = file; 
+        this.validationErrors['mainImageFile'] = ''; 
 
-  //       const reader = new FileReader();
-  //       reader.readAsDataURL(file);
-  //     } else {
-  //       this.validationErrors['MainImage'] = 'Invalid file type. Only JPEG, JPG and PNG are allowed.';
-  //       this.Data.MainImageFile = null;
-  //       return; 
-  //     }
-  //   }
-  // }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+      } else {
+        this.validationErrors['mainImageFile'] = 'Invalid file type. Only JPEG, JPG and PNG are allowed.';
+        this.ShopItem.mainImageFile = null;
+        return; 
+      }
+    }
+  }
+
+  onImageOtherFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    
+    if (file) {
+      if (file.size > 25 * 1024 * 1024) {
+        this.validationErrors['otherImageFile'] = 'The file size exceeds the maximum limit of 25 MB.';
+        this.ShopItem.otherImageFile = null;
+        return; 
+      }
+      if (file.type === 'image/jpeg' || file.type === 'image/png') {
+        this.ShopItem.otherImageFile = file; 
+        this.validationErrors['otherImageFile'] = ''; 
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+      } else {
+        this.validationErrors['otherImageFile'] = 'Invalid file type. Only JPEG, JPG and PNG are allowed.';
+        this.ShopItem.otherImageFile = null;
+        return; 
+      }
+    }
+  }
 }

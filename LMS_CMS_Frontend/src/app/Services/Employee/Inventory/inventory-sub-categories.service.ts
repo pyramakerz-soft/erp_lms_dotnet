@@ -39,7 +39,7 @@ export class InventorySubCategoriesService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
     return this.http.get<SubCategory>(`${this.baseUrl}/InventorySubCategories/${id}`, { headers })
-  }
+  } 
 
   GetByCategoryId(id: number, DomainName: string) {
     if (DomainName != null) {

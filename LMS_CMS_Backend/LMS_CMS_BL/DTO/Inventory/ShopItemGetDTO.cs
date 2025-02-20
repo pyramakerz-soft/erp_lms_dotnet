@@ -25,6 +25,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string OtherImage { get; set; }
         public long GenderID { get; set; }
         public string GenderName { get; set; }
+        public long InventoryCategoriesID { get; set; }
         public long InventorySubCategoriesID { get; set; }
         public string InventorySubCategoriesName { get; set; }
         public long SchoolID { get; set; }

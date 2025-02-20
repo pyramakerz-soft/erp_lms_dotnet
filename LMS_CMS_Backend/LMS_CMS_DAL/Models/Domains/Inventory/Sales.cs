@@ -25,6 +25,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public int VisaAmount { get; set; }
         public int Remaining { get; set; }
         public string Notes { get; set; }
+        public List<string>? Attachments { get; set; }
 
         [ForeignKey("Store")]
         public long StoreID { get; set; }
@@ -42,6 +43,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public Student Student { get; set; }
         public Save? Save { get; set; }
         public Bank? Bank { get; set; }
+
 
         public ICollection<SalesItem> SalesItem { get; set; } = new HashSet<SalesItem>();
     }

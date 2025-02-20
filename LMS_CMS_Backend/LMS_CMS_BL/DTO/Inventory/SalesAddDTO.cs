@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace LMS_CMS_BL.DTO.Inventory
 {
@@ -21,6 +22,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public int VisaAmount { get; set; }
         public int Remaining { get; set; }
         public string Notes { get; set; }
+        public List<IFormFile>? Attachment { get; set; }
         public long StoreID { get; set; }
         public long StudentID { get; set; }
         public long? SaveID { get; set; }

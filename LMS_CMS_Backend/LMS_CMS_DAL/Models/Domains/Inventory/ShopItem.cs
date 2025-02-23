@@ -28,6 +28,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public bool AvailableInShop { get; set; }
         public string? MainImage { get; set; }
         public string? OtherImage { get; set; }
+        public string BarCode { get; set; }
 
         [ForeignKey("Gender")]
         public long GenderID { get; set; }

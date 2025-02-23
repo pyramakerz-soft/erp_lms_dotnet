@@ -24,12 +24,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly FileImageValidationService _fileImageValidationService;
+        private readonly GenerateBarCodeEan13 _generateBarCodeEan13;
 
-        public ShopItemController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService)
+        public ShopItemController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService, GenerateBarCodeEan13 generateBarCodeEan13)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _fileImageValidationService = fileImageValidationService;
+            _generateBarCodeEan13 = generateBarCodeEan13;
         }
 
         ///////////////////////////////////////////
@@ -205,6 +207,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("No Gender With this ID");
             }
 
+
+            if (newShopItem.BarCode != null)
+            {
+                ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(
+                    d => d.BarCode == newShopItem.BarCode && d.IsDeleted != true
+                    );
+
+                if (shopItem != null)
+                {
+                    return BadRequest("BarCode Must Be unique");
+                }
+            }
+            else
+            {
+                newShopItem.BarCode = "Test";
+            }
+
             if (newShopItem.MainImageFile != null)
             {
                 string returnFileInput = _fileImageValidationService.ValidateImageFile(newShopItem.MainImageFile);
@@ -233,8 +252,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             else if (userTypeClaim == "employee")
             {
                 ShopItem.InsertedByUserId = userId;
-            }
-             
+            } 
+
             Unit_Of_Work.shopItem_Repository.Add(ShopItem);
             Unit_Of_Work.SaveChanges();
 
@@ -283,6 +302,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 ShopItem.MainImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + ShopItem.ID, "MainImage", newShopItem.MainImageFile.FileName);
             if (newShopItem.OtherImageFile != null)
                 ShopItem.OtherImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + ShopItem.ID, "OtherImage", newShopItem.OtherImageFile.FileName);
+
+            
+            if(newShopItem.BarCode == "Test")
+            {
+                string barCode = _generateBarCodeEan13.GenerateEan13(ShopItem.ID.ToString());
+                ShopItem shopItemexist = Unit_Of_Work.shopItem_Repository.First_Or_Default(
+                    d => d.BarCode == barCode && d.IsDeleted != true
+                    );
+
+                if (shopItemexist != null)
+                {
+                    return BadRequest("BarCode Must Be unique");
+                }
+                else
+                {
+                    ShopItem.BarCode = barCode;
+                }
+            }
 
             Unit_Of_Work.shopItem_Repository.Update(ShopItem);
 
@@ -401,6 +438,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             if (gender == null)
             {
                 return NotFound("No Gender With this ID");
+            }
+
+            if (existingShopItem.BarCode != newShopItem.BarCode)
+            {
+                ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(
+                    d => d.BarCode == newShopItem.BarCode && d.IsDeleted != true
+                    );
+
+                if (shopItem != null)
+                {
+                    return BadRequest("BarCode Must Be unique");
+                }
             }
 
             if (newShopItem.MainImageFile != null)
@@ -543,25 +592,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                             await newShopItem.MainImageFile.CopyToAsync(stream);
                         }
                     }
-
-                    if (newShopItem.EnName != enNameExists && existingShopItem.OtherImage != null)
-                    { 
-                        var filesOther = Directory.GetFiles(oldShopItemOtherImageFolder);
-
-                        Directory.Delete(oldShopItemOtherImageFolder);
-
-                        var fileName = "";
-
-                        foreach (var file in filesOther)
-                        {
-                            fileName = Path.GetFileName(file);
-                            var destFile = Path.Combine(shopItemOtherImageFolder, fileName);
-                            System.IO.File.Move(file, destFile);
-                        }
-
-                        newShopItem.OtherImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "OtherImage", fileName);
-                    }
-
+                     
                     if (newShopItem.OtherImageFile == null && (newShopItem.OtherImage == null || existingShopItem.OtherImage == null))
                     {
                         newShopItem.OtherImage = null;
@@ -575,6 +606,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     else if(newShopItem.OtherImageFile == null && existingShopItem.OtherImage != null)
                     {
                         newShopItem.OtherImage = existingShopItem.OtherImage;
+                    }
+
+                    if (newShopItem.EnName != enNameExists && existingShopItem.OtherImage != null)
+                    {
+                        var filesOther = Directory.GetFiles(oldShopItemOtherImageFolder);
+
+                        var fileName = "";
+
+                        foreach (var file in filesOther)
+                        {
+                            fileName = Path.GetFileName(file);
+                            var destFile = Path.Combine(shopItemOtherImageFolder, fileName);
+                            System.IO.File.Move(file, destFile);
+                        }
+
+                        Directory.Delete(oldShopItemOtherImageFolder);
+                        Directory.Delete(oldShopItemFolder);
+                        newShopItem.OtherImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "OtherImage", fileName);
                     }
                 } 
                 else if (newShopItem.OtherImageFile != null)
@@ -603,24 +652,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                         {
                             await newShopItem.OtherImageFile.CopyToAsync(stream);
                         }
-                    }
-
-                    if (newShopItem.EnName != enNameExists && existingShopItem.MainImage != null)
-                    { 
-                        var filesMain = Directory.GetFiles(oldShopItemMainImageFolder);
-
-                        Directory.Delete(oldShopItemMainImageFolder);
-
-                        var fileName = "";
-                        foreach (var file in filesMain)
-                        {
-                            fileName = Path.GetFileName(file);
-                            var destFile = Path.Combine(shopItemMainImageFolder, fileName);
-                            System.IO.File.Move(file, destFile);
-                        }
-
-                        newShopItem.MainImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "MainImage", fileName);
-                    }
+                    } 
 
                     if(newShopItem.MainImageFile == null && (newShopItem.MainImage == null || existingShopItem.MainImage == null))
                     {
@@ -635,6 +667,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     else if (newShopItem.MainImageFile == null && existingShopItem.MainImage != null)
                     {
                         newShopItem.MainImage = existingShopItem.MainImage;
+                    }
+
+                    if (newShopItem.EnName != enNameExists && existingShopItem.MainImage != null)
+                    {
+                        var filesMain = Directory.GetFiles(oldShopItemMainImageFolder);
+
+                        var fileName = "";
+                        foreach (var file in filesMain)
+                        {
+                            fileName = Path.GetFileName(file);
+                            var destFile = Path.Combine(shopItemMainImageFolder, fileName);
+                            System.IO.File.Move(file, destFile);
+                        }
+
+                        Directory.Delete(oldShopItemMainImageFolder);
+                        Directory.Delete(oldShopItemFolder);
+                        newShopItem.MainImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "MainImage", fileName);
                     }
                 }
                 else
@@ -793,6 +842,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     newShopItem.OtherImage = null;
                 } 
             }
+
 
             mapper.Map(newShopItem, existingShopItem);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

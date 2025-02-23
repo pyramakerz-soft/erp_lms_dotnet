@@ -34,5 +34,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string? OtherImage { get; set; }
         public string[]? ShopItemColors { get; set; }
         public string[]? ShopItemSizes { get; set; }
+        public string BarCode { get; set; }
     }
 }

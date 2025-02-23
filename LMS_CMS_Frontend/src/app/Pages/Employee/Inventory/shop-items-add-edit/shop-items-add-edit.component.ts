@@ -2,16 +2,13 @@ import { Component } from '@angular/core';
 import { ShopItem } from '../../../../Models/Inventory/shop-item';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { SearchComponent } from '../../../../Component/search/search.component';
+import { Router, ActivatedRoute } from '@angular/router'; 
 import { SubCategory } from '../../../../Models/Inventory/sub-category';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
-import { ApiService } from '../../../../Services/api.service';
-import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.service';
+import { ApiService } from '../../../../Services/api.service'; 
 import { DomainService } from '../../../../Services/Employee/domain.service';
-import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
-import { MenuService } from '../../../../Services/shared/menu.service';
+import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service'; 
 import { Category } from '../../../../Models/Inventory/category';
 import { Grade } from '../../../../Models/LMS/grade';
 import { School } from '../../../../Models/school';
@@ -207,9 +204,8 @@ export class ShopItemsAddEditComponent {
         this.ShopItem.shopItemSizes.push(element)
       });
     }
-    // console.log(this.ShopItem)
-    if (this.isFormValid()) {
-      console.log(this.ShopItem)
+    
+    if (this.isFormValid()) { 
       if (this.mode == 'Create') {
         this.shopItemService.Add(this.ShopItem, this.DomainName).subscribe(
           data => {
@@ -219,6 +215,15 @@ export class ShopItemsAddEditComponent {
               title: "Added Successfully!",
               icon: "success"
             });
+          }, 
+          err => { 
+            if(err.error == "BarCode Must Be unique"){
+              Swal.fire({
+                title: "BarCode Must Be unique",
+                text: "Please change the BarCode",
+                icon: "error"
+              });
+            }
           }
         )
       }
@@ -231,6 +236,15 @@ export class ShopItemsAddEditComponent {
               title: "Edited Successfully!",
               icon: "success"
             });
+          }, 
+          err => {
+            if(err.error == "BarCode Must Be unique"){
+              Swal.fire({
+                title: "BarCode Must Be unique",
+                text: "Please change the BarCode",
+                icon: "error"
+              });
+            }
           }
         )
       }
@@ -295,7 +309,7 @@ export class ShopItemsAddEditComponent {
 
   onImageMainFileSelected(event: any) {
     const file: File = event.target.files[0];
-    
+    this.ShopItem.mainImage = ""
     if (file) {
       if (file.size > 25 * 1024 * 1024) {
         this.validationErrors['mainImageFile'] = 'The file size exceeds the maximum limit of 25 MB.';
@@ -318,7 +332,7 @@ export class ShopItemsAddEditComponent {
 
   onImageOtherFileSelected(event: any) {
     const file: File = event.target.files[0];
-    
+    this.ShopItem.otherImage = ""
     if (file) {
       if (file.size > 25 * 1024 * 1024) {
         this.validationErrors['otherImageFile'] = 'The file size exceeds the maximum limit of 25 MB.';

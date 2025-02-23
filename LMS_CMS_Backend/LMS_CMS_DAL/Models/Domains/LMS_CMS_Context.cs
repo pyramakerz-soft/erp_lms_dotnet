@@ -108,9 +108,9 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<ShopItemColor> ShopItemColor { get; set; }
         public DbSet<ShopItem> ShopItem { get; set; }
         public DbSet<SalesItemAttachment> SalesItemAttachment { get; set; }
-        public DbSet<SalesItem> SalesItem { get; set; }
-        public DbSet<Sales> Sales { get; set; }
-
+        public DbSet<InventoryDetails> InventoryDetails { get; set; }
+        public DbSet<InventoryMaster> InventoryMaster { get; set; }
+        public DbSet<InventoryFlags> InventoryFlags { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -230,6 +230,10 @@ namespace LMS_CMS_DAL.Models.Domains
                 .ValueGeneratedNever();
 
             modelBuilder.Entity<Gender>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<InventoryFlags>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
@@ -908,44 +912,44 @@ namespace LMS_CMS_DAL.Models.Domains
                 .OnDelete(DeleteBehavior.Restrict);
             
             modelBuilder.Entity<SalesItemAttachment>()
-                .HasOne(p => p.SalesItem)
+                .HasOne(p => p.InventoryDetails)
                 .WithMany(p => p.SalesItemAttachment)
-                .HasForeignKey(p => p.SalesItemID)
+                .HasForeignKey(p => p.InventoryDetailsID)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            modelBuilder.Entity<SalesItem>()
+            modelBuilder.Entity<InventoryDetails>()
                 .HasOne(p => p.ShopItem)
-                .WithMany(p => p.SalesItem)
+                .WithMany(p => p.InventoryDetails)
                 .HasForeignKey(p => p.ShopItemID)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            modelBuilder.Entity<SalesItem>()
-                .HasOne(p => p.Sales)
-                .WithMany(p => p.SalesItem)
-                .HasForeignKey(p => p.SalesID)
+            modelBuilder.Entity<InventoryDetails>()
+                .HasOne(p => p.InventoryMaster)
+                .WithMany(p => p.InventoryDetails)
+                .HasForeignKey(p => p.InventoryMasterId)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            modelBuilder.Entity<Sales>()
+            modelBuilder.Entity<InventoryMaster>()
                 .HasOne(p => p.Store)
-                .WithMany(p => p.Sales)
+                .WithMany(p => p.InventoryMasters)
                 .HasForeignKey(p => p.StoreID)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            modelBuilder.Entity<Sales>()
+            modelBuilder.Entity<InventoryMaster>()
                 .HasOne(p => p.Student)
-                .WithMany(p => p.Sales)
+                .WithMany(p => p.InventoryMaster)
                 .HasForeignKey(p => p.StudentID)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            modelBuilder.Entity<Sales>()
+            modelBuilder.Entity<InventoryMaster>()
                 .HasOne(p => p.Save)
-                .WithMany(p => p.Sales)
+                .WithMany(p => p.InventoryMasters)
                 .HasForeignKey(p => p.SaveID)
                 .OnDelete(DeleteBehavior.Restrict);
             
-            modelBuilder.Entity<Sales>()
+            modelBuilder.Entity<InventoryMaster>()
                 .HasOne(p => p.Bank)
-                .WithMany(p => p.Sales)
+                .WithMany(p => p.InventoryMasters)
                 .HasForeignKey(p => p.BankID)
                 .OnDelete(DeleteBehavior.Restrict);
             
@@ -971,6 +975,13 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasOne(p => p.Grade)
                 .WithMany(p => p.ShopItem)
                 .HasForeignKey(p => p.GradeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<InventoryMaster>()
+                .HasOne(p => p.InventoryFlags)
+                .WithMany(p => p.InventoryMaster)
+                .HasForeignKey(p => p.FlagId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 

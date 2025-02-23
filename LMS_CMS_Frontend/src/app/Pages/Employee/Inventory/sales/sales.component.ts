@@ -130,7 +130,7 @@ export class SalesComponent {
      this.value = event.value;
      try {
        const data: any = await firstValueFrom(
-         this.salesServ.Get(this.DomainName, this.CurrentPage, this.PageSize)
+         this.salesServ.Get(this.DomainName, 1, this.CurrentPage, this.PageSize)
        );
        this.TableData = data.data || [];
  
@@ -156,7 +156,7 @@ export class SalesComponent {
    }
  
    GetAllData(pageNumber:number, pageSize:number){
-     this.salesServ.Get(this.DomainName, pageNumber, pageSize).subscribe(
+     this.salesServ.Get(this.DomainName,1, pageNumber, pageSize).subscribe(
        (data) => {
          this.CurrentPage = data.pagination.currentPage
          this.PageSize = data.pagination.pageSize

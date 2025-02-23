@@ -15,12 +15,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class SalesItemController : ControllerBase
+    public class InventoryDetailsController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
 
-        public SalesItemController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public InventoryDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -35,10 +35,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<SalesItem> salesItems = await Unit_Of_Work.salesItem_Repository.Select_All_With_IncludesById<SalesItem>(
+            List<InventoryDetails> salesItems = await Unit_Of_Work.inventoryDetails_Repository.Select_All_With_IncludesById<InventoryDetails>(
                     f => f.IsDeleted != true,
                     query => query.Include(s => s.ShopItem),
-                    query => query.Include(s => s.Sales)
+                    query => query.Include(s => s.InventoryMaster)
                     );
 
             if (salesItems == null || salesItems.Count == 0)
@@ -46,7 +46,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound();
             }
 
-            List<SalesItemGetDTO> DTO = mapper.Map<List<SalesItemGetDTO>>(salesItems);
+            List<InventoryDetailsGetDTO> DTO = mapper.Map<List<InventoryDetailsGetDTO>>(salesItems);
 
             return Ok(DTO);
         }
@@ -62,10 +62,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<SalesItem> salesItems = await Unit_Of_Work.salesItem_Repository.Select_All_With_IncludesById<SalesItem>(
-                    f => f.IsDeleted != true&&f.SalesID==id,
+            List<InventoryDetails> salesItems = await Unit_Of_Work.inventoryDetails_Repository.Select_All_With_IncludesById<InventoryDetails>(
+                    f => f.IsDeleted != true&&f.InventoryMasterId==id,
                     query => query.Include(s => s.ShopItem),
-                    query => query.Include(s => s.Sales)
+                    query => query.Include(s => s.InventoryMaster)
                     );
 
             if (salesItems == null || salesItems.Count == 0)
@@ -73,7 +73,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound();
             }
 
-            List<SalesItemGetDTO> DTO = mapper.Map<List<SalesItemGetDTO>>(salesItems);
+            List<InventoryDetailsGetDTO> DTO = mapper.Map<List<InventoryDetailsGetDTO>>(salesItems);
 
             return Ok(DTO);
         }
@@ -89,10 +89,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            SalesItem salesItems = await Unit_Of_Work.salesItem_Repository.FindByIncludesAsync(
+            InventoryDetails salesItems = await Unit_Of_Work.inventoryDetails_Repository.FindByIncludesAsync(
                     f => f.IsDeleted != true && f.ID == id,
                     query => query.Include(s => s.ShopItem),
-                    query => query.Include(s => s.Sales)
+                    query => query.Include(s => s.InventoryMaster)
                     );
 
             if (salesItems == null )
@@ -100,7 +100,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound();
             }
 
-            SalesItemGetDTO DTO = mapper.Map<SalesItemGetDTO>(salesItems);
+            InventoryDetailsGetDTO DTO = mapper.Map<InventoryDetailsGetDTO>(salesItems);
 
             return Ok(DTO);
         }
@@ -112,7 +112,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         allowedTypes: new[] { "octa", "employee" },
           pages: new[] { "Sales Item", "Inventory" }
     )]
-        public async Task<IActionResult> Add(SalesItemAddDTO newItem)
+        public async Task<IActionResult> Add(InventoryDetailsAddDTO newItem)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -136,13 +136,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound();
             }
 
-            Sales sale = Unit_Of_Work.sales_Repository.First_Or_Default(s => s.ID == newItem.SalesID && s.IsDeleted != true);
-            if (sale == null)
+            InventoryMaster InventoryMaster = Unit_Of_Work.inventoryMaster_Repository.First_Or_Default(s => s.ID == newItem.InventoryMasterId && s.IsDeleted != true);
+            if (InventoryMaster == null)
             {
                 return NotFound();
             }
 
-            SalesItem salesItem = mapper.Map<SalesItem>(newItem);
+            InventoryDetails salesItem = mapper.Map<InventoryDetails>(newItem);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             salesItem.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -155,7 +155,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 salesItem.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.salesItem_Repository.Add(salesItem);
+            Unit_Of_Work.inventoryDetails_Repository.Add(salesItem);
             await Unit_Of_Work.SaveChangesAsync();
 
             return Ok(salesItem.ID);
@@ -169,7 +169,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         allowEdit: 1,
          pages: new[] { "Sales Item", "Inventory" }
     )]
-        public async Task<IActionResult> EditAsync(SalesItemGetDTO newSale)
+        public async Task<IActionResult> EditAsync(InventoryDetailsGetDTO newSale)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -189,7 +189,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return BadRequest("Sales Item cannot be null");
             }
 
-            SalesItem salesItem = Unit_Of_Work.salesItem_Repository.First_Or_Default(s => s.ID == newSale.ID && s.IsDeleted != true);
+            InventoryDetails salesItem = Unit_Of_Work.inventoryDetails_Repository.First_Or_Default(s => s.ID == newSale.ID && s.IsDeleted != true);
             if (salesItem == null)
             {
                 return NotFound("No SaleItem with this ID");
@@ -201,7 +201,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound();
             }
 
-            Sales sale = Unit_Of_Work.sales_Repository.First_Or_Default(s => s.ID == newSale.SalesID && s.IsDeleted != true);
+            InventoryMaster sale = Unit_Of_Work.inventoryMaster_Repository.First_Or_Default(s => s.ID == newSale.InventoryMasterId && s.IsDeleted != true);
             if (sale == null)
             {
                 return NotFound();
@@ -247,7 +247,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            Unit_Of_Work.salesItem_Repository.Update(salesItem);
+            Unit_Of_Work.inventoryDetails_Repository.Update(salesItem);
             Unit_Of_Work.SaveChanges();
             return Ok(newSale);
         }
@@ -281,7 +281,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return BadRequest("Enter Sales Item ID");
             }
 
-            SalesItem salesItem = Unit_Of_Work.salesItem_Repository.First_Or_Default(s => s.ID == id && s.IsDeleted != true);
+            InventoryDetails salesItem = Unit_Of_Work.inventoryDetails_Repository.First_Or_Default(s => s.ID == id && s.IsDeleted != true);
             if (salesItem == null)
             {
                 return NotFound("No SaleItem with this ID");
@@ -327,7 +327,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            Unit_Of_Work.salesItem_Repository.Update(salesItem);
+            Unit_Of_Work.inventoryDetails_Repository.Update(salesItem);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

@@ -9,11 +9,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace LMS_CMS_BL.DTO.Inventory
 {
-    public class SalesAddDTO
+    public class InventoryMasterGetDTO
     {
-        //[Required(ErrorMessage = "Name is required")]
-        //[StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
-        //public string Name { get; set; }
+        public long ID { get; set; }
         public int InvoiceNumber { get; set; }
         public string Date { get; set; }
         public bool IsCash { get; set; }
@@ -22,10 +20,15 @@ namespace LMS_CMS_BL.DTO.Inventory
         public int VisaAmount { get; set; }
         public int Remaining { get; set; }
         public string Notes { get; set; }
-        public List<IFormFile>? Attachment { get; set; }
+        public List<string>? Attachments { get; set; }
         public long StoreID { get; set; }
         public long StudentID { get; set; }
+        public long FlagId { get; set; }
         public long? SaveID { get; set; }
         public long? BankID { get; set; }
+        public string? StoreName { get; set; }
+        public string? StudentName { get; set; }
+        public string? SaveName { get; set; }
+        public string? BankName { get; set; }
     }
 }

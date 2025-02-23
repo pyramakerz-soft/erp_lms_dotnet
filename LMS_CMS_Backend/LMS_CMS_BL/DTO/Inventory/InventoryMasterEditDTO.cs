@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace LMS_CMS_BL.DTO.Inventory
 {
-    public class SalesGetDTO
+    public class InventoryMasterEditDTO
     {
         public long ID { get; set; }
         public int InvoiceNumber { get; set; }
@@ -20,14 +18,12 @@ namespace LMS_CMS_BL.DTO.Inventory
         public int VisaAmount { get; set; }
         public int Remaining { get; set; }
         public string Notes { get; set; }
-        public List<string>? Attachments { get; set; }
+        public List<IFormFile>? NewAttachments { get; set; }
+        public List<string>? DeletedAttachments { get; set; }
         public long StoreID { get; set; }
+        public long FlagId { get; set; }
         public long StudentID { get; set; }
         public long? SaveID { get; set; }
         public long? BankID { get; set; }
-        public string? StoreName { get; set; }
-        public string? StudentName { get; set; }
-        public string? SaveName { get; set; }
-        public string? BankName { get; set; }
     }
 }

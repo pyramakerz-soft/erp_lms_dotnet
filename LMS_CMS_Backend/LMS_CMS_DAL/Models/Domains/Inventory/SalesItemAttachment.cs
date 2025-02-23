@@ -14,9 +14,9 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public long Id { get; set; }
         public string Link { get; set; }
 
-        [ForeignKey("SalesItem")]
-        public long SalesItemID { get; set; }
+        [ForeignKey("InventoryDetails")]
+        public long InventoryDetailsID { get; set; }
 
-        public SalesItem SalesItem { get; set; }
+        public InventoryDetails InventoryDetails { get; set; }
     }
 }

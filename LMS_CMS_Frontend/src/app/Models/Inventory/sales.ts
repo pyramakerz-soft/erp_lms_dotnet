@@ -10,6 +10,7 @@ export class Sales {
             public visaAmount :number =0,
             public remaining :number =0,
             public notes :string = '',
+            public flagId :number =0,
             public storeID :number =0,
             public studentID :number =0,
             public saveID :number =0,

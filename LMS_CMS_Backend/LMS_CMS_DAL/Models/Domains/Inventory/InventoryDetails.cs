@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.Inventory
 {
-    public class SalesItem : AuditableEntity
+    public class InventoryDetails : AuditableEntity
     {
         [Key]
         public long ID { get; set; } 
-        public string BarCode { get; set; }
+        //public string BarCode { get; set; }
         public int Quantity { get; set; }
         public float Price { get; set; }
         public float Amount { get; set; }
@@ -21,11 +21,11 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         [ForeignKey("ShopItem")]
         public long ShopItemID { get; set; }
         
-        [ForeignKey("Sales")]
-        public long SalesID { get; set; }
+        [ForeignKey("InventoryMaster")]
+        public long InventoryMasterId { get; set; }
 
         public ShopItem ShopItem { get; set; }
-        public Sales Sales { get; set; }
+        public InventoryMaster InventoryMaster { get; set; }
 
         public ICollection<SalesItemAttachment> SalesItemAttachment { get; set; } = new HashSet<SalesItemAttachment>();
 

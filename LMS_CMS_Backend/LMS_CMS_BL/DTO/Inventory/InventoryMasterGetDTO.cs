@@ -19,6 +19,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public int CashAmount { get; set; }
         public int VisaAmount { get; set; }
         public int Remaining { get; set; }
+        public int Total { get; set; }
         public string Notes { get; set; }
         public List<string>? Attachments { get; set; }
         public long StoreID { get; set; }

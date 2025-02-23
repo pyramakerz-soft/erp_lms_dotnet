@@ -17,6 +17,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public int CashAmount { get; set; }
         public int VisaAmount { get; set; }
         public int Remaining { get; set; }
+        public int Total { get; set; }
         public string Notes { get; set; }
         public List<IFormFile>? NewAttachments { get; set; }
         public List<string>? DeletedAttachments { get; set; }

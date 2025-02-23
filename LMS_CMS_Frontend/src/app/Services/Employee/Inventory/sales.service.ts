@@ -47,13 +47,31 @@ export class SalesService {
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
+      .set('Authorization', `Bearer ${token}`);
 
-    return this.http.post<any>(`${this.baseUrl}/InventoryMaster`, sales, {
-      headers: headers,
-      responseType: 'text' as 'json'
-    });
+      const formData = new FormData();
+
+      formData.append('invoiceNumber', sales.invoiceNumber.toString());
+      formData.append('date', sales.date);
+      formData.append('isCash', sales.isCash.toString()); 
+      formData.append('isVisa', sales.isVisa.toString());
+      formData.append('cashAmount', sales.cashAmount.toString());
+      formData.append('visaAmount', sales.visaAmount.toString());
+      formData.append('remaining', sales.remaining.toString());
+      formData.append('notes', sales.notes);
+      formData.append('storeID', sales.storeID.toString());
+      formData.append('flagId', sales.flagId.toString());
+      formData.append('studentID', sales.studentID.toString());
+      formData.append('saveID', sales.saveID.toString());
+      formData.append('bankID', sales.bankID.toString());
+  
+      if (sales.attachment && sales.attachment.length > 0) {
+        sales.attachment.forEach((file, index) => {
+          formData.append('attachment', file);
+        });
+      }
+  
+    return this.http.post<any>(`${this.baseUrl}/InventoryMaster`, formData ,{ headers });
   }
 
   Edit(sales: Sales, DomainName: string): Observable<Sales> {

@@ -104,15 +104,16 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             InventoryMasterGetDTO DTO = mapper.Map<InventoryMasterGetDTO>(Data);
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Sales";
+            //subject.IconLink = $"{serverUrl}{subject.IconLink.Replace("\\", "/")}";
             if (Data.Attachments != null)
             {
                 DTO.Attachments = Data.Attachments.Select(filePath =>
-                    $"{Request.Scheme}://{Request.Host}/{Data.ID}/{Path.GetFileName(filePath)}"
+                    $"{serverUrl}/{Data.ID}/{Path.GetFileName(filePath)}"
                 ).ToList();
             }
             return Ok(DTO);
         }
-
         /////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
@@ -138,7 +139,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return BadRequest("Sale cannot be null.");
             }
 
-            Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.BankID && b.IsDeleted!= true);
+            Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreID && b.IsDeleted!= true);
             if (store == null)
             {
                 return NotFound("Store not found.");

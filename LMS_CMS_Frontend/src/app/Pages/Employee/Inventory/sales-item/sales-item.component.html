@@ -2,19 +2,23 @@
     <div class="flex justify-between items-center space-x-5">
         <i class="fa-solid fa-chevron-left" (click)="moveToMaster()"></i>
         <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">
-            Create 
+            Create
         </h1>
         <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">
-            Edit 
+            Edit
         </h1>
         <h1 *ngIf="mode=='View'" class="font-semibold text-2xl leading-9">
-            View 
+            View
         </h1>
     </div>
+
+    <button class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="Save()">
+        Save
+    </button>
 </div>
 
 
-<div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap py-3">
+<div class="mt-6 mb-4 rounded-3xl flex justify-start space-x-2 flex-wrap py-3">
     <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2" for="store">Store</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Store"
@@ -63,7 +67,7 @@
                 <option *ngIf="Saves.length === 0" disabled selected>No Data Found</option>
             </select>
         </div>
-    
+
         <div class="flex w-[8%] space-x-5 items-center mb-4">
             <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isVisa">
             <label for="exception" class="text-sm">Visa</label>
@@ -80,39 +84,124 @@
                 <option *ngIf="Banks.length === 0" disabled selected>No Data Found</option>
             </select>
         </div>
-    
+
     </div>
-    
+
     <div class="flex flex-col mb-4 w-[24%]">
         <label class="mb-2 primaryTxt" for="remaining">Remaining</label>
         <input id="remaining" type="remaining" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter remaining" [(ngModel)]="Data.remaining" />
     </div>
 
+    <div class="flex flex-col mb-4 w-[24%]">
+        <label class="mb-2 primaryTxt" for="total">Total</label>
+        <input id="total" type="total" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            placeholder="Enter total" [(ngModel)]="Data.total" />
+    </div>
+
     <div class="flex flex-col mb-4 w-full">
         <h6 class="font-medium text-base leading-6 mb-1 mt-3">Note</h6>
         <div class="flex justify-start gap-2 items-start">
-          <div class="flex flex-col w-full">
-            <textarea
-              class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
-              [(ngModel)]="Data.notes"
-              placeholder="Enter Note"
-            ></textarea>
-          </div>
+            <div class="flex flex-col w-full">
+                <textarea
+                    class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+                    [(ngModel)]="Data.notes" placeholder="Enter Note"></textarea>
+            </div>
         </div>
     </div>
 
-</div>
+    <div class="flex flex-col mb-4 w-[30%]">
+        <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed border-2">
+            <div class="flex justify-center w-full">
+                <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                    <img src="Images/FileAttached.png" class="w-1/4">
+                    <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to
+                            Upload </span>or drag and drop Icon</p>
+                    <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB)</p>
+                </label>
+                <input id="file-upload" type="file" class="hidden" (change)="onImageFileSelected($event)"
+                    accept="image/jpeg, image/png" />
+            </div>
+        </div>
+    </div>
 
-<div *ngIf="mode!='View'" class="flex justify-end mb-3">
-    <button class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="Save()">
-        Save
-    </button>
+    <div  *ngFor="let img of Data.attachments; let i = index">
+        <div class="flex flex-col w-full">
+            <div class="border border-cacaca rounded-lg p-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-file"></i>
+                        <!-- Extract just the filename -->
+                        <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                            {{ img.split('/').pop() }}
+                        </p>
+                    </div>
+                    <button>
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                </div>
+                <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
+                <!-- Open the file when clicking "Click to View" -->
+                <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
+                    Click to View
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div  *ngIf="mode=='Create'" class="flex flex-wrap gap-4">
+        <div  *ngFor="let img of Data.attachment; let i = index">
+                <div class="border border-cacaca rounded-lg p-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-file"></i>
+                            <!-- Extract just the filename -->
+                            <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                                {{ img.name }}
+                            </p>
+                        </div>
+                        <button>
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                    <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
+                    <!-- Open the file when clicking "Click to View" -->
+                    <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
+                        Click to View
+                    </p>
+                </div>
+        </div>
+    </div>
+
+    <div *ngIf="mode=='Edit'" class="flex flex-wrap gap-4">
+        <div *ngFor="let img of Data.NewAttachments; let i = index" >
+          <div class="border border-cacaca rounded-lg p-6">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-file"></i>
+                <!-- Extract just the filename -->
+                <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                  {{ img.name }}
+                </p>
+              </div>
+              <button>
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            </div>
+            <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
+            <!-- Open the file when clicking "Click to View" -->
+            <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
+              Click to View
+            </p>
+          </div>
+        </div>
+      </div>
+      
+
 </div>
 
 <div *ngIf="mode=='Edit'" class="flex justify-end">
-    <button class="secondaryTxt secondaryBorder px-1 py-2 rounded-lg flex items-center space-x-1"
-        (click)="AddDetail()">
+    <button class="secondaryTxt secondaryBorder px-1 py-2 rounded-lg flex items-center space-x-1" (click)="AddDetail()">
         <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
         <p>Add</p>
     </button>
@@ -136,15 +225,16 @@
                         Quantity
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Price 
+                        Price
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Amount 
+                        Amount
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Notes 
+                        Notes
                     </th>
-                    <th *ngIf="mode=='Edit'" class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    <th *ngIf="mode=='Edit'"
+                        class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Actions
                     </th>
                 </tr>
@@ -176,25 +266,29 @@
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <ng-container *ngIf="editingRowId === row.id; else textModequantity">
-                            <input [(ngModel)]="row.quantity" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                            <input [(ngModel)]="row.quantity"
+                                class="w-full border border-gray-300 px-2 py-1 rounded-md">
                         </ng-container>
                         <ng-template #textModequantity>{{ row.quantity }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <ng-container *ngIf="editingRowId === row.id; else textModeprice">
-                            <input [(ngModel)]="row.price" type="price" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                            <input [(ngModel)]="row.price" type="price"
+                                class="w-full border border-gray-300 px-2 py-1 rounded-md">
                         </ng-container>
                         <ng-template #textModeprice>{{ row.price }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <ng-container *ngIf="editingRowId === row.id; else textModeamount">
-                            <input [(ngModel)]="row.amount" type="amount" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                            <input [(ngModel)]="row.amount" type="amount"
+                                class="w-full border border-gray-300 px-2 py-1 rounded-md">
                         </ng-container>
                         <ng-template #textModeamount>{{ row.amount }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <ng-container *ngIf="editingRowId === row.id; else textModenotes">
-                            <input [(ngModel)]="row.notes" type="notes" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                            <input [(ngModel)]="row.notes" type="notes"
+                                class="w-full border border-gray-300 px-2 py-1 rounded-md">
                         </ng-container>
                         <ng-template #textModenotes>{{ row.notes }}</ng-template>
                     </td>
@@ -213,8 +307,7 @@
                     </td>
                 </tr>
                 <!-- Data Rows -->
-                <tr *ngIf="IsOpenToAdd==true"
-                    class="border-t border-gray-300 text-xs md:text-sm bg-[#F7F7F7]">
+                <tr *ngIf="IsOpenToAdd==true" class="border-t border-gray-300 text-xs md:text-sm bg-[#F7F7F7]">
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         ___
                     </td>

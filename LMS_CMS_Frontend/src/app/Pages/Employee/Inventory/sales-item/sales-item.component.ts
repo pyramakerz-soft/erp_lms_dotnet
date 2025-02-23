@@ -33,7 +33,7 @@ import { Bank } from '../../../../Models/Accounting/bank';
   styleUrl: './sales-item.component.css'
 })
 export class SalesItemComponent {
- User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
+  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
@@ -54,15 +54,15 @@ export class SalesItemComponent {
 
   students: Student[] = []
   Stores: Store[] = []
-  Saves :Saves[]=[]
-  Banks : Bank[]=[]
+  Saves: Saves[] = []
+  Banks: Bank[] = []
 
   TableData: SalesItem[] = []
-  Item:SalesItem =new SalesItem()
-  MasterId :number =0;
-  editingRowId :any =0;
+  Item: SalesItem = new SalesItem()
+  MasterId: number = 0;
+  editingRowId: any = 0;
 
-  IsOpenToAdd :boolean=false
+  IsOpenToAdd: boolean = false
 
   constructor(
     private router: Router,
@@ -74,12 +74,12 @@ export class SalesItemComponent {
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
     public EmployeeServ: EmployeeService,
-    public StudentServ: StudentService ,
-    public salesItemServ :SalesItemService ,
-    public salesServ :SalesService ,
-    public storeServ : StoresService ,
-    public SaveServ : SaveService ,
-    public bankServ :BankService
+    public StudentServ: StudentService,
+    public salesItemServ: SalesItemService,
+    public salesServ: SalesService,
+    public storeServ: StoresService,
+    public SaveServ: SaveService,
+    public bankServ: BankService
   ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -91,18 +91,18 @@ export class SalesItemComponent {
 
     this.MasterId = Number(this.activeRoute.snapshot.paramMap.get('id'))
 
-    if(!this.MasterId){
+    if (!this.MasterId) {
       this.mode = "Create"
-    }else{
+    } else {
       this.GetTableDataByID();
       this.GetMasterInfo();
     }
 
     this.activeRoute.url.subscribe(url => {
       this.path = url[0].path
-      if(url[1].path == "View"){ 
+      if (url[1].path == "View") {
         this.mode = "View"
-      } else if(url[1].path == "Edit"){ 
+      } else if (url[1].path == "Edit") {
         this.mode = "Edit"
       }
     });
@@ -117,7 +117,7 @@ export class SalesItemComponent {
       }
     });
 
-    if(this.mode=="Create"){
+    if (this.mode == "Create") {
 
     }
     this.GetAllStudents()
@@ -131,16 +131,18 @@ export class SalesItemComponent {
   }
 
   Save() {
-    if(this.mode=="Create"){
-      this.salesServ.Add(this.Data,this.DomainName).subscribe((d)=>{
-       this.MasterId=d
-       this.router.navigateByUrl(`Employee/Sales Item/Edit/${this.MasterId}`)
+    this.Data.flagId = 1;
+    console.log(this.Data)
+    if (this.mode == "Create") {
+      this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
+        this.MasterId = d
+        this.router.navigateByUrl(`Employee/Sales Item/Edit/${this.MasterId}`)
       })
     }
-    if(this.mode=="Edit"){
-      this.salesServ.Edit(this.Data,this.DomainName).subscribe((d)=>{
+    if (this.mode == "Edit") {
+      this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
         this.GetMasterInfo()
-       })
+      })
     }
   }
 
@@ -169,42 +171,42 @@ export class SalesItemComponent {
     })
   }
 
-  GetMasterInfo(){
-    this.salesServ.GetById(this.MasterId,this.DomainName).subscribe((d)=>{
-      this.Data=d
+  GetMasterInfo() {
+    this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
+      this.Data = d
     })
   }
 
-  GetTableDataByID(){
-    this.salesItemServ.GetBySalesId(this.MasterId,this.DomainName).subscribe((d)=>{
-      this.TableData=d;
+  GetTableDataByID() {
+    this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
+      this.TableData = d;
     })
   }
 
   AddDetail() {
-    this.IsOpenToAdd=true
+    this.IsOpenToAdd = true
   }
 
   Edit(id: number) {
-    this.editingRowId=id
+    this.editingRowId = id
   }
 
   Delete(id: number) {
-  Swal.fire({
-        title: 'Are you sure you want to delete this Sales Item?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#FF7519',
-        cancelButtonColor: '#17253E',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.salesItemServ.Delete(id, this.DomainName).subscribe((D) => {
-            this.GetTableDataByID();
-          })
-        }
-      });
+    Swal.fire({
+      title: 'Are you sure you want to delete this Sales Item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.salesItemServ.Delete(id, this.DomainName).subscribe((D) => {
+          this.GetTableDataByID();
+        })
+      }
+    });
   }
 
   IsAllowDelete(InsertedByID: number) {
@@ -225,23 +227,45 @@ export class SalesItemComponent {
     return IsAllow;
   }
 
-  SaveRow(){
-    this.Item.salesID=this.MasterId
-    this.salesItemServ.Add(this.Item,this.DomainName).subscribe((d)=>{
+  SaveRow() {
+    this.Item.salesID = this.MasterId
+    this.salesItemServ.Add(this.Item, this.DomainName).subscribe((d) => {
       this.GetTableDataByID();
     })
-    this.IsOpenToAdd=false
-    this.Item=new SalesItem()
+    this.IsOpenToAdd = false
+    this.Item = new SalesItem()
   }
 
-  CancelAdd(){
-    this.IsOpenToAdd=false
+  CancelAdd() {
+    this.IsOpenToAdd = false
   }
 
-  SaveEdit(row:SalesItem){
+  SaveEdit(row: SalesItem) {
     this.editingRowId = null;
-    this.salesItemServ.Edit(row,this.DomainName).subscribe((d)=>{
+    this.salesItemServ.Edit(row, this.DomainName).subscribe((d) => {
       this.GetTableDataByID();
     })
   }
+
+
+  onImageFileSelected(event: any) {
+    console.log(this.mode)
+    const file: File = event.target.files[0];
+    if(this.mode=="Create"){
+      this.Data.attachment.push(file)
+    }
+    if (this.mode === "Edit") {
+      console.log(this.Data);
+      if (!this.Data.NewAttachments) {
+        this.Data.NewAttachments = [];
+      }
+      this.Data.NewAttachments.push(file);
+    }
+
+  }
+
+  openFile(fileUrl: any) {
+    // window.open(fileUrl, '_blank');
+  }
+
 }

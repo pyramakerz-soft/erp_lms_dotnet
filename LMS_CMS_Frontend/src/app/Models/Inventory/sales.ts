@@ -9,6 +9,7 @@ export class Sales {
             public cashAmount :number =0,
             public visaAmount :number =0,
             public remaining :number =0,
+            public total :number =0,
             public notes :string = '',
             public flagId :number =0,
             public storeID :number =0,
@@ -21,5 +22,10 @@ export class Sales {
             public bankName :string = '',
             public insertedAt :string ="",
             public insertedByUserId :number =0,
+            public attachments : string [] =[],
+            public attachment : File [] =[] ,
+            public NewAttachments : File [] =[] ,
+            public DeletedAttachments : string [] =[] ,
         ) {}
 }
+

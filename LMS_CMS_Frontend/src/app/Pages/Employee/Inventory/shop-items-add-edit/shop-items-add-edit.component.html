@@ -137,7 +137,7 @@
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt font-medium" for="limit">Limit</label>
-        <input id="limit" type="number" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        <input id="limit" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             (input)="validateNumber($event)"
             (ngModelChange)="onInputValueChange({ field: 'limit', value: $event })"
             placeholder="Enter limit" [(ngModel)]="ShopItem.limit" />
@@ -174,13 +174,19 @@
         </div>
     </div>
 
-    <div class="flex w-full space-x-2 items-center mb-4">
+    <div class="flex w-full space-x-2 items-center mb-6">
         <input type="checkbox" id="Available" class="w-5 h-5"
         (change)="onAvailableInShopkChange($event)"
         [checked]="ShopItem.availableInShop">
         <label for="Available" class="text-sm">Available IN Shop </label>
+    </div> 
+    
+    <div class="flex flex-col mb-4 w-full">
+        <label class="mb-2 primaryTxt font-medium" for="barCode">Generate Bar Code</label>
+        <input id="barCode" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[49%]" 
+            placeholder="Generate Bar Code" [(ngModel)]="ShopItem.barCode" /> 
     </div>
- 
+
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="font-medium text-base leading-6 mb-1 mt-3">Main Image</label>
         <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
@@ -188,7 +194,7 @@
                 <label for="imageMain" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5"> 
                     <img *ngIf="!ShopItem.mainImage && !ShopItem.mainImageFile" src="Images/Icon frame.png" class="w-1/4">
                     <img *ngIf="!ShopItem.mainImage && ShopItem.mainImageFile" src="Images/FileAttached.png" class="w-1/4">
-                    <img *ngIf="ShopItem.mainImage" [src]="ShopItem.mainImage" class="w-1/3 object-cover">
+                    <img *ngIf="ShopItem.mainImage && !ShopItem.mainImageFile" [src]="ShopItem.mainImage" class="w-1/3 object-cover">
                     <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
                         <span class="secondaryTxt">Click to Upload</span> or drag and drop files
                     </p>
@@ -208,7 +214,7 @@
                 <label for="otherImage" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
                     <img *ngIf="!ShopItem.otherImage && !ShopItem.otherImageFile" src="Images/Icon frame.png" class="w-1/4">
                     <img *ngIf="!ShopItem.otherImage && ShopItem.otherImageFile" src="Images/FileAttached.png" class="w-1/4">
-                    <img *ngIf="ShopItem.otherImage" [src]="ShopItem.otherImage" class="w-1/3 object-cover">
+                    <img *ngIf="ShopItem.otherImage && !ShopItem.otherImageFile" [src]="ShopItem.otherImage" class="w-1/3 object-cover">
                     <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
                         <span class="secondaryTxt">Click to Upload</span> or drag and drop files
                     </p>

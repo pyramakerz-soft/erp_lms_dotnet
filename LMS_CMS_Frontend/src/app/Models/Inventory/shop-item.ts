@@ -27,5 +27,6 @@ export class ShopItem {
         public insertedAt :string ="",
         public shopItemColors :any[] = [],
         public shopItemSizes :any[] = [],
+        public barCode :string ="",
     ) {}
 }         

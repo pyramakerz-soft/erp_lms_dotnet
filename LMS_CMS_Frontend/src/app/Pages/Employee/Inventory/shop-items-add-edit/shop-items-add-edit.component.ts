@@ -295,7 +295,7 @@ export class ShopItemsAddEditComponent {
 
   onImageMainFileSelected(event: any) {
     const file: File = event.target.files[0];
-    
+    this.ShopItem.mainImage = ""
     if (file) {
       if (file.size > 25 * 1024 * 1024) {
         this.validationErrors['mainImageFile'] = 'The file size exceeds the maximum limit of 25 MB.';
@@ -318,7 +318,7 @@ export class ShopItemsAddEditComponent {
 
   onImageOtherFileSelected(event: any) {
     const file: File = event.target.files[0];
-    
+    this.ShopItem.otherImage = ""
     if (file) {
       if (file.size > 25 * 1024 * 1024) {
         this.validationErrors['otherImageFile'] = 'The file size exceeds the maximum limit of 25 MB.';

@@ -33,5 +33,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public IFormFile? OtherImageFile { get; set; }  
         public string[]? ShopItemColors { get; set; }
         public string[]? ShopItemSizes { get; set; } 
+        public string? BarCode { get; set; }
     }
 }

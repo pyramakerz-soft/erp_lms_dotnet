@@ -56,6 +56,9 @@ export class ShopItemService {
     if (ShopItem.purchasePrice !== null) {
       formData.append('purchasePrice', ShopItem.purchasePrice.toString());
     } 
+    if (ShopItem.barCode !== null) {
+      formData.append('barCode', ShopItem.barCode.toString());
+    } 
     if (ShopItem.salesPrice !== null) {
       formData.append('salesPrice', ShopItem.salesPrice.toString());
     }
@@ -114,6 +117,7 @@ export class ShopItemService {
     formData.append('arName', ShopItem.arName.toString())
     formData.append('enDescription', ShopItem.enDescription.toString() );
     formData.append('arDescription', ShopItem.arDescription.toString());
+    formData.append('barCode', ShopItem.barCode.toString());
     if (ShopItem.purchasePrice !== null) {
       formData.append('purchasePrice', ShopItem.purchasePrice.toString());
     } 

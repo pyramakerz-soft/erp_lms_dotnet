@@ -166,6 +166,10 @@ namespace LMS_CMS_DAL.Models.Domains
             modelBuilder.Entity<RegisterationFormState>()
                .HasIndex(p => p.Name)
                .IsUnique();
+            
+            modelBuilder.Entity<ShopItem>()
+               .HasIndex(p => p.BarCode)
+               .IsUnique();
 
             ///////////////////////// No Identity: /////////////////////////
             

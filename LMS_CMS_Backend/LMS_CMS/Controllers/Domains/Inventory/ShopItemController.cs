@@ -24,12 +24,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly FileImageValidationService _fileImageValidationService;
+        private readonly GenerateBarCodeEan13 _generateBarCodeEan13;
 
-        public ShopItemController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService)
+        public ShopItemController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService, GenerateBarCodeEan13 generateBarCodeEan13)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _fileImageValidationService = fileImageValidationService;
+            _generateBarCodeEan13 = generateBarCodeEan13;
         }
 
         ///////////////////////////////////////////
@@ -205,6 +207,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("No Gender With this ID");
             }
 
+
+            if (newShopItem.BarCode != null)
+            {
+                ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(
+                    d => d.BarCode == newShopItem.BarCode && d.IsDeleted != true
+                    );
+
+                if (shopItem != null)
+                {
+                    return BadRequest("BarCode Must Be unique");
+                }
+            }
+            else
+            {
+                newShopItem.BarCode = "Test";
+            }
+
             if (newShopItem.MainImageFile != null)
             {
                 string returnFileInput = _fileImageValidationService.ValidateImageFile(newShopItem.MainImageFile);
@@ -233,8 +252,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             else if (userTypeClaim == "employee")
             {
                 ShopItem.InsertedByUserId = userId;
-            }
-             
+            } 
+
             Unit_Of_Work.shopItem_Repository.Add(ShopItem);
             Unit_Of_Work.SaveChanges();
 
@@ -283,6 +302,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 ShopItem.MainImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + ShopItem.ID, "MainImage", newShopItem.MainImageFile.FileName);
             if (newShopItem.OtherImageFile != null)
                 ShopItem.OtherImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + ShopItem.ID, "OtherImage", newShopItem.OtherImageFile.FileName);
+
+            
+            if(newShopItem.BarCode == "Test")
+            {
+                string barCode = _generateBarCodeEan13.GenerateEan13(ShopItem.ID.ToString());
+                ShopItem shopItemexist = Unit_Of_Work.shopItem_Repository.First_Or_Default(
+                    d => d.BarCode == barCode && d.IsDeleted != true
+                    );
+
+                if (shopItemexist != null)
+                {
+                    return BadRequest("BarCode Must Be unique");
+                }
+                else
+                {
+                    ShopItem.BarCode = barCode;
+                }
+            }
 
             Unit_Of_Work.shopItem_Repository.Update(ShopItem);
 
@@ -401,6 +438,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             if (gender == null)
             {
                 return NotFound("No Gender With this ID");
+            }
+
+            if (existingShopItem.BarCode != newShopItem.BarCode)
+            {
+                ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(
+                    d => d.BarCode == newShopItem.BarCode && d.IsDeleted != true
+                    );
+
+                if (shopItem != null)
+                {
+                    return BadRequest("BarCode Must Be unique");
+                }
             }
 
             if (newShopItem.MainImageFile != null)
@@ -793,6 +842,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     newShopItem.OtherImage = null;
                 } 
             }
+
 
             mapper.Map(newShopItem, existingShopItem);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

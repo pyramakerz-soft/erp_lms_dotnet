@@ -34,5 +34,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string GradeName { get; set; }
         public List<ShopItemColorGetDTO> shopItemColors { get; set; }
         public List<ShopItemSizeGetDTO> shopItemSizes { get; set; }
+        public string BarCode { get; set; }
     }
 }

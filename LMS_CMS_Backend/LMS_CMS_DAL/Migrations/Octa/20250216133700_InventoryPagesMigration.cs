@@ -14,12 +14,12 @@ namespace LMS_CMS_DAL.Migrations.Octa
                 INSERT INTO Page(ID, en_name, ar_name, Page_ID, IsDisplay) VALUES  
                 (77, 'Inventory', N'المخزون', NULL, 1),
                 (78, 'Sales', N'المبيعات', 77, 1),
-                (79, 'Sales Item', N'عنصر المبيعات', 77, 1),
+                (79, 'Sales Item', N'عنصر المبيعات', 77, 0),
                 (80, 'Inventory Categories', N'فئات المخزون', 77, 1),
-                (81, 'Inventory Sub Categories', N'فئات المخزون الفرعية', 77, 1),
+                (81, 'Inventory Sub Categories', N'فئات المخزون الفرعية', 77, 0),
                 (82, 'Stores', N'المتاجر', 77, 1),
                 (83, 'Shop', N'المتجر', 77, 1),
-                (84, 'Shop Item', N'عنصر المتجر', 77, 1);
+                (84, 'Shop Item', N'عنصر المتجر', 77, 0);
             ");
         }
 

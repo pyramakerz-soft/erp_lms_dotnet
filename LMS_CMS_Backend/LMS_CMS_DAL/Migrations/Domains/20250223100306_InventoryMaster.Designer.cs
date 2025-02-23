@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250223100306_InventoryMaster")]
+    partial class InventoryMaster
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -6995,9 +6998,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("DeletedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.InventoryFlags", "InventoryFlags")
-                        .WithMany("InventoryMaster")
+                        .WithMany()
                         .HasForeignKey("FlagId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
@@ -8546,11 +8549,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.InventoryDetails", b =>
                 {
                     b.Navigation("SalesItemAttachment");
-                });
-
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.InventoryFlags", b =>
-                {
-                    b.Navigation("InventoryMaster");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.InventoryMaster", b =>

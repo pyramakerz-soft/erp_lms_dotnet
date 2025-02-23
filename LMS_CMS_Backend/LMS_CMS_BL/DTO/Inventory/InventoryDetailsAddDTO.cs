@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.Inventory
 {
-    public class SalesItemAddDTO
+    public class InventoryDetailsAddDTO
     {
-        public string BarCode { get; set; }
         public int Quantity { get; set; }
         public float Price { get; set; }
         public float Amount { get; set; }
         public string Notes { get; set; }
         public long ShopItemID { get; set; }
-        public long SalesID { get; set; }
+        public long InventoryMasterId { get; set; }
     }
 }

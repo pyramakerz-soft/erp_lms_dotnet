@@ -102,7 +102,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             return Ok(subjectDTO);
         }
 
-        [HttpPost]
+        [HttpPost] 
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Subject", "LMS" }

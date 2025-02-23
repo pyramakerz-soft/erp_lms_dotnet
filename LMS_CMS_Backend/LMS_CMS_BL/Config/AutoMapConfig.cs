@@ -589,18 +589,18 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
             CreateMap<ShopItemSizeAddDTO, ShopItemSize>();
 
-            CreateMap<Sales, SalesGetDTO>()
-                .ForMember(dest => dest.SaveName, opt => opt.MapFrom(src => src.Save.Name))
-                .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.Bank.Name))
-                .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
-                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.User_Name));
-            CreateMap<SalesAddDTO, Sales>();
-            CreateMap<SaleEditDTO, Sales>();
+            CreateMap<InventoryMaster, InventoryMasterGetDTO>()
+                 .ForMember(dest => dest.SaveName, opt => opt.MapFrom(src => src.Save != null ? src.Save.Name : null))
+                 .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.Bank != null ? src.Bank.Name : null))
+                 .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store != null ? src.Store.Name : null))
+                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student != null ? src.Student.User_Name : null));
+            CreateMap<InventoryMasterAddDTO, InventoryMaster>();
+            CreateMap<InventoryMasterEditDTO, InventoryMaster>();
 
-            CreateMap<SalesItem, SalesItemGetDTO>()
+            CreateMap<InventoryDetails, InventoryDetailsGetDTO>()
                 .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
-            CreateMap<SalesItemGetDTO, SalesItem>();
-            CreateMap<SalesItemAddDTO, SalesItem>();
+            CreateMap<InventoryDetailsGetDTO, InventoryDetails>();
+            CreateMap<InventoryDetailsAddDTO, InventoryDetails>();
 
             CreateMap<Gender, GenderGetDTO>();
         }

@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250223092913_InventoryFlags")]
+    partial class InventoryFlags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2801,9 +2804,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("InsertedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("InventoryMasterId")
-                        .HasColumnType("bigint");
-
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -2816,6 +2816,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<long>("SalesID")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("ShopItemID")
                         .HasColumnType("bigint");
@@ -2835,7 +2838,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("InsertedByUserId");
 
-                    b.HasIndex("InventoryMasterId");
+                    b.HasIndex("SalesID");
 
                     b.HasIndex("ShopItemID");
 
@@ -3047,15 +3050,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("InsertedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("InventoryDetailsID")
-                        .HasColumnType("bigint");
-
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Link")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("SalesItemID")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -3072,7 +3075,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("InsertedByUserId");
 
-                    b.HasIndex("InventoryDetailsID");
+                    b.HasIndex("SalesItemID");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -6956,14 +6959,14 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.InventoryMaster", "InventoryMaster")
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.InventoryMaster", "Sales")
                         .WithMany("InventoryDetails")
-                        .HasForeignKey("InventoryMasterId")
+                        .HasForeignKey("SalesID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.ShopItem", "ShopItem")
-                        .WithMany("InventoryDetails")
+                        .WithMany("SalesItem")
                         .HasForeignKey("ShopItemID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -6976,7 +6979,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InventoryMaster");
+                    b.Navigation("Sales");
 
                     b.Navigation("ShopItem");
 
@@ -6995,9 +6998,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("DeletedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.InventoryFlags", "InventoryFlags")
-                        .WithMany("InventoryMaster")
+                        .WithMany()
                         .HasForeignKey("FlagId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
@@ -7005,7 +7008,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("InsertedByUserId");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Save", "Save")
-                        .WithMany("InventoryMasters")
+                        .WithMany("Sales")
                         .HasForeignKey("SaveID")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -7081,9 +7084,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.InventoryDetails", "InventoryDetails")
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.InventoryDetails", "SalesItem")
                         .WithMany("SalesItemAttachment")
-                        .HasForeignKey("InventoryDetailsID")
+                        .HasForeignKey("SalesItemID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -7095,7 +7098,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("InsertedByEmployee");
 
-                    b.Navigation("InventoryDetails");
+                    b.Navigation("SalesItem");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -8425,7 +8428,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AccountingModule.Save", b =>
                 {
-                    b.Navigation("InventoryMasters");
+                    b.Navigation("Sales");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AccountingModule.SubType", b =>
@@ -8548,11 +8551,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("SalesItemAttachment");
                 });
 
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.InventoryFlags", b =>
-                {
-                    b.Navigation("InventoryMaster");
-                });
-
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.InventoryMaster", b =>
                 {
                     b.Navigation("InventoryDetails");
@@ -8565,7 +8563,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.ShopItem", b =>
                 {
-                    b.Navigation("InventoryDetails");
+                    b.Navigation("SalesItem");
 
                     b.Navigation("ShopItemColor");
 

@@ -27,7 +27,7 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         public long AccountNumberID { get; set; }
 
         public AccountingTreeChart AccountNumber { get; set; }
-        public ICollection<Sales> Sales { get; set; } = new HashSet<Sales>();
+        public ICollection<InventoryMaster> InventoryMasters { get; set; } = new HashSet<InventoryMaster>();
 
     }
 }

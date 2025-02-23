@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.Inventory
 {
-    public class Sales : AuditableEntity
+    public class InventoryMaster : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
@@ -38,13 +38,13 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         
         [ForeignKey("Bank")]
         public long? BankID { get; set; }
-
+        [ForeignKey("InventoryFlags")]
+        public long FlagId { get; set; }
+        public InventoryFlags InventoryFlags { get; set; }
         public Store Store { get; set; }
         public Student Student { get; set; }
         public Save? Save { get; set; }
         public Bank? Bank { get; set; }
-
-
-        public ICollection<SalesItem> SalesItem { get; set; } = new HashSet<SalesItem>();
+        public ICollection<InventoryDetails> InventoryDetails { get; set; } = new HashSet<InventoryDetails>();
     }
 }

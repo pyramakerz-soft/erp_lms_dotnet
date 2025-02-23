@@ -54,7 +54,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<EmployeeStudent> EmployeeStudents { get; set; } = new HashSet<EmployeeStudent>();
         public ICollection<InstallmentDeductionMaster> InstallmentDeductionMasters { get; set; } = new HashSet<InstallmentDeductionMaster>();
         public ICollection<FeesActivation> FeesActivations { get; set; } = new HashSet<FeesActivation>();
-        public ICollection<Sales> Sales { get; set; } = new HashSet<Sales>();
+        public ICollection<InventoryMaster> InventoryMaster { get; set; } = new HashSet<InventoryMaster>();
 
     }
 }

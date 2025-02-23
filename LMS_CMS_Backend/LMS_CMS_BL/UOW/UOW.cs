@@ -113,8 +113,8 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<AccountingEntriesDetails> AccountingEntriesDetails_Repository;
         GenericRepo<Gender> Gender_Repository;
         GenericRepo<ShopItem> ShopItem_Repository;
-        GenericRepo<Sales> Sales_Repository;
-        GenericRepo<SalesItem> SalesItem_Repository;
+        GenericRepo<InventoryMaster> InventoryMaster_Repository;
+        GenericRepo<InventoryDetails> InventoryDetails_Repository;
         GenericRepo<SalesItemAttachment> SalesItemAttachment_Repository;
         GenericRepo<Store> Store_Repository;
         GenericRepo<ShopItemSize> ShopItemSize_Repository;
@@ -1186,27 +1186,27 @@ namespace LMS_CMS_BL.UOW
             }
         }
         
-        public GenericRepo<Sales> sales_Repository
+        public GenericRepo<InventoryMaster> inventoryMaster_Repository
         {
             get
             {
-                if (Sales_Repository == null)
+                if (InventoryMaster_Repository == null)
                 {
-                    Sales_Repository = new GenericRepo<Sales>(db);
+                    InventoryMaster_Repository = new GenericRepo<InventoryMaster>(db);
                 }
-                return Sales_Repository;
+                return InventoryMaster_Repository;
             }
         }
         
-        public GenericRepo<SalesItem> salesItem_Repository
+        public GenericRepo<InventoryDetails> inventoryDetails_Repository
         {
             get
             {
-                if (SalesItem_Repository == null)
+                if (InventoryDetails_Repository == null)
                 {
-                    SalesItem_Repository = new GenericRepo<SalesItem>(db);
+                    InventoryDetails_Repository = new GenericRepo<InventoryDetails>(db);
                 }
-                return SalesItem_Repository;
+                return InventoryDetails_Repository;
             }
         }
         

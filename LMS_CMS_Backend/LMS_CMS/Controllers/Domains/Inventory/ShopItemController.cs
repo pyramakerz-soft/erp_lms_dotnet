@@ -41,7 +41,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Shop", "Inventory" }
+           pages: new[] { "Shop Item", "Shop" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -99,10 +99,71 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         //////////////////////////////////////////////////////////////////////////////
 
+        [HttpGet("BySubCategoryId/{id}")]
+        [Authorize_Endpoint_(
+        allowedTypes: new[] { "octa", "employee" },
+        pages: new[] { "Shop Item", "Shop" }
+     )]
+        public async Task<IActionResult> GetBySubCategoryAsync(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<ShopItem> shopItem = await Unit_Of_Work.shopItem_Repository.Select_All_With_IncludesById<ShopItem>(
+                    b => b.IsDeleted != true && b.InventorySubCategoriesID==id,
+                    query => query.Include(sub => sub.InventorySubCategories),
+                    query => query.Include(sub => sub.School),
+                    query => query.Include(sub => sub.Grade),
+                    query => query.Include(sub => sub.Gender),
+                    query => query.Include(sub => sub.ShopItemColor),
+                    query => query.Include(sub => sub.ShopItemSize)
+                    );
+
+            if (shopItem == null || shopItem.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<ShopItemGetDTO> shopItemGetDTO = mapper.Map<List<ShopItemGetDTO>>(shopItem);
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            foreach (var item in shopItemGetDTO)
+            {
+                if (!string.IsNullOrEmpty(item.MainImage))
+                {
+                    item.MainImage = $"{serverUrl}{item.MainImage.Replace("\\", "/")}";
+                }
+                if (!string.IsNullOrEmpty(item.OtherImage))
+                {
+                    item.OtherImage = $"{serverUrl}{item.OtherImage.Replace("\\", "/")}";
+                }
+
+                List<ShopItemColor> shopItemColors = await Unit_Of_Work.shopItemColor_Repository.Select_All_With_IncludesById<ShopItemColor>(s => s.ShopItemID == item.ID && s.IsDeleted != true);
+                if (shopItemColors.Count != 0)
+                {
+                    List<ShopItemColorGetDTO> shopItemColorGetDTO = mapper.Map<List<ShopItemColorGetDTO>>(shopItemColors);
+                    item.shopItemColors = shopItemColorGetDTO;
+                }
+                else
+                    item.shopItemColors = new List<ShopItemColorGetDTO>();
+
+                List<ShopItemSize> shopItemSizes = await Unit_Of_Work.shopItemSize_Repository.Select_All_With_IncludesById<ShopItemSize>(s => s.ShopItemID == item.ID && s.IsDeleted != true);
+                if (shopItemSizes.Count != 0)
+                {
+                    List<ShopItemSizeGetDTO> shopItemSizeGetDTO = mapper.Map<List<ShopItemSizeGetDTO>>(shopItemSizes);
+                    item.shopItemSizes = shopItemSizeGetDTO;
+                }
+                else
+                    item.shopItemSizes = new List<ShopItemSizeGetDTO>();
+            }
+
+            return Ok(shopItemGetDTO);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////
+
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Shop Item", "Inventory" }
+            pages: new[] { "Shop Item", "Shop" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
@@ -154,10 +215,65 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         //////////////////////////////////////////////////////////////////////////////
 
+        [HttpGet("ByBarcode/{BarCode}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Shop Item", "Shop" }
+         )]
+        public async Task<IActionResult> GetbyIdAsync(string BarCode)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            ShopItem shopItem = await Unit_Of_Work.shopItem_Repository.FindByIncludesAsync(
+                d => d.BarCode == BarCode && d.IsDeleted != true,
+                query => query.Include(sub => sub.InventorySubCategories),
+                query => query.Include(sub => sub.School),
+                query => query.Include(sub => sub.Grade),
+                query => query.Include(sub => sub.Gender),
+                query => query.Include(sub => sub.ShopItemColor),
+                query => query.Include(sub => sub.ShopItemSize)
+                );
+
+            if (shopItem == null)
+            {
+                return NotFound();
+            }
+
+            ShopItemGetDTO shopItemDTO = mapper.Map<ShopItemGetDTO>(shopItem);
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+
+            if (!string.IsNullOrEmpty(shopItemDTO.MainImage))
+            {
+                shopItemDTO.MainImage = $"{serverUrl}{shopItemDTO.MainImage.Replace("\\", "/")}";
+            }
+            if (!string.IsNullOrEmpty(shopItemDTO.OtherImage))
+            {
+                shopItemDTO.OtherImage = $"{serverUrl}{shopItemDTO.OtherImage.Replace("\\", "/")}";
+            }
+
+            List<ShopItemColor> shopItemColors = Unit_Of_Work.shopItemColor_Repository.FindBy(s => s.ShopItemID == shopItemDTO.ID && s.IsDeleted != true);
+            List<ShopItemColorGetDTO> shopItemColorGetDTO = mapper.Map<List<ShopItemColorGetDTO>>(shopItemColors);
+            if (shopItemColorGetDTO != null)
+                shopItemDTO.shopItemColors = shopItemColorGetDTO;
+            else
+                shopItemDTO.shopItemColors = new List<ShopItemColorGetDTO>();
+
+            List<ShopItemSize> shopItemSizes = Unit_Of_Work.shopItemSize_Repository.FindBy(s => s.ShopItemID == shopItemDTO.ID && s.IsDeleted != true);
+            List<ShopItemSizeGetDTO> shopItemSizeGetDTO = mapper.Map<List<ShopItemSizeGetDTO>>(shopItemSizes);
+            if (shopItemSizeGetDTO != null)
+                shopItemDTO.shopItemSizes = shopItemSizeGetDTO;
+            else
+                shopItemDTO.shopItemSizes = new List<ShopItemSizeGetDTO>();
+
+            return Ok(shopItemDTO);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////
+
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Shop", "Shop Item", "Inventory" }
+           pages: new[] { "Shop Item", "Shop" }
         )]
         public async Task<IActionResult> Add([FromForm] ShopItemAddDTO newShopItem)
         {
@@ -378,7 +494,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Shop", "Shop Item", "Inventory" }
+            pages: new[] { "Shop Item" }
         )]
         public async Task<IActionResult> Edit([FromForm] ShopItemPutDTO newShopItem)
         {
@@ -477,7 +593,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
              
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfPageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, existingShopItem);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, existingShopItem);
                 if (accessCheck != null)
                 {
                     return accessCheck;
@@ -973,7 +1089,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Shop", "Inventory" }
+            pages: new[] { "Shop Item", "Shop" }
          )]
         public IActionResult Delete(long id)
         {
@@ -1005,7 +1121,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfPageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, shopItem);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, shopItem);
                 if (accessCheck != null)
                 {
                     return accessCheck;

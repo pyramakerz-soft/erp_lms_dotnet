@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.DTO.Inventory;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
@@ -9,7 +8,6 @@ using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,12 +20,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        public  InVoiceNumberCreate _InVoiceNumberCreate;
 
-        public InventoryMasterController(DbContextFactoryService dbContextFactory, IMapper mapper)
+
+
+        public InventoryMasterController(DbContextFactoryService dbContextFactory, IMapper mapper  , InVoiceNumberCreate inVoiceNumberCreate)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            this._InVoiceNumberCreate= inVoiceNumberCreate;
         }
+
+
 
         [HttpGet("ByFlagId/{id}")]
         [Authorize_Endpoint_(
@@ -151,7 +155,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("Student not found.");
             }
 
-            if (newData.BankID != 0)
+            if (newData.BankID != 0 && newData.BankID != null)
             {
                 Bank bank = Unit_Of_Work.bank_Repository.First_Or_Default(b => b.ID == newData.BankID && b.IsDeleted != true);
                 if (bank == null)
@@ -159,8 +163,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     return NotFound("Bank not found.");
                 }
             }
+            else
+            {
+                newData.BankID =null;
+            }
 
-            if (newData.SaveID != 0)
+            if (newData.SaveID != 0 && newData.SaveID != null)
             {
                 Save save = Unit_Of_Work.save_Repository.First_Or_Default(b => b.ID == newData.SaveID && b.IsDeleted != true);
                 if (save == null)
@@ -168,8 +176,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     return NotFound("Save not found.");
                 }
             }
+            else
+            {
+                newData.SaveID = null;
+            }
 
             InventoryMaster Master = mapper.Map<InventoryMaster>(newData);
+            LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
+            Master.InvoiceNumber = await _InVoiceNumberCreate.GetNextInvoiceNumber(db ,newData.StoreID, newData.FlagId);
             if (Master == null)
             {
                 return BadRequest("Failed to map sale object.");
@@ -217,7 +231,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                             await item.CopyToAsync(stream);
                         }
 
-                        Master.Attachments.Add(Path.Combine("Uploads", "Sales", SaleID.ToString(), item.FileName));
+                        var fileUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Sales/{SaleID}/{item.FileName}";
+                        Master.Attachments.Add(fileUrl);
                     }
                 }
             }
@@ -233,10 +248,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpPut]
         [Authorize_Endpoint_(
-        allowedTypes: new[] { "octa", "employee" },
-        allowEdit: 1,
-         pages: new[] { "Sales", "Inventory" }
-    )]
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+             pages: new[] { "Sales", "Inventory" }
+        )]
         public async Task<IActionResult> EditAsync([FromForm] InventoryMasterEditDTO newSale)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -252,21 +267,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (newSale == null)
-            {
-                return BadRequest("Store cannot be null");
-            }
 
-            Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newSale.BankID && b.IsDeleted != true);
+            Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newSale.StoreID && b.IsDeleted != true);
             if (store == null)
             {
-                return NotFound();
+                return NotFound("Store cannot be null");
             }
 
             Student student = Unit_Of_Work.student_Repository.First_Or_Default(b => b.ID == newSale.StudentID && b.IsDeleted != true);
             if (student == null)
             {
-                return NotFound();
+                return NotFound("There Is No Student With This Id");
+            }
+
+            InventoryFlags flag = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(b => b.ID == newSale.FlagId);
+            if (flag == null)
+            {
+                return NotFound("There Is No Flag With This Id");
             }
 
             if (newSale.BankID != 0 && newSale.BankID != null)
@@ -274,7 +291,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 Bank bank = Unit_Of_Work.bank_Repository.First_Or_Default(b => b.ID == newSale.BankID && b.IsDeleted != true);
                 if (bank == null)
                 {
-                    return NotFound();
+                    return NotFound("There Is No Bank With This Id");
                 }
             }
 
@@ -283,14 +300,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 Save save = Unit_Of_Work.save_Repository.First_Or_Default(b => b.ID == newSale.SaveID && b.IsDeleted != true);
                 if (save == null)
                 {
-                    return NotFound();
+                    return NotFound("There Is No Save With This Id");
                 }
             }
 
             InventoryMaster sale = Unit_Of_Work.inventoryMaster_Repository.First_Or_Default(s => s.ID == newSale.ID && s.IsDeleted != true);
             if (sale == null || sale.IsDeleted == true)
             {
-                return NotFound("No Sale with this ID");
+                return NotFound("There Is No InventoryMaster With This Id");
             }
 
             if (userTypeClaim == "employee")
@@ -340,22 +357,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                             await item.CopyToAsync(stream);
                         }
 
-                        sale.Attachments.Add(Path.Combine("Uploads", "Sales", newSale.ID.ToString(), item.FileName));
+                        var fileUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Sales/{newSale.ID}/{item.FileName}";
+                        sale.Attachments.Add(fileUrl);
                     }
                 }
             }
 
-            // Remove selected files
             if (newSale.DeletedAttachments != null)
             {
-                foreach (var file in newSale.DeletedAttachments)
+                foreach (var fileUrl in newSale.DeletedAttachments)
                 {
-                    var filePath = Path.Combine(saleFolder, file);
+                    var fileName = Path.GetFileName(fileUrl); // Extract just the filename from the URL
+                    var filePath = Path.Combine(saleFolder, fileName);
+
                     if (System.IO.File.Exists(filePath))
                     {
-                        System.IO.File.Delete(filePath); 
+                        System.IO.File.Delete(filePath);
                     }
-                    sale.Attachments.Remove(file);
+
+                    sale.Attachments.Remove(fileUrl);
                 }
             }
 

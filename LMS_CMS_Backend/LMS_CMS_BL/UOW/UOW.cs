@@ -122,6 +122,8 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<StoreCategories> StoreCategories_Repository;
         GenericRepo<InventorySubCategories> InventorySubCategories_Repository;
         GenericRepo<InventoryCategories> InventoryCategories_Repository;
+        GenericRepo<InventoryFlags> InventoryFlags_Repository;
+
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -1303,6 +1305,18 @@ namespace LMS_CMS_BL.UOW
                     StoreCategories_Repository = new GenericRepo<StoreCategories>(db);
                 }
                 return StoreCategories_Repository;
+            }
+        }
+
+        public GenericRepo<InventoryFlags> inventoryFlags_Repository
+        {
+            get
+            {
+                if (InventoryFlags_Repository == null)
+                {
+                    InventoryFlags_Repository = new GenericRepo<InventoryFlags>(db);
+                }
+                return InventoryFlags_Repository;
             }
         }
 

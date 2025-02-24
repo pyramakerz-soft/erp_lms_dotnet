@@ -30,8 +30,9 @@
     </div>
     <div class="flex flex-col mb-4 w-[24%]">
         <label class="mb-2 primaryTxt" for="name">Invoice Number</label>
-        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter Invoice Number" [(ngModel)]="Data.invoiceNumber" />
+        <input id="name" type="text"
+            class="rounded-lg border border-solid px-4 py-3  border-gray-300 placeholder-gray-400 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+            placeholder="Enter Invoice Number" [(ngModel)]="Data.invoiceNumber" readonly disabled />
     </div>
 
     <div class="flex flex-col mb-4 w-[24%]">
@@ -90,13 +91,13 @@
     <div class="flex flex-col mb-4 w-[24%]">
         <label class="mb-2 primaryTxt" for="remaining">Remaining</label>
         <input id="remaining" type="remaining" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter remaining" [(ngModel)]="Data.remaining" />
+            placeholder="Enter remaining" [(ngModel)]="Data.remaining" readonly disabled />
     </div>
 
     <div class="flex flex-col mb-4 w-[24%]">
         <label class="mb-2 primaryTxt" for="total">Total</label>
         <input id="total" type="total" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter total" [(ngModel)]="Data.total" />
+            placeholder="Enter total" [(ngModel)]="Data.total" readonly disabled />
     </div>
 
     <div class="flex flex-col mb-4 w-full">
@@ -125,7 +126,7 @@
         </div>
     </div>
 
-    <div  *ngFor="let img of Data.attachments; let i = index">
+    <div *ngFor="let img of Data.attachments; let i = index">
         <div class="flex flex-col w-full">
             <div class="border border-cacaca rounded-lg p-6">
                 <div class="flex justify-between items-center">
@@ -136,7 +137,7 @@
                             {{ img.split('/').pop() }}
                         </p>
                     </div>
-                    <button>
+                    <button (click)="DeleteExistedImg(img)">
                         <i class="fa-regular fa-trash-can"></i>
                     </button>
                 </div>
@@ -149,54 +150,54 @@
         </div>
     </div>
 
-    <div  *ngIf="mode=='Create'" class="flex flex-wrap gap-4">
-        <div  *ngFor="let img of Data.attachment; let i = index">
-                <div class="border border-cacaca rounded-lg p-6">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center space-x-2">
-                            <i class="fa-solid fa-file"></i>
-                            <!-- Extract just the filename -->
-                            <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
-                                {{ img.name }}
-                            </p>
-                        </div>
-                        <button>
-                            <i class="fa-regular fa-trash-can"></i>
-                        </button>
+    <div *ngIf="mode=='Create'" class="flex flex-wrap gap-4">
+        <div *ngFor="let img of Data.attachment; let i = index">
+            <div class="border border-cacaca rounded-lg p-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-file"></i>
+                        <!-- Extract just the filename -->
+                        <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                            {{ img.name }}
+                        </p>
                     </div>
-                    <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                    <!-- Open the file when clicking "Click to View" -->
-                    <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
-                        Click to View
-                    </p>
+                    <button (click)="DeleteWhenCreate(img)">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
                 </div>
+                <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
+                <!-- Open the file when clicking "Click to View" -->
+                <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
+                    Click to View
+                </p>
+            </div>
         </div>
     </div>
 
     <div *ngIf="mode=='Edit'" class="flex flex-wrap gap-4">
-        <div *ngFor="let img of Data.NewAttachments; let i = index" >
-          <div class="border border-cacaca rounded-lg p-6">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-file"></i>
-                <!-- Extract just the filename -->
-                <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
-                  {{ img.name }}
+        <div *ngFor="let img of Data.NewAttachments; let i = index">
+            <div class="border border-cacaca rounded-lg p-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-file"></i>
+                        <!-- Extract just the filename -->
+                        <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                            {{ img.name }}
+                        </p>
+                    </div>
+                    <button (click)="DeleteWhenEdit(img)">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                </div>
+                <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
+                <!-- Open the file when clicking "Click to View" -->
+                <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
+                    Click to View
                 </p>
-              </div>
-              <button>
-                <i class="fa-regular fa-trash-can"></i>
-              </button>
             </div>
-            <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-            <!-- Open the file when clicking "Click to View" -->
-            <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
-              Click to View
-            </p>
-          </div>
         </div>
-      </div>
-      
+    </div>
+
 
 </div>
 
@@ -206,6 +207,47 @@
         <p>Add</p>
     </button>
 </div>
+
+<div class="flex justify-start space-x-5"> 
+    <div class="w-[30%] bg-[#F7F7F7] flex flex-col space-x-3 rounded-[16px]">
+        <h1 class="font-semibold text-2xl leading-9 ml-4">Categories</h1>
+        <div class="flex justify-start space-x-2">
+            <div *ngFor="let c of Categories; let i = index">
+                <p 
+                    (click)="selectCategory(c.id)" 
+                    [class.secondaryBg]="SelectedCategoryId === c.id" 
+                    class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer">
+                    {{c.name}}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="w-[30%] bg-[#F7F7F7] flex flex-col space-x-3 rounded-[16px]">
+        <h1 class="font-semibold text-2xl leading-9 ml-2">Sub_Categories</h1>
+        <div class="flex justify-start space-x-2">
+            <div *ngFor="let sc of subCategories; let i = index">
+                <p 
+                    (click)="selectSubCategory(sc.id)" 
+                    [class.secondaryBg]="SelectedSubCategoryId === sc.id" 
+                    class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer">
+                    {{sc.name}}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="w-[30%] bg-[#F7F7F7] flex flex-col space-x-3 rounded-[16px]">
+        <h1 class="font-semibold text-2xl leading-9 ml-2">Items</h1>
+        <div class="flex justify-start space-x-2">
+            <div *ngFor="let item of ShopItems; let i = index">
+                <p 
+                    (click)="selectShopItem(item)" 
+                    [class.secondaryBg]="SelectedSopItem === item"  
+                    class="bg-[#FFFFFF] p-2 rounded-[16px]">{{item.enName}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div *ngIf="mode!='Create'">
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
@@ -309,21 +351,22 @@
                 <!-- Data Rows -->
                 <tr *ngIf="IsOpenToAdd==true" class="border-t border-gray-300 text-xs md:text-sm bg-[#F7F7F7]">
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        ___
-                    </td>
-                    <!-- <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ Data.studentName }}
+                        {{ShopItem.barCode}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <select [(ngModel)]="Detail.feeTypeID" class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                            <option *ngFor="let S of FeesType" [value]="S.id">{{ S.name }}</option>
-                        </select>
+                        {{ShopItem.id}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="Detail.amount" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        {{ShopItem.enName}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input type="date" [(ngModel)]="Detail.date" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        <input [(ngModel)]="Item.quantity" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <input [(ngModel)]="Item.price" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <input  [(ngModel)]="Item.totalPrice" class="w-full border border-gray-300 px-2 py-1 rounded-md">
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
@@ -334,7 +377,7 @@
                                 <i class="far fa-check-circle secondaryTxt"></i>
                             </button>
                         </div>
-                    </td> -->
+                    </td>
                 </tr>
             </tbody>
         </table>

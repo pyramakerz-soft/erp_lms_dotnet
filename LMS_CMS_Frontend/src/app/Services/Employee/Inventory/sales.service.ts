@@ -81,9 +81,38 @@ export class SalesService {
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
-    return this.http.put<Sales>(`${this.baseUrl}/InventoryMaster`, sales, { headers });
+      .set('Authorization', `Bearer ${token}`);
+
+      const formData = new FormData();
+      formData.append('id', sales.id.toString());
+      formData.append('invoiceNumber', sales.invoiceNumber.toString());
+      formData.append('date', sales.date);
+      formData.append('isCash', sales.isCash.toString()); 
+      formData.append('isVisa', sales.isVisa.toString());
+      formData.append('cashAmount', sales.cashAmount.toString());
+      formData.append('visaAmount', sales.visaAmount.toString());
+      formData.append('remaining', sales.remaining.toString());
+      formData.append('total', sales.total.toString());
+      formData.append('notes', sales.notes);
+      formData.append('storeID', sales.storeID.toString());
+      formData.append('flagId', sales.flagId.toString());
+      formData.append('studentID', sales.studentID.toString());
+      formData.append('saveID', sales.saveID.toString());
+      formData.append('bankID', sales.bankID.toString());
+  
+      if (sales.NewAttachments && sales.NewAttachments.length > 0) {
+        sales.NewAttachments.forEach((file, index) => {
+          formData.append('NewAttachments', file);
+        });
+      }
+
+      if (sales.DeletedAttachments && sales.DeletedAttachments.length > 0) {
+        sales.DeletedAttachments.forEach((file, index) => {
+          formData.append('DeletedAttachments', file);
+        });
+      }
+
+    return this.http.put<Sales>(`${this.baseUrl}/InventoryMaster`, formData, { headers });
   }
 
   Delete(id: number, DomainName: string) {

@@ -24,6 +24,13 @@ import { SaveService } from '../../../../Services/Employee/Accounting/save.servi
 import { Saves } from '../../../../Models/Accounting/saves';
 import { BankService } from '../../../../Services/Employee/Accounting/bank.service';
 import { Bank } from '../../../../Models/Accounting/bank';
+import { InventoryCategoryService } from '../../../../Services/Employee/Inventory/inventory-category.service';
+import { Category } from '../../../../Models/Inventory/category';
+import { SubCategory } from '../../../../Models/Inventory/sub-category';
+import { ShopItem } from '../../../../Models/Inventory/shop-item';
+import { SubjectCategoryService } from '../../../../Services/Employee/LMS/subject-category.service';
+import { InventorySubCategoriesService } from '../../../../Services/Employee/Inventory/inventory-sub-categories.service';
+import { ShopItemService } from '../../../../Services/Employee/Inventory/shop-item.service';
 
 @Component({
   selector: 'app-sales-item',
@@ -56,9 +63,17 @@ export class SalesItemComponent {
   Stores: Store[] = []
   Saves: Saves[] = []
   Banks: Bank[] = []
+  Categories: Category[] = []
+  subCategories: SubCategory[] = []
+  ShopItems: ShopItem[] = []
+
+  SelectedCategoryId: number | null = null;
+  SelectedSubCategoryId: number | null = null;
+  SelectedSopItem: ShopItem | null = null;
 
   TableData: SalesItem[] = []
   Item: SalesItem = new SalesItem()
+  ShopItem :ShopItem =new ShopItem()
   MasterId: number = 0;
   editingRowId: any = 0;
 
@@ -79,7 +94,11 @@ export class SalesItemComponent {
     public salesServ: SalesService,
     public storeServ: StoresService,
     public SaveServ: SaveService,
-    public bankServ: BankService
+    public bankServ: BankService ,
+    public CategoriesServ : InventoryCategoryService ,
+    public SubCategoriesServ : InventorySubCategoriesService ,
+    public shopitemServ : ShopItemService ,
+
   ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -177,6 +196,47 @@ export class SalesItemComponent {
     })
   }
 
+  GetCategories() {
+    this.CategoriesServ.Get(this.DomainName).subscribe((d) => {
+      this.Categories = d
+    })
+  }
+
+  selectCategory(categoryId: number) {
+    this.SelectedCategoryId = categoryId;
+    this.GetSubCategories();
+  }
+  
+  GetSubCategories() {
+    if(this.SelectedCategoryId)
+    this.SubCategoriesServ.GetByCategoryId(this.SelectedCategoryId, this.DomainName)
+      .subscribe(d => {
+        this.subCategories = d;
+        this.ShopItems = []; // Clear items when category changes
+        this.SelectedSubCategoryId = null;
+      });
+  }
+  
+  selectSubCategory(subCategoryId: number) {
+    this.SelectedSubCategoryId = subCategoryId;
+    this.ShopItems=[]
+    this.GetItems();
+  }
+  
+  GetItems() {
+    console.log(this.SelectedSubCategoryId)
+    if(this.SelectedSubCategoryId)
+    this.shopitemServ.GetBySubCategory(this.SelectedSubCategoryId, this.DomainName)
+      .subscribe(d => {
+        this.ShopItems = d;
+      });
+  }
+
+  selectShopItem(item: ShopItem) {
+    this.SelectedSopItem = item;
+    this.ShopItem=item
+  }
+
   GetTableDataByID() {
     this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
       this.TableData = d;
@@ -185,6 +245,7 @@ export class SalesItemComponent {
 
   AddDetail() {
     this.IsOpenToAdd = true
+    this.GetCategories()
   }
 
   Edit(id: number) {
@@ -207,6 +268,23 @@ export class SalesItemComponent {
         })
       }
     });
+  }
+
+  DeleteWhenCreate(img:File){
+    this.Data.attachment=this.Data.attachment.filter(i=>i!=img)
+  }
+
+  DeleteWhenEdit(img:File){
+    this.Data.NewAttachments=this.Data.NewAttachments.filter(i=>i!=img)
+  }
+
+  DeleteExistedImg(img:string){
+    console.log(img)
+    if (!this.Data.DeletedAttachments) {
+      this.Data.DeletedAttachments = [];
+    }
+    this.Data.DeletedAttachments.push(img)
+    this.Data.attachments=this.Data.attachments.filter(i=>i!=img)
   }
 
   IsAllowDelete(InsertedByID: number) {
@@ -267,5 +345,6 @@ export class SalesItemComponent {
   openFile(fileUrl: any) {
     // window.open(fileUrl, '_blank');
   }
+
 
 }

@@ -20,20 +20,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public InventoryCategoriesController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public InventoryCategoriesController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
-        }
-
+            _checkPageAccessService = checkPageAccessService;
+        } 
 
         ///////////////////////////////////////////
 
         [HttpGet]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Inventory Categories", "Inventory" }
+           pages: new[] { "Inventory Categories" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -57,7 +58,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Inventory Categories", "Inventory" }
+            pages: new[] { "Inventory Categories" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
@@ -80,7 +81,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Inventory Categories", "Inventory" }
+           pages: new[] { "Inventory Categories" }
         )]
         public IActionResult Add(InventoryCategoriesAddDTO newCategory)
         {
@@ -123,7 +124,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Inventory Categories", "Inventory" }
+            pages: new[] { "Inventory Categories" }
         )]
         public IActionResult Edit(InventoryCategoriesPutDTO newCategory)
         {
@@ -150,24 +151,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound("There is no Inventory Categories with this id");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Inventory Categories");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Inventory Categories", roleId, userId, category);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (category.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Inventory Categories page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -202,7 +192,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Inventory Categories", "Inventory" }
+            pages: new[] { "Inventory Categories" }
          )]
         public IActionResult Delete(long id)
         {
@@ -232,24 +222,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Inventory Categories");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Inventory Categories", roleId, userId, category);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (category.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Inventory Categories page doesn't exist");
+                    return accessCheck;
                 }
             }
 

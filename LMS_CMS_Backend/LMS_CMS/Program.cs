@@ -101,9 +101,9 @@ namespace LMS_CMS
             builder.Services.AddScoped<FileImageValidationService>();
             builder.Services.AddScoped<CancelInterviewDayMessageService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
-            builder.Services.AddScoped<GenerateBarCodeEan13>();
-            builder.Services.AddScoped<InVoiceNumberCreate>();
-
+            builder.Services.AddScoped<GenerateBarCodeEan13>(); 
+            builder.Services.AddScoped<CheckPageAccessService>(); 
+            builder.Services.AddScoped<InVoiceNumberCreate>(); 
 
 
             /// 2)

@@ -20,17 +20,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public StoresController (DbContextFactoryService dbContextFactory, IMapper mapper)
+        public StoresController (DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Stores", "Inventory" }
+            pages: new[] { "Stores" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -55,7 +57,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Stores", "Inventory" }
+            pages: new[] { "Stores" }
       )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -85,7 +87,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpPost]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Stores", "Inventory" }
+            pages: new[] { "Stores" }
       )]
         public async Task<IActionResult> Add(InventoryStoreAddDTO newStore)
         {
@@ -149,7 +151,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-            pages: new[] { "Stores", "Inventory" }
+            pages: new[] { "Stores" }
        )]
        public async Task<IActionResult> EditAsync(StoreCategoriesEditDTO newStore)
        {
@@ -181,24 +183,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound("No Store with this ID");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Stores");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Stores", roleId, userId, store);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (store.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("store page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -256,7 +247,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
          allowDelete: 1,
-         pages: new[] { "Stores", "Inventory" }
+         pages: new[] { "Stores" }
      )]
         public IActionResult Delete(long id)
         {
@@ -285,24 +276,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Stores");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, store);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (store.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Stores page doesn't exist");
+                    return accessCheck;
                 }
             }
 

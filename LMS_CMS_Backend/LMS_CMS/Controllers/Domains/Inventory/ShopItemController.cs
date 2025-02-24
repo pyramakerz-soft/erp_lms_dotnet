@@ -25,13 +25,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         IMapper mapper;
         private readonly FileImageValidationService _fileImageValidationService;
         private readonly GenerateBarCodeEan13 _generateBarCodeEan13;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public ShopItemController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService, GenerateBarCodeEan13 generateBarCodeEan13)
+        public ShopItemController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService, GenerateBarCodeEan13 generateBarCodeEan13, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _fileImageValidationService = fileImageValidationService;
             _generateBarCodeEan13 = generateBarCodeEan13;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////
@@ -39,7 +41,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Shop", "Inventory" }
+           pages: new[] { "Shop Item", "Shop" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -100,7 +102,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("BySubCategoryId/{id}")]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
-        pages: new[] { "Shop", "Inventory" }
+        pages: new[] { "Shop Item", "Shop" }
      )]
         public async Task<IActionResult> GetBySubCategoryAsync(long id)
         {
@@ -161,7 +163,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Shop Item", "Inventory" }
+            pages: new[] { "Shop Item", "Shop" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
@@ -216,7 +218,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("ByBarcode/{BarCode}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Shop Item", "Inventory" }
+            pages: new[] { "Shop Item", "Shop" }
          )]
         public async Task<IActionResult> GetbyIdAsync(string BarCode)
         {
@@ -271,7 +273,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Shop", "Shop Item", "Inventory" }
+           pages: new[] { "Shop Item", "Shop" }
         )]
         public async Task<IActionResult> Add([FromForm] ShopItemAddDTO newShopItem)
         {
@@ -492,7 +494,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Shop", "Shop Item", "Inventory" }
+            pages: new[] { "Shop Item" }
         )]
         public async Task<IActionResult> Edit([FromForm] ShopItemPutDTO newShopItem)
         {
@@ -588,24 +590,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             string otherImageExists = existingShopItem.MainImage;
             string mainImageLinkExists = existingShopItem.OtherImage;
             string enNameExists = existingShopItem.EnName;
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Shop Item");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, existingShopItem);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (existingShopItem.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Shop Item page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -1098,7 +1089,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Shop", "Inventory" }
+            pages: new[] { "Shop Item", "Shop" }
          )]
         public IActionResult Delete(long id)
         {
@@ -1130,21 +1121,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Shop");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, shopItem);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (shopItem.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Shop page doesn't exist");
+                    return accessCheck;
                 }
             }
 

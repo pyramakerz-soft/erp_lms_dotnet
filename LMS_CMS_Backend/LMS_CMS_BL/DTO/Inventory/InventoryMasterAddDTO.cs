@@ -29,5 +29,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long StudentID { get; set; }
         public long? SaveID { get; set; }
         public long? BankID { get; set; }
+        public List<InventoryDetailsAddDTO>? InventoryDetails { get; set; }
     }
 }

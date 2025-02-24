@@ -240,6 +240,27 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
+
+            //Save InventoryDetails
+
+            foreach (var item in newData.InventoryDetails)
+            {
+                InventoryDetails salesItem = mapper.Map<InventoryDetails>(item);
+                salesItem.InventoryMasterId= Master.ID;
+
+                salesItem.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "octa")
+                {
+                    salesItem.InsertedByOctaId = userId;
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    salesItem.InsertedByUserId = userId;
+                }
+
+                Unit_Of_Work.inventoryDetails_Repository.Add(salesItem);
+                await Unit_Of_Work.SaveChangesAsync();
+            }
             return Ok(Master.ID);
         }
 

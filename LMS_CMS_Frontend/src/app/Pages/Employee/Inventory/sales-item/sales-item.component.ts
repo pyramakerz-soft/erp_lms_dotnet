@@ -151,11 +151,12 @@ export class SalesItemComponent {
 
   Save() {
     this.Data.flagId = 1;
-    console.log(this.Data)
+    console.log("data",this.Data)
     if (this.mode == "Create") {
       this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
         this.MasterId = d
-        this.router.navigateByUrl(`Employee/Sales Item/Edit/${this.MasterId}`)
+        console.log(this.MasterId)
+        // this.router.navigateByUrl(`Employee/Sales Item/Edit/${this.MasterId}`)
       })
     }
     if (this.mode == "Edit") {
@@ -213,7 +214,7 @@ export class SalesItemComponent {
       .subscribe(d => {
         this.subCategories = d;
         this.ShopItems = []; // Clear items when category changes
-        this.SelectedSubCategoryId = null;
+        this.SelectedSubCategoryId = null; 
       });
   }
   
@@ -306,10 +307,16 @@ export class SalesItemComponent {
   }
 
   SaveRow() {
-    this.Item.salesID = this.MasterId
-    this.salesItemServ.Add(this.Item, this.DomainName).subscribe((d) => {
-      this.GetTableDataByID();
-    })
+    console.log("fsd")
+    this.Item.inventoryMasterId = this.MasterId
+    this.Item.shopItemID=this.ShopItem.id
+    console.log(this.Item)
+    this.Data.total = +this.Data.total + +this.Item.totalPrice;
+    this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount) 
+    // this.salesItemServ.Add(this.Item, this.DomainName).subscribe((d) => {
+    //   this.GetTableDataByID();
+    // })
+    this.Data.inventoryDetails.push(this.Item)
     this.IsOpenToAdd = false
     this.Item = new SalesItem()
   }

@@ -8,7 +8,7 @@ export class SalesItem {
         public totalPrice :number =0,
         public amount :number =0,
         public shopItemID :number =0,
-        public salesID :number =0,
+        public inventoryMasterId :number =0,
         public shopItemName :string = '',
         public salesName :string = '',
         public notes :string = '',

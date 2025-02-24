@@ -16,6 +16,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public float TotalPrice { get; set; }
         public float Amount { get; set; }
         public string Notes { get; set; }
+        public string BarCode { get; set; }
         public long ShopItemID { get; set; }
         public long InventoryMasterId { get; set; }
         public string? ShopItemName { get; set; }

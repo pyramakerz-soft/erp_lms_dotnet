@@ -1,3 +1,5 @@
+import { SalesItem } from "./sales-item";
+
 export class Sales {
      constructor(
             public id: number = 0,
@@ -26,6 +28,7 @@ export class Sales {
             public attachment : File [] =[] ,
             public NewAttachments : File [] =[] ,
             public DeletedAttachments : string [] =[] ,
+            public inventoryDetails : SalesItem [] =[] ,
         ) {}
 }
 

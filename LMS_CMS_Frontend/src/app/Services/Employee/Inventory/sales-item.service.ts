@@ -26,7 +26,7 @@ export class SalesItemService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-      return this.http.get<SalesItem[]>(`${this.baseUrl}/SalesItem/BySaleId/${id}`, { headers });
+      return this.http.get<SalesItem[]>(`${this.baseUrl}/InventoryDetails/BySaleId/${id}`, { headers });
   }
 
   GetById(id: number, DomainName: string) {
@@ -38,7 +38,7 @@ export class SalesItemService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<SalesItem>(`${this.baseUrl}/SalesItem/${id}`, { headers })
+    return this.http.get<SalesItem>(`${this.baseUrl}/InventoryDetails/${id}`, { headers })
   }
 
   Add(sales: SalesItem, DomainName: string): Observable<any> {
@@ -51,7 +51,7 @@ export class SalesItemService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
 
-    return this.http.post<any>(`${this.baseUrl}/SalesItem`, sales, {
+    return this.http.post<any>(`${this.baseUrl}/InventoryDetails`, sales, {
       headers: headers,
       responseType: 'text' as 'json'
     });
@@ -66,7 +66,7 @@ export class SalesItemService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.put<Store>(`${this.baseUrl}/SalesItem`, sales, { headers });
+    return this.http.put<Store>(`${this.baseUrl}/InventoryDetails`, sales, { headers });
   }
 
   Delete(id: number, DomainName: string) {
@@ -78,7 +78,7 @@ export class SalesItemService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.delete(`${this.baseUrl}/SalesItem/${id}`, { headers })
+    return this.http.delete(`${this.baseUrl}/InventoryDetails/${id}`, { headers })
   }
 
 }

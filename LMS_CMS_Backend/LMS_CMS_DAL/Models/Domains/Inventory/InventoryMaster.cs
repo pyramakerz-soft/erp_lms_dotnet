@@ -21,8 +21,8 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public string Date { get; set; }
         public bool IsCash { get; set; }
         public bool IsVisa { get; set; }
-        public int CashAmount { get; set; }
-        public int VisaAmount { get; set; }
+        public int? CashAmount { get; set; }
+        public int? VisaAmount { get; set; }
         public int Remaining { get; set; }
         public int Total { get; set; }
         public string Notes { get; set; }

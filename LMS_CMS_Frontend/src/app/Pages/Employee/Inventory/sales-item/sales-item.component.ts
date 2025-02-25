@@ -76,6 +76,7 @@ export class SalesItemComponent {
   ShopItem: ShopItem = new ShopItem()
   MasterId: number = 0;
   editingRowId: any = 0;
+  validationErrors: { [key in keyof Sales]?: string } = {};
 
   IsOpenToAdd: boolean = false
 
@@ -140,6 +141,7 @@ export class SalesItemComponent {
   Save() {
     this.Data.flagId = 1;
     console.log("data", this.Data)
+    if(this.isFormValid()){
     if (this.mode == "Create") {
       this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
         console.log(d)
@@ -149,9 +151,10 @@ export class SalesItemComponent {
     }
     if (this.mode == "Edit") {
       this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-        this.GetMasterInfo()
+        this.router.navigateByUrl(`Employee/Sales`)
       })
     }
+  }
   }
 
 
@@ -223,6 +226,7 @@ export class SalesItemComponent {
   selectShopItem(item: ShopItem) {
     this.SelectedSopItem = item;
     this.ShopItem = item
+    this.Item.price = this.ShopItem.salesPrice
   }
 
   GetTableDataByID() {
@@ -238,6 +242,11 @@ export class SalesItemComponent {
 
   Edit(id: number) {
     this.editingRowId = id
+  }
+
+  CalculateTotalPrice(Quantity:number ){
+    this.Item.totalPrice=Quantity*this.Item.price
+    this.TotalandRemainingCalculate()
   }
 
   Delete(id: number) {
@@ -319,11 +328,18 @@ export class SalesItemComponent {
 
   SaveEdit(row: SalesItem) {
     this.editingRowId = null;
+    this.Data.total = +this.Data.total + +this.Item.totalPrice;
+    this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount)
+    this.Item.shopItemID = this.ShopItem.id
     this.salesItemServ.Edit(row, this.DomainName).subscribe((d) => {
       this.GetTableDataByID();
     })
   }
 
+  TotalandRemainingCalculate(){
+    this.Data.total = +this.Data.total + +this.Item.totalPrice;
+    this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount)
+  }
 
   onImageFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -337,6 +353,58 @@ export class SalesItemComponent {
       this.Data.NewAttachments.push(file);
     }
 
+  }
+
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.Data) {
+      if (this.Data.hasOwnProperty(key)) {
+        const field = key as keyof Sales;
+        if (!this.Data[field]) {
+          if (
+            field == 'studentID' ||
+            field == 'storeID' ||
+            field == 'date' 
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
+    console.log(this.Data.inventoryDetails , isValid)
+    if (this.mode=='Create'&&this.Data.inventoryDetails.length==0 ) {
+       Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'SalesItems Is Required',
+                confirmButtonColor: '#FF7519',
+              });
+              return false;
+    }
+    if (this.mode=='Edit'&&this.TableData.length==0 ) {
+      Swal.fire({
+               icon: 'warning',
+               title: 'Warning!',
+               text: 'SalesItems Is Required',
+               confirmButtonColor: '#FF7519',
+             });
+             return false;
+   }
+      return isValid;
+  }
+  capitalizeField(field: keyof Sales): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
+  onInputValueChange(event: { field: keyof Sales; value: any }) {
+    const { field, value } = event;
+    (this.Data as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    }
   }
 
   openFile(file: any) {

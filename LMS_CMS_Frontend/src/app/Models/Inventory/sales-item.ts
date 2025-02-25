@@ -6,7 +6,6 @@ export class SalesItem {
         public quantity :number =0,
         public price :number =0,
         public totalPrice :number =0,
-        public amount :number =0,
         public shopItemID :number =0,
         public inventoryMasterId :number =0,
         public shopItemName :string = '',

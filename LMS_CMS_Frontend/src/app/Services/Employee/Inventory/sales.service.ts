@@ -76,7 +76,6 @@ export class SalesService {
         formData.append(`inventoryDetails[${index}][price]`, item.price.toString());
         formData.append(`inventoryDetails[${index}][totalPrice]`, item.totalPrice.toString());
         formData.append(`inventoryDetails[${index}][quantity]`, item.quantity.toString());
-        formData.append(`inventoryDetails[${index}][amount]`, item.amount.toString());
         formData.append(`inventoryDetails[${index}][notes]`, item.notes.toString());
         formData.append(`inventoryDetails[${index}][shopItemID]`, item.shopItemID.toString());
         formData.append(`inventoryDetails[${index}][inventoryMasterId]`, item.inventoryMasterId.toString());

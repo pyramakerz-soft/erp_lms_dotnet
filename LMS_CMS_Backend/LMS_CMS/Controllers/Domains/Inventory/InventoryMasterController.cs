@@ -242,26 +242,29 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             await Unit_Of_Work.SaveChangesAsync();
 
 
-            //Save InventoryDetails
+            ////Save InventoryDetails
 
-            foreach (var item in newData.InventoryDetails)
-            {
-                InventoryDetails salesItem = mapper.Map<InventoryDetails>(item);
-                salesItem.InventoryMasterId= Master.ID;
+            //if (newData.InventoryDetailsArray != null && newData.InventoryDetailsArray.Any())
+            //{
+            //    foreach (var item in newData.InventoryDetailsArray)
+            //    {
+            //        if (item == null) continue;
 
-                salesItem.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                if (userTypeClaim == "octa")
-                {
-                    salesItem.InsertedByOctaId = userId;
-                }
-                else if (userTypeClaim == "employee")
-                {
-                    salesItem.InsertedByUserId = userId;
-                }
+            //        InventoryDetails salesItem = mapper.Map<InventoryDetails>(item);
+            //        salesItem.InventoryMasterId = Master.ID;
 
-                Unit_Of_Work.inventoryDetails_Repository.Add(salesItem);
-                await Unit_Of_Work.SaveChangesAsync();
-            }
+            //        salesItem.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            //        if (userTypeClaim == "octa")
+            //            salesItem.InsertedByOctaId = userId;
+            //        else if (userTypeClaim == "employee")
+            //            salesItem.InsertedByUserId = userId;
+
+            //        Unit_Of_Work.inventoryDetails_Repository.Add(salesItem);
+            //    }
+            //}
+
+            await Unit_Of_Work.SaveChangesAsync();
+
             return Ok(Master.ID);
         }
 
@@ -269,6 +272,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         /////////////////////////////////////////////////////////////////////////////
 
         [HttpPut]
+        [Consumes("multipart/form-data")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,

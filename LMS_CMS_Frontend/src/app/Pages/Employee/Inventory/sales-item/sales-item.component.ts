@@ -73,7 +73,7 @@ export class SalesItemComponent {
 
   TableData: SalesItem[] = []
   Item: SalesItem = new SalesItem()
-  ShopItem :ShopItem =new ShopItem()
+  ShopItem: ShopItem = new ShopItem()
   MasterId: number = 0;
   editingRowId: any = 0;
 
@@ -94,13 +94,12 @@ export class SalesItemComponent {
     public salesServ: SalesService,
     public storeServ: StoresService,
     public SaveServ: SaveService,
-    public bankServ: BankService ,
-    public CategoriesServ : InventoryCategoryService ,
-    public SubCategoriesServ : InventorySubCategoriesService ,
-    public shopitemServ : ShopItemService ,
-
+    public bankServ: BankService,
+    public CategoriesServ: InventoryCategoryService,
+    public SubCategoriesServ: InventorySubCategoriesService,
+    public shopitemServ: ShopItemService,
   ) { }
-  ngOnInit() {
+  async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
     this.DomainName = this.ApiServ.GetHeader();
@@ -110,21 +109,18 @@ export class SalesItemComponent {
 
     this.MasterId = Number(this.activeRoute.snapshot.paramMap.get('id'))
 
+    await this.GetAllStudents()
+    await this.GetAllStores()
+    await this.GetAllSaves()
+    await this.GetAllBanks()
+
     if (!this.MasterId) {
       this.mode = "Create"
     } else {
+      this.mode = "Edit"
       this.GetTableDataByID();
       this.GetMasterInfo();
     }
-
-    this.activeRoute.url.subscribe(url => {
-      this.path = url[0].path
-      if (url[1].path == "View") {
-        this.mode = "View"
-      } else if (url[1].path == "Edit") {
-        this.mode = "Edit"
-      }
-    });
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
@@ -135,14 +131,6 @@ export class SalesItemComponent {
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
       }
     });
-
-    if (this.mode == "Create") {
-
-    }
-    this.GetAllStudents()
-    this.GetAllStores()
-    this.GetAllSaves()
-    this.GetAllBanks()
   }
 
   moveToMaster() {
@@ -151,12 +139,12 @@ export class SalesItemComponent {
 
   Save() {
     this.Data.flagId = 1;
-    console.log("data",this.Data)
+    console.log("data", this.Data)
     if (this.mode == "Create") {
       this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
+        console.log(d)
         this.MasterId = d
-        console.log(this.MasterId)
-        // this.router.navigateByUrl(`Employee/Sales Item/Edit/${this.MasterId}`)
+        this.router.navigateByUrl(`Employee/Sales`)
       })
     }
     if (this.mode == "Edit") {
@@ -207,35 +195,34 @@ export class SalesItemComponent {
     this.SelectedCategoryId = categoryId;
     this.GetSubCategories();
   }
-  
+
   GetSubCategories() {
-    if(this.SelectedCategoryId)
-    this.SubCategoriesServ.GetByCategoryId(this.SelectedCategoryId, this.DomainName)
-      .subscribe(d => {
-        this.subCategories = d;
-        this.ShopItems = []; // Clear items when category changes
-        this.SelectedSubCategoryId = null; 
-      });
+    if (this.SelectedCategoryId)
+      this.SubCategoriesServ.GetByCategoryId(this.SelectedCategoryId, this.DomainName)
+        .subscribe(d => {
+          this.subCategories = d;
+          this.ShopItems = []; // Clear items when category changes
+          this.SelectedSubCategoryId = null;
+        });
   }
-  
+
   selectSubCategory(subCategoryId: number) {
     this.SelectedSubCategoryId = subCategoryId;
-    this.ShopItems=[]
+    this.ShopItems = []
     this.GetItems();
   }
-  
+
   GetItems() {
-    console.log(this.SelectedSubCategoryId)
-    if(this.SelectedSubCategoryId)
-    this.shopitemServ.GetBySubCategory(this.SelectedSubCategoryId, this.DomainName)
-      .subscribe(d => {
-        this.ShopItems = d;
-      });
+    if (this.SelectedSubCategoryId)
+      this.shopitemServ.GetBySubCategory(this.SelectedSubCategoryId, this.DomainName)
+        .subscribe(d => {
+          this.ShopItems = d;
+        });
   }
 
   selectShopItem(item: ShopItem) {
     this.SelectedSopItem = item;
-    this.ShopItem=item
+    this.ShopItem = item
   }
 
   GetTableDataByID() {
@@ -271,21 +258,20 @@ export class SalesItemComponent {
     });
   }
 
-  DeleteWhenCreate(img:File){
-    this.Data.attachment=this.Data.attachment.filter(i=>i!=img)
+  DeleteWhenCreate(img: File) {
+    this.Data.attachment = this.Data.attachment.filter(i => i != img)
   }
 
-  DeleteWhenEdit(img:File){
-    this.Data.NewAttachments=this.Data.NewAttachments.filter(i=>i!=img)
+  DeleteWhenEdit(img: File) {
+    this.Data.NewAttachments = this.Data.NewAttachments.filter(i => i != img)
   }
 
-  DeleteExistedImg(img:string){
-    console.log(img)
+  DeleteExistedImg(img: string) {
     if (!this.Data.DeletedAttachments) {
       this.Data.DeletedAttachments = [];
     }
     this.Data.DeletedAttachments.push(img)
-    this.Data.attachments=this.Data.attachments.filter(i=>i!=img)
+    this.Data.attachments = this.Data.attachments.filter(i => i != img)
   }
 
   IsAllowDelete(InsertedByID: number) {
@@ -307,16 +293,22 @@ export class SalesItemComponent {
   }
 
   SaveRow() {
-    console.log("fsd")
-    this.Item.inventoryMasterId = this.MasterId
-    this.Item.shopItemID=this.ShopItem.id
-    console.log(this.Item)
     this.Data.total = +this.Data.total + +this.Item.totalPrice;
-    this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount) 
-    // this.salesItemServ.Add(this.Item, this.DomainName).subscribe((d) => {
-    //   this.GetTableDataByID();
-    // })
-    this.Data.inventoryDetails.push(this.Item)
+    this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount)
+    this.Item.shopItemID = this.ShopItem.id
+    if(this.mode=='Create'){
+      if (!this.Data.inventoryDetails) {
+        this.Data.inventoryDetails = [];
+      }
+      this.Data.inventoryDetails.push(this.Item)
+    }
+    if (this.mode == 'Edit') {
+      this.Item.inventoryMasterId = this.MasterId
+      this.salesItemServ.Add(this.Item, this.DomainName).subscribe((d) => {
+        this.GetTableDataByID();
+      })
+
+    }
     this.IsOpenToAdd = false
     this.Item = new SalesItem()
   }
@@ -334,13 +326,11 @@ export class SalesItemComponent {
 
 
   onImageFileSelected(event: any) {
-    console.log(this.mode)
     const file: File = event.target.files[0];
-    if(this.mode=="Create"){
+    if (this.mode == "Create") {
       this.Data.attachment.push(file)
     }
     if (this.mode === "Edit") {
-      console.log(this.Data);
       if (!this.Data.NewAttachments) {
         this.Data.NewAttachments = [];
       }
@@ -349,9 +339,17 @@ export class SalesItemComponent {
 
   }
 
-  openFile(fileUrl: any) {
-    // window.open(fileUrl, '_blank');
+  openFile(file: any) {
+    console.log(file);
+    if (typeof file === 'string') {
+      window.open(file, '_blank');
+    } else if (file instanceof File) {
+      const fileUrl = URL.createObjectURL(file);
+      window.open(fileUrl, '_blank');
+      setTimeout(() => URL.revokeObjectURL(fileUrl), 10000); 
+    } else {
+      console.warn('Unknown file type:', file);
+    }
   }
-
 
 }

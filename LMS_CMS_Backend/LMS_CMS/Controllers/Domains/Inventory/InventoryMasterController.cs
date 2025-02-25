@@ -21,14 +21,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         public  InVoiceNumberCreate _InVoiceNumberCreate;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
 
-
-        public InventoryMasterController(DbContextFactoryService dbContextFactory, IMapper mapper  , InVoiceNumberCreate inVoiceNumberCreate)
+        public InventoryMasterController(DbContextFactoryService dbContextFactory, IMapper mapper  , InVoiceNumberCreate inVoiceNumberCreate, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
-            this._InVoiceNumberCreate= inVoiceNumberCreate;
+            this._InVoiceNumberCreate = inVoiceNumberCreate;
+            _checkPageAccessService = checkPageAccessService;
         }
 
 
@@ -36,7 +37,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("ByFlagId/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sales", "Inventory" }
+            pages: new[] { "Sales" }
         )]
         public async Task<IActionResult> GetAsync(long id ,[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -83,7 +84,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Sales", "Inventory" }
+          pages: new[] { "Sales" }
     )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -123,7 +124,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sales", "Inventory" }
+            pages: new[] { "Sales" }
         )]
         public async Task<IActionResult> Add([FromForm] InventoryMasterAddDTO newData)
         {
@@ -271,7 +272,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-             pages: new[] { "Sales", "Inventory" }
+             pages: new[] { "Sales" }
         )]
         public async Task<IActionResult> EditAsync([FromForm] InventoryMasterEditDTO newSale)
         {
@@ -330,24 +331,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound("There Is No InventoryMaster With This Id");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sales");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Sales", roleId, userId, sale);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (sale.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Sales page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -433,7 +423,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
         allowDelete: 1,
-        pages: new[] { "Sales", "Inventory" }
+        pages: new[] { "Sales" }
     )]
         public IActionResult Delete(long id)
         {
@@ -465,21 +455,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sales");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Sales", roleId, userId, sales);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (sales.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Sales page doesn't exist");
+                    return accessCheck;
                 }
             }
 

@@ -23,15 +23,14 @@ namespace LMS_CMS_PL.Controllers.Domains
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
-        private readonly UOW _Unit_Of_Work_Octa;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public EmployeeStudentController(DbContextFactoryService dbContextFactory, IMapper mapper, UOW Unit_Of_Work)
+        public EmployeeStudentController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
 
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
-            _Unit_Of_Work_Octa = Unit_Of_Work;
-
+            _checkPageAccessService = checkPageAccessService; 
         }
 
         //////
@@ -61,7 +60,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpPost]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Add Children", "Accounting" }
+          pages: new[] { "Add Children" }
        )]
         public IActionResult Add(EmployeeStudentAddDTO newChild)
         {
@@ -117,7 +116,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowDelete: 1,
-          pages: new[] { "Add Children", "Accounting" }
+          pages: new[] { "Add Children" }
        )]
         public IActionResult Delete(long id)
         {
@@ -146,24 +145,13 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Add Children");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Add Children", roleId, userId, employeeStudent);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (employeeStudent.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Add Children page doesn't exist");
+                    return accessCheck;
                 }
             }
 

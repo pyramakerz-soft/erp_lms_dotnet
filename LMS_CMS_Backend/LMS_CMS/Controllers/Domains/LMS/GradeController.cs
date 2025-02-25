@@ -21,11 +21,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public GradeController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public GradeController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -144,7 +146,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Grade", "Administrator" }
+            pages: new[] { "Grade" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -178,7 +180,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Grade", "Administrator" }
+            pages: new[] { "Grade" }
         )]
         public async Task<IActionResult> Add(GradeAddDTO Newgrade)
         {
@@ -233,7 +235,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Grade", "Administrator" }
+            pages: new[] { "Grade" }
         )]
         public async Task<IActionResult> EditAsync(GradeEditDTO newGrade)
         {
@@ -274,27 +276,17 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (grade == null)
             {
                 return BadRequest("this grade not exist");
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sections & Grade Levels");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Grade", roleId, userId, grade);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (grade.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Sections & Grade Levels page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             mapper.Map(newGrade, grade);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             grade.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -324,7 +316,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Grade", "Administrator" }
+            pages: new[] { "Grade" }
         )]
         public IActionResult Delete(long id)
         {
@@ -346,30 +338,22 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("id cannot be null");
             }
-            Grade grade = Unit_Of_Work.grade_Repository.Select_By_Id(id);
+            Grade grade = Unit_Of_Work.grade_Repository.Select_By_Id(id); 
+
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sections & Grade Levels");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Grade", roleId, userId, grade);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (grade.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Sections & Grade Levels page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             if (grade == null || grade.IsDeleted == true)
             {
                 return NotFound("No grade with this ID");
             }
+
             grade.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             grade.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);

@@ -19,11 +19,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public SemesterController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public SemesterController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +33,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Semester", "Administrator" }
+            pages: new[] { "Semester" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -65,7 +67,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("GetByAcademicYear/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Semester", "Administrator" }
+            pages: new[] { "Semester" }
         )]
         public async Task<IActionResult> GetAsyncByAcademicYear(long id)
         {
@@ -99,7 +101,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Semester", "Administrator" }
+            pages: new[] { "Semester" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -133,7 +135,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Semester", "Administrator" }
+            pages: new[] { "Semester" }
         )]
         public async Task<IActionResult> Add(SemesterAddDTO NewSemester)
         {
@@ -184,7 +186,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Semester", "Administrator" }
+            pages: new[] { "Semester" }
         )]
         public IActionResult Edit(SemesterEditDTO newSemester)
         {
@@ -219,26 +221,17 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (semester == null)
             {
                 return NotFound("there is no semester with this id");
-            }
+            } 
+
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Semester");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Semester", roleId, userId, semester);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (semester.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Semester page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             mapper.Map(newSemester, semester);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -272,7 +265,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Semester", "Administrator" }
+            pages: new[] { "Semester" }
         )]
         public IActionResult Delete(long id)
         {
@@ -299,26 +292,17 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (semester == null || semester.IsDeleted == true)
             {
                 return NotFound("No semester with this ID");
-            }
+            } 
+
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Semester");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Semester", roleId, userId, semester);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (semester.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Semester page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             semester.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             semester.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);

@@ -3,6 +3,7 @@ using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Migrations;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
@@ -23,13 +24,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
     public class BusStudentController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
-
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public BusStudentController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public BusStudentController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet("GetByBusId/{busId}")]
@@ -242,7 +244,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             allowEdit: 1,
             pages: new[] { "Busses" }
         )]
-        public ActionResult Edit(BusStudent_PutDTO busStudentPutDTO)
+        public IActionResult Edit(BusStudent_PutDTO busStudentPutDTO)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -297,25 +299,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             if (busStudentExists == null || busStudentExists.IsDeleted == true)
             {
                 return NotFound("No Bus Student with this ID");
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Status");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Busses", roleId, userId, busStudentExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (busStudentExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Bus Status page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -377,24 +368,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return NotFound();
             }
             else
-            {
+            { 
                 if (userTypeClaim == "employee")
                 {
-                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Busses");
-                    if (page != null)
+                    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Busses", roleId, userId, busStudent);
+                    if (accessCheck != null)
                     {
-                        Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                        if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                        {
-                            if (busStudent.InsertedByUserId != userId)
-                            {
-                                return Unauthorized();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest("Bus Types page doesn't exist");
+                        return accessCheck;
                     }
                 }
 

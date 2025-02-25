@@ -5,6 +5,7 @@ using LMS_CMS_BL.DTO.Registration;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.Administration;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_PL.Attribute;
@@ -23,11 +24,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public DepartmentController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public DepartmentController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////
@@ -35,7 +38,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpGet]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Department", "Administrator" }
+       pages: new[] { "Department" }
        )]
         public async Task<IActionResult> GetAsync()
         {
@@ -58,7 +61,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Department", "Administrator" }
+         pages: new[] { "Department" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
@@ -80,7 +83,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpPost]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Department", "Administrator" }
+         pages: new[] { "Department" }
        )]
         public IActionResult Add(DepartmentAddDto newDept)
         {
@@ -123,7 +126,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
         allowEdit: 1,
-       pages: new[] { "Department", "Administrator" }
+       pages: new[] { "Department" }
     )]
         public IActionResult Edit(DepartmentGetDTO newDept)
         {
@@ -150,24 +153,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             {
                 return NotFound("There is no department with this id");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Department");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Department", roleId, userId, department);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (department.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Department page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -202,7 +194,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
           allowDelete: 1,
-         pages: new[] { "Department", "Administrator" }
+         pages: new[] { "Department" }
          )]
         public IActionResult Delete(long id)
         {
@@ -232,24 +224,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Department");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Department", roleId, userId, department);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (department.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Admission Test page doesn't exist");
+                    return accessCheck;
                 }
             }
 

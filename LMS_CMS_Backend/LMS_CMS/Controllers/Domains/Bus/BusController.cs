@@ -22,17 +22,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public BusController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public BusController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Details" }
+            pages: new[] { "Bus Details" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -73,7 +75,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpGet("{Id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Details" }
+            pages: new[] { "Bus Details" }
         )]
         public async Task<IActionResult> GetByID(long Id)
         {
@@ -120,7 +122,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Details" }
+            pages: new[] { "Bus Details" }
         )]
         public ActionResult Add(Bus_AddDTO busAddDTO)
         {
@@ -224,9 +226,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Busses", "Bus Details" }
+            pages: new[] { "Bus Details" }
         )]
-        public ActionResult Edit(Bus_PutDTO busPutDTO)
+        public IActionResult Edit(Bus_PutDTO busPutDTO)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -310,24 +312,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return NotFound("No Bus with this ID");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Details");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Bus Details", roleId, userId, busExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (busExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Busses page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -361,7 +352,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Busses", "Bus Details" }
+            pages: new[] { "Bus Details" }
         )]
         public IActionResult Delete(long Id)
         {
@@ -390,24 +381,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return NotFound("No Bus with this ID");
             }
             else
-            {
+            { 
                 if (userTypeClaim == "employee")
                 {
-                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Details");
-                    if (page != null)
+                    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Bus Details", roleId, userId, bus);
+                    if (accessCheck != null)
                     {
-                        Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                        if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                        {
-                            if (bus.InsertedByUserId != userId)
-                            {
-                                return Unauthorized();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest("Busses page doesn't exist");
+                        return accessCheck;
                     }
                 }
 

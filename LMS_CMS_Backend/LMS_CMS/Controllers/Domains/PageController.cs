@@ -29,7 +29,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Role", "Administrator" }
+            pages: new[] { "Role" }
         )]
         public IActionResult Get()
         {

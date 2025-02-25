@@ -18,11 +18,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public ReasonsForLeavingWorkController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public ReasonsForLeavingWorkController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////
@@ -30,7 +32,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpGet]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Reasons For Leaving Work", "Administrator" }
+       pages: new[] { "Reasons For Leaving Work" }
        )]
         public async Task<IActionResult> GetAsync()
         {
@@ -53,7 +55,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Reasons For Leaving Work", "Administrator" }
+         pages: new[] { "Reasons For Leaving Work" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
@@ -75,7 +77,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpPost]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Reasons For Leaving Work", "Administrator" }
+         pages: new[] { "Reasons For Leaving Work" }
        )]
         public IActionResult Add(ReasonsForLeavingWorkAddDTO newReason)
         {
@@ -118,7 +120,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
         allowEdit: 1,
-       pages: new[] { "Reasons For Leaving Work", "Administrator" }
+       pages: new[] { "Reasons For Leaving Work" }
     )]
         public IActionResult Edit(ReasonsForLeavingWorkGetDTO newReason)
         {
@@ -148,21 +150,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Reasons For Leaving Work");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Reasons For Leaving Work", roleId, userId, Reason);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (Reason.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Reasons For Leaving Work page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -197,7 +188,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
           allowDelete: 1,
-         pages: new[] { "Reasons For Leaving Work", "Administrator" }
+         pages: new[] { "Reasons For Leaving Work" }
          )]
         public IActionResult Delete(long id)
         {
@@ -227,24 +218,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Reasons For Leaving Work");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Reasons For Leaving Work", roleId, userId, reason);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (reason.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Reasons For Leaving Work page doesn't exist");
+                    return accessCheck;
                 }
             }
 

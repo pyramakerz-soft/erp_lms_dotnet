@@ -31,14 +31,14 @@ namespace LMS_CMS_PL.Controllers.Domains
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly UOW _Unit_Of_Work_Octa;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-
-        public EmployeeController(DbContextFactoryService dbContextFactory, IMapper mapper, UOW Unit_Of_Work)
+        public EmployeeController(DbContextFactoryService dbContextFactory, IMapper mapper, UOW Unit_Of_Work, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _Unit_Of_Work_Octa = Unit_Of_Work;
-
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Administrator", "Employee" }
+            pages: new[] { "Employee" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -92,7 +92,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet("GetByTypeId/{TypeId}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Administrator", "Employee" }
+            pages: new[] { "Employee" }
         )]
         public async Task<IActionResult> GetByTypeIDAsync(long TypeId)
         {
@@ -192,7 +192,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Administrator", "Employee Create" }
+            pages: new[] { "Employee Create" }
         )]
         public async Task<IActionResult> Add([FromForm] EmployeeAddDTO NewEmployee, [FromForm] List<IFormFile> files)
         {
@@ -341,7 +341,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Administrator", "Employee Edit" }
+            pages: new[] { "Employee Edit" }
         )]
         public async Task<IActionResult> EditAsync([FromForm] EmployeePutDTO newEmployee, [FromForm] List<IFormFile> files)
         {
@@ -478,26 +478,15 @@ namespace LMS_CMS_PL.Controllers.Domains
             //}
             //}
 
-            // Update employee
             if (userTypeClaim == "employee")
             {
-                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Employee", roleId, userId, oldEmp);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (oldEmp.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Employee page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
             if(oldEmp.User_Name!=newEmployee.User_Name)
@@ -579,9 +568,9 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Administrator", "Employee" }
+            pages: new[] { "Employee" }
         )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -607,25 +596,16 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return NotFound("No employee with this ID");
             }
+            
             if (userTypeClaim == "employee")
             {
-                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Employee", roleId, userId, employee);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (employee.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Employee page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             employee.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             employee.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -729,7 +709,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Administrator", "Employee" }
+            pages: new[] { "Employee" }
         )]
         public async Task<IActionResult> EditpasswordAsync(EditPasswordDTO model)
         {
@@ -756,25 +736,16 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return NotFound("Employee not found.");
             }
+             
             if (userTypeClaim == "employee")
             {
-                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Employee", roleId, userId, oldEmp);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (oldEmp.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Employee page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             if (userTypeClaim == "octa")
             {
@@ -798,7 +769,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet("getByAccountingEmployee/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Accounting", "Employee" }
+            pages: new[] { "Employee" }
         )]
         public async Task<IActionResult> GetByAccounting(long id)
         {
@@ -861,7 +832,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Administrator", "Employee" }
+            pages: new[] { "Employee Accounting" }
         )]
         public async Task<IActionResult> EditEmployeeAccountingAsync(EmployeeAccountingPut newEmployee)
         {
@@ -980,21 +951,10 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             if (userTypeClaim == "employee")
             {
-                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Employee Accounting");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Employee Accounting", roleId, userId, employee);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (employee.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Employee page doesn't exist");
+                    return accessCheck;
                 }
             }
 

@@ -23,14 +23,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         public StudentAcademicYearController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
-            this.mapper = mapper;
+            this.mapper = mapper; 
         }
         //////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
-            pages: new[] { "Academic Years", "Administrator" }
+            pages: new[] { "Academic Years" }
         )]
         public async Task<IActionResult> GetAsync()
         {

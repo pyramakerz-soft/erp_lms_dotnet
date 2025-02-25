@@ -279,7 +279,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
              
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, store);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Stores", roleId, userId, store);
                 if (accessCheck != null)
                 {
                     return accessCheck;

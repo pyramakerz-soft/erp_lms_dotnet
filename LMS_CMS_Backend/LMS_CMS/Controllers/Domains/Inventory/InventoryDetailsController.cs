@@ -19,17 +19,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public InventoryDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public InventoryDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sales Item", "Inventory" }
+            pages: new[] { "Sales Item" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -56,7 +58,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("BySaleId/{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Sales Item", "Inventory" }
+          pages: new[] { "Sales Item" }
       )]
         public async Task<IActionResult> GetBySaleIDAsync(long id)
         {
@@ -83,7 +85,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
-        pages: new[] { "Sales Item", "Inventory" }
+        pages: new[] { "Sales Item" }
         )]
         public async Task<IActionResult> GetByIDAsync(long id)
         {
@@ -110,7 +112,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpPost]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Sales Item", "Inventory" }
+          pages: new[] { "Sales Item" }
     )]
         public async Task<IActionResult> Add(InventoryDetailsAddDTO newItem)
         {
@@ -167,7 +169,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
         allowEdit: 1,
-         pages: new[] { "Sales Item", "Inventory" }
+         pages: new[] { "Sales Item" }
     )]
         public async Task<IActionResult> EditAsync(InventoryDetailsGetDTO newSale)
         {
@@ -206,24 +208,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sales Item");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Sales Item", roleId, userId, salesItem);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (salesItem.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Sales Item page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -258,7 +249,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
          allowDelete: 1,
-         pages: new[] { "Sales Item", "Inventory" }
+         pages: new[] { "Sales Item" }
      )]
         public IActionResult Delete(long id)
         {
@@ -287,23 +278,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("No SaleItem with this ID");
             }
 
+
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sales Item");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Sales Item", roleId, userId, salesItem);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (salesItem.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Sales Item page doesn't exist");
+                    return accessCheck;
                 }
             }
 

@@ -22,18 +22,20 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         private readonly DbContextFactoryService _dbContextFactory;
         private readonly FileImageValidationService _fileImageValidationService;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public SubjectController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService)
+        public SubjectController(DbContextFactoryService dbContextFactory, IMapper mapper, FileImageValidationService fileImageValidationService, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _fileImageValidationService = fileImageValidationService;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject", "LMS" }
+            pages: new[] { "Subject" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -67,7 +69,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject", "LMS" }
+            pages: new[] { "Subject" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -105,7 +107,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost] 
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject", "LMS" }
+            pages: new[] { "Subject" }
         )]
         public async Task<IActionResult> Add([FromForm]SubjectAddDTO NewSubject)
         {
@@ -202,7 +204,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Subject", "LMS" }
+            pages: new[] { "Subject" }
         )]
         public async Task<IActionResult> Edit([FromForm] SubjectPutDTO EditSubject)
         {
@@ -258,27 +260,16 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (SubjectExists == null || SubjectExists.IsDeleted == true)
             {
                 return NotFound("No Subject with this ID");
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Subject", roleId, userId, SubjectExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (SubjectExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
+                    return accessCheck;
                 }
-                else
-                {
-                    return BadRequest("Subject page doesn't exist");
-                }
-            } 
+            }
 
             if (EditSubject.IconFile != null)
             {
@@ -373,7 +364,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Subject", "LMS" }
+            pages: new[] { "Subject" }
         )]
         public IActionResult Delete(long id)
         {
@@ -402,25 +393,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (subject == null)
             {
                 return NotFound();
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Subject", roleId, userId, subject);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (subject.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Subject page doesn't exist");
+                    return accessCheck;
                 }
             }
 

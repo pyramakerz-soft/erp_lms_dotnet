@@ -24,12 +24,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         private readonly DbContextFactoryService _dbContextFactory;
         private readonly CancelInterviewDayMessageService _cancelInterviewDayMessage;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public InterviewTimeTableController(DbContextFactoryService dbContextFactory, IMapper mapper, CancelInterviewDayMessageService cancelInterviewDayMessage)
+        public InterviewTimeTableController(DbContextFactoryService dbContextFactory, IMapper mapper, CancelInterviewDayMessageService cancelInterviewDayMessage, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             this._cancelInterviewDayMessage = cancelInterviewDayMessage;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Interview Time Table", "Registration" }
+            pages: new[] { "Interview Time Table" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -63,7 +65,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetInterviewTableByID/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Interview Time Table", "Registration" }
+            pages: new[] { "Interview Time Table" }
         )]
         public async Task<IActionResult> GetByID(long id)
         {
@@ -94,7 +96,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetInterviewTableWithYearID/{yearID}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
-            pages: new[] { "Interview Time Table", "Registration" }
+            pages: new[] { "Interview Time Table" }
         )]
         public async Task<IActionResult> GetInterviewTableWithYearID(long yearID)
         {
@@ -134,7 +136,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetInterviewTableWithSchoolID/{schoolID}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Interview Time Table", "Registration" }
+            pages: new[] { "Interview Time Table" }
         )]
         public async Task<IActionResult> GetInterviewTableWithSchoolID(long schoolID)
         {
@@ -174,7 +176,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Interview Time Table", "Registration" }
+            pages: new[] { "Interview Time Table" }
         )]
         public IActionResult Add(InterviewTimeTableAddDTO NewInterviewTimeTable)
         {
@@ -273,7 +275,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Interview Time Table", "Registration" }
+            pages: new[] { "Interview Time Table" }
         )]
         public IActionResult Edit(InterviewTimeTablePutDTO EditedInterviewTimeTable)
         {
@@ -305,24 +307,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return NotFound("No Interview Time Table with this ID");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Interview Time Table");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Interview Time Table", roleId, userId, InterviewTimeTableExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (InterviewTimeTableExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Interview Time Table page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -357,7 +348,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Interview Time Table", "Registration" }
+            pages: new[] { "Interview Time Table" }
         )]
         public IActionResult Delete(long id)
         {
@@ -386,24 +377,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Interview Time Table");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Interview Time Table", roleId, userId, interviewTime);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (interviewTime.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Interview Time Table page doesn't exist");
+                    return accessCheck;
                 }
             }
 

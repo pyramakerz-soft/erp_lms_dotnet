@@ -22,17 +22,19 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public BuildingController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public BuildingController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Building", "Administrator" }
+            pages: new[] { "Building" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -56,7 +58,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Building", "Administrator" }
+            pages: new[] { "Building" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -83,7 +85,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Building", "Administrator" }
+            pages: new[] { "Building" }
         )]
         public IActionResult Add(BuildingAddDTO NewBuilding)
         {
@@ -137,7 +139,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Building", "Administrator" }
+            pages: new[] { "Building" }
         )]
         public IActionResult Edit(BuildingPutDTO EditedBuilding)
         {
@@ -176,27 +178,16 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return NotFound("No Building with this ID");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Building");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Building", roleId, userId, BuildingExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (BuildingExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Building page doesn't exist");
+                    return accessCheck;
                 }
             }
-             
+
             mapper.Map(EditedBuilding, BuildingExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             BuildingExists.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -226,7 +217,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Building", "Administrator" }
+            pages: new[] { "Building" }
         )]
         public IActionResult Delete(long id)
         {
@@ -256,24 +247,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Building");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Building", roleId, userId, Building);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (Building.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Buildings page doesn't exist");
+                    return accessCheck;
                 }
             }
 

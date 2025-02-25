@@ -17,13 +17,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
     public class BusDistrictController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
-
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public BusDistrictController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public BusDistrictController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
 
@@ -32,7 +33,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Districts" }
+            pages: new[] { "Bus Districts" }
         )]
         public IActionResult Get()
         {
@@ -67,7 +68,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpGet("id")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Districts" }
+            pages: new[] { "Bus Districts" }
         )]
         public IActionResult GetById(long id)
         {
@@ -103,7 +104,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses", "Bus Districts" }
+            pages: new[] { "Bus Districts" }
         )]
         public IActionResult Add(BusDistrictAddDTO NewDistrict)
         {
@@ -151,7 +152,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Busses", "Bus Districts" }
+            pages: new[] { "Bus Districts" }
         )]
         public IActionResult Edit(BusDistrictEditDTO EditBusDistrict)
         {
@@ -182,24 +183,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             {
                 return NotFound("No Bus District with this ID");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Districts");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Bus Districts", roleId, userId, busDistrict);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (busDistrict.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Bus Districts page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -234,7 +224,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Busses", "Bus Districts" }
+            pages: new[] { "Bus Districts" }
         )]
         public IActionResult Delete(long id)
         {
@@ -263,24 +253,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
                 return NotFound("No Bus District with this ID");
             }
             else
-            {
+            { 
                 if (userTypeClaim == "employee")
                 {
-                    Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Bus Districts"); 
-                    if (page != null)
+                    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Bus Districts", roleId, userId, busDistrict);
+                    if (accessCheck != null)
                     {
-                        Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                        if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                        {
-                            if (busDistrict.InsertedByUserId != userId)
-                            {
-                                return Unauthorized();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest("Bus Districts page doesn't exist");
+                        return accessCheck;
                     }
                 }
 

@@ -19,17 +19,19 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public SubjectCategoryController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public SubjectCategoryController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject Categories", "LMS" }
+            pages: new[] { "Subject Categories"}
         )]
         public IActionResult GetAsync()
         {
@@ -51,7 +53,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Subject Categories", "LMS" }
+            pages: new[] { "Subject Categories" }
         )]
         public IActionResult GetById(long id)
         {
@@ -78,7 +80,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Subject Categories", "LMS" }
+           pages: new[] { "Subject Categories" }
        )]
         public IActionResult Add(SubjectCategoryAddDTO NewSubCat)
         {
@@ -123,7 +125,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Subject Categories", "LMS" }
+           pages: new[] { "Subject Categories" }
        )]
         public IActionResult Edit(SubjectCategoryPutDTO EditedSubjectCategory)
         {
@@ -153,25 +155,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (SubjectCategoryExists == null || SubjectCategoryExists.IsDeleted == true)
             {
                 return NotFound("No Subject Category with this ID");
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject Categories");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Subject Categories", roleId, userId, SubjectCategoryExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (SubjectCategoryExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Subject Categories page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -204,7 +195,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Subject Categories", "LMS" }
+            pages: new[] { "Subject Categories" }
         )]
         public IActionResult Delete(long id)
         {
@@ -233,25 +224,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (subjectCategory == null)
             {
                 return NotFound();
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Subject Categories");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Subject Categories", roleId, userId, subjectCategory);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (subjectCategory.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Subject Categories page doesn't exist");
+                    return accessCheck;
                 }
             }
 

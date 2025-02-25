@@ -17,14 +17,12 @@ namespace LMS_CMS_PL.Controllers.Domains
     public class ParentController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
-        IMapper mapper;
-        private readonly IEmailService _emailService;
+        IMapper mapper; 
 
-        public ParentController(DbContextFactoryService dbContextFactory, IMapper mapper , IEmailService emailService)
+        public ParentController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
-            this.mapper = mapper;
-            this._emailService = emailService;
+            this.mapper = mapper; 
         }
 
 

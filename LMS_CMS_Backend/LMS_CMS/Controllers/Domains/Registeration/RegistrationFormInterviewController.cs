@@ -24,11 +24,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         private readonly DbContextFactoryService _dbContextFactory;
         private readonly CancelInterviewDayMessageService _cancelInterviewDayMessage;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public RegistrationFormInterviewController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public RegistrationFormInterviewController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +38,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetRegistrationFormInterviewByInterviewID/{interviewID}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Interview Registration", "Registration" }
+            pages: new[] { "Interview Registration" }
         )]
         public async Task<IActionResult> GetRegistrationFormInterviewByInterviewID(long interviewID)
         {
@@ -87,7 +89,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetRegistrationFormInterviewByID/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Interview Registration", "Registration" }
+            pages: new[] { "Interview Registration" }
         )]
         public async Task<IActionResult> GetByID(long id)
         {
@@ -127,7 +129,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
-            pages: new[] { "Interview Registration", "Registration" }
+            pages: new[] { "Interview Registration" }
         )]
         public IActionResult Add(RegisterationFormInterviewAddDTO NewRegisterationFormInterview)
         {
@@ -249,7 +251,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Interview Registration", "Registration" }
+            pages: new[] { "Interview Registration" }
         )]
         public IActionResult Edit(RegistrationFormInterviewPutDTO registrationFormInterviewPutDTO)
         {
@@ -291,24 +293,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return NotFound("No Registration Form Interview with this ID");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Interview Registration");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Interview Registration", roleId, userId, RegisterationFormInterviewExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (RegisterationFormInterviewExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Interview Registration page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -344,7 +335,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
             allowEdit: 1,
-            pages: new[] { "Interview Registration", "Registration" }
+            pages: new[] { "Interview Registration" }
         )]
         public async Task<IActionResult> EditInterviewDateByParent(RegistrationFormInterviewPutByParentDTO EditedRegistrationFormInterviewPutByParentDTO)
         {
@@ -441,24 +432,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return BadRequest("You can't Change the Interview Time");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Interview Registration");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Interview Registration", roleId, userId, RegisterationFormInterviewExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (RegisterationFormInterviewExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Interview Registration page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -501,7 +481,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
             allowDelete: 1,
-            pages: new[] { "Interview Registration", "Registration" }
+            pages: new[] { "Interview Registration" }
         )]
         public IActionResult CanceledByParent(long id)
         {
@@ -530,24 +510,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Interview Registration");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Interview Registration", roleId, userId, registerationFormInterview);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (registerationFormInterview.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Interview Registration page doesn't exist");
+                    return accessCheck;
                 }
             }
 

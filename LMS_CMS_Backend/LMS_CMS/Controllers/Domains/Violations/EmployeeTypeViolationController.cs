@@ -22,11 +22,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public EmployeeTypeViolationController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public EmployeeTypeViolationController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////
@@ -34,7 +36,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Violation Types", "Administrator" }
+            pages: new[] { "Violation Types" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -63,7 +65,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         [HttpGet("GetByEmployeeType/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Violation Types", "Administrator" }
+            pages: new[] { "Violation Types" }
         )]
         public async Task<IActionResult> GetAsyncByEmployeeType(long id)
         {
@@ -99,7 +101,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         [HttpGet("id")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Violation Types", "Administrator" }
+            pages: new[] { "Violation Types" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -134,7 +136,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Violation Types", "Administrator" }
+            pages: new[] { "Violation Types" }
         )]
         public async Task<IActionResult> Add(EmployeeTypeViolationAddDTO NewEmployeeTypeViolation)
         {
@@ -219,7 +221,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Violation Types", "Administrator" }
+            pages: new[] { "Violation Types" }
         )]
         public async Task<IActionResult> EditViolationAsync(EmployeeTypeViolationEditDTO NewViolation)
         {
@@ -250,26 +252,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             if (violation == null) {
                 return Unauthorized("Violation not found.");
 
-            }
+            } 
+
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Violations");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Violation Types", roleId, userId, violation);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (violation.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Violations page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             if (NewViolation.ViolationName != violation.Name) 
             {
                 Violation v2 =Unit_Of_Work.violations_Repository.First_Or_Default(v=>v.Name==NewViolation.ViolationName);
@@ -339,9 +332,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Violation Types", "Administrator" }
+            pages: new[] { "Violation Types" }
         )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -366,26 +359,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Violations
             if (employeeTypeViolation == null || employeeTypeViolation.IsDeleted == true)
             {
                 return NotFound("No EmployeeTypeViolation with this ID");
-            }
+            } 
+
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Violations");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Violation Types", roleId, userId, employeeTypeViolation);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (employeeTypeViolation.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Violations page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             employeeTypeViolation.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             employeeTypeViolation.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);

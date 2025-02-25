@@ -31,9 +31,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-     allowedTypes: new[] { "octa", "employee" ,"parent"},
-     pages: new[] { "Registration Confirmation", "Registration" }
- )]
+         allowedTypes: new[] { "octa", "employee" ,"parent"},
+         pages: new[] { "Registration Confirmation"}
+     )]
         public async Task<IActionResult> GetAsync(long id, long testId)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -88,9 +88,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
         [HttpPost("{RegisterationFormParentId}/{TestId}")]
         [Authorize_Endpoint_(
-       allowedTypes: new[] { "octa", "employee","parent" },
-       pages: new[] { "Registration Confirmation", "Registration" }
-     )]
+           allowedTypes: new[] { "octa", "employee","parent" },
+           pages: new[] { "Registration Confirmation" }
+         )]
 
         public async Task<IActionResult> Add(IEnumerable<RegisterationFormTestAnswerAddDTO> newAnswersList ,long RegisterationFormParentId , long TestId)
         {

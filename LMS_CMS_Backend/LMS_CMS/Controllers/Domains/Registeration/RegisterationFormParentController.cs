@@ -23,11 +23,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public RegisterationFormParentController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public RegisterationFormParentController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +37,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" ,"parent"},
-            pages: new[] { "Registration Confirmation", "Registration" }
+            pages: new[] { "Registration Confirmation" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -98,7 +100,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Registration Confirmation", "Registration" }
+            pages: new[] { "Registration Confirmation" }
         )]
         public async Task<IActionResult> Edit(RegisterationFormParentPutDTO editedregisterationFormParentPutDTO)
         {
@@ -130,25 +132,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             if (existsRegisterationFormParent == null)
             {
                 return BadRequest("No Registration Form Parent with this ID");
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Registration Confirmation");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Registration Confirmation", roleId, userId, existsRegisterationFormParent);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (existsRegisterationFormParent.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Registration Confirmation page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -182,7 +173,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetByParentID/{parentID}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
-            pages: new[] { "Registration Confirmation", "Registration" }
+            pages: new[] { "Registration Confirmation" }
         )]
         public async Task<IActionResult> GetByParentID(long parentID)
         {
@@ -240,7 +231,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetByID/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
-            pages: new[] { "Registration Confirmation", "Registration" }
+            pages: new[] { "Registration Confirmation" }
         )]
         public async Task<IActionResult> GetByID(long id)
         {
@@ -295,7 +286,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetByParentIDIncludeRegistrationFormInterview/{parentID}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
-            pages: new[] { "Registration Confirmation", "Registration", "Interview Registration" }
+            pages: new[] { "Registration Confirmation", "Interview Registration" }
         )]
         public async Task<IActionResult> GetByParentIDIncludeRegistrationFormInterview(long parentID)
         {
@@ -370,7 +361,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetByStateID/{stateID}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Registration Confirmation", "Registration" }
+            pages: new[] { "Registration Confirmation" }
         )]
         public async Task<IActionResult> GetByStateID(long stateID)
         {
@@ -428,7 +419,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetBySchoolID/{schoolID}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Registration Confirmation", "Registration" }
+            pages: new[] { "Registration Confirmation" }
         )]
         public async Task<IActionResult> GetBySchoolID(long schoolID)
         {
@@ -505,7 +496,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("GetByAcademicYearID/{academicYearID}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Registration Confirmation", "Registration" }
+            pages: new[] { "Registration Confirmation" }
         )]
         public async Task<IActionResult> GetByAcademicYearID(long academicYearID)
         {

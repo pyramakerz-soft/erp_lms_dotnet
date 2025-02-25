@@ -20,11 +20,13 @@ namespace LMS_CMS_PL.Controllers.Domains
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public RoleController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public RoleController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +34,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Role", "Administrator" }
+            pages: new[] { "Role"}
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -64,7 +66,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Role", "Administrator" }
+            pages: new[] { "Role" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -96,7 +98,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Role Create", "Administrator" }
+            pages: new[] { "Role Create" }
         )]
         public async Task<IActionResult> Add(RoleAddDTO NewRoles)
         {
@@ -199,7 +201,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Role Edit", "Administrator" }
+            pages: new[] { "Role Edit" }
         )]
         public async Task<IActionResult> Edit(RolePutDTO newRole)
         {
@@ -232,25 +234,16 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("Role cannot be null");
             }
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Role");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Role Edit", roleId, userId, role);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (role.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Role page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             if (role.Name != newRole.Name) 
             { 
                 Role checkForUnique = Unit_Of_Work.role_Repository.First_Or_Default(r=>r.Name==newRole.Name);
@@ -345,9 +338,9 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Role", "Administrator" }
+            pages: new[] { "Role" }
         )]
-        public IActionResult delete(long id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -368,23 +361,13 @@ namespace LMS_CMS_PL.Controllers.Domains
                 return BadRequest("id cannot be null");
             }
             Role role = Unit_Of_Work.role_Repository.Select_By_Id(id);
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Role");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Role", roleId, userId, role);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (role.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Role page doesn't exist");
+                    return accessCheck;
                 }
             }
 

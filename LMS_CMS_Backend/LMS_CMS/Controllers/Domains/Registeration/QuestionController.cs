@@ -22,18 +22,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public QuestionController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public QuestionController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee"}
          ,
-         pages: new[] { "Admission Test", "Registration" }
+         pages: new[] { "Admission Test" }
          )]
         public async Task<IActionResult> GetAsync()
         {
@@ -76,7 +78,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("ByTest/{id}")]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee","parent" },
-       pages: new[] { "Admission Test", "Registration" }
+       pages: new[] { "Admission Test" }
        )]
         public async Task<IActionResult> GetAsyncbyId(int id)
         {
@@ -118,7 +120,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpGet("ByTestGroupBy/{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" ,"parent"},
-          pages: new[] { "Admission Test", "Registration" }
+          pages: new[] { "Admission Test" }
       )]
         public async Task<IActionResult> GetAsyncbyTestId(int id)
         {
@@ -178,7 +180,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpPost]
         [Authorize_Endpoint_(
     allowedTypes: new[] { "octa", "employee" },
-    pages: new[] { "Admission Test", "Registration" }
+    pages: new[] { "Admission Test" }
 )]
         public async Task<IActionResult> Add([FromForm] QuestionAddDTO newQuestion)
         {
@@ -319,7 +321,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
          allowEdit: 1,
-         pages: new[] { "Admission Test", "Registration" }
+         pages: new[] { "Admission Test" }
        )]
         public async Task<IActionResult> Edit([FromForm] QuestionEditDTO newQuestion)
         {
@@ -373,24 +375,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     return BadRequest("CorrectAnswer in msq question is required");
                 }
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Admission Test");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Admission Test", roleId, userId, question);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (question.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Admission Test page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -518,7 +509,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
         allowDelete: 1,
-       pages: new[] { "Admission Test", "Registration" }
+       pages: new[] { "Admission Test" }
        )]
         public IActionResult Delete(long id)
         {
@@ -547,25 +538,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             if (question == null)
             {
                 return NotFound();
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Admission Test");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Admission Test", roleId, userId, question);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (question.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Admission Test page doesn't exist");
+                    return accessCheck;
                 }
             }
 

@@ -19,17 +19,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public CategoryFieldController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public CategoryFieldController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet("GetByCategoryId/{id}")]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Registration Form Field", "Registration" }
+         pages: new[] { "Registration Form Field" }
          )]
         public async Task<IActionResult> GetAsync(int id)
         {
@@ -56,7 +58,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [HttpPost]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-         pages: new[] { "Registration Form Field", "Registration" }
+         pages: new[] { "Registration Form Field" }
          )]
         public async Task<IActionResult> Add(CategoryFieldAddDTO newField)
         {
@@ -143,7 +145,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
          allowEdit: 1,
-        pages: new[] { "Registration Form Field", "Registration" }
+        pages: new[] { "Registration Form Field" }
         )]
         public async Task<IActionResult> Edit(CategoryFieldEditDTO newField)
         {
@@ -193,25 +195,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 return BadRequest("there is no registrationCategory with this id");
 
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Registration Form Field");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Registration Form Field", roleId, userId, categoryField);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (categoryField.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Registration Form Field page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -274,7 +265,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowDelete: 1,
-          pages: new[] { "Registration Form Field", "Registration" }
+          pages: new[] { "Registration Form Field" }
           )]
         public IActionResult Delete(long id)
         {
@@ -305,21 +296,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Registration Form Field");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Registration Form Field", roleId, userId, field);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (field.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Registration Form Field page doesn't exist");
+                    return accessCheck;
                 }
             }
 

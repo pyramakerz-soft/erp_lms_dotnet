@@ -20,11 +20,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public SectionController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public SectionController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +34,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee", "parent" },
-            pages: new[] { "Section", "Administrator" }
+            pages: new[] { "Section" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -66,7 +68,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Section", "Administrator" }
+            pages: new[] { "Section" }
         )]
         public async Task<IActionResult> GetAsyncByID(long id)
         {
@@ -100,7 +102,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpGet("BySchoolID/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Section", "Administrator" }
+            pages: new[] { "Section" }
         )]
         public async Task<IActionResult> GetAsyncBySchoolID(long id)
         {
@@ -134,7 +136,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Section", "Administrator" }
+            pages: new[] { "Section" }
         )]
         public async Task<IActionResult> Add(SectionAddDTO NewSection)
         {
@@ -185,7 +187,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Section", "Administrator" }
+            pages: new[] { "Section" }
         )]
         public IActionResult Edit(SectionEditDTO newSection)
         {
@@ -220,26 +222,17 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (section == null)
             {
                 return NotFound("there is no section with this id");
-            }
+            } 
+
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sections & Grade Levels");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Section", roleId, userId, section);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (section.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Sections & Grade Levels page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             mapper.Map(newSection, section);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -273,7 +266,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Section", "Administrator" }
+            pages: new[] { "Section" }
         )]
         public IActionResult Delete(long id)
         {
@@ -300,26 +293,17 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             if (section == null || section.IsDeleted == true)
             {
                 return NotFound("No Section with this ID");
-            }
+            } 
+
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Sections & Grade Levels");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Section", roleId, userId, section);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (section.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Sections & Grade Levels page doesn't exist");
+                    return accessCheck;
                 }
             }
+
             section.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             section.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);

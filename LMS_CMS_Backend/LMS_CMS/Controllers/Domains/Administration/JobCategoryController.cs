@@ -18,11 +18,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public JobCategoryController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public JobCategoryController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////
@@ -30,7 +32,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpGet]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Job Category", "Administrator" }
+       pages: new[] { "Job Category" }
        )]
         public async Task<IActionResult> GetAsync()
         {
@@ -54,7 +56,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-        pages: new[] { "Job Category", "Administrator" }
+        pages: new[] { "Job Category" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
@@ -76,7 +78,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpPost]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Job Category", "Administrator" }
+       pages: new[] { "Job Category" }
        )]
         public IActionResult Add(JobCategoryAddDto newCategory)
         {
@@ -117,10 +119,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
 
         [HttpPut]
         [Authorize_Endpoint_(
-        allowedTypes: new[] { "octa", "employee" },
-        allowEdit: 1,
-       pages: new[] { "Job Category", "Administrator" }
-    )]
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Job Category" }
+        )]
         public IActionResult Edit(JobCategoryGetDto newCategory)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -146,24 +148,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             {
                 return NotFound("There is no Job Category with this id");
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Job Category");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Job Category", roleId, userId, category);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (category.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Job Category page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -196,9 +187,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
 
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
-          allowedTypes: new[] { "octa", "employee" },
-          allowDelete: 1,
-       pages: new[] { "Job Category", "Administrator" }
+            allowedTypes: new[] { "octa", "employee" },
+            allowDelete: 1,
+            pages: new[] { "Job Category" }
          )]
         public IActionResult Delete(long id)
         {
@@ -231,21 +222,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Job Category");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Job Category", roleId, userId, category);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (category.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Job Category page doesn't exist");
+                    return accessCheck;
                 }
             }
 

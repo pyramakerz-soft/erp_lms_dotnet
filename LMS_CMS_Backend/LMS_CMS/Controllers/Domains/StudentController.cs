@@ -25,14 +25,15 @@ namespace LMS_CMS_PL.Controllers.Domains
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly UOW _Unit_Of_Work_Octa;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public StudentController(DbContextFactoryService dbContextFactory, IMapper mapper, UOW Unit_Of_Work)
+        public StudentController(DbContextFactoryService dbContextFactory, IMapper mapper, UOW Unit_Of_Work, CheckPageAccessService checkPageAccessService)
         {
 
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _Unit_Of_Work_Octa = Unit_Of_Work;
-
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
@@ -135,7 +136,7 @@ namespace LMS_CMS_PL.Controllers.Domains
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
           allowEdit: 1,
-          pages: new[] { "Accounting", "Student Edit Accounting" }
+          pages: new[] { "Student Edit Accounting" }
       )]
         public async Task<IActionResult> EditStudentAccountingAsync(AccountingStudentPutDTO newStudent)
         {
@@ -187,24 +188,13 @@ namespace LMS_CMS_PL.Controllers.Domains
                 }
 
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Student Edit Accounting");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Student Edit Accounting", roleId, userId, student);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (student.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Employee page doesn't exist");
+                    return accessCheck;
                 }
             }
 

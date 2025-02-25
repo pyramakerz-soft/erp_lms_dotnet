@@ -3,6 +3,7 @@ using LMS_CMS_BL.DTO.Administration;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.Administration;
+using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +18,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
     public class AcademicDegreeController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
-        IMapper mapper;
+        IMapper mapper; 
 
         public AcademicDegreeController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
@@ -30,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         [HttpGet]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Academic Degree", "Administrator" }
+       pages: new[] { "Academic Degree" }
        )]
         public async Task<IActionResult> GetAsync()
         {
@@ -50,9 +51,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         //////////////////////////////////////////////////////////////////////////////
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-     allowedTypes: new[] { "octa", "employee" },
-   pages: new[] { "Academic Degree", "Administrator" }
-     )]
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Academic Degree" }
+        )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -72,9 +73,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
 
         [HttpPost]
         [Authorize_Endpoint_(
-         allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Academic Degree", "Administrator" }
-       )]
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Academic Degree" }
+        )]
         public IActionResult Add(AcademicDegreeAddDTO newAcademicDegree)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -105,10 +106,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
 
         [HttpPut]
         [Authorize_Endpoint_(
-        allowedTypes: new[] { "octa", "employee" },
-        allowEdit: 1,
-       pages: new[] { "Academic Degree", "Administrator" }
-    )]
+            allowedTypes: new[] { "octa", "employee" },
+            allowEdit: 1,
+            pages: new[] { "Academic Degree" }
+        )]
         public IActionResult Edit(AcademicDegreeGetDTO newAcademicDegree)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -134,20 +135,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             {
                 return NotFound("There is no Academic Degree with this id");
             }
-
-            if (userTypeClaim == "employee")
-            {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Academic Degree");
-                if (page != null)
-                {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                }
-                else
-                {
-                    return BadRequest("Academic Degree page doesn't exist");
-                }
-            }
-
+              
             mapper.Map(newAcademicDegree, academicDegree);
 
             Unit_Of_Work.academicDegree_Repository.Update(academicDegree);
@@ -159,9 +147,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
 
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
-          allowedTypes: new[] { "octa", "employee" },
-          allowDelete: 1,
-       pages: new[] { "Academic Degree", "Administrator" }
+              allowedTypes: new[] { "octa", "employee" },
+              allowDelete: 1,
+              pages: new[] { "Academic Degree" }
          )]
         public IActionResult Delete(long id)
         {

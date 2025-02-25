@@ -22,11 +22,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public AccountingTreeChartController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public AccountingTreeChartController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         private async Task<List<AccountingTreeChart>> GetAllChildren(long parentId)
@@ -614,27 +616,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     return NotFound("No Link File with this Id");
                 }
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Accounting");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Accounting", roleId, userId, accountExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (accountExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Accounting page doesn't exist");
+                    return accessCheck;
                 }
             }
-
 
             bool isEndTypeDiff = false;
             bool isMotionTypeDiff = false;

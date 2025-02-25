@@ -21,20 +21,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly UOW _Unit_Of_Work_Octa;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-
-        public SupplierController(DbContextFactoryService dbContextFactory, IMapper mapper, UOW Unit_Of_Work)
+        public SupplierController(DbContextFactoryService dbContextFactory, IMapper mapper, UOW Unit_Of_Work, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
-            _Unit_Of_Work_Octa= Unit_Of_Work;
+            _Unit_Of_Work_Octa = Unit_Of_Work;
+            _checkPageAccessService = checkPageAccessService;
         }
 
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Supplier", "Accounting" }
+            pages: new[] { "Supplier" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -65,7 +66,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Supplier", "Accounting" }
+            pages: new[] { "Supplier" }
      )]
         public IActionResult Add(SupplierAddDTO NewSupplier)
         {
@@ -169,7 +170,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
         allowEdit: 1,
-        pages: new[] { "Supplier", "Accounting" }
+        pages: new[] { "Supplier" }
      )]
         public IActionResult Edit(SupplierGetDTO NewSupplier)
         {
@@ -178,6 +179,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -255,6 +258,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return BadRequest("There is no country with this id");
             }
 
+            if (userTypeClaim == "employee")
+            {
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Supplier", roleId, userId, supplier);
+                if (accessCheck != null)
+                {
+                    return accessCheck;
+                }
+            }
             mapper.Map(NewSupplier,supplier);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -286,7 +297,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
           allowDelete: 1,
-          pages: new[] { "Save", "Accounting" }
+          pages: new[] { "Supplier" }
       )]
         public IActionResult Delete(long id)
         {
@@ -313,25 +324,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             if (supplier == null)
             {
                 return BadRequest("there is no supplier with This id");
-            }
+            } 
 
             if (userTypeClaim == "employee")
             {
-                LMS_CMS_DAL.Models.Domains.Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Supplier");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Save", roleId, userId, supplier);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (supplier.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("supplier page doesn't exist");
+                    return accessCheck;
                 }
             }
 

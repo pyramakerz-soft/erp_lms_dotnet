@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace LMS_CMS_PL.Controllers.Domains.Accounting
 {
@@ -20,11 +21,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public FeesActivationController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public FeesActivationController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ////
@@ -32,7 +35,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Accounting", "Fees Activation" }
+       pages: new[] { "Fees Activation" }
    )]
         public async Task<IActionResult> GetAsync()
         {
@@ -98,7 +101,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
              allowedTypes: new[] { "octa", "employee" },
-             pages: new[] { "Fees Activation", "Accounting" }
+             pages: new[] { "Fees Activation" }
          )]
         public IActionResult Add(List<FeesActivationAdddDTO> newActivations)
         {
@@ -177,7 +180,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
           allowEdit: 1,
-          pages: new[] { "Fees Activation", "Accounting" }
+          pages: new[] { "Fees Activation" }
       )]
         public IActionResult Edit(FeesActivationGetDTO newActivation)
         {
@@ -235,23 +238,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 newActivation.FeeDiscountTypeID = null;
             }
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Fees Activation");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Fees Activation", roleId, userId, feesActivation);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (feesActivation.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Fees Activation page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -286,7 +279,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
           allowDelete: 1,
-          pages: new[] { "Fees Activation", "Accounting" }
+          pages: new[] { "Fees Activation" }
       )]
         public IActionResult Delete(long id)
         {
@@ -314,24 +307,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Fees Activation");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Fees Activation", roleId, userId, feesActivation);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (feesActivation.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Income page doesn't exist");
+                    return accessCheck;
                 }
             }
 

@@ -3,6 +3,7 @@ using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
+using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -20,11 +21,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public AccountingEntriesDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public AccountingEntriesDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////
@@ -32,7 +35,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("GetByMasterID/{id}")]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Accounting Entries Details", "Accounting" }
+           pages: new[] { "Accounting Entries Details" }
         )]
         public async Task<IActionResult> GetAsync(long id)
         {
@@ -153,7 +156,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Accounting Entries Details", "Accounting" }
+            pages: new[] { "Accounting Entries Details" }
         )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
@@ -249,7 +252,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Accounting Entries Details", "Accounting" }
+            pages: new[] { "Accounting Entries Details" }
         )]
         public IActionResult Add(AccountingEntriesDetailsAddDTO newDetails)
         {
@@ -479,7 +482,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Accounting Entries Details", "Accounting" }
+            pages: new[] { "Accounting Entries Details" }
         )]
         public IActionResult Edit(AccountingEntriesDetailsPutDTO newDetail)
         {
@@ -518,25 +521,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return BadRequest("there is no Accounting Tree Chart with this ID");
             }
-
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Accounting Entries Details");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Accounting Entries Details", roleId, userId, AccountingEntriesDetails);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (AccountingEntriesDetails.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Accounting Entries Details page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -742,7 +733,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Accounting Entries Details", "Accounting" }
+            pages: new[] { "Accounting Entries Details" }
         )]
         public IActionResult Delete(long id)
         {
@@ -771,24 +762,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Accounting Entries Details");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Accounting Entries Details", roleId, userId, AccountingEntriesDetails);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (AccountingEntriesDetails.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Accounting Entries Details page doesn't exist");
+                    return accessCheck;
                 }
             }
 

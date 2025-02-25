@@ -20,18 +20,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public InstallmentDeductionMasterController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public InstallmentDeductionMasterController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Installment Deduction", "Accounting" }
+            pages: new[] { "Installment Deduction" }
         )]
         public async Task<IActionResult> GetAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -79,7 +81,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Installment Deduction", "Accounting" }
+           pages: new[] { "Installment Deduction" }
        )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -110,7 +112,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Installment Deduction", "Accounting" }
+           pages: new[] { "Installment Deduction" }
          )]
         public IActionResult Add(InstallmentDeductionMasterAddDTO newMaster)
         {
@@ -167,7 +169,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Installment Deduction", "Accounting" }
+           pages: new[] { "Installment Deduction" }
        )]
         public IActionResult Edit(InstallmentDeductionMasterGetDTO newMaster)
         {
@@ -201,24 +203,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Installment Deduction");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Installment Deduction", roleId, userId, master);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (master.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("master page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -253,7 +244,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-           pages: new[] { "Installment Deduction", "Accounting" }
+           pages: new[] { "Installment Deduction" }
         )]
         public IActionResult Delete(long id)
         {
@@ -285,21 +276,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Installment Deduction");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Installment Deduction", roleId, userId, master);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (master.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Installment Deduction page doesn't exist");
+                    return accessCheck;
                 }
             }
 

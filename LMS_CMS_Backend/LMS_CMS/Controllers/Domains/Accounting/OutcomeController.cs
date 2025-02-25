@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace LMS_CMS_PL.Controllers.Domains.Accounting
 {
@@ -19,17 +20,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public OutcomeController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public OutcomeController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Outcome", "Accounting" }
+            pages: new[] { "Outcome" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -52,7 +55,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Outcome", "Accounting" }
+            pages: new[] { "Outcome" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -80,7 +83,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Outcome", "Accounting" }
+           pages: new[] { "Outcome" }
        )]
         public IActionResult Add(OutcomeAddDTO NewOutcome)
         {
@@ -146,7 +149,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Outcome", "Accounting" }
+           pages: new[] { "Outcome" }
        )]
         public IActionResult Edit(OutcomePutDTO EditedOutcome)
         {
@@ -197,24 +200,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     return BadRequest("Wrong Link File, it should be Outcome file link ");
                 }
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Outcome");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Outcome", roleId, userId, OutcomeExists);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (OutcomeExists.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Outcome page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -247,7 +239,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Outcome", "Accounting" }
+            pages: new[] { "Outcome" }
         )]
         public IActionResult Delete(long id)
         {
@@ -279,21 +271,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Outcome");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Outcome", roleId, userId, outcome);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (outcome.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Outcome page doesn't exist");
+                    return accessCheck;
                 }
             }
 

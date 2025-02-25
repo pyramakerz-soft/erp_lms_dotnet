@@ -19,17 +19,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public TuitionFeesTypeController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public TuitionFeesTypeController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Tuition Fees Type", "Accounting" }
+            pages: new[] { "Tuition Fees Type" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -52,7 +54,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Tuition Fees Type", "Accounting" }
+            pages: new[] { "Tuition Fees Type" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -80,7 +82,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Tuition Fees Type", "Accounting" }
+           pages: new[] { "Tuition Fees Type" }
         )]
         public IActionResult Add(TuitionFeesTypeAddDTO NewTuitionFeesType)
         {
@@ -146,7 +148,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Tuition Fees Type", "Accounting" }
+           pages: new[] { "Tuition Fees Type" }
        )]
         public IActionResult Edit(TuitionFeesTypePutDTO EditedTuitionFeesType)
         {
@@ -217,6 +219,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     return BadRequest("Tuition Fees Type page doesn't exist");
                 }
             }
+            if (userTypeClaim == "employee")
+            {
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Tuition Fees Type", roleId, userId, TuitionFeesTypeExists);
+                if (accessCheck != null)
+                {
+                    return accessCheck;
+                }
+            }
 
             mapper.Map(EditedTuitionFeesType, TuitionFeesTypeExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -247,7 +257,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Tuition Fees Type", "Accounting" }
+            pages: new[] { "Tuition Fees Type" }
         )]
         public IActionResult Delete(long id)
         {
@@ -276,24 +286,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Tuition Fees Type");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Tuition Fees Type", roleId, userId, tuitionFeesType);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (tuitionFeesType.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Tuition Fees Type page doesn't exist");
+                    return accessCheck;
                 }
             }
 

@@ -19,17 +19,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public InstallmentDeductionDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public InstallmentDeductionDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         [HttpGet]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Installment Deduction Details", "Accounting" }
+           pages: new[] { "Installment Deduction Details" }
        )]
         public async Task<IActionResult> GetAsync()
         {
@@ -54,7 +56,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("GetByMaster/{id}")]
         [Authorize_Endpoint_(
              allowedTypes: new[] { "octa", "employee" },
-             pages: new[] { "Installment Deduction Details", "Accounting" }
+             pages: new[] { "Installment Deduction Details" }
          )]
         public async Task<IActionResult> GetByMasterAsync(long id)
         {
@@ -79,7 +81,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Installment Deduction Details", "Accounting" }
+           pages: new[] { "Installment Deduction Details" }
          )]
         public IActionResult Add(InstallmentDeductionDetailsAddDTO NewDetails)
         {
@@ -135,7 +137,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Installment Deduction Details", "Accounting" }
+           pages: new[] { "Installment Deduction Details" }
        )]
         public IActionResult Edit(InstallmentDeductionDetailsGetDTO NewDetails)
         {
@@ -169,24 +171,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Installment Deduction Details");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Installment Deduction Details", roleId, userId, detail);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (detail.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("details page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -221,7 +212,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-           pages: new[] { "Installment Deduction Details", "Accounting" }
+           pages: new[] { "Installment Deduction Details" }
         )]
         public IActionResult Delete(long id)
         {
@@ -249,25 +240,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return NotFound("No detail with this ID");
             }
-
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Installment Deduction Details");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Installment Deduction Details", roleId, userId, detail);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (detail.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Installment Deduction Details page doesn't exist");
+                    return accessCheck;
                 }
             }
 

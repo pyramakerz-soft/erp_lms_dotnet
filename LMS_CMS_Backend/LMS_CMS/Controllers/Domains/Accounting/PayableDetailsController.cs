@@ -20,11 +20,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public PayableDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public PayableDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////
@@ -32,7 +34,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("GetByMasterID/{id}")]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Payable Details", "Accounting" }
+           pages: new[] { "Payable Details" }
         )]
         public async Task<IActionResult> GetAsync(long id)
         {
@@ -149,7 +151,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Payable Details", "Accounting" }
+            pages: new[] { "Payable Details" }
         )]
         public async Task<IActionResult> GetbyIdAsync(long id)
         {
@@ -245,7 +247,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Payable Details", "Accounting" }
+            pages: new[] { "Payable Details" }
         )]
         public IActionResult Add(PayableDetailsAddDTO newDetails)
         {
@@ -462,7 +464,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Payable Details", "Accounting" }
+            pages: new[] { "Payable Details" }
         )]
         public IActionResult Edit(PayableDetailsPutDTO newDetail)
         {
@@ -598,24 +600,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     return BadRequest("There is no Student with this ID in the database.");
                 }
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Payable Details");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Payable Details", roleId, userId, PayableDetails);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Edit_For_Others == false)
-                    {
-                        if (PayableDetails.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Payable Details page doesn't exist");
+                    return accessCheck;
                 }
             }
 
@@ -712,7 +703,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Payable Details", "Accounting" }
+            pages: new[] { "Payable Details" }
         )]
         public IActionResult Delete(long id)
         {
@@ -741,24 +732,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             {
                 return NotFound();
             }
-
+             
             if (userTypeClaim == "employee")
             {
-                Page page = Unit_Of_Work.page_Repository.First_Or_Default(page => page.en_name == "Payable Details");
-                if (page != null)
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Payable Details", roleId, userId, PayableDetails);
+                if (accessCheck != null)
                 {
-                    Role_Detailes roleDetails = Unit_Of_Work.role_Detailes_Repository.First_Or_Default(RD => RD.Page_ID == page.ID && RD.Role_ID == roleId);
-                    if (roleDetails != null && roleDetails.Allow_Delete_For_Others == false)
-                    {
-                        if (PayableDetails.InsertedByUserId != userId)
-                        {
-                            return Unauthorized();
-                        }
-                    }
-                }
-                else
-                {
-                    return BadRequest("Payable Details page doesn't exist");
+                    return accessCheck;
                 }
             }
 

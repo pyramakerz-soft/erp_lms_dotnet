@@ -3,6 +3,7 @@ using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -123,6 +124,9 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<InventorySubCategories> InventorySubCategories_Repository;
         GenericRepo<InventoryCategories> InventoryCategories_Repository;
         GenericRepo<InventoryFlags> InventoryFlags_Repository;
+        GenericRepo<HygieneType> HygieneType_Repository;
+        GenericRepo<Diagnosis> Diagnosis_Repository;
+        GenericRepo<Drug> Drug_Repository;
 
 
 
@@ -1317,6 +1321,42 @@ namespace LMS_CMS_BL.UOW
                     InventoryFlags_Repository = new GenericRepo<InventoryFlags>(db);
                 }
                 return InventoryFlags_Repository;
+            }
+        }
+
+        public GenericRepo<HygieneType> hygieneType_Repository
+        {
+            get
+            {
+                if (HygieneType_Repository == null)
+                {   
+                    HygieneType_Repository = new GenericRepo<HygieneType>(db);
+                }
+                return HygieneType_Repository;
+            }
+        }
+
+        public GenericRepo<Diagnosis> diagnosis_Repository
+        {
+            get
+            {
+                if (Diagnosis_Repository == null)
+                {
+                    Diagnosis_Repository = new GenericRepo<Diagnosis>(db);
+                }
+                return diagnosis_Repository;
+            }
+        }
+
+        public GenericRepo<Drug> drug_Repository
+        {
+            get
+            {
+                if (Drug_Repository == null)
+                {
+                    Drug_Repository = new GenericRepo<Drug>(db);
+                }
+                return drug_Repository;
             }
         }
 

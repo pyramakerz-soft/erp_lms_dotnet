@@ -1,0 +1,13 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LMS_CMS_DAL.Models.Domains.ClinicModule
+{
+    public class Drug : AuditableEntity
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Name is required.")]
+        public string Name { get; set; }
+    }
+}

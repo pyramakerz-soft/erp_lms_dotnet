@@ -320,6 +320,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     return NotFound("There Is No Bank With This Id");
                 }
             }
+            else
+            {
+                newSale.BankID = null;
+            }
 
             if (newSale.SaveID != 0 && newSale.SaveID != null)
             {
@@ -328,6 +332,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 {
                     return NotFound("There Is No Save With This Id");
                 }
+            }
+            else
+            {
+                newSale.SaveID = null;
             }
 
             InventoryMaster sale = Unit_Of_Work.inventoryMaster_Repository.First_Or_Default(s => s.ID == newSale.ID && s.IsDeleted != true);

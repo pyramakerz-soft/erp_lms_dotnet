@@ -100,11 +100,14 @@ import { ShopItemsAddEditComponent } from './Pages/Employee/Inventory/shop-items
 import { StoresComponent } from './Pages/Employee/Inventory/stores/stores.component';
 import { SalesComponent } from './Pages/Employee/Inventory/sales/sales.component';
 import { SalesItemComponent } from './Pages/Employee/Inventory/sales-item/sales-item.component';
+import { HygieneTypesComponent } from './Pages/Employee/Clinic/hygiene-types/hygiene-types.component';
+import { DiagnosisComponent } from './Pages/Employee/Clinic/diagnosis/diagnosis.component';
+import { DrugsComponent } from './Pages/Employee/Clinic/drugs/drugs.component';
 
 export const routes: Routes = [
-    { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
-    { path: "Octa/login", component: OctaLoginComponent, title: "login", canActivate:[noNavigateToLoginIfLoginGuard] },
-    { path: "SignUp", component: SignUpComponent, title: "SignUp", canActivate:[noNavigateToLoginIfLoginGuard] },
+    { path: "", component: LoginComponent, title: "Login", canActivate:[] },
+    { path: "Octa/login", component: OctaLoginComponent, title: "login", canActivate:[] },
+    { path: "SignUp", component: SignUpComponent, title: "SignUp", canActivate:[] },
 
     
     { 
@@ -113,6 +116,9 @@ export const routes: Routes = [
         title: "Employee Home", 
         canActivate:[navigateIfEmployeeGuard, noNavigateWithoutLoginGuard], 
         children: [
+            { path: "hy", component: HygieneTypesComponent, title: "Login" },
+            { path: "di", component: DiagnosisComponent, title: "Login" },
+            { path: "dr", component: DrugsComponent, title: "Login" },
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }, 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Students/:domainName/:busId", component: BusStudentComponent, title: "Bus Students", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]}, 

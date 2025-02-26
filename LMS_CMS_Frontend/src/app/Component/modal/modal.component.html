@@ -1,0 +1,28 @@
+<!-- Modal Overlay -->
+<div id="modal-overlay" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-1/2 relative">
+        <!-- Close Button -->
+        <button (click)="closeModal()" type="button"
+            class="absolute top-4 right-4 bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">
+            X
+        </button>
+
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!isEditMode" class="font-semibold text-2xl leading-9">{{ title }}</h1>
+            <h1 *ngIf="isEditMode" class="font-semibold text-2xl leading-9">Edit {{ title }}</h1>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="mt-6 mb-4 flex flex-wrap justify-between">
+            <ng-content></ng-content> <!-- Content will be projected here -->
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex justify-end">
+            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="onSave()">
+                Save
+            </button>
+        </div>
+    </div>
+</div>

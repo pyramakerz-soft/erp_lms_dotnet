@@ -94,7 +94,6 @@ export class SalesService {
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`);
-    console.log(sales)
     const formData = new FormData();
     formData.append('id', sales.id?.toString() || '');
     formData.append('invoiceNumber', sales.invoiceNumber?.toString() || '');

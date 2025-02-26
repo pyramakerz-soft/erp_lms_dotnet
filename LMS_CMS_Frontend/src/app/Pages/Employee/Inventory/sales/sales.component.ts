@@ -180,6 +180,7 @@ export class SalesComponent {
              }
            } 
          }
+         this.TableData=[]
        }
      )
    }

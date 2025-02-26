@@ -242,27 +242,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             await Unit_Of_Work.SaveChangesAsync();
 
 
-            ////Save InventoryDetails
-
-            //if (newData.InventoryDetailsArray != null && newData.InventoryDetailsArray.Any())
-            //{
-            //    foreach (var item in newData.InventoryDetailsArray)
-            //    {
-            //        if (item == null) continue;
-
-            //        InventoryDetails salesItem = mapper.Map<InventoryDetails>(item);
-            //        salesItem.InventoryMasterId = Master.ID;
-
-            //        salesItem.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            //        if (userTypeClaim == "octa")
-            //            salesItem.InsertedByOctaId = userId;
-            //        else if (userTypeClaim == "employee")
-            //            salesItem.InsertedByUserId = userId;
-
-            //        Unit_Of_Work.inventoryDetails_Repository.Add(salesItem);
-            //    }
-            //}
-
             await Unit_Of_Work.SaveChangesAsync();
 
             return Ok(Master.ID);

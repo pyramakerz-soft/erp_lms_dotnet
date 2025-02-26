@@ -214,10 +214,16 @@ export class SalesItemComponent {
     this.Item.barCode = this.ShopItem.barCode
   }
 
-  GetTableDataByID() {
-    this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
-      this.TableData = d;
-    })
+  async GetTableDataByID(): Promise<void> {
+    return new Promise((resolve) => {
+      this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
+        this.TableData = d;
+        resolve();
+      }, 
+      (error) => { 
+        this.TableData=[]
+      });
+    });
   }
 
   /////////////////////////////////////////////////////// CRUD
@@ -232,11 +238,9 @@ export class SalesItemComponent {
   }
   Save() {
     this.Data.flagId = 1;
-    console.log("data", this.Data)
     if (this.isFormValid()) {
       if (this.mode == "Create") {
         this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
-          console.log(d)
           this.MasterId = d
           this.router.navigateByUrl(`Employee/Sales`)
         })
@@ -253,8 +257,23 @@ export class SalesItemComponent {
     this.editingRowId = row.id;
   }
 
+  handleCashChange(isChecked: boolean): void {
+    if (!isChecked) {
+      this.Data.cashAmount = 0;
+      this.Data.saveID = 0; // Optional, if you want to clear the save selection too
+    }
+    this.TotalandRemainingCalculate();
+  }
+  
+  handleVisaChange(isChecked: boolean): void {
+    if (!isChecked) {
+      this.Data.visaAmount = 0;
+      this.Data.bankID = 0; // Optional, if you want to clear the bank selection too
+    }
+    this.TotalandRemainingCalculate();
+  }
+
   Delete(row: SalesItem) {
-    console.log(row)
     if (this.mode == 'Edit') {
       Swal.fire({
         title: 'Are you sure you want to delete this Sales Item?',
@@ -310,7 +329,6 @@ export class SalesItemComponent {
 
   async SaveRow() {
     this.Item.shopItemID = this.ShopItem.id;
-    
     if (this.mode == 'Create') {
       if (!this.Data.inventoryDetails) {
         this.Data.inventoryDetails = [];
@@ -318,19 +336,14 @@ export class SalesItemComponent {
       this.Data.inventoryDetails.push(this.Item);
       this.TotalandRemainingCalculate();
     }
-  
     if (this.mode == 'Edit') {
       this.Item.inventoryMasterId = this.MasterId;
       this.salesItemServ.Add(this.Item, this.DomainName).subscribe(async (d) => {
         await this.GetTableDataByID(); 
-        console.log('before await', this.Data);
         await this.TotalandRemainingCalculate(); 
-        console.log('after await', this.Data);
-  
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {});
       });
     }
-  
     this.IsOpenToAdd = false;
     this.Item = new SalesItem();
     this.editingRowId = null;
@@ -350,7 +363,7 @@ export class SalesItemComponent {
       this.TotalandRemainingCalculate()
     } else if (this.mode == 'Edit') {
       this.salesItemServ.Edit(row, this.DomainName).subscribe(async (d) => {
-        this.GetTableDataByID();
+        await this.GetTableDataByID();
         await this.TotalandRemainingCalculate()
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
         })
@@ -373,7 +386,6 @@ export class SalesItemComponent {
   }
 
   openFile(file: any) {  // open image if it file or url 
-    console.log(file);
     if (typeof file === 'string') {
       window.open(file, '_blank');
     } else if (file instanceof File) {
@@ -390,7 +402,7 @@ export class SalesItemComponent {
     await this.TotalandRemainingCalculate()
     if (this.mode == 'Create') {
       if (row == null) {
-        this.Item.totalPrice = this.Item.quantity * this.Item.price
+        this.Item.totalPrice = +this.Item.quantity * this.Item.price
         this.Data.total = +this.Data.total + +this.Item.totalPrice
         this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount)
       }
@@ -401,16 +413,14 @@ export class SalesItemComponent {
     }
     else if (this.mode == 'Edit') {
       if (row == null) {
-        console.log(this.Item.totalPrice, this.Item.quantity, this.Item.price)
         this.Item.totalPrice = this.Item.quantity * this.Item.price
         this.Data.total = +this.Data.total + +this.Item.totalPrice
         this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount)
-        console.log(this.Item.totalPrice, this.Item.quantity, this.Item.price)
       }
       else {
         row.totalPrice = row.quantity * row.price
         this.TotalandRemainingCalculate()
-      }
+       }
     }
   }
 
@@ -426,7 +436,6 @@ export class SalesItemComponent {
         this.Data.visaAmount = this.Data.visaAmount || 0;
         this.Data.total = this.TableData.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
         this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
-        console.log('mm',this.Data)
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
         })
       }
@@ -454,7 +463,6 @@ export class SalesItemComponent {
         }
       }
     }
-    console.log(this.Data.inventoryDetails, isValid)
     if (this.mode == 'Create' && this.Data.inventoryDetails.length == 0) {
       Swal.fire({
         icon: 'warning',

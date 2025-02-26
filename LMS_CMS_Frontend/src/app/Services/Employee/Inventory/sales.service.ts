@@ -58,6 +58,7 @@ export class SalesService {
     formData.append('cashAmount', sales.cashAmount.toString());
     formData.append('visaAmount', sales.visaAmount.toString());
     formData.append('remaining', sales.remaining.toString());
+    formData.append('total', sales.total.toString());
     formData.append('notes', sales.notes);
     formData.append('storeID', sales.storeID.toString());
     formData.append('flagId', sales.flagId.toString());
@@ -103,6 +104,7 @@ export class SalesService {
     formData.append('cashAmount', sales.cashAmount?.toString() || '0');
     formData.append('visaAmount', sales.visaAmount?.toString() || '0');
     formData.append('remaining', sales.remaining?.toString() || '0');
+    formData.append('total', sales.total.toString());
     formData.append('notes', sales.notes || '');
     formData.append('storeID', sales.storeID?.toString() || '0');
     formData.append('flagId', sales.flagId?.toString() || '0');

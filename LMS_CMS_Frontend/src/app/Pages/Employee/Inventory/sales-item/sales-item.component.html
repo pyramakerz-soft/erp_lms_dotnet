@@ -22,11 +22,13 @@
     <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2" for="store">Store</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Store"
-            [(ngModel)]="Data.storeID">
+            (ngModelChange)=" onInputValueChange({ field: 'storeID', value: $event })" [(ngModel)]="Data.storeID">
             <option [value]=0 disabled selected hidden>Choose Store</option>
             <option *ngFor="let s of Stores" [value]="s.id">{{ s.name }}</option>
             <option *ngIf="Stores.length === 0" disabled selected>No Data Found</option>
         </select>
+        <span *ngIf="validationErrors['storeID']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["storeID"]}}</span>
     </div>
     <div class="flex flex-col mb-4 w-[24%]">
         <label class="mb-2 primaryTxt" for="name">Invoice Number</label>
@@ -38,18 +40,23 @@
     <div class="flex flex-col mb-4 w-[24%]">
         <label class="mb-2 primaryTxt" for="name">Date</label>
         <input id="name" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter Date" [(ngModel)]="Data.date" />
+            (ngModelChange)=" onInputValueChange({ field: 'date', value: $event })" placeholder="Enter Date"
+            [(ngModel)]="Data.date" />
+        <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["date"]}}</span>
     </div>
 
 
     <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2" for="student">Students</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student"
-            [(ngModel)]="Data.studentID">
+            (ngModelChange)=" onInputValueChange({ field: 'studentID', value: $event })" [(ngModel)]="Data.studentID">
             <option [value]=0 disabled selected hidden>Choose Student</option>
             <option *ngFor="let stu of students" [value]="stu.id">{{ stu.user_Name }}</option>
             <option *ngIf="students.length === 0" disabled selected>No Data Found</option>
         </select>
+        <span *ngIf="validationErrors['studentID']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["studentID"]}}</span>
     </div>
     <div class="flex justify-start w-full mb-4 space-x-5">
         <div class="flex w-[8%] space-x-5 items-center mb-4">
@@ -201,35 +208,31 @@
 
 </div>
 
-<div  class="flex justify-end">
+<div class="flex justify-end">
     <button class="secondaryTxt secondaryBorder px-1 py-2 rounded-lg flex items-center space-x-1" (click)="AddDetail()">
         <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
         <p>Add</p>
     </button>
 </div>
 
-<div *ngIf="IsOpenToAdd==true" class="flex justify-start space-x-5"> 
+<div *ngIf="IsOpenToAdd==true" class="flex justify-start space-x-5">
     <div class="w-[30%] bg-[#F7F7F7] flex flex-col space-x-3 rounded-[16px] py-3">
         <h1 class="font-semibold text-2xl leading-9 ml-4">Categories</h1>
         <div class="flex justify-start space-x-2 overflow-y-auto max-h-60">
-          <div *ngFor="let c of Categories; let i = index">
-            <p 
-              (click)="selectCategory(c.id)" 
-              [class.secondaryBg]="SelectedCategoryId === c.id" 
-              [class.text-white]="SelectedCategoryId === c.id"
-              class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer">
-              {{c.name}}
-            </p>
-          </div>
+            <div *ngFor="let c of Categories; let i = index">
+                <p (click)="selectCategory(c.id)" [class.secondaryBg]="SelectedCategoryId === c.id"
+                    [class.text-white]="SelectedCategoryId === c.id"
+                    class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer">
+                    {{c.name}}
+                </p>
+            </div>
         </div>
-      </div>
+    </div>
     <div class="w-[30%] bg-[#F7F7F7] flex flex-col space-x-3 rounded-[16px] py-3">
         <h1 class="font-semibold text-2xl leading-9 ml-2">Sub_Categories</h1>
         <div class="flex justify-start space-x-2 overflow-y-auto max-h-60">
             <div *ngFor="let sc of subCategories; let i = index">
-                <p 
-                    (click)="selectSubCategory(sc.id)" 
-                    [class.secondaryBg]="SelectedSubCategoryId === sc.id"
+                <p (click)="selectSubCategory(sc.id)" [class.secondaryBg]="SelectedSubCategoryId === sc.id"
                     [class.text-white]="SelectedSubCategoryId === sc.id"
                     class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer">
                     {{sc.name}}
@@ -241,18 +244,16 @@
         <h1 class="font-semibold text-2xl leading-9 ml-2">Items</h1>
         <div class="flex justify-start space-x-2 overflow-y-auto max-h-60">
             <div *ngFor="let item of ShopItems; let i = index">
-                <p 
-                    (click)="selectShopItem(item)" 
-                    [class.secondaryBg]="SelectedSopItem === item"  
-                    [class.text-white]="SelectedSopItem === item"
-                    class="bg-[#FFFFFF] p-2 rounded-[16px]">{{item.enName}}</p>
+                <p (click)="selectShopItem(item)" [class.secondaryBg]="SelectedSopItem === item"
+                    [class.text-white]="SelectedSopItem === item" class="bg-[#FFFFFF] p-2 rounded-[16px]">
+                    {{item.enName}}</p>
             </div>
         </div>
     </div>
 </div>
 
 
-<div >
+<div>
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
         <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
             <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
@@ -276,9 +277,6 @@
                         Total Price
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Amount
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Notes
                     </th>
                     <th *ngIf="mode=='Edit'"
@@ -289,7 +287,14 @@
             </thead>
             <tbody>
                 <!-- No Data Row -->
-                <tr *ngIf="Data.inventoryDetails.length === 0 && IsOpenToAdd==false">
+                <tr *ngIf="(Data.inventoryDetails?.length === 0) && !IsOpenToAdd && mode === 'Create'">
+                    <td colspan="11"
+                        class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                        No Data Found
+                    </td>
+                </tr>
+
+                <tr *ngIf="(TableData?.length === 0) && !IsOpenToAdd && mode === 'Edit'">
                     <td colspan="11"
                         class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                         No Data Found
@@ -297,7 +302,7 @@
                 </tr>
 
                 <!-- Data Rows -->
-                <tr *ngFor="let row of Data.inventoryDetails; let i = index"
+                <tr *ngFor="let row of (mode === 'Create' ? Data.inventoryDetails : TableData) || []; let i = index"
                     [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
                     class="border-t border-gray-300 text-xs md:text-sm">
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
@@ -334,13 +339,6 @@
                         <ng-template #textModetotalPrice>{{ row.totalPrice }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <ng-container *ngIf="editingRowId === row.id; else textModeamount">
-                            <input [(ngModel)]="row.amount" type="amount"
-                                class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                        </ng-container>
-                        <ng-template #textModeamount>{{ row.amount }}</ng-template>
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <ng-container *ngIf="editingRowId === row.id; else textModenotes">
                             <input [(ngModel)]="row.notes" type="notes"
                                 class="w-full border border-gray-300 px-2 py-1 rounded-md">
@@ -373,19 +371,19 @@
                         {{ShopItem.enName}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="Item.quantity" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        <input [(ngModel)]="Item.quantity" 
+                               (ngModelChange)="CalculateTotalPrice(Item.quantity)"
+                               class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                      </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        {{ShopItem.salesPrice}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="Item.price" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        <!-- <input [(ngModel)]="Item.totalPrice" class="w-full border border-gray-300 px-2 py-1 rounded-md"> -->
+                        {{Item.totalPrice}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input  [(ngModel)]="Item.totalPrice" class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input  [(ngModel)]="Item.amount" class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input  [(ngModel)]="Item.notes" class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                        <input [(ngModel)]="Item.notes" class="w-full border border-gray-300 px-2 py-1 rounded-md">
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">

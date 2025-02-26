@@ -16,7 +16,6 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public int Quantity { get; set; }
         public float Price { get; set; }
         public float TotalPrice { get; set; }
-        public float Amount { get; set; }
         public string Notes { get; set; }
 
         [ForeignKey("ShopItem")]

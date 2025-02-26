@@ -4,6 +4,7 @@ using LMS_CMS_BL.DTO.Accounting;
 using LMS_CMS_BL.DTO.Administration;
 
 using LMS_CMS_BL.DTO.Bus;
+using LMS_CMS_BL.DTO.Clinic;
 using LMS_CMS_BL.DTO.Inventory;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Octa;
@@ -13,6 +14,7 @@ using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -604,6 +606,10 @@ namespace LMS_CMS_BL.Config
             CreateMap<InventoryDetailsAddDTO, InventoryDetails>();
 
             CreateMap<Gender, GenderGetDTO>();
+
+            CreateMap<HygieneType, HygieneTypeDto>().ReverseMap();
+            CreateMap<Diagnosis, DiagnosisDto>().ReverseMap();
+            CreateMap<Drug, DrugDto>().ReverseMap();
         }
     } 
 }

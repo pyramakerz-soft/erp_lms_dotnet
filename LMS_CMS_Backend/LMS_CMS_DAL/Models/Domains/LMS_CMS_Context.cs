@@ -1,6 +1,7 @@
 ﻿using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -111,6 +112,10 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<InventoryDetails> InventoryDetails { get; set; }
         public DbSet<InventoryMaster> InventoryMaster { get; set; }
         public DbSet<InventoryFlags> InventoryFlags { get; set; }
+
+        public DbSet<HygieneType> HygieneTypes { get; set; }
+        public DbSet<Diagnosis> Diagnoses { get; set; }
+        public DbSet<Drug> Drugs { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)

@@ -19,7 +19,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
                 (81, 'Inventory Sub Categories', N'فئات المخزون الفرعية', 77, 0),
                 (82, 'Stores', N'المتاجر', 77, 1),
                 (83, 'Shop', N'المتجر', 77, 1),
-                (84, 'Shop Item', N'عنصر المتجر', 77, 0);
+                (84, 'Shop Item', N'عنصر المتجر', 77, 0),
             ");
         }
 

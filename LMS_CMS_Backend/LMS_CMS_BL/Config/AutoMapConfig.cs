@@ -611,6 +611,8 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<Gender, GenderGetDTO>();
 
+            CreateMap<InventoryFlags, InventoryFlagGetDTO>();
+
             CreateMap<HygieneType, HygieneTypeDto>().ReverseMap();
             CreateMap<Diagnosis, DiagnosisDto>().ReverseMap();
             CreateMap<Drug, DrugDto>().ReverseMap();

@@ -44,7 +44,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 return NotFound();
             }
 
-            Cart cart = null;
+            long cartID = 0;
 
             for (int i = 0; i < carts.Count; i++)
             {
@@ -53,17 +53,17 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
                 if (order == null)
                 {
-                    cart = carts[i];
+                    cartID = carts[i].ID;
                 }
             }
 
-            if (cart == null)
+            if (cartID == 0)
             {
                 return NotFound();
             }
 
             List<Cart_ShopItem> cart_ShopItem = await Unit_Of_Work.cart_ShopItem_Repository.Select_All_With_IncludesById<Cart_ShopItem>(
-                    c => c.IsDeleted != true && c.CartID == cart.ID,
+                    c => c.IsDeleted != true && c.CartID == cartID,
                     query => query.Include(store => store.Cart),
                     query => query.Include(store => store.ShopItem),
                     query => query.Include(store => store.ShopItemColor),
@@ -82,7 +82,15 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 } 
             }
 
-            return Ok();
+            Cart cart = await Unit_Of_Work.cart_Repository.FindByIncludesAsync(
+                c => c.ID == cartID, 
+                query => query.Include(c => c.PromoCode)
+                );
+
+            CartGetDTO cartGetDTO = mapper.Map<CartGetDTO>(cart);
+            cartGetDTO.Cart_ShopItems = cart_ShopItemGetDTO;
+
+            return Ok(cartGetDTO);
         }
 
 

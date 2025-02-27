@@ -1,4 +1,4 @@
-export class SalesItem {
+export class InventoryDetails {
     constructor(
         public id: number = 0,
         public barCode: string = '',

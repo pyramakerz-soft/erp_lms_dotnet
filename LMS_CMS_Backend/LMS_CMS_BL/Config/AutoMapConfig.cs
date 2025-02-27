@@ -570,6 +570,10 @@ namespace LMS_CMS_BL.Config
             CreateMap<InventoryCategories, InventoryCategoriesGetDto>();
             CreateMap<InventoryCategoriesAddDTO, InventoryCategories>();
             CreateMap<InventoryCategoriesPutDTO, InventoryCategories>();
+            CreateMap<StoreCategories, InventoryCategoriesGetDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.InventoryCategories.Name))
+                .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.InventoryCategories.ID));
+
 
             CreateMap<InventorySubCategories, InventorySubCategoriesGetDTO>()
                 .ForMember(dest => dest.InventoryCategoriesName, opt => opt.MapFrom(src => src.InventoryCategories.Name));
@@ -596,7 +600,11 @@ namespace LMS_CMS_BL.Config
             CreateMap<InventoryMaster, InventoryMasterGetDTO>()
                  .ForMember(dest => dest.SaveName, opt => opt.MapFrom(src => src.Save != null ? src.Save.Name : null))
                  .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.Bank != null ? src.Bank.Name : null))
-                 .ForMember(dest => dest.FlagValue, opt => opt.MapFrom(src =>  src.InventoryFlags.FlagValue ))
+                 .ForMember(dest => dest.FlagArName, opt => opt.MapFrom(src => src.InventoryFlags.arName))
+                 .ForMember(dest => dest.FlagEnName, opt => opt.MapFrom(src => src.InventoryFlags.enName))
+                 .ForMember(dest => dest.FlagArTitle, opt => opt.MapFrom(src => src.InventoryFlags.ar_Title))
+                 .ForMember(dest => dest.FlagEnTitle, opt => opt.MapFrom(src => src.InventoryFlags.en_Title))
+                 .ForMember(dest => dest.FlagValue, opt => opt.MapFrom(src => src.InventoryFlags.FlagValue))
                  .ForMember(dest => dest.ItemInOut, opt => opt.MapFrom(src => src.InventoryFlags.ItemInOut ))
                  .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store != null ? src.Store.Name : null))
                  .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student != null ? src.Student.User_Name : null));

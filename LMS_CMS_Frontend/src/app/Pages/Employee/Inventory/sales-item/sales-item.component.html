@@ -1,4 +1,4 @@
-<div class="flex justify-between items-center">
+<!-- <div class="flex justify-between items-center">
     <div class="flex justify-between items-center space-x-5">
         <i class="fa-solid fa-chevron-left" (click)="moveToMaster()"></i>
         <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">
@@ -139,7 +139,6 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
                         <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
                             {{ img.split('/').pop() }}
                         </p>
@@ -149,7 +148,6 @@
                     </button>
                 </div>
                 <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
                 <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
                     Click to View
                 </p>
@@ -163,7 +161,6 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
                         <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
                             {{ img.name }}
                         </p>
@@ -173,7 +170,6 @@
                     </button>
                 </div>
                 <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
                 <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
                     Click to View
                 </p>
@@ -187,7 +183,6 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
                         <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
                             {{ img.name }}
                         </p>
@@ -197,7 +192,6 @@
                     </button>
                 </div>
                 <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
                 <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
                     Click to View
                 </p>
@@ -286,7 +280,6 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- No Data Row -->
                 <tr *ngIf="(Data.inventoryDetails?.length === 0) && !IsOpenToAdd && mode === 'Create'">
                     <td colspan="11"
                         class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
@@ -301,7 +294,6 @@
                     </td>
                 </tr>
 
-                <!-- Data Rows -->
                 <tr *ngFor="let row of (mode === 'Create' ? Data.inventoryDetails : TableData) || []; let i = index"
                     [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
                     class="border-t border-gray-300 text-xs md:text-sm">
@@ -348,7 +340,6 @@
                         </div>
                     </td>
                 </tr>
-                <!-- Add Row -->
                 <tr *ngIf="IsOpenToAdd==true && SelectedSopItem !=null" class="border-t border-gray-300 text-xs md:text-sm bg-[#F7F7F7]">
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         {{Item.barCode}}
@@ -386,4 +377,4 @@
             </tbody>
         </table>
     </div>
-</div>
+</div> -->

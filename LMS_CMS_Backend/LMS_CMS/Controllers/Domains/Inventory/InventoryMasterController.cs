@@ -78,7 +78,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
             };
 
-            return Ok(new { Data = DTO, Pagination = paginationMetadata , inventoryFlag= Flagdto });
+            return Ok(new { Data = DTO, Pagination = paginationMetadata , inventoryFlag=Flagdto });
         }
 
 

@@ -5,16 +5,16 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SearchComponent } from '../../../../Component/search/search.component';
-import { Sales } from '../../../../Models/Inventory/sales';
+import { InventoryMaster } from '../../../../Models/Inventory/InventoryMaster';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
 import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.service';
 import { DomainService } from '../../../../Services/Employee/domain.service';
-import { SalesService } from '../../../../Services/Employee/Inventory/sales.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { InventoryFlag } from '../../../../Models/Inventory/inventory-flag';
+import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
 
 @Component({
   selector: 'app-inventory-master',
@@ -31,7 +31,7 @@ export class InventoryMasterComponent {
    AllowEditForOthers: boolean = false;
    AllowDeleteForOthers: boolean = false;
  
-   TableData: Sales[] = [];
+   TableData: InventoryMaster[] = [];
  
    DomainName: string = '';
    UserID: number = 0;
@@ -63,7 +63,7 @@ export class InventoryMasterComponent {
      public DomainServ: DomainService,
      public EditDeleteServ: DeleteEditPermissionService,
      public ApiServ: ApiService,
-     public salesServ:SalesService 
+     public salesServ:InventoryMasterService 
    ) {}
    ngOnInit() {
      this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -88,7 +88,7 @@ export class InventoryMasterComponent {
    }
    Create() {
      this.mode = 'Create';
-     this.router.navigateByUrl(`Employee/Sales Item`)
+     this.router.navigateByUrl(`Employee/Sales Item/${this.FlagId}`)
    }
  
    Delete(id: number) {
@@ -109,8 +109,8 @@ export class InventoryMasterComponent {
      });
    }
  
-   Edit(row: Sales) {
-     this.router.navigateByUrl(`Employee/Sales Item/Edit/${row.id}`)
+   Edit(row: InventoryMaster) {
+     this.router.navigateByUrl(`Employee/Sales Item/Edit/${row.flagId}/${row.id}`)
    }
  
    IsAllowDelete(InsertedByID: number) {

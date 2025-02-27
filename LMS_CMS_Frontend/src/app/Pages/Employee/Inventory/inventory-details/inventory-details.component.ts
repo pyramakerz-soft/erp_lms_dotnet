@@ -7,8 +7,8 @@ import { SearchComponent } from '../../../../Component/search/search.component';
 import { Bank } from '../../../../Models/Accounting/bank';
 import { Saves } from '../../../../Models/Accounting/saves';
 import { Category } from '../../../../Models/Inventory/category';
-import { Sales } from '../../../../Models/Inventory/sales';
-import { SalesItem } from '../../../../Models/Inventory/sales-item';
+import { InventoryMaster } from '../../../../Models/Inventory/InventoryMaster';
+import { InventoryDetails } from '../../../../Models/Inventory/InventoryDetails';
 import { ShopItem } from '../../../../Models/Inventory/shop-item';
 import { Store } from '../../../../Models/Inventory/store';
 import { SubCategory } from '../../../../Models/Inventory/sub-category';
@@ -23,13 +23,13 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { EmployeeService } from '../../../../Services/Employee/employee.service';
 import { InventoryCategoryService } from '../../../../Services/Employee/Inventory/inventory-category.service';
 import { InventorySubCategoriesService } from '../../../../Services/Employee/Inventory/inventory-sub-categories.service';
-import { SalesItemService } from '../../../../Services/Employee/Inventory/sales-item.service';
-import { SalesService } from '../../../../Services/Employee/Inventory/sales.service';
 import { ShopItemService } from '../../../../Services/Employee/Inventory/shop-item.service';
 import { StoresService } from '../../../../Services/Employee/Inventory/stores.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { StudentService } from '../../../../Services/student.service';
+import { InventoryDetailsService } from '../../../../Services/Employee/Inventory/inventory-details.service';
+import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
 
 @Component({
   selector: 'app-inventory-details',
@@ -47,8 +47,8 @@ export class InventoryDetailsComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  Data: Sales = new Sales();
-
+  Data: InventoryMaster = new InventoryMaster();
+  FlagId:number=0
   DomainName: string = '';
   UserID: number = 0;
 
@@ -71,12 +71,12 @@ export class InventoryDetailsComponent {
   SelectedSubCategoryId: number | null = null;
   SelectedSopItem: ShopItem | null = null;
 
-  TableData: SalesItem[] = []
-  Item: SalesItem = new SalesItem()
+  TableData: InventoryDetails[] = []
+  Item: InventoryDetails = new InventoryDetails()
   ShopItem: ShopItem = new ShopItem()
   MasterId: number = 0;
   editingRowId: any = 0;
-  validationErrors: { [key in keyof Sales]?: string } = {};
+  validationErrors: { [key in keyof InventoryMaster]?: string } = {};
 
   IsOpenToAdd: boolean = false
 
@@ -91,8 +91,8 @@ export class InventoryDetailsComponent {
     public ApiServ: ApiService,
     public EmployeeServ: EmployeeService,
     public StudentServ: StudentService,
-    public salesItemServ: SalesItemService,
-    public salesServ: SalesService,
+    public salesItemServ: InventoryDetailsService,
+    public salesServ: InventoryMasterService,
     public storeServ: StoresService,
     public SaveServ: SaveService,
     public bankServ: BankService,
@@ -109,7 +109,9 @@ export class InventoryDetailsComponent {
     });
 
     this.MasterId = Number(this.activeRoute.snapshot.paramMap.get('id'))
-
+    this.FlagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
+    this.Data.flagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
+    console.log("dd",this.FlagId)
     await this.GetAllStudents()
     await this.GetAllStores()
     await this.GetAllSaves()
@@ -166,12 +168,14 @@ export class InventoryDetailsComponent {
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d
+      console.log(d)
     })
   }
 
   GetCategories() {
-    this.CategoriesServ.Get(this.DomainName).subscribe((d) => {
+    this.CategoriesServ.GetByStoreId(this.DomainName , this.Data.storeID).subscribe((d) => {
       this.Categories = d
+      console.log(d)
     })
   }
 
@@ -228,16 +232,25 @@ export class InventoryDetailsComponent {
 
   /////////////////////////////////////////////////////// CRUD
   AddDetail() {
-    this.SelectedCategoryId = null;
-    this.SelectedSubCategoryId = null;
-    this.SelectedSopItem = null;
-    this.IsOpenToAdd = true;
-    this.Item = new SalesItem()
-    this.ShopItem = new ShopItem()
-    this.GetCategories()
+    if(this.Data.storeID != 0){
+      this.SelectedCategoryId = null;
+      this.SelectedSubCategoryId = null;
+      this.SelectedSopItem = null;
+      this.IsOpenToAdd = true;
+      this.Item = new InventoryDetails()
+      this.ShopItem = new ShopItem()
+      this.GetCategories()
+    }
+    else{
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'You Should Choose Store First',
+        confirmButtonColor: '#FF7519',
+      });
+    }
   }
   Save() {
-    this.Data.flagId = 1;
     if (this.isFormValid()) {
       if (this.mode == "Create") {
         this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
@@ -253,7 +266,7 @@ export class InventoryDetailsComponent {
     }
   }
 
-  Edit(row: SalesItem) {
+  Edit(row: InventoryDetails) {
     this.editingRowId = row.id;
   }
 
@@ -273,7 +286,7 @@ export class InventoryDetailsComponent {
     this.TotalandRemainingCalculate();
   }
 
-  Delete(row: SalesItem) {
+  Delete(row: InventoryDetails) {
     if (this.mode == 'Edit') {
       Swal.fire({
         title: 'Are you sure you want to delete this Sales Item?',
@@ -345,7 +358,7 @@ export class InventoryDetailsComponent {
       });
     }
     this.IsOpenToAdd = false;
-    this.Item = new SalesItem();
+    this.Item = new InventoryDetails();
     this.editingRowId = null;
     this.ShopItem = new ShopItem();
   }
@@ -355,7 +368,7 @@ export class InventoryDetailsComponent {
     this.TotalandRemainingCalculate()
   }
 
-  SaveEdit(row: SalesItem) {
+  SaveEdit(row: InventoryDetails) {
     this.editingRowId = null;
     row.totalPrice = row.quantity * row.price
     this.Item.shopItemID = this.ShopItem.id
@@ -398,7 +411,7 @@ export class InventoryDetailsComponent {
   }
 
   ////////////////////// Calculate Total and Remaining 
-  async CalculateTotalPrice(row?: SalesItem) {
+  async CalculateTotalPrice(row?: InventoryDetails) {
     await this.TotalandRemainingCalculate()
     if (this.mode == 'Create') {
       if (row == null) {
@@ -448,7 +461,7 @@ export class InventoryDetailsComponent {
     let isValid = true;
     for (const key in this.Data) {
       if (this.Data.hasOwnProperty(key)) {
-        const field = key as keyof Sales;
+        const field = key as keyof InventoryMaster;
         if (!this.Data[field]) {
           if (
             field == 'studentID' ||
@@ -483,11 +496,11 @@ export class InventoryDetailsComponent {
     }
     return isValid;
   }
-  capitalizeField(field: keyof Sales): string {
+  capitalizeField(field: keyof InventoryMaster): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
-  onInputValueChange(event: { field: keyof Sales; value: any }) {
+  onInputValueChange(event: { field: keyof InventoryMaster; value: any }) {
     const { field, value } = event;
     (this.Data as any)[field] = value;
     if (value) {

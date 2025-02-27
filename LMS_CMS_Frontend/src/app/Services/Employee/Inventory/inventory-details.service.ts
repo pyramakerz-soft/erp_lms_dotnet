@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { SalesItem } from '../../../Models/Inventory/sales-item';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { InventoryDetails } from '../../../Models/Inventory/InventoryDetails';
 import { Store } from '../../../Models/Inventory/store';
 import { ApiService } from '../../api.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SalesItemService {
+export class InventoryDetailsService {
 
   baseUrl = ""
   header = ""
@@ -26,7 +26,7 @@ export class SalesItemService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-      return this.http.get<SalesItem[]>(`${this.baseUrl}/InventoryDetails/BySaleId/${id}`, { headers });
+      return this.http.get<InventoryDetails[]>(`${this.baseUrl}/InventoryDetails/BySaleId/${id}`, { headers });
   }
 
   GetById(id: number, DomainName: string) {
@@ -38,10 +38,10 @@ export class SalesItemService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<SalesItem>(`${this.baseUrl}/InventoryDetails/${id}`, { headers })
+    return this.http.get<InventoryDetails>(`${this.baseUrl}/InventoryDetails/${id}`, { headers })
   }
 
-  Add(sales: SalesItem, DomainName: string): Observable<any> {
+  Add(Detail: InventoryDetails, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -51,13 +51,13 @@ export class SalesItemService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
 
-    return this.http.post<any>(`${this.baseUrl}/InventoryDetails`, sales, {
+    return this.http.post<any>(`${this.baseUrl}/InventoryDetails`, Detail, {
       headers: headers,
       responseType: 'text' as 'json'
     });
   }
 
-  Edit(sales: SalesItem, DomainName: string): Observable<Store> {
+  Edit(Detail: InventoryDetails, DomainName: string): Observable<Store> {
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -66,7 +66,7 @@ export class SalesItemService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.put<Store>(`${this.baseUrl}/InventoryDetails`, sales, { headers });
+    return this.http.put<Store>(`${this.baseUrl}/InventoryDetails`, Detail, { headers });
   }
 
   Delete(id: number, DomainName: string) {

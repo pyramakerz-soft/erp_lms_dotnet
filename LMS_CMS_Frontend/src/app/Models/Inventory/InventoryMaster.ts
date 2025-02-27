@@ -1,6 +1,6 @@
-import { SalesItem } from "./sales-item";
+import { InventoryDetails } from "./InventoryDetails";
 
-export class Sales {
+export class InventoryMaster {
      constructor(
             public id: number = 0,
             public name: string = '',
@@ -22,13 +22,19 @@ export class Sales {
             public studentName :string = '',
             public saveName :string = '',
             public bankName :string = '',
+            public flagArName :string = '',
+            public flagArTitle :string = '',
+            public flagEnName  :string = '',
+            public flagEnTitle :string = '',
+            public flagValue :number =0,
+            public itemInOut :number =0,
             public insertedAt :string ="",
             public insertedByUserId :number =0,
             public attachments : string [] =[],
             public attachment : File [] =[] ,
             public NewAttachments : File [] =[] ,
             public DeletedAttachments : string [] =[] ,
-            public inventoryDetails : SalesItem [] =[] ,
+            public inventoryDetails : InventoryDetails [] =[] ,
         ) {}
 }
 

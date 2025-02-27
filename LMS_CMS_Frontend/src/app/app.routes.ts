@@ -204,9 +204,9 @@ export const routes: Routes = [
             { path: "Shop Item/:id", component: ShopItemsAddEditComponent, title: "Edit Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Stores", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Sales", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 11 } },
-            { path: "Sales Item", component: InventoryDetailsComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Sales Item/:FlagId", component: InventoryDetailsComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Purchase", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 9 } },
-            { path: "Sales Item/Edit/:id", component: InventoryDetailsComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Sales Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
 
         ]
     },

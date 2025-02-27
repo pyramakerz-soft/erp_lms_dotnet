@@ -1,8 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-modal',
     standalone: true, // Ensure this is set to true
+    imports:[CommonModule],
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.css']
 })

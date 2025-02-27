@@ -1,77 +1,131 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { ModalComponent } from '../../../../Component/modal/modal.component';
 import Swal from 'sweetalert2';
+import { TableComponent } from '../../../../Component/reuse-table/reuse-table.component';
+import { ApiService } from '../../../../Services/api.service';
+import { HygieneTypesService } from '../../../../Services/Employee/Clinic/hygiene-types.service';
+import { HygieneTypes } from '../../../../Models/Clinic/hygiene-types';
 
 @Component({
   selector: 'app-hygiene-types',
   standalone: true,
-  imports: [FormsModule, CommonModule, SearchComponent, ModalComponent],
+  imports: [FormsModule, CommonModule, SearchComponent, ModalComponent, TableComponent],
   templateUrl: './hygiene-types.component.html',
-  styleUrls: ['./hygiene-types.component.css']
+  styleUrls: ['./hygiene-types.component.css'],
 })
-export class HygieneTypesComponent {
-  hygieneTypes: any[] = [];
-  hygieneType: any = { id: null, name: '' };
+export class HygieneTypesComponent implements OnInit {
+  hygieneType: HygieneTypes = new HygieneTypes(0, '', new Date(), 0);
   editHygieneType = false;
   validationErrors: { [key: string]: string } = {};
-  keysArray: string[] = ['id', 'name'];
-  isModalVisible = false; // Add this property to control modal visibility
+  keysArray: string[] = ['id', 'type'];
+  key: string = "id";
+  value: any = "";
+  isModalVisible = false;
+  hygieneTypes: HygieneTypes[] = [];
+  DomainName: string = '';
 
-  openModal(id?: number) {
-    if (id) {
-      this.editHygieneType = true;
-      this.hygieneType = this.hygieneTypes.find(ht => ht.id === id);
-    } else {
-      this.hygieneType = { id: null, name: '' }; // Reset form for new entry
-      this.editHygieneType = false;
-    }
-    this.isModalVisible = true; // Show the modal
+  constructor(
+    private hygieneTypesService: HygieneTypesService,
+    private apiService: ApiService
+  ) {}
+
+  ngOnInit(): void {
+    this.DomainName = this.apiService.GetHeader(); // Get the domain name from ApiService
+    this.getHygieneTypes();
   }
 
+  // Fetch hygiene types
+//  async getHygieneTypes() {
+//     this.hygieneTypesService.Get(this.DomainName).subscribe(
+//       (data) => {
+//         this.hygieneTypes = data;
+//         console.log(this.hygieneTypes)
+//       },
+//       (error) => {
+//         console.error('Error fetching hygiene types:', error);
+//       }
+//     );
+//   }
+
+async getHygieneTypes() {
+  try {
+    const data = await firstValueFrom(this.hygieneTypesService.Get(this.DomainName));
+    this.hygieneTypes = data.map((item) => ({
+      ...item,
+      actions: { delete: true, edit: true }, // Add actions dynamically
+    }));
+  } catch (error) {
+    this.hygieneTypes = [];
+    console.log('Error loading data:', error);
+  }
+}
+
+  // Open modal for create/edit
+openModal(id?: number) {
+  if (id) {
+    this.editHygieneType = true;
+    this.hygieneType = this.hygieneTypes.find((ht) => ht.id === id)!;
+  } else {
+    this.hygieneType = new HygieneTypes(0, '', new Date(), 0); // Reset form for new entry
+    this.editHygieneType = false;
+  }
+  this.isModalVisible = true; // Show the modal
+}
+
+  // Close modal
   closeModal() {
     this.isModalVisible = false; // Hide the modal
-    this.hygieneType = { id: null, name: '' }; // Reset form
+    this.hygieneType = new HygieneTypes(0, '', new Date(), 0); // Reset form
     this.editHygieneType = false;
     this.validationErrors = {};
   }
 
+  // Save or update hygiene type
   saveHygieneType() {
     if (this.validateForm()) {
       if (this.editHygieneType) {
-        const index = this.hygieneTypes.findIndex(ht => ht.id === this.hygieneType.id);
-        this.hygieneTypes[index] = { ...this.hygieneType }; // Update existing item
+        this.hygieneTypesService.Edit(this.hygieneType, this.DomainName).subscribe(() => {
+          this.getHygieneTypes();
+          this.closeModal();
+        });
       } else {
-        this.hygieneType.id = this.hygieneTypes.length + 1; // Generate new ID
-        this.hygieneTypes.push({ ...this.hygieneType }); // Add new item
+        this.hygieneTypesService.Add(this.hygieneType, this.DomainName).subscribe(() => {
+          this.getHygieneTypes();
+          this.closeModal();
+        });
       }
-      this.closeModal(); // Close the modal after saving
     }
   }
 
-  deleteHygieneType(id: number) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this hygiene type!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#FF7519',
-      cancelButtonColor: '#2E3646',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.hygieneTypes = this.hygieneTypes.filter(ht => ht.id !== id); // Remove item
+  // Delete hygiene type
+deleteHygieneType(row: any) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You will not be able to recover this hygiene type!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#FF7519',
+    cancelButtonColor: '#2E3646',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, keep it',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.hygieneTypesService.Delete(row.id, this.DomainName).subscribe(() => {
+        this.getHygieneTypes(); // Refresh the table after deletion
         Swal.fire('Deleted!', 'The hygiene type has been deleted.', 'success');
-      }
-    });
-  }
+      });
+    }
+  });
+}
 
+  // Validate form
   validateForm(): boolean {
     let isValid = true;
-    if (!this.hygieneType.name) {
+    if (!this.hygieneType.type) {
       this.validationErrors['name'] = '*Name is required';
       isValid = false;
     } else {
@@ -80,20 +134,33 @@ export class HygieneTypesComponent {
     return isValid;
   }
 
-  onInputValueChange(event: { field: string, value: any }) {
+  // Handle input changes
+  onInputValueChange(event: { field: string; value: any }) {
     const { field, value } = event;
-    this.hygieneType[field] = value;
+    (this.hygieneType as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
   }
 
-  onSearchEvent(event: { key: string, value: any }) {
-    const { key, value } = event;
-    if (value) {
-      this.hygieneTypes = this.hygieneTypes.filter(ht => ht[key].toString().toLowerCase().includes(value.toLowerCase()));
-    } else {
-      this.hygieneTypes = [...this.hygieneTypes];
+async onSearchEvent(event: { key: string, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    await this.getHygieneTypes();
+    if (this.value != "") {
+      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+
+      this.hygieneTypes = this.hygieneTypes.filter(t => {
+        const fieldValue = t[this.key as keyof typeof t];
+        if (typeof fieldValue === 'string') {
+          return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+        }
+        if (typeof fieldValue === 'number') {
+          return fieldValue === numericValue;
+        }
+        return fieldValue == this.value;
+      });
     }
   }
+
 }

@@ -625,9 +625,9 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.PromoCodeName, opt => opt.MapFrom(src => src.PromoCode.Name))
                 .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => src.PromoCode.Percentage));
 
-            CreateMap<HygieneType, HygieneTypeAddDTO>();
-            CreateMap<HygieneTypeGetDTO, HygieneType>();
-            CreateMap<HygieneType, HygieneTypePutDTO>();
+            CreateMap<HygieneTypeAddDTO, HygieneType>();
+            CreateMap<HygieneType, HygieneTypeGetDTO>();
+            CreateMap<HygieneTypePutDTO, HygieneType>();
 
             CreateMap<DiagnosisAddDTO, Diagnosis>();
             CreateMap<Diagnosis, DiagnosisGetDTO>();

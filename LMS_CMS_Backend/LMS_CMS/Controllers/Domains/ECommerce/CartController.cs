@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using LMS_CMS_BL.DTO.ECommerce;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains.ECommerce;
+using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 {
@@ -54,44 +57,35 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 }
             }
 
-            //if(cart != null)
-            //{
+            if (cart == null)
+            {
+                return NotFound();
+            }
 
-            //}
+            List<Cart_ShopItem> cart_ShopItem = await Unit_Of_Work.cart_ShopItem_Repository.Select_All_With_IncludesById<Cart_ShopItem>(
+                    c => c.IsDeleted != true && c.CartID == cart.ID,
+                    query => query.Include(store => store.Cart),
+                    query => query.Include(store => store.ShopItem),
+                    query => query.Include(store => store.ShopItemColor),
+                    query => query.Include(store => store.ShopItemSize)
+                    ); 
 
-            //List<ShopItemGetDTO> shopItemGetDTO = mapper.Map<List<ShopItemGetDTO>>(shopItem);
-            //string serverUrl = $"{Request.Scheme}://{Request.Host}/";
-            //foreach (var item in shopItemGetDTO)
-            //{
-            //    if (!string.IsNullOrEmpty(item.MainImage))
-            //    {
-            //        item.MainImage = $"{serverUrl}{item.MainImage.Replace("\\", "/")}";
-            //    }
-            //    if (!string.IsNullOrEmpty(item.OtherImage))
-            //    {
-            //        item.OtherImage = $"{serverUrl}{item.OtherImage.Replace("\\", "/")}";
-            //    }
+            List<Cart_ShopItemGetDTO> cart_ShopItemGetDTO = mapper.Map<List<Cart_ShopItemGetDTO>>(cart_ShopItem);
 
-            //    List<ShopItemColor> shopItemColors = await Unit_Of_Work.shopItemColor_Repository.Select_All_With_IncludesById<ShopItemColor>(s => s.ShopItemID == item.ID && s.IsDeleted != true);
-            //    if (shopItemColors.Count != 0)
-            //    {
-            //        List<ShopItemColorGetDTO> shopItemColorGetDTO = mapper.Map<List<ShopItemColorGetDTO>>(shopItemColors);
-            //        item.shopItemColors = shopItemColorGetDTO;
-            //    }
-            //    else
-            //        item.shopItemColors = new List<ShopItemColorGetDTO>();
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
 
-            //    List<ShopItemSize> shopItemSizes = await Unit_Of_Work.shopItemSize_Repository.Select_All_With_IncludesById<ShopItemSize>(s => s.ShopItemID == item.ID && s.IsDeleted != true);
-            //    if (shopItemSizes.Count != 0)
-            //    {
-            //        List<ShopItemSizeGetDTO> shopItemSizeGetDTO = mapper.Map<List<ShopItemSizeGetDTO>>(shopItemSizes);
-            //        item.shopItemSizes = shopItemSizeGetDTO;
-            //    }
-            //    else
-            //        item.shopItemSizes = new List<ShopItemSizeGetDTO>();
-            //}
+            foreach (var item in cart_ShopItemGetDTO)
+            {
+                if (!string.IsNullOrEmpty(item.MainImage))
+                {
+                    item.MainImage = $"{serverUrl}{item.MainImage.Replace("\\", "/")}";
+                } 
+            }
 
             return Ok();
         }
+
+
+            // AvailableInShop , Limit
     }
 }

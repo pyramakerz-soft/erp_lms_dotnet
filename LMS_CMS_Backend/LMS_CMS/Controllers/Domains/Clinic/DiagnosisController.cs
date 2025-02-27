@@ -49,9 +49,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return NotFound();
             }
             
-            List<DiagnosisGetDTO> HygieneTypesDto = _mapper.Map<List<DiagnosisGetDTO>>(diagnosis);
+            List<DiagnosisGetDTO> DiagnosisDto = _mapper.Map<List<DiagnosisGetDTO>>(diagnosis);
             
-            return Ok(HygieneTypesDto);
+            return Ok(DiagnosisDto);
         }
         #endregion
 
@@ -76,14 +76,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
             
-            Diagnosis diagnosis = Unit_Of_Work.diagnosis_Repository.Select_By_Id(id);
-            
+            Diagnosis diagnosis = Unit_Of_Work.diagnosis_Repository.First_Or_Default(d => d.Id == id && d.IsDeleted != true);
+
             if (diagnosis == null)
             {
-                return NotFound();
+                return NotFound("No Diagnosis with this ID");
             }
             
-            DiagnosisPutDTO diagnosisDto = _mapper.Map<DiagnosisPutDTO>(diagnosis);
+            DiagnosisGetDTO diagnosisDto = _mapper.Map<DiagnosisGetDTO>(diagnosis);
 
             return Ok(diagnosisDto);
         }
@@ -120,13 +120,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             diagnosis.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
 
-            diagnosis.InsertedByUserId = userId;
-            diagnosis.InsertedAt = DateTime.Now;
-
             if (userTypeClaim == "octa")
             {
                 diagnosis.InsertedByOctaId = userId;
             }
+
             else if (userTypeClaim == "employee")
             {
                 diagnosis.InsertedByUserId = userId;
@@ -166,16 +164,35 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            Diagnosis diagnosis = Unit_Of_Work.diagnosis_Repository.Select_By_Id(userIdClaim);
+            Diagnosis diagnosis = Unit_Of_Work.diagnosis_Repository.First_Or_Default(d => d.Id == diagnosisDto.ID && d.IsDeleted != true);
 
             if (diagnosis == null || diagnosis.IsDeleted == true)
             {
                 return NotFound("No Diagnosis Type with this ID");
             }
 
-            diagnosis.Name = diagnosisDto.Name;
-            diagnosis.UpdatedByUserId = userId;
-            diagnosis.UpdatedAt = DateTime.Now;
+            _mapper.Map(diagnosisDto, diagnosis);
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
+            diagnosis.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                diagnosis.UpdatedByOctaId = userId;
+                if (diagnosis.UpdatedByUserId != null)
+                {
+                    diagnosis.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                diagnosis.UpdatedByUserId = userId;
+                if (diagnosis.UpdatedByOctaId != null)
+                {
+                    diagnosis.UpdatedByOctaId = null;
+                }
+            }
 
             Unit_Of_Work.diagnosis_Repository.Update(diagnosis);
             Unit_Of_Work.SaveChanges();
@@ -199,10 +216,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
 
             long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
             
-            long.TryParse(userRoleClaim, out long roleId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
             if (userIdClaim == null || userTypeClaim == null)
             {
@@ -214,9 +229,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return BadRequest("Diagnosis ID cannot be null.");
             }
 
-            Diagnosis diagnosis = Unit_Of_Work.diagnosis_Repository.Select_By_Id(id);
+            Diagnosis diagnosis = Unit_Of_Work.diagnosis_Repository.First_Or_Default(d => d.IsDeleted != true && d.Id == id);
 
-            if (diagnosis == null || diagnosis.IsDeleted == true)
+            if (diagnosis == null)
             {
                 return NotFound("No Diagnosis with this ID");
             }

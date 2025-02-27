@@ -6,5 +6,6 @@ namespace LMS_CMS_BL.DTO.Clinic
     {
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
+        public DateTime InsertedAt { get; set; }
     }
 }

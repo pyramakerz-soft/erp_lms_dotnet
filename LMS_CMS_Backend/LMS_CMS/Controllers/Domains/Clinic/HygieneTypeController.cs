@@ -81,9 +81,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.Select_By_Id(id);
+            HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.First_Or_Default(h => h.Id == id && h.IsDeleted != true);
 
-            if (hygieneType == null || hygieneType.IsDeleted == true)
+            if (hygieneType == null)
             {
                 return NotFound("No Hygiene Type with this ID");
             }
@@ -106,11 +106,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Please enter the Name field.");
             }
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
@@ -121,8 +122,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             HygieneType hygieneType = _mapper.Map<HygieneType>(hygieneTypeDto);
 
-            hygieneType.InsertedByUserId = userId;
-            hygieneType.InsertedAt = DateTime.Now;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            hygieneType.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                hygieneType.InsertedByOctaId = userId;
+            }
+
+            else if (userTypeClaim == "employee")
+            {
+                hygieneType.InsertedByUserId = userId;
+            }
 
             Unit_Of_Work.hygieneType_Repository.Add(hygieneType);
             Unit_Of_Work.SaveChanges();
@@ -158,21 +169,40 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.Select_By_Id(userIdClaim);
+            HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.First_Or_Default(h => h.Id == hygieneTypeDto.ID && h.IsDeleted != true);
 
-            if (hygieneType == null || hygieneType.IsDeleted == true)
+            if (hygieneType == null)
             {
                 return NotFound("No Hygiene Type with this ID");
             }
 
-            hygieneType.Type = hygieneTypeDto.Type;
-            hygieneType.UpdatedByUserId = userId;
-            hygieneType.UpdatedAt = DateTime.Now;
+            _mapper.Map(hygieneTypeDto, hygieneType);
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
+            hygieneType.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                hygieneType.UpdatedByOctaId = userId;
+                if (hygieneType.UpdatedByUserId != null)
+                {
+                    hygieneType.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                hygieneType.UpdatedByUserId = userId;
+                if (hygieneType.UpdatedByOctaId != null)
+                {
+                    hygieneType.UpdatedByOctaId = null;
+                }
+            }
 
             Unit_Of_Work.hygieneType_Repository.Update(hygieneType);
             Unit_Of_Work.SaveChanges();
 
-            return Ok(hygieneType);
+            return Ok(hygieneTypeDto);
         }
         #endregion
 
@@ -189,10 +219,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            
             long.TryParse(userIdClaim, out long userId);
+            
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            var userRoleClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
-            long.TryParse(userRoleClaim, out long roleId);
 
             if (userIdClaim == null || userTypeClaim == null)
             {

@@ -4,7 +4,6 @@ using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS_CMS_PL.Controllers.Domains.Clinic
@@ -43,7 +42,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            List<Drug> drugs = Unit_Of_Work.drug_Repository.Select_All();
+            List<Drug> drugs = Unit_Of_Work.drug_Repository.FindBy(d => d.IsDeleted != true);
             
             if (drugs == null || drugs.Count == 0)
             {
@@ -76,11 +75,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            Drug drug = Unit_Of_Work.drug_Repository.Select_By_Id(id);
+            Drug drug = Unit_Of_Work.drug_Repository.First_Or_Default(d => d.Id == id && d.IsDeleted != true);
 
             if (drug == null)
             {
-                return NotFound("No Hygiene Type with this ID");
+                return NotFound("No Drug with this ID");
             }
 
             DrugGetDTO drugDto = _mapper.Map<DrugGetDTO>(drug);
@@ -117,8 +116,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             Drug drug = _mapper.Map<Drug>(drugDto);
 
-            drug.InsertedByUserId = userId;
-            drug.InsertedAt = DateTime.Now;
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            drug.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                drug.InsertedByOctaId = userId;
+            }
+            else if (userTypeClaim == "employee")
+            {
+                drug.InsertedByUserId = userId;
+            }
 
             Unit_Of_Work.drug_Repository.Add(drug);
             Unit_Of_Work.SaveChanges();
@@ -153,11 +161,36 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return BadRequest("Please enter the Name field");
             }
 
-            Drug drug = _mapper.Map<Drug>(drugDto);
+            Drug drug = Unit_Of_Work.drug_Repository.First_Or_Default(d => d.Id == drugDto.ID && d.IsDeleted != true);
 
-            drug.UpdatedByUserId = userId;
-            drug.UpdatedAt = DateTime.Now;
-            
+            if (drug == null || drug.IsDeleted == true)
+            {
+                return NotFound("There is no Drug with this id");
+            }
+
+            _mapper.Map(drugDto, drug);
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
+            drug.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                drug.UpdatedByOctaId = userId;
+                if (drug.UpdatedByUserId != null)
+                {
+                    drug.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                drug.UpdatedByUserId = userId;
+                if (drug.UpdatedByOctaId != null)
+                {
+                    drug.UpdatedByOctaId = null;
+                }
+            }
+
             Unit_Of_Work.drug_Repository.Update(drug);
             Unit_Of_Work.SaveChanges();
 
@@ -186,17 +219,36 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
             
-            Drug drug = Unit_Of_Work.drug_Repository.Select_By_Id(id);
-            
+            Drug drug = Unit_Of_Work.drug_Repository.First_Or_Default(d => d.IsDeleted != true && d.Id == id);
+
             if (drug == null)
             {
                 return NotFound("No Drug with this ID");
             }
-           
+
             drug.IsDeleted = true;
-            drug.DeletedByUserId = userId;
-            drug.DeletedAt = DateTime.Now;
-            
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            drug.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                drug.DeletedByOctaId = userId;
+
+                if (drug.DeletedByUserId != null)
+                {
+                    drug.DeletedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                drug.DeletedByUserId = userId;
+                if (drug.DeletedByOctaId != null)
+                {
+                    drug.DeletedByOctaId = null;
+                }
+            }
+
             Unit_Of_Work.drug_Repository.Update(drug);
             Unit_Of_Work.SaveChanges();
             

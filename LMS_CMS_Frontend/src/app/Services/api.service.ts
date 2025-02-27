@@ -8,8 +8,11 @@ export class ApiService {
   // BaseUrlOcta="https://localhost:7205/api" 
 
   // BaseUrl="https://3.214.27.32/"
-  BaseUrl="http://localhost:5094/api/with-domain" 
-  BaseUrlOcta="http://localhost:5094/api" 
+  // BaseUrl="http://localhost:5094/api/with-domain" 
+  // BaseUrlOcta="http://localhost:5094/api"
+
+  BaseUrl="https://3.214.27.32:443/api/with-domain" 
+  BaseUrlOcta="https://3.214.27.32:443/api" 
 
 
   constructor() { }

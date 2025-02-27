@@ -32,7 +32,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public string BarCode { get; set; }
 
         [ForeignKey("Gender")]
-        public long GenderID { get; set; }
+        public long? GenderID { get; set; }
         
         [ForeignKey("InventorySubCategories")]
         public long InventorySubCategoriesID { get; set; }
@@ -41,7 +41,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public long SchoolID { get; set; }
         
         [ForeignKey("Grade")]
-        public long GradeID { get; set; }
+        public long? GradeID { get; set; }
 
         public Gender? Gender { get; set; }
         public InventorySubCategories InventorySubCategories { get; set; }

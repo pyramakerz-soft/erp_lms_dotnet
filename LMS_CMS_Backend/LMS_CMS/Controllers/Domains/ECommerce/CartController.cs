@@ -57,7 +57,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 }
             }
 
-            if (cartID != 0)
+            if (cartID == 0)
             {
                 return NotFound();
             }

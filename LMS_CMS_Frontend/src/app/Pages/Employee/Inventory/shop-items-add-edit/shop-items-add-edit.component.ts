@@ -207,6 +207,7 @@ export class ShopItemsAddEditComponent {
     
     if (this.isFormValid()) { 
       if (this.mode == 'Create') {
+        console.log(this.ShopItem)
         this.shopItemService.Add(this.ShopItem, this.DomainName).subscribe(
           data => {
             this.router.navigateByUrl(`Employee/Shop`)

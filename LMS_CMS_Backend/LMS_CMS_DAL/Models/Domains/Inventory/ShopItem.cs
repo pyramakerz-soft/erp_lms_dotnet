@@ -43,10 +43,10 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         [ForeignKey("Grade")]
         public long GradeID { get; set; }
 
-        public Gender Gender { get; set; }
+        public Gender? Gender { get; set; }
         public InventorySubCategories InventorySubCategories { get; set; }
         public School School { get; set; }
-        public Grade Grade { get; set; }
+        public Grade? Grade { get; set; }
 
         public ICollection<InventoryDetails> InventoryDetails { get; set; } = new HashSet<InventoryDetails>();
         public ICollection<ShopItemColor> ShopItemColor { get; set; } = new HashSet<ShopItemColor>();

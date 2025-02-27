@@ -162,7 +162,8 @@ export class SubCategoryComponent {
   }
 
   CreateOREdit() {
-    if (this.isFormValid()) {
+    if (this.isFormValid()) { 
+      this.SubCategory.inventoryCategoriesID = this.CategoryId 
       if (this.mode == 'Create') {
         this.InventorySubCategoryServ.Add(this.SubCategory,this.DomainName).subscribe((d)=>{
           this.GetAllData();

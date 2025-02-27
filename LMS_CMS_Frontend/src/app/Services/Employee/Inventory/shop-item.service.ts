@@ -86,7 +86,9 @@ export class ShopItemService {
     if (ShopItem.salesPrice !== null) {
       formData.append('salesPrice', ShopItem.salesPrice.toString());
     }
-    formData.append('genderId', ShopItem.genderID.toString());
+    if (ShopItem.genderID !== null) {
+      formData.append('genderId', ShopItem.genderID.toString());
+    }
     if (ShopItem.vatForForeign !== null) {
       formData.append('vatForForeign', ShopItem.vatForForeign.toString());
     }
@@ -96,7 +98,9 @@ export class ShopItemService {
     formData.append('availableInShop', ShopItem.availableInShop ? 'true' : 'false');
     formData.append('inventorySubCategoriesID', ShopItem.inventorySubCategoriesID.toString());
     formData.append('schoolID', ShopItem.schoolID.toString());
-    formData.append('gradeID', ShopItem.gradeID.toString());
+    if (ShopItem.gradeID !== null) {
+      formData.append('gradeID', ShopItem.gradeID.toString());
+    }
 
     if (ShopItem.shopItemColors.length != 0) {
       ShopItem.shopItemColors.forEach(color => {
@@ -148,7 +152,9 @@ export class ShopItemService {
     if (ShopItem.salesPrice !== null) {
       formData.append('salesPrice', ShopItem.salesPrice.toString());
     }
-    formData.append('genderId', ShopItem.genderID.toString());
+    if (ShopItem.genderID !== null) {
+      formData.append('genderId', ShopItem.genderID.toString());
+    }
     if (ShopItem.vatForForeign !== null) {
       formData.append('vatForForeign', ShopItem.vatForForeign.toString());
     }
@@ -158,7 +164,9 @@ export class ShopItemService {
     formData.append('availableInShop', ShopItem.availableInShop ? 'true' : 'false');
     formData.append('inventorySubCategoriesID', ShopItem.inventorySubCategoriesID.toString());
     formData.append('schoolID', ShopItem.schoolID.toString());
-    formData.append('gradeID', ShopItem.gradeID.toString());
+    if (ShopItem.gradeID !== null) {
+      formData.append('gradeID', ShopItem.gradeID.toString());
+    } 
 
     if (ShopItem.shopItemColors.length != 0) {
       ShopItem.shopItemColors.forEach(color => {

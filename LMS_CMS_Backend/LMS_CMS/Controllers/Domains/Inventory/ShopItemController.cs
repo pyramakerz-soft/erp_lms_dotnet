@@ -421,7 +421,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("No School With this ID");
             }
 
-            if (newShopItem.GradeID != 0 || newShopItem.GradeID != null)
+            if (newShopItem.GradeID != 0 && newShopItem.GradeID != null)
             {
                 Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(
                     d => d.ID == newShopItem.GradeID && d.IsDeleted != true
@@ -432,7 +432,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            if (newShopItem.GenderID != 0 || newShopItem.GenderID != null)
+            if (newShopItem.GenderID != 0 && newShopItem.GenderID != null)
             {
                 Gender gender = Unit_Of_Work.gender_Repository.First_Or_Default(
                 d => d.ID == newShopItem.GenderID
@@ -660,7 +660,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("No School With this ID");
             }
 
-            if (newShopItem.GradeID != 0 || newShopItem.GradeID != null)
+            if (newShopItem.GradeID != 0 && newShopItem.GradeID != null)
             {
                 Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(
                     d => d.ID == newShopItem.GradeID && d.IsDeleted != true
@@ -671,7 +671,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            if (newShopItem.GenderID != 0 || newShopItem.GenderID != null)
+            if (newShopItem.GenderID != 0 && newShopItem.GenderID != null)
             {
                 Gender gender = Unit_Of_Work.gender_Repository.First_Or_Default(
                     d => d.ID == newShopItem.GenderID

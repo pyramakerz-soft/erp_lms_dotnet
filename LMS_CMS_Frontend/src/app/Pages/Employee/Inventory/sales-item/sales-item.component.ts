@@ -208,7 +208,7 @@ export class SalesItemComponent {
     this.SelectedSopItem = item;
     this.ShopItem = item
     this.Item.id = Date.now();  // it is random for edit and delete only 
-    this.Item.price = this.ShopItem.salesPrice
+    this.Item.price = this.ShopItem.salesPrice ?? 0
     this.Item.shopItemID = this.ShopItem.id
     this.Item.shopItemName = this.ShopItem.enName
     this.Item.barCode = this.ShopItem.barCode

@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.ClinicModule;
+using LMS_CMS_DAL.Models.Domains.ECommerce;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -127,7 +128,11 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<HygieneType> HygieneType_Repository;
         GenericRepo<Diagnosis> Diagnosis_Repository;
         GenericRepo<Drug> Drug_Repository;
-
+        GenericRepo<Cart> Cart_Repository;
+        GenericRepo<PromoCode> PromoCode_Repository;
+        GenericRepo<OrderState> OrderState_Repository;
+        GenericRepo<Order> Order_Repository;
+        GenericRepo<Cart_ShopItem> Cart_ShopItem_Repository;
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -1360,6 +1365,65 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
+        public GenericRepo<PromoCode> promoCode_Repository
+        {
+            get
+            {
+                if (PromoCode_Repository == null)
+                {
+                    PromoCode_Repository = new GenericRepo<PromoCode>(db);
+                }
+                return PromoCode_Repository;
+            }
+        }
+
+        public GenericRepo<Cart> cart_Repository
+        {
+            get
+            {
+                if (Cart_Repository == null)
+                {
+                    Cart_Repository = new GenericRepo<Cart>(db);
+                }
+                return Cart_Repository;
+            }
+        }
+
+        public GenericRepo<Cart_ShopItem> cart_ShopItem_Repository
+        {
+            get
+            {
+                if (Cart_ShopItem_Repository == null)
+                {
+                    Cart_ShopItem_Repository = new GenericRepo<Cart_ShopItem>(db);
+                }
+                return Cart_ShopItem_Repository;
+            }
+        }
+
+        public GenericRepo<OrderState> orderState_Repository
+        {
+            get
+            {
+                if (OrderState_Repository == null)
+                {
+                    OrderState_Repository = new GenericRepo<OrderState>(db);
+                }
+                return OrderState_Repository;
+            }
+        }
+
+        public GenericRepo<Order> order_Repository
+        {
+            get
+            {
+                if (Order_Repository == null)
+                {
+                    Order_Repository = new GenericRepo<Order>(db);
+                }
+                return Order_Repository;
+            }
+        }
         public void SaveChanges()
         {
             db.SaveChanges();

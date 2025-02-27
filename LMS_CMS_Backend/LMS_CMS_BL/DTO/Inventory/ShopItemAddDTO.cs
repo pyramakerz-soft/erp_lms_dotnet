@@ -22,13 +22,13 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string ArDescription { get; set; }
         public float PurchasePrice { get; set; }
         public float SalesPrice { get; set; }
-        public float VATForForeign { get; set; }
+        public float? VATForForeign { get; set; }
         public int Limit { get; set; }
         public bool AvailableInShop { get; set; }
-        public long GenderID { get; set; }
+        public long? GenderID { get; set; }
         public long InventorySubCategoriesID { get; set; }
         public long SchoolID { get; set; }
-        public long GradeID { get; set; }
+        public long? GradeID { get; set; }
         public IFormFile? MainImageFile { get; set; }
         public IFormFile? OtherImageFile { get; set; }  
         public string[]? ShopItemColors { get; set; }

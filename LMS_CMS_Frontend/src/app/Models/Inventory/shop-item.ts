@@ -6,7 +6,7 @@ export class ShopItem {
         public enDescription: string = '',
         public arDescription: string = '',
         public purchasePrice: number|null = null,
-        public salesPrice: number = 0,
+        public salesPrice: number|null = null,
         public vatForForeign: number|null = null,
         public genderID: number =0,
         public genderName: string = '',

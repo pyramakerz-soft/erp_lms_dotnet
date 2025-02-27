@@ -258,7 +258,7 @@ export class ShopItemsAddEditComponent {
         const field = key as keyof ShopItem;
         if (!this.ShopItem[field]) {
           if (field == 'enName'|| field == 'arName'|| field == 'enDescription'|| field == 'arDescription'|| field == 'purchasePrice'|| field == 'salesPrice' 
-            || field == 'vatForForeign'|| field == 'genderID'|| field == 'limit'|| field == 'inventorySubCategoriesID'|| field == 'schoolID'|| field == 'gradeID') {
+            || field == 'vatForForeign'|| field == 'limit'|| field == 'inventorySubCategoriesID'|| field == 'schoolID') {
             this.validationErrors[field] = `*${this.capitalizeField( field )} is required`;
             isValid = false;
           }

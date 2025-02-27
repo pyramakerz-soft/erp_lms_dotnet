@@ -5,6 +5,7 @@ using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Registration;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
+using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
@@ -97,19 +98,130 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             return Ok(shopItemGetDTO);
         }
 
+        ///////////////////////////////////////////
+
+        [HttpGet("GetBySubCategoryIDWithGenderAndGrade/{SubCategoryID}")]
+        [Authorize_Endpoint_(
+           allowedTypes: new[] { "octa", "employee", "student" }
+        )]
+        public async Task<IActionResult> GetBySubCategoryID(long SubCategoryID, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            long gradeID = 1;
+            long genderID = 1;
+
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 10;
+
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            int totalRecords = await Unit_Of_Work.shopItem_Repository
+                .CountAsync(f => f.IsDeleted != true);
+
+            if (userTypeClaim == "student")
+            {
+                Student student = Unit_Of_Work.student_Repository.First_Or_Default(
+                    d => d.ID == userId && d.IsDeleted != true
+                    );
+
+                if (student == null)
+                {
+                    return NotFound("There is No Student with this ID");
+                }
+            }
+
+            var shopItemQuery = Unit_Of_Work.shopItem_Repository
+                .Select_All_With_IncludesById_Pagination<ShopItem>(
+                    b => b.IsDeleted != true && b.InventorySubCategoriesID == SubCategoryID,
+                    query => query.Include(sub => sub.InventorySubCategories),
+                    query => query.Include(sub => sub.School),
+                    query => query.Include(sub => sub.Grade),
+                    query => query.Include(sub => sub.Gender),
+                    query => query.Include(sub => sub.ShopItemColor),
+                    query => query.Include(sub => sub.ShopItemSize)
+                );
+
+            shopItemQuery = shopItemQuery.Where(s => s.GenderID == genderID || s.GenderID == null);
+            shopItemQuery = shopItemQuery.Where(s => s.GradeID == gradeID || s.GradeID == null);
+
+            totalRecords = await shopItemQuery.CountAsync();
+
+            var shopItems = await shopItemQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            if (shopItems == null || shopItems.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<ShopItemGetDTO> shopItemGetDTO = mapper.Map<List<ShopItemGetDTO>>(shopItems);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+
+            foreach (var item in shopItemGetDTO)
+            {
+                if (!string.IsNullOrEmpty(item.MainImage))
+                {
+                    item.MainImage = $"{serverUrl}{item.MainImage.Replace("\\", "/")}";
+                }
+                if (!string.IsNullOrEmpty(item.OtherImage))
+                {
+                    item.OtherImage = $"{serverUrl}{item.OtherImage.Replace("\\", "/")}";
+                }
+
+                List<ShopItemColor> shopItemColors = await Unit_Of_Work.shopItemColor_Repository.Select_All_With_IncludesById<ShopItemColor>(s => s.ShopItemID == item.ID && s.IsDeleted != true);
+                if (shopItemColors.Count != 0)
+                {
+                    List<ShopItemColorGetDTO> shopItemColorGetDTO = mapper.Map<List<ShopItemColorGetDTO>>(shopItemColors);
+                    item.shopItemColors = shopItemColorGetDTO;
+                }
+                else
+                    item.shopItemColors = new List<ShopItemColorGetDTO>();
+
+                List<ShopItemSize> shopItemSizes = await Unit_Of_Work.shopItemSize_Repository.Select_All_With_IncludesById<ShopItemSize>(s => s.ShopItemID == item.ID && s.IsDeleted != true);
+                if (shopItemSizes.Count != 0)
+                {
+                    List<ShopItemSizeGetDTO> shopItemSizeGetDTO = mapper.Map<List<ShopItemSizeGetDTO>>(shopItemSizes);
+                    item.shopItemSizes = shopItemSizeGetDTO;
+                }
+                else
+                    item.shopItemSizes = new List<ShopItemSizeGetDTO>();
+            }
+
+            var paginationMetadata = new
+            {
+                TotalRecords = totalRecords,
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+
+            return Ok(new { Data = shopItemGetDTO, Pagination = paginationMetadata });
+        }
+
         //////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("BySubCategoryId/{id}")]
         [Authorize_Endpoint_(
-        allowedTypes: new[] { "octa", "employee" },
-        pages: new[] { "Shop Item", "Shop" }
-     )]
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Inventory" }
+         )]
         public async Task<IActionResult> GetBySubCategoryAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             List<ShopItem> shopItem = await Unit_Of_Work.shopItem_Repository.Select_All_With_IncludesById<ShopItem>(
-                    b => b.IsDeleted != true && b.InventorySubCategoriesID==id,
+                    b => b.IsDeleted != true && b.InventorySubCategoriesID == id,
                     query => query.Include(sub => sub.InventorySubCategories),
                     query => query.Include(sub => sub.School),
                     query => query.Include(sub => sub.Grade),
@@ -162,7 +274,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
+            allowedTypes: new[] { "octa", "employee", "student" },
             pages: new[] { "Shop Item", "Shop" }
          )]
         public async Task<IActionResult> GetbyIdAsync(long id)
@@ -300,7 +412,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound("No Inventory Sub Categories With this ID");
             }
-            
+
             School school = Unit_Of_Work.school_Repository.First_Or_Default(
                 d => d.ID == newShopItem.SchoolID && d.IsDeleted != true
                 );
@@ -308,21 +420,27 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound("No School With this ID");
             }
-            
-            Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(
-                d => d.ID == newShopItem.GradeID && d.IsDeleted != true
-                );
-            if (grade == null)
+
+            if (newShopItem.GradeID != 0 || newShopItem.GradeID != null)
             {
-                return NotFound("No Grade With this ID");
+                Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(
+                    d => d.ID == newShopItem.GradeID && d.IsDeleted != true
+                    );
+                if (grade == null)
+                {
+                    return NotFound("No Grade With this ID");
+                }
             }
-            
-            Gender gender = Unit_Of_Work.gender_Repository.First_Or_Default(
-                d => d.ID == newShopItem.GenderID 
-                );
-            if (gender == null)
+
+            if (newShopItem.GenderID != 0 || newShopItem.GenderID != null)
             {
-                return NotFound("No Gender With this ID");
+                Gender gender = Unit_Of_Work.gender_Repository.First_Or_Default(
+                d => d.ID == newShopItem.GenderID
+                );
+                if (gender == null)
+                {
+                    return NotFound("No Gender With this ID");
+                }
             }
 
 
@@ -357,7 +475,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 {
                     return BadRequest(returnFileInput);
                 }
-            } 
+            }
 
             ShopItem ShopItem = mapper.Map<ShopItem>(newShopItem);
 
@@ -370,7 +488,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             else if (userTypeClaim == "employee")
             {
                 ShopItem.InsertedByUserId = userId;
-            } 
+            }
 
             Unit_Of_Work.shopItem_Repository.Add(ShopItem);
             Unit_Of_Work.SaveChanges();
@@ -380,8 +498,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             var shopItemMainImageFolder = Path.Combine(shopItemFolder, "MainImage");
             var shopItemOtherImageFolder = Path.Combine(shopItemFolder, "OtherImage");
 
-            if (newShopItem.MainImageFile != null | newShopItem.OtherImageFile != null) 
-            { 
+            if (newShopItem.MainImageFile != null | newShopItem.OtherImageFile != null)
+            {
                 if (!Directory.Exists(shopItemMainImageFolder))
                 {
                     Directory.CreateDirectory(shopItemMainImageFolder);
@@ -421,8 +539,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             if (newShopItem.OtherImageFile != null)
                 ShopItem.OtherImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + ShopItem.ID, "OtherImage", newShopItem.OtherImageFile.FileName);
 
-            
-            if(newShopItem.BarCode == "Test")
+
+            if (newShopItem.BarCode == "Test")
             {
                 string barCode = _generateBarCodeEan13.GenerateEan13(ShopItem.ID.ToString());
                 ShopItem shopItemexist = Unit_Of_Work.shopItem_Repository.First_Or_Default(
@@ -441,7 +559,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             Unit_Of_Work.shopItem_Repository.Update(ShopItem);
 
-            if(newShopItem.ShopItemColors != null)
+            if (newShopItem.ShopItemColors != null)
             {
                 foreach (var item in newShopItem.ShopItemColors)
                 {
@@ -463,7 +581,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            if(newShopItem.ShopItemSizes != null)
+            if (newShopItem.ShopItemSizes != null)
             {
                 foreach (var item in newShopItem.ShopItemSizes)
                 {
@@ -542,20 +660,26 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("No School With this ID");
             }
 
-            Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(
-                d => d.ID == newShopItem.GradeID && d.IsDeleted != true
-                );
-            if (grade == null)
+            if (newShopItem.GradeID != 0 || newShopItem.GradeID != null)
             {
-                return NotFound("No Grade With this ID");
+                Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(
+                    d => d.ID == newShopItem.GradeID && d.IsDeleted != true
+                    );
+                if (grade == null)
+                {
+                    return NotFound("No Grade With this ID");
+                }
             }
 
-            Gender gender = Unit_Of_Work.gender_Repository.First_Or_Default(
-                d => d.ID == newShopItem.GenderID
-                );
-            if (gender == null)
+            if (newShopItem.GenderID != 0 || newShopItem.GenderID != null)
             {
-                return NotFound("No Gender With this ID");
+                Gender gender = Unit_Of_Work.gender_Repository.First_Or_Default(
+                    d => d.ID == newShopItem.GenderID
+                    );
+                if (gender == null)
+                {
+                    return NotFound("No Gender With this ID");
+                }
             }
 
             if (existingShopItem.BarCode != newShopItem.BarCode)
@@ -590,7 +714,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             string otherImageExists = existingShopItem.MainImage;
             string mainImageLinkExists = existingShopItem.OtherImage;
             string enNameExists = existingShopItem.EnName;
-             
+
             if (userTypeClaim == "employee")
             {
                 IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Shop Item", roleId, userId, existingShopItem);
@@ -611,8 +735,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 var shopItemFolder = Path.Combine(baseFolder, newShopItem.EnName + "_" + existingShopItem.ID);
                 var shopItemMainImageFolder = Path.Combine(shopItemFolder, "MainImage");
                 var shopItemOtherImageFolder = Path.Combine(shopItemFolder, "OtherImage");
-                 
-                if(newShopItem.MainImageFile != null)
+
+                if (newShopItem.MainImageFile != null)
                 {
                     string existingFilePath = Path.Combine(oldShopItemFolder, "MainImage");
 
@@ -622,7 +746,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     }
                 }
 
-                if(newShopItem.OtherImageFile != null)
+                if (newShopItem.OtherImageFile != null)
                 {
                     string existingFilePath = Path.Combine(oldShopItemFolder, "OtherImage");
 
@@ -653,7 +777,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
                     newShopItem.MainImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "MainImage", newShopItem.MainImageFile.FileName);
                     newShopItem.OtherImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "OtherImage", newShopItem.OtherImageFile.FileName);
-                
+
                     if (newShopItem.MainImageFile.Length > 0)
                     {
                         var filePath = Path.Combine(shopItemMainImageFolder, newShopItem.MainImageFile.FileName);
@@ -671,12 +795,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                             await newShopItem.OtherImageFile.CopyToAsync(stream);
                         }
                     }
-                } 
+                }
                 else if (newShopItem.MainImageFile != null)
                 {
                     if (Directory.Exists(oldShopItemMainImageFolder))
                     {
-                        Directory.Delete(oldShopItemMainImageFolder, true);  
+                        Directory.Delete(oldShopItemMainImageFolder, true);
                     }
 
                     if (!Directory.Exists(shopItemMainImageFolder))
@@ -699,7 +823,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                             await newShopItem.MainImageFile.CopyToAsync(stream);
                         }
                     }
-                     
+
                     if (newShopItem.OtherImageFile == null && (newShopItem.OtherImage == null || existingShopItem.OtherImage == null))
                     {
                         newShopItem.OtherImage = null;
@@ -710,7 +834,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                             System.IO.File.Delete(existingFilePath); // Delete the old file
                         }
                     }
-                    else if(newShopItem.OtherImageFile == null && existingShopItem.OtherImage != null)
+                    else if (newShopItem.OtherImageFile == null && existingShopItem.OtherImage != null)
                     {
                         newShopItem.OtherImage = existingShopItem.OtherImage;
                     }
@@ -732,14 +856,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                         Directory.Delete(oldShopItemFolder);
                         newShopItem.OtherImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "OtherImage", fileName);
                     }
-                } 
+                }
                 else if (newShopItem.OtherImageFile != null)
                 {
                     if (Directory.Exists(oldShopItemOtherImageFolder))
                     {
                         Directory.Delete(oldShopItemOtherImageFolder, true);
                     }
-                    
+
                     if (!Directory.Exists(shopItemMainImageFolder))
                     {
                         Directory.CreateDirectory(shopItemMainImageFolder);
@@ -759,13 +883,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                         {
                             await newShopItem.OtherImageFile.CopyToAsync(stream);
                         }
-                    } 
+                    }
 
-                    if(newShopItem.MainImageFile == null && (newShopItem.MainImage == null || existingShopItem.MainImage == null))
+                    if (newShopItem.MainImageFile == null && (newShopItem.MainImage == null || existingShopItem.MainImage == null))
                     {
                         newShopItem.MainImage = null;
                         string existingFilePath = Path.Combine(oldShopItemFolder, "MainImage");
-                         
+
                         if (System.IO.File.Exists(existingFilePath))
                         {
                             System.IO.File.Delete(existingFilePath); // Delete the old file
@@ -812,7 +936,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 var shopItemOtherImageFolder = Path.Combine(shopItemFolder, "OtherImage");
 
                 // Check if the path already there or null, as if null so he wants to delete the existing files
-                if(newShopItem.MainImage != null || newShopItem.OtherImage != null)
+                if (newShopItem.MainImage != null || newShopItem.OtherImage != null)
                 {
                     // Rename the folder if it exists
                     if (newShopItem.EnName != enNameExists)
@@ -830,7 +954,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
                             var filesMain = Directory.GetFiles(oldShopItemMainImageFolder);
                             var filesOther = Directory.GetFiles(oldShopItemOtherImageFolder);
-                            if(newShopItem.OtherImage != null && existingShopItem.OtherImage != null)
+                            if (newShopItem.OtherImage != null && existingShopItem.OtherImage != null)
                             {
                                 var fileName = "";
                                 foreach (var file in filesOther)
@@ -839,7 +963,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                                     var destFile = Path.Combine(shopItemOtherImageFolder, fileName);
                                     System.IO.File.Move(file, destFile);
                                 }
-                                
+
                                 newShopItem.OtherImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "OtherImage", fileName);
                             }
                             else
@@ -847,7 +971,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                                 newShopItem.OtherImage = null;
                             }
 
-                            if(newShopItem.MainImage != null && existingShopItem.MainImage != null)
+                            if (newShopItem.MainImage != null && existingShopItem.MainImage != null)
                             {
                                 var fileName = "";
 
@@ -857,7 +981,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                                     var destFile = Path.Combine(shopItemMainImageFolder, fileName);
                                     System.IO.File.Move(file, destFile);
                                 }
-                             
+
                                 newShopItem.MainImage = Path.Combine("Uploads", "ShopItems", newShopItem.EnName + "_" + existingShopItem.ID, "MainImage", fileName);
                             }
                             else
@@ -872,7 +996,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                         else
                         {
                             if (newShopItem.OtherImage != null && existingShopItem.OtherImage != null)
-                            { 
+                            {
                                 newShopItem.OtherImage = existingShopItem.OtherImage;
                             }
                             else
@@ -881,7 +1005,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                             }
 
                             if (newShopItem.MainImage != null && existingShopItem.MainImage != null)
-                            { 
+                            {
                                 newShopItem.MainImage = existingShopItem.MainImage;
                             }
                             else
@@ -892,7 +1016,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     }
                     else
                     {
-                        if(newShopItem.MainImage != null && newShopItem.OtherImage != null)
+                        if (newShopItem.MainImage != null && newShopItem.OtherImage != null)
                         {
                             newShopItem.MainImage = existingShopItem.MainImage;
                             newShopItem.OtherImage = existingShopItem.OtherImage;
@@ -947,7 +1071,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     }
                     newShopItem.MainImage = null;
                     newShopItem.OtherImage = null;
-                } 
+                }
             }
 
 
@@ -981,7 +1105,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 foreach (var item in shopItemColorExists)
                 {
-                    item.IsDeleted = true; 
+                    item.IsDeleted = true;
                     item.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
                     if (userTypeClaim == "octa")
                     {
@@ -1007,12 +1131,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             List<ShopItemSize> shopItemSizeExists = await Unit_Of_Work.shopItemSize_Repository.Select_All_With_IncludesById<ShopItemSize>(
                 d => d.ShopItemID == existingShopItem.ID
                 );
-            
+
             if (shopItemSizeExists.Count > 0)
             {
                 foreach (var item in shopItemSizeExists)
                 {
-                    item.IsDeleted = true; 
+                    item.IsDeleted = true;
                     item.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
                     if (userTypeClaim == "octa")
                     {

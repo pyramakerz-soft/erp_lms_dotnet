@@ -625,18 +625,17 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.PromoCodeName, opt => opt.MapFrom(src => src.PromoCode.Name))
                 .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => src.PromoCode.Percentage));
 
-            CreateMap<HygieneType, HygieneTypeAddDTO>();
-            CreateMap<HygieneTypeGetDTO, HygieneType>();
-            CreateMap<HygieneType, HygieneTypePutDTO>();
+            CreateMap<HygieneTypeAddDTO, HygieneType>();
+            CreateMap<HygieneType, HygieneTypeGetDTO>();
+            CreateMap<HygieneTypePutDTO, HygieneType>();
 
             CreateMap<DiagnosisAddDTO, Diagnosis>();
-            CreateMap<Diagnosis, DiagnosisGetDTO>()
-                .ForMember(dest => dest.InsertedAt, opt => opt.MapFrom(src => src.InsertedAt));
-            CreateMap<Diagnosis, DiagnosisPutDTO>();
+            CreateMap<Diagnosis, DiagnosisGetDTO>();
+            CreateMap<DiagnosisPutDTO, Diagnosis>();
 
-            CreateMap<Drug, DrugAddDTO>();
-            CreateMap<DrugGetDTO, Drug>();
-            CreateMap<Drug, DrugPutDTO>();
+            CreateMap<DrugAddDTO, Drug>();
+            CreateMap<Drug, DrugGetDTO>();
+            CreateMap<DrugPutDTO, Drug>();
 
             CreateMap<HygieneForm, HygieneFormGetDTO>()
                 .ForMember(dest => dest.GradeId, opt => opt.MapFrom(src => src.Classroom.GradeID));

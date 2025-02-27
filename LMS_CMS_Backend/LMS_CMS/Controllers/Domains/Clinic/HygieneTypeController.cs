@@ -49,7 +49,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return NotFound();
             }
 
-            List<HygieneTypeDto> HygieneTypesDto = _mapper.Map<List<HygieneTypeDto>>(HygieneTypes);
+            List<HygieneTypeGetDTO> HygieneTypesDto = _mapper.Map<List<HygieneTypeGetDTO>>(HygieneTypes);
 
             return Ok(HygieneTypesDto);
         }
@@ -88,7 +88,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return NotFound("No Hygiene Type with this ID");
             }
 
-            HygieneTypeDto hygieneTypeDto = _mapper.Map<HygieneTypeDto>(hygieneType);
+            HygieneTypeGetDTO hygieneTypeDto = _mapper.Map<HygieneTypeGetDTO>(hygieneType);
 
             return Ok(hygieneTypeDto);
         }
@@ -100,7 +100,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Hygiene Types" }
         )]
-        public IActionResult Add(HygieneTypeDto hygieneTypeDto)
+        public IActionResult Add(HygieneTypeAddDTO hygieneTypeDto)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -127,7 +127,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.hygieneType_Repository.Add(hygieneType);
             Unit_Of_Work.SaveChanges();
 
-            return Ok("Hygiene Type added successfully");
+            return Ok(hygieneTypeDto);
         }
         #endregion
 
@@ -138,7 +138,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             allowEdit: 1,
             pages: new[] { "Hygiene Types" }
         )]
-        public IActionResult Update(HygieneTypeDto hygieneTypeDto)
+        public IActionResult Update(HygieneTypePutDTO hygieneTypeDto)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -172,7 +172,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.hygieneType_Repository.Update(hygieneType);
             Unit_Of_Work.SaveChanges();
 
-            return Ok("Hygiene Type Updated Successfully");
+            return Ok(hygieneType);
         }
         #endregion
 
@@ -236,7 +236,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.hygieneType_Repository.Update(hygieneType);
             Unit_Of_Work.SaveChanges();
 
-            return Ok();
+            return Ok("Hygiene Type deleted successfully");
         }
         #endregion
     }

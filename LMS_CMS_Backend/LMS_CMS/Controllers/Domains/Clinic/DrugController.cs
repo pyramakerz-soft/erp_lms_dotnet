@@ -50,7 +50,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return NotFound();
             }
 
-            List<DrugDto> drugsDto = _mapper.Map<List<DrugDto>>(drugs);
+            List<DrugGetDTO> drugsDto = _mapper.Map<List<DrugGetDTO>>(drugs);
 
             return Ok(drugsDto);
         }
@@ -62,7 +62,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Drugs" }
         )]
-        public IActionResult GetByID(int id)
+        public IActionResult GetByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -83,7 +83,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return NotFound("No Hygiene Type with this ID");
             }
 
-            DrugDto drugDto = _mapper.Map<DrugDto>(drug);
+            DrugGetDTO drugDto = _mapper.Map<DrugGetDTO>(drug);
             
             return Ok(drugDto);
         }
@@ -95,7 +95,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Drugs" }
         )]
-        public IActionResult Add(DrugDto drugDto)
+        public IActionResult Add(DrugAddDTO drugDto)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -123,7 +123,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.drug_Repository.Add(drug);
             Unit_Of_Work.SaveChanges();
             
-            return Ok("Drug added successfully");
+            return Ok(drugDto);
         }
         #endregion
 
@@ -133,7 +133,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Drugs" }
         )]
-        public IActionResult Update(DrugDto drugDto)
+        public IActionResult Update(DrugPutDTO drugDto)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -161,7 +161,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.drug_Repository.Update(drug);
             Unit_Of_Work.SaveChanges();
 
-            return Ok("Drug updated successfully");
+            return Ok(drugDto);
         }
         #endregion
 
@@ -171,7 +171,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Drugs" }
         )]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

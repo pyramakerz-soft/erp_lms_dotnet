@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LMS_CMS_DAL.Models.Domains.ClinicModule
+namespace LMS_CMS_BL.DTO.Clinic
 {
-    public class Diagnosis : AuditableEntity
+    public class DiagnosisGetDTO
     {
-        [Key]
-        public long Id { get; set; }
-
+        public long ID { get; set; }
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
+        public DateTime InsertedAt { get; set; }
     }
 }

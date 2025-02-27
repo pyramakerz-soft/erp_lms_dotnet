@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LMS_CMS_DAL.Models.Domains.ClinicModule
+namespace LMS_CMS_BL.DTO.Clinic
 {
-    public class HygieneType : AuditableEntity
+    public class HygieneTypeAddDTO
     {
-        [Key]
-        public long Id { get; set; }
-
         [Required(ErrorMessage = "Type is required")]
         public string Type { get; set; }
     }

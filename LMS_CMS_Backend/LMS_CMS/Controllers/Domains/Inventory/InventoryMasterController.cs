@@ -54,6 +54,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     f => f.IsDeleted != true && f.FlagId==id,
                     query => query.Include(store => store.Store),
                     query => query.Include(store => store.Student),
+                    query => query.Include(store => store.InventoryFlags),
                     query => query.Include(store => store.Save),
                     query => query.Include(store => store.Bank))
                 .Skip((pageNumber - 1) * pageSize)
@@ -64,6 +65,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound();
             }
+            InventoryFlags inventoryFlags = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(i=>i.ID==id);
+            InventoryFlagGetDTO Flagdto = mapper.Map<InventoryFlagGetDTO>(inventoryFlags);
 
             List<InventoryMasterGetDTO> DTO = mapper.Map<List<InventoryMasterGetDTO>>(Data);
 
@@ -75,7 +78,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
             };
 
-            return Ok(new { Data = DTO, Pagination = paginationMetadata });
+            return Ok(new { Data = DTO, Pagination = paginationMetadata , inventoryFlag= Flagdto });
         }
 
 
@@ -157,7 +160,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("Student not found.");
             }
 
-            InventoryFlags flag = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(b => b.ID == newData.FlagId);
+            LMS_CMS_DAL.Models.Domains.Inventory.InventoryFlags flag = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(b => b.ID == newData.FlagId);
             if (flag == null)
             {
                 return NotFound("flag not found.");

@@ -3,6 +3,7 @@ import { Sales } from '../../../Models/Inventory/sales';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../api.service';
+import { InventoryFlag } from '../../../Models/Inventory/inventory-flag';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class SalesService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<{ data: Sales[], pagination: any }>(`${this.baseUrl}/InventoryMaster/ByFlagId/${FlagId}?pageNumber=${pageNumber}&pageSize=${pageSize}`, { headers });
+    return this.http.get<{ data: Sales[], pagination: any ,inventoryFlag :InventoryFlag }>(`${this.baseUrl}/InventoryMaster/ByFlagId/${FlagId}?pageNumber=${pageNumber}&pageSize=${pageSize}`, { headers });
   }
 
   GetById(id: number, DomainName: string) {

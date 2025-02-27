@@ -5,6 +5,7 @@ using LMS_CMS_BL.DTO.Administration;
 
 using LMS_CMS_BL.DTO.Bus;
 using LMS_CMS_BL.DTO.Clinic;
+using LMS_CMS_BL.DTO.ECommerce;
 using LMS_CMS_BL.DTO.Inventory;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Octa;
@@ -15,6 +16,7 @@ using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.ClinicModule;
+using LMS_CMS_DAL.Models.Domains.ECommerce;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -594,8 +596,6 @@ namespace LMS_CMS_BL.Config
             CreateMap<InventoryMaster, InventoryMasterGetDTO>()
                  .ForMember(dest => dest.SaveName, opt => opt.MapFrom(src => src.Save != null ? src.Save.Name : null))
                  .ForMember(dest => dest.BankName, opt => opt.MapFrom(src => src.Bank != null ? src.Bank.Name : null))
-                 .ForMember(dest => dest.FlagName, opt => opt.MapFrom(src => src.InventoryFlags != null ? src.InventoryFlags.Name : null))
-                 .ForMember(dest => dest.FlagTitle, opt => opt.MapFrom(src => src.InventoryFlags != null ? src.InventoryFlags.Title : null))
                  .ForMember(dest => dest.FlagValue, opt => opt.MapFrom(src =>  src.InventoryFlags.FlagValue ))
                  .ForMember(dest => dest.ItemInOut, opt => opt.MapFrom(src => src.InventoryFlags.ItemInOut ))
                  .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store != null ? src.Store.Name : null))
@@ -612,10 +612,35 @@ namespace LMS_CMS_BL.Config
             CreateMap<Gender, GenderGetDTO>();
 
             CreateMap<InventoryFlags, InventoryFlagGetDTO>();
+            CreateMap<Cart_ShopItem, Cart_ShopItemGetDTO>()
+                .ForMember(dest => dest.ShopItemEnNme, opt => opt.MapFrom(src => src.ShopItem.EnName))
+                .ForMember(dest => dest.ShopItemArNme, opt => opt.MapFrom(src => src.ShopItem.ArName))
+                .ForMember(dest => dest.SalesPrice, opt => opt.MapFrom(src => src.ShopItem.SalesPrice))
+                .ForMember(dest => dest.VATForForeign, opt => opt.MapFrom(src => src.ShopItem.VATForForeign))
+                .ForMember(dest => dest.MainImage, opt => opt.MapFrom(src => src.ShopItem.MainImage))
+                .ForMember(dest => dest.ShopItemSizeName, opt => opt.MapFrom(src => src.ShopItemSize.Name))
+                .ForMember(dest => dest.ShopItemColorName, opt => opt.MapFrom(src => src.ShopItemColor.Name));
 
-            CreateMap<HygieneType, HygieneTypeDto>().ReverseMap();
-            CreateMap<Diagnosis, DiagnosisDto>().ReverseMap();
-            CreateMap<Drug, DrugDto>().ReverseMap();
+            CreateMap<Cart, CartGetDTO>()
+                .ForMember(dest => dest.PromoCodeName, opt => opt.MapFrom(src => src.PromoCode.Name))
+                .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => src.PromoCode.Percentage));
+
+            CreateMap<HygieneType, HygieneTypeAddDTO>();
+            CreateMap<HygieneTypeGetDTO, HygieneType>();
+            CreateMap<HygieneType, HygieneTypePutDTO>();
+
+            CreateMap<DiagnosisAddDTO, Diagnosis>();
+            CreateMap<Diagnosis, DiagnosisGetDTO>()
+                .ForMember(dest => dest.InsertedAt, opt => opt.MapFrom(src => src.InsertedAt));
+            CreateMap<Diagnosis, DiagnosisPutDTO>();
+
+            CreateMap<Drug, DrugAddDTO>();
+            CreateMap<DrugGetDTO, Drug>();
+            CreateMap<Drug, DrugPutDTO>();
+
+            CreateMap<HygieneForm, HygieneFormGetDTO>()
+                .ForMember(dest => dest.GradeId, opt => opt.MapFrom(src => src.Classroom.GradeID));
+            CreateMap<HygieneFormAddDTO, HygieneForm>();
         }
     } 
 }

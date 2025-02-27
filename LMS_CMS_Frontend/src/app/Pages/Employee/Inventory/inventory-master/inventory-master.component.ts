@@ -14,6 +14,7 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { SalesService } from '../../../../Services/Employee/Inventory/sales.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
+import { InventoryFlag } from '../../../../Models/Inventory/inventory-flag';
 
 @Component({
   selector: 'app-inventory-master',
@@ -50,6 +51,8 @@ export class InventoryMasterComponent {
    isDeleting:boolean = false;
 
    FlagId:number =0;
+
+   inventoryFlag :InventoryFlag =new InventoryFlag()
  
    constructor(
      private router: Router,
@@ -167,6 +170,7 @@ export class InventoryMasterComponent {
          this.TotalPages = data.pagination.totalPages
          this.TotalRecords = data.pagination.totalRecords 
          this.TableData = data.data
+         this.inventoryFlag = data.inventoryFlag
        }, 
        (error) => { 
          if(error.status == 404){

@@ -607,9 +607,22 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<Gender, GenderGetDTO>();
 
-            CreateMap<HygieneType, HygieneTypeDto>().ReverseMap();
-            CreateMap<Diagnosis, DiagnosisDto>().ReverseMap();
-            CreateMap<Drug, DrugDto>().ReverseMap();
+            CreateMap<HygieneType, HygieneTypeAddDTO>();
+            CreateMap<HygieneTypeGetDTO, HygieneType>();
+            CreateMap<HygieneType, HygieneTypePutDTO>();
+
+            CreateMap<DiagnosisAddDTO, Diagnosis>();
+            CreateMap<Diagnosis, DiagnosisGetDTO>()
+                .ForMember(dest => dest.InsertedAt, opt => opt.MapFrom(src => src.InsertedAt));
+            CreateMap<Diagnosis, DiagnosisPutDTO>();
+
+            CreateMap<Drug, DrugAddDTO>();
+            CreateMap<DrugGetDTO, Drug>();
+            CreateMap<Drug, DrugPutDTO>();
+
+            CreateMap<HygieneForm, HygieneFormGetDTO>()
+                .ForMember(dest => dest.GradeId, opt => opt.MapFrom(src => src.Classroom.GradeID));
+            CreateMap<HygieneFormAddDTO, HygieneForm>();
         }
     } 
 }

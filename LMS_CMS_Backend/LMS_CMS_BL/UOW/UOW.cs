@@ -128,6 +128,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<HygieneType> HygieneType_Repository;
         GenericRepo<Diagnosis> Diagnosis_Repository;
         GenericRepo<Drug> Drug_Repository;
+        GenericRepo<HygieneForm> HygieneForm_Repository;
         GenericRepo<Cart> Cart_Repository;
         GenericRepo<PromoCode> PromoCode_Repository;
         GenericRepo<OrderState> OrderState_Repository;
@@ -1349,7 +1350,7 @@ namespace LMS_CMS_BL.UOW
                 {
                     Diagnosis_Repository = new GenericRepo<Diagnosis>(db);
                 }
-                return diagnosis_Repository;
+                return Diagnosis_Repository;
             }
         }
 
@@ -1361,7 +1362,19 @@ namespace LMS_CMS_BL.UOW
                 {
                     Drug_Repository = new GenericRepo<Drug>(db);
                 }
-                return drug_Repository;
+                return Drug_Repository;
+            }
+        }
+
+        public GenericRepo<HygieneForm> hygieneForm_Repository
+        {
+            get
+            {
+                if (HygieneForm_Repository == null)
+                {
+                    HygieneForm_Repository = new GenericRepo<HygieneForm>(db);
+                }
+                return HygieneForm_Repository;
             }
         }
 

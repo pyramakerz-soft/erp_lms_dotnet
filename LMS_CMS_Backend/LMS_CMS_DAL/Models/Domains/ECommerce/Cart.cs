@@ -16,11 +16,11 @@ namespace LMS_CMS_DAL.Models.Domains.ECommerce
         public int TotalPrice { get; set; }
 
         [ForeignKey("PromoCode")]
-        public long PromoCodeID { get; set; }
+        public long? PromoCodeID { get; set; }
         [ForeignKey("Student")]
         public long StudentID { get; set; }
 
-        public PromoCode PromoCode { get; set; }
+        public PromoCode? PromoCode { get; set; }
         public Student Student { get; set; }
 
         public ICollection<Order> Orders { get; set; } = new HashSet<Order>();

@@ -2360,11 +2360,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ClinicModule.Diagnosis", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -2413,11 +2413,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ClinicModule.Drug", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -2466,11 +2466,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ClinicModule.HygieneType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -2530,6 +2530,287 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasKey("ID");
 
                     b.ToTable("Days");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.Cart", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long?>("OrderStateID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("PromoCodeID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StudentID")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TotalPrice")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("OrderStateID");
+
+                    b.HasIndex("PromoCodeID");
+
+                    b.HasIndex("StudentID");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("Cart");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.Cart_ShopItem", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long>("CartID")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("ShopItemColorID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ShopItemID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ShopItemSizeID")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CartID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("ShopItemColorID");
+
+                    b.HasIndex("ShopItemID");
+
+                    b.HasIndex("ShopItemSizeID");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("Cart_ShopItem");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.Order", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long>("CartID")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("OrderStateID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StudentID")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TotalPrice")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CartID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("OrderStateID");
+
+                    b.HasIndex("StudentID");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.OrderState", b =>
+                {
+                    b.Property<long>("ID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("OrderState");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.PromoCode", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Percentage")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("PromoCode");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Employee", b =>
@@ -2964,7 +3245,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Price")
@@ -3008,10 +3288,26 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("ID")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Name")
+                    b.Property<int>("FlagValue")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemInOut")
+                        .HasColumnType("int");
+
+                    b.Property<string>("arName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ar_Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("enName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("en_Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -3282,10 +3578,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<long>("GenderID")
+                    b.Property<long?>("GenderID")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("GradeID")
+                    b.Property<long?>("GradeID")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("InsertedAt")
@@ -3330,7 +3626,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<float>("VATForForeign")
+                    b.Property<float?>("VATForForeign")
                         .HasColumnType("real");
 
                     b.HasKey("ID");
@@ -7010,6 +7306,163 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("UpdatedByEmployee");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.Cart", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.ECommerce.OrderState", null)
+                        .WithMany("Carts")
+                        .HasForeignKey("OrderStateID");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.ECommerce.PromoCode", "PromoCode")
+                        .WithMany("Carts")
+                        .HasForeignKey("PromoCodeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Student", "Student")
+                        .WithMany("Carts")
+                        .HasForeignKey("StudentID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("PromoCode");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.Cart_ShopItem", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.ECommerce.Cart", "Cart")
+                        .WithMany("Cart_ShopItems")
+                        .HasForeignKey("CartID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.ShopItemColor", "ShopItemColor")
+                        .WithMany("Cart_ShopItems")
+                        .HasForeignKey("ShopItemColorID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.ShopItem", "ShopItem")
+                        .WithMany("Cart_ShopItems")
+                        .HasForeignKey("ShopItemID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.ShopItemSize", "ShopItemSize")
+                        .WithMany("Cart_ShopItems")
+                        .HasForeignKey("ShopItemSizeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("ShopItem");
+
+                    b.Navigation("ShopItemColor");
+
+                    b.Navigation("ShopItemSize");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.Order", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.ECommerce.Cart", "Cart")
+                        .WithMany("Orders")
+                        .HasForeignKey("CartID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.ECommerce.OrderState", "OrderState")
+                        .WithMany("Orders")
+                        .HasForeignKey("OrderStateID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Student", "Student")
+                        .WithMany("Orders")
+                        .HasForeignKey("StudentID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("OrderState");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.PromoCode", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Employee", b =>
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Administration.AcademicDegree", "AcademicDegree")
@@ -7340,14 +7793,12 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Gender", "Gender")
                         .WithMany("ShopItem")
                         .HasForeignKey("GenderID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Grade", "Grade")
                         .WithMany("ShopItem")
                         .HasForeignKey("GradeID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -8738,6 +9189,25 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("EmployeeDays");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.Cart", b =>
+                {
+                    b.Navigation("Cart_ShopItems");
+
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.OrderState", b =>
+                {
+                    b.Navigation("Carts");
+
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.PromoCode", b =>
+                {
+                    b.Navigation("Carts");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Employee", b =>
                 {
                     b.Navigation("DrivenBuses");
@@ -8796,11 +9266,23 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.ShopItem", b =>
                 {
+                    b.Navigation("Cart_ShopItems");
+
                     b.Navigation("InventoryDetails");
 
                     b.Navigation("ShopItemColor");
 
                     b.Navigation("ShopItemSize");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.ShopItemColor", b =>
+                {
+                    b.Navigation("Cart_ShopItems");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.ShopItemSize", b =>
+                {
+                    b.Navigation("Cart_ShopItems");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.Store", b =>
@@ -8881,6 +9363,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 {
                     b.Navigation("BusStudents");
 
+                    b.Navigation("Carts");
+
                     b.Navigation("EmployeeStudents");
 
                     b.Navigation("FeesActivations");
@@ -8888,6 +9372,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("InstallmentDeductionMasters");
 
                     b.Navigation("InventoryMaster");
+
+                    b.Navigation("Orders");
 
                     b.Navigation("StudentAcademicYears");
                 });

@@ -103,6 +103,8 @@ import { SalesItemComponent } from './Pages/Employee/Inventory/sales-item/sales-
 import { HygieneTypesComponent } from './Pages/Employee/Clinic/hygiene-types/hygiene-types.component';
 import { DiagnosisComponent } from './Pages/Employee/Clinic/diagnosis/diagnosis.component';
 import { DrugsComponent } from './Pages/Employee/Clinic/drugs/drugs.component';
+import { InventoryMasterComponent } from './Pages/Employee/Inventory/inventory-master/inventory-master.component';
+import { InventoryDetailsComponent } from './Pages/Employee/Inventory/inventory-details/inventory-details.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[] },
@@ -207,10 +209,10 @@ export const routes: Routes = [
             { path: "Shop Item/Create", component: ShopItemsAddEditComponent, title: "Create Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Shop Item/:id", component: ShopItemsAddEditComponent, title: "Edit Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Stores", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Sales", component: SalesComponent, title: "Sales" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Sales Item", component: SalesItemComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Sales Item/View/:id", component: SalesItemComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Sales Item/Edit/:id", component: SalesItemComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Sales", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 11 } },
+            { path: "Sales Item/:FlagId", component: InventoryDetailsComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Purchase", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 9 } },
+            { path: "Sales Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Sales Item" , canActivate:[noNavigateWithoutLoginGuard ]},
 
         ]
     },

@@ -10,6 +10,7 @@ using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Controllers.Domains.Inventory
 {
@@ -49,6 +50,32 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             List<InventoryCategoriesGetDto> inventoryCategoriesGetDto = mapper.Map<List<InventoryCategoriesGetDto>>(InventoryCategories);
+
+            return Ok(inventoryCategoriesGetDto);
+        }
+
+        ///////////////////////////////////////////
+
+        [HttpGet("ByStoreId/{id}")]
+        [Authorize_Endpoint_(
+           allowedTypes: new[] { "octa", "employee" },
+           pages: new[] { "Inventory Categories" }
+        )]
+        public async Task<IActionResult> GetByStoreIdAsync(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<StoreCategories> StoreCategories = await Unit_Of_Work.storeCategories_Repository.Select_All_With_IncludesById<StoreCategories>(
+                    b => b.IsDeleted != true && b.StoreID==id,
+                    query => query.Include(store => store.InventoryCategories)
+                    );
+
+            if (StoreCategories == null || StoreCategories.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<InventoryCategoriesGetDto> inventoryCategoriesGetDto = mapper.Map<List<InventoryCategoriesGetDto>>(StoreCategories);
 
             return Ok(inventoryCategoriesGetDto);
         }

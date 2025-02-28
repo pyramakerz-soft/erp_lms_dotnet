@@ -25,6 +25,12 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long StoreID { get; set; }
         public long StudentID { get; set; }
         public long FlagId { get; set; }
+        public string FlagEnName { get; set; }
+        public string FlagArName { get; set; }
+        public string? FlagEnTitle { get; set; }
+        public string? FlagArTitle { get; set; }
+        public int ItemInOut { get; set; }
+        public int FlagValue { get; set; }
         public long? SaveID { get; set; }
         public long? BankID { get; set; }
         public string? StoreName { get; set; }

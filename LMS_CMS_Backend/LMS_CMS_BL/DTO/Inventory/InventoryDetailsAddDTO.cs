@@ -12,7 +12,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public int Quantity { get; set; }
         public float Price { get; set; }
         public float TotalPrice { get; set; }
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
         public long ShopItemID { get; set; }
         public long InventoryMasterId { get; set; }
     }

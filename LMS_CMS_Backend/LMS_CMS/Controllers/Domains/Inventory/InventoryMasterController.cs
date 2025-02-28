@@ -37,7 +37,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("ByFlagId/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sales" }
+            pages: new[] { "Inventory" }
         )]
         public async Task<IActionResult> GetAsync(long id ,[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -54,6 +54,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     f => f.IsDeleted != true && f.FlagId==id,
                     query => query.Include(store => store.Store),
                     query => query.Include(store => store.Student),
+                    query => query.Include(store => store.InventoryFlags),
                     query => query.Include(store => store.Save),
                     query => query.Include(store => store.Bank))
                 .Skip((pageNumber - 1) * pageSize)
@@ -64,6 +65,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound();
             }
+            InventoryFlags inventoryFlags = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(i=>i.ID==id);
+            InventoryFlagGetDTO Flagdto = mapper.Map<InventoryFlagGetDTO>(inventoryFlags);
 
             List<InventoryMasterGetDTO> DTO = mapper.Map<List<InventoryMasterGetDTO>>(Data);
 
@@ -75,7 +78,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
             };
 
-            return Ok(new { Data = DTO, Pagination = paginationMetadata });
+            return Ok(new { Data = DTO, Pagination = paginationMetadata , inventoryFlag=Flagdto });
         }
 
 
@@ -84,7 +87,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Sales" }
+          pages: new[] { "Inventory" }
     )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -92,7 +95,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (id == 0)
             {
-                return BadRequest("Enter Sale ID");
+                return BadRequest("Enter Master ID");
             }
 
             InventoryMaster Data = await Unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
@@ -100,6 +103,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     query => query.Include(store => store.Store),
                     query => query.Include(store => store.Student),
                     query => query.Include(store => store.Save),
+                    query => query.Include(store => store.InventoryFlags),
                     query => query.Include(store => store.Bank)
                     );
             
@@ -109,7 +113,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             InventoryMasterGetDTO DTO = mapper.Map<InventoryMasterGetDTO>(Data);
-            string serverUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Sales";
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Master";
             //subject.IconLink = $"{serverUrl}{subject.IconLink.Replace("\\", "/")}";
             if (Data.Attachments != null)
             {
@@ -124,7 +128,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sales" }
+            pages: new[] { "Inventory" }
         )]
         public async Task<IActionResult> Add([FromForm] InventoryMasterAddDTO newData)
         {
@@ -141,7 +145,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (newData == null)
             {
-                return BadRequest("Sale cannot be null.");
+                return BadRequest("Master cannot be null.");
             }
 
             Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreID && b.IsDeleted!= true);
@@ -154,6 +158,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             if (student == null)
             {
                 return NotFound("Student not found.");
+            }
+
+            LMS_CMS_DAL.Models.Domains.Inventory.InventoryFlags flag = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(b => b.ID == newData.FlagId);
+            if (flag == null)
+            {
+                return NotFound("flag not found.");
             }
 
             if (newData.BankID != 0 && newData.BankID != null)
@@ -182,6 +192,49 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 newData.SaveID = null;
             }
 
+            if (newData.InventoryDetails.Count == 0)
+            {
+                return BadRequest("InventoryDetails IsRequired");
+            }
+
+            /// Validations
+            
+            if(newData.IsVisa == false)
+            {
+                newData.VisaAmount = 0;
+                newData.BankID=null;
+            }
+            if (newData.IsCash == false)
+            {
+                newData.CashAmount = 0;
+                newData.SaveID = null;
+            }
+
+            double expectedItemsPrice = newData.InventoryDetails?.Sum(item => item.TotalPrice) ?? 0;
+            if (newData.Total != expectedItemsPrice)
+            {
+                return BadRequest("Total should be sum up all the totalPrice values in InventoryDetails");
+
+            }
+
+            if (newData.FlagId==8 || newData.FlagId == 9 || newData.FlagId == 10 || newData.FlagId == 11 || newData.FlagId == 12)
+            {
+                double expectedRemaining = (newData.Total) - ((newData.CashAmount ?? 0) + (newData.VisaAmount ?? 0));
+                if(expectedRemaining != newData.Remaining)
+                {
+                    return BadRequest("Total should be sum up all the totalPrice values in InventoryDetails");
+                }
+
+                
+            }
+
+            newData.InventoryDetails.RemoveAll(item =>
+            {
+                var shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(s => s.ID == item.ShopItemID && s.IsDeleted != true);
+                return shopItem == null;
+            });
+
+            /// Create
             InventoryMaster Master = mapper.Map<InventoryMaster>(newData);
             LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
             Master.InvoiceNumber = await _InVoiceNumberCreate.GetNextInvoiceNumber(db ,newData.StoreID, newData.FlagId);
@@ -207,7 +260,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             long SaleID = 0;
             SaleID = Master.ID;
 
-            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Sales");
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Master");
             var saleFolder = Path.Combine(baseFolder, Master.ID.ToString());
 
             if (!Directory.Exists(saleFolder))
@@ -242,29 +295,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             await Unit_Of_Work.SaveChangesAsync();
 
 
-            ////Save InventoryDetails
-
-            //if (newData.InventoryDetailsArray != null && newData.InventoryDetailsArray.Any())
-            //{
-            //    foreach (var item in newData.InventoryDetailsArray)
-            //    {
-            //        if (item == null) continue;
-
-            //        InventoryDetails salesItem = mapper.Map<InventoryDetails>(item);
-            //        salesItem.InventoryMasterId = Master.ID;
-
-            //        salesItem.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            //        if (userTypeClaim == "octa")
-            //            salesItem.InsertedByOctaId = userId;
-            //        else if (userTypeClaim == "employee")
-            //            salesItem.InsertedByUserId = userId;
-
-            //        Unit_Of_Work.inventoryDetails_Repository.Add(salesItem);
-            //    }
-            //}
-
-            await Unit_Of_Work.SaveChangesAsync();
-
             return Ok(Master.ID);
         }
 
@@ -276,7 +306,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-             pages: new[] { "Sales" }
+             pages: new[] { "Inventory" }
         )]
         public async Task<IActionResult> EditAsync([FromForm] InventoryMasterEditDTO newSale)
         {
@@ -346,7 +376,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
              
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Sales", roleId, userId, sale);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Inventory", roleId, userId, sale);
                 if (accessCheck != null)
                 {
                     return accessCheck;
@@ -354,7 +384,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             mapper.Map(newSale, sale);
-            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Sales");
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Master");
             var saleFolder = Path.Combine(baseFolder, sale.ID.ToString());
 
             if (!Directory.Exists(saleFolder))
@@ -380,7 +410,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                             await item.CopyToAsync(stream);
                         }
 
-                        var fileUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Sales/{newSale.ID}/{item.FileName}";
+                        var fileUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Master/{newSale.ID}/{item.FileName}";
                         sale.Attachments.Add(fileUrl);
                     }
                 }
@@ -435,7 +465,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
         allowDelete: 1,
-        pages: new[] { "Sales" }
+        pages: new[] { "Inventory" }
     )]
         public IActionResult Delete(long id)
         {
@@ -467,7 +497,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Sales", roleId, userId, sales);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Inventory", roleId, userId, sales);
                 if (accessCheck != null)
                 {
                     return accessCheck;

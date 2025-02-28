@@ -1,4 +1,5 @@
-﻿using LMS_CMS_DAL.Models.Domains.LMS;
+﻿using LMS_CMS_DAL.Models.Domains.ECommerce;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,7 +24,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public string ArDescription { get; set; }
         public float PurchasePrice { get; set; }
         public float SalesPrice { get; set; }
-        public float VATForForeign { get; set; }
+        public float? VATForForeign { get; set; }
         public int Limit { get; set; }
         public bool AvailableInShop { get; set; }
         public string? MainImage { get; set; }
@@ -31,7 +32,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public string BarCode { get; set; }
 
         [ForeignKey("Gender")]
-        public long GenderID { get; set; }
+        public long? GenderID { get; set; }
         
         [ForeignKey("InventorySubCategories")]
         public long InventorySubCategoriesID { get; set; }
@@ -40,15 +41,16 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public long SchoolID { get; set; }
         
         [ForeignKey("Grade")]
-        public long GradeID { get; set; }
+        public long? GradeID { get; set; }
 
-        public Gender Gender { get; set; }
+        public Gender? Gender { get; set; }
         public InventorySubCategories InventorySubCategories { get; set; }
         public School School { get; set; }
-        public Grade Grade { get; set; }
+        public Grade? Grade { get; set; }
 
         public ICollection<InventoryDetails> InventoryDetails { get; set; } = new HashSet<InventoryDetails>();
         public ICollection<ShopItemColor> ShopItemColor { get; set; } = new HashSet<ShopItemColor>();
         public ICollection<ShopItemSize> ShopItemSize { get; set; } = new HashSet<ShopItemSize>();
+        public ICollection<Cart_ShopItem> Cart_ShopItems { get; set; } = new HashSet<Cart_ShopItem>();
     }
 }

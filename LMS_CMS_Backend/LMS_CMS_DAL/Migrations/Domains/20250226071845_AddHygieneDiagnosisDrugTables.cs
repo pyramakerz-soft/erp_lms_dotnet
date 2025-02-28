@@ -15,7 +15,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "Diagnoses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -53,7 +53,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "Drugs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -91,7 +91,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "HygieneTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     InsertedByUserId = table.Column<long>(type: "bigint", nullable: true),

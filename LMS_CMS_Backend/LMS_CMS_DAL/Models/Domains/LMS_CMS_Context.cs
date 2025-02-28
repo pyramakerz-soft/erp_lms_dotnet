@@ -2,6 +2,7 @@
 using LMS_CMS_DAL.Models.Domains.Administration;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.ClinicModule;
+using LMS_CMS_DAL.Models.Domains.ECommerce;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
@@ -111,11 +112,15 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<SalesItemAttachment> SalesItemAttachment { get; set; }
         public DbSet<InventoryDetails> InventoryDetails { get; set; }
         public DbSet<InventoryMaster> InventoryMaster { get; set; }
-        public DbSet<InventoryFlags> InventoryFlags { get; set; }
-
+        public DbSet<InventoryFlags> InventoryFlags { get; set; } 
         public DbSet<HygieneType> HygieneTypes { get; set; }
         public DbSet<Diagnosis> Diagnoses { get; set; }
         public DbSet<Drug> Drugs { get; set; }
+        public DbSet<PromoCode> PromoCode { get; set; }
+        public DbSet<Cart> Cart { get; set; }
+        public DbSet<OrderState> OrderState { get; set; }
+        public DbSet<Order> Order { get; set; }
+        public DbSet<Cart_ShopItem> Cart_ShopItem { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -176,8 +181,12 @@ namespace LMS_CMS_DAL.Models.Domains
                .HasIndex(p => p.BarCode)
                .IsUnique();
 
+            modelBuilder.Entity<OrderState>()
+               .HasIndex(p => p.Name)
+               .IsUnique();
+
             ///////////////////////// No Identity: /////////////////////////
-            
+
             modelBuilder.Entity<Page>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
@@ -243,6 +252,10 @@ namespace LMS_CMS_DAL.Models.Domains
                 .ValueGeneratedNever();
 
             modelBuilder.Entity<InventoryFlags>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<OrderState>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
@@ -993,6 +1006,59 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasForeignKey(p => p.FlagId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Cart>()
+                .HasOne(p => p.PromoCode)
+                .WithMany(p => p.Carts)
+                .HasForeignKey(p => p.PromoCodeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Cart>()
+                .HasOne(p => p.Student)
+                .WithMany(p => p.Carts)
+                .HasForeignKey(p => p.StudentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Cart_ShopItem>()
+                .HasOne(p => p.Cart)
+                .WithMany(p => p.Cart_ShopItems)
+                .HasForeignKey(p => p.CartID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Cart_ShopItem>()
+                .HasOne(p => p.ShopItem)
+                .WithMany(p => p.Cart_ShopItems)
+                .HasForeignKey(p => p.ShopItemID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Cart_ShopItem>()
+                .HasOne(p => p.ShopItemColor)
+                .WithMany(p => p.Cart_ShopItems)
+                .HasForeignKey(p => p.ShopItemColorID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Cart_ShopItem>()
+                .HasOne(p => p.ShopItemSize)
+                .WithMany(p => p.Cart_ShopItems)
+                .HasForeignKey(p => p.ShopItemSizeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(p => p.OrderState)
+                .WithMany(p => p.Orders)
+                .HasForeignKey(p => p.OrderStateID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(p => p.Student)
+                .WithMany(p => p.Orders)
+                .HasForeignKey(p => p.StudentID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(p => p.Cart)
+                .WithMany(p => p.Orders)
+                .HasForeignKey(p => p.CartID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()

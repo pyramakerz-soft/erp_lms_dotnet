@@ -1,4 +1,4 @@
-<div class="flex justify-between items-center">
+<!-- <div class="flex justify-between items-center">
     <div class="flex justify-between items-center space-x-5">
         <i class="fa-solid fa-chevron-left" (click)="moveToMaster()"></i>
         <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">
@@ -60,12 +60,12 @@
     </div>
     <div class="flex justify-start w-full mb-4 space-x-5">
         <div class="flex w-[8%] space-x-5 items-center mb-4">
-            <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isCash">
+            <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isCash" (ngModelChange)="handleCashChange($event)">
             <label for="exception" class="text-sm">Chash</label>
         </div>
         <div *ngIf="Data.isCash" class="flex flex-col mb-4 w-[15%]">
-            <input id="name" type="cashAmount" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                placeholder="Enter Amount" [(ngModel)]="Data.cashAmount" />
+            <input id="cashAmount" type="number" [(ngModel)]="Data.cashAmount"  class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                (ngModelChange)="TotalandRemainingCalculate()" placeholder="Enter Amount"/>
         </div>
         <div *ngIf="Data.isCash" class="flex flex-col w-[23%] mb-4">
             <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="save"
@@ -77,12 +77,12 @@
         </div>
 
         <div class="flex w-[8%] space-x-5 items-center mb-4">
-            <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isVisa">
+            <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isVisa"  (ngModelChange)="handleVisaChange($event)">
             <label for="exception" class="text-sm">Visa</label>
         </div>
         <div *ngIf="Data.isVisa" class="flex flex-col mb-4 w-[15%]">
-            <input id="name" type="visaAmount" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                placeholder="Enter Amount" [(ngModel)]="Data.visaAmount" />
+            <input id="visaAmount" type="number"  [(ngModel)]="Data.visaAmount" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                (ngModelChange)="TotalandRemainingCalculate()" placeholder="Enter Amount"/>
         </div>
         <div *ngIf="Data.isVisa" class="flex flex-col w-[23%] mb-4">
             <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bank"
@@ -139,7 +139,6 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
                         <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
                             {{ img.split('/').pop() }}
                         </p>
@@ -149,7 +148,6 @@
                     </button>
                 </div>
                 <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
                 <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
                     Click to View
                 </p>
@@ -163,7 +161,6 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
                         <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
                             {{ img.name }}
                         </p>
@@ -173,7 +170,6 @@
                     </button>
                 </div>
                 <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
                 <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
                     Click to View
                 </p>
@@ -187,7 +183,6 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
                         <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
                             {{ img.name }}
                         </p>
@@ -197,7 +192,6 @@
                     </button>
                 </div>
                 <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
                 <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
                     Click to View
                 </p>
@@ -286,7 +280,6 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- No Data Row -->
                 <tr *ngIf="(Data.inventoryDetails?.length === 0) && !IsOpenToAdd && mode === 'Create'">
                     <td colspan="11"
                         class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
@@ -301,7 +294,6 @@
                     </td>
                 </tr>
 
-                <!-- Data Rows -->
                 <tr *ngFor="let row of (mode === 'Create' ? Data.inventoryDetails : TableData) || []; let i = index"
                     [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
                     class="border-t border-gray-300 text-xs md:text-sm">
@@ -309,34 +301,23 @@
                         {{ row.barCode }}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ Data.id }}
+                        {{ row.shopItemID }}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <ng-container *ngIf="editingRowId === row.id; else textModeName">
-                            <input [(ngModel)]="row.name" class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                        </ng-container>
-                        <ng-template #textModeName>{{ row.shopItemName }}</ng-template>
+                        {{ row.shopItemName }}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <ng-container *ngIf="editingRowId === row.id; else textModequantity">
-                            <input [(ngModel)]="row.quantity"
+                            <input [(ngModel)]="row.quantity" (ngModelChange)="CalculateTotalPrice(row)"
                                 class="w-full border border-gray-300 px-2 py-1 rounded-md">
                         </ng-container>
                         <ng-template #textModequantity>{{ row.quantity }}</ng-template>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <ng-container *ngIf="editingRowId === row.id; else textModeprice">
-                            <input [(ngModel)]="row.price" type="price"
-                                class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                        </ng-container>
-                        <ng-template #textModeprice>{{ row.price }}</ng-template>
+                        {{ row.price }}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <ng-container *ngIf="editingRowId === row.id; else textModetotalPrice">
-                            <input [(ngModel)]="row.totalPrice" type="totalPrice"
-                                class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                        </ng-container>
-                        <ng-template #textModetotalPrice>{{ row.totalPrice }}</ng-template>
+                        {{ row.totalPrice }}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <ng-container *ngIf="editingRowId === row.id; else textModenotes">
@@ -345,41 +326,38 @@
                         </ng-container>
                         <ng-template #textModenotes>{{ row.notes }}</ng-template>
                     </td>
-                    <td *ngIf="mode=='Edit'" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
-                            <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row.id)">
+                            <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row)">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
                             <button *ngIf="editingRowId === row.id" (click)="SaveEdit(row)">
                                 <i class="far fa-check-circle secondaryTxt"></i>
                             </button>
-                            <button *ngIf="editingRowId !== row.id" (click)="Edit(row.id)">
+                            <button *ngIf="editingRowId !== row.id" (click)="Edit(row)">
                                 <i class="fa-solid fa-pencil"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
-                <!-- Data Rows -->
-                <tr *ngIf="IsOpenToAdd==true" class="border-t border-gray-300 text-xs md:text-sm bg-[#F7F7F7]">
+                <tr *ngIf="IsOpenToAdd==true && SelectedSopItem !=null" class="border-t border-gray-300 text-xs md:text-sm bg-[#F7F7F7]">
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ShopItem.barCode}}
+                        {{Item.barCode}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ShopItem.id}}
+                        {{Item.shopItemID}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ShopItem.enName}}
+                        {{Item.shopItemName}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="Item.quantity" 
-                               (ngModelChange)="CalculateTotalPrice(Item.quantity)"
-                               class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                      </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ShopItem.salesPrice}}
+                        <input [(ngModel)]="Item.quantity"  (ngModelChange)="CalculateTotalPrice()"
+                            class="w-full border border-gray-300 px-2 py-1 rounded-md">
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <!-- <input [(ngModel)]="Item.totalPrice" class="w-full border border-gray-300 px-2 py-1 rounded-md"> -->
+                        {{Item.price}}
+                    </td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         {{Item.totalPrice}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
@@ -399,4 +377,4 @@
             </tbody>
         </table>
     </div>
-</div>
+</div> -->

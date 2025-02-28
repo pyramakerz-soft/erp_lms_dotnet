@@ -58,11 +58,6 @@
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter diagnosis name" [(ngModel)]="diagnosis.name" (ngModelChange)="onInputValueChange({ field: 'name', value: $event })" />
         <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
       </div>
-      <div class="flex flex-col w-full mb-4">
-        <label class="mb-2 primaryTxt" for="date">Date</label>
-        <input id="date" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" [(ngModel)]="diagnosis.date" (ngModelChange)="onInputValueChange({ field: 'date', value: $event })" />
-        <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{ validationErrors['date'] }}</span>
-      </div>
     </div>
     <div class="flex justify-end">
       <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="saveDiagnosis()">Save</button>

@@ -105,6 +105,8 @@ import { DiagnosisComponent } from './Pages/Employee/Clinic/diagnosis/diagnosis.
 import { DrugsComponent } from './Pages/Employee/Clinic/drugs/drugs.component';
 import { InventoryMasterComponent } from './Pages/Employee/Inventory/inventory-master/inventory-master.component';
 import { InventoryDetailsComponent } from './Pages/Employee/Inventory/inventory-details/inventory-details.component';
+import { HygieneFormComponent } from './Pages/Employee/Clinic/hygiene-form/hygiene-form.component';
+import { CreateHygieneFormComponent } from './Pages/Employee/Clinic/create-hygiene-form/create-hygiene-form.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[] },
@@ -118,9 +120,11 @@ export const routes: Routes = [
         title: "Employee Home", 
         canActivate:[navigateIfEmployeeGuard, noNavigateWithoutLoginGuard], 
         children: [
-            { path: "hy", component: HygieneTypesComponent, title: "Login" },
-            { path: "di", component: DiagnosisComponent, title: "Login" },
-            { path: "dr", component: DrugsComponent, title: "Login" },
+            { path: "Hygiene Types", component: HygieneTypesComponent, title: "Hygiene Types", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard] },
+            { path: "Diagnosis", component: DiagnosisComponent, title: "Diagnosis" },
+            { path: "Drugs", component: DrugsComponent, title: "Drugs" },
+            { path: "Hygiene Form Medical Report", component: HygieneFormComponent, title: "Hygiene Form" },
+            { path: "Create Hygiene Form", component: CreateHygieneFormComponent, title: "Create Hygiene Form" },
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }, 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Students/:domainName/:busId", component: BusStudentComponent, title: "Bus Students", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]}, 

@@ -103,10 +103,10 @@ import { SalesItemComponent } from './Pages/Employee/Inventory/sales-item/sales-
 import { HygieneTypesComponent } from './Pages/Employee/Clinic/hygiene-types/hygiene-types.component';
 import { DiagnosisComponent } from './Pages/Employee/Clinic/diagnosis/diagnosis.component';
 import { DrugsComponent } from './Pages/Employee/Clinic/drugs/drugs.component';
-import { InventoryMasterComponent } from './Pages/Employee/Inventory/inventory-master/inventory-master.component';
-import { InventoryDetailsComponent } from './Pages/Employee/Inventory/inventory-details/inventory-details.component';
 import { HygieneFormComponent } from './Pages/Employee/Clinic/hygiene-form/hygiene-form.component';
 import { CreateHygieneFormComponent } from './Pages/Employee/Clinic/create-hygiene-form/create-hygiene-form.component';
+import { InventoryMasterComponent } from './Pages/Employee/Inventory/inventory-master/inventory-master.component';
+import { InventoryDetailsComponent } from './Pages/Employee/Inventory/inventory-details/inventory-details.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[] },

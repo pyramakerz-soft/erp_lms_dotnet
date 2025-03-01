@@ -107,30 +107,29 @@
                     <!-- Student Name -->
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ student.name }}</td>
 
-                    <!-- Attendance -->
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <label class="switch">
-                            <input type="checkbox" [(ngModel)]="student.attendance"
-                                (change)="toggleAttendance(student)">
-                            <span class="slider round"></span>
-                        </label>
-                    </td>
+                <!-- Attendance -->
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" [(ngModel)]="student.attendance" class="sr-only peer">
+                        <div
+                            class="relative w-11 h-6 bg-[#EAECF0] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#FF7519]/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5  after:transition-all peer-checked:bg-[#FF7519]">
+                        </div>
+                    </label>
+                </td>
 
                     <!-- Select All -->
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex gap-2">
                             <button (click)="setSelectAll(student, true)" [ngClass]="{
-                                    'bg-green-500 text-white': student.selectAll === true,
-                                    'bg-gray-200 text-gray-700': student.selectAll !== true
-                                }"
-                                class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
+                  'bg-green-500 text-white': student.selectAll === true,
+                  'bg-gray-200 text-gray-700': student.selectAll !== true
+                }" class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
                                 ✓
                             </button>
                             <button (click)="setSelectAll(student, false)" [ngClass]="{
-                                    'bg-red-500 text-white': student.selectAll === false,
-                                    'bg-gray-200 text-gray-700': student.selectAll !== false
-                                }"
-                                class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
+                  'bg-red-500 text-white': student.selectAll === false,
+                  'bg-gray-200 text-gray-700': student.selectAll !== false
+                }" class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
                                 ✗
                             </button>
                         </div>
@@ -140,17 +139,15 @@
                     <td *ngFor="let _ of [1, 2, 3, 4]" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex gap-2">
                             <button (click)="setHair(student, true)" [ngClass]="{
-                                    'bg-green-500 text-white': student.hair === true,
-                                    'bg-gray-200 text-gray-700': student.hair !== true
-                                }"
-                                class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
+                  'bg-green-500 text-white': student.hair === true,
+                  'bg-gray-200 text-gray-700': student.hair !== true
+                }" class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
                                 ✓
                             </button>
                             <button (click)="setHair(student, false)" [ngClass]="{
-                                    'bg-red-500 text-white': student.hair === false,
-                                    'bg-gray-200 text-gray-700': student.hair !== false
-                                }"
-                                class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
+                  'bg-red-500 text-white': student.hair === false,
+                  'bg-gray-200 text-gray-700': student.hair !== false
+                }" class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
                                 ✗
                             </button>
                         </div>
@@ -160,17 +157,15 @@
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex gap-2">
                             <button (click)="setNails(student, true)" [ngClass]="{
-                                    'bg-green-500 text-white': student.nails === true,
-                                    'bg-gray-200 text-gray-700': student.nails !== true
-                                }"
-                                class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
+                  'bg-green-500 text-white': student.nails === true,
+                  'bg-gray-200 text-gray-700': student.nails !== true
+                }" class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
                                 ✓
                             </button>
                             <button (click)="setNails(student, false)" [ngClass]="{
-                                    'bg-red-500 text-white': student.nails === false,
-                                    'bg-gray-200 text-gray-700': student.nails !== false
-                                }"
-                                class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
+                  'bg-red-500 text-white': student.nails === false,
+                  'bg-gray-200 text-gray-700': student.nails !== false
+                }" class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200">
                                 ✗
                             </button>
                         </div>

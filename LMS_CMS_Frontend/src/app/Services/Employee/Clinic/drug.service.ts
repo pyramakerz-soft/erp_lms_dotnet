@@ -1,13 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HygieneTypes } from '../../../Models/Clinic/hygiene-types';
 import { ApiService } from '../../api.service';
+import { Drug } from '../../../Models/Clinic/drug';
 
 @Injectable({
   providedIn: 'root',
 })
-export class HygieneTypesService {
+export class DrugService {
   baseUrl = '';
   header = '';
 
@@ -16,20 +16,20 @@ export class HygieneTypesService {
   }
 
   
-  Get(DomainName: string): Observable<HygieneTypes[]> {
+  Get(DomainName: string): Observable<Drug[]> {
     if (DomainName != null) {
       this.header = DomainName;
     }
     const token = localStorage.getItem('current_token');
     const headers = new HttpHeaders()
-      .set('Domain-Name', this.header) 
-      .set('Authorization', `Bearer ${token}`) 
-      .set('accept', '*/*'); 
-    return this.http.get<HygieneTypes[]>(`${this.baseUrl}/HygieneType`, { headers });
+      .set('Domain-Name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('accept', '*/*');
+    return this.http.get<Drug[]>(`${this.baseUrl}/Drug`, { headers });
   }
 
   
-  Add(hygieneType: HygieneTypes, DomainName: string): Observable<any> {
+  Add(drug: Drug, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName;
     }
@@ -39,14 +39,14 @@ export class HygieneTypesService {
       .set('Authorization', `Bearer ${token}`)
       .set('accept', '*/*')
       .set('Content-Type', 'application/json');
-    return this.http.post<any>(`${this.baseUrl}/HygieneType`, hygieneType, {
+    return this.http.post<any>(`${this.baseUrl}/Drug`, drug, {
       headers: headers,
       responseType: 'text' as 'json',
     });
   }
 
   
-  Edit(hygieneType: HygieneTypes, DomainName: string): Observable<HygieneTypes> {
+  Edit(drug: Drug, DomainName: string): Observable<Drug> {
     if (DomainName != null) {
       this.header = DomainName;
     }
@@ -56,7 +56,7 @@ export class HygieneTypesService {
       .set('Authorization', `Bearer ${token}`)
       .set('accept', '*/*')
       .set('Content-Type', 'application/json');
-    return this.http.put<HygieneTypes>(`${this.baseUrl}/HygieneType`, hygieneType, { headers });
+    return this.http.put<Drug>(`${this.baseUrl}/Drug`, drug, { headers });
   }
 
   
@@ -70,20 +70,6 @@ export class HygieneTypesService {
       .set('Authorization', `Bearer ${token}`)
       .set('accept', '*/*')
       .set('Content-Type', 'application/json');
-    return this.http.delete(`${this.baseUrl}/HygieneType?id=${id}`, { headers, responseType: 'text' });
-  }
-
-
-  
-  Search(key: string, value: string, DomainName: string): Observable<HygieneTypes[]> {
-    if (DomainName != null) {
-      this.header = DomainName;
-    }
-    const token = localStorage.getItem('current_token');
-    const headers = new HttpHeaders()
-      .set('Domain-Name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('accept', '*/*');
-    return this.http.get<HygieneTypes[]>(`${this.baseUrl}/HygieneTypes/search?key=${key}&value=${value}`, { headers });
+    return this.http.delete(`${this.baseUrl}/Drug?id=${id}`, { headers, responseType: 'text' });
   }
 }

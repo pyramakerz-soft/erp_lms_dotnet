@@ -1,73 +1,127 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import Swal from 'sweetalert2';
 import { SearchComponent } from '../../../../Component/search/search.component';
+import { ModalComponent } from '../../../../Component/modal/modal.component';
+import Swal from 'sweetalert2';
+import { TableComponent } from '../../../../Component/reuse-table/reuse-table.component';
+import { ApiService } from '../../../../Services/api.service';
+import { DrugService } from '../../../../Services/Employee/Clinic/drug.service';
+import { Drug } from '../../../../Models/Clinic/drug';
 
 @Component({
   selector: 'app-drugs',
   standalone: true,
-  imports: [FormsModule, CommonModule, SearchComponent],
+  imports: [FormsModule, CommonModule, SearchComponent, ModalComponent, TableComponent],
   templateUrl: './drugs.component.html',
-  styleUrls: ['./drugs.component.css']
+  styleUrls: ['./drugs.component.css'],
 })
-export class DrugsComponent {
-  drugs: any[] = [];
-  drug: any = { id: null, name: '', date: '' };
+export class DrugsComponent implements OnInit {
+  drug: Drug = new Drug(0, '', new Date());
   editDrug = false;
   validationErrors: { [key: string]: string } = {};
-  keysArray: string[] = ['id', 'name', 'date'];
+  keysArray: string[] = ['id', 'name', 'insertedAt'];
+  key: string = "id";
+  value: any = "";
+  isModalVisible = false;
+  drugs: Drug[] = [];
+  DomainName: string = '';
 
+  constructor(
+    private drugService: DrugService,
+    private apiService: ApiService
+  ) {}
+
+  ngOnInit(): void {
+    this.DomainName = this.apiService.GetHeader(); // Get the domain name from ApiService
+    this.getDrugs();
+  }
+
+  // Fetch drugs
+  async getDrugs() {
+    try {
+      const data = await firstValueFrom(this.drugService.Get(this.DomainName));
+      this.drugs = data.map((item) => ({
+        ...item,
+        actions: { delete: true, edit: true }, // Add actions dynamically
+      }));
+    } catch (error) {
+      console.error('Error loading data:', error);
+      this.drugs = []; // Clear the table if there's an error
+    }
+  }
+
+  // Open modal for create/edit
   openModal(id?: number) {
     if (id) {
       this.editDrug = true;
-      this.drug = this.drugs.find(drug => drug.id === id);
+      this.drug = this.drugs.find((drug) => drug.id === id)!;
     } else {
-      this.drug = { id: null, name: '', date: '' };
+      this.drug = new Drug(0, '', new Date()); // Reset form for new entry
+      this.editDrug = false;
     }
-    document.getElementById("Add_Drug_Modal")?.classList.remove("hidden");
-    document.getElementById("Add_Drug_Modal")?.classList.add("flex");
+    this.isModalVisible = true; // Show the modal
   }
 
+  // Close modal
   closeModal() {
-    document.getElementById("Add_Drug_Modal")?.classList.remove("flex");
-    document.getElementById("Add_Drug_Modal")?.classList.add("hidden");
-    this.drug = { id: null, name: '', date: '' };
+    this.isModalVisible = false; // Hide the modal
+    this.drug = new Drug(0, '', new Date()); // Reset form
     this.editDrug = false;
     this.validationErrors = {};
   }
 
+  // Save or update drug
   saveDrug() {
     if (this.validateForm()) {
       if (this.editDrug) {
-        const index = this.drugs.findIndex(drug => drug.id === this.drug.id);
-        this.drugs[index] = { ...this.drug };
+        this.drugService.Edit(this.drug, this.DomainName).subscribe(() => {
+          this.getDrugs();
+          this.closeModal();
+        });
       } else {
-        this.drug.id = this.drugs.length + 1;
-        this.drugs.push({ ...this.drug });
+        // Set the current date for new drugs
+        this.drug.insertedAt = new Date().toISOString();
+        this.drugService.Add(this.drug, this.DomainName).subscribe(() => {
+          this.getDrugs();
+          this.closeModal();
+        });
       }
-      this.closeModal();
     }
   }
 
-  deleteDrug(id: number) {
+  // Delete drug
+  deleteDrug(row: any) {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this drug!',
+      title: 'Are you sure you want to delete this drug?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
-      cancelButtonColor: '#2E3646',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.drugs = this.drugs.filter(drug => drug.id !== id);
-        Swal.fire('Deleted!', 'The drug has been deleted.', 'success');
+        this.drugService.Delete(row.id, this.DomainName).subscribe({
+          next: (response) => {
+            // Log the plain text response (optional)
+            console.log('Delete response:', response);
+
+            // Refresh the table after successful deletion
+            this.getDrugs();
+            Swal.fire('Deleted!', 'The drug has been deleted.', 'success');
+          },
+          error: (error) => {
+            console.error('Error deleting drug:', error);
+            Swal.fire('Error!', 'Failed to delete the drug.', 'error');
+          },
+        });
       }
     });
   }
 
+  // Validate form
   validateForm(): boolean {
     let isValid = true;
     if (!this.drug.name) {
@@ -76,29 +130,36 @@ export class DrugsComponent {
     } else {
       this.validationErrors['name'] = '';
     }
-    if (!this.drug.date) {
-      this.validationErrors['date'] = '*Date is required';
-      isValid = false;
-    } else {
-      this.validationErrors['date'] = '';
-    }
     return isValid;
   }
 
-  onInputValueChange(event: { field: string, value: any }) {
+  // Handle input changes
+  onInputValueChange(event: { field: string; value: any }) {
     const { field, value } = event;
-    this.drug[field] = value;
+    (this.drug as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
   }
 
-  onSearchEvent(event: { key: string, value: any }) {
-    const { key, value } = event;
-    if (value) {
-      this.drugs = this.drugs.filter(drug => drug[key].toString().toLowerCase().includes(value.toLowerCase()));
-    } else {
-      this.drugs = [...this.drugs];
+  // Handle search
+  async onSearchEvent(event: { key: string; value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    await this.getDrugs();
+    if (this.value != "") {
+      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+
+      this.drugs = this.drugs.filter(t => {
+        const fieldValue = t[this.key as keyof typeof t];
+        if (typeof fieldValue === 'string') {
+          return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+        }
+        if (typeof fieldValue === 'number') {
+          return fieldValue === numericValue;
+        }
+        return fieldValue == this.value;
+      });
     }
   }
 }

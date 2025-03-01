@@ -30,10 +30,12 @@ export class HygieneFormComponent {
   constructor(private router: Router) {
     this.addActionsToHygieneForms(); // Add actions to hygiene forms on initialization
   }
-  ngOnInit() {
+ngOnInit() {
+  // Load saved hygiene forms from localStorage
   const savedForms = localStorage.getItem('hygieneForms');
   if (savedForms) {
     this.hygieneForms = JSON.parse(savedForms);
+    this.addActionsToHygieneForms(); // Add actions to hygiene forms
   }
 }
 

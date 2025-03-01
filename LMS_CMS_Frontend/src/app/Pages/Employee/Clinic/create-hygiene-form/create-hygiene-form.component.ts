@@ -40,10 +40,10 @@ export class CreateHygieneFormComponent {
 
   constructor(private router: Router) {}
 
-  // Toggle Attendance
-  toggleAttendance(student: any) {
-    student.attendance = !student.attendance;
-  }
+// Toggle Attendance
+toggleAttendance(student: any) {
+  student.attendance = !student.attendance;
+}
 
   // Set Select All
   setSelectAll(student: any, value: boolean) {
@@ -75,21 +75,42 @@ setNails(student: any, value: boolean) {
     else student.nails = null;
   }
 
-  // Save Hygiene Form
-  saveHygieneForm() {
-    const newHygieneForm = {
-      id: this.students.length + 1,
-      school: this.schools.find(s => s.id === this.selectedSchool)?.name,
-      grade: this.grades.find(g => g.id === this.selectedGrade)?.name,
-      class: this.classes.find(c => c.id === this.selectedClass)?.name,
-      date: this.selectedDate,
-      students: this.students,
-    };
+// Save Hygiene Form
+saveHygieneForm() {//not paired to backend yet
+  const newHygieneForm = {
+    id: this.students.length + 1,
+    school: this.schools.find(s => s.id === this.selectedSchool)?.name,
+    grade: this.grades.find(g => g.id === this.selectedGrade)?.name,
+    class: this.classes.find(c => c.id === this.selectedClass)?.name,
+    date: this.selectedDate,
+    students: this.students,
+  };
 
-    // Save to local storage or send to backend
-    localStorage.setItem('hygieneForms', JSON.stringify(newHygieneForm));
+  // Retrieve existing hygiene forms from localStorage
+  const savedForms = localStorage.getItem('hygieneForms');
+  let existingForms = [];
 
-    // Navigate back to the main Hygiene Form page
-    this.router.navigate(['/Employee/Hygiene Form']);
+  if (savedForms) {
+    try {
+      // Parse the saved forms and ensure it's an array
+      existingForms = JSON.parse(savedForms);
+      if (!Array.isArray(existingForms)) {
+        console.error('Saved forms is not an array. Resetting to an empty array.');
+        existingForms = [];
+      }
+    } catch (error) {
+      console.error('Error parsing saved forms. Resetting to an empty array.', error);
+      existingForms = [];
+    }
   }
+
+  // Add the new form to the list
+  existingForms.push(newHygieneForm);
+
+  // Save the updated list back to localStorage
+  localStorage.setItem('hygieneForms', JSON.stringify(existingForms));
+
+  // Navigate back to the main Hygiene Form page
+  this.router.navigate(['/Employee/Hygiene Form']);
+}
 }

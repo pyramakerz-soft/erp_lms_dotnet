@@ -59,10 +59,11 @@ async getHygieneTypes() {
       actions: { delete: true, edit: true }, // Add actions dynamically
     }));
   } catch (error) {
-    this.hygieneTypes = [];
-    console.log('Error loading data:', error);
+    console.error('Error loading data:', error);
+    this.hygieneTypes = []; // Clear the table if there's an error
   }
 }
+
 
   // Open modal for create/edit
 openModal(id?: number) {
@@ -101,26 +102,35 @@ openModal(id?: number) {
     }
   }
 
-  // Delete hygiene type
-deleteHygieneType(row: any) {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'You will not be able to recover this hygiene type!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#FF7519',
-    cancelButtonColor: '#2E3646',
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'No, keep it',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.hygieneTypesService.Delete(row.id, this.DomainName).subscribe(() => {
-        this.getHygieneTypes(); // Refresh the table after deletion
-        Swal.fire('Deleted!', 'The hygiene type has been deleted.', 'success');
-      });
-    }
-  });
-}
+  // Delete drug
+  deleteHygieneType(row: any) {
+    Swal.fire({
+      title: 'Are you sure you want to delete this drug?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.hygieneTypesService.Delete(row.id, this.DomainName).subscribe({
+          next: (response) => {
+            // Log the plain text response (optional)
+            console.log('Delete response:', response);
+
+            // Refresh the table after successful deletion
+            this.getHygieneTypes();
+            Swal.fire('Deleted!', 'The drug has been deleted.', 'success');
+          },
+          error: (error) => {
+            console.error('Error deleting drug:', error);
+            Swal.fire('Error!', 'Failed to delete the drug.', 'error');
+          },
+        });
+      }
+    });
+  }
 
   // Validate form
   validateForm(): boolean {

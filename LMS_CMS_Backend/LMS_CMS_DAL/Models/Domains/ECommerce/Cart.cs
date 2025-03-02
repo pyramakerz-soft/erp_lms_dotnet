@@ -13,7 +13,7 @@ namespace LMS_CMS_DAL.Models.Domains.ECommerce
     {
         [Key]
         public long ID { get; set; }
-        public int TotalPrice { get; set; }
+        public float TotalPrice { get; set; }
 
         [ForeignKey("PromoCode")]
         public long? PromoCodeID { get; set; }

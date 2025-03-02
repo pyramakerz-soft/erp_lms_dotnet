@@ -128,7 +128,12 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<HygieneType> HygieneType_Repository;
         GenericRepo<Diagnosis> Diagnosis_Repository;
         GenericRepo<Drug> Drug_Repository;
+        GenericRepo<Dose> Dose_Repository;
         GenericRepo<HygieneForm> HygieneForm_Repository;
+        GenericRepo<StudentHygieneTypes> StudentHygieneTypes_Repository;
+        GenericRepo<FollowUp> FollowUp_Repository;
+        GenericRepo<FollowUpDrug> FollowUpDrug_Repository;
+        GenericRepo<MedicalHistory> MedicalHistory_Repository;
         GenericRepo<Cart> Cart_Repository;
         GenericRepo<PromoCode> PromoCode_Repository;
         GenericRepo<OrderState> OrderState_Repository;
@@ -1366,6 +1371,18 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
+        public GenericRepo<Dose> dose_Repository
+        {
+            get
+            {
+                if (Dose_Repository == null)
+                {
+                    Dose_Repository = new GenericRepo<Dose>(db);
+                }
+                return Dose_Repository;
+            }
+        }
+
         public GenericRepo<HygieneForm> hygieneForm_Repository
         {
             get
@@ -1375,6 +1392,54 @@ namespace LMS_CMS_BL.UOW
                     HygieneForm_Repository = new GenericRepo<HygieneForm>(db);
                 }
                 return HygieneForm_Repository;
+            }
+        }
+
+        public GenericRepo<FollowUp> followUp_Repository
+        {
+            get
+            {
+                if (FollowUp_Repository == null)
+                {
+                    FollowUp_Repository = new GenericRepo<FollowUp>(db);
+                }
+                return FollowUp_Repository;
+            }
+        }
+
+        public GenericRepo<FollowUpDrug> followUpDrug_Repository
+        {
+            get
+            {
+                if (FollowUpDrug_Repository == null)
+                {
+                    FollowUpDrug_Repository = new GenericRepo<FollowUpDrug>(db);
+                }
+                return FollowUpDrug_Repository;
+            }
+        }
+
+        public GenericRepo<StudentHygieneTypes> studentHygieneTypes_Repository
+        {
+            get
+            {
+                if (StudentHygieneTypes_Repository == null)
+                {
+                    StudentHygieneTypes_Repository = new GenericRepo<StudentHygieneTypes>(db);
+                }
+                return StudentHygieneTypes_Repository;
+            }
+        }
+
+        public GenericRepo<MedicalHistory> medicalHistory_Repository
+        {
+            get
+            {
+                if (MedicalHistory_Repository == null)
+                {
+                    MedicalHistory_Repository = new GenericRepo<MedicalHistory>(db);
+                }
+                return MedicalHistory_Repository;
             }
         }
 

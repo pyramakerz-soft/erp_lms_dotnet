@@ -645,9 +645,25 @@ namespace LMS_CMS_BL.Config
             CreateMap<Drug, DrugGetDTO>();
             CreateMap<DrugPutDTO, Drug>();
 
-            CreateMap<HygieneForm, HygieneFormGetDTO>()
-                .ForMember(dest => dest.GradeId, opt => opt.MapFrom(src => src.Classroom.GradeID));
+            CreateMap<DoseAddDTO, Dose>();
+            CreateMap<Dose, DoseGetDTO>();
+            CreateMap<DosePutDTO, Dose>();
+
             CreateMap<HygieneFormAddDTO, HygieneForm>();
+            CreateMap<HygieneForm, HygieneFormGetDTO>();
+            CreateMap<HygieneFormPutDTO, HygieneForm>();
+
+            CreateMap<FollowUpAddDTO, FollowUp>();
+            CreateMap<FollowUp, FollowUpGetDTO>();
+            CreateMap<FollowUpPutDTO, FollowUp>();
+
+            CreateMap<FollowUpDrugAddDTO, FollowUpDrug>();
+            CreateMap<FollowUpDrug, FollowUpDrugGetDTO>();
+            CreateMap<FollowUpDrugPutDTO, FollowUpDrug>();
+
+            CreateMap<MedicalHistoryAddDTO, MedicalHistory>();
+            CreateMap<MedicalHistory, MedicalHistoryGetDTO>();
+            CreateMap<MedicalHistoryPutDTO, MedicalHistory>();
         }
     } 
 }

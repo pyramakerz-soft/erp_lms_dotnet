@@ -35,6 +35,6 @@ namespace LMS_CMS_DAL.Models.Domains.ClinicModule
 
         public string? PermanentDrug { get; set; }
 
-        public string[]? Attachments { get; set; }
+        public ICollection<MedicalHistoryFiles>? Files { get; set; } = new HashSet<MedicalHistoryFiles>();
     }
 }

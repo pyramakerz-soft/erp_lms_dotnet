@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using Microsoft.AspNetCore.Http;
 
 namespace LMS_CMS_BL.DTO.Clinic
@@ -19,8 +20,6 @@ namespace LMS_CMS_BL.DTO.Clinic
         public long? StudentId { get; set; }
 
         public string? Details { get; set; }
-
-        public int? Attached { get; set; } = 0;
 
         public string? PermanentDrug { get; set; }
 

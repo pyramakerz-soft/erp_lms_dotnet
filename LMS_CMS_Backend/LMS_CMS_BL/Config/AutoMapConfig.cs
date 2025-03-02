@@ -650,11 +650,6 @@ namespace LMS_CMS_BL.Config
             CreateMap<DosePutDTO, Dose>();
 
             CreateMap<HygieneFormAddDTO, HygieneForm>();
-            CreateMap<DoseAddDTO, Dose>();
-            CreateMap<Dose, DoseGetDTO>();
-            CreateMap<DosePutDTO, Dose>();
-
-            CreateMap<HygieneFormAddDTO, HygieneForm>();
             CreateMap<HygieneForm, HygieneFormGetDTO>();
             CreateMap<HygieneFormPutDTO, HygieneForm>();
 

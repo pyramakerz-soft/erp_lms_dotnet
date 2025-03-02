@@ -7,6 +7,7 @@ using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Controllers.Domains.Clinic
 {
@@ -22,6 +23,39 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;
         }
+
+        #region Get
+        [HttpGet]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Medical History" }
+        )]
+        public IActionResult Get()
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            List<MedicalHistory> medicalHistories = Unit_Of_Work.medicalHistory_Repository.FindBy(m => m.IsDeleted != true);
+
+            if (medicalHistories == null || medicalHistories.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<MedicalHistoryGetDTO> medicalHistoryGets = _mapper.Map<List<MedicalHistoryGetDTO>>(medicalHistories);
+
+            return Ok(medicalHistoryGets);
+        }
+        #endregion
 
         #region Add Medical History
         [HttpPost]
@@ -78,6 +112,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             MedicalHistory medicalHistory = _mapper.Map<MedicalHistory>(historyAddDTO);
 
+            medicalHistory.Attached = historyAddDTO.Attachments.Count;
+
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             medicalHistory.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
 
@@ -92,25 +128,38 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             Unit_Of_Work.medicalHistory_Repository.Add(medicalHistory);
             Unit_Of_Work.SaveChanges();
-
-            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/MedicalHistories");
-            var medicalHistoryFolder = Path.Combine(baseFolder, medicalHistory.Student?.en_name + "_" + medicalHistory.Id);
-
-            if (!Directory.Exists(medicalHistoryFolder))
-            {
-                Directory.CreateDirectory(medicalHistoryFolder);
-            }
+                     
 
             if (historyAddDTO.Attachments is not null || historyAddDTO.Attachments.Any())
             {
-                foreach (IFormFile file in historyAddDTO.Attachments)
+                var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/MedicalHistories");
+                var medicalHistoryFolder = Path.Combine(baseFolder, medicalHistory.Student?.en_name + "_" + medicalHistory.Id);
+
+                if (!Directory.Exists(medicalHistoryFolder))
                 {
-                    medicalHistory.Attachments.Append(
-                    Path.Combine("Uploads", "MedicalHistories", file.FileName + "_" + medicalHistory.Id));
+                    Directory.CreateDirectory(medicalHistoryFolder);
+                }
+
+                foreach (var file in historyAddDTO.Attachments)
+                {
+                    MedicalHistoryFiles medicalHistoryFiles = new MedicalHistoryFiles
+                    {
+                        FileName = file.FileName,
+                        MedicalHistoryId = medicalHistory.Id,
+                    };
+
+                    var filePath = Path.Combine(medicalHistoryFolder, file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    Path.Combine("Uploads", "MedicalHistories", file.FileName + "_" + medicalHistory.Id);
+
+                    Unit_Of_Work.medicalHistoryFiles_Repository.Add(medicalHistoryFiles);
                 }
             }
 
-            Unit_Of_Work.medicalHistory_Repository.Update(medicalHistory);
             Unit_Of_Work.SaveChanges();
 
             return Ok(historyAddDTO);

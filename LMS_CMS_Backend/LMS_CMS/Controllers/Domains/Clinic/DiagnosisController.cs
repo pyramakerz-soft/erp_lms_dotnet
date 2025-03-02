@@ -80,7 +80,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (diagnosis == null)
             {
-                return NotFound("No Diagnosis with this ID");
+                return NotFound();
             }
             
             DiagnosisGetDTO diagnosisDto = _mapper.Map<DiagnosisGetDTO>(diagnosis);
@@ -168,7 +168,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (diagnosis == null || diagnosis.IsDeleted == true)
             {
-                return NotFound("No Diagnosis Type with this ID");
+                return NotFound();
             }
 
             _mapper.Map(diagnosisDto, diagnosis);
@@ -233,7 +233,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (diagnosis == null)
             {
-                return NotFound("No Diagnosis with this ID");
+                return NotFound();
             }
 
             diagnosis.IsDeleted = true;

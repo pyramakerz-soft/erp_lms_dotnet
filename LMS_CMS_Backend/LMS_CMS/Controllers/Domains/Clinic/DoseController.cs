@@ -10,12 +10,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
-    public class HygieneFormController : ControllerBase
+    public class DoseController : ControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly DbContextFactoryService _dbContextFactory;
+        private readonly IMapper _mapper;
 
-        public HygieneFormController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public DoseController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;
@@ -25,33 +25,33 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Doses" }
         )]
-        public ActionResult Get()
+        public IActionResult Get()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-            
+
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            
+
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            
+
             if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            
-            List<HygieneForm> hygieneForms = Unit_Of_Work.hygieneForm_Repository.FindBy(d => d.IsDeleted != true);
 
-            if (hygieneForms == null || hygieneForms.Count == 0)
+            List<Dose> dose = Unit_Of_Work.dose_Repository.FindBy(d => d.IsDeleted != true);
+
+            if (dose == null || dose.Count == 0)
             {
                 return NotFound();
             }
-            
-            List<HygieneFormGetDTO> hygieneFormsDto = _mapper.Map<List<HygieneFormGetDTO>>(hygieneForms);
-            
-            return Ok(hygieneFormsDto);
+
+            List<DoseGetDTO> DoseDto = _mapper.Map<List<DoseGetDTO>>(dose);
+
+            return Ok(DoseDto);
         }
         #endregion
 
@@ -59,9 +59,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpGet("id")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Doses" }
         )]
-        public ActionResult GetByID(long id)
+        public IActionResult GetByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -76,35 +76,35 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.Select_By_Id(id);
+            Dose dose = Unit_Of_Work.dose_Repository.First_Or_Default(d => d.Id == id && d.IsDeleted != true);
 
-            if (hygieneForm == null)
+            if (dose == null)
             {
                 return NotFound();
             }
 
-            HygieneFormGetDTO hygieneFormDto = _mapper.Map<HygieneFormGetDTO>(hygieneForm);
+            DoseGetDTO doseDto = _mapper.Map<DoseGetDTO>(dose);
 
-            return Ok(hygieneFormDto);
+            return Ok(doseDto);
         }
         #endregion
 
-        #region Add Hygiene Form
+        #region Add Dose
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Doses" }
         )]
-        public ActionResult Add(HygieneFormAddDTO hygieneFormDTO)
+        public IActionResult Add(DoseAddDTO doseDto)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-            
+
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            
+
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            
+
             if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
@@ -112,49 +112,46 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (!ModelState.IsValid)
             {
-                return BadRequest("Hygiene Form can not be null");
+                return BadRequest("Please enter the Name field.");
             }
 
-            HygieneForm hygieneForm = _mapper.Map<HygieneForm>(hygieneFormDTO);
+            Dose dose = _mapper.Map<Dose>(doseDto);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            hygieneForm.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            dose.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
 
             if (userTypeClaim == "octa")
             {
-                hygieneForm.InsertedByOctaId = userId;
+                dose.InsertedByOctaId = userId;
             }
 
             else if (userTypeClaim == "employee")
             {
-                hygieneForm.InsertedByUserId = userId;
+                dose.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.hygieneForm_Repository.Add(hygieneForm);
+            Unit_Of_Work.dose_Repository.Add(dose);
             Unit_Of_Work.SaveChanges();
 
-            foreach (var studentHygiene in hygieneForm.StudentHygieneTypes)
-            {
-                StudentHygieneTypes sht = _mapper.Map<StudentHygieneTypes>(studentHygiene);
-
-                sht.HygieneFormId = hygieneForm.Id;
-
-                Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
-            }
-
-            return Ok(hygieneFormDTO);
+            return Ok(doseDto);
         }
         #endregion
 
-        #region Update Hygiene Form
+        #region Update Dose
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            allowEdit: 1,
+            pages: new[] { "Doses" }
         )]
-        public ActionResult Update(HygieneFormPutDTO hygieneFormDTO)
+        public IActionResult Update(DosePutDTO doseDto)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
@@ -166,80 +163,106 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Hygiene Form can not be null");
-            }
 
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.First_Or_Default(d => d.Id == hygieneFormDTO.ID && d.IsDeleted != true);
+            Dose dose = Unit_Of_Work.dose_Repository.First_Or_Default(d => d.Id == doseDto.ID && d.IsDeleted != true);
 
-            if (hygieneForm == null)
+            if (dose == null || dose.IsDeleted == true)
             {
                 return NotFound();
             }
 
-            _mapper.Map(hygieneFormDTO, hygieneForm);
+            _mapper.Map(doseDto, dose);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
-            hygieneForm.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            dose.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
 
             if (userTypeClaim == "octa")
             {
-                hygieneForm.UpdatedByOctaId = userId;
-                if (hygieneForm.UpdatedByUserId != null)
+                dose.UpdatedByOctaId = userId;
+                if (dose.UpdatedByUserId != null)
                 {
-                    hygieneForm.UpdatedByUserId = null;
+                    dose.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                hygieneForm.UpdatedByUserId = userId;
-                if (hygieneForm.UpdatedByOctaId != null)
+                dose.UpdatedByUserId = userId;
+                if (dose.UpdatedByOctaId != null)
                 {
-                    hygieneForm.UpdatedByOctaId = null;
+                    dose.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.hygieneForm_Repository.Update(hygieneForm);
+            Unit_Of_Work.dose_Repository.Update(dose);
             Unit_Of_Work.SaveChanges();
 
-            return Ok(hygieneFormDTO);
+            return Ok(doseDto);
         }
         #endregion
 
-        #region Delete Hygiene Form
+        #region Delete Dose
         [HttpDelete]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            allowDelete: 1,
+            pages: new[] { "Doses" }
         )]
-        public ActionResult Delete(long id)
+        public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-            
+
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            
+
             long.TryParse(userIdClaim, out long userId);
+
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            
+
             if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.First_Or_Default(d => d.IsDeleted != true && d.Id == id);
 
-            if (hygieneForm == null)
+            if (id == 0)
+            {
+                return BadRequest("Dose ID cannot be null.");
+            }
+
+            Dose dose = Unit_Of_Work.dose_Repository.First_Or_Default(d => d.IsDeleted != true && d.Id == id);
+
+            if (dose == null)
             {
                 return NotFound();
             }
-            
-            Unit_Of_Work.hygieneForm_Repository.Delete(id);
+
+            dose.IsDeleted = true;
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            dose.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                dose.DeletedByOctaId = userId;
+
+                if (dose.DeletedByUserId != null)
+                {
+                    dose.DeletedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                dose.DeletedByUserId = userId;
+                if (dose.DeletedByOctaId != null)
+                {
+                    dose.DeletedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.dose_Repository.Update(dose);
             Unit_Of_Work.SaveChanges();
-            
-            return Ok("Hygiene Form deleted successfully");
+
+            return Ok("Dose deleted successfully");
         }
         #endregion
     }

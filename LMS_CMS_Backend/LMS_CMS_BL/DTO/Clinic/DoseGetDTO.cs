@@ -4,8 +4,8 @@ namespace LMS_CMS_BL.DTO.Clinic
 {
     public class DoseGetDTO
     {
-        [Required(ErrorMessage = "Name is required")]
-        public string Name { get; set; }
+        public long ID { get; set; }
+        public string DoseTimes { get; set; }
         public DateTime InsertedAt { get; set; }
     }
 }

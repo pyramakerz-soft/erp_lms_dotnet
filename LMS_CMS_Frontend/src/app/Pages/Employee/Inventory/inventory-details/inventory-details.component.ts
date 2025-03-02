@@ -30,6 +30,8 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { StudentService } from '../../../../Services/student.service';
 import { InventoryDetailsService } from '../../../../Services/Employee/Inventory/inventory-details.service';
 import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
+import { Supplier } from '../../../../Models/Accounting/supplier';
+import { SupplierService } from '../../../../Services/Employee/Accounting/supplier.service';
 
 @Component({
   selector: 'app-inventory-details',
@@ -49,6 +51,8 @@ export class InventoryDetailsComponent {
 
   Data: InventoryMaster = new InventoryMaster();
   FlagId:number=0
+  IsPriceEditable : boolean =false;
+  IsRemainingCashVisa :boolean =false ;
   DomainName: string = '';
   UserID: number = 0;
 
@@ -60,6 +64,8 @@ export class InventoryDetailsComponent {
   mode: string = "Create"
 
   students: Student[] = []
+  Suppliers :Supplier[]=[]
+  StoresForTitle :Store[]=[]
   Stores: Store[] = []
   Saves: Saves[] = []
   Banks: Bank[] = []
@@ -99,6 +105,7 @@ export class InventoryDetailsComponent {
     public CategoriesServ: InventoryCategoryService,
     public SubCategoriesServ: InventorySubCategoriesService,
     public shopitemServ: ShopItemService,
+    public SupplierServ : SupplierService
   ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -111,8 +118,24 @@ export class InventoryDetailsComponent {
     this.MasterId = Number(this.activeRoute.snapshot.paramMap.get('id'))
     this.FlagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
     this.Data.flagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
-    console.log("dd",this.FlagId)
-    await this.GetAllStudents()
+
+    if(this.FlagId==8||this.FlagId==9||this.FlagId==10||this.FlagId==11||this.FlagId==12){
+      this.IsRemainingCashVisa = true
+    }
+
+    if(this.FlagId==9){
+      if(this.mode=='Create')
+        this.IsPriceEditable=true
+    }
+
+    if(this.FlagId==8){
+
+    }else if(this.FlagId==9||this.FlagId==10){
+      this.GetAllSuppliers()
+    }else if(this.FlagId==11||this.FlagId==12){
+      await this.GetAllStudents()
+    }
+
     await this.GetAllStores()
     await this.GetAllSaves()
     await this.GetAllBanks()
@@ -165,6 +188,12 @@ export class InventoryDetailsComponent {
     })
   }
 
+  GetAllSuppliers(){
+    this.SupplierServ.Get(this.DomainName).SubScribe((d)=>{
+      this.Supplier=d
+    })
+  }
+
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d
@@ -212,7 +241,12 @@ export class InventoryDetailsComponent {
     this.SelectedSopItem = item;
     this.ShopItem = item
     this.Item.id = Date.now();  // it is random for edit and delete only 
-    this.Item.price = this.ShopItem.salesPrice ?? 0
+    if(this.FlagId==11 || this.FlagId==12){
+      this.Item.price = this.ShopItem.salesPrice ?? 0
+    }
+    else{
+      this.Item.price = this.ShopItem.purchasePrice ?? 0
+    }
     this.Item.shopItemID = this.ShopItem.id
     this.Item.shopItemName = this.ShopItem.enName
     this.Item.barCode = this.ShopItem.barCode

@@ -42,12 +42,11 @@
         <input id="name" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             (ngModelChange)=" onInputValueChange({ field: 'date', value: $event })" placeholder="Enter Date"
             [(ngModel)]="Data.date" />
-        <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{
-            validationErrors["date"]}}</span>
+        <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{validationErrors["date"]}}</span>
     </div>
 
 
-    <div class="flex flex-col w-[24%] mb-4">
+    <div *ngIf="IsRemainingCashVisa" class="flex flex-col w-[24%] mb-4">
         <label class="mb-2" for="student">Students</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student"
             (ngModelChange)=" onInputValueChange({ field: 'studentID', value: $event })" [(ngModel)]="Data.studentID">
@@ -58,7 +57,7 @@
         <span *ngIf="validationErrors['studentID']" class="text-red-500 ml-3 font-normal">{{
             validationErrors["studentID"]}}</span>
     </div>
-    <div class="flex justify-start w-full mb-4 space-x-5">
+    <div *ngIf="IsRemainingCashVisa" class="flex justify-start w-full mb-4 space-x-5">
         <div class="flex w-[8%] space-x-5 items-center mb-4">
             <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isCash" (ngModelChange)="handleCashChange($event)">
             <label for="exception" class="text-sm">Chash</label>
@@ -95,7 +94,7 @@
 
     </div>
 
-    <div class="flex flex-col mb-4 w-[24%]">
+    <div *ngIf="IsRemainingCashVisa" class="flex flex-col mb-4 w-[24%]">
         <label class="mb-2 primaryTxt" for="remaining">Remaining</label>
         <input id="remaining" type="remaining" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter remaining" [(ngModel)]="Data.remaining" readonly disabled />

@@ -79,7 +79,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (drug == null)
             {
-                return NotFound("No Drug with this ID");
+                return NotFound();
             }
 
             DrugGetDTO drugDto = _mapper.Map<DrugGetDTO>(drug);
@@ -163,9 +163,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             Drug drug = Unit_Of_Work.drug_Repository.First_Or_Default(d => d.Id == drugDto.ID && d.IsDeleted != true);
 
-            if (drug == null || drug.IsDeleted == true)
+            if (drug == null)
             {
-                return NotFound("There is no Drug with this id");
+                return NotFound();
             }
 
             _mapper.Map(drugDto, drug);
@@ -223,7 +223,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (drug == null)
             {
-                return NotFound("No Drug with this ID");
+                return NotFound();
             }
 
             drug.IsDeleted = true;

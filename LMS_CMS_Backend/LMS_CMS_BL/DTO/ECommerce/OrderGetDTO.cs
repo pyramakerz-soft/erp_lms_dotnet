@@ -12,7 +12,7 @@ namespace LMS_CMS_BL.DTO.ECommerce
         public long ID { get; set; }
         public int TotalPrice { get; set; }
         public long OrderStateID { get; set; }
-        public long OrderStateName { get; set; }
+        public string OrderStateName { get; set; }
         public long StudentID { get; set; }
         public long CartID { get; set; }
         public DateTime? InsertedAt { get; set; }

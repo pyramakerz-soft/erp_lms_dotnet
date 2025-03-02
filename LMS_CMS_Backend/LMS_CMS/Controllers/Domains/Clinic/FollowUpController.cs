@@ -5,17 +5,18 @@ using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Controllers.Domains.Clinic
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
-    public class HygieneFormController : ControllerBase
+    public class FollowUpController : ControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly DbContextFactoryService _dbContextFactory;
+        private readonly IMapper _mapper;
 
-        public HygieneFormController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public FollowUpController(DbContextFactoryService dbContextFactory, IMapper mapper)
         {
             _dbContextFactory = dbContextFactory;
             _mapper = mapper;
@@ -25,33 +26,33 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Follow Up" }
         )]
-        public ActionResult Get()
+        public IActionResult Get()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-            
+
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            
+
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            
+
             if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            
-            List<HygieneForm> hygieneForms = Unit_Of_Work.hygieneForm_Repository.FindBy(d => d.IsDeleted != true);
 
-            if (hygieneForms == null || hygieneForms.Count == 0)
+            List<FollowUp> followUps = Unit_Of_Work.followUp_Repository.FindBy(d => d.IsDeleted != true);
+
+            if (followUps == null || followUps.Count == 0)
             {
                 return NotFound();
             }
-            
-            List<HygieneFormGetDTO> hygieneFormsDto = _mapper.Map<List<HygieneFormGetDTO>>(hygieneForms);
-            
-            return Ok(hygieneFormsDto);
+
+            List<FollowUpGetDTO> followUpDto = _mapper.Map<List<FollowUpGetDTO>>(followUps);
+
+            return Ok(followUpDto);
         }
         #endregion
 
@@ -59,9 +60,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpGet("id")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Follow Up" }
         )]
-        public ActionResult GetByID(long id)
+        public async Task<IActionResult> GetByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -76,35 +77,36 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.Select_By_Id(id);
+            FollowUp followUp = await Unit_Of_Work.followUp_Repository
+                .FindByIncludesAsync(d => d.Id == id && d.IsDeleted != true, query => query.Include(f => f.FollowUpDrugs));
 
-            if (hygieneForm == null)
+            if (followUp == null)
             {
                 return NotFound();
             }
 
-            HygieneFormGetDTO hygieneFormDto = _mapper.Map<HygieneFormGetDTO>(hygieneForm);
+            FollowUpGetDTO followUpDto = _mapper.Map<FollowUpGetDTO>(followUp);
 
-            return Ok(hygieneFormDto);
+            return Ok(followUpDto);
         }
         #endregion
 
-        #region Add Hygiene Form
+        #region Add Follow Up
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Follow Up" }
         )]
-        public ActionResult Add(HygieneFormAddDTO hygieneFormDTO)
+        public IActionResult Add(FollowUpAddDTO followUpDto)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-            
+
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            
+
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            
+
             if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
@@ -112,49 +114,57 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (!ModelState.IsValid)
             {
-                return BadRequest("Hygiene Form can not be null");
+                return BadRequest();
             }
 
-            HygieneForm hygieneForm = _mapper.Map<HygieneForm>(hygieneFormDTO);
+            FollowUp followUp = _mapper.Map<FollowUp>(followUpDto);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            hygieneForm.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            followUp.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
 
             if (userTypeClaim == "octa")
             {
-                hygieneForm.InsertedByOctaId = userId;
+                followUp.InsertedByOctaId = userId;
             }
 
             else if (userTypeClaim == "employee")
             {
-                hygieneForm.InsertedByUserId = userId;
+                followUp.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.hygieneForm_Repository.Add(hygieneForm);
+            Unit_Of_Work.followUp_Repository.Add(followUp);
             Unit_Of_Work.SaveChanges();
 
-            foreach (var studentHygiene in hygieneForm.StudentHygieneTypes)
+            foreach (var followUpDrug in followUpDto.FollowUpDrugs)
             {
-                StudentHygieneTypes sht = _mapper.Map<StudentHygieneTypes>(studentHygiene);
+                FollowUpDrug fud = _mapper.Map<FollowUpDrug>(followUpDrug);
+                
+                fud.FollowUpId = followUp.Id;
 
-                sht.HygieneFormId = hygieneForm.Id;
-
-                Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
+                Unit_Of_Work.followUpDrug_Repository.Add(fud);
             }
+            
+            Unit_Of_Work.SaveChanges();
 
-            return Ok(hygieneFormDTO);
+            return Ok(followUpDto);
         }
         #endregion
 
-        #region Update Hygiene Form
+        #region Update Follow Up
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            allowEdit: 1,
+            pages: new[] { "Follow Up" }
         )]
-        public ActionResult Update(HygieneFormPutDTO hygieneFormDTO)
+        public IActionResult Update(FollowUpPutDTO followUpDto)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
@@ -166,80 +176,115 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Hygiene Form can not be null");
-            }
 
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.First_Or_Default(d => d.Id == hygieneFormDTO.ID && d.IsDeleted != true);
+            FollowUp followUp = Unit_Of_Work.followUp_Repository.First_Or_Default(d => d.Id == followUpDto.ID && d.IsDeleted != true);
 
-            if (hygieneForm == null)
+            if (followUp == null)
             {
                 return NotFound();
             }
 
-            _mapper.Map(hygieneFormDTO, hygieneForm);
+            _mapper.Map(followUpDto, followUp);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
-            hygieneForm.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            followUp.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
 
             if (userTypeClaim == "octa")
             {
-                hygieneForm.UpdatedByOctaId = userId;
-                if (hygieneForm.UpdatedByUserId != null)
+                followUp.UpdatedByOctaId = userId;
+                if (followUp.UpdatedByUserId != null)
                 {
-                    hygieneForm.UpdatedByUserId = null;
+                    followUp.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                hygieneForm.UpdatedByUserId = userId;
-                if (hygieneForm.UpdatedByOctaId != null)
+                followUp.UpdatedByUserId = userId;
+                if (followUp.UpdatedByOctaId != null)
                 {
-                    hygieneForm.UpdatedByOctaId = null;
+                    followUp.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.hygieneForm_Repository.Update(hygieneForm);
+            Unit_Of_Work.followUp_Repository.Update(followUp);
             Unit_Of_Work.SaveChanges();
 
-            return Ok(hygieneFormDTO);
+            foreach (var followUpDrug in followUpDto.FollowUpDrugs)
+            {
+                FollowUpDrug fud = _mapper.Map<FollowUpDrug>(followUpDrug);
+
+                Unit_Of_Work.followUpDrug_Repository.Update(fud);
+            }
+
+            Unit_Of_Work.SaveChanges();
+
+            return Ok(followUpDto);
         }
         #endregion
 
-        #region Delete Hygiene Form
+        #region Delete Follow Up
         [HttpDelete]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            allowDelete: 1,
+            pages: new[] { "Follow Up" }
         )]
-        public ActionResult Delete(long id)
+        public IActionResult Delete(long id)
         {
+            if (id == 0)
+            {
+                return BadRequest("Follow Up ID cannot be null.");
+            }
+
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-            
+
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            
+
             long.TryParse(userIdClaim, out long userId);
+
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-            
+
             if (userIdClaim == null || userTypeClaim == null)
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-            
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.First_Or_Default(d => d.IsDeleted != true && d.Id == id);
 
-            if (hygieneForm == null)
+            FollowUp followUp = Unit_Of_Work.followUp_Repository.First_Or_Default(d => d.IsDeleted != true && d.Id == id);
+
+            if (followUp == null)
             {
                 return NotFound();
             }
-            
-            Unit_Of_Work.hygieneForm_Repository.Delete(id);
+
+            followUp.IsDeleted = true;
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            followUp.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                followUp.DeletedByOctaId = userId;
+
+                if (followUp.DeletedByUserId != null)
+                {
+                    followUp.DeletedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                followUp.DeletedByUserId = userId;
+                if (followUp.DeletedByOctaId != null)
+                {
+                    followUp.DeletedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.followUp_Repository.Update(followUp);
             Unit_Of_Work.SaveChanges();
-            
-            return Ok("Hygiene Form deleted successfully");
+
+            return Ok("Follow Up deleted successfully");
         }
         #endregion
     }

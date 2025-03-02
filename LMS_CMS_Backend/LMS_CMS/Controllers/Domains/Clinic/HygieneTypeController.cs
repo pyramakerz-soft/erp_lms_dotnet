@@ -85,7 +85,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (hygieneType == null)
             {
-                return NotFound("No Hygiene Type with this ID");
+                return NotFound();
             }
 
             HygieneTypeGetDTO hygieneTypeDto = _mapper.Map<HygieneTypeGetDTO>(hygieneType);
@@ -173,7 +173,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (hygieneType == null)
             {
-                return NotFound("No Hygiene Type with this ID");
+                return NotFound();
             }
 
             _mapper.Map(hygieneTypeDto, hygieneType);

@@ -28,6 +28,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             this.mapper = mapper;
             _checkPageAccessService = checkPageAccessService;
         }
+        
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
         [HttpGet("ByStudentId/{id}")]
         [Authorize_Endpoint_(
@@ -60,7 +62,9 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             return Ok(orderDTO);
         }
 
-        [HttpGet("CancelOrder/{id}")]
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+        [HttpDelete("CancelOrder/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "student" }
         )]
@@ -83,6 +87,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             Unit_Of_Work.SaveChanges();
             return Ok();
         }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
         [HttpGet("ConfirmCart/{id}")]
         [Authorize_Endpoint_(
@@ -111,7 +117,16 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             }
 
             Order newOrder = new Order();
-            newOrder.TotalPrice = cart.TotalPrice;
+            if(cart.PromoCodeID != null && cart.PromoCodeID != 0)
+            {
+                float PriceAfterPromo = cart.TotalPrice - (cart.TotalPrice * (cart.PromoCode.Percentage / 100));
+                newOrder.TotalPrice = PriceAfterPromo;
+
+            }
+            else
+            {
+                newOrder.TotalPrice = cart.TotalPrice;
+            }
             newOrder.CartID = cart.ID;
             newOrder.StudentID = cart.StudentID;
             newOrder.OrderStateID = 1;

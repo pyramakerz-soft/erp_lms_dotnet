@@ -650,6 +650,25 @@ namespace LMS_CMS_BL.Config
             CreateMap<DosePutDTO, Dose>();
 
             CreateMap<HygieneFormAddDTO, HygieneForm>();
+            CreateMap<DoseAddDTO, Dose>();
+            CreateMap<Dose, DoseGetDTO>();
+            CreateMap<DosePutDTO, Dose>();
+
+            CreateMap<HygieneFormAddDTO, HygieneForm>();
+            CreateMap<HygieneForm, HygieneFormGetDTO>();
+            CreateMap<HygieneFormPutDTO, HygieneForm>();
+
+            CreateMap<FollowUpAddDTO, FollowUp>();
+            CreateMap<FollowUp, FollowUpGetDTO>();
+            CreateMap<FollowUpPutDTO, FollowUp>();
+
+            CreateMap<FollowUpDrugAddDTO, FollowUpDrug>();
+            CreateMap<FollowUpDrug, FollowUpDrugGetDTO>();
+            CreateMap<FollowUpDrugPutDTO, FollowUpDrug>();
+
+            CreateMap<MedicalHistoryAddDTO, MedicalHistory>();
+            CreateMap<MedicalHistory, MedicalHistoryGetDTO>();
+            CreateMap<MedicalHistoryPutDTO, MedicalHistory>();
 
             CreateMap<Order, OrderGetDTO>()
                 .ForMember(dest => dest.OrderStateName, opt => opt.MapFrom(src => src.OrderState.Name));

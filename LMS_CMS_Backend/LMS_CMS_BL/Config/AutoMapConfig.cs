@@ -648,6 +648,9 @@ namespace LMS_CMS_BL.Config
             CreateMap<HygieneForm, HygieneFormGetDTO>()
                 .ForMember(dest => dest.GradeId, opt => opt.MapFrom(src => src.Classroom.GradeID));
             CreateMap<HygieneFormAddDTO, HygieneForm>();
+
+            CreateMap<Order, OrderGetDTO>()
+                .ForMember(dest => dest.OrderStateName, opt => opt.MapFrom(src => src.OrderState.Name));
         }
     } 
 }

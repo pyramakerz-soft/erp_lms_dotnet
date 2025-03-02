@@ -17,5 +17,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
 
         public ICollection<StoreCategories> StoreCategories { get; set; } = new HashSet<StoreCategories>();
         public ICollection<InventoryMaster> InventoryMasters { get; set; } = new HashSet<InventoryMaster>();
+        public ICollection<InventoryMaster> InventoryMastersStoreToTransform { get; set; } = new HashSet<InventoryMaster>();
+
     }
 }

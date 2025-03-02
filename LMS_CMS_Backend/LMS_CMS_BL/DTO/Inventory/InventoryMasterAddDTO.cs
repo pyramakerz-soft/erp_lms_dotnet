@@ -20,15 +20,17 @@ namespace LMS_CMS_BL.DTO.Inventory
         public bool IsVisa { get; set; }
         public int? CashAmount { get; set; }
         public int? VisaAmount { get; set; }
-        public int Remaining { get; set; }
+        public int? Remaining { get; set; }
         public int Total { get; set; }
         public string? Notes { get; set; }
         public List<IFormFile>? Attachment { get; set; }
         public long StoreID { get; set; }
         public long FlagId { get; set; }
-        public long StudentID { get; set; }
+        public long? StudentID { get; set; }
         public long? SaveID { get; set; }
+        public long? SupplierId { get; set; }
         public long? BankID { get; set; }
+        public long? StoreToTransformId { get; set; }
         public List<InventoryDetailsAddDTO>? InventoryDetails { get; set; }
     }
 }

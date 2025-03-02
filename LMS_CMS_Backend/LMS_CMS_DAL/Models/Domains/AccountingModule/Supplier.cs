@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LMS_CMS_DAL.Models.Domains.Inventory;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -30,5 +31,6 @@ namespace LMS_CMS_DAL.Models.Domains.AccountingModule
         [ForeignKey("AccountNumber")]
         public long AccountNumberID { get; set; }
         public AccountingTreeChart AccountNumber { get; set; }
+        public ICollection<InventoryMaster> InventoryMasters { get; set; } = new HashSet<InventoryMaster>();
     }
 }

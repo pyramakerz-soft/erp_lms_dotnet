@@ -32,11 +32,13 @@ import { InventoryDetailsService } from '../../../../Services/Employee/Inventory
 import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
 import { Supplier } from '../../../../Models/Accounting/supplier';
 import { SupplierService } from '../../../../Services/Employee/Accounting/supplier.service';
+import { InventoryFlagService } from '../../../../Services/Employee/Inventory/inventory-flag.service';
+import { InventoryFlag } from '../../../../Models/Inventory/inventory-flag';
 
 @Component({
   selector: 'app-inventory-details',
   standalone: true,
-  imports: [FormsModule, CommonModule, SearchComponent],
+  imports: [FormsModule, CommonModule],
   templateUrl: './inventory-details.component.html',
   styleUrl: './inventory-details.component.css'
 })
@@ -72,6 +74,7 @@ export class InventoryDetailsComponent {
   Categories: Category[] = []
   subCategories: SubCategory[] = []
   ShopItems: ShopItem[] = []
+  InventoryFlag : InventoryFlag=new InventoryFlag()
 
   SelectedCategoryId: number | null = null;
   SelectedSubCategoryId: number | null = null;
@@ -105,7 +108,8 @@ export class InventoryDetailsComponent {
     public CategoriesServ: InventoryCategoryService,
     public SubCategoriesServ: InventorySubCategoriesService,
     public shopitemServ: ShopItemService,
-    public SupplierServ : SupplierService
+    public SupplierServ : SupplierService ,
+    public InventoryFlagServ : InventoryFlagService
   ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -139,6 +143,7 @@ export class InventoryDetailsComponent {
     await this.GetAllStores()
     await this.GetAllSaves()
     await this.GetAllBanks()
+    this.GetInventoryFlagInfo()
 
     if (!this.MasterId) {
       this.mode = "Create"
@@ -160,7 +165,7 @@ export class InventoryDetailsComponent {
   }
 
   moveToMaster() {
-    this.router.navigateByUrl(`Employee/Sales`)
+    this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
   }
 
   ////////////////////////////////////////////////////// Get Data
@@ -185,12 +190,13 @@ export class InventoryDetailsComponent {
   GetAllStores() {
     this.storeServ.Get(this.DomainName).subscribe((d) => {
       this.Stores = d
+      this.StoresForTitle =d
     })
   }
 
   GetAllSuppliers(){
-    this.SupplierServ.Get(this.DomainName).SubScribe((d)=>{
-      this.Supplier=d
+    this.SupplierServ.Get(this.DomainName).subscribe((d)=>{
+      this.Suppliers=d
     })
   }
 
@@ -205,6 +211,12 @@ export class InventoryDetailsComponent {
     this.CategoriesServ.GetByStoreId(this.DomainName , this.Data.storeID).subscribe((d) => {
       this.Categories = d
       console.log(d)
+    })
+  }
+
+  GetInventoryFlagInfo(){
+    this.InventoryFlagServ.GetById(this.FlagId , this.DomainName).subscribe((d) => {
+      this.InventoryFlag = d
     })
   }
 
@@ -253,6 +265,7 @@ export class InventoryDetailsComponent {
   }
 
   async GetTableDataByID(): Promise<void> {
+    console.log(this.MasterId)
     return new Promise((resolve) => {
       this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
         this.TableData = d;
@@ -285,16 +298,17 @@ export class InventoryDetailsComponent {
     }
   }
   Save() {
+    console.log(this.Data)
     if (this.isFormValid()) {
       if (this.mode == "Create") {
         this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
           this.MasterId = d
-          this.router.navigateByUrl(`Employee/Sales`)
+          this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
         })
       }
       if (this.mode == "Edit") {
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-          this.router.navigateByUrl(`Employee/Sales`)
+          this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
         })
       }
     }
@@ -498,7 +512,6 @@ export class InventoryDetailsComponent {
         const field = key as keyof InventoryMaster;
         if (!this.Data[field]) {
           if (
-            field == 'studentID' ||
             field == 'storeID' ||
             field == 'date'
           ) {
@@ -527,6 +540,22 @@ export class InventoryDetailsComponent {
         confirmButtonColor: '#FF7519',
       });
       return false;
+    }
+    if (this.FlagId==8&&this.Data.storeToTransformId==0) {
+      this.validationErrors['storeToTransformId']='Store Is Required'
+      return false;
+    }
+    if (this.FlagId==9||this.FlagId==10) {
+      if(this.Data.storeToTransformId==0){
+        this.validationErrors['supplierId']='Supplier Is Required'
+        return false;
+      }
+    }
+    if (this.FlagId==11||this.FlagId==12) {
+      if(this.Data.studentID==0){
+        this.validationErrors['studentID']='Student Is Required'
+        return false;
+      }
     }
     return isValid;
   }

@@ -46,7 +46,31 @@
     </div>
 
 
-    <div *ngIf="IsRemainingCashVisa" class="flex flex-col w-[24%] mb-4">
+    <div *ngIf="FlagId==8" class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2" for="storeToTransform">Store</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="storeToTransform"
+            (ngModelChange)=" onInputValueChange({ field: 'storeToTransformId', value: $event })" [(ngModel)]="Data.storeToTransformId">
+            <option [value]=0 disabled selected hidden>Choose Store</option>
+            <option *ngFor="let stu of StoresForTitle" [value]="stu.id">{{ stu.name }}</option>
+            <option *ngIf="StoresForTitle.length === 0" disabled selected>No Data Found</option>
+        </select>
+        <span *ngIf="validationErrors['storeToTransformId']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["storeToTransformId"]}}</span>
+    </div>
+
+    <div *ngIf="FlagId==9||FlagId==10" class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2" for="supplier">Supplires</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="supplier"
+            (ngModelChange)=" onInputValueChange({ field: 'supplierId', value: $event })" [(ngModel)]="Data.supplierId">
+            <option [value]=0 disabled selected hidden>Choose Supplier</option>
+            <option *ngFor="let stu of Suppliers" [value]="stu.id">{{ stu.name }}</option>
+            <option *ngIf="Suppliers.length === 0" disabled selected>No Data Found</option>
+        </select>
+        <span *ngIf="validationErrors['supplierId']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["supplierId"]}}</span>
+    </div>
+
+    <div *ngIf="FlagId==11||FlagId==12" class="flex flex-col w-[24%] mb-4">
         <label class="mb-2" for="student">Students</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student"
             (ngModelChange)=" onInputValueChange({ field: 'studentID', value: $event })" [(ngModel)]="Data.studentID">

@@ -49,16 +49,29 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             {
                 return NotFound("No Cart With this ID");
             }
+            
+            ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(
+                o => o.ID == cartShopItem.ShopItemID && o.IsDeleted != true);
 
-             
+            if (cart == null)
+            {
+                return NotFound("No Shop Item With this ID");
+            }
 
+            shopItem.Limit = shopItem.Limit + cartShopItem.Quantity;
+            cart.TotalPrice = cart.TotalPrice - (cartShopItem.Quantity * shopItem.SalesPrice);
 
+            Unit_Of_Work.cart_ShopItem_Repository.Delete(CartShopItemID);
+            Unit_Of_Work.SaveChanges(); 
 
+            List<Cart_ShopItem> existsCartShopItem = Unit_Of_Work.cart_ShopItem_Repository.FindBy(c => c.IsDeleted != true && c.CartID == cart.ID);
+            if (existsCartShopItem == null || existsCartShopItem.Count == 0)
+            { 
+                Unit_Of_Work.cart_Repository.Delete(cart.ID);
+                Unit_Of_Work.SaveChanges();
+            }
 
-            CartGetDTO cartGetDTO = mapper.Map<CartGetDTO>(cart);
-            //cartGetDTO.Cart_ShopItems = cart_ShopItemGetDTO;
-
-            return Ok(cartGetDTO);
+            return Ok();
         }
     }
 }

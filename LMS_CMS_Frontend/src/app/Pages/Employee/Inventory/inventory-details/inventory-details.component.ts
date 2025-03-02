@@ -546,7 +546,7 @@ export class InventoryDetailsComponent {
       return false;
     }
     if (this.FlagId==9||this.FlagId==10) {
-      if(this.Data.storeToTransformId==0){
+      if(this.Data.supplierId==0){
         this.validationErrors['supplierId']='Supplier Is Required'
         return false;
       }

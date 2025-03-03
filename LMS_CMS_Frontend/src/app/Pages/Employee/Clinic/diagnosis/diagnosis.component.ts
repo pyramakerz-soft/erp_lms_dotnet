@@ -42,13 +42,27 @@ export class DiagnosisComponent implements OnInit {
 async getDiagnoses() {
   try {
     const data = await firstValueFrom(this.diagnosisService.Get(this.DomainName));
-    this.diagnoses = data.map((item) => ({
-      ...item,
-      actions: { delete: true, edit: true }, 
-    }));
+    this.diagnoses = data.map((item) => {
+      const insertedAtDate = new Date(item.insertedAt);
+
+      // Format the date
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      };
+      const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
+
+      // Create a new Diagnosis object with the formatted date and actions
+      return {
+        ...item,
+        insertedAt: formattedDate, // Pass the formatted date as a string
+        actions: { delete: true, edit: true }, // Add actions dynamically
+      };
+    });
   } catch (error) {
     console.error('Error loading data:', error);
-    this.diagnoses = []; 
+    this.diagnoses = []; // Clear the table if there's an error
   }
 }
 

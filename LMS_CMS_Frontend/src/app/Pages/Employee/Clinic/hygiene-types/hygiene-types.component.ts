@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { ModalComponent } from '../../../../Component/modal/modal.component';
 import Swal from 'sweetalert2';
@@ -39,25 +39,27 @@ export class HygieneTypesComponent implements OnInit {
   }
 
   // Fetch hygiene types
-//  async getHygieneTypes() {
-//     this.hygieneTypesService.Get(this.DomainName).subscribe(
-//       (data) => {
-//         this.hygieneTypes = data;
-//         console.log(this.hygieneTypes)
-//       },
-//       (error) => {
-//         console.error('Error fetching hygiene types:', error);
-//       }
-//     );
-//   }
-
 async getHygieneTypes() {
   try {
     const data = await firstValueFrom(this.hygieneTypesService.Get(this.DomainName));
-    this.hygieneTypes = data.map((item) => ({
-      ...item,
-      actions: { delete: true, edit: true }, // Add actions dynamically
-    }));
+    this.hygieneTypes = data.map((item) => {
+      const insertedAtDate = new Date(item.insertedAt);
+
+      // Format the date
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      };
+      const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
+
+      // Create a new HygieneTypes object with the formatted date and actions
+      return {
+        ...item,
+        insertedAt: formattedDate, // Pass the formatted date as a string
+        actions: { delete: true, edit: true }, // Add actions dynamically
+      };
+    });
   } catch (error) {
     console.error('Error loading data:', error);
     this.hygieneTypes = []; // Clear the table if there's an error
@@ -173,4 +175,4 @@ async onSearchEvent(event: { key: string, value: any }) {
     }
   }
 
-}
+} 

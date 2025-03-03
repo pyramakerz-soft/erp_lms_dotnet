@@ -107,6 +107,8 @@ import { HygieneFormComponent } from './Pages/Employee/Clinic/hygiene-form/hygie
 import { DrugsComponent } from './Pages/Employee/Clinic/drugs/drugs.component';
 import { DiagnosisComponent } from './Pages/Employee/Clinic/diagnosis/diagnosis.component';
 import { HygieneTypesComponent } from './Pages/Employee/Clinic/hygiene-types/hygiene-types.component';
+import { FollowUpComponent } from './Pages/Employee/Clinic/follow-up/follow-up.component';
+import { MedicalHistoryComponent } from './Pages/Employee/Clinic/medical-history/medical-history.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -125,6 +127,8 @@ export const routes: Routes = [
             { path: "Drugs", component: DrugsComponent, title: "Drugs" },
             { path: "Hygiene Form Medical Report", component: HygieneFormComponent, title: "Hygiene Form" },
             { path: "Create Hygiene Form", component: CreateHygieneFormComponent, title: "Create Hygiene Form" },
+            { path: "Follow Up", component: FollowUpComponent, title: "Follow Up" },
+            { path: "Medical History", component: MedicalHistoryComponent, title: "Medical History" },
 
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }, 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     

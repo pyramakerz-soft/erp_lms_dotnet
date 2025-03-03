@@ -3,14 +3,15 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-modal',
-    standalone: true, // Ensure this is set to true
-    imports:[CommonModule],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.css']
 })
 export class ModalComponent {
   @Input() title: string = ''; // Title of the modal
   @Input() isEditMode: boolean = false; // Whether the modal is in edit mode
+  @Input() buttonText: string = 'Create'; // Dynamic button text
   @Output() save = new EventEmitter<void>(); // Emit when the save button is clicked
   @Output() close = new EventEmitter<void>(); // Emit when the modal is closed
 

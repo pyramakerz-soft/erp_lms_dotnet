@@ -91,7 +91,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
         #region Add Hygiene Form
         [HttpPost]
-        [Authorize_Endpoint_(
+        [Authorize_Endpoint_(   
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "HygieneForm" }
         )]

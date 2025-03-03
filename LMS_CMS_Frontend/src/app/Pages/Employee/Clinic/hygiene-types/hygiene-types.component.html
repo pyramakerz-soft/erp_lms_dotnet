@@ -2,7 +2,7 @@
   <div class="flex justify-between items-center">
     <h1 class="primaryTxt font-semibold text-2xl leading-9">Hygiene Types</h1>
     <div class="flex justify-between items-center">
-    <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+      <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
       <button (click)="openModal()"
         class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
         Create Hygiene Type
@@ -10,13 +10,14 @@
     </div>
   </div>
 
-<app-table [headers]="['ID', 'Hygiene Type', 'Date', 'Actions']" [data]="hygieneTypes"
-  [keys]="['id', 'type', 'insertedAt']" (delete)="deleteHygieneType($event)" (edit)="openModal($event.id)">
-</app-table>
+  <app-table [headers]="['ID', 'Hygiene Type', 'Date', 'Actions']" [data]="hygieneTypes"
+    [keys]="['id', 'type', 'insertedAt']" (delete)="deleteHygieneType($event)" (edit)="openModal($event.id)">
+  </app-table> 
 
   <!-- Reusable Modal -->
   <app-modal [title]="editHygieneType ? 'Edit Hygiene Type' : 'Create Hygiene Type'" [isEditMode]="editHygieneType"
-    (save)="saveHygieneType()" (close)="closeModal()" [ngClass]="{ hidden: !isModalVisible }">
+    [buttonText]="editHygieneType ? 'Save' : 'Create'" (save)="saveHygieneType()" (close)="closeModal()"
+    [ngClass]="{ hidden: !isModalVisible }">
     <!-- Modal Content -->
     <div class="flex flex-col w-full mb-4">
       <label class="mb-2 primaryTxt" for="name">Hygiene Type</label>

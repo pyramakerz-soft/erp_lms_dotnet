@@ -42,10 +42,24 @@ export class DrugsComponent implements OnInit {
   async getDrugs() {
     try {
       const data = await firstValueFrom(this.drugService.Get(this.DomainName));
-      this.drugs = data.map((item) => ({
-        ...item,
-        actions: { delete: true, edit: true }, // Add actions dynamically
-      }));
+      this.drugs = data.map((item) => {
+        const insertedAtDate = new Date(item.insertedAt);
+
+        // Format the date
+        const options: Intl.DateTimeFormatOptions = {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        };
+        const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
+
+        // Create a new Drug object with the formatted date and actions
+        return {
+          ...item,
+          insertedAt: formattedDate, // Pass the formatted date as a string
+          actions: { delete: true, edit: true }, // Add actions dynamically
+        };
+      });
     } catch (error) {
       console.error('Error loading data:', error);
       this.drugs = []; // Clear the table if there's an error

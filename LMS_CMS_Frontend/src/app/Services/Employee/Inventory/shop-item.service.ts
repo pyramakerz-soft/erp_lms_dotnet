@@ -38,6 +38,19 @@ export class ShopItemService {
     return this.http.get<ShopItem[]>(`${this.baseUrl}/ShopItem/BySubCategoryId/${SubCategoryId}`, { headers });
   }
 
+  GetBySubCategoryIDWithGenderAndGrade(SubCategoryId:number, pageNumber:number, pageSize:number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+  
+    return this.http.get<{ data: ShopItem[], pagination: any }>(`${this.baseUrl}/ShopItem/GetBySubCategoryIDWithGenderAndGrade/${SubCategoryId}?pageNumber=${pageNumber}&pageSize=${pageSize}`, { headers });
+  }
+
   GetById(id: number, DomainName: string) {
     if (DomainName != null) {
       this.header = DomainName

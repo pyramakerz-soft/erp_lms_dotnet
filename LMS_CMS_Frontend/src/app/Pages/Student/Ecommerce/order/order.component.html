@@ -1,0 +1,28 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9 w-1/2">Orders</h1>
+    <div class="flex justify-between items-center w-1/2 space-x-4">
+        <div class=" relative flex items-center flex-1">
+            <span class="absolute text-[#919191] ltr:ml-2 rtl:mr-2">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
+                placeholder="Search For..." />
+        </div>
+
+        <div class="py-2 px-3 border bg-[#F7F7F7] rounded cursor-pointer" (click)="goToCart()">
+            <i class="fa-solid fa-cart-shopping text-[#919191]"></i>
+        </div>
+
+        <div class="py-2 px-3 border bg-[#F7F7F7] rounded cursor-pointer">
+            <i class="fa-solid fa-gear secondaryTxt"></i>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="orders.length == 0" class="w-full h-[90%] flex justify-center items-center">
+    <p>No Orders Yet</p>
+</div>
+
+<div *ngIf="orders.length != 0">
+     
+</div>

@@ -1,0 +1,87 @@
+<div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToShop()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">{{shopItem.enName}}</h1>
+    </div>
+
+    <div class="flex justify-between items-center space-x-4">
+        <div class="py-2 px-3 border bg-[#F7F7F7] rounded cursor-pointer" (click)="goToCart()">
+            <i class="fa-solid fa-cart-shopping text-[#919191]"></i>
+        </div>
+
+        <div class="py-2 px-3 border bg-[#F7F7F7] rounded cursor-pointer" (click)="goToOrder()">
+            <i class="fa-solid fa-gear text-[#919191]"></i>
+        </div>
+    </div>
+</div>
+
+<div class="mt-8 flex justify-between space-x-5">
+    <div class="w-1/2">
+        <img *ngIf="shopItem.mainImage" [src]="shopItem.mainImage" class="object-cover rounded-lg">
+        <div *ngIf="!shopItem.mainImage" class="w-full h-full object-cover bg-[#D9D9D9] rounded-lg"></div>
+    </div>
+    <div class="w-1/2">
+        <p class="primaryTxt font-semibold text-3xl">{{shopItem.enName}}</p>
+        <p class="text-[#6F6F6F] font-normal text-sm my-6">{{shopItem.enDescription}}</p>
+
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="primaryTxt font-semibold text-2xl">{{shopItem.salesPrice}} SAR</p>
+                <div *ngIf="shopItem.vatForForeign != 0" class="mt-4 font-normal text-sm">
+                    <p class="text-[#6F6F6F]">VAT <span class="secondaryTxt font-medium"> + {{shopItem.vatForForeign}}%</span> <span class="primaryTxt"> {{CalculatedVat}} SR</span></p> 
+                </div>
+            </div>
+            <i class="fa-solid fa-cart-plus bg-white rounded p-2 text-3xl" 
+            [ngClass]="{
+                'secondaryTxt cursor-pointer': shopItem.limit && shopItem.limit > 0, 
+                'text-gray-200': shopItem.limit && shopItem.limit <= 0
+            }" 
+            (click)="onAddToCartClick($event, shopItem.id, shopItem.limit)"></i>
+        </div>
+
+        <div *ngIf="shopItem.shopItemColors.length != 0" class="mt-6">
+            <p class="font-medium text-base mb-2">Color</p>
+            <div class="flex space-x-2">
+                <div *ngFor="let row of shopItem.shopItemColors; let i = index">
+                    <div 
+                        class="border-2 flex items-center justify-center w-6 h-6 rounded-full"
+                        [ngClass]="{ 
+                        'border-[#05A357] text-[#05A357]': row.id == selectedColor, 
+                        'border-[#C5C5C5]': row.id != selectedColor
+                        }"
+                        [ngStyle]="{
+                        'background-color': isValidColor(row.name) ? row.name : '',
+                        'color': !isValidColor(row.name) ? 'black' : ''
+                        }"
+                        (click)="ChooseColor(row.id)">
+                        <ng-container *ngIf="isValidColor(row.name)"> 
+                        <span></span>
+                        </ng-container>
+                        <ng-container *ngIf="!isValidColor(row.name)">
+                            <div class="relative group"> 
+                              <span class="text-lg cursor-pointer">X</span> 
+                              <span class="absolute text-base bg-gray-500 rounded-md p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 bottom-full">
+                                {{ row.name }}
+                              </span>
+                            </div>
+                          </ng-container>
+                    </div>
+                </div>
+            </div>        
+        </div>
+
+        <div *ngIf="shopItem.shopItemSizes.length != 0" class="mt-6">
+            <p class="font-medium text-base mb-2">Size</p>
+            <div class="flex space-x-2">
+                <div *ngFor="let row of shopItem.shopItemSizes; let i = index">
+                    <div class="w-12 h-12 border flex items-center justify-center rounded" [ngClass]="{
+                        'border-[#05A357] text-[#05A357]': row.id == selectedSize, 
+                        'border-[#C5C5C5]': row.id != selectedSize
+                    }" (click)="ChooseSize(row.id)"> 
+                        {{row.name}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

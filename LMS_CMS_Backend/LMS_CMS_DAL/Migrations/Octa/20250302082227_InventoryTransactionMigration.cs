@@ -22,7 +22,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
                 (108, 'Transfer to Store', N'تحويل الي مخزن', 101, 1),
                 (109, 'Damaged', N'تالف', 101, 1),
                 (110, 'Purchases', N'مشتريات', 77, 1),
-                (111, 'Purchase Returns', N'مردودات مشتريات', 77, 1);
+                (111, 'Purchase Returns', N'مردودات مشتريات', 110, 1);
             ");
         }
 

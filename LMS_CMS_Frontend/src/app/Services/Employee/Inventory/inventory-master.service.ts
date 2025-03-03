@@ -67,6 +67,9 @@ export class InventoryMasterService {
      formData.append('studentID', master.studentID.toString());
      formData.append('saveID', master.saveID.toString());
      formData.append('bankID', master.bankID.toString());
+     formData.append('supplierId', master.supplierId.toString());
+     formData.append('storeToTransformId', master.storeToTransformId.toString());
+
  
      if (master.attachment && master.attachment.length > 0) {
        master.attachment.forEach((file, index) => {
@@ -112,6 +115,8 @@ export class InventoryMasterService {
      formData.append('studentID', master.studentID?.toString() || '0');
      formData.append('saveID', master.saveID?.toString() || '0');
      formData.append('bankID', master.bankID?.toString() || '0');
+     formData.append('supplierId', master.supplierId?.toString()|| '0');
+     formData.append('storeToTransformId', master.storeToTransformId?.toString()|| '0');
  
  
      if (master.NewAttachments && master.NewAttachments.length > 0) {

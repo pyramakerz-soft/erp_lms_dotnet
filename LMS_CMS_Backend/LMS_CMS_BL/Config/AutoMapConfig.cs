@@ -661,9 +661,13 @@ namespace LMS_CMS_BL.Config
             CreateMap<FollowUpDrug, FollowUpDrugGetDTO>();
             CreateMap<FollowUpDrugPutDTO, FollowUpDrug>();
 
-            CreateMap<MedicalHistoryAddDTO, MedicalHistory>();
-            CreateMap<MedicalHistory, MedicalHistoryGetDTO>();
-            CreateMap<MedicalHistoryPutDTO, MedicalHistory>();
+            CreateMap<MedicalHistoryAddByDoctorDTO, MedicalHistory>();
+            CreateMap<MedicalHistory, MedicalHistoryGetByDoctorDTO>();
+            CreateMap<MedicalHistoryPutByDoctorDTO, MedicalHistory>();
+
+            CreateMap<MedicalHistoryAddByParentDTO, MedicalHistory>();
+            CreateMap<MedicalHistory, MedicalHistoryGetByParentDTO>();
+            CreateMap<MedicalHistoryPutByParentDTO, MedicalHistory>();
 
             CreateMap<Order, OrderGetDTO>()
                 .ForMember(dest => dest.OrderStateName, opt => opt.MapFrom(src => src.OrderState.Name));

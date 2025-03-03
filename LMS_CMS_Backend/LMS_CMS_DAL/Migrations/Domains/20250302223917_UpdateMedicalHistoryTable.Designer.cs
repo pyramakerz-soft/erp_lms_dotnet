@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250302223917_UpdateMedicalHistoryTable")]
+    partial class UpdateMedicalHistoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2801,10 +2804,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("int");
 
                     b.Property<long?>("ClassRoomID")
+                        .IsRequired()
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("Date")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -2822,6 +2823,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("GradeId")
+                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("InsertedAt")
@@ -2840,12 +2842,14 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("SchoolId")
+                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.Property<string>("SecReport")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("StudentId")
+                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -7904,7 +7908,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Classroom", "Classroom")
                         .WithMany()
-                        .HasForeignKey("ClassRoomID");
+                        .HasForeignKey("ClassRoomID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
@@ -7912,7 +7918,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Grade", "Grade")
                         .WithMany()
-                        .HasForeignKey("GradeId");
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -7920,11 +7928,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.School", "School")
                         .WithMany()
-                        .HasForeignKey("SchoolId");
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Student", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()

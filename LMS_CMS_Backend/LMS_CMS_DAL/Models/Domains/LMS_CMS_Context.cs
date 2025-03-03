@@ -122,7 +122,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<FollowUp> FollowUps { get; set; }
         public DbSet<FollowUpDrug> FollowUpDrugs { get; set; }
         public DbSet<MedicalHistory> MedicalHistories { get; set; }
-        public DbSet<MedicalHistoryFiles> MedicalHistoryFiles { get; set; }
         public DbSet<PromoCode> PromoCode { get; set; }
         public DbSet<Cart> Cart { get; set; }
         public DbSet<OrderState> OrderState { get; set; }

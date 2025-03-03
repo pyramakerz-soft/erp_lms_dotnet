@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace LMS_CMS_BL.DTO.Clinic
+﻿namespace LMS_CMS_BL.DTO.Clinic
 {
-    public class MedicalHistoryGetDTO
+    public class MedicalHistoryGetByDoctorDTO
     {
         public long ID { get; set; }
         public long GradeId { get; set; }
@@ -11,7 +9,8 @@ namespace LMS_CMS_BL.DTO.Clinic
         public string? Details { get; set; }
         public int? Attached { get; set; } = 0;
         public string? PermanentDrug { get; set; }
-        public IFormFileCollection? Attachments { get; set; }
+        public string? FirstReport { get; set; }
+        public string? SecReport { get; set; }
         public DateTime InsertedAt { get; set; }
     }
 }

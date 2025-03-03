@@ -12,7 +12,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
         {
             migrationBuilder.Sql(@"
                 UPDATE Page
-                SET  IsDisplay= 1  ,ar_name= N'مردودات مبيعات' , en_name ='Sales Returns'
+                SET  IsDisplay= 1  ,ar_name= N'مردودات مبيعات' , en_name ='Sales Returns' , Page_ID = 78
                 WHERE ID = 79;
             ");
         }
@@ -22,7 +22,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
         {
             migrationBuilder.Sql(@"
                 UPDATE Page
-                SET IsDisplay = 0, ar_name = N'عنصر المبيعات', en_name = 'Sales Item'
+                SET IsDisplay = 0, ar_name = N'عنصر المبيعات', en_name = 'Sales Item', Page_ID = 77
                 WHERE ID = 79;
             ");
         }

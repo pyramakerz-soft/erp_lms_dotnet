@@ -386,7 +386,11 @@
                         <input [(ngModel)]="Item.quantity"  (ngModelChange)="CalculateTotalPrice()"
                             class="w-full border border-gray-300 px-2 py-1 rounded-md">
                     </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <td *ngIf="IsPriceEditable" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <input [(ngModel)]="SelectedSopItem.purchasePrice"  (ngModelChange)="EditPrice()"
+                            class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                    </td>
+                    <td *ngIf="!IsPriceEditable" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         {{Item.price}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">

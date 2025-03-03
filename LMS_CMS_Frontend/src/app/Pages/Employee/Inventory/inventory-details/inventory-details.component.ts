@@ -55,6 +55,7 @@ export class InventoryDetailsComponent {
   FlagId:number=0
   IsPriceEditable : boolean =false;
   IsRemainingCashVisa :boolean =false ;
+  IsPriceChanged :boolean =false;
   DomainName: string = '';
   UserID: number = 0;
 
@@ -307,6 +308,7 @@ export class InventoryDetailsComponent {
         })
       }
       if (this.mode == "Edit") {
+        console.log("after",this.Data)
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
         })
@@ -316,6 +318,13 @@ export class InventoryDetailsComponent {
 
   Edit(row: InventoryDetails) {
     this.editingRowId = row.id;
+  }
+
+  EditPrice(){
+    console.log(this.ShopItem)
+    this.Item.price = this.ShopItem.purchasePrice ?? 0
+    this.CalculateTotalPrice()
+    this.IsPriceChanged=true;
   }
 
   handleCashChange(isChecked: boolean): void {
@@ -557,6 +566,7 @@ export class InventoryDetailsComponent {
         return false;
       }
     }
+    console.log(this.Data)
     return isValid;
   }
   capitalizeField(field: keyof InventoryMaster): string {

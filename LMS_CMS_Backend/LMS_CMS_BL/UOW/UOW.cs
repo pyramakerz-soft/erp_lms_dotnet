@@ -134,7 +134,6 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<FollowUp> FollowUp_Repository;
         GenericRepo<FollowUpDrug> FollowUpDrug_Repository;
         GenericRepo<MedicalHistory> MedicalHistory_Repository;
-        GenericRepo<MedicalHistoryFiles> MedicalHistoryFiles_Repository;
         GenericRepo<Cart> Cart_Repository;
         GenericRepo<PromoCode> PromoCode_Repository;
         GenericRepo<OrderState> OrderState_Repository;
@@ -1441,18 +1440,6 @@ namespace LMS_CMS_BL.UOW
                     MedicalHistory_Repository = new GenericRepo<MedicalHistory>(db);
                 }
                 return MedicalHistory_Repository;
-            }
-        }
-
-        public GenericRepo<MedicalHistoryFiles> medicalHistoryFiles_Repository
-        {
-            get
-            {
-                if (MedicalHistoryFiles_Repository == null)
-                {
-                    MedicalHistoryFiles_Repository = new GenericRepo<MedicalHistoryFiles>(db);
-                }
-                return MedicalHistoryFiles_Repository;
             }
         }
 

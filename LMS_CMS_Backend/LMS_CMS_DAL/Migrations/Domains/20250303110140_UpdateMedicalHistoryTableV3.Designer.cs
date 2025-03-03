@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250303110140_UpdateMedicalHistoryTableV3")]
+    partial class UpdateMedicalHistoryTableV3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3798,13 +3801,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("StoreID")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("StoreToTransformId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("StudentID")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("SupplierId")
+                    b.Property<long>("StudentID")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Total")
@@ -3836,11 +3833,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("StoreID");
 
-                    b.HasIndex("StoreToTransformId");
-
                     b.HasIndex("StudentID");
-
-                    b.HasIndex("SupplierId");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -8385,20 +8378,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.Store", "StoreToTransform")
-                        .WithMany("InventoryMastersStoreToTransform")
-                        .HasForeignKey("StoreToTransformId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Student", "Student")
                         .WithMany("InventoryMaster")
                         .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.Supplier", "Supplier")
-                        .WithMany("InventoryMasters")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -8416,11 +8400,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Navigation("Store");
 
-                    b.Navigation("StoreToTransform");
-
                     b.Navigation("Student");
-
-                    b.Navigation("Supplier");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -9814,11 +9794,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("AccountingTreeCharts");
                 });
 
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AccountingModule.Supplier", b =>
-                {
-                    b.Navigation("InventoryMasters");
-                });
-
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AccountingModule.TuitionDiscountType", b =>
                 {
                     b.Navigation("FeesActivations");
@@ -10007,8 +9982,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.Store", b =>
                 {
                     b.Navigation("InventoryMasters");
-
-                    b.Navigation("InventoryMastersStoreToTransform");
 
                     b.Navigation("StoreCategories");
                 });

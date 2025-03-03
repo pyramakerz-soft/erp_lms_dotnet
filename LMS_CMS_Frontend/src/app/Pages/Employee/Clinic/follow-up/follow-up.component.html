@@ -42,16 +42,16 @@
                     </td>
 
                     <!-- Actions Column -->
-<td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-    <div class="flex space-x-4">
-        <button *ngIf="row.actions?.delete !== false" (click)="deleteFollowUp(row)">
-            <i class="fa-regular fa-trash-can"></i>
-        </button>
-        <button *ngIf="row.actions?.edit !== false" (click)="openModal(row.id)">
-            <i class="fa-solid fa-pencil"></i>
-        </button>
-    </div>
-</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <div class="flex space-x-4">
+                            <button *ngIf="row.actions?.delete !== false" (click)="deleteFollowUp(row)">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button *ngIf="row.actions?.edit !== false" (click)="openModal(row.id)">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>

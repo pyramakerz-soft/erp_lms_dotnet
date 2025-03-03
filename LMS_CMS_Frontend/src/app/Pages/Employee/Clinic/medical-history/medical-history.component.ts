@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { SearchComponent } from '../../../../Component/search/search.component';
 import { TableComponent } from '../../../../Component/reuse-table/reuse-table.component';
 import Swal from 'sweetalert2';
-import { SearchComponent } from "../../../../Component/search/search.component";
 
 @Component({
   selector: 'app-medical-history',
   standalone: true,
-  imports: [FormsModule, CommonModule, TableComponent, SearchComponent],
+  imports: [FormsModule, CommonModule, SearchComponent, TableComponent],
   templateUrl: './medical-history.component.html',
   styleUrls: ['./medical-history.component.css'],
 })
@@ -18,8 +18,7 @@ export class MedicalHistoryComponent {
 
   // Table Data
   medicalHistories: any[] = [];
-  isCreateModalVisible = false;
-  isEditModalVisible = false;
+  isModalVisible = false;
 
   // Define keys for table columns
   keys: string[] = ['id', 'grade', 'class', 'student', 'attached', 'text', 'date'];
@@ -41,48 +40,48 @@ export class MedicalHistoryComponent {
   classes = ['Class A', 'Class B'];
   students = ['Student 1', 'Student 2'];
 
+  // Define keysArray for search component
+  keysArray: string[] = ['grade', 'class', 'student', 'attached', 'text', 'date'];
+
   openCreateModal() {
-    this.isCreateModalVisible = true;
+    this.isModalVisible = true;
     this.resetForm();
   }
 
   openEditModal(id?: number) {
-    this.isEditModalVisible = true;
+    this.isModalVisible = true;
     if (id) {
+      // Load existing medical history data for editing
       const existingHistory = this.medicalHistories.find(mh => mh.id === id);
       if (existingHistory) {
         this.medicalHistory = { ...existingHistory };
       }
+    } else {
+      // Reset form for new entry
+      this.resetForm();
     }
   }
 
-  closeCreateModal() {
-    this.isCreateModalVisible = false;
+  closeModal() {
+    this.isModalVisible = false;
+    this.resetForm();
   }
 
-  closeEditModal() {
-    this.isEditModalVisible = false;
+  saveMedicalHistory() {
+    if (this.medicalHistory.id) {
+      // Update existing medical history
+      const index = this.medicalHistories.findIndex(mh => mh.id === this.medicalHistory.id);
+      this.medicalHistories[index] = { ...this.medicalHistory, actions: { edit: true, delete: true } };
+    } else {
+      // Add new medical history
+      this.medicalHistory.id = this.medicalHistories.length + 1;
+      this.medicalHistories.push({
+        ...this.medicalHistory,
+        actions: { edit: true, delete: true }
+      });
+    }
+    this.closeModal();
   }
-
-saveMedicalHistory() {
-  if (this.medicalHistory.id) {
-    // Update existing medical history
-    const index = this.medicalHistories.findIndex(mh => mh.id === this.medicalHistory.id);
-    this.medicalHistories[index] = { ...this.medicalHistory, actions: { edit: true, delete: true } };
-  } else {
-    // Add new medical history
-    this.medicalHistory.id = this.medicalHistories.length + 1;
-    this.medicalHistories.push({
-      ...this.medicalHistory,
-      actions: { edit: true, delete: true } // Ensure actions are added
-    });
-  }
-
-  // Reset the form and close the modal
-  this.resetForm();
-  this.closeCreateModal();
-  this.closeEditModal();
-}
 
   deleteMedicalHistory(row: any) {
     Swal.fire({
@@ -114,13 +113,22 @@ saveMedicalHistory() {
     };
   }
 
-onFileChange(event: any, inputNumber: number) {
-  if (event.target.files && event.target.files.length > 0) {
-    if (inputNumber === 1) {
-      this.medicalHistory.attachedFiles1 = event.target.files;
-    } else if (inputNumber === 2) {
-      this.medicalHistory.attachedFiles2 = event.target.files;
+  onFileChange(event: any, inputNumber: number) {
+    if (event.target.files && event.target.files.length > 0) {
+      if (inputNumber === 1) {
+        this.medicalHistory.attachedFiles1 = event.target.files;
+      } else if (inputNumber === 2) {
+        this.medicalHistory.attachedFiles2 = event.target.files;
+      }
     }
   }
-}
+
+  onSearchEvent(event: { key: string, value: any }) {
+    const { key, value } = event;
+    if (value) {
+      this.medicalHistories = this.medicalHistories.filter(mh => mh[key].toString().toLowerCase().includes(value.toLowerCase()));
+    } else {
+      this.medicalHistories = [...this.medicalHistories];
+    }
+  }
 }

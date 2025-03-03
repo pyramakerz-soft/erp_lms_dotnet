@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS_CMS_PL.Controllers.Domains.Clinic
 {
-    [Route("api/[controller]")]
+    [Route("api/with-domain/[controller]")]
     [ApiController]
     public class HygieneFormController : ControllerBase
     {
@@ -42,8 +42,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
             
-            List<HygieneForm> hygieneForms = Unit_Of_Work.hygieneForm_Repository.Select_All();
-            
+            List<HygieneForm> hygieneForms = Unit_Of_Work.hygieneForm_Repository.FindBy(d => d.IsDeleted != true);
+
             if (hygieneForms == null || hygieneForms.Count == 0)
             {
                 return NotFound();
@@ -80,7 +80,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             if (hygieneForm == null)
             {
-                return NotFound("No Hygiene Type with this ID");
+                return NotFound();
             }
 
             HygieneFormGetDTO hygieneFormDto = _mapper.Map<HygieneFormGetDTO>(hygieneForm);
@@ -116,10 +116,32 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             HygieneForm hygieneForm = _mapper.Map<HygieneForm>(hygieneFormDTO);
-            
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            hygieneForm.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                hygieneForm.InsertedByOctaId = userId;
+            }
+
+            else if (userTypeClaim == "employee")
+            {
+                hygieneForm.InsertedByUserId = userId;
+            }
+
             Unit_Of_Work.hygieneForm_Repository.Add(hygieneForm);
             Unit_Of_Work.SaveChanges();
-            
+
+            foreach (var studentHygiene in hygieneForm.StudentHygieneTypes)
+            {
+                StudentHygieneTypes sht = _mapper.Map<StudentHygieneTypes>(studentHygiene);
+
+                sht.HygieneFormId = hygieneForm.Id;
+
+                Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
+            }
+
             return Ok(hygieneFormDTO);
         }
         #endregion
@@ -149,10 +171,35 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return BadRequest("Hygiene Form can not be null");
             }
 
-            HygieneForm hygieneForm = _mapper.Map<HygieneForm>(hygieneFormDTO);
+            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.First_Or_Default(d => d.Id == hygieneFormDTO.ID && d.IsDeleted != true);
 
-            hygieneForm.UpdatedByUserId = userId;
-            hygieneForm.UpdatedAt = DateTime.Now;
+            if (hygieneForm == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(hygieneFormDTO, hygieneForm);
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+
+            hygieneForm.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+
+            if (userTypeClaim == "octa")
+            {
+                hygieneForm.UpdatedByOctaId = userId;
+                if (hygieneForm.UpdatedByUserId != null)
+                {
+                    hygieneForm.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                hygieneForm.UpdatedByUserId = userId;
+                if (hygieneForm.UpdatedByOctaId != null)
+                {
+                    hygieneForm.UpdatedByOctaId = null;
+                }
+            }
 
             Unit_Of_Work.hygieneForm_Repository.Update(hygieneForm);
             Unit_Of_Work.SaveChanges();
@@ -182,11 +229,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
             
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.Select_By_Id(id);
-            
+            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.First_Or_Default(d => d.IsDeleted != true && d.Id == id);
+
             if (hygieneForm == null)
             {
-                return NotFound("No Hygiene Form with this ID");
+                return NotFound();
             }
             
             Unit_Of_Work.hygieneForm_Repository.Delete(id);

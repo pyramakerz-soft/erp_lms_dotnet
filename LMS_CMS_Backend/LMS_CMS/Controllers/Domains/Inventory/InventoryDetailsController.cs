@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Sales Item" }
+            pages: new[] { "Inventory" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -58,7 +58,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("BySaleId/{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Sales Item" }
+          pages: new[] { "Inventory" }
       )]
         public async Task<IActionResult> GetBySaleIDAsync(long id)
         {
@@ -85,7 +85,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
-        pages: new[] { "Sales Item" }
+        pages: new[] { "Inventory" }
         )]
         public async Task<IActionResult> GetByIDAsync(long id)
         {
@@ -112,7 +112,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [HttpPost]
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Sales Item" }
+          pages: new[] { "Inventory" }
     )]
         public async Task<IActionResult> Add(InventoryDetailsAddDTO newItem)
         {
@@ -169,7 +169,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
         allowedTypes: new[] { "octa", "employee" },
         allowEdit: 1,
-         pages: new[] { "Sales Item" }
+         pages: new[] { "Inventory" }
     )]
         public async Task<IActionResult> EditAsync(InventoryDetailsGetDTO newSale)
         {
@@ -249,7 +249,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" },
          allowDelete: 1,
-         pages: new[] { "Sales Item" }
+         pages: new[] { "Inventory" }
      )]
         public IActionResult Delete(long id)
         {

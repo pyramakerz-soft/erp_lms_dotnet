@@ -116,6 +116,12 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<HygieneType> HygieneTypes { get; set; }
         public DbSet<Diagnosis> Diagnoses { get; set; }
         public DbSet<Drug> Drugs { get; set; }
+        public DbSet<HygieneForm> HygieneForms { get; set; }
+        public DbSet<StudentHygieneTypes> StudentHygieneTypes { get; set; }
+        public DbSet<Dose> Dose { get; set; }
+        public DbSet<FollowUp> FollowUps { get; set; }
+        public DbSet<FollowUpDrug> FollowUpDrugs { get; set; }
+        public DbSet<MedicalHistory> MedicalHistories { get; set; }
         public DbSet<PromoCode> PromoCode { get; set; }
         public DbSet<Cart> Cart { get; set; }
         public DbSet<OrderState> OrderState { get; set; }
@@ -974,7 +980,19 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany(p => p.InventoryMasters)
                 .HasForeignKey(p => p.BankID)
                 .OnDelete(DeleteBehavior.Restrict);
-            
+
+            modelBuilder.Entity<InventoryMaster>()
+                .HasOne(p => p.Supplier)
+                .WithMany(p => p.InventoryMasters)
+                .HasForeignKey(p => p.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InventoryMaster>()
+                .HasOne(p => p.StoreToTransform)
+                .WithMany(p => p.InventoryMastersStoreToTransform)
+                .HasForeignKey(p => p.StoreToTransformId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<ShopItem>()
                 .HasOne(p => p.Gender)
                 .WithMany(p => p.ShopItem)

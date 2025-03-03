@@ -645,9 +645,35 @@ namespace LMS_CMS_BL.Config
             CreateMap<Drug, DrugGetDTO>();
             CreateMap<DrugPutDTO, Drug>();
 
-            CreateMap<HygieneForm, HygieneFormGetDTO>()
-                .ForMember(dest => dest.GradeId, opt => opt.MapFrom(src => src.Classroom.GradeID));
+            CreateMap<DoseAddDTO, Dose>();
+            CreateMap<Dose, DoseGetDTO>();
+            CreateMap<DosePutDTO, Dose>();
+
             CreateMap<HygieneFormAddDTO, HygieneForm>();
+            CreateMap<HygieneForm, HygieneFormGetDTO>();
+            CreateMap<HygieneFormPutDTO, HygieneForm>();
+
+            CreateMap<FollowUpAddDTO, FollowUp>();
+            CreateMap<FollowUp, FollowUpGetDTO>();
+            CreateMap<FollowUpPutDTO, FollowUp>();
+
+            CreateMap<FollowUpDrugAddDTO, FollowUpDrug>();
+            CreateMap<FollowUpDrug, FollowUpDrugGetDTO>();
+            CreateMap<FollowUpDrugPutDTO, FollowUpDrug>();
+
+            CreateMap<MedicalHistoryAddByDoctorDTO, MedicalHistory>();
+            CreateMap<MedicalHistory, MedicalHistoryGetByDoctorDTO>();
+            CreateMap<MedicalHistoryPutByDoctorDTO, MedicalHistory>();
+
+            CreateMap<MedicalHistoryAddByParentDTO, MedicalHistory>();
+            CreateMap<MedicalHistory, MedicalHistoryGetByParentDTO>();
+            CreateMap<MedicalHistoryPutByParentDTO, MedicalHistory>();
+
+            CreateMap<Order, OrderGetDTO>()
+                .ForMember(dest => dest.OrderStateName, opt => opt.MapFrom(src => src.OrderState.Name));
+
+            CreateMap<CartShopItemAddDTO, Cart_ShopItem>();
+            CreateMap<CartShopItemPutDTO, Cart_ShopItem>();
         }
     } 
 }

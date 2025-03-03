@@ -23,8 +23,10 @@ namespace LMS_CMS_BL.DTO.Inventory
         public List<string>? DeletedAttachments { get; set; }
         public long StoreID { get; set; }
         public long FlagId { get; set; }
-        public long StudentID { get; set; }
+        public long? StudentID { get; set; }
         public long? SaveID { get; set; }
+        public long? SupplierId { get; set; }
         public long? BankID { get; set; }
+        public long? StoreToTransformId { get; set; }
     }
 }

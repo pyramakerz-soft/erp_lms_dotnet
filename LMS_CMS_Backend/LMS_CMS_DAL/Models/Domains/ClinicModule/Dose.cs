@@ -7,7 +7,7 @@ namespace LMS_CMS_DAL.Models.Domains.ClinicModule
         [Key]
         public long Id { get; set; }
 
-        [Required(ErrorMessage = "Name is required")]
+        [Required(ErrorMessage = "Dose Times is required")]
         public string DoseTimes { get; set; }
     }
 }

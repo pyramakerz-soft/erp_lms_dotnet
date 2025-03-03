@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Save" }
+            pages: new[] { "Save" , "Inventory" }
         )]
         public async Task<IActionResult> GetAsync()
         {

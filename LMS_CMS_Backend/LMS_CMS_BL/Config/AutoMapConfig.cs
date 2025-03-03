@@ -671,6 +671,9 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<Order, OrderGetDTO>()
                 .ForMember(dest => dest.OrderStateName, opt => opt.MapFrom(src => src.OrderState.Name));
+
+            CreateMap<CartShopItemAddDTO, Cart_ShopItem>();
+            CreateMap<CartShopItemPutDTO, Cart_ShopItem>();
         }
     } 
 }

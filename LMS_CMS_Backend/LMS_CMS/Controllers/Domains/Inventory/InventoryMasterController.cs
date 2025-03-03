@@ -61,10 +61,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 .Take(pageSize)
                 .ToListAsync();
 
-            if (Data == null || Data.Count == 0)
-            {
-                return NotFound();
-            }
+            //if (Data == null || Data.Count == 0)
+            //{
+            //    return NotFound();
+            //}
             InventoryFlags inventoryFlags = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(i=>i.ID==id);
             InventoryFlagGetDTO Flagdto = mapper.Map<InventoryFlagGetDTO>(inventoryFlags);
 
@@ -153,11 +153,41 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound("Store not found.");
             }
-
-            Student student = Unit_Of_Work.student_Repository.First_Or_Default(b => b.ID == newData.StudentID && b.IsDeleted != true);
-            if (student == null)
+            if (newData.StudentID != 0 && newData.StudentID != null)
             {
-                return NotFound("Student not found.");
+                Student student = Unit_Of_Work.student_Repository.First_Or_Default(b => b.ID == newData.StudentID && b.IsDeleted != true);
+                if (student == null)
+                {
+                    return NotFound("Student not found.");
+                }
+            }
+            else
+            {
+                newData.StudentID = null;
+            }
+            if (newData.SupplierId != 0 && newData.SupplierId != null)
+            {
+                Supplier supplier = Unit_Of_Work.supplier_Repository.First_Or_Default(b => b.ID == newData.SupplierId && b.IsDeleted != true);
+                if (supplier == null)
+                {
+                    return NotFound("Supplier not found.");
+                }
+            }
+            else
+            {
+                newData.SupplierId = null;
+            }
+            if (newData.StoreToTransformId != 0 && newData.StoreToTransformId != null)
+            {
+                Store StoreToTransform = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreToTransformId && b.IsDeleted != true);
+                if (StoreToTransform == null)
+                {
+                    return NotFound("store not found.");
+                }
+            }
+            else
+            {
+                newData.StoreToTransformId = null;
             }
 
             LMS_CMS_DAL.Models.Domains.Inventory.InventoryFlags flag = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(b => b.ID == newData.FlagId);
@@ -330,10 +360,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("Store cannot be null");
             }
 
-            Student student = Unit_Of_Work.student_Repository.First_Or_Default(b => b.ID == newSale.StudentID && b.IsDeleted != true);
-            if (student == null)
+            if (newSale.StudentID != 0 && newSale.StudentID != null)
             {
-                return NotFound("There Is No Student With This Id");
+                Student student = Unit_Of_Work.student_Repository.First_Or_Default(b => b.ID == newSale.StudentID && b.IsDeleted != true);
+                if (student == null)
+                {
+                    return NotFound("There Is No Student With This Id");
+                }
+
+            }
+            else
+            {
+                newSale.StudentID = null;
             }
 
             InventoryFlags flag = Unit_Of_Work.inventoryFlags_Repository.First_Or_Default(b => b.ID == newSale.FlagId);
@@ -366,6 +404,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             else
             {
                 newSale.SaveID = null;
+            }
+            if (newSale.StoreToTransformId != 0 && newSale.StoreToTransformId != null)
+            {
+                Store StoreToTransform = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newSale.StoreToTransformId && b.IsDeleted != true);
+                if (StoreToTransform == null)
+                {
+                    return NotFound("store not found.");
+                }
+            }
+            else
+            {
+                newSale.StoreToTransformId = null;
             }
 
             InventoryMaster sale = Unit_Of_Work.inventoryMaster_Repository.First_Or_Default(s => s.ID == newSale.ID && s.IsDeleted != true);

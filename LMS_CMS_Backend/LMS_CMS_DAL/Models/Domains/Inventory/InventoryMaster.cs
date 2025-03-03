@@ -32,20 +32,29 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public long StoreID { get; set; }
         
         [ForeignKey("Student")]
-        public long StudentID { get; set; }
+        public long? StudentID { get; set; }
         
         [ForeignKey("Save")]
         public long? SaveID { get; set; }
         
         [ForeignKey("Bank")]
         public long? BankID { get; set; }
+
         [ForeignKey("InventoryFlags")]
         public long FlagId { get; set; }
+
+        [ForeignKey("Supplier")]
+        public long? SupplierId { get; set; }
+
+        [ForeignKey("StoreToTransform")]
+        public long? StoreToTransformId { get; set; }
         public InventoryFlags InventoryFlags { get; set; }
         public Store Store { get; set; }
-        public Student Student { get; set; }
+        public Student? Student { get; set; }
         public Save? Save { get; set; }
         public Bank? Bank { get; set; }
+        public Supplier? Supplier { get; set; }
+        public Store? StoreToTransform { get; set; }
         public ICollection<InventoryDetails> InventoryDetails { get; set; } = new HashSet<InventoryDetails>();
     }
 }

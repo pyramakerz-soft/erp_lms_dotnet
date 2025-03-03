@@ -42,12 +42,35 @@
         <input id="name" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             (ngModelChange)=" onInputValueChange({ field: 'date', value: $event })" placeholder="Enter Date"
             [(ngModel)]="Data.date" />
-        <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{
-            validationErrors["date"]}}</span>
+        <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{validationErrors["date"]}}</span>
     </div>
 
 
-    <div class="flex flex-col w-[24%] mb-4">
+    <div *ngIf="FlagId==8" class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2" for="storeToTransform">Store</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="storeToTransform"
+            (ngModelChange)=" onInputValueChange({ field: 'storeToTransformId', value: $event })" [(ngModel)]="Data.storeToTransformId">
+            <option [value]=0 disabled selected hidden>Choose Store</option>
+            <option *ngFor="let stu of StoresForTitle" [value]="stu.id">{{ stu.name }}</option>
+            <option *ngIf="StoresForTitle.length === 0" disabled selected>No Data Found</option>
+        </select>
+        <span *ngIf="validationErrors['storeToTransformId']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["storeToTransformId"]}}</span>
+    </div>
+
+    <div *ngIf="FlagId==9||FlagId==10" class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2" for="supplier">Supplires</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="supplier"
+            (ngModelChange)=" onInputValueChange({ field: 'supplierId', value: $event })" [(ngModel)]="Data.supplierId">
+            <option [value]=0 disabled selected hidden>Choose Supplier</option>
+            <option *ngFor="let stu of Suppliers" [value]="stu.id">{{ stu.name }}</option>
+            <option *ngIf="Suppliers.length === 0" disabled selected>No Data Found</option>
+        </select>
+        <span *ngIf="validationErrors['supplierId']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["supplierId"]}}</span>
+    </div>
+
+    <div *ngIf="FlagId==11||FlagId==12" class="flex flex-col w-[24%] mb-4">
         <label class="mb-2" for="student">Students</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student"
             (ngModelChange)=" onInputValueChange({ field: 'studentID', value: $event })" [(ngModel)]="Data.studentID">
@@ -58,7 +81,7 @@
         <span *ngIf="validationErrors['studentID']" class="text-red-500 ml-3 font-normal">{{
             validationErrors["studentID"]}}</span>
     </div>
-    <div class="flex justify-start w-full mb-4 space-x-5">
+    <div *ngIf="IsRemainingCashVisa" class="flex justify-start w-full mb-4 space-x-5">
         <div class="flex w-[8%] space-x-5 items-center mb-4">
             <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isCash" (ngModelChange)="handleCashChange($event)">
             <label for="exception" class="text-sm">Chash</label>
@@ -95,7 +118,7 @@
 
     </div>
 
-    <div class="flex flex-col mb-4 w-[24%]">
+    <div *ngIf="IsRemainingCashVisa" class="flex flex-col mb-4 w-[24%]">
         <label class="mb-2 primaryTxt" for="remaining">Remaining</label>
         <input id="remaining" type="remaining" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter remaining" [(ngModel)]="Data.remaining" readonly disabled />
@@ -363,7 +386,11 @@
                         <input [(ngModel)]="Item.quantity"  (ngModelChange)="CalculateTotalPrice()"
                             class="w-full border border-gray-300 px-2 py-1 rounded-md">
                     </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <td *ngIf="IsPriceEditable" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <input [(ngModel)]="SelectedSopItem.purchasePrice"  (ngModelChange)="EditPrice()"
+                            class="w-full border border-gray-300 px-2 py-1 rounded-md">
+                    </td>
+                    <td *ngIf="!IsPriceEditable" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         {{Item.price}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">

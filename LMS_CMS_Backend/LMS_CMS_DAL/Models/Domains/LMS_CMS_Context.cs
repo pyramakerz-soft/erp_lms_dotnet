@@ -980,7 +980,19 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany(p => p.InventoryMasters)
                 .HasForeignKey(p => p.BankID)
                 .OnDelete(DeleteBehavior.Restrict);
-            
+
+            modelBuilder.Entity<InventoryMaster>()
+                .HasOne(p => p.Supplier)
+                .WithMany(p => p.InventoryMasters)
+                .HasForeignKey(p => p.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InventoryMaster>()
+                .HasOne(p => p.StoreToTransform)
+                .WithMany(p => p.InventoryMastersStoreToTransform)
+                .HasForeignKey(p => p.StoreToTransformId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<ShopItem>()
                 .HasOne(p => p.Gender)
                 .WithMany(p => p.ShopItem)

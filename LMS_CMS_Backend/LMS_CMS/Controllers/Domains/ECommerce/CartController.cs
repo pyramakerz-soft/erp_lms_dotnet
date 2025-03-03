@@ -27,6 +27,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             this.mapper = mapper; 
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
         [HttpGet("ByStudentId/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "student" }
@@ -101,6 +103,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             return Ok(cartGetDTO);
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
         [HttpGet("ByOrderId/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "student" }
@@ -152,7 +156,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             cartGetDTO.Cart_ShopItems = cart_ShopItemGetDTO;
 
             return Ok(cartGetDTO);
-        }
-        // AvailableInShop , Limit
+        } 
     }
 }

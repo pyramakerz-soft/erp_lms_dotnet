@@ -277,9 +277,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             allowedTypes: new[] { "octa", "employee", "student" },
             pages: new[] { "Shop Item", "Shop" }
          )]
-        public async Task<IActionResult> GetbyIdAsync(long id)
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
             ShopItem shopItem = await Unit_Of_Work.shopItem_Repository.FindByIncludesAsync(
                 d => d.ID == id && d.IsDeleted != true,
@@ -321,6 +325,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 shopItemDTO.shopItemSizes = shopItemSizeGetDTO;
             else
                 shopItemDTO.shopItemSizes = new List<ShopItemSizeGetDTO>();
+
+            if(userTypeClaim == "student")
+            {
+                Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.IsDeleted != true && s.ID == userId);
+                if(stu.Nationality == 148)
+                {
+                    shopItemDTO.VATForForeign = 0;
+                }
+            }
 
             return Ok(shopItemDTO);
         }

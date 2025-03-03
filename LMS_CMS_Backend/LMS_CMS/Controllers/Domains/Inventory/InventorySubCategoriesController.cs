@@ -59,7 +59,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpGet("ByCategoryId/{id}")]
         [Authorize_Endpoint_(
-           allowedTypes: new[] { "octa", "employee" },
+           allowedTypes: new[] { "octa", "employee", "student" },
            pages: new[] { "Inventory Sub Categories" }
         )]
         public async Task<IActionResult> GetAsync(long id)

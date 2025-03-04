@@ -7,7 +7,7 @@ namespace LMS_CMS_BL.DTO.Clinic
     {
         public long ID { get; set; }
         public long SchoolId { get; set; }
-        public long GradelId { get; set; }
+        public long GradeId { get; set; }
         public long ClassroomId { get; set; }
         public long StudentId { get; set; }
         public string? Complains { get; set; }

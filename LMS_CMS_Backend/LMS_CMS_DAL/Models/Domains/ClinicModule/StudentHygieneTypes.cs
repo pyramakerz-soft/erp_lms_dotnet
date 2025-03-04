@@ -19,6 +19,12 @@ namespace LMS_CMS_DAL.Models.Domains.ClinicModule
         public long StudentId { get; set; }
         public Student? Student { get; set; }
 
-        public ICollection<HygieneType>? HygieneTypes { get; set; }
+        //public ICollection<HygieneType>? HygieneTypes { get; set; } = new HashSet<HygieneType>();
+
+
+        [Required(ErrorMessage = "Hygiene Type ID is required")]
+        [ForeignKey("HygieneType")]
+        public long HygieneId { get; set; }
+        public HygieneType? HygieneType { get; set; }
     }
 }

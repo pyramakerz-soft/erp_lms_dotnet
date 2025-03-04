@@ -9,5 +9,7 @@ namespace LMS_CMS_DAL.Models.Domains.ClinicModule
 
         [Required(ErrorMessage = "Type is required")]
         public string Type { get; set; }
+
+        public ICollection<StudentHygieneTypes> StudentHygieneTypes { get; set; } = new HashSet<StudentHygieneTypes>();
     }
 }

@@ -4,8 +4,8 @@ namespace LMS_CMS_BL.DTO.Clinic
 {
     public class FollowUpDrugPutDTO
     {
-        [Required(ErrorMessage = "Foolow Up ID is required")]
-        public long FollowUpId { get; set; }
+        [Required(ErrorMessage = "ID is required")]
+        public long ID { get; set; }
 
         [Required(ErrorMessage = "Drug ID is required")]
         public long DrugId { get; set; }

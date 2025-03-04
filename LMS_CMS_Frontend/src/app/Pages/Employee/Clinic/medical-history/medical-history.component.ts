@@ -67,21 +67,24 @@ export class MedicalHistoryComponent {
     this.resetForm();
   }
 
-  saveMedicalHistory() {
-    if (this.medicalHistory.id) {
-      // Update existing medical history
-      const index = this.medicalHistories.findIndex(mh => mh.id === this.medicalHistory.id);
-      this.medicalHistories[index] = { ...this.medicalHistory, actions: { edit: true, delete: true } };
-    } else {
-      // Add new medical history
-      this.medicalHistory.id = this.medicalHistories.length + 1;
-      this.medicalHistories.push({
-        ...this.medicalHistory,
-        actions: { edit: true, delete: true }
-      });
-    }
-    this.closeModal();
+saveMedicalHistory() {
+  if (this.medicalHistory.id) {
+    // Update existing medical history
+    const index = this.medicalHistories.findIndex(mh => mh.id === this.medicalHistory.id);
+    this.medicalHistories[index] = { ...this.medicalHistory, actions: { edit: true, delete: true } };
+  } else {
+    // Add new medical history
+    this.medicalHistory.id = this.medicalHistories.length + 1;
+    this.medicalHistories.push({
+      ...this.medicalHistory,
+      actions: { edit: true, delete: true }
+    });
   }
+
+  // Reset the form and close the modal
+  this.resetForm();
+  this.closeModal();
+}
 
   deleteMedicalHistory(row: any) {
     Swal.fire({

@@ -20,7 +20,7 @@
         (click)="closeModal()"> <!-- Close when clicking outside -->
 
         <!-- Modal Container -->
-        <div class="relative bg-white w-[750px] max-h-[90vh] h-auto rounded-2xl p-12 gap-4 shadow-md overflow-y-auto"
+        <div class="relative bg-white w-[750px] max-h-[90vh] h-auto rounded-2xl p-12 gap-4 shadow-md overflow-y-auto overflow-x-hidden"
             (click)="$event.stopPropagation()"> <!-- Prevent closing when clicking inside -->
 
             <!-- Close Icon -->
@@ -99,30 +99,31 @@
                     <label class="mb-1 primaryTxt" for="attachedFiles">Attached Files</label>
                     <div class="flex gap-4">
                         <div
-                            class="border-2 border-dashed border-orange-400 bg-white rounded-lg w-1/2 h-32 flex flex-col items-center justify-center cursor-pointer">
+                            class="border-2 border-dashed border-orange-400 bg-white rounded-lg w-1/2 h-32 flex flex-col items-center justify-center cursor-pointer relative">
                             <i class="fa-solid fa-cloud-upload text-orange-400 text-3xl"></i>
                             <span class="text-orange-400 mt-2 text-sm font-semibold">Click to Upload</span>
                             <span class="text-gray-500 text-xs">(Max File: 25 MB)</span>
                             <input type="file" (change)="onFileChange($event, 1)"
-                                class="opacity-0 absolute w-full h-full">
+                                class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                         </div>
                         <div
-                            class="border-2 border-dashed border-orange-400 bg-white rounded-lg w-1/2 h-32 flex flex-col items-center justify-center cursor-pointer">
+                            class="border-2 border-dashed border-orange-400 bg-white rounded-lg w-1/2 h-32 flex flex-col items-center justify-center cursor-pointer relative">
                             <i class="fa-solid fa-cloud-upload text-orange-400 text-3xl"></i>
                             <span class="text-orange-400 mt-2 text-sm font-semibold">Click to Upload</span>
                             <span class="text-gray-500 text-xs">(Max File: 25 MB)</span>
                             <input type="file" (change)="onFileChange($event, 2)"
-                                class="opacity-0 absolute w-full h-full">
+                                class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Save Button -->
-            <div class="flex justify-end mt-6">
-                <button class="secondaryBg text-white font-medium px-6 py-2 rounded-lg" (click)="saveMedicalHistory()">
-                    Save
-                </button>
+                <!-- Save Button -->
+                <div class="flex justify-end mt-6">
+                    <button class="secondaryBg text-white font-medium px-6 py-2 rounded-lg"
+                        (click)="saveMedicalHistory()">
+                        Save
+                    </button>
+                </div>
             </div>
         </div>
     </div>

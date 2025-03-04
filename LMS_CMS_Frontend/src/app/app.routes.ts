@@ -113,6 +113,8 @@ import { ShopComponent } from './Pages/Student/Ecommerce/shop/shop.component';
 import { ShopItemComponent } from './Pages/Student/Ecommerce/shop-item/shop-item.component';
 import { CartComponent } from './Pages/Student/Ecommerce/cart/cart.component';
 import { OrderComponent } from './Pages/Student/Ecommerce/order/order.component';
+import { DosesComponent } from './Pages/Employee/Clinic/doses/doses.component';
+import { MedicalReportComponent } from './Pages/Employee/Clinic/medical-report/medical-report.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -133,6 +135,8 @@ export const routes: Routes = [
             { path: "Create Hygiene Form", component: CreateHygieneFormComponent, title: "Create Hygiene Form" },
             { path: "Follow Up", component: FollowUpComponent, title: "Follow Up" },
             { path: "Medical History", component: MedicalHistoryComponent, title: "Medical History" },
+            { path: "Medical Report", component: MedicalReportComponent, title: "Medical Report" },
+            { path: "Doses", component: DosesComponent, title: "Doses" },
 
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }, 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     

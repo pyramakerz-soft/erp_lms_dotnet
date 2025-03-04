@@ -1,0 +1,52 @@
+<div class="container mx-auto px-5 py-3">
+    <!-- Header -->
+    <h1 class="primaryTxt font-semibold text-2xl leading-9 mb-6">Medical Report</h1>
+
+    <!-- Tabs and Buttons Section -->
+    <div class="flex justify-between items-center mb-6">
+        <!-- Tabs -->
+        <div class="flex space-x-4">
+            <button *ngFor="let tab of tabs" (click)="selectTab(tab)" [ngClass]="{
+          'bg-[#FF7519] text-white': selectedTab === tab,
+          'bg-gray-200 text-gray-700': selectedTab !== tab
+        }" class="px-4 py-3 text-sm font-medium rounded-sm focus:outline-none transition-colors duration-200">
+                {{ tab }}
+            </button>
+        </div>
+
+        <!-- Print Buttons -->
+        <div class="flex space-x-4">
+            <button (click)="exportToExcel()"
+                class="secondaryBg text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-file-excel"></i> Excel
+            </button>
+            <button (click)="exportToPDF()" class="secondaryBg text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+            </button>
+            <button (click)="printTable()" class="secondaryBg text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div *ngIf="selectedTab === 'MH By Parent'">
+        <app-table [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']"
+            [data]="mhByParentData" [keys]="['date', 'description', 'insertDate', 'lastModified']"
+            (delete)="deleteMHParent($event)" (edit)="editMHParent($event)"></app-table>
+    </div>
+
+    <div *ngIf="selectedTab === 'MH By Doctor'">
+        <app-table [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']"
+            [data]="mhByDoctorData" [keys]="['date', 'description', 'insertDate', 'lastModified']"
+            (delete)="deleteMHDoctor($event)" (edit)="editMHDoctor($event)"></app-table>
+    </div>
+
+    <div *ngIf="selectedTab === 'Hygiene Form'">
+        <app-hygiene-form></app-hygiene-form>
+    </div>
+
+    <div *ngIf="selectedTab === 'Follow Up'">
+        <app-follow-up></app-follow-up>
+    </div>
+</div>

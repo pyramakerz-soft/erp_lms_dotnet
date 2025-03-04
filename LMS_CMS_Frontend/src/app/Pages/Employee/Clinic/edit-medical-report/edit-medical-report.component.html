@@ -1,0 +1,40 @@
+<div class="bg-gray-900 min-h-screen p-6 text-white">
+    <div class="max-w-4xl mx-auto bg-gray-800 p-6 rounded-lg">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Medical Report By Doctor</h2>
+            <button (click)="closePage()" class="bg-red-500 px-4 py-2 rounded-lg">Close</button>
+        </div>
+
+        <!-- Patient Details -->
+        <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="bg-gray-700 p-4 rounded">Grade: C1</div>
+            <div class="bg-gray-700 p-4 rounded">Class: Class A</div>
+            <div class="bg-gray-700 p-4 rounded">Student: Ahmed Mohamed</div>
+        </div>
+
+        <!-- Report Details -->
+        <div class="bg-gray-700 p-4 rounded mb-4">
+            <strong>Date:</strong> {{ reportData?.date }}
+        </div>
+
+        <div class="bg-gray-700 p-4 rounded mb-4">
+            <strong>Description:</strong>
+            <p>{{ reportData?.description }}</p>
+        </div>
+
+        <!-- Attachments -->
+        <div class="mb-4">
+            <h3 class="text-lg font-semibold">Attached</h3>
+            <div class="bg-gray-700 p-4 rounded flex justify-between items-center">
+                <span>HannahBusing_Resume.pdf (200 KB)</span>
+                <button class="bg-red-500 px-4 py-2 rounded-lg">Delete</button>
+            </div>
+        </div>
+
+        <!-- Edit Date -->
+        <div class="bg-gray-700 p-4 rounded mb-4">
+            <strong>Date Edit:</strong> 24, May 2024
+        </div>
+    </div>
+</div>

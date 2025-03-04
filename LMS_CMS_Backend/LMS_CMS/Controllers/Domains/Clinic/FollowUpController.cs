@@ -2,6 +2,7 @@
 using LMS_CMS_BL.DTO.Clinic;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains.ClinicModule;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -112,9 +113,57 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (!ModelState.IsValid)
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(d => d.ID == followUpDto.SchoolId && d.IsDeleted != true);
+
+            if (school == null)
             {
-                return BadRequest();
+                return NotFound("School not found.");
+            }
+
+            Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(d => d.ID == followUpDto.GradeId && d.IsDeleted != true);
+
+            if (grade == null)
+            {
+                return NotFound("Grade not found.");
+            }
+
+            Classroom classroom = Unit_Of_Work.classroom_Repository.First_Or_Default(d => d.ID == followUpDto.ClassroomId && d.IsDeleted != true);
+
+            if (classroom == null)
+            {
+                return NotFound("Classroom not found.");
+            }
+
+            Student student = Unit_Of_Work.student_Repository.First_Or_Default(d => d.ID == followUpDto.StudentId && d.IsDeleted != true);
+
+            if (student == null)
+            {
+                return NotFound("Student not found.");
+            }
+
+            Diagnosis diagnosis = Unit_Of_Work.diagnosis_Repository.First_Or_Default(d => d.Id == followUpDto.DiagnosisId && d.IsDeleted != true);
+
+            if (diagnosis == null)
+            {
+                return NotFound("Diagnosis not found.");
+            }
+
+            foreach (var followUpDrug in followUpDto.FollowUpDrugs)
+            {
+                Drug drug = Unit_Of_Work.drug_Repository.First_Or_Default(d => d.Id == followUpDrug.DrugId && d.IsDeleted != true);
+                if (drug == null)
+                {
+                    return NotFound($"Drug with ID: {followUpDrug.DrugId} not found.");
+                }
+            }
+
+            foreach (var followUpDrug in followUpDto.FollowUpDrugs)
+            {
+                Drug drug = Unit_Of_Work.drug_Repository.First_Or_Default(d => d.Id == followUpDrug.DoseId && d.IsDeleted != true);
+                if (drug == null)
+                {
+                    return NotFound($"Dose with ID: {followUpDrug.DoseId} not found.");
+                }
             }
 
             FollowUp followUp = _mapper.Map<FollowUp>(followUpDto);
@@ -143,8 +192,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
                 Unit_Of_Work.followUpDrug_Repository.Add(fud);
             }
-            
-            Unit_Of_Work.SaveChanges();
 
             return Ok(followUpDto);
         }
@@ -210,14 +257,27 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.followUp_Repository.Update(followUp);
             Unit_Of_Work.SaveChanges();
 
-            foreach (var followUpDrug in followUpDto.FollowUpDrugs)
+            foreach (var followUpDrugDto in followUpDto.FollowUpDrugs)
             {
-                FollowUpDrug fud = _mapper.Map<FollowUpDrug>(followUpDrug);
+                var existingFollowUpDrug = Unit_Of_Work.followUpDrug_Repository
+                    .First_Or_Default(f => f.Id == followUpDrugDto.ID);
 
-                Unit_Of_Work.followUpDrug_Repository.Update(fud);
+                if (existingFollowUpDrug != null)
+                {
+                    _mapper.Map(followUpDrugDto, existingFollowUpDrug);
+
+                    existingFollowUpDrug.FollowUpId = followUp.Id; 
+
+                    Unit_Of_Work.followUpDrug_Repository.Update(existingFollowUpDrug);
+                }
+                else
+                {
+                    FollowUpDrug newFollowUpDrug = _mapper.Map<FollowUpDrug>(followUpDrugDto);
+                    newFollowUpDrug.FollowUpId = followUp.Id;
+
+                    Unit_Of_Work.followUpDrug_Repository.Add(newFollowUpDrug);
+                }
             }
-
-            Unit_Of_Work.SaveChanges();
 
             return Ok(followUpDto);
         }

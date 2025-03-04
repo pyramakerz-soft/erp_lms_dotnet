@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LMS_CMS_DAL.Models.Domains.ClinicModule;
+using System.ComponentModel.DataAnnotations;
 
 namespace LMS_CMS_BL.DTO.Clinic
 {
@@ -13,12 +14,12 @@ namespace LMS_CMS_BL.DTO.Clinic
         [Required(ErrorMessage = "Classroom ID is required")]
         public long ClassRoomID { get; set; }
 
-        [Required(ErrorMessage = "School ID is required")]
-        public long StudentId { get; set; }
-
         [Required(ErrorMessage = "Date is required")]
         public DateTime Date { get; set; }
+       
+        public long StudentId { get; set; }
+        public long HygieneTypeId { get; set; }
 
-        public ICollection<StudentHygieneTypesAddDTO> StudentHygieneTypes { get; set; } = new HashSet<StudentHygieneTypesAddDTO>();
+        //public List<StudentHygieneTypesAddDTO> StudentHygieneTypes { get; set; }
     }
 }

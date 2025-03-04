@@ -338,7 +338,13 @@ namespace LMS_CMS_DAL.Models.Domains
                  .WithMany(p => p.Students)
                  .HasForeignKey(p => p.Parent_Id)
                  .OnDelete(DeleteBehavior.Restrict);
-          
+
+            modelBuilder.Entity<Student>()
+                 .HasOne(p => p.Gender)
+                 .WithMany(p => p.Students)
+                 .HasForeignKey(p => p.GenderId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Student>()
                  .HasOne(p => p.AccountNumber)
                  .WithMany(p => p.Students)

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.BusModule;
+using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using LMS_CMS_DAL.Models.Domains.ECommerce;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 
@@ -49,6 +50,10 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("AccountNumber")]
         public long? AccountNumberID { get; set; }
 
+        [ForeignKey("Gender")]
+        public long GenderId { get; set; }
+        public Gender Gender { get; set; }
+
         public AccountingTreeChart AccountNumber { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();
@@ -58,5 +63,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<InventoryMaster> InventoryMaster { get; set; } = new HashSet<InventoryMaster>();
         public ICollection<Cart> Carts { get; set; } = new HashSet<Cart>();
         public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
+
+        public ICollection<StudentHygieneTypes> StudentHygieneTypes { get; set; } = new HashSet<StudentHygieneTypes>();
     }
 }

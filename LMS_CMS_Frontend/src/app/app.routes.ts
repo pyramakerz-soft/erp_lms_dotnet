@@ -175,7 +175,7 @@ export const routes: Routes = [
             { path: "Department", component: DepartmentComponent, title: "Department" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Outcome", component: OutcomesComponent, title: "Outcome" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Income", component: IncomesComponent, title: "Income" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Save", component: SavesComponent, title: "Save" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Safe", component: SavesComponent, title: "Save" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Accounting Tree", component: AccountingTreeComponent, title: "Accounting Tree" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Bank", component: BankComponent, title: "Bank" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Employee Accounting", component: AccountingEmployeeComponent, title: "Employee Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,

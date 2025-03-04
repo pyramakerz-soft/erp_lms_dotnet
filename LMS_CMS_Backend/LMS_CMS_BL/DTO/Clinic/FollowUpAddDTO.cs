@@ -21,7 +21,6 @@ namespace LMS_CMS_BL.DTO.Clinic
 
         [Required(ErrorMessage = "Diagnosis ID is required")]
         public long DiagnosisId { get; set; }
-        public Diagnosis? Diagnosis { get; set; }
 
         public ICollection<FollowUpDrugAddDTO> FollowUpDrugs { get; set; } = new HashSet<FollowUpDrugAddDTO>();
 

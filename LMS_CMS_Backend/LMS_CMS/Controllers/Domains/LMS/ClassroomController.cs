@@ -471,7 +471,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             return Ok();
         }
 
-        [HttpGet("AddStudentToClassroom/{registrationFormParentID}/{classroomid}")]
+        [HttpPost("AddStudentToClassroom/{registrationFormParentID}/{classroomid}")]
         [Authorize_Endpoint_(
        allowedTypes: new[] { "octa", "employee" },
        pages: new[] { "Classroom" }
@@ -524,7 +524,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 long parentId = Convert.ToInt64(registerationFormParent.ParentID);
                 long AccademicYearId = Convert.ToInt64(registerationFormParent.AcademicYearID);
                 long GradeId = Convert.ToInt64(registerationFormParent.GradeID);
-
+                RegisterationFormSubmittion registerationFormSubmittion = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 3 && r.RegisterationFormParentID == registrationFormParentID);
+                long GenderId = Convert.ToInt64(registerationFormSubmittion.TextAnswer);
+                RegisterationFormSubmittion registerationFormSubmittion2 = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 5 && r.RegisterationFormParentID == registrationFormParentID);
+                long NationaltyId = Convert.ToInt64(registerationFormSubmittion2.TextAnswer);
                 AcademicYear academicYear = Unit_Of_Work.academicYear_Repository
                     .First_Or_Default(a => a.ID == AccademicYearId && a.IsDeleted != true);
                 if (academicYear == null)
@@ -540,7 +543,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     en_name = submittionEName.TextAnswer,
                     ar_name = submittionAName.TextAnswer,
                     User_Name = name,
+                    Nationality = NationaltyId,
                     Parent_Id = parentId,
+                    GenderId = GenderId,
                     Password= hashedPassword,
                     InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
                     InsertedByOctaId = userTypeClaim == "octa" ? userId : null,

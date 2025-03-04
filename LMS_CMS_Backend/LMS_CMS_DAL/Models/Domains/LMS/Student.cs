@@ -50,6 +50,10 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("AccountNumber")]
         public long? AccountNumberID { get; set; }
 
+        [ForeignKey("Gender")]
+        public long GenderId { get; set; }
+        public Gender Gender { get; set; }
+
         public AccountingTreeChart AccountNumber { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
         public ICollection<StudentAcademicYear> StudentAcademicYears { get; set; } = new HashSet<StudentAcademicYear>();

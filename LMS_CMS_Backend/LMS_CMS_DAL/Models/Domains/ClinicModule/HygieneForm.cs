@@ -27,6 +27,6 @@ namespace LMS_CMS_DAL.Models.Domains.ClinicModule
         [Required(ErrorMessage = "Date is required")]
         public DateTime Date { get; set; }
 
-        public ICollection<StudentHygieneTypes>? StudentHygieneTypes { get; set; } = new HashSet<StudentHygieneTypes>();
+        public ICollection<StudentHygieneTypes> StudentHygieneTypes { get; set; } = new HashSet<StudentHygieneTypes>();
     }
 }

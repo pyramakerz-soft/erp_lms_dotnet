@@ -367,114 +367,113 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         )]
         public async Task<IActionResult> AddByParentAsync([FromForm] MedicalHistoryAddByParentDTO historyAddDTO)
         {
-            //UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            //var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            //long.TryParse(userIdClaim, out long userId);
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
 
-            //var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-            //if (userIdClaim == null || userTypeClaim == null)
-            //{
-            //    return Unauthorized("User ID or Type claim not found.");
-            //}
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
 
-            //if (historyAddDTO == null)
-            //{
-            //    return BadRequest("Medical History cannot be null");
-            //}
+            if (historyAddDTO == null)
+            {
+                return BadRequest("Medical History cannot be null");
+            }
 
-            //if (historyAddDTO.FirstReport != null)
-            //{
-            //    string returnFileInput = _fileImageValidationService.ValidateImageFile(historyAddDTO.FirstReport);
+            if (historyAddDTO.FirstReport != null)
+            {
+                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyAddDTO.FirstReport);
 
-            //    if (returnFileInput != null)
-            //    {
-            //        return BadRequest(returnFileInput);
-            //    }
-            //}
+                if (returnFileInput != null)
+                {
+                    return BadRequest(returnFileInput);
+                }
+            }
 
-            //if (historyAddDTO.SecReport != null)
-            //{
-            //    string returnFileInput = _fileImageValidationService.ValidateImageFile(historyAddDTO.SecReport);
+            if (historyAddDTO.SecReport != null)
+            {
+                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyAddDTO.SecReport);
 
-            //    if (returnFileInput != null)
-            //    {
-            //        return BadRequest(returnFileInput);
-            //    }
-            //}
+                if (returnFileInput != null)
+                {
+                    return BadRequest(returnFileInput);
+                }
+            }
 
-            //MedicalHistory medicalHistory = _mapper.Map<MedicalHistory>(historyAddDTO);
+            MedicalHistory medicalHistory = _mapper.Map<MedicalHistory>(historyAddDTO);
 
-            //TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            //medicalHistory.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            medicalHistory.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
 
-            //if (userTypeClaim == "octa")
-            //{
-            //    medicalHistory.InsertedByOctaId = userId;
-            //}
-            //else if (userTypeClaim == "employee")
-            //{
-            //    medicalHistory.InsertedByUserId = userId;
-            //}
+            if (userTypeClaim == "octa")
+            {
+                medicalHistory.InsertedByOctaId = userId;
+            }
+            else if (userTypeClaim == "employee")
+            {
+                medicalHistory.InsertedByUserId = userId;
+            }
 
-            //Unit_Of_Work.medicalHistory_Repository.Add(medicalHistory);
-            //Unit_Of_Work.SaveChanges();
+            Unit_Of_Work.medicalHistory_Repository.Add(medicalHistory);
+            Unit_Of_Work.SaveChanges();
 
-            //var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/MedicalHistories");
-            //var medicalHistoryFolder = Path.Combine(baseFolder, medicalHistory.Student.en_name + "_" + medicalHistory.Id);
-            //var medicalHistoryFirstReportFolder = Path.Combine(medicalHistoryFolder, "FirstReport");
-            //var medicalHistorySecReportFolder = Path.Combine(medicalHistoryFolder, "SecReport");
+            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/MedicalHistories");
+            var medicalHistoryFolder = Path.Combine(baseFolder, medicalHistory.Student.en_name + "_" + medicalHistory.Id);
+            var medicalHistoryFirstReportFolder = Path.Combine(medicalHistoryFolder, "FirstReport");
+            var medicalHistorySecReportFolder = Path.Combine(medicalHistoryFolder, "SecReport");
 
-            //if (historyAddDTO.FirstReport != null | historyAddDTO.SecReport != null)
-            //{
-            //    if (!Directory.Exists(medicalHistoryFirstReportFolder))
-            //    {
-            //        Directory.CreateDirectory(medicalHistoryFirstReportFolder);
-            //    }
-            //}
+            if (historyAddDTO.FirstReport != null | historyAddDTO.SecReport != null)
+            {
+                if (!Directory.Exists(medicalHistoryFirstReportFolder))
+                {
+                    Directory.CreateDirectory(medicalHistoryFirstReportFolder);
+                }
+            }
 
-            //if (!Directory.Exists(medicalHistorySecReportFolder))
-            //{
-            //    Directory.CreateDirectory(medicalHistorySecReportFolder);
-            //}
+            if (!Directory.Exists(medicalHistorySecReportFolder))
+            {
+                Directory.CreateDirectory(medicalHistorySecReportFolder);
+            }
 
-            //if (historyAddDTO.FirstReport != null)
-            //{
-            //    if (historyAddDTO.FirstReport.Length > 0)
-            //    {
-            //        medicalHistory.Attached += 1;
-            //        var filePath = Path.Combine(medicalHistoryFirstReportFolder, historyAddDTO.FirstReport.FileName);
-            //        using (var stream = new FileStream(filePath, FileMode.Create))
-            //        {
-            //            await historyAddDTO.FirstReport.CopyToAsync(stream);
-            //        }
-            //    }
-            //}
+            if (historyAddDTO.FirstReport != null)
+            {
+                if (historyAddDTO.FirstReport.Length > 0)
+                {
+                    medicalHistory.Attached += 1;
+                    var filePath = Path.Combine(medicalHistoryFirstReportFolder, historyAddDTO.FirstReport.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await historyAddDTO.FirstReport.CopyToAsync(stream);
+                    }
+                }
+            }
 
-            //if (historyAddDTO.SecReport != null)
-            //{
-            //    if (historyAddDTO.SecReport.Length > 0)
-            //    {
-            //        medicalHistory.Attached += 1;
-            //        var filePath = Path.Combine(medicalHistorySecReportFolder, historyAddDTO.SecReport.FileName);
-            //        using (var stream = new FileStream(filePath, FileMode.Create))
-            //        {
-            //            await historyAddDTO.SecReport.CopyToAsync(stream);
-            //        }
-            //    }
-            //}
+            if (historyAddDTO.SecReport != null)
+            {
+                if (historyAddDTO.SecReport.Length > 0)
+                {
+                    medicalHistory.Attached += 1;
+                    var filePath = Path.Combine(medicalHistorySecReportFolder, historyAddDTO.SecReport.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await historyAddDTO.SecReport.CopyToAsync(stream);
+                    }
+                }
+            }
 
-            //if (historyAddDTO.FirstReport != null)
-            //    medicalHistory.FirstReport = Path.Combine("Uploads", "MedicalHistories", medicalHistory.Student.en_name + "_" + medicalHistory.Id, "FirstReport", historyAddDTO.FirstReport.FileName);
-            //if (historyAddDTO.SecReport != null)
-            //    medicalHistory.SecReport = Path.Combine("Uploads", "MedicalHistories", medicalHistory.Student.en_name + "_" + medicalHistory.Id, "SecReport", historyAddDTO.SecReport.FileName);
+            if (historyAddDTO.FirstReport != null)
+                medicalHistory.FirstReport = Path.Combine("Uploads", "MedicalHistories", medicalHistory.Student.en_name + "_" + medicalHistory.Id, "FirstReport", historyAddDTO.FirstReport.FileName);
+            if (historyAddDTO.SecReport != null)
+                medicalHistory.SecReport = Path.Combine("Uploads", "MedicalHistories", medicalHistory.Student.en_name + "_" + medicalHistory.Id, "SecReport", historyAddDTO.SecReport.FileName);
 
-            //Unit_Of_Work.medicalHistory_Repository.Update(medicalHistory);
-            //Unit_Of_Work.SaveChanges();
+            Unit_Of_Work.medicalHistory_Repository.Update(medicalHistory);
+            Unit_Of_Work.SaveChanges();
 
-            //return Ok(historyAddDTO);
-            return Ok();
+            return Ok(historyAddDTO);
         }
         #endregion
         

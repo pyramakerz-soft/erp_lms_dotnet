@@ -211,7 +211,6 @@ export class InventoryDetailsComponent {
   GetCategories() {
     this.CategoriesServ.GetByStoreId(this.DomainName , this.Data.storeID).subscribe((d) => {
       this.Categories = d
-      console.log(d)
     })
   }
 
@@ -266,7 +265,6 @@ export class InventoryDetailsComponent {
   }
 
   async GetTableDataByID(): Promise<void> {
-    console.log(this.MasterId)
     return new Promise((resolve) => {
       this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
         this.TableData = d;
@@ -299,7 +297,6 @@ export class InventoryDetailsComponent {
     }
   }
   Save() {
-    console.log(this.Data)
     if (this.isFormValid()) {
       if (this.mode == "Create") {
         this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
@@ -308,7 +305,6 @@ export class InventoryDetailsComponent {
         })
       }
       if (this.mode == "Edit") {
-        console.log("after",this.Data)
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
         })
@@ -321,7 +317,6 @@ export class InventoryDetailsComponent {
   }
 
   EditPrice(){
-    console.log(this.ShopItem)
     this.Item.price = this.ShopItem.purchasePrice ?? 0
     this.CalculateTotalPrice()
     this.IsPriceChanged=true;
@@ -566,7 +561,6 @@ export class InventoryDetailsComponent {
         return false;
       }
     }
-    console.log(this.Data)
     return isValid;
   }
   capitalizeField(field: keyof InventoryMaster): string {

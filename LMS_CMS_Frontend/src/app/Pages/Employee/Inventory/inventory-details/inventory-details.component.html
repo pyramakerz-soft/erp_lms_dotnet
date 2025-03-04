@@ -93,7 +93,7 @@
         <div *ngIf="Data.isCash" class="flex flex-col w-[23%] mb-4">
             <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="save"
                 [(ngModel)]="Data.saveID">
-                <option [value]=0 disabled selected hidden>Saves</option>
+                <option [value]=0 disabled selected hidden>Choose Safe</option>
                 <option *ngFor="let stu of Saves" [value]="stu.id">{{ stu.name }}</option>
                 <option *ngIf="Saves.length === 0" disabled selected>No Data Found</option>
             </select>
@@ -110,7 +110,7 @@
         <div *ngIf="Data.isVisa" class="flex flex-col w-[23%] mb-4">
             <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bank"
                 [(ngModel)]="Data.bankID">
-                <option [value]=0 disabled selected hidden>Banks</option>
+                <option [value]=0 disabled selected hidden>Choose Bank</option>
                 <option *ngFor="let stu of Banks" [value]="stu.id">{{ stu.name }}</option>
                 <option *ngIf="Banks.length === 0" disabled selected>No Data Found</option>
             </select>
@@ -359,7 +359,7 @@
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-4">
-                            <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row)">
+                            <button (click)="Delete(row)">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
                             <button *ngIf="editingRowId === row.id" (click)="SaveEdit(row)">

@@ -10,7 +10,7 @@ namespace LMS_CMS_BL.DTO.ECommerce
     public class CartGetDTO
     {
         public long ID { get; set; }
-        public int TotalPrice { get; set; }
+        public float TotalPrice { get; set; }
         public long PromoCodeID { get; set; } 
         public string PromoCodeName { get; set; } 
         public int Percentage { get; set; } 

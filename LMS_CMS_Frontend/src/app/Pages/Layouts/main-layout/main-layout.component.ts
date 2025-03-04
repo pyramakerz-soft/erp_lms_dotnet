@@ -43,6 +43,13 @@ export class MainLayoutComponent {
       this.menuItems = [
         {
           label: 'Dashboard Student', route: '#'
+        },
+        {
+          label: 'ECommerce', subItems: [
+            {
+              label: 'Shop', route: 'Ecommerce/Shop'
+            }
+          ]
         }
       ]
     } else if (this.User_Data_After_Login.type == "parent") {

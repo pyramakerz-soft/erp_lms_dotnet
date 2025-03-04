@@ -102,6 +102,10 @@ import { SalesComponent } from './Pages/Employee/Inventory/sales/sales.component
 import { SalesItemComponent } from './Pages/Employee/Inventory/sales-item/sales-item.component';
 import { InventoryMasterComponent } from './Pages/Employee/Inventory/inventory-master/inventory-master.component';
 import { InventoryDetailsComponent } from './Pages/Employee/Inventory/inventory-details/inventory-details.component';
+import { ShopComponent } from './Pages/Student/Ecommerce/shop/shop.component';
+import { ShopItemComponent } from './Pages/Student/Ecommerce/shop-item/shop-item.component';
+import { CartComponent } from './Pages/Student/Ecommerce/cart/cart.component';
+import { OrderComponent } from './Pages/Student/Ecommerce/order/order.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -261,7 +265,11 @@ export const routes: Routes = [
         title: "Student Home", 
         canActivate:[noNavigateWithoutLoginGuard,navigateIfStudentGuard], 
         children: [
-            { path: "", component: StudentHomeComponent, title: "StudentHome" }
+            { path: "", component: StudentHomeComponent, title: "StudentHome" },
+            { path: "Ecommerce/Shop", component: ShopComponent, title: "Shop" },
+            { path: "Ecommerce/ShopItem/:id", component: ShopItemComponent, title: "Shop Item" },
+            { path: "Ecommerce/Cart", component: CartComponent, title: "Cart" },
+            { path: "Ecommerce/Order", component: OrderComponent, title: "Order" }
         ]
     },
     { 

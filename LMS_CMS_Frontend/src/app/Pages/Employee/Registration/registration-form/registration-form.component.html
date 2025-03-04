@@ -62,12 +62,13 @@
                                     <option value="null" style="color: gray;" disabled selected hidden>{{ 'Choose' | translate }} {{ isRtl ? field.arName : field.enName }}</option>
                                      
                                     <ng-container *ngIf="field.id == 3">
-                                        <option value="male">{{ 'Male' | translate }}</option>
-                                        <option value="female">{{ 'Female' | translate }}</option>
+                                        <option *ngFor="let gender of Gender" [value]="gender.id">
+                                            {{ gender.name }}
+                                          </option>
                                     </ng-container>
         
                                     <ng-container *ngIf="field.id == 5">
-                                        <option *ngFor="let nationality of nationalities" [value]="nationality.name">
+                                        <option *ngFor="let nationality of nationalities" [value]="nationality.id">
                                           {{ nationality.name }}
                                         </option>
                                     </ng-container>

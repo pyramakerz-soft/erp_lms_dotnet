@@ -1,6 +1,6 @@
 <div class="">
     <div class="flex justify-between">
-      <h1 class="font-semibold text-2xl leading-9">Saves</h1>
+      <h1 class="font-semibold text-2xl leading-9">Safe</h1>
       <div class="flex justify-between items-center">
         <app-search
           [keysArray]="keysArray"
@@ -10,7 +10,7 @@
           (click)="Create()"
           class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2"
         >
-          Create Save
+          Create Safe
         </button>
       </div>
     </div>
@@ -100,14 +100,14 @@ class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h
   </button>
 
   <h1 *ngIf="mode == 'Create'" class="font-semibold text-2xl leading-9">
-    Create Saves
+    Create Safe
   </h1>
   <h1 *ngIf="mode == 'Edit'" class="font-semibold text-2xl leading-9">
-    Edit Saves
+    Edit Safe
   </h1>
   <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
     <div class="flex flex-col mt-2 gap-2 items-start">
-      <h6 class="font-medium text-base leading-6">Saves Name</h6>
+      <h6 class="font-medium text-base leading-6">Safe Name</h6>
       <input type="text" class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2"
         [(ngModel)]="save.name" placeholder="Enter Name" (ngModelChange)="
               onInputValueChange({ field: 'name', value: $event })" />

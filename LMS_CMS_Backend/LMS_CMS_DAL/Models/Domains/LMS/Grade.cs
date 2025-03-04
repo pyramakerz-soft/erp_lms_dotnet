@@ -28,5 +28,6 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<Classroom> Classrooms { get; set; } = new HashSet<Classroom>();
         public ICollection<Test> Tests { get; set; } = new HashSet<Test>();
         public ICollection<ShopItem> ShopItem { get; set; } = new HashSet<ShopItem>();
+
     }
 }

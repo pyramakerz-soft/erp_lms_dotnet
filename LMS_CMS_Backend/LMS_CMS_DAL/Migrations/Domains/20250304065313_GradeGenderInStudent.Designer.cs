@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250304065313_GradeGenderInStudent")]
+    partial class GradeGenderInStudent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4889,6 +4892,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("GenderId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("GradeId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -4958,6 +4964,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("GenderId");
+
+                    b.HasIndex("GradeId");
 
                     b.HasIndex("InsertedByUserId");
 
@@ -8927,9 +8935,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Gender", "Gender")
-                        .WithMany("Students")
+                        .WithMany()
                         .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Grade", "Grade")
+                        .WithMany()
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
@@ -8951,6 +8965,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("DeletedByEmployee");
 
                     b.Navigation("Gender");
+
+                    b.Navigation("Grade");
 
                     b.Navigation("InsertedByEmployee");
 
@@ -9971,8 +9987,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Gender", b =>
                 {
                     b.Navigation("ShopItem");
-
-                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.InventoryCategories", b =>

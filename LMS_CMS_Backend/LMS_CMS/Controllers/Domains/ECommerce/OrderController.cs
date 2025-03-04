@@ -31,6 +31,42 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
         
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
+        [HttpGet("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "student" }
+         )]
+        public async Task<IActionResult> GetById(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+             
+            if (id == null || id == 0)
+            {
+                return NotFound("Id can't be null");
+            }
+
+            Order order = Unit_Of_Work.order_Repository.First_Or_Default(
+                    b => b.IsDeleted != true && b.ID == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            OrderGetDTO orderDTO = mapper.Map<OrderGetDTO>(order);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+             
+            Cart_ShopItem cartShopitem = await Unit_Of_Work.cart_ShopItem_Repository.FindByIncludesAsync(
+                c => c.IsDeleted != true && c.CartID == orderDTO.CartID,
+                query => query.Include(c => c.ShopItem)
+                );
+
+            orderDTO.MainImage = $"{serverUrl}{cartShopitem.ShopItem.MainImage.Replace("\\", "/")}"; 
+            
+            return Ok(orderDTO);
+        }
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
         [HttpGet("ByStudentId/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "student" }
@@ -58,6 +94,18 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             }
              
             List<OrderGetDTO> orderDTO = mapper.Map<List<OrderGetDTO>>(orders);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+
+            for (int i = 0; i < orderDTO.Count; i++)
+            {
+                Cart_ShopItem cartShopitem = await Unit_Of_Work.cart_ShopItem_Repository.FindByIncludesAsync(
+                    c => c.IsDeleted != true && c.CartID == orderDTO[i].CartID,
+                    query => query.Include(c => c.ShopItem)
+                    );
+
+                orderDTO[i].MainImage = $"{serverUrl}{cartShopitem.ShopItem.MainImage.Replace("\\", "/")}"; 
+            }
              
             return Ok(orderDTO);
         }

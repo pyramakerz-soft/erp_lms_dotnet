@@ -16,5 +16,6 @@ namespace LMS_CMS_BL.DTO.ECommerce
         public long StudentID { get; set; }
         public long CartID { get; set; }
         public DateTime? InsertedAt { get; set; }
+        public string MainImage { get; set; }
     }
 }

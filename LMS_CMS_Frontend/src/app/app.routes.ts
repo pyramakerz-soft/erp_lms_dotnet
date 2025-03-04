@@ -106,6 +106,7 @@ import { ShopComponent } from './Pages/Student/Ecommerce/shop/shop.component';
 import { ShopItemComponent } from './Pages/Student/Ecommerce/shop-item/shop-item.component';
 import { CartComponent } from './Pages/Student/Ecommerce/cart/cart.component';
 import { OrderComponent } from './Pages/Student/Ecommerce/order/order.component';
+import { OrderItemsComponent } from './Pages/Student/Ecommerce/order-items/order-items.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -269,7 +270,8 @@ export const routes: Routes = [
             { path: "Ecommerce/Shop", component: ShopComponent, title: "Shop" },
             { path: "Ecommerce/ShopItem/:id", component: ShopItemComponent, title: "Shop Item" },
             { path: "Ecommerce/Cart", component: CartComponent, title: "Cart" },
-            { path: "Ecommerce/Order", component: OrderComponent, title: "Order" }
+            { path: "Ecommerce/Order", component: OrderComponent, title: "Order" },
+            { path: "Ecommerce/Order/:id", component: OrderItemsComponent, title: "Order Items" }
         ]
     },
     { 

@@ -36,6 +36,10 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
         public async Task<IActionResult> GetByStudentId(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
             Student stu = Unit_Of_Work.student_Repository.First_Or_Default(
                 stu => stu.ID == id && stu.IsDeleted != true
@@ -100,6 +104,17 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             CartGetDTO cartGetDTO = mapper.Map<CartGetDTO>(cart);
             cartGetDTO.Cart_ShopItems = cart_ShopItemGetDTO;
 
+            if (userTypeClaim == "student")
+            { 
+                if (stu.Nationality == 148)
+                {
+                    for(int i = 0; i < cartGetDTO.Cart_ShopItems.Count; i++)
+                    {
+                        cartGetDTO.Cart_ShopItems[i].VATForForeign = 0;
+                    }
+                }
+            }
+
             return Ok(cartGetDTO);
         }
 
@@ -112,6 +127,10 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
         public async Task<IActionResult> GetByOrderId(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
             Order order = Unit_Of_Work.order_Repository.First_Or_Default(
                 o => o.ID == id && o.IsDeleted != true
@@ -154,6 +173,19 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
             CartGetDTO cartGetDTO = mapper.Map<CartGetDTO>(cart);
             cartGetDTO.Cart_ShopItems = cart_ShopItemGetDTO;
+
+            if (userTypeClaim == "student")
+            {
+                Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.IsDeleted != true && s.ID == userId); 
+
+                if (stu.Nationality == 148)
+                {
+                    for (int i = 0; i < cartGetDTO.Cart_ShopItems.Count; i++)
+                    {
+                        cartGetDTO.Cart_ShopItems[i].VATForForeign = 0;
+                    }
+                }
+            }
 
             return Ok(cartGetDTO);
         } 

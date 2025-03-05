@@ -146,10 +146,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            Cart cart = await Unit_Of_Work.cart_Repository.FindByIncludesAsync(
-                o => o.ID == id && o.IsDeleted != true,
-                query => query.Include(c => c.PromoCode)
-                );
+            Cart cart = Unit_Of_Work.cart_Repository.First_Or_Default(
+                o => o.ID == id && o.IsDeleted != true);
 
             if (cart == null)
             {
@@ -164,17 +162,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 return BadRequest("This is already an Order");
             }
 
-            Order newOrder = new Order();
-            if(cart.PromoCodeID != null && cart.PromoCodeID != 0)
-            {
-                float PriceAfterPromo = cart.TotalPrice - (cart.TotalPrice * (cart.PromoCode.Percentage / 100));
-                newOrder.TotalPrice = PriceAfterPromo;
-
-            }
-            else
-            {
-                newOrder.TotalPrice = cart.TotalPrice;
-            }
+            Order newOrder = new Order(); 
+            newOrder.TotalPrice = cart.TotalPrice;
             newOrder.CartID = cart.ID;
             newOrder.StudentID = cart.StudentID;
             newOrder.OrderStateID = 1;

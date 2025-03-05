@@ -64,7 +64,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     d => d.IsDeleted != true,
                     query => query.Include(h => h.HygieneForm),
                     query => query.Include(h => h.Student),
-                    query => query.Include(h => h.HygieneType)
+                    query => query.Include(h => h.HygieneTypes)
                 );
                 if (stuHyTy != null)
                 {
@@ -116,7 +116,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     d => d.IsDeleted != true,
                     query => query.Include(h => h.HygieneForm),
                     query => query.Include(h => h.Student),
-                    query => query.Include(h => h.HygieneType)
+                    query => query.Include(h => h.HygieneTypes)
                 );
 
             if (stuHyTy != null)
@@ -173,12 +173,16 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.hygieneForm_Repository.Add(hygieneForm);
             Unit_Of_Work.SaveChanges();
 
-            StudentHygieneTypes sht = new StudentHygieneTypes
-            {
-                HygieneFormId = hygieneForm.Id,
-                StudentId = hygieneFormDTO.StudentId,
-                HygieneTypeId = hygieneFormDTO.HygieneTypeId
-            };
+            StudentHygieneTypes sht = _mapper.Map<StudentHygieneTypes>(hygieneFormDTO.StudentHygieneTypes);
+
+            //new StudentHygieneTypes
+            //{
+            //    HygieneFormId = hygieneForm.Id,
+            //    StudentId = hygieneFormDTO.StudentId,
+            //    HygieneTypeId = hygieneFormDTO.HygieneTypeId
+            //};
+
+            sht.HygieneFormId = hygieneForm.Id;
 
             Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
             Unit_Of_Work.SaveChanges();

@@ -129,7 +129,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     d => d.IsDeleted != true,
                     query => query.Include(h => h.HygieneForm),
                     query => query.Include(h => h.Student),
-                    query => query.Include(h => h.HygieneType)
+                    query => query.Include(h => h.HygieneTypes)
                 );
                 if (stuHyTy != null)
                 {

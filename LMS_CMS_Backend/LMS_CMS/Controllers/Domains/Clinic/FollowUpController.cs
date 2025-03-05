@@ -79,7 +79,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             FollowUp followUp = await Unit_Of_Work.followUp_Repository
-                .FindByIncludesAsync(d => d.Id == id && d.IsDeleted != true, query => query.Include(f => f.FollowUpDrugs));
+                .FindByIncludesAsync(
+                    d => d.Id == id && d.IsDeleted != true, 
+                    query => query.Include(f => f.FollowUpDrugs),
+                    query => query.Include(f => f.School),
+                    query => query.Include(f => f.Grade),
+                    query => query.Include(f => f.Classroom),
+                    query => query.Include(f => f.Student),
+                    query => query.Include(f => f.Diagnosis)
+                );
 
             if (followUp == null)
             {

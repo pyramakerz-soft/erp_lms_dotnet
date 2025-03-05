@@ -7,7 +7,7 @@ namespace LMS_CMS_BL.DTO.Clinic
         [Required(ErrorMessage = "Student ID is required")]
         public long StudentId { get; set; }
 
-        List<HygieneTypeAddDTO>? HygieneTypes { get; set; }
+        public List<long>? HygieneTypesIds { get; set; }
 
         public bool Attendance { get; set; }
         public string? Comment { get; set; }

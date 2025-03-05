@@ -55,7 +55,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return NotFound();
             }
 
-
             List<HygieneFormGetDTO> hygieneFormsDto = _mapper.Map<List<HygieneFormGetDTO>>(hygieneForms);
 
             foreach (var item in hygieneFormsDto)
@@ -66,6 +65,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     query => query.Include(h => h.Student),
                     query => query.Include(h => h.HygieneTypes)
                 );
+
                 if (stuHyTy != null)
                 {
                     List<StudentHygieneTypesGetDTO> stuHyTyDTO = _mapper.Map<List<StudentHygieneTypesGetDTO>>(stuHyTy);
@@ -155,6 +155,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return BadRequest("Hygiene Form can not be null");
             }
 
+            foreach (var hfd in hygieneFormDTO.StudentHygieneTypes)
+            {
+                foreach (var ht in hfd.HygieneTypesIds)
+                {
+                    HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.First_Or_Default(d => d.Id == ht && d.IsDeleted != true);
+
+                    if (hygieneType == null)
+                    {
+                        return NotFound($"Hygien Type ID: {ht} not found");
+                    }
+                }
+            }
+
             HygieneForm hygieneForm = _mapper.Map<HygieneForm>(hygieneFormDTO);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -175,14 +188,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             StudentHygieneTypes sht = _mapper.Map<StudentHygieneTypes>(hygieneFormDTO.StudentHygieneTypes);
 
-            //new StudentHygieneTypes
+            sht.HygieneFormId = hygieneForm.Id;
+            //StudentHygieneTypes sht = new StudentHygieneTypes
             //{
             //    HygieneFormId = hygieneForm.Id,
-            //    StudentId = hygieneFormDTO.StudentId,
-            //    HygieneTypeId = hygieneFormDTO.HygieneTypeId
+
             //};
 
-            sht.HygieneFormId = hygieneForm.Id;
 
             Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
             Unit_Of_Work.SaveChanges();

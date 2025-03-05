@@ -29,7 +29,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Follow Up" }
         )]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -44,7 +44,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            List<FollowUp> followUps = Unit_Of_Work.followUp_Repository.FindBy(d => d.IsDeleted != true);
+            List<FollowUp> followUps = await Unit_Of_Work.followUp_Repository.Select_All_With_IncludesById<FollowUp>(
+                d => d.IsDeleted != true,
+                query => query.Include(f => f.FollowUpDrugs),
+                query => query.Include(f => f.School),
+                query => query.Include(f => f.Grade),
+                query => query.Include(f => f.Classroom),
+                query => query.Include(f => f.Student),
+                query => query.Include(f => f.Diagnosis)
+            );
 
             if (followUps == null || followUps.Count == 0)
             {
@@ -52,6 +60,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             List<FollowUpGetDTO> followUpDto = _mapper.Map<List<FollowUpGetDTO>>(followUps);
+
+            foreach (var follow in followUpDto)
+            {
+                foreach (var drug in follow.FollowUpDrugs)
+                {
+                    Drug Drug = Unit_Of_Work.drug_Repository.Select_By_Id(drug.DrugId);
+                    drug.Drug = Drug.Name;
+
+                    Dose dose = Unit_Of_Work.dose_Repository.Select_By_Id(drug.DoseId);
+                    drug.Dose = dose.DoseTimes;
+                }
+            }
 
             return Ok(followUpDto);
         }
@@ -95,6 +115,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             FollowUpGetDTO followUpDto = _mapper.Map<FollowUpGetDTO>(followUp);
+
+            foreach (var follow in followUpDto.FollowUpDrugs)
+            {
+                Drug Drug = Unit_Of_Work.drug_Repository.Select_By_Id(follow.DrugId);
+                follow.Drug = Drug.Name;
+
+                Dose dose = Unit_Of_Work.dose_Repository.Select_By_Id(follow.DoseId);
+                follow.Dose = dose.DoseTimes;
+            }
 
             return Ok(followUpDto);
         }

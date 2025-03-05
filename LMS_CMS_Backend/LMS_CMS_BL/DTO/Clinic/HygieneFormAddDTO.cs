@@ -17,6 +17,6 @@ namespace LMS_CMS_BL.DTO.Clinic
         [Required(ErrorMessage = "Date is required")]
         public DateTime Date { get; set; }
 
-        public List<StudentHygieneTypes>? StudentHygieneTypes { get; set; }
+        public List<StudentHygieneTypesAddDTO>? StudentHygieneTypes { get; set; }
     }
 }

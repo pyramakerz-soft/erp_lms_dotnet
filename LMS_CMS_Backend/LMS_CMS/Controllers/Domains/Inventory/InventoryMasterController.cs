@@ -393,6 +393,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 newSale.BankID = null;
             }
 
+            if (newSale.SupplierId != 0 && newSale.SupplierId != null)
+            {
+                Supplier supplier = Unit_Of_Work.supplier_Repository.First_Or_Default(b => b.ID == newSale.SupplierId && b.IsDeleted != true);
+                if (supplier == null)
+                {
+                    return NotFound("Supplier not found.");
+                }
+            }
+            else
+            {
+                newSale.SupplierId = null;
+            }
+
             if (newSale.SaveID != 0 && newSale.SaveID != null)
             {
                 Save save = Unit_Of_Work.save_Repository.First_Or_Default(b => b.ID == newSale.SaveID && b.IsDeleted != true);

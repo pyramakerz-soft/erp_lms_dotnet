@@ -148,10 +148,19 @@ export class InventoryDetailsComponent {
 
     if (!this.MasterId) {
       this.mode = "Create"
+      this.Data.date = new Date().toISOString().split('T')[0];
     } else {
       this.mode = "Edit"
       this.GetTableDataByID();
       this.GetMasterInfo();
+      if(this.Data.saveID==null){
+        this.Data.saveID=0
+      }
+      if(this.Data.bankID==null){
+        this.Data.bankID=0
+      }
+
+      console.log(this.Data)
     }
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -437,17 +446,18 @@ export class InventoryDetailsComponent {
   }
 
   onImageFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (this.mode == "Create") {
-      this.Data.attachment.push(file)
+    const files: FileList = event.target.files;
+  
+    if (this.mode === "Create") {
+      this.Data.attachment = this.Data.attachment || [];
+      Array.from(files).forEach(file => this.Data.attachment.push(file));
     }
     if (this.mode === "Edit") {
       if (!this.Data.NewAttachments) {
         this.Data.NewAttachments = [];
       }
-      this.Data.NewAttachments.push(file);
+      Array.from(files).forEach(file => this.Data.NewAttachments.push(file));
     }
-
   }
 
   openFile(file: any) {  // open image if it file or url 
@@ -560,6 +570,15 @@ export class InventoryDetailsComponent {
         this.validationErrors['studentID']='Student Is Required'
         return false;
       }
+    }
+    if(this.Data.isCash==true&& this.Data.saveID== 0 ||this.Data.isCash==true&& this.Data.saveID== null){
+      this.validationErrors['saveID']='Safe Is Required'
+      return false;
+    }
+    console.log(this.Data)
+    if(this.Data.isVisa==true&& this.Data.bankID== 0 || this.Data.isVisa==true&& this.Data.bankID== null ){
+      this.validationErrors['bankID']='Bank Is Required'
+      return false;
     }
     return isValid;
   }

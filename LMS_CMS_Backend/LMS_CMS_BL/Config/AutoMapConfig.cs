@@ -657,7 +657,7 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<StudentHygieneTypes, StudentHygieneTypesGetDTO>()
                 .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name))
-                .ForMember(dest => dest.Hygiene, opt => opt.MapFrom(src => src.HygieneType));
+                .ForMember(dest => dest.HygieneType, opt => opt.MapFrom(src => src.HygieneType.Type));
 
             CreateMap<HygieneFormPutDTO, HygieneForm>();
 

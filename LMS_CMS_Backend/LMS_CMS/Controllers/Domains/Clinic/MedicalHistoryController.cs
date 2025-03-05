@@ -148,12 +148,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             MedicalHistory medicalHistory = await Unit_Of_Work.medicalHistory_Repository.FindByIncludesAsync(
-                    m => m.IsDeleted != true, 
+                    m => m.IsDeleted != true && m.Id == id, 
                     query => query.Include(m => m.School),
                     query => query.Include(m => m.Grade),
                     query => query.Include(m => m.Classroom),
                     query => query.Include(m => m.Student)
-                );
+            );
 
             if (medicalHistory == null || medicalHistory.IsDeleted == true)
             {
@@ -339,7 +339,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             {
                 if (historyAddDTO.FirstReport.Length > 0)
                 {
-                    medicalHistory.Attached += 1;
                     var filePath = Path.Combine(medicalHistoryFirstReportFolder, historyAddDTO.FirstReport.FileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
@@ -352,7 +351,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             {
                 if (historyAddDTO.SecReport.Length > 0)
                 {
-                    medicalHistory.Attached += 1;
                     var filePath = Path.Combine(medicalHistorySecReportFolder, historyAddDTO.SecReport.FileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
@@ -362,9 +360,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             if (historyAddDTO.FirstReport != null)
+            {
                 medicalHistory.FirstReport = Path.Combine("Uploads", "MedicalHistories", enNameExists + "_" + medicalHistory.Id, "FirstReport", historyAddDTO.FirstReport.FileName);
+                medicalHistory.Attached += 1;
+            }
             if (historyAddDTO.SecReport != null)
+            {
                 medicalHistory.SecReport = Path.Combine("Uploads", "MedicalHistories", enNameExists + "_" + medicalHistory.Id, "SecReport", historyAddDTO.SecReport.FileName);
+                medicalHistory.Attached += 1;
+            }
 
             Unit_Of_Work.medicalHistory_Repository.Update(medicalHistory);
             Unit_Of_Work.SaveChanges();

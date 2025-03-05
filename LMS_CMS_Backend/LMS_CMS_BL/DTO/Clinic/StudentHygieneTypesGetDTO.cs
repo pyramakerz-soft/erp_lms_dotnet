@@ -9,7 +9,7 @@ namespace LMS_CMS_BL.DTO.Clinic
         public long StudentId { get; set; }
         public string Student { get; set; }
         public long HygieneTypeId { get; set; }
-        public string Hygiene { get; set; }
+        public string HygieneType { get; set; }
         public bool Attendance { get; set; }
         public bool SelectAll { get; set; }
         public string? Comment { get; set; }

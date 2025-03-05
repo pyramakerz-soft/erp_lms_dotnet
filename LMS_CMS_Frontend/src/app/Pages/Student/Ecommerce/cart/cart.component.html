@@ -19,14 +19,80 @@
     </div>
 </div>
 
-<div *ngIf="cart.id == 0" class="w-full h-[90%] flex justify-center items-center">
+<select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto mt-8"
+    *ngIf="User_Data_After_Login.type == 'employee'"
+    [(ngModel)]="StuID" (change)="getCart()">
+    <option [value]=0 disabled selected hidden> Choose Your Student</option>
+    <option *ngFor="let empStu of emplyeeStudent" [value]="empStu.studentID">{{ empStu.studentName }}</option>
+    <option *ngIf="emplyeeStudent.length === 0" disabled selected>No Data Found</option>
+</select>
+
+<div *ngIf="cart.id == 0 && StuID != 0" class="w-full h-[90%] flex justify-center items-center">
     <p>No Items in Cart</p>
 </div>
 
-<div *ngIf="cart.id != 0">
-    <div *ngFor="let row of cart.cart_ShopItems; let i = index" class="px-4 py-2">
-        <div>
-            <p>{{ row.shopItemEnNme }}</p>
+<div *ngIf="cart.id != 0" class="flex space-x-4 items-start mt-8">
+    <div class="w-2/3">
+        <table class="w-full text-left">
+            <thead class="bg-[#F7F7F7]">
+                <tr>
+                    <th class="p-2">Products</th>
+                    <th class="p-2">Price</th>
+                    <th class="p-2">Quantity</th>
+                    <th class="p-2">Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="cart.cart_ShopItems.length === 0">
+                    <td
+                      colspan="4"
+                      class="bg-white px-4 py-2 h-[72px] text-center border-t text-xs md:text-sm">
+                      No Data Found
+                    </td>
+                </tr>
+                <tr *ngFor="let row of cart.cart_ShopItems; let i = index"
+                [ngClass]="{ 'border-b': i != cart.cart_ShopItems.length }">
+                    <td class="flex space-x-4 p-4 items-center">
+                        <img class="rounded w-[100px] h-[67px]" [src]="row.mainImage" *ngIf="row.mainImage">
+                        <div class="rounded w-[100px] h-[67px] bg-[#E4E4E4]" *ngIf="!row.mainImage"></div>
+                        <div>
+                            <p class="text-base font-medium"><span *ngIf="row.shopItemColorID">{{row.shopItemColorName}}</span> {{row.shopItemEnName}} <span *ngIf="row.shopItemSizeID">({{row.shopItemSizeName}})</span></p>
+                            <p class="text-[#F53F6B] text-xs font-normal mt-2 cursor-pointer" (click)="RemoveCartShopItem(row.id)">Remove</p>
+                        </div>
+                    </td>
+
+                    <td class="text-[#6F6F6F] text-sm font-normal p-4">{{row.salesPrice}} SAR</td>
+
+                    <td class="p-4 flex">
+                        <div class="rounded-tl-2xl rounded-tr-lg rounded-bl-lg rounded-br-2xl border bg-[#F7F7F7] flex items-center space-x-4 py-3 px-4 primaryTxt text-base">
+                            <i class="fa-solid fa-minus cursor-pointer" 
+                            [ngClass]="{'text-gray-400 cursor-not-allowed': row.quantity <= 0}" 
+                            (click)="row.quantity > 0 && ChangeQuantity(row.id, row.quantity - 1)"></i>
+                            <p>{{row.quantity}}</p> 
+                            <i class="fa-solid fa-plus cursor-pointer" 
+                            [ngClass]="{'text-gray-400 cursor-not-allowed': row.shopItemLimit == 0}" 
+                            (click)="row.shopItemLimit != 0 && ChangeQuantity(row.id, row.quantity + 1)"></i>
+                        </div>
+                    </td>
+
+                    <td class="primaryTxt text-base font-bold p-4">{{row.salesPrice * row.quantity}} SAR</td>
+                </tr>
+            </tbody>
+        </table> 
+    </div>
+
+    <div class="w-1/3 rounded-2xl p-6 shadow-lg border border-[#BDBDBD]">
+        <div class="flex justify-between">
+            <p class="text-sm font-normal">Price</p>
+            <p class="text-base font-normal">{{totalSalesPrices}}</p>
         </div>
+        <div class="flex justify-between mt-3">
+            <p class="text-sm font-normal">VAT</p>
+            <p class="text-base font-normal">+{{totalVat}}</p>
+        </div>
+        <hr class="my-4">
+        <p class="font-medium text-xl">Total Order <span class="secondaryTxt text-xl font-medium">{{cart.totalPrice}} SAR</span></p>
+
+        <button class="mt-6 secondaryBg text-white py-3 px-16 w-full rounded-lg" (click)="ProceedToBuy()">Proceed to Buy</button>
     </div>
 </div>

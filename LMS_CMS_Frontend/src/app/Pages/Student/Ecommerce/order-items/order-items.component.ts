@@ -43,11 +43,19 @@ export class OrderItemsComponent {
   }
 
   goToCart() {
-    this.router.navigateByUrl("Student/Ecommerce/Cart")
+    if(this.User_Data_After_Login.type == 'employee'){
+      this.router.navigateByUrl("Employee/Cart")
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/Cart")
+    } 
   } 
 
   moveToOrders(){
-    this.router.navigateByUrl("Student/Ecommerce/Order")
+    if(this.User_Data_After_Login.type == 'employee'){
+      this.router.navigateByUrl("Employee/Order")
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/Order")
+    } 
   }
 
   getCartData(){

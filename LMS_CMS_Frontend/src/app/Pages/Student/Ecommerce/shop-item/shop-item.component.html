@@ -27,16 +27,28 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="primaryTxt font-semibold text-2xl">{{shopItem.salesPrice}} SAR</p>
+                
                 <div *ngIf="shopItem.vatForForeign != 0" class="mt-4 font-normal text-sm">
                     <p class="text-[#6F6F6F]">VAT <span class="secondaryTxt font-medium"> + {{shopItem.vatForForeign}}%</span> <span class="primaryTxt"> {{CalculatedVat}} SR</span></p> 
                 </div>
             </div>
-            <i class="fa-solid fa-cart-plus bg-white rounded p-2 text-3xl" 
-            [ngClass]="{
-                'secondaryTxt cursor-pointer': shopItem.limit && shopItem.limit > 0, 
-                'text-gray-200': shopItem.limit && shopItem.limit <= 0
-            }" 
-            (click)="onAddToCartClick($event, shopItem.id, shopItem.limit)"></i>
+            <div class="flex items-center space-x-4">
+                <i class="fa-solid fa-cart-plus bg-white rounded p-2 text-3xl" 
+                *ngIf="User_Data_After_Login.type == 'student' || (User_Data_After_Login.type == 'employee' && StuID!=0)"
+                [ngClass]="{
+                    'secondaryTxt cursor-pointer': shopItem.limit && shopItem.limit > 0, 
+                    'text-gray-200': shopItem.limit && shopItem.limit <= 0
+                }" 
+                (click)="onAddToCartClick($event, shopItem.id, shopItem.limit)"></i>
+                
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto "
+                    *ngIf="User_Data_After_Login.type == 'employee'"
+                    [(ngModel)]="StuID">
+                    <option [value]=0 disabled selected hidden> Choose Your Student</option>
+                    <option *ngFor="let empStu of emplyeeStudent" [value]="empStu.studentID">{{ empStu.studentName }}</option>
+                    <option *ngIf="emplyeeStudent.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
         </div>
 
         <div *ngIf="shopItem.shopItemColors.length != 0" class="mt-6">

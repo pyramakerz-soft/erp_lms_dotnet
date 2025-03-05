@@ -244,7 +244,11 @@ export const routes: Routes = [
             { path: "Damaged", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 7 } },
             { path: "Damaged Item/:FlagId", component: InventoryDetailsComponent, title: "Damaged Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Damaged Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Damaged Item" , canActivate:[noNavigateWithoutLoginGuard ]},
-
+            { path: "The Shop", component: ShopComponent, title: "Shop", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "ShopItem/:id", component: ShopItemComponent, title: "Shop Item", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Cart", component: CartComponent, title: "Cart", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Order", component: OrderComponent, title: "Order", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Order/:id", component: OrderItemsComponent, title: "Order Items", canActivate:[noNavigateWithoutLoginGuard ] }
         ]
     },
     { 

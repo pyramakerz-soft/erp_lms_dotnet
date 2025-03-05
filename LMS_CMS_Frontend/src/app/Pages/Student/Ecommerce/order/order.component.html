@@ -19,7 +19,16 @@
     </div>
 </div>
 
-<div *ngIf="orders.length == 0" class="w-full h-[90%] flex justify-center items-center">
+<select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto mt-8"
+    *ngIf="User_Data_After_Login.type == 'employee'"
+    (change)="getOrders()"
+    [(ngModel)]="StuID">
+    <option [value]=0 disabled selected hidden> Choose Your Student</option>
+    <option *ngFor="let empStu of emplyeeStudent" [value]="empStu.studentID">{{ empStu.studentName }}</option>
+    <option *ngIf="emplyeeStudent.length === 0" disabled selected>No Data Found</option>
+</select>
+
+<div *ngIf="orders.length == 0 && StuID != 0" class="w-full h-[90%] flex justify-center items-center">
     <p>No Orders Yet</p>
 </div>
 

@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
         )]
         public IActionResult Add(CartShopItemAddDTO cartShopItem)
         {
@@ -208,7 +208,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpDelete("RemoveItemFromCart/{CartShopItemID}")]
         [Authorize_Endpoint_(
-           allowedTypes: new[] { "octa", "student" }
+           allowedTypes: new[] { "octa", "student", "employee" }
         )]
         public IActionResult RemoveItemFromCart(long CartShopItemID)
         {
@@ -280,7 +280,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpPut("ChangeQuantity")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
         )]
         public IActionResult ChangeQuantity(CartShopItemPutDTO cartShopItem)
         {
@@ -310,9 +310,12 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             }
 
             ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(sh => sh.IsDeleted != true && sh.ID == existsCartShopItem.ShopItemID);
-            if (shopItem.Limit < cartShopItem.Quantity)
+            if(existsCartShopItem.Quantity < cartShopItem.Quantity)
             {
-                return BadRequest($"There are only {shopItem.Limit} items in the store");
+                if (shopItem.Limit < (existsCartShopItem.Quantity - cartShopItem.Quantity))
+                {
+                    return BadRequest($"There are only {shopItem.Limit} items in the store");
+                }
             }
 
             if (cartShopItem.Quantity < 0)

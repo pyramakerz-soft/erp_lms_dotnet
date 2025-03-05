@@ -33,7 +33,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
          )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -69,7 +69,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpGet("ByStudentId/{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
          )]
         public async Task<IActionResult> GetByStudentId(long id)
         {
@@ -114,7 +114,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpDelete("CancelOrder/{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
         )]
         public IActionResult CancelOrder(long id)
         {
@@ -140,7 +140,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpGet("ConfirmCart/{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
         )]
         public async Task<IActionResult> ConfirmCart(long id)
         {

@@ -27,6 +27,12 @@ import { ParentService } from '../../../../Services/parent.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageService } from '../../../../Services/shared/language.service';
 import { Subscription } from 'rxjs';
+import { Gender } from '../../../../Models/gender';
+import { GenderService } from '../../../../Services/Employee/Inventory/gender.service';
+import { Nationality } from '../../../../Models/nationality';
+import { NationalityService } from '../../../../Services/Octa/nationality.service';
+import { CountryService } from '../../../../Services/Octa/country.service';
+import { Country } from '../../../../Models/Accounting/country';
 
 @Component({
   selector: 'app-registration-form',
@@ -48,9 +54,9 @@ export class RegistrationFormComponent {
   isGuardianEmailSameAsParent: boolean = true
   isMotherEmailValid: boolean = true
 
-  nationalities = Object.values(countries.countries).map(country => ({
-    name: country.name
-  }));
+  // nationalities = Object.values(countries.countries).map(country => ({
+  //   name: country.name
+  // }));
 
   schools:School[] = []
   selectedSchool: number | null = null;
@@ -59,6 +65,9 @@ export class RegistrationFormComponent {
   AcademicYears:AcademicYear[] = []
   selectedAcademicYear: number | null = null;
   Sections:Section[] = []
+  Gender:Gender[]=[]
+  nationalities : Nationality[]=[]
+  countries :Country[]=[]
 
   selectedOptions: any[] = [];
 
@@ -72,9 +81,9 @@ export class RegistrationFormComponent {
   isRtl: boolean = false;
   subscription!: Subscription;
 
-  constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, public schoolService:SchoolService,
-    public activeRoute: ActivatedRoute, public registrationFormService: RegistrationFormService, public router:Router, public parentService:ParentService,
-    public http: HttpClient, public academicYearServce:AcadimicYearService, public gradeServce:GradeService, public sectionServce:SectionService, private languageService: LanguageService){}
+  constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, public schoolService:SchoolService, public CountryServ:CountryService ,
+    public activeRoute: ActivatedRoute, public registrationFormService: RegistrationFormService, public router:Router, public parentService:ParentService, public NationalityServ : NationalityService ,
+    public http: HttpClient, public academicYearServce:AcadimicYearService, public gradeServce:GradeService, public sectionServce:SectionService, private languageService: LanguageService , public GenderServ:GenderService){}
   
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -88,6 +97,9 @@ export class RegistrationFormComponent {
 
     this.getRegistrationFormData()
     this.getSchools()
+    this.getGenders()
+    this.getNationalities()
+    this.getCountry()
 
     this.registrationForm.registrationFormID = 1
 
@@ -125,6 +137,30 @@ export class RegistrationFormComponent {
     this.schoolService.Get(this.DomainName).subscribe(
       (data) => {
         this.schools = data
+      }
+    )
+  }
+
+  getGenders(){
+    this.GenderServ.Get(this.DomainName).subscribe(
+      (data) => {
+        this.Gender = data
+      }
+    )
+  }
+
+  getNationalities(){
+    this.NationalityServ.Get().subscribe(
+      (data) => {
+        this.nationalities = data
+      }
+    )
+  }
+
+  getCountry(){
+    this.CountryServ.Get().subscribe(
+      (data) => {
+        this.countries = data
       }
     )
   }

@@ -5,6 +5,7 @@ using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Controllers.Domains.Clinic
 {
@@ -25,9 +26,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
-        public ActionResult Get()
+        public async Task<IActionResult> Get()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
             
@@ -42,15 +43,36 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
             
-            List<HygieneForm> hygieneForms = Unit_Of_Work.hygieneForm_Repository.FindBy(d => d.IsDeleted != true);
+            List<HygieneForm> hygieneForms = await Unit_Of_Work.hygieneForm_Repository.Select_All_With_IncludesById<HygieneForm>(
+                    d => d.IsDeleted != true, 
+                    query => query.Include(h => h.Classroom),
+                    query => query.Include(h => h.School),
+                    query => query.Include(h => h.Grade)
+                );
 
             if (hygieneForms == null || hygieneForms.Count == 0)
             {
                 return NotFound();
             }
-            
+
+
             List<HygieneFormGetDTO> hygieneFormsDto = _mapper.Map<List<HygieneFormGetDTO>>(hygieneForms);
-            
+
+            foreach (var item in hygieneFormsDto)
+            {
+                List<StudentHygieneTypes> stuHyTy = await Unit_Of_Work.studentHygieneTypes_Repository.Select_All_With_IncludesById<StudentHygieneTypes>(
+                    d => d.IsDeleted != true,
+                    query => query.Include(h => h.HygieneForm),
+                    query => query.Include(h => h.Student),
+                    query => query.Include(h => h.HygieneType)
+                );
+                if (stuHyTy != null)
+                {
+                    List<StudentHygieneTypesGetDTO> stuHyTyDTO = _mapper.Map<List<StudentHygieneTypesGetDTO>>(stuHyTy);
+                    item.StudentHygieneTypes = stuHyTyDTO;
+                }
+            } 
+
             return Ok(hygieneFormsDto);
         }
         #endregion
@@ -59,9 +81,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpGet("id")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
-        public ActionResult GetByID(long id)
+        public async Task<IActionResult> GetByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -76,7 +98,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.Select_By_Id(id);
+            HygieneForm hygieneForm = await Unit_Of_Work.hygieneForm_Repository.FindByIncludesAsync(
+                    h => h.Id == id && h.IsDeleted != true,
+                    query => query.Include(x => x.Classroom),
+                    query => query.Include(x => x.School),
+                    query => query.Include(x => x.Grade)
+                );
 
             if (hygieneForm == null)
             {
@@ -84,6 +111,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             HygieneFormGetDTO hygieneFormDto = _mapper.Map<HygieneFormGetDTO>(hygieneForm);
+
+            List<StudentHygieneTypes> stuHyTy = await Unit_Of_Work.studentHygieneTypes_Repository.Select_All_With_IncludesById<StudentHygieneTypes>(
+                    d => d.IsDeleted != true,
+                    query => query.Include(h => h.HygieneForm),
+                    query => query.Include(h => h.Student),
+                    query => query.Include(h => h.HygieneType)
+                );
+
+            if (stuHyTy != null)
+            {
+                List<StudentHygieneTypesGetDTO> stuHyTyDTO = _mapper.Map<List<StudentHygieneTypesGetDTO>>(stuHyTy);
+                hygieneFormDto.StudentHygieneTypes = stuHyTyDTO;
+            }
 
             return Ok(hygieneFormDto);
         }
@@ -93,7 +133,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpPost]
         [Authorize_Endpoint_(   
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
         public ActionResult Add(HygieneFormAddDTO hygieneFormDTO)
         {
@@ -133,14 +173,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.hygieneForm_Repository.Add(hygieneForm);
             Unit_Of_Work.SaveChanges();
 
-            foreach (var studentHygiene in hygieneForm.StudentHygieneTypes)
+            StudentHygieneTypes sht = new StudentHygieneTypes
             {
-                StudentHygieneTypes sht = _mapper.Map<StudentHygieneTypes>(studentHygiene);
+                HygieneFormId = hygieneForm.Id,
+                StudentId = hygieneFormDTO.StudentId,
+                HygieneTypeId = hygieneFormDTO.HygieneTypeId
+            };
 
-                sht.HygieneFormId = hygieneForm.Id;
-
-                Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
-            }
+            Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
+            Unit_Of_Work.SaveChanges();
 
             return Ok(hygieneFormDTO);
         }
@@ -150,7 +191,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
         public ActionResult Update(HygieneFormPutDTO hygieneFormDTO)
         {
@@ -212,7 +253,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpDelete]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
         public ActionResult Delete(long id)
         {

@@ -1,13 +1,17 @@
 ﻿using LMS_CMS_DAL.Models.Domains.LMS;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LMS_CMS_DAL.Models.Domains.ClinicModule
 {
-    public class MedicalReport : AuditableEntity
+    public class MedicalReport
     {
-        [Key]
-        public long Id { get; set; }
+        public long SchoolId { get; set; }
+        public virtual School? School { get; set; }
+        public long GradeId { get; set; }
+        public virtual Grade? Grade { get; set; }
+        public long ClassroomId { get; set; }
+        public virtual Classroom? Classroom { get; set; }
+        public long StudentId { get; set; }
+        public virtual Student? Student { get; set; }
 
         public ICollection<MedicalHistory> MHByParent { get; set; } = new HashSet<MedicalHistory>();
         public ICollection<MedicalHistory> MHByDoctor { get; set; } = new HashSet<MedicalHistory>();

@@ -31,6 +31,42 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
         
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
+        [HttpGet("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "student" }
+         )]
+        public async Task<IActionResult> GetById(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+             
+            if (id == null || id == 0)
+            {
+                return NotFound("Id can't be null");
+            }
+
+            Order order = Unit_Of_Work.order_Repository.First_Or_Default(
+                    b => b.IsDeleted != true && b.ID == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            OrderGetDTO orderDTO = mapper.Map<OrderGetDTO>(order);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+             
+            Cart_ShopItem cartShopitem = await Unit_Of_Work.cart_ShopItem_Repository.FindByIncludesAsync(
+                c => c.IsDeleted != true && c.CartID == orderDTO.CartID,
+                query => query.Include(c => c.ShopItem)
+                );
+
+            orderDTO.MainImage = $"{serverUrl}{cartShopitem.ShopItem.MainImage.Replace("\\", "/")}"; 
+            
+            return Ok(orderDTO);
+        }
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
         [HttpGet("ByStudentId/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "student" }
@@ -58,6 +94,18 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             }
              
             List<OrderGetDTO> orderDTO = mapper.Map<List<OrderGetDTO>>(orders);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+
+            for (int i = 0; i < orderDTO.Count; i++)
+            {
+                Cart_ShopItem cartShopitem = await Unit_Of_Work.cart_ShopItem_Repository.FindByIncludesAsync(
+                    c => c.IsDeleted != true && c.CartID == orderDTO[i].CartID,
+                    query => query.Include(c => c.ShopItem)
+                    );
+
+                orderDTO[i].MainImage = $"{serverUrl}{cartShopitem.ShopItem.MainImage.Replace("\\", "/")}"; 
+            }
              
             return Ok(orderDTO);
         }
@@ -98,10 +146,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            Cart cart = await Unit_Of_Work.cart_Repository.FindByIncludesAsync(
-                o => o.ID == id && o.IsDeleted != true,
-                query => query.Include(c => c.PromoCode)
-                );
+            Cart cart = Unit_Of_Work.cart_Repository.First_Or_Default(
+                o => o.ID == id && o.IsDeleted != true);
 
             if (cart == null)
             {
@@ -116,17 +162,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 return BadRequest("This is already an Order");
             }
 
-            Order newOrder = new Order();
-            if(cart.PromoCodeID != null && cart.PromoCodeID != 0)
-            {
-                float PriceAfterPromo = cart.TotalPrice - (cart.TotalPrice * (cart.PromoCode.Percentage / 100));
-                newOrder.TotalPrice = PriceAfterPromo;
-
-            }
-            else
-            {
-                newOrder.TotalPrice = cart.TotalPrice;
-            }
+            Order newOrder = new Order(); 
+            newOrder.TotalPrice = cart.TotalPrice;
             newOrder.CartID = cart.ID;
             newOrder.StudentID = cart.StudentID;
             newOrder.OrderStateID = 1;

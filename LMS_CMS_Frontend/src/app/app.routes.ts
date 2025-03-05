@@ -115,6 +115,7 @@ import { CartComponent } from './Pages/Student/Ecommerce/cart/cart.component';
 import { OrderComponent } from './Pages/Student/Ecommerce/order/order.component';
 import { DosesComponent } from './Pages/Employee/Clinic/doses/doses.component';
 import { MedicalReportComponent } from './Pages/Employee/Clinic/medical-report/medical-report.component';
+import { OrderItemsComponent } from './Pages/Student/Ecommerce/order-items/order-items.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -193,7 +194,7 @@ export const routes: Routes = [
             { path: "Department", component: DepartmentComponent, title: "Department" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Outcome", component: OutcomesComponent, title: "Outcome" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Income", component: IncomesComponent, title: "Income" , canActivate:[noNavigateWithoutLoginGuard ]} ,
-            { path: "Save", component: SavesComponent, title: "Save" , canActivate:[noNavigateWithoutLoginGuard ]} ,
+            { path: "Safe", component: SavesComponent, title: "Save" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Accounting Tree", component: AccountingTreeComponent, title: "Accounting Tree" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Bank", component: BankComponent, title: "Bank" , canActivate:[noNavigateWithoutLoginGuard ]} ,
             { path: "Employee Accounting", component: AccountingEmployeeComponent, title: "Employee Accounting" , canActivate:[noNavigateWithoutLoginGuard ]} ,
@@ -288,7 +289,8 @@ export const routes: Routes = [
             { path: "Ecommerce/Shop", component: ShopComponent, title: "Shop" },
             { path: "Ecommerce/ShopItem/:id", component: ShopItemComponent, title: "Shop Item" },
             { path: "Ecommerce/Cart", component: CartComponent, title: "Cart" },
-            { path: "Ecommerce/Order", component: OrderComponent, title: "Order" }
+            { path: "Ecommerce/Order", component: OrderComponent, title: "Order" },
+            { path: "Ecommerce/Order/:id", component: OrderItemsComponent, title: "Order Items" }
         ]
     },
     { 

@@ -19,7 +19,5 @@ namespace LMS_CMS_BL.DTO.Clinic
        
         public long StudentId { get; set; }
         public long HygieneTypeId { get; set; }
-
-        //public List<StudentHygieneTypesAddDTO> StudentHygieneTypes { get; set; }
     }
 }

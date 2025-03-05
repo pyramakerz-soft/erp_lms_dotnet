@@ -2879,6 +2879,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("ActionTaken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Attendance")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -2891,7 +2900,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("HygieneFormId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("HygieneId")
+                    b.Property<long>("HygieneTypeId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("InsertedAt")
@@ -2904,6 +2913,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("bigint");
 
                     b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SelectAll")
                         .HasColumnType("bit");
 
                     b.Property<long>("StudentId")
@@ -2924,7 +2936,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasIndex("HygieneFormId");
 
-                    b.HasIndex("HygieneId");
+                    b.HasIndex("HygieneTypeId");
 
                     b.HasIndex("InsertedByUserId");
 
@@ -2982,9 +2994,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("OrderStateID")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("PromoCodeID")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("StudentID")
                         .HasColumnType("bigint");
 
@@ -3007,8 +3016,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("OrderStateID");
-
-                    b.HasIndex("PromoCodeID");
 
                     b.HasIndex("StudentID");
 
@@ -3172,63 +3179,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .IsUnique();
 
                     b.ToTable("OrderState");
-                });
-
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.PromoCode", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeletedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeletedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("InsertedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("InsertedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("InsertedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Percentage")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("UpdatedByOctaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("UpdatedByUserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DeletedByUserId");
-
-                    b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("UpdatedByUserId");
-
-                    b.ToTable("PromoCode");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Employee", b =>
@@ -4886,6 +4836,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<long>("GenderId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -4953,6 +4906,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("GenderId");
 
                     b.HasIndex("InsertedByUserId");
 
@@ -7965,7 +7920,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.ClinicModule.HygieneType", "HygieneType")
                         .WithMany("StudentHygieneTypes")
-                        .HasForeignKey("HygieneId")
+                        .HasForeignKey("HygieneTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -8010,11 +7965,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany("Carts")
                         .HasForeignKey("OrderStateID");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.ECommerce.PromoCode", "PromoCode")
-                        .WithMany("Carts")
-                        .HasForeignKey("PromoCodeID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Student", "Student")
                         .WithMany("Carts")
                         .HasForeignKey("StudentID")
@@ -8028,8 +7978,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("DeletedByEmployee");
 
                     b.Navigation("InsertedByEmployee");
-
-                    b.Navigation("PromoCode");
 
                     b.Navigation("Student");
 
@@ -8128,27 +8076,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("OrderState");
 
                     b.Navigation("Student");
-
-                    b.Navigation("UpdatedByEmployee");
-                });
-
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.PromoCode", b =>
-                {
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("DeletedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("InsertedByUserId");
-
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByUserId");
-
-                    b.Navigation("DeletedByEmployee");
-
-                    b.Navigation("InsertedByEmployee");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -8921,6 +8848,12 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("DeletedByUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Gender", "Gender")
+                        .WithMany("Students")
+                        .HasForeignKey("GenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
@@ -8938,6 +8871,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("AccountNumber");
 
                     b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("Gender");
 
                     b.Navigation("InsertedByEmployee");
 
@@ -9926,11 +9861,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.PromoCode", b =>
-                {
-                    b.Navigation("Carts");
-                });
-
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Employee", b =>
                 {
                     b.Navigation("DrivenBuses");
@@ -9958,6 +9888,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Gender", b =>
                 {
                     b.Navigation("ShopItem");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.InventoryCategories", b =>

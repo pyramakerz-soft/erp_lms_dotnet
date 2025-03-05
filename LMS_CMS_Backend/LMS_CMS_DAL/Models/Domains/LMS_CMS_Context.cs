@@ -121,8 +121,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Dose> Dose { get; set; }
         public DbSet<FollowUp> FollowUps { get; set; }
         public DbSet<FollowUpDrug> FollowUpDrugs { get; set; }
-        public DbSet<MedicalHistory> MedicalHistories { get; set; }
-        public DbSet<PromoCode> PromoCode { get; set; }
+        public DbSet<MedicalHistory> MedicalHistories { get; set; } 
         public DbSet<Cart> Cart { get; set; }
         public DbSet<OrderState> OrderState { get; set; }
         public DbSet<Order> Order { get; set; }
@@ -338,7 +337,13 @@ namespace LMS_CMS_DAL.Models.Domains
                  .WithMany(p => p.Students)
                  .HasForeignKey(p => p.Parent_Id)
                  .OnDelete(DeleteBehavior.Restrict);
-          
+
+            modelBuilder.Entity<Student>()
+                 .HasOne(p => p.Gender)
+                 .WithMany(p => p.Students)
+                 .HasForeignKey(p => p.GenderId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Student>()
                  .HasOne(p => p.AccountNumber)
                  .WithMany(p => p.Students)
@@ -1022,13 +1027,7 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasOne(p => p.InventoryFlags)
                 .WithMany(p => p.InventoryMaster)
                 .HasForeignKey(p => p.FlagId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Cart>()
-                .HasOne(p => p.PromoCode)
-                .WithMany(p => p.Carts)
-                .HasForeignKey(p => p.PromoCodeID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Cart>()
                 .HasOne(p => p.Student)

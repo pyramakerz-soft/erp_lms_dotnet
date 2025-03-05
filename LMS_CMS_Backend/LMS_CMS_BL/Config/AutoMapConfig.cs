@@ -629,9 +629,7 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.ShopItemSizeName, opt => opt.MapFrom(src => src.ShopItemSize.Name))
                 .ForMember(dest => dest.ShopItemColorName, opt => opt.MapFrom(src => src.ShopItemColor.Name));
 
-            CreateMap<Cart, CartGetDTO>()
-                .ForMember(dest => dest.PromoCodeName, opt => opt.MapFrom(src => src.PromoCode.Name))
-                .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => src.PromoCode.Percentage));
+            CreateMap<Cart, CartGetDTO>();
 
             CreateMap<HygieneTypeAddDTO, HygieneType>();
             CreateMap<HygieneType, HygieneTypeGetDTO>();
@@ -650,8 +648,18 @@ namespace LMS_CMS_BL.Config
             CreateMap<DosePutDTO, Dose>();
 
             CreateMap<HygieneFormAddDTO, HygieneForm>();
-            CreateMap<HygieneForm, HygieneFormGetDTO>();
+            CreateMap<HygieneForm, HygieneFormGetDTO>()
+                .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name))
+                .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade.Name))
+                .ForMember(dest => dest.ClassRoom, opt => opt.MapFrom(src => src.Classroom.Name));
+
+            CreateMap<StudentHygieneTypes, StudentHygieneTypesGetDTO>()
+                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name))
+                .ForMember(dest => dest.HygieneType, opt => opt.MapFrom(src => src.HygieneType.Type));
+
             CreateMap<HygieneFormPutDTO, HygieneForm>();
+
+            CreateMap<StudentHygieneTypesAddDTO, StudentHygieneTypes>();
 
             CreateMap<FollowUpAddDTO, FollowUp>();
             CreateMap<FollowUp, FollowUpGetDTO>();
@@ -662,7 +670,12 @@ namespace LMS_CMS_BL.Config
             CreateMap<FollowUpDrugPutDTO, FollowUpDrug>();
 
             CreateMap<MedicalHistoryAddByDoctorDTO, MedicalHistory>();
-            CreateMap<MedicalHistory, MedicalHistoryGetByDoctorDTO>();
+            CreateMap<MedicalHistory, MedicalHistoryGetByDoctorDTO>()
+                .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name))
+                .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade.Name))
+                .ForMember(dest => dest.ClassRoom, opt => opt.MapFrom(src => src.Classroom.Name))
+                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name));
+
             CreateMap<MedicalHistoryPutByDoctorDTO, MedicalHistory>();
 
             CreateMap<MedicalHistoryAddByParentDTO, MedicalHistory>();

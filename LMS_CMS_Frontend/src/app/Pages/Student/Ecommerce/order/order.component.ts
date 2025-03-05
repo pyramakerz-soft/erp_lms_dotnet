@@ -4,6 +4,8 @@ import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { Router } from '@angular/router';
 import { ApiService } from '../../../../Services/api.service';
+import { Order } from '../../../../Models/Student/ECommerce/order';
+import { OrderService } from '../../../../Services/Student/order.service';
 
 @Component({
   selector: 'app-order',
@@ -17,9 +19,9 @@ export class OrderComponent {
   UserID: number = 0;
   DomainName: string = ""; 
 
-  orders: any[] = []
+  orders: Order[] = []
 
-  constructor(public account: AccountService, public ApiServ: ApiService, private router: Router){}
+  constructor(public account: AccountService, public ApiServ: ApiService, private router: Router, private orderrService: OrderService){}
   
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -35,6 +37,34 @@ export class OrderComponent {
   } 
 
   getOrders() {
-    
+    this.orderrService.getByStudentID(this.UserID, this.DomainName).subscribe(
+      data => {
+        this.orders = data
+      }
+    )
   } 
+
+  formatDate(dateString: string) {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    };
+
+    const formattedDate = date.toLocaleDateString('en-US', options)
+
+    return `${formattedDate}`;
+  }
+
+  goToOrderItems(id: number) {
+    this.router.navigateByUrl("Student/Ecommerce/Order/" + id)
+  }
+  
+  DownloadOrder() {
+    
+  }
 }

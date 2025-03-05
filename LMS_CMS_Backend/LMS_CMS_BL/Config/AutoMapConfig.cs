@@ -629,9 +629,7 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.ShopItemSizeName, opt => opt.MapFrom(src => src.ShopItemSize.Name))
                 .ForMember(dest => dest.ShopItemColorName, opt => opt.MapFrom(src => src.ShopItemColor.Name));
 
-            CreateMap<Cart, CartGetDTO>()
-                .ForMember(dest => dest.PromoCodeName, opt => opt.MapFrom(src => src.PromoCode.Name))
-                .ForMember(dest => dest.Percentage, opt => opt.MapFrom(src => src.PromoCode.Percentage));
+            CreateMap<Cart, CartGetDTO>();
 
             CreateMap<HygieneTypeAddDTO, HygieneType>();
             CreateMap<HygieneType, HygieneTypeGetDTO>();

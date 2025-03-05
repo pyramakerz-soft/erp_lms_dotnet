@@ -96,10 +96,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 } 
             }
 
-            Cart cart = await Unit_Of_Work.cart_Repository.FindByIncludesAsync(
-                c => c.ID == cartID, 
-                query => query.Include(c => c.PromoCode)
-                );
+            Cart cart = Unit_Of_Work.cart_Repository.First_Or_Default(
+                c => c.ID == cartID && c.IsDeleted != true);
 
             CartGetDTO cartGetDTO = mapper.Map<CartGetDTO>(cart);
             cartGetDTO.Cart_ShopItems = cart_ShopItemGetDTO;
@@ -141,10 +139,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 return NotFound("No Order With this ID");
             }
 
-            Cart cart = await Unit_Of_Work.cart_Repository.FindByIncludesAsync(
-                o => o.ID == order.CartID && o.IsDeleted != true,
-                query => query.Include(c => c.PromoCode)
-                );
+            Cart cart = Unit_Of_Work.cart_Repository.First_Or_Default(
+                o => o.ID == order.CartID && o.IsDeleted != true);
 
             if (cart == null)
             {

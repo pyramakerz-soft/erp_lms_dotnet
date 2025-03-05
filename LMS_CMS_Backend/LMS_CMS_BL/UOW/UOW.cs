@@ -134,8 +134,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<FollowUp> FollowUp_Repository;
         GenericRepo<FollowUpDrug> FollowUpDrug_Repository;
         GenericRepo<MedicalHistory> MedicalHistory_Repository;
-        GenericRepo<Cart> Cart_Repository;
-        GenericRepo<PromoCode> PromoCode_Repository;
+        GenericRepo<Cart> Cart_Repository; 
         GenericRepo<OrderState> OrderState_Repository;
         GenericRepo<Order> Order_Repository;
         GenericRepo<Cart_ShopItem> Cart_ShopItem_Repository;
@@ -1441,19 +1440,7 @@ namespace LMS_CMS_BL.UOW
                 }
                 return MedicalHistory_Repository;
             }
-        }
-
-        public GenericRepo<PromoCode> promoCode_Repository
-        {
-            get
-            {
-                if (PromoCode_Repository == null)
-                {
-                    PromoCode_Repository = new GenericRepo<PromoCode>(db);
-                }
-                return PromoCode_Repository;
-            }
-        }
+        } 
 
         public GenericRepo<Cart> cart_Repository
         {

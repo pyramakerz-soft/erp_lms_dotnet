@@ -26,7 +26,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
         public async Task<IActionResult> Get()
         {
@@ -55,13 +55,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return NotFound();
             }
 
-
             List<HygieneFormGetDTO> hygieneFormsDto = _mapper.Map<List<HygieneFormGetDTO>>(hygieneForms);
 
             foreach (var item in hygieneFormsDto)
             {
-                List<StudentHygieneTypes> stuHyTy = Unit_Of_Work.studentHygieneTypes_Repository.FindBy(s => s.IsDeleted != true && s.HygieneFormId == item.ID);
-                if(stuHyTy != null)
+                List<StudentHygieneTypes> stuHyTy = await Unit_Of_Work.studentHygieneTypes_Repository.Select_All_With_IncludesById<StudentHygieneTypes>(
+                    d => d.IsDeleted != true,
+                    query => query.Include(h => h.HygieneForm),
+                    query => query.Include(h => h.Student),
+                    query => query.Include(h => h.HygieneTypes)
+                );
+
+                if (stuHyTy != null)
                 {
                     List<StudentHygieneTypesGetDTO> stuHyTyDTO = _mapper.Map<List<StudentHygieneTypesGetDTO>>(stuHyTy);
                     item.StudentHygieneTypes = stuHyTyDTO;
@@ -76,9 +81,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpGet("id")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
-        public ActionResult GetByID(long id)
+        public async Task<IActionResult> GetByID(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -93,7 +98,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            HygieneForm hygieneForm = Unit_Of_Work.hygieneForm_Repository.Select_By_Id(id);
+            HygieneForm hygieneForm = await Unit_Of_Work.hygieneForm_Repository.FindByIncludesAsync(
+                    h => h.Id == id && h.IsDeleted != true,
+                    query => query.Include(x => x.Classroom),
+                    query => query.Include(x => x.School),
+                    query => query.Include(x => x.Grade)
+                );
 
             if (hygieneForm == null)
             {
@@ -102,17 +112,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             HygieneFormGetDTO hygieneFormDto = _mapper.Map<HygieneFormGetDTO>(hygieneForm);
 
-            //foreach (var item in hygieneFormDto.StudentHygieneTypes)
-            //{
-            //    List<StudentHygieneTypes> stuHyTy = Unit_Of_Work.studentHygieneTypes_Repository.FindBy(s => s.IsDeleted != true && s.HygieneFormId == item.ID);
-            //    if (stuHyTy != null)
-            //    {
-            //        List<StudentHygieneTypesGetDTO> stuHyTyDTO = _mapper.Map<List<StudentHygieneTypesGetDTO>>(stuHyTy);
-            //        item.StudentHygieneTypes = stuHyTyDTO;
-            //    }
-            //}
-
-            List<StudentHygieneTypes> stuHyTy = Unit_Of_Work.studentHygieneTypes_Repository.FindBy(s => s.IsDeleted != true && s.HygieneFormId == hygieneForm.Id);
+            List<StudentHygieneTypes> stuHyTy = await Unit_Of_Work.studentHygieneTypes_Repository.Select_All_With_IncludesById<StudentHygieneTypes>(
+                    d => d.IsDeleted != true,
+                    query => query.Include(h => h.HygieneForm),
+                    query => query.Include(h => h.Student),
+                    query => query.Include(h => h.HygieneTypes)
+                );
 
             if (stuHyTy != null)
             {
@@ -128,7 +133,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
         public ActionResult Add(HygieneFormAddDTO hygieneFormDTO)
         {
@@ -150,13 +155,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return BadRequest("Hygiene Form can not be null");
             }
 
-            HygieneForm hygieneForm = new HygieneForm
+            foreach (var hfd in hygieneFormDTO.StudentHygieneTypes)
             {
-                SchoolId = hygieneFormDTO.SchoolId,
-                GradeId = hygieneFormDTO.GradeId,
-                ClassRoomID = hygieneFormDTO.ClassRoomID,
-                Date = hygieneFormDTO.Date
-            };
+                foreach (var ht in hfd.HygieneTypesIds)
+                {
+                    HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.First_Or_Default(d => d.Id == ht && d.IsDeleted != true);
+
+                    if (hygieneType == null)
+                    {
+                        return NotFound($"Hygien Type ID: {ht} not found");
+                    }
+                }
+            }
+
+            HygieneForm hygieneForm = _mapper.Map<HygieneForm>(hygieneFormDTO);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             hygieneForm.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -174,12 +186,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.hygieneForm_Repository.Add(hygieneForm);
             Unit_Of_Work.SaveChanges();
 
-            StudentHygieneTypes sht = new StudentHygieneTypes
-            {
-                HygieneFormId = hygieneForm.Id,
-                StudentId = hygieneFormDTO.StudentId,
-                HygieneTypeId = hygieneFormDTO.HygieneTypeId
-            };
+            StudentHygieneTypes sht = _mapper.Map<StudentHygieneTypes>(hygieneFormDTO.StudentHygieneTypes);
+
+            sht.HygieneFormId = hygieneForm.Id;
+            //StudentHygieneTypes sht = new StudentHygieneTypes
+            //{
+            //    HygieneFormId = hygieneForm.Id,
+
+            //};
+
 
             Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
             Unit_Of_Work.SaveChanges();
@@ -192,7 +207,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
         public ActionResult Update(HygieneFormPutDTO hygieneFormDTO)
         {
@@ -254,7 +269,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
         [HttpDelete]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "HygieneForm" }
+            pages: new[] { "Hygiene Form Medical Report" }
         )]
         public ActionResult Delete(long id)
         {

@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
         )]
         public IActionResult Add(CartShopItemAddDTO cartShopItem)
         {
@@ -42,7 +42,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 return BadRequest("Cart Shop Item cannot be null");
             }
 
-            Cart cart = new Cart();
+            Cart cart = new Cart(); 
 
             if (cartShopItem.CartID != 0 && cartShopItem.CartID != null)
             {
@@ -50,8 +50,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 if (cart == null)
                 {
                     Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.IsDeleted != true && s.ID == cartShopItem.StudentID);
-                    if (stu == null)
-                    {
+                    if (stu == null) 
+                    { 
                         return NotFound("No Student with this ID");
                     }
 
@@ -170,7 +170,23 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 return BadRequest($"There are only {shopItem.Limit} items in the store");
             }
 
-            cart.TotalPrice = cart.TotalPrice + (cartShopItem.Quantity * shopItem.SalesPrice);
+            Student ExStu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.IsDeleted != true && s.ID == cartShopItem.StudentID);
+            if (ExStu.Nationality != 148)
+            {
+                if(shopItem.VATForForeign != null && shopItem.VATForForeign != 0)
+                { 
+                    cart.TotalPrice = (float)(cart.TotalPrice + (cartShopItem.Quantity * (shopItem.SalesPrice + shopItem.SalesPrice * (shopItem.VATForForeign / 100))));
+                }
+                else
+                {
+                    cart.TotalPrice = cart.TotalPrice + (cartShopItem.Quantity * shopItem.SalesPrice);
+                }
+            }
+            else
+            {
+                cart.TotalPrice = cart.TotalPrice + (cartShopItem.Quantity * shopItem.SalesPrice);
+            }
+
             Unit_Of_Work.cart_Repository.Update(cart);
 
             shopItem.Limit = shopItem.Limit - cartShopItem.Quantity;
@@ -192,7 +208,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpDelete("RemoveItemFromCart/{CartShopItemID}")]
         [Authorize_Endpoint_(
-           allowedTypes: new[] { "octa", "student" }
+           allowedTypes: new[] { "octa", "student", "employee" }
         )]
         public IActionResult RemoveItemFromCart(long CartShopItemID)
         {
@@ -230,7 +246,22 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             }
 
             shopItem.Limit = shopItem.Limit + cartShopItem.Quantity;
-            cart.TotalPrice = cart.TotalPrice - (cartShopItem.Quantity * shopItem.SalesPrice);
+            Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.IsDeleted != true && s.ID == cart.StudentID);
+            if (stu.Nationality != 148)
+            {
+                if (shopItem.VATForForeign != null && shopItem.VATForForeign != 0)
+                { 
+                    cart.TotalPrice = (float)(cart.TotalPrice - (cartShopItem.Quantity * (shopItem.SalesPrice + shopItem.SalesPrice * (shopItem.VATForForeign / 100))));
+                }
+                else
+                {
+                    cart.TotalPrice = cart.TotalPrice - (cartShopItem.Quantity * shopItem.SalesPrice);
+                }
+            }
+            else
+            {
+                cart.TotalPrice = cart.TotalPrice - (cartShopItem.Quantity * shopItem.SalesPrice);
+            }
 
             Unit_Of_Work.cart_ShopItem_Repository.Delete(CartShopItemID);
             Unit_Of_Work.SaveChanges();
@@ -249,7 +280,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpPut("ChangeQuantity")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
         )]
         public IActionResult ChangeQuantity(CartShopItemPutDTO cartShopItem)
         {
@@ -265,7 +296,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             {
                 return NotFound("No Cart with this ID");
             }
-            
+
             Cart cart = Unit_Of_Work.cart_Repository.First_Or_Default(c => c.ID == cartShopItem.CartID && c.IsDeleted != true);
             if (cart == null)
             {
@@ -273,26 +304,44 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
             }
 
             Order order = Unit_Of_Work.order_Repository.First_Or_Default(o => o.IsDeleted != true && o.CartID == cartShopItem.CartID);
-            if(order != null)
+            if (order != null)
             {
                 return BadRequest("It is already an order");
             }
 
             ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(sh => sh.IsDeleted != true && sh.ID == existsCartShopItem.ShopItemID);
-            if(shopItem.Limit < cartShopItem.Quantity)
+            if(existsCartShopItem.Quantity < cartShopItem.Quantity)
             {
-                return BadRequest($"There are only {shopItem.Limit} items in the store");
+                if (shopItem.Limit < (existsCartShopItem.Quantity - cartShopItem.Quantity))
+                {
+                    return BadRequest($"There are only {shopItem.Limit} items in the store");
+                }
             }
 
-            if(cartShopItem.Quantity < 0)
+            if (cartShopItem.Quantity < 0)
             {
                 return BadRequest("Can't Request minus");
             }
-             
+
             shopItem.Limit = shopItem.Limit + (existsCartShopItem.Quantity - cartShopItem.Quantity);
-            cart.TotalPrice = cart.TotalPrice + ((cartShopItem.Quantity - existsCartShopItem.Quantity) * shopItem.SalesPrice);
+            Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.IsDeleted != true && s.ID == cart.StudentID);
+            if (stu.Nationality != 148)
+            {
+                if (shopItem.VATForForeign != null && shopItem.VATForForeign != 0)
+                {
+                    cart.TotalPrice = cart.TotalPrice + (float)(((cartShopItem.Quantity - existsCartShopItem.Quantity) * (shopItem.SalesPrice + shopItem.SalesPrice * (shopItem.VATForForeign / 100))));
+                }
+                else
+                { 
+                    cart.TotalPrice = cart.TotalPrice + ((cartShopItem.Quantity - existsCartShopItem.Quantity) * shopItem.SalesPrice);
+                }
+            }
+            else
+            { 
+                cart.TotalPrice = cart.TotalPrice + ((cartShopItem.Quantity - existsCartShopItem.Quantity) * shopItem.SalesPrice);
+            }
             existsCartShopItem.Quantity = cartShopItem.Quantity;
-                
+
             Unit_Of_Work.shopItem_Repository.Update(shopItem);
             Unit_Of_Work.cart_Repository.Update(cart);
             Unit_Of_Work.cart_ShopItem_Repository.Update(existsCartShopItem);

@@ -7,12 +7,13 @@ export class CartShopItem {
         public shopItemColorID: number|null = null,
         public studentID: number = 0, 
         public id: number = 0,
-        public shopItemEnNme: string = "",
-        public shopItemArNme: string = "",
+        public shopItemEnName: string = "",
+        public shopItemArName: string = "",
         public salesPrice: number = 0,
         public vatForForeign: number = 0,
         public mainImage: string = "",
         public shopItemSizeName: string = "",
+        public shopItemLimit: number = 0,
         public shopItemColorName: string = ""
     ) {}
 }  

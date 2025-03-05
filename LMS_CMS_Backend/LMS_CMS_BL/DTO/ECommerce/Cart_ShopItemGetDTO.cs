@@ -12,8 +12,9 @@ namespace LMS_CMS_BL.DTO.ECommerce
         public long ID { get; set; }
         public int Quantity { get; set; }
         public long ShopItemID { get; set; }
-        public string ShopItemEnNme { get; set; }
-        public string ShopItemArNme { get; set; }
+        public string ShopItemEnName { get; set; }
+        public string ShopItemArName { get; set; }
+        public int ShopItemLimit { get; set; }
         public float SalesPrice { get; set; }
         public float VATForForeign { get; set; }
         public string MainImage { get; set; }

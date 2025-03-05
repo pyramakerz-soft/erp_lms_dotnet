@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpGet("ByStudentId/{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
          )]
         public async Task<IActionResult> GetByStudentId(long id)
         {
@@ -96,22 +96,17 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 } 
             }
 
-            Cart cart = await Unit_Of_Work.cart_Repository.FindByIncludesAsync(
-                c => c.ID == cartID, 
-                query => query.Include(c => c.PromoCode)
-                );
+            Cart cart = Unit_Of_Work.cart_Repository.First_Or_Default(
+                c => c.ID == cartID && c.IsDeleted != true);
 
             CartGetDTO cartGetDTO = mapper.Map<CartGetDTO>(cart);
             cartGetDTO.Cart_ShopItems = cart_ShopItemGetDTO;
-
-            if (userTypeClaim == "student")
-            { 
-                if (stu.Nationality == 148)
+             
+            if (stu.Nationality == 148)
+            {
+                for(int i = 0; i < cartGetDTO.Cart_ShopItems.Count; i++)
                 {
-                    for(int i = 0; i < cartGetDTO.Cart_ShopItems.Count; i++)
-                    {
-                        cartGetDTO.Cart_ShopItems[i].VATForForeign = 0;
-                    }
+                    cartGetDTO.Cart_ShopItems[i].VATForForeign = 0;
                 }
             }
 
@@ -122,7 +117,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
         [HttpGet("ByOrderId/{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "student" }
+            allowedTypes: new[] { "octa", "student", "employee" }
          )]
         public async Task<IActionResult> GetByOrderId(long id)
         {
@@ -141,10 +136,8 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
                 return NotFound("No Order With this ID");
             }
 
-            Cart cart = await Unit_Of_Work.cart_Repository.FindByIncludesAsync(
-                o => o.ID == order.CartID && o.IsDeleted != true,
-                query => query.Include(c => c.PromoCode)
-                );
+            Cart cart = Unit_Of_Work.cart_Repository.First_Or_Default(
+                o => o.ID == order.CartID && o.IsDeleted != true);
 
             if (cart == null)
             {
@@ -173,17 +166,14 @@ namespace LMS_CMS_PL.Controllers.Domains.ECommerce
 
             CartGetDTO cartGetDTO = mapper.Map<CartGetDTO>(cart);
             cartGetDTO.Cart_ShopItems = cart_ShopItemGetDTO;
+             
+            Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.IsDeleted != true && s.ID == cart.StudentID); 
 
-            if (userTypeClaim == "student")
+            if (stu.Nationality == 148)
             {
-                Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.IsDeleted != true && s.ID == userId); 
-
-                if (stu.Nationality == 148)
+                for (int i = 0; i < cartGetDTO.Cart_ShopItems.Count; i++)
                 {
-                    for (int i = 0; i < cartGetDTO.Cart_ShopItems.Count; i++)
-                    {
-                        cartGetDTO.Cart_ShopItems[i].VATForForeign = 0;
-                    }
+                    cartGetDTO.Cart_ShopItems[i].VATForForeign = 0;
                 }
             }
 

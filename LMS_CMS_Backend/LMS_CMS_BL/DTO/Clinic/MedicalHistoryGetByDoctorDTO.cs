@@ -12,7 +12,7 @@
         public long StudentId { get; set; } 
         public string Student { get; set; } 
         public string? Details { get; set; }
-        public int? Attached { get; set; } = 0;
+        public int? Attached { get; set; } 
         public string? PermanentDrug { get; set; }
         public string? FirstReport { get; set; }
         public string? SecReport { get; set; }

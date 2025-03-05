@@ -34,7 +34,7 @@ namespace LMS_CMS_DAL.Models.Domains.ClinicModule
         public string? FirstReport { get; set; }
         public string? SecReport { get; set; }
 
-        public int? Attached { get; set; } = 0;
+        public int? Attached { get; set; } 
 
         public string? PermanentDrug { get; set; }
 

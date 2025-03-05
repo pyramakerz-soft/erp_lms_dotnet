@@ -9,11 +9,14 @@ import { CommonModule } from '@angular/common';
 import { CartShopItem } from '../../../../Models/Student/ECommerce/cart-shop-item';
 import { CartShopItemService } from '../../../../Services/Student/cart-shop-item.service';
 import Swal from 'sweetalert2';
+import { EmplyeeStudent } from '../../../../Models/Accounting/emplyee-student';
+import { EmployeeStudentService } from '../../../../Services/Employee/Accounting/employee-student.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-shop-item',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './shop-item.component.html',
   styleUrl: './shop-item.component.css'
 })
@@ -22,6 +25,8 @@ export class ShopItemComponent {
   
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   UserID: number = 0;
+  StuID: number = 0;
+  emplyeeStudent: EmplyeeStudent[] = [];
   DomainName: string = "";
 
   shopItem: ShopItem = new ShopItem()
@@ -32,7 +37,7 @@ export class ShopItemComponent {
   selectedSize: number = 0;
   
   constructor(public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private router: Router, public shopItemService:ShopItemService
-    , private cartShopItemService:CartShopItemService
+    , private cartShopItemService:CartShopItemService, public employeeStudentService:EmployeeStudentService
   ){}
 
   ngOnInit(){
@@ -41,9 +46,25 @@ export class ShopItemComponent {
 
     this.DomainName = this.ApiServ.GetHeader(); 
 
+    if(this.User_Data_After_Login.type == 'employee'){
+      this.getStudents()
+    }
+
+    if(this.User_Data_After_Login.type == 'student'){
+      this.StuID = this.UserID
+    }
+
     this.ShopItemId = Number(this.activeRoute.snapshot.paramMap.get('id'))
 
     this.getShopItem() 
+  }
+
+  getStudents(){
+    this.employeeStudentService.Get(this.UserID, this.DomainName).subscribe(
+      data => {
+        this.emplyeeStudent = data
+      }
+    )
   }
 
   getShopItem(){
@@ -58,19 +79,31 @@ export class ShopItemComponent {
   }
 
   moveToShop() {
-    this.router.navigateByUrl("Student/Ecommerce/Shop")
+    if(this.User_Data_After_Login.type == "employee"){
+      this.router.navigateByUrl("Employee/The Shop")
+    }else{
+      this.router.navigateByUrl("Student/Ecommerce/Shop")
+    }
   }
 
   goToCart() {
-    this.router.navigateByUrl("Student/Ecommerce/Cart")
+    if(this.User_Data_After_Login.type == "employee"){
+      this.router.navigateByUrl("Employee/Cart")
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/Cart")
+    }
   } 
 
   goToOrder() {
-    this.router.navigateByUrl("Student/Ecommerce/Order")
+    if(this.User_Data_After_Login.type == "employee"){
+      this.router.navigateByUrl("Employee/Order")
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/Order")
+    }
   } 
 
   addShopItemToCart(id: number) { 
-    this.cartShopItem.studentID = this.UserID
+    this.cartShopItem.studentID = this.StuID
     this.cartShopItem.quantity = 1
     this.cartShopItem.shopItemID = id
     if(this.selectedColor != 0){

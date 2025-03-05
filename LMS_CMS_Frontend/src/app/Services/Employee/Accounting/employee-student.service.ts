@@ -8,14 +8,13 @@ import { ApiService } from '../../api.service';
   providedIn: 'root'
 })
 export class EmployeeStudentService {
- baseUrl = ""
+  baseUrl = ""
    header = ""
  
    constructor(public http: HttpClient, public ApiServ: ApiService) {
      this.baseUrl = ApiServ.BaseUrl
    }
- 
- 
+  
    Get(EmpId:number ,DomainName:string) {
      if(DomainName!=null) {
        this.header=DomainName 

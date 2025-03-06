@@ -103,7 +103,6 @@ export class InterviewRegistrationComponent {
         this.getRegistrationFormInterviewData()
       },
       error => {
-        console.log(error)
       }
     );
   }

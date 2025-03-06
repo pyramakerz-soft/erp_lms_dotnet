@@ -224,7 +224,6 @@ export class AddEditSubjectComponent {
             this.closeDialog()
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -233,7 +232,6 @@ export class AddEditSubjectComponent {
             this.closeDialog()
           },
           error => {
-            console.log(error)
           }
         );
       }  

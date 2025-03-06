@@ -98,8 +98,6 @@ import { SubCategoryComponent } from './Pages/Employee/Inventory/sub-category/su
 import { ShopItemsComponent } from './Pages/Employee/Inventory/shop-items/shop-items.component';
 import { ShopItemsAddEditComponent } from './Pages/Employee/Inventory/shop-items-add-edit/shop-items-add-edit.component';
 import { StoresComponent } from './Pages/Employee/Inventory/stores/stores.component';
-import { SalesComponent } from './Pages/Employee/Inventory/sales/sales.component';
-import { SalesItemComponent } from './Pages/Employee/Inventory/sales-item/sales-item.component';
 import { InventoryMasterComponent } from './Pages/Employee/Inventory/inventory-master/inventory-master.component';
 import { InventoryDetailsComponent } from './Pages/Employee/Inventory/inventory-details/inventory-details.component';
 import { CreateHygieneFormComponent } from './Pages/Employee/Clinic/create-hygiene-form/create-hygiene-form.component';
@@ -257,13 +255,20 @@ export const routes: Routes = [
             { path: "Gifts", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 6 } },
             { path: "Gifts Item/:FlagId", component: InventoryDetailsComponent, title: "Gifts Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Gifts Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Gifts Item" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Purchase Order", component: InventoryMasterComponent, title: "Purchase Order", canActivate: [noNavigateWithoutLoginGuard], data: { id: 13 } },
+            { path: "Purchase Order Item/:FlagId", component: InventoryDetailsComponent, title: "Purchase Order Item" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Purchase Order Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchase Order Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Transfer to Store", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 8 } },
             { path: "Transfer to Store Item/:FlagId", component: InventoryDetailsComponent, title: "Transfer to Store Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Transfer to Store Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Transfer to Store Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Damaged", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 7 } },
             { path: "Damaged Item/:FlagId", component: InventoryDetailsComponent, title: "Damaged Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Damaged Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Damaged Item" , canActivate:[noNavigateWithoutLoginGuard ]},
-
+            { path: "The Shop", component: ShopComponent, title: "Shop", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "ShopItem/:id", component: ShopItemComponent, title: "Shop Item", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Cart", component: CartComponent, title: "Cart", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Order", component: OrderComponent, title: "Order", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Order/:id", component: OrderItemsComponent, title: "Order Items", canActivate:[noNavigateWithoutLoginGuard ] }
         ]
     },
     { 

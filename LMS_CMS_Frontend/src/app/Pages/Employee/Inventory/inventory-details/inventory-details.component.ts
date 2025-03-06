@@ -52,10 +52,10 @@ export class InventoryDetailsComponent {
   AllowDeleteForOthers: boolean = false;
 
   Data: InventoryMaster = new InventoryMaster();
-  FlagId:number=0
-  IsPriceEditable : boolean =false;
-  IsRemainingCashVisa :boolean =false ;
-  IsPriceChanged :boolean =false;
+  FlagId: number = 0
+  IsPriceEditable: boolean = false;
+  IsRemainingCashVisa: boolean = false;
+  IsPriceChanged: boolean = false;
   DomainName: string = '';
   UserID: number = 0;
 
@@ -67,15 +67,15 @@ export class InventoryDetailsComponent {
   mode: string = "Create"
 
   students: Student[] = []
-  Suppliers :Supplier[]=[]
-  StoresForTitle :Store[]=[]
+  Suppliers: Supplier[] = []
+  StoresForTitle: Store[] = []
   Stores: Store[] = []
   Saves: Saves[] = []
   Banks: Bank[] = []
   Categories: Category[] = []
   subCategories: SubCategory[] = []
   ShopItems: ShopItem[] = []
-  InventoryFlag : InventoryFlag=new InventoryFlag()
+  InventoryFlag: InventoryFlag = new InventoryFlag()
 
   SelectedCategoryId: number | null = null;
   SelectedSubCategoryId: number | null = null;
@@ -109,8 +109,8 @@ export class InventoryDetailsComponent {
     public CategoriesServ: InventoryCategoryService,
     public SubCategoriesServ: InventorySubCategoriesService,
     public shopitemServ: ShopItemService,
-    public SupplierServ : SupplierService ,
-    public InventoryFlagServ : InventoryFlagService
+    public SupplierServ: SupplierService,
+    public InventoryFlagServ: InventoryFlagService
   ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -124,20 +124,20 @@ export class InventoryDetailsComponent {
     this.FlagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
     this.Data.flagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
 
-    if(this.FlagId==8||this.FlagId==9||this.FlagId==10||this.FlagId==11||this.FlagId==12){
+    if (this.FlagId == 8 || this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 11 || this.FlagId == 12 || this.FlagId == 13) {
       this.IsRemainingCashVisa = true
     }
 
-    if(this.FlagId==9){
-      if(this.mode=='Create')
-        this.IsPriceEditable=true
+    if (this.FlagId == 9) {
+      if (this.mode == 'Create')
+        this.IsPriceEditable = true
     }
 
-    if(this.FlagId==8){
+    if (this.FlagId == 8) {
 
-    }else if(this.FlagId==9||this.FlagId==10){
+    } else if (this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 13) {
       this.GetAllSuppliers()
-    }else if(this.FlagId==11||this.FlagId==12){
+    } else if (this.FlagId == 11 || this.FlagId == 12) {
       await this.GetAllStudents()
     }
 
@@ -148,10 +148,18 @@ export class InventoryDetailsComponent {
 
     if (!this.MasterId) {
       this.mode = "Create"
+      this.Data.date = new Date().toISOString().split('T')[0];
     } else {
       this.mode = "Edit"
       this.GetTableDataByID();
       this.GetMasterInfo();
+      if (this.Data.saveID == null) {
+        this.Data.saveID = 0
+      }
+      if (this.Data.bankID == null) {
+        this.Data.bankID = 0
+      }
+
     }
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -191,31 +199,30 @@ export class InventoryDetailsComponent {
   GetAllStores() {
     this.storeServ.Get(this.DomainName).subscribe((d) => {
       this.Stores = d
-      this.StoresForTitle =d
+      this.StoresForTitle = d
     })
   }
 
-  GetAllSuppliers(){
-    this.SupplierServ.Get(this.DomainName).subscribe((d)=>{
-      this.Suppliers=d
+  GetAllSuppliers() {
+    this.SupplierServ.Get(this.DomainName).subscribe((d) => {
+      this.Suppliers = d
     })
   }
 
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d
-      console.log(d)
     })
   }
 
   GetCategories() {
-    this.CategoriesServ.GetByStoreId(this.DomainName , this.Data.storeID).subscribe((d) => {
+    this.CategoriesServ.GetByStoreId(this.DomainName, this.Data.storeID).subscribe((d) => {
       this.Categories = d
     })
   }
 
-  GetInventoryFlagInfo(){
-    this.InventoryFlagServ.GetById(this.FlagId , this.DomainName).subscribe((d) => {
+  GetInventoryFlagInfo() {
+    this.InventoryFlagServ.GetById(this.FlagId, this.DomainName).subscribe((d) => {
       this.InventoryFlag = d
     })
   }
@@ -253,10 +260,10 @@ export class InventoryDetailsComponent {
     this.SelectedSopItem = item;
     this.ShopItem = item
     this.Item.id = Date.now();  // it is random for edit and delete only 
-    if(this.FlagId==11 || this.FlagId==12){
+    if (this.FlagId == 11 || this.FlagId == 12) {
       this.Item.price = this.ShopItem.salesPrice ?? 0
     }
-    else{
+    else {
       this.Item.price = this.ShopItem.purchasePrice ?? 0
     }
     this.Item.shopItemID = this.ShopItem.id
@@ -269,16 +276,16 @@ export class InventoryDetailsComponent {
       this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
         this.TableData = d;
         resolve();
-      }, 
-      (error) => { 
-        this.TableData=[]
-      });
+      },
+        (error) => {
+          this.TableData = []
+        });
     });
   }
 
   /////////////////////////////////////////////////////// CRUD
   AddDetail() {
-    if(this.Data.storeID != 0){
+    if (this.Data.storeID != 0) {
       this.SelectedCategoryId = null;
       this.SelectedSubCategoryId = null;
       this.SelectedSopItem = null;
@@ -287,7 +294,7 @@ export class InventoryDetailsComponent {
       this.ShopItem = new ShopItem()
       this.GetCategories()
     }
-    else{
+    else {
       Swal.fire({
         icon: 'warning',
         title: 'Warning!',
@@ -316,10 +323,10 @@ export class InventoryDetailsComponent {
     this.editingRowId = row.id;
   }
 
-  EditPrice(){
+  EditPrice() {
     this.Item.price = this.ShopItem.purchasePrice ?? 0
     this.CalculateTotalPrice()
-    this.IsPriceChanged=true;
+    this.IsPriceChanged = true;
   }
 
   handleCashChange(isChecked: boolean): void {
@@ -329,7 +336,7 @@ export class InventoryDetailsComponent {
     }
     this.TotalandRemainingCalculate();
   }
-  
+
   handleVisaChange(isChecked: boolean): void {
     if (!isChecked) {
       this.Data.visaAmount = 0;
@@ -404,9 +411,9 @@ export class InventoryDetailsComponent {
     if (this.mode == 'Edit') {
       this.Item.inventoryMasterId = this.MasterId;
       this.salesItemServ.Add(this.Item, this.DomainName).subscribe(async (d) => {
-        await this.GetTableDataByID(); 
-        await this.TotalandRemainingCalculate(); 
-        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {});
+        await this.GetTableDataByID();
+        await this.TotalandRemainingCalculate();
+        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => { });
       });
     }
     this.IsOpenToAdd = false;
@@ -436,18 +443,28 @@ export class InventoryDetailsComponent {
     }
   }
 
+  ConvertToPurcase() {
+    this.Data.flagId = 9
+    this.Data.isEditInvoiceNumber=true
+    this.Data.date = new Date().toISOString().split('T')[0];
+    this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
+      this.router.navigateByUrl(`Employee/Purchases`)
+    })
+  }
+
   onImageFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (this.mode == "Create") {
-      this.Data.attachment.push(file)
+    const files: FileList = event.target.files;
+
+    if (this.mode === "Create") {
+      this.Data.attachment = this.Data.attachment || [];
+      Array.from(files).forEach(file => this.Data.attachment.push(file));
     }
     if (this.mode === "Edit") {
       if (!this.Data.NewAttachments) {
         this.Data.NewAttachments = [];
       }
-      this.Data.NewAttachments.push(file);
+      Array.from(files).forEach(file => this.Data.NewAttachments.push(file));
     }
-
   }
 
   openFile(file: any) {  // open image if it file or url 
@@ -485,7 +502,7 @@ export class InventoryDetailsComponent {
       else {
         row.totalPrice = row.quantity * row.price
         this.TotalandRemainingCalculate()
-       }
+      }
     }
   }
 
@@ -504,7 +521,7 @@ export class InventoryDetailsComponent {
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
         })
       }
-      resolve(); 
+      resolve();
     });
   }
 
@@ -545,21 +562,29 @@ export class InventoryDetailsComponent {
       });
       return false;
     }
-    if (this.FlagId==8&&this.Data.storeToTransformId==0) {
-      this.validationErrors['storeToTransformId']='Store Is Required'
+    if (this.FlagId == 8 && this.Data.storeToTransformId == 0) {
+      this.validationErrors['storeToTransformId'] = 'Store Is Required'
       return false;
     }
-    if (this.FlagId==9||this.FlagId==10) {
-      if(this.Data.supplierId==0){
-        this.validationErrors['supplierId']='Supplier Is Required'
+    if (this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 13) {
+      if (this.Data.supplierId == 0) {
+        this.validationErrors['supplierId'] = 'Supplier Is Required'
         return false;
       }
     }
-    if (this.FlagId==11||this.FlagId==12) {
-      if(this.Data.studentID==0){
-        this.validationErrors['studentID']='Student Is Required'
+    if (this.FlagId == 11 || this.FlagId == 12) {
+      if (this.Data.studentID == 0) {
+        this.validationErrors['studentID'] = 'Student Is Required'
         return false;
       }
+    }
+    if (this.Data.isCash == true && this.Data.saveID == 0 || this.Data.isCash == true && this.Data.saveID == null) {
+      this.validationErrors['saveID'] = 'Safe Is Required'
+      return false;
+    }
+    if (this.Data.isVisa == true && this.Data.bankID == 0 || this.Data.isVisa == true && this.Data.bankID == null) {
+      this.validationErrors['bankID'] = 'Bank Is Required'
+      return false;
     }
     return isValid;
   }

@@ -22,6 +22,7 @@ using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using LMS_CMS_DAL.Models.Octa;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,6 +35,12 @@ namespace LMS_CMS_BL.Config
 {
     public class AutoMapConfig : Profile
     {
+        private readonly LMS_CMS_Context _context;
+
+        public AutoMapConfig(LMS_CMS_Context context)
+        {
+            _context = context;
+        }
         public AutoMapConfig()
         {
             CreateMap<LMS_CMS_DAL.Models.Domains.Page, Page_AddDTO>();
@@ -621,8 +628,9 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<InventoryFlags, InventoryFlagGetDTO>();
             CreateMap<Cart_ShopItem, Cart_ShopItemGetDTO>()
-                .ForMember(dest => dest.ShopItemEnNme, opt => opt.MapFrom(src => src.ShopItem.EnName))
-                .ForMember(dest => dest.ShopItemArNme, opt => opt.MapFrom(src => src.ShopItem.ArName))
+                .ForMember(dest => dest.ShopItemEnName, opt => opt.MapFrom(src => src.ShopItem.EnName))
+                .ForMember(dest => dest.ShopItemArName, opt => opt.MapFrom(src => src.ShopItem.ArName))
+                .ForMember(dest => dest.ShopItemLimit, opt => opt.MapFrom(src => src.ShopItem.Limit))
                 .ForMember(dest => dest.SalesPrice, opt => opt.MapFrom(src => src.ShopItem.SalesPrice))
                 .ForMember(dest => dest.VATForForeign, opt => opt.MapFrom(src => src.ShopItem.VATForForeign))
                 .ForMember(dest => dest.MainImage, opt => opt.MapFrom(src => src.ShopItem.MainImage))
@@ -652,21 +660,39 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name))
                 .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade.Name))
                 .ForMember(dest => dest.ClassRoom, opt => opt.MapFrom(src => src.Classroom.Name));
-
+            CreateMap<HygieneFormPutDTO, HygieneForm>()
+                .ForMember(dest => dest.StudentHygieneTypes, opt => opt.Ignore());
+            
             CreateMap<StudentHygieneTypes, StudentHygieneTypesGetDTO>()
-                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name))
-                .ForMember(dest => dest.HygieneType, opt => opt.MapFrom(src => src.HygieneType.Type));
-
-            CreateMap<HygieneFormPutDTO, HygieneForm>();
-
-            CreateMap<StudentHygieneTypesAddDTO, StudentHygieneTypes>();
+                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name));
+            CreateMap<StudentHygieneTypesAddDTO, StudentHygieneTypes>()
+                .AfterMap(async (src, dest) =>
+                {
+                    if (src.HygieneTypesIds != null && _context != null)
+                    {
+                        foreach (var ht in src.HygieneTypesIds)
+                        {
+                            var hygieneType = await _context.HygieneTypes.FirstOrDefaultAsync(h => h.Id == ht);
+                            if (hygieneType != null)
+                            {
+                                dest.HygieneTypes.Add(hygieneType);
+                            }
+                        }
+                    }
+                }); 
 
             CreateMap<FollowUpAddDTO, FollowUp>();
-            CreateMap<FollowUp, FollowUpGetDTO>();
+            CreateMap<FollowUp, FollowUpGetDTO>()
+                .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name))
+                .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade.Name))
+                .ForMember(dest => dest.Classroom, opt => opt.MapFrom(src => src.Classroom.Name))
+                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name));
             CreateMap<FollowUpPutDTO, FollowUp>();
 
             CreateMap<FollowUpDrugAddDTO, FollowUpDrug>();
-            CreateMap<FollowUpDrug, FollowUpDrugGetDTO>();
+            CreateMap<FollowUpDrug, FollowUpDrugGetDTO>()
+                .ForMember(dest => dest.Drug, opt => opt.MapFrom(src => src.Drug.Name))
+                .ForMember(dest => dest.Dose, opt => opt.MapFrom(src => src.Dose.DoseTimes));
             CreateMap<FollowUpDrugPutDTO, FollowUpDrug>();
 
             CreateMap<MedicalHistoryAddByDoctorDTO, MedicalHistory>();
@@ -687,6 +713,7 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<CartShopItemAddDTO, Cart_ShopItem>();
             CreateMap<CartShopItemPutDTO, Cart_ShopItem>();
+
         }
     } 
 }

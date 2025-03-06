@@ -427,7 +427,6 @@ export class RegistrationFormComponent {
             this.DoneSuccessfully()
           },
           (error) => {
-            console.log(error.error)
             if(error.error == "Email Already Exists"){
               Swal.fire({
                 icon: 'warning',

@@ -18,7 +18,7 @@ namespace LMS_CMS_PL.Services
         {
             int lastInvoice = await db.InventoryMaster
                 .Where(x => x.StoreID == storeId && x.FlagId == flagId)
-                .OrderByDescending(x => x.InsertedAt)
+                .OrderByDescending(x => x.InvoiceNumber)
                 .Select(x => x.InvoiceNumber)
                 .FirstOrDefaultAsync();
 

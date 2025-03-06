@@ -101,7 +101,6 @@ export class BusDistrictsComponent {
       this.TableData = data;
     } catch (error) {
       this.TableData = [];
-      console.log('Error loading data:', error);
     }
   }
 
@@ -184,7 +183,6 @@ export class BusDistrictsComponent {
       this.busDistrict = new BusType()
     },
       error => {
-        console.log(error)
       });
   }
 

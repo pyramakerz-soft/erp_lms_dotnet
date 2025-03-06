@@ -6,22 +6,27 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../../../Services/api.service';
 import { Order } from '../../../../Models/Student/ECommerce/order';
 import { OrderService } from '../../../../Services/Student/order.service';
+import { EmployeeStudentService } from '../../../../Services/Employee/Accounting/employee-student.service';
+import { EmplyeeStudent } from '../../../../Models/Accounting/emplyee-student';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-order',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './order.component.html',
   styleUrl: './order.component.css'
 })
 export class OrderComponent {
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   UserID: number = 0;
+  StuID: number = 0;
+  emplyeeStudent: EmplyeeStudent[] = [];
   DomainName: string = ""; 
 
   orders: Order[] = []
 
-  constructor(public account: AccountService, public ApiServ: ApiService, private router: Router, private orderrService: OrderService){}
+  constructor(public account: AccountService, public ApiServ: ApiService, private router: Router, public employeeStudentService:EmployeeStudentService, private orderrService: OrderService){}
   
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -29,15 +34,35 @@ export class OrderComponent {
 
     this.DomainName = this.ApiServ.GetHeader(); 
 
+    if(this.User_Data_After_Login.type == 'employee'){
+      this.getStudents()
+    }
+
+    if(this.User_Data_After_Login.type == 'student'){
+      this.StuID = this.UserID
+    }
+
     this.getOrders() 
   }
 
+  getStudents(){
+    this.employeeStudentService.Get(this.UserID, this.DomainName).subscribe(
+      data => {
+        this.emplyeeStudent = data
+      }
+    )
+  }
+
   goToCart() {
-    this.router.navigateByUrl("Student/Ecommerce/Cart")
+    if(this.User_Data_After_Login.type == 'employee'){
+      this.router.navigateByUrl("Employee/Cart")
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/Cart")
+    }
   } 
 
   getOrders() {
-    this.orderrService.getByStudentID(this.UserID, this.DomainName).subscribe(
+    this.orderrService.getByStudentID(this.StuID, this.DomainName).subscribe(
       data => {
         this.orders = data
       }
@@ -61,7 +86,11 @@ export class OrderComponent {
   }
 
   goToOrderItems(id: number) {
-    this.router.navigateByUrl("Student/Ecommerce/Order/" + id)
+    if(this.User_Data_After_Login.type == 'employee'){
+      this.router.navigateByUrl("Employee/Order/" + id)
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/Order/" + id)
+    }
   }
   
   DownloadOrder() {

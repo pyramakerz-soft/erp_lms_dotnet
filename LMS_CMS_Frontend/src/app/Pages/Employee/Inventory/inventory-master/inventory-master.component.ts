@@ -73,7 +73,6 @@ export class InventoryMasterComponent {
        this.path = url[0].path;
      });
      this.FlagId = this.activeRoute.snapshot.data['id'];
-     console.log(this.FlagId);
      this.menuService.menuItemsForEmployee$.subscribe((items) => {
        const settingsPage = this.menuService.findByPageName(this.path, items);
        if (settingsPage) {
@@ -164,7 +163,6 @@ export class InventoryMasterComponent {
    GetAllData(pageNumber:number, pageSize:number){
      this.salesServ.Get(this.DomainName,this.FlagId, pageNumber, pageSize).subscribe(
        (data) => {
-        console.log(data)
          this.CurrentPage = data.pagination.currentPage
          this.PageSize = data.pagination.pageSize
          this.TotalPages = data.pagination.totalPages
@@ -176,7 +174,6 @@ export class InventoryMasterComponent {
          if(error.status == 404){
            if(this.TotalRecords != 0){
              let lastPage = this.TotalRecords / this.PageSize 
-             console.log(lastPage)
              if(lastPage >= 1){
                if(this.isDeleting){
                  this.CurrentPage = Math.floor(lastPage) 

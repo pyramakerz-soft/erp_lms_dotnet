@@ -277,8 +277,6 @@ export class AccountingEntriesDetailsComponent {
   }
 
   SaveNewDetails(){
-    console.log(this.newDetails)
-
     this.newDetails.accountingEntriesMasterID = this.AccountingEntriesID
     this.accountingEntriesDetailsService.Add(this.newDetails, this.DomainName).subscribe(
       (data) => {

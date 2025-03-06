@@ -100,7 +100,6 @@ export class RegistrationConfirmationTestDetailsComponent {
       this.Data = d.tests;
       this.StudentName=d.studentName
 
-      console.log(d)
     })
   }
 

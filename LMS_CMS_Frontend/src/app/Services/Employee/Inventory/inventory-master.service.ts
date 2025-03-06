@@ -18,7 +18,6 @@ export class InventoryMasterService {
    }
  
    Get(DomainName: string, FlagId: number, pageNumber: number, pageSize: number) {
-    console.log("dd")
      if (DomainName != null) {
        this.header = DomainName
      }
@@ -91,7 +90,7 @@ export class InventoryMasterService {
      return this.http.post<any>(`${this.baseUrl}/InventoryMaster`, formData, { headers });
    }
  
-   Edit(master: InventoryMaster, DomainName: string): Observable<InventoryMaster> {
+   Edit(master: InventoryMaster, DomainName: string ): Observable<InventoryMaster> {
      if (DomainName != null) {
        this.header = DomainName
      }
@@ -105,6 +104,7 @@ export class InventoryMasterService {
      formData.append('date', master.date || '');
      formData.append('isCash', master.isCash?.toString() || 'false');
      formData.append('isVisa', master.isVisa?.toString() || 'false');
+     formData.append('isEditInvoiceNumber', master.isEditInvoiceNumber?.toString() || 'false');
      formData.append('cashAmount', master.cashAmount?.toString() || '0');
      formData.append('visaAmount', master.visaAmount?.toString() || '0');
      formData.append('remaining', master.remaining?.toString() || '0');
@@ -117,7 +117,6 @@ export class InventoryMasterService {
      formData.append('bankID', master.bankID?.toString() || '0');
      formData.append('supplierId', master.supplierId?.toString()|| '0');
      formData.append('storeToTransformId', master.storeToTransformId?.toString()|| '0');
- 
  
      if (master.NewAttachments && master.NewAttachments.length > 0) {
        master.NewAttachments.forEach((file, index) => {

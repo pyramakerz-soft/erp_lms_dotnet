@@ -115,7 +115,6 @@ export class RegistraionTestComponent {
       )
       .subscribe(
         (d: any) => {
-          console.log(d)
           this.Data = d.questionWithAnswer;
           this.TestName = d.testName;
           this.mark = d.mark;
@@ -129,11 +128,9 @@ export class RegistraionTestComponent {
             .subscribe((d: any) => {
               this.questions = d.groupedByQuestionType ;
               this.TestName=d.testName;
-              console.log(d);
               this.questionServ
                 .GetByTestID(this.TestId, this.DomainName)
                 .subscribe((q: any) => {
-                  console.log(q);
                   this.QuestionsByTest = q;
                   if (
                     this.QuestionsByTest &&

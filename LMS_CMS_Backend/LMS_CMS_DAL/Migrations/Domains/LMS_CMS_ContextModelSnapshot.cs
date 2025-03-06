@@ -22,6 +22,21 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("HygieneTypeStudentHygieneTypes", b =>
+                {
+                    b.Property<long>("HygieneTypesId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StudentHygieneTypesId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("HygieneTypesId", "StudentHygieneTypesId");
+
+                    b.HasIndex("StudentHygieneTypesId");
+
+                    b.ToTable("HygieneTypeStudentHygieneTypes");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AccountingModule.AccountingEntriesDetails", b =>
                 {
                     b.Property<long>("ID")
@@ -2900,9 +2915,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("HygieneFormId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("HygieneTypeId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -2913,9 +2925,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("bigint");
 
                     b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("SelectAll")
                         .HasColumnType("bit");
 
                     b.Property<long>("StudentId")
@@ -2935,8 +2944,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("HygieneFormId");
-
-                    b.HasIndex("HygieneTypeId");
 
                     b.HasIndex("InsertedByUserId");
 
@@ -6513,6 +6520,21 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.ToTable("Violation");
                 });
 
+            modelBuilder.Entity("HygieneTypeStudentHygieneTypes", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.ClinicModule.HygieneType", null)
+                        .WithMany()
+                        .HasForeignKey("HygieneTypesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.ClinicModule.StudentHygieneTypes", null)
+                        .WithMany()
+                        .HasForeignKey("StudentHygieneTypesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.AccountingModule.AccountingEntriesDetails", b =>
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Domains.AccountingModule.AccountingEntriesMaster", "AccountingEntriesMaster")
@@ -7918,12 +7940,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.ClinicModule.HygieneType", "HygieneType")
-                        .WithMany("StudentHygieneTypes")
-                        .HasForeignKey("HygieneTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
@@ -7941,8 +7957,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("DeletedByEmployee");
 
                     b.Navigation("HygieneForm");
-
-                    b.Navigation("HygieneType");
 
                     b.Navigation("InsertedByEmployee");
 
@@ -9833,11 +9847,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ClinicModule.HygieneForm", b =>
-                {
-                    b.Navigation("StudentHygieneTypes");
-                });
-
-            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ClinicModule.HygieneType", b =>
                 {
                     b.Navigation("StudentHygieneTypes");
                 });

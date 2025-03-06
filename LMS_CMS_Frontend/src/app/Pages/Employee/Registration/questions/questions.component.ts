@@ -161,7 +161,6 @@ export class QuestionsComponent {
   Edit(row: Question) {
     this.mode = 'Edit';
     this.question = row as unknown as QuestionAddEdit;
-    console.log(this.question);
     this.options = row.options.map((option) => option.name);
     this.openModal();
   }
@@ -187,7 +186,6 @@ export class QuestionsComponent {
   CreateOREdit() {
     this.question.options = this.options;
     this.question.testID = this.testId;
-    console.log(this.question);
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
         this.QuestionServ.Add(this.question, this.DomainName).subscribe(() => {

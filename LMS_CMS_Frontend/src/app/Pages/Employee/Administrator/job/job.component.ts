@@ -160,11 +160,9 @@ export class JobComponent {
   }
 
   CreateOREdit() {
-    console.log("vdf")
     this.job.JobCategoryId=this.JobCategoryID;
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
-        console.log("vdf")
         this.jobServ.Add(this.job,this.DomainName).subscribe((d)=>{
           this.TableData=d;
           this.GetAllData()

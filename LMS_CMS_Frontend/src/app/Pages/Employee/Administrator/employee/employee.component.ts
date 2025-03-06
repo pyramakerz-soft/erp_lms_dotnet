@@ -158,7 +158,6 @@ export class EmployeeComponent {
         }
       } catch (error) {
         this.TableData = [];
-        console.log('Error fetching data:', error);
       }
     }
 }

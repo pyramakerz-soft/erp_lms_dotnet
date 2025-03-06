@@ -113,7 +113,6 @@ export class RoleAddEditComponent {
       this.PagecollapseStates = this.data.map(() => new Array(this.data[0].children.length).fill(false));
     } catch (error) {
       this.data = [];
-      console.log('Error loading data:', error);
     }
   }
 
@@ -251,7 +250,6 @@ export class RoleAddEditComponent {
             this.router.navigateByUrl("Employee/Role")
           },
           error: (error) => {
-            console.log(error)
             const errorMessage =  error?.error || 'An unexpected error occurred';
             Swal.fire({
               icon: 'error',
@@ -271,7 +269,6 @@ export class RoleAddEditComponent {
             this.router.navigateByUrl("Employee/Role")
           },
           error: (error) => {
-            console.log(error)
             const errorMessage =  error?.error || 'An unexpected error occurred';
 
             Swal.fire({

@@ -115,7 +115,6 @@ export class SuppliersComponent {
   GetAllCountries(){
     this.countryServ.Get().subscribe((d)=>{
       this.contries=d;
-      console.log(d)
     });
   }
   Create() {

@@ -10,6 +10,7 @@ using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace LMS_CMS_PL.Controllers.Domains.Inventory
 {
@@ -338,7 +339,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             allowEdit: 1,
              pages: new[] { "Inventory" }
         )]
-        public async Task<IActionResult> EditAsync([FromForm] InventoryMasterEditDTO newSale)
+        public async Task<IActionResult> EditAsync([FromForm] InventoryMasterEditDTO newSale )
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -460,6 +461,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 sale.Attachments = new List<string>();
             }
 
+
+            //Edit Invoice Number if Converted From Purchase Order to Purchases
+            if (newSale.IsEditInvoiceNumber==true)
+            {
+                LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
+                sale.InvoiceNumber = await _InVoiceNumberCreate.GetNextInvoiceNumber(db, newSale.StoreID, newSale.FlagId);
+            }
             // Add new attachments
             if (newSale.NewAttachments != null)
             {

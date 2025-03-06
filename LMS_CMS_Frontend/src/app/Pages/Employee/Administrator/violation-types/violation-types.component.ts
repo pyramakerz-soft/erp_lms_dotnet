@@ -183,7 +183,6 @@ export class ViolationTypesComponent {
               this.closeModal();
             },
             error: (error) => {
-              console.log(error);
               const errorMessage =
                 error?.error || 'An unexpected error occurred';
               Swal.fire({
@@ -203,7 +202,6 @@ export class ViolationTypesComponent {
               this.closeModal();
             },
             error: (error) => {
-              console.log(error);
               const errorMessage =
                 error?.error || 'An unexpected error occurred';
               Swal.fire({
@@ -270,7 +268,6 @@ export class ViolationTypesComponent {
       }
     } catch (error) {
       this.Data = [];
-      console.log('Error fetching data:', error);
     }
   }
 

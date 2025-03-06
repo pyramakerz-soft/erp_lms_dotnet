@@ -168,7 +168,6 @@ export class BankComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
-      console.log(this.bank)
       if (this.mode == 'Create') {
         this.BankServ.Add(this.bank,this.DomainName).subscribe((d)=>{
           this.GetAllData()

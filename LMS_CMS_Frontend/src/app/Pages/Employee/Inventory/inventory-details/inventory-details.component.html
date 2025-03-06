@@ -12,9 +12,15 @@
         </h1>
     </div>
 
-    <button class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="Save()">
-        Save
-    </button>
+    <div class="flex space-x-2">
+        <button class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="Save()">
+            Save
+        </button>
+    
+        <button *ngIf="FlagId==13 && mode=='Edit'" class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="ConvertToPurcase()">
+            Convert To Purchase
+        </button>
+    </div>
 </div>
 
 
@@ -58,7 +64,7 @@
             validationErrors["storeToTransformId"]}}</span>
     </div>
 
-    <div *ngIf="FlagId==9||FlagId==10" class="flex flex-col w-[24%] mb-4">
+    <div *ngIf="FlagId==9||FlagId==10 || FlagId ==13 " class="flex flex-col w-[24%] mb-4">
         <label class="mb-2" for="supplier">Supplires</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="supplier"
             (ngModelChange)=" onInputValueChange({ field: 'supplierId', value: $event })" [(ngModel)]="Data.supplierId">

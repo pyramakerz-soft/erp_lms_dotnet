@@ -306,32 +306,25 @@ export class AccountingTreeComponent {
   }
 
   Save(){
-    console.log(this.accountingTreeChart)
-    console.log(this.isEdit)
-    console.log(this.validationErrors)
     if(this.isFormValid()){}
     if(this.isFormValid())
     {
       if(this.isEdit){
         this.accountingTreeChartService.Edit(this.accountingTreeChart, this.DomainName).subscribe(
           (data) => {
-            console.log(data)
             this.GetAllData()
             this.validationErrors = {}; 
             this.accountingTreeChart = new AccountingTreeChart()
           }, (error) => {
-            console.log(error)
           }
         )
       } else{
         this.accountingTreeChartService.Add(this.accountingTreeChart, this.DomainName).subscribe(
           (data) => {
-            console.log(data)
             this.GetAllData()
             this.validationErrors = {}; 
             this.accountingTreeChart = new AccountingTreeChart()
           }, (error) => {
-            console.log(error)
           }
         )
       }

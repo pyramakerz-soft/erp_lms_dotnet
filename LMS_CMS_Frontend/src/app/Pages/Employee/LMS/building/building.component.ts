@@ -140,7 +140,6 @@ export class BuildingComponent {
       }
     } catch (error) {
       this.buildingData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -201,7 +200,6 @@ export class BuildingComponent {
             this.getBuildingData()
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -211,7 +209,6 @@ export class BuildingComponent {
             this.getBuildingData()
           },
           error => {
-            console.log(error)
           }
         );
       }  

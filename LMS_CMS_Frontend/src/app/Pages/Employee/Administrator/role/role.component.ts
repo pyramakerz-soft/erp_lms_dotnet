@@ -90,7 +90,6 @@ export class RoleComponent {
       this.TableData = data;
     } catch (error) {
       this.TableData = [];
-      console.log('Error loading data:', error);
     }
   }
 
@@ -121,7 +120,6 @@ export class RoleComponent {
       }
     } catch (error) {
       this.TableData = [];
-      console.log('Error fetching data:', error);
     }
   }
 

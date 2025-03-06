@@ -117,7 +117,6 @@ export class SchoolComponent {
       }
     } catch (error) {
       this.schoolData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -195,7 +194,6 @@ export class SchoolComponent {
           this.getSchoolData()
         },
         error => {
-          console.log(error)
         }
       );
     }

@@ -95,7 +95,6 @@ export class BusCompaniesComponent {
     this.DomainServ.Get().subscribe((data) => {
       this.DomainData = data;
     }, (error) => {
-      console.log(error)
     });
   }
 
@@ -105,7 +104,6 @@ export class BusCompaniesComponent {
       this.TableData = data;
     } catch (error) {
       this.TableData = [];
-      console.log('Error loading data:', error);
     }
   }
 

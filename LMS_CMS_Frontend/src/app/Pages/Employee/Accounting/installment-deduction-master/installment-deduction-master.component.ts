@@ -168,7 +168,6 @@ export class InstallmentDeductionMasterComponent {
         if(error.status == 404){
           if(this.TotalRecords != 0){
             let lastPage = this.TotalRecords / this.PageSize 
-            console.log(lastPage)
             if(lastPage >= 1){
               if(this.isDeleting){
                 this.CurrentPage = Math.floor(lastPage) 

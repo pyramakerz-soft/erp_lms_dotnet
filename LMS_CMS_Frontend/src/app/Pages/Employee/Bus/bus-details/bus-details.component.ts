@@ -115,7 +115,6 @@ export class BusDetailsComponent {
         this.busData = data;
       } ,(error)=>{
         this.busData=[];
-        console.log(error)
       });
   }
 
@@ -286,7 +285,6 @@ export class BusDetailsComponent {
             );
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -300,7 +298,6 @@ export class BusDetailsComponent {
             );
           },
           error => {
-            console.log(error)
           }
         );
       }  
@@ -346,7 +343,6 @@ export class BusDetailsComponent {
       }
     } catch (error) {
       this.busData = [];
-      console.log('Error fetching data:', error);
     }
   }
   

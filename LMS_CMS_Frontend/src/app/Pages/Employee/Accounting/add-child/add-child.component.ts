@@ -193,11 +193,9 @@ export class AddChildComponent {
   }
 
   SelectChild(nationalId: string) {
-    console.log(nationalId)
     this.Student = new Student()
     this.emplyeeStudent = new EmplyeeStudent()
     this.StudentServ.GetByNationalID(nationalId, this.DomainName).subscribe((d) => {
-      console.log(d)
       this.Student = d
       this.emplyeeStudent.studentID = d.id
       this.emplyeeStudent.employeeID = this.UserID

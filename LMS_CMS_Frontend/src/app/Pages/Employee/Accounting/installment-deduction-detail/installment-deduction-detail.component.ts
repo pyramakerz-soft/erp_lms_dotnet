@@ -126,7 +126,6 @@ export class InstallmentDeductionDetailComponent {
     if(this.mode=="Create"){
       this.installmentDeductionMasterServ.Add(this.Data,this.DomainName).subscribe((d)=>{
        this.MasterId=d
-       console.log(this.MasterId)
        this.router.navigateByUrl(`Employee/Installment Deduction Details/Edit/${this.MasterId}`)
       })
     }
@@ -212,7 +211,6 @@ export class InstallmentDeductionDetailComponent {
   }
 
   SaveRow(){
-    console.log(this.Detail)
     this.Detail.installmentDeductionMasterID=this.MasterId
     this.installmentDeductionDetailServ.Add(this.Detail,this.DomainName).subscribe((d)=>{
       this.GetTableDataByID();

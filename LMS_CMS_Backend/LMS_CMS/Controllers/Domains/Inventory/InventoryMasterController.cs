@@ -10,6 +10,7 @@ using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace LMS_CMS_PL.Controllers.Domains.Inventory
 {
@@ -240,6 +241,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 newData.SaveID = null;
             }
 
+            if (newData.IsVisa == true && newData.BankID==0 || newData.IsVisa == true && newData.BankID == null)
+            {
+                return BadRequest("Bank IsRequired");
+
+            }
+            if (newData.IsCash == true && newData.SaveID == 0 || newData.IsCash == true && newData.SaveID == null)
+            {
+                return BadRequest("Safe IsRequired");
+
+            }
+
             double expectedItemsPrice = newData.InventoryDetails?.Sum(item => item.TotalPrice) ?? 0;
             if (newData.Total != expectedItemsPrice)
             {
@@ -338,7 +350,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             allowEdit: 1,
              pages: new[] { "Inventory" }
         )]
-        public async Task<IActionResult> EditAsync([FromForm] InventoryMasterEditDTO newSale)
+        public async Task<IActionResult> EditAsync([FromForm] InventoryMasterEditDTO newSale )
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -393,6 +405,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 newSale.BankID = null;
             }
 
+            if (newSale.SupplierId != 0 && newSale.SupplierId != null)
+            {
+                Supplier supplier = Unit_Of_Work.supplier_Repository.First_Or_Default(b => b.ID == newSale.SupplierId && b.IsDeleted != true);
+                if (supplier == null)
+                {
+                    return NotFound("Supplier not found.");
+                }
+            }
+            else
+            {
+                newSale.SupplierId = null;
+            }
+
             if (newSale.SaveID != 0 && newSale.SaveID != null)
             {
                 Save save = Unit_Of_Work.save_Repository.First_Or_Default(b => b.ID == newSale.SaveID && b.IsDeleted != true);
@@ -423,7 +448,42 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound("There Is No InventoryMaster With This Id");
             }
-             
+
+            /// Validations
+
+            if (newSale.IsVisa == false)
+            {
+                newSale.VisaAmount = 0;
+                newSale.BankID = null;
+            }
+            if (newSale.IsCash == false)
+            {
+                newSale.CashAmount = 0;
+                newSale.SaveID = null;
+            }
+
+            if (newSale.IsVisa == true && newSale.BankID == 0 || newSale.IsVisa == true && newSale.BankID == null)
+            {
+                return BadRequest("Bank IsRequired");
+
+            }
+            if (newSale.IsCash == true && newSale.SaveID == 0 || newSale.IsCash == true && newSale.SaveID == null)
+            {
+                return BadRequest("Safe IsRequired");
+
+            }
+
+            if (newSale.FlagId == 8 || newSale.FlagId == 9 || newSale.FlagId == 10 || newSale.FlagId == 11 || newSale.FlagId == 12)
+            {
+                double expectedRemaining = (newSale.Total) - ((newSale.CashAmount ?? 0) + (newSale.VisaAmount ?? 0));
+                if (expectedRemaining != newSale.Remaining)
+                {
+                    return BadRequest("Total should be sum up all the totalPrice values in InventoryDetails");
+                }
+
+
+            }
+
             if (userTypeClaim == "employee")
             {
                 IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Inventory", roleId, userId, sale);
@@ -447,6 +507,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 sale.Attachments = new List<string>();
             }
 
+
+            //Edit Invoice Number if Converted From Purchase Order to Purchases
+            if (newSale.IsEditInvoiceNumber==true)
+            {
+                LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
+                sale.InvoiceNumber = await _InVoiceNumberCreate.GetNextInvoiceNumber(db, newSale.StoreID, newSale.FlagId);
+            }
             // Add new attachments
             if (newSale.NewAttachments != null)
             {

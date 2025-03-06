@@ -13,17 +13,22 @@ import { Router } from '@angular/router';
 import { CartShopItemService } from '../../../../Services/Student/cart-shop-item.service';
 import { CartShopItem } from '../../../../Models/Student/ECommerce/cart-shop-item';
 import Swal from 'sweetalert2';
+import { EmployeeStudentService } from '../../../../Services/Employee/Accounting/employee-student.service';
+import { EmplyeeStudent } from '../../../../Models/Accounting/emplyee-student';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-shop',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './shop.component.html',
   styleUrl: './shop.component.css'
 })
 export class ShopComponent { 
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   UserID: number = 0;
+  StuID: number = 0;
+  emplyeeStudent: EmplyeeStudent[] = [];
   DomainName: string = "";
   
   InventoryCategory:Category[] = []
@@ -39,7 +44,7 @@ export class ShopComponent {
 
   cartShopItem:CartShopItem = new CartShopItem()
 
-  constructor(public inventoryCategoryService:InventoryCategoryService, public inventorySubCategoryService:InventorySubCategoriesService, 
+  constructor(public inventoryCategoryService:InventoryCategoryService, public inventorySubCategoryService:InventorySubCategoriesService, public employeeStudentService:EmployeeStudentService,
     public account: AccountService, public ApiServ: ApiService, public shopItemService:ShopItemService, private router: Router, private cartShopItemService:CartShopItemService){}
 
   ngOnInit(){
@@ -48,7 +53,23 @@ export class ShopComponent {
 
     this.DomainName = this.ApiServ.GetHeader(); 
 
+    if(this.User_Data_After_Login.type == 'employee'){
+      this.getStudents()
+    }
+
+    if(this.User_Data_After_Login.type == 'student'){
+      this.StuID = this.UserID
+    }
+
     this.getInventoryCategory() 
+  }
+
+  getStudents(){
+    this.employeeStudentService.Get(this.UserID, this.DomainName).subscribe(
+      data => {
+        this.emplyeeStudent = data
+      }
+    )
   }
 
   getInventoryCategory(){
@@ -94,7 +115,7 @@ export class ShopComponent {
   }
   
   addShopItemToCart(id: number) { 
-    this.cartShopItem.studentID = this.UserID
+    this.cartShopItem.studentID = this.StuID
     this.cartShopItem.quantity = 1
     this.cartShopItem.shopItemID = id
 
@@ -123,14 +144,26 @@ export class ShopComponent {
   }
 
   goToShopItem(id: number) {  
-    this.router.navigateByUrl("Student/Ecommerce/ShopItem/" + id)
+    if(this.User_Data_After_Login.type == "employee"){
+      this.router.navigateByUrl("Employee/ShopItem/" + id)
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/ShopItem/" + id)
+    }
   }
 
   goToCart() {
-    this.router.navigateByUrl("Student/Ecommerce/Cart")
+    if(this.User_Data_After_Login.type == "employee"){
+      this.router.navigateByUrl("Employee/Cart")
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/Cart")
+    }
   } 
 
   goToOrder() {
-    this.router.navigateByUrl("Student/Ecommerce/Order")
+    if(this.User_Data_After_Login.type == "employee"){
+      this.router.navigateByUrl("Employee/Order")
+    } else{
+      this.router.navigateByUrl("Student/Ecommerce/Order")
+    }
   } 
 }

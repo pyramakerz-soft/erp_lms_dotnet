@@ -124,7 +124,6 @@ export class SubjectCategoryComponent {
       }
     } catch (error) {
       this.subjectCategoryData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -186,7 +185,6 @@ export class SubjectCategoryComponent {
             this.getSubjectCategoryData()
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -196,7 +194,6 @@ export class SubjectCategoryComponent {
             this.getSubjectCategoryData()
           },
           error => {
-            console.log(error)
           }
         );
       }  

@@ -118,7 +118,6 @@ export class ShopItemsAddEditComponent {
           this.colors.push(element.name)
         });
 
-        console.log(data)
         this.ShopItem.shopItemSizes.forEach((element: { name: string; }) => {
           this.Sizes.push(element.name)
         });
@@ -207,7 +206,6 @@ export class ShopItemsAddEditComponent {
     
     if (this.isFormValid()) { 
       if (this.mode == 'Create') {
-        console.log(this.ShopItem)
         this.shopItemService.Add(this.ShopItem, this.DomainName).subscribe(
           data => {
             this.router.navigateByUrl(`Employee/Shop`)

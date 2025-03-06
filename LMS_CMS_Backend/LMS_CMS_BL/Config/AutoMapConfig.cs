@@ -628,8 +628,9 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<InventoryFlags, InventoryFlagGetDTO>();
             CreateMap<Cart_ShopItem, Cart_ShopItemGetDTO>()
-                .ForMember(dest => dest.ShopItemEnNme, opt => opt.MapFrom(src => src.ShopItem.EnName))
-                .ForMember(dest => dest.ShopItemArNme, opt => opt.MapFrom(src => src.ShopItem.ArName))
+                .ForMember(dest => dest.ShopItemEnName, opt => opt.MapFrom(src => src.ShopItem.EnName))
+                .ForMember(dest => dest.ShopItemArName, opt => opt.MapFrom(src => src.ShopItem.ArName))
+                .ForMember(dest => dest.ShopItemLimit, opt => opt.MapFrom(src => src.ShopItem.Limit))
                 .ForMember(dest => dest.SalesPrice, opt => opt.MapFrom(src => src.ShopItem.SalesPrice))
                 .ForMember(dest => dest.VATForForeign, opt => opt.MapFrom(src => src.ShopItem.VATForForeign))
                 .ForMember(dest => dest.MainImage, opt => opt.MapFrom(src => src.ShopItem.MainImage))

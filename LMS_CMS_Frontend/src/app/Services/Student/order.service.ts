@@ -52,4 +52,17 @@ export class OrderService {
     
     return this.http.delete(`${this.baseUrl}/Order/CancelOrder/${id}`, { headers });
   }
+
+  ConfirmOrder(id:number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    
+    return this.http.get(`${this.baseUrl}/Order/ConfirmCart/${id}`, { headers });
+  }
 }

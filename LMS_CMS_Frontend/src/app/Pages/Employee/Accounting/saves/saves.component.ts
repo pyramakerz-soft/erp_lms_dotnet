@@ -101,7 +101,6 @@ export class SavesComponent {
   GetAllData() {
     this.SaveServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData =d
-      console.log(d)
     })
   }
   GetAllAccount(){

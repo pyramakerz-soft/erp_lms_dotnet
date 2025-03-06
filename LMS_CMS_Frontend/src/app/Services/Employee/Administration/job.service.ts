@@ -58,7 +58,6 @@ export class JobService {
     if (DomainName != null) {
       this.header = DomainName
     }
-    console.log(job)
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)

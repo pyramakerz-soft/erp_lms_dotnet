@@ -137,7 +137,6 @@ export class OctaLoginComponent {
             this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
             const currentIndex = this.allTokens.findIndex(token => token.UserType === this.User_Data_After_Login.type && token.key===this.User_Data_After_Login.user_Name);
             const currentToken = this.allTokens[currentIndex];
-            // console.log("mennab",currentIndex,currentToken,currentToken.KeyInLocal)
             localStorage.setItem(currentToken.KeyInLocal, token);
           }
           

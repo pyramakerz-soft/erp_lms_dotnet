@@ -102,7 +102,6 @@ export class BusStatusComponent {
       this.TableData = data;
     } catch (error) {
       this.TableData = [];
-      console.log('Error loading data:', error);
     }
   }
 

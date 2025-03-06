@@ -12,9 +12,15 @@
         </h1>
     </div>
 
-    <button class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="Save()">
-        Save
-    </button>
+    <div class="flex space-x-2">
+        <button class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="Save()">
+            Save
+        </button>
+    
+        <button *ngIf="FlagId==13 && mode=='Edit'" class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="ConvertToPurcase()">
+            Convert To Purchase
+        </button>
+    </div>
 </div>
 
 
@@ -58,7 +64,7 @@
             validationErrors["storeToTransformId"]}}</span>
     </div>
 
-    <div *ngIf="FlagId==9||FlagId==10" class="flex flex-col w-[24%] mb-4">
+    <div *ngIf="FlagId==9||FlagId==10 || FlagId ==13 " class="flex flex-col w-[24%] mb-4">
         <label class="mb-2" for="supplier">Supplires</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="supplier"
             (ngModelChange)=" onInputValueChange({ field: 'supplierId', value: $event })" [(ngModel)]="Data.supplierId">
@@ -84,7 +90,7 @@
     <div *ngIf="IsRemainingCashVisa" class="flex justify-start w-full mb-4 space-x-5">
         <div class="flex w-[8%] space-x-5 items-center mb-4">
             <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isCash" (ngModelChange)="handleCashChange($event)">
-            <label for="exception" class="text-sm">Chash</label>
+            <label for="exception" class="text-sm">Cash</label>
         </div>
         <div *ngIf="Data.isCash" class="flex flex-col mb-4 w-[15%]">
             <input id="cashAmount" type="number" [(ngModel)]="Data.cashAmount"  class="rounded-lg border border-solid border-gray-300 px-4 py-3"
@@ -97,6 +103,8 @@
                 <option *ngFor="let stu of Saves" [value]="stu.id">{{ stu.name }}</option>
                 <option *ngIf="Saves.length === 0" disabled selected>No Data Found</option>
             </select>
+            <span *ngIf="validationErrors['saveID']" class="text-red-500 ml-3 font-normal">{{
+                validationErrors["saveID"]}}</span>
         </div>
 
         <div class="flex w-[8%] space-x-5 items-center mb-4">
@@ -114,6 +122,8 @@
                 <option *ngFor="let stu of Banks" [value]="stu.id">{{ stu.name }}</option>
                 <option *ngIf="Banks.length === 0" disabled selected>No Data Found</option>
             </select>
+            <span *ngIf="validationErrors['bankID']" class="text-red-500 ml-3 font-normal">{{
+                validationErrors["bankID"]}}</span>
         </div>
 
     </div>
@@ -143,18 +153,18 @@
 
     <div class="flex flex-col mb-4 w-[30%]">
         <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed border-2">
-            <div class="flex justify-center w-full">
-                <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
-                    <img src="Images/FileAttached.png" class="w-1/4">
-                    <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to
-                            Upload </span>or drag and drop Icon</p>
-                    <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB)</p>
-                </label>
-                <input id="file-upload" type="file" class="hidden" (change)="onImageFileSelected($event)"
-                    accept="image/jpeg, image/png" />
-            </div>
+          <div class="flex justify-center w-full">
+            <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+              <img src="Images/FileAttached.png" class="w-1/4">
+              <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to
+                  Upload </span>or drag and drop Icons</p>
+              <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB)</p>
+            </label>
+            <input id="file-upload" type="file" class="hidden" (change)="onImageFileSelected($event)" 
+                   accept="image/jpeg, image/png" multiple />
+          </div>
         </div>
-    </div>
+      </div>
 
     <div *ngFor="let img of Data.attachments; let i = index">
         <div class="flex flex-col w-full">

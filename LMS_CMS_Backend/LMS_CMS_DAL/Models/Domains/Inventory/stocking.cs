@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.Inventory
 {
-    internal class stocking
+    public class stocking
     {
+
     }
 }

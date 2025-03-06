@@ -7,7 +7,7 @@ import { ModalComponent } from '../../../../Component/modal/modal.component';
 import Swal from 'sweetalert2';
 import { TableComponent } from '../../../../Component/reuse-table/reuse-table.component';
 import { ApiService } from '../../../../Services/api.service';
-import { HygieneTypesService } from '../../../../Services/Employee/Clinic/hygiene-types.service';
+import { HygieneTypesService } from '../../../../Services/Employee/Clinic/hygiene-type.service';
 import { HygieneTypes } from '../../../../Models/Clinic/hygiene-types';
 
 @Component({

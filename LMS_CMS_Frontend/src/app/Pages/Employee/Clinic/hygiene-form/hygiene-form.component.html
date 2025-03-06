@@ -1,22 +1,28 @@
-<div class="">
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Hygiene Forms</h1>
     <div class="flex justify-between items-center">
-        <h1 class="primaryTxt font-semibold text-2xl leading-9">Hygiene Forms</h1>
-        <div class="flex justify-between items-center">
-            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
-            <button (click)="navigateToCreateHygieneForm()"
-                class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
-                Create Hygiene Form
-            </button>
-        </div>
+        <!-- Add the Search Component -->
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        <button (click)="navigateToCreateHygieneForm()"
+            class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
+            Create Hygiene Form
+        </button>
     </div>
+</div>
 
-    <app-table [headers]="['ID', 'Grade', 'Classes', 'Date', 'Actions']" [data]="hygieneForms"
-        [keys]="['id', 'grade', 'classes', 'date']" (delete)="deleteHygieneForm($event)" (edit)="openModal($event.id)">
-    </app-table>
-    
-    <!-- No Data Found Row -->
-    <tr *ngIf="hygieneForms.length === 0">
-        <td colspan="5" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-            No Data Found
-        </td>
-    </tr>
+<app-table [headers]="['ID', 'School', 'Grade', 'Class Room', 'Date', 'Actions']" [data]="hygieneForms"
+     [showViewAction]="true" 
+
+[keys]="['id', 'school', 'grade', 'classRoom', 'date']"
+     (delete)="deleteHygieneForm($event)"
+    (edit)="openModal($event.id)" 
+      (view)="onView($event)">
+>
+</app-table>
+
+<!-- No Data Found Row -->
+<tr *ngIf="hygieneForms.length === 0">
+    <td colspan="6" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+        No Data Found
+    </td>
+</tr>

@@ -1,3 +1,4 @@
+// follow-up.component.ts
 import { Component, OnInit } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -5,13 +6,14 @@ import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import Swal from 'sweetalert2';
 import { FollowUpService } from '../../../../Services/Employee/Clinic/follow-up.service';
-
 import { DiagnosisService } from '../../../../Services/Employee/Clinic/diagnosis.service';
 import { ApiService } from '../../../../Services/api.service';
 import { SchoolService } from '../../../../Services/Employee/school.service';
 import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
 import { StudentService } from '../../../../Services/student.service';
 import { TableComponent } from "../../../../Component/reuse-table/reuse-table.component";
+import { DrugService } from '../../../../Services/Employee/Clinic/drug.service';
+import { DoseService } from '../../../../Services/Employee/Clinic/dose.service';
 
 @Component({
   selector: 'app-follow-up',
@@ -49,6 +51,15 @@ export class FollowUpComponent implements OnInit {
   classes: any[] = [];
   students: any[] = [];
   diagnoses: any[] = [];
+  drugs: any[] = [];
+  doses: any[] = [];
+
+  // Selected Drug and Dose
+  selectedDrugId: number | null = null;
+  selectedDoseId: number | null = null;
+
+  // List of selected drugs and doses
+  drugDoseList: any[] = [];
 
   // Define keysArray for search component
   keysArray: string[] = ['schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation'];
@@ -59,6 +70,8 @@ export class FollowUpComponent implements OnInit {
     private gradeService: GradeService,
     private studentService: StudentService,
     private diagnosisService: DiagnosisService,
+    private drugService: DrugService,
+    private doseService: DoseService,
     private apiService: ApiService
   ) {}
 
@@ -67,35 +80,35 @@ export class FollowUpComponent implements OnInit {
     this.loadDropdownOptions();
   }
 
-async loadFollowUps() {
-  try {
-    const domainName = this.apiService.GetHeader(); // Get the domain name from ApiService
-    const data = await firstValueFrom(this.followUpService.Get(domainName));
+  async loadFollowUps() {
+    try {
+      const domainName = this.apiService.GetHeader(); // Get the domain name from ApiService
+      const data = await firstValueFrom(this.followUpService.Get(domainName));
 
-    // Map the data to match the keys array
-    this.followUps = data.map((item) => {
-      // Find the school name using schoolId
-      const school = this.schools.find(s => s.id === item.schoolId);
-      const grade = this.grades.find(g => g.id === item.gradeId);
-      const student = this.students.find(s => s.id === item.studentId);
-      const diagnosis = this.diagnoses.find(d => d.id === item.diagnosisId);
+      // Map the data to match the keys array
+      this.followUps = data.map((item) => {
+        // Find the school name using schoolId
+        const school = this.schools.find(s => s.id === item.schoolId);
+        const grade = this.grades.find(g => g.id === item.gradeId);
+        const student = this.students.find(s => s.id === item.studentId);
+        const diagnosis = this.diagnoses.find(d => d.id === item.diagnosisId);
 
-      return {
-        id: item.id,
-        schoolName: school?.name || 'N/A', // Use the school name
-        gradeName: grade?.name || 'N/A', // Use the grade name
-        studentName: student?.name || 'N/A', // Use the student name
-        complaints: item.complains,
-        diagnosisName: diagnosis?.name || 'N/A', // Use the diagnosis name
-        recommendation: item.recommendation,
-        actions: { delete: true, edit: true }, // Add actions dynamically
-      };
-    });
-  } catch (error) {
-    console.error('Error fetching follow-ups:', error);
-    Swal.fire('Error', 'Failed to load follow-ups. Please try again later.', 'error');
+        return {
+          id: item.id,
+          schoolName: school?.name || 'N/A', // Use the school name
+          gradeName: grade?.name || 'N/A', // Use the grade name
+          studentName: student?.name || 'N/A', // Use the student name
+          complaints: item.complains,
+          diagnosisName: diagnosis?.name || 'N/A', // Use the diagnosis name
+          recommendation: item.recommendation,
+          actions: { delete: true, edit: true }, // Add actions dynamically
+        };
+      });
+    } catch (error) {
+      console.error('Error fetching follow-ups:', error);
+      Swal.fire('Error', 'Failed to load follow-ups. Please try again later.', 'error');
+    }
   }
-}
 
   // Load dropdown options from backend
   async loadDropdownOptions() {
@@ -115,10 +128,41 @@ async loadFollowUps() {
 
       // Fetch diagnoses
       this.diagnoses = await firstValueFrom(this.diagnosisService.Get(domainName));
+
+      // Fetch drugs
+      this.drugs = await firstValueFrom(this.drugService.Get(domainName));
+
+      // Fetch doses
+      this.doses = await firstValueFrom(this.doseService.Get(domainName));
     } catch (error) {
       console.error('Error loading dropdown options:', error);
       Swal.fire('Error', 'Failed to load dropdown options. Please try again later.', 'error');
     }
+  }
+
+  // Add drug and dose to the list
+  addDrugAndDose() {
+    if (this.selectedDrugId && this.selectedDoseId) {
+      const selectedDrug = this.drugs.find(drug => drug.id === this.selectedDrugId);
+      const selectedDose = this.doses.find(dose => dose.id === this.selectedDoseId);
+
+      if (selectedDrug && selectedDose) {
+        this.drugDoseList.push({
+          drugName: selectedDrug.name,
+          doseTimes: selectedDose.doseTimes,
+          actions: { delete: true }
+        });
+
+        // Reset selections
+        this.selectedDrugId = null;
+        this.selectedDoseId = null;
+      }
+    }
+  }
+
+  // Remove drug and dose from the list
+  removeDrugAndDose(row: any) {
+    this.drugDoseList = this.drugDoseList.filter(item => item !== row);
   }
 
   // Open modal for create/edit

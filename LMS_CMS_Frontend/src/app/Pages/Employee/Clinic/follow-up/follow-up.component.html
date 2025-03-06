@@ -15,11 +15,12 @@
     <app-table
         [headers]="['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation', 'Actions']"
         [data]="followUps"
+        [showViewAction]="true"
         [keys]="['id', 'schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation']"
-        (delete)="deleteFollowUp($event)" (edit)="openModal($event.id)">
+        (delete)="deleteFollowUp($event)" (edit)="openModal($event.id)"
+ >
     </app-table>
 </div>
-
 <!-- Follow Up Modal -->
 <div *ngIf="isModalVisible" class="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
     <div class="relative bg-white w-[750px] max-h-[90vh] h-auto rounded-2xl p-12 gap-4 shadow-md overflow-y-auto">
@@ -94,6 +95,39 @@
                 </select>
             </div>
 
+            <!-- Drugs and Doses -->
+            <div class="grid grid-cols-2 gap-6">
+                <div class="flex flex-col">
+                    <label class="mb-1 primaryTxt" for="drug">Drug</label>
+                    <select id="drug" [(ngModel)]="selectedDrugId"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                        <option value="" disabled selected hidden>Choose Drug</option>
+                        <option *ngFor="let drug of drugs" [value]="drug.id">{{ drug.name }}</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col">
+                    <label class="mb-1 primaryTxt" for="dose">Dose</label>
+                    <select id="dose" [(ngModel)]="selectedDoseId"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                        <option value="" disabled selected hidden>Choose Dose</option>
+                        <option *ngFor="let dose of doses" [value]="dose.id">{{ dose.doseTimes }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Add Drug and Dose Button -->
+            <div class="flex justify-end">
+                <button (click)="addDrugAndDose()" class="secondaryBg text-white font-medium px-6 py-2 rounded-lg">
+                    Add
+                </button>
+            </div>
+
+            <!-- Drugs and Doses Table -->
+            <app-table [headers]="['Drug', 'Dose', 'Actions']" [data]="drugDoseList" [keys]="['drugName', 'doseTimes']"
+                (delete)="removeDrugAndDose($event)">
+            </app-table>
+
             <!-- Recommendation -->
             <div class="flex flex-col">
                 <label class="mb-1 primaryTxt" for="recommendation">Recommendation</label>
@@ -112,8 +146,8 @@
 
         <!-- Save Button -->
         <div class="flex justify-end mt-6">
-            <button class="secondaryBg text-white font-medium px-6 py-2 rounded-lg" (click)="saveFollowUp()">
-                Save
+            <button class="secondaryBg text-white font-medium w-full py-2 rounded-lg" (click)="saveFollowUp()">
+                Submit
             </button>
         </div>
     </div>

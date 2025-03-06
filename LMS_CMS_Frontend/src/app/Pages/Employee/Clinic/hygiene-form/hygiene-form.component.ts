@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../../../Component/search/search.component';
@@ -6,6 +7,10 @@ import { ModalComponent } from '../../../../Component/modal/modal.component';
 import Swal from 'sweetalert2';
 import { TableComponent } from "../../../../Component/reuse-table/reuse-table.component";
 import { Router } from '@angular/router';
+import { HygieneFormService } from '../../../../Services/Employee/Clinic/hygiene-form.service';
+import { ApiService } from '../../../../Services/api.service';
+import { HygieneForm } from '../../../../Models/Clinic/HygieneForm';
+import { Classroom } from '../../../../Models/LMS/classroom';
 
 @Component({
   selector: 'app-hygiene-form',
@@ -14,41 +19,55 @@ import { Router } from '@angular/router';
   templateUrl: './hygiene-form.component.html',
   styleUrls: ['./hygiene-form.component.css']
 })
-export class HygieneFormComponent {
+export class HygieneFormComponent implements OnInit {
+onView($event: any) {
+throw new Error('Method not implemented.');
+}
+viewHygieneForm($event: any) {
+throw new Error('Method not implemented.');
+}
   hygieneForm: any = { id: null, grade: '', classes: '' };
   editHygieneForm = false;
   validationErrors: { [key: string]: string } = {};
-  keysArray: string[] = ['id', 'grade', 'classes'];
+  // keysArray: string[] = ['id', 'school', 'grade', 'classRoom', 'date'];
   isModalVisible = false;
 
-  hygieneForms: any[] = [
-    { id: 1, grade: 'A', classes: 'Math, Science', date: '2023-10-01' },
-    { id: 2, grade: 'B', classes: 'History, English', date: '2023-10-02' },
-    { id: 3, grade: 'C', classes: 'Physics, Chemistry', date: '2023-10-03' },
-  ];
+  hygieneForms: HygieneForm[] = []; 
 
-  constructor(private router: Router) {
-    this.addActionsToHygieneForms(); // Add actions to hygiene forms on initialization
+  constructor(
+    private router: Router,
+    private hygieneFormService: HygieneFormService,
+    private apiService: ApiService
+  ) {}
+
+  ngOnInit() {
+    this.loadHygieneForms(); 
   }
-ngOnInit() {
-  // Load saved hygiene forms from localStorage
-  const savedForms = localStorage.getItem('hygieneForms');
-  if (savedForms) {
-    this.hygieneForms = JSON.parse(savedForms);
-    this.addActionsToHygieneForms(); // Add actions to hygiene forms
+
+  
+// hygiene-form.component.ts
+async loadHygieneForms() {
+  try {
+    const domainName = this.apiService.GetHeader();
+    const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
+
+    this.hygieneForms = data.map((item) => ({
+      ...item,
+      school: item.school,
+      grade: item.grade,
+      classRoom: item.classRoom,
+      date: new Date(item.date).toLocaleDateString(),
+      actions: { delete: true, edit: true, view: true } // Enable view action
+    }));
+  } catch (error) {
+    console.error('Error fetching hygiene forms:', error);
+    Swal.fire('Error', 'Failed to load hygiene forms. Please try again later.', 'error');
   }
 }
+  
 
   navigateToCreateHygieneForm() {
-  this.router.navigate(['/Employee/Create Hygiene Form']);
-}
-
-  // Function to add actions to each hygiene form
-  addActionsToHygieneForms() {
-    this.hygieneForms = this.hygieneForms.map(hf => ({
-      ...hf,
-      actions: { delete: true, edit: true } // Add actions dynamically
-    }));
+    this.router.navigate(['/Employee/Create Hygiene Form']);
   }
 
   openModal(id?: number) {
@@ -56,15 +75,15 @@ ngOnInit() {
       this.editHygieneForm = true;
       this.hygieneForm = this.hygieneForms.find(hf => hf.id === id);
     } else {
-      this.hygieneForm = { id: null, grade: '', classes: '' }; // Reset form for new entry
+      this.hygieneForm = { id: null, grade: '', classes: '' }; 
       this.editHygieneForm = false;
     }
-    this.isModalVisible = true; // Show the modal
+    this.isModalVisible = true; 
   }
 
   closeModal() {
-    this.isModalVisible = false; // Hide the modal
-    this.hygieneForm = { id: null, grade: '', classes: '' }; // Reset form
+    this.isModalVisible = false; 
+    this.hygieneForm = { id: null, grade: '', classes: '' }; 
     this.editHygieneForm = false;
     this.validationErrors = {};
   }
@@ -73,12 +92,12 @@ ngOnInit() {
     if (this.validateForm()) {
       if (this.editHygieneForm) {
         const index = this.hygieneForms.findIndex(hf => hf.id === this.hygieneForm.id);
-        this.hygieneForms[index] = { ...this.hygieneForm, actions: { delete: true, edit: true } }; // Update existing item
+        this.hygieneForms[index] = { ...this.hygieneForm, actions: { delete: true, edit: true } }; 
       } else {
-        this.hygieneForm.id = this.hygieneForms.length + 1; // Generate new ID
-        this.hygieneForms.push({ ...this.hygieneForm, date: new Date().toISOString().split('T')[0], actions: { delete: true, edit: true } }); // Add new item with actions
+        this.hygieneForm.id = this.hygieneForms.length + 1; 
+        this.hygieneForms.push({ ...this.hygieneForm, date: new Date().toISOString().split('T')[0], actions: { delete: true, edit: true } }); 
       }
-      this.closeModal(); // Close the modal after saving
+      this.closeModal(); 
     }
   }
 
@@ -88,13 +107,13 @@ ngOnInit() {
       text: 'You will not be able to recover this hygiene form!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#FF7519', // Use your secondary color
-      cancelButtonColor: '#2E3646', // Use your primary color
+      confirmButtonColor: '#FF7519', 
+      cancelButtonColor: '#2E3646', 
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, keep it'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Delete the hygiene form if confirmed
+        
         this.hygieneForms = this.hygieneForms.filter(hf => hf.id !== row.id);
         Swal.fire(
           'Deleted!',
@@ -129,13 +148,30 @@ ngOnInit() {
       this.validationErrors[field] = '';
     }
   }
+  key: string = 'id'; // Default search key (can be changed dynamically)
+value: any = ''; // Search value
+keysArray: string[] = ['id', 'school', 'grade', 'classRoom', 'date']; // Keys available for search
 
-  onSearchEvent(event: { key: string, value: any }) {
-    const { key, value } = event;
-    if (value) {
-      this.hygieneForms = this.hygieneForms.filter(hf => hf[key].toString().toLowerCase().includes(value.toLowerCase()));
-    } else {
-      this.hygieneForms = [...this.hygieneForms];
-    }
+async onSearchEvent(event: { key: string, value: any }) {
+  this.key = event.key;
+  this.value = event.value;
+
+  if (this.value === '') {
+    await this.loadHygieneForms(); // Reset to full list if search is empty
+  } else {
+    const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+
+    this.hygieneForms = this.hygieneForms.filter((form) => {
+      const fieldValue = form[this.key as keyof HygieneForm];
+      if (typeof fieldValue === 'string') {
+        return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+      }
+      if (typeof fieldValue === 'number') {
+        return fieldValue === numericValue;
+      }
+      return false;
+    });
   }
+}
+  
 }

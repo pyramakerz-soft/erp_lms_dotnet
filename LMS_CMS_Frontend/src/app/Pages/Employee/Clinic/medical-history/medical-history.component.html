@@ -2,7 +2,7 @@
     <div class="flex justify-between items-center">
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Medical History</h1>
         <div class="flex justify-between items-center">
-            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+            <!-- <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> -->
             <button (click)="openCreateModal()"
                 class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
                 Create Medical History
@@ -34,97 +34,95 @@
                 {{ medicalHistory.id ? 'Edit Medical History' : 'Create Medical History' }}
             </h1>
 
-            <!-- Modal Content -->
-            <div class="space-y-6">
-                <!-- School and Grade -->
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="flex flex-col">
-                        <label class="mb-1 primaryTxt" for="school">School</label>
-                        <select id="school" [(ngModel)]="medicalHistory.school"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose School</option>
-                            <option *ngFor="let school of schools" [value]="school">{{ school }}</option>
-                        </select>
-                    </div>
+<!-- Modal Content -->
+<div class="space-y-6">
+    <!-- School and Grade -->
+    <div class="grid grid-cols-2 gap-6">
+        <div class="flex flex-col">
+            <label class="mb-1 primaryTxt" for="school">School</label>
+            <select id="school" [(ngModel)]="medicalHistory.schoolId"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                <option value="" disabled selected hidden>Choose School</option>
+                <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
+            </select>
+        </div>
 
-                    <div class="flex flex-col">
-                        <label class="mb-1 primaryTxt" for="grade">Grade</label>
-                        <select id="grade" [(ngModel)]="medicalHistory.grade"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose Grade</option>
-                            <option *ngFor="let grade of grades" [value]="grade">{{ grade }}</option>
-                        </select>
-                    </div>
-                </div>
+        <div class="flex flex-col">
+            <label class="mb-1 primaryTxt" for="grade">Grade</label>
+            <select id="grade" [(ngModel)]="medicalHistory.gradeId"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                <option value="" disabled selected hidden>Choose Grade</option>
+                <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
+            </select>
+        </div>
+    </div>
 
-                <!-- Class and Student -->
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="flex flex-col">
-                        <label class="mb-1 primaryTxt" for="class">Class</label>
-                        <select id="class" [(ngModel)]="medicalHistory.class"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose Class</option>
-                            <option *ngFor="let class of classes" [value]="class">{{ class }}</option>
-                        </select>
-                    </div>
+    <!-- Class and Student -->
+    <div class="grid grid-cols-2 gap-6">
+        <div class="flex flex-col">
+            <label class="mb-1 primaryTxt" for="class">Class</label>
+            <select id="class" [(ngModel)]="medicalHistory.classRoomID"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                <option value="" disabled selected hidden>Choose Class</option>
+                <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+            </select>
+        </div>
 
-                    <div class="flex flex-col">
-                        <label class="mb-1 primaryTxt" for="student">Student</label>
-                        <select id="student" [(ngModel)]="medicalHistory.student"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose Student</option>
-                            <option *ngFor="let student of students" [value]="student">{{ student }}</option>
-                        </select>
-                    </div>
-                </div>
+        <div class="flex flex-col">
+            <label for="student">Student</label>
+<select id="student" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5" [(ngModel)]="medicalHistory.studentId">
+  <option value="" disabled selected hidden>Choose Student</option>
+  <option *ngFor="let student of students" [value]="student.id">{{ student.name }}</option>
+</select>
+        </div>
+    </div>
 
-                <!-- Details -->
-                <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="details">Details</label>
-                    <textarea id="details" [(ngModel)]="medicalHistory.details"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 h-24"
-                        placeholder="Enter Details"></textarea>
-                </div>
+    <!-- Details -->
+    <div class="flex flex-col">
+        <label class="mb-1 primaryTxt" for="details">Details</label>
+        <textarea id="details" [(ngModel)]="medicalHistory.details"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 h-24"
+            placeholder="Enter Details"></textarea>
+    </div>
 
-                <!-- Permanent Drug -->
-                <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="permanentDrug">Permanent Drug</label>
-                    <input id="permanentDrug" [(ngModel)]="medicalHistory.permanentDrug"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
-                        placeholder="Enter Permanent Drug">
-                </div>
+    <!-- Permanent Drug -->
+    <div class="flex flex-col">
+        <label class="mb-1 primaryTxt" for="permanentDrug">Permanent Drug</label>
+        <input id="permanentDrug" [(ngModel)]="medicalHistory.permanentDrug"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
+            placeholder="Enter Permanent Drug">
+    </div>
 
-                <!-- Attached Files -->
-                <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="attachedFiles">Attached Files</label>
-                    <div class="flex gap-4">
-                        <div
-                            class="border-2 border-dashed border-orange-400 bg-white rounded-lg w-1/2 h-32 flex flex-col items-center justify-center cursor-pointer relative">
-                            <i class="fa-solid fa-cloud-upload text-orange-400 text-3xl"></i>
-                            <span class="text-orange-400 mt-2 text-sm font-semibold">Click to Upload</span>
-                            <span class="text-gray-500 text-xs">(Max File: 25 MB)</span>
-                            <input type="file" (change)="onFileChange($event, 1)"
-                                class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
-                        </div>
-                        <div
-                            class="border-2 border-dashed border-orange-400 bg-white rounded-lg w-1/2 h-32 flex flex-col items-center justify-center cursor-pointer relative">
-                            <i class="fa-solid fa-cloud-upload text-orange-400 text-3xl"></i>
-                            <span class="text-orange-400 mt-2 text-sm font-semibold">Click to Upload</span>
-                            <span class="text-gray-500 text-xs">(Max File: 25 MB)</span>
-                            <input type="file" (change)="onFileChange($event, 2)"
-                                class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Save Button -->
-                <div class="flex justify-end mt-6">
-                    <button class="secondaryBg text-white font-medium px-6 py-2 rounded-lg"
-                        (click)="saveMedicalHistory()">
-                        Save
-                    </button>
-                </div>
+    <!-- Attached Files -->
+    <div class="flex flex-col">
+        <label class="mb-1 primaryTxt" for="attachedFiles">Attached Files</label>
+        <div class="flex gap-4">
+            <div
+                class="border-2 border-dashed border-orange-400 bg-white rounded-lg w-1/2 h-32 flex flex-col items-center justify-center cursor-pointer relative">
+                <i class="fa-solid fa-cloud-upload text-orange-400 text-3xl"></i>
+                <span class="text-orange-400 mt-2 text-sm font-semibold">Click to Upload</span>
+                <span class="text-gray-500 text-xs">(Max File: 25 MB)</span>
+                <input type="file" (change)="onFileChange($event, 1)"
+                    class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
             </div>
+            <div
+                class="border-2 border-dashed border-orange-400 bg-white rounded-lg w-1/2 h-32 flex flex-col items-center justify-center cursor-pointer relative">
+                <i class="fa-solid fa-cloud-upload text-orange-400 text-3xl"></i>
+                <span class="text-orange-400 mt-2 text-sm font-semibold">Click to Upload</span>
+                <span class="text-gray-500 text-xs">(Max File: 25 MB)</span>
+                <input type="file" (change)="onFileChange($event, 2)"
+                    class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="flex justify-end mt-6">
+        <button class="secondaryBg text-white font-medium px-6 py-2 rounded-lg" (click)="saveMedicalHistory()">
+            Save
+        </button>
+    </div>
+</div>
         </div>
     </div>
 </div>

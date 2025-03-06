@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <app-table [headers]="['ID', 'Dose Name', 'Date', 'Actions']" [data]="doses" [keys]="['id', 'name', 'insertedAt']"
+    <app-table [headers]="['ID', 'Doses', 'Date', 'Actions']" [data]="doses" [keys]="['id', 'doseTimes', 'insertedAt']"
         (delete)="deleteDose($event)" (edit)="openModal($event.id)">
     </app-table>
 
@@ -22,7 +22,7 @@
         <div class="flex flex-col w-full mb-4">
             <label class="mb-2 primaryTxt" for="name">Dose Name</label>
             <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                placeholder="Enter Dose Name" [(ngModel)]="dose.name"
+                placeholder="Enter Dose Times" [(ngModel)]="dose.doseTimes"
                 (ngModelChange)="onInputValueChange({ field: 'name', value: $event })" />
             <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name']
                 }}</span>

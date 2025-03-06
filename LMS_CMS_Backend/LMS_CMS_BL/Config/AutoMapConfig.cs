@@ -22,6 +22,7 @@ using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
 using LMS_CMS_DAL.Models.Octa;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,6 +35,12 @@ namespace LMS_CMS_BL.Config
 {
     public class AutoMapConfig : Profile
     {
+        private readonly LMS_CMS_Context _context;
+
+        public AutoMapConfig(LMS_CMS_Context context)
+        {
+            _context = context;
+        }
         public AutoMapConfig()
         {
             CreateMap<LMS_CMS_DAL.Models.Domains.Page, Page_AddDTO>();
@@ -653,11 +660,26 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name))
                 .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade.Name))
                 .ForMember(dest => dest.ClassRoom, opt => opt.MapFrom(src => src.Classroom.Name));
-            CreateMap<HygieneFormPutDTO, HygieneForm>();
-
+            CreateMap<HygieneFormPutDTO, HygieneForm>()
+                .ForMember(dest => dest.StudentHygieneTypes, opt => opt.Ignore());
+            
             CreateMap<StudentHygieneTypes, StudentHygieneTypesGetDTO>()
                 .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name));
-            CreateMap<StudentHygieneTypesAddDTO, StudentHygieneTypes>();
+            CreateMap<StudentHygieneTypesAddDTO, StudentHygieneTypes>()
+                .AfterMap(async (src, dest) =>
+                {
+                    if (src.HygieneTypesIds != null && _context != null)
+                    {
+                        foreach (var ht in src.HygieneTypesIds)
+                        {
+                            var hygieneType = await _context.HygieneTypes.FirstOrDefaultAsync(h => h.Id == ht);
+                            if (hygieneType != null)
+                            {
+                                dest.HygieneTypes.Add(hygieneType);
+                            }
+                        }
+                    }
+                }); 
 
             CreateMap<FollowUpAddDTO, FollowUp>();
             CreateMap<FollowUp, FollowUpGetDTO>()
@@ -691,6 +713,7 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<CartShopItemAddDTO, Cart_ShopItem>();
             CreateMap<CartShopItemPutDTO, Cart_ShopItem>();
+
         }
     } 
 }

@@ -47,7 +47,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     d => d.IsDeleted != true, 
                     query => query.Include(h => h.Classroom),
                     query => query.Include(h => h.School),
-                    query => query.Include(h => h.Grade)
+                    query => query.Include(h => h.Grade),
+                    query => query.Include(h => h.StudentHygieneTypes)
                 );
 
             if (hygieneForms == null || hygieneForms.Count == 0)
@@ -56,22 +57,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             List<HygieneFormGetDTO> hygieneFormsDto = _mapper.Map<List<HygieneFormGetDTO>>(hygieneForms);
-
-            foreach (var item in hygieneFormsDto)
-            {
-                List<StudentHygieneTypes> stuHyTy = await Unit_Of_Work.studentHygieneTypes_Repository.Select_All_With_IncludesById<StudentHygieneTypes>(
-                    d => d.IsDeleted != true,
-                    query => query.Include(h => h.HygieneForm),
-                    query => query.Include(h => h.Student),
-                    query => query.Include(h => h.HygieneTypes)
-                );
-
-                if (stuHyTy != null)
-                {
-                    List<StudentHygieneTypesGetDTO> stuHyTyDTO = _mapper.Map<List<StudentHygieneTypesGetDTO>>(stuHyTy);
-                    item.StudentHygieneTypes = stuHyTyDTO;
-                }
-            } 
 
             return Ok(hygieneFormsDto);
         }
@@ -102,7 +87,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     h => h.Id == id && h.IsDeleted != true,
                     query => query.Include(x => x.Classroom),
                     query => query.Include(x => x.School),
-                    query => query.Include(x => x.Grade)
+                    query => query.Include(x => x.Grade),
+                    query => query.Include(x => x.StudentHygieneTypes)
                 );
 
             if (hygieneForm == null)
@@ -111,19 +97,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             }
 
             HygieneFormGetDTO hygieneFormDto = _mapper.Map<HygieneFormGetDTO>(hygieneForm);
-
-            List<StudentHygieneTypes> stuHyTy = await Unit_Of_Work.studentHygieneTypes_Repository.Select_All_With_IncludesById<StudentHygieneTypes>(
-                    d => d.IsDeleted != true,
-                    query => query.Include(h => h.HygieneForm),
-                    query => query.Include(h => h.Student),
-                    query => query.Include(h => h.HygieneTypes)
-                );
-
-            if (stuHyTy != null)
-            {
-                List<StudentHygieneTypesGetDTO> stuHyTyDTO = _mapper.Map<List<StudentHygieneTypesGetDTO>>(stuHyTy);
-                hygieneFormDto.StudentHygieneTypes = stuHyTyDTO;
-            }
 
             return Ok(hygieneFormDto);
         }
@@ -186,18 +159,29 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             Unit_Of_Work.hygieneForm_Repository.Add(hygieneForm);
             Unit_Of_Work.SaveChanges();
 
-            StudentHygieneTypes sht = _mapper.Map<StudentHygieneTypes>(hygieneFormDTO.StudentHygieneTypes);
+            List<StudentHygieneTypes> sht = _mapper.Map<List<StudentHygieneTypes>>(hygieneFormDTO.StudentHygieneTypes);
 
-            sht.HygieneFormId = hygieneForm.Id;
-            //StudentHygieneTypes sht = new StudentHygieneTypes
-            //{
-            //    HygieneFormId = hygieneForm.Id,
+            foreach (var item in sht)
+            {
+                //if (item is not null)
+                //{
+                item.HygieneFormId = hygieneForm.Id;
+                
+                //    foreach(var ht in item.HygieneTypes)
+                //    {
+                //        foreach (var htId in hygieneFormDTO.StudentHygieneTypes)
+                //        {
+                //            HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.First_Or_Default(d => d.Id == ht && d.IsDeleted != true);
+                //            item.HygieneTypes.Add(hygieneType);
+                //        }
+                            
+                //    }
+                //}
 
-            //};
+                Unit_Of_Work.studentHygieneTypes_Repository.Add(item);
+            }
 
-
-            Unit_Of_Work.studentHygieneTypes_Repository.Add(sht);
-            Unit_Of_Work.SaveChanges();
+            //Unit_Of_Work.SaveChanges();
 
             return Ok(hygieneFormDTO);
         }

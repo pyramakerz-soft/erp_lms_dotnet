@@ -241,6 +241,17 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 newData.SaveID = null;
             }
 
+            if (newData.IsVisa == true && newData.BankID==0 || newData.IsVisa == true && newData.BankID == null)
+            {
+                return BadRequest("Bank IsRequired");
+
+            }
+            if (newData.IsCash == true && newData.SaveID == 0 || newData.IsCash == true && newData.SaveID == null)
+            {
+                return BadRequest("Safe IsRequired");
+
+            }
+
             double expectedItemsPrice = newData.InventoryDetails?.Sum(item => item.TotalPrice) ?? 0;
             if (newData.Total != expectedItemsPrice)
             {
@@ -437,7 +448,42 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return NotFound("There Is No InventoryMaster With This Id");
             }
-             
+
+            /// Validations
+
+            if (newSale.IsVisa == false)
+            {
+                newSale.VisaAmount = 0;
+                newSale.BankID = null;
+            }
+            if (newSale.IsCash == false)
+            {
+                newSale.CashAmount = 0;
+                newSale.SaveID = null;
+            }
+
+            if (newSale.IsVisa == true && newSale.BankID == 0 || newSale.IsVisa == true && newSale.BankID == null)
+            {
+                return BadRequest("Bank IsRequired");
+
+            }
+            if (newSale.IsCash == true && newSale.SaveID == 0 || newSale.IsCash == true && newSale.SaveID == null)
+            {
+                return BadRequest("Safe IsRequired");
+
+            }
+
+            if (newSale.FlagId == 8 || newSale.FlagId == 9 || newSale.FlagId == 10 || newSale.FlagId == 11 || newSale.FlagId == 12)
+            {
+                double expectedRemaining = (newSale.Total) - ((newSale.CashAmount ?? 0) + (newSale.VisaAmount ?? 0));
+                if (expectedRemaining != newSale.Remaining)
+                {
+                    return BadRequest("Total should be sum up all the totalPrice values in InventoryDetails");
+                }
+
+
+            }
+
             if (userTypeClaim == "employee")
             {
                 IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Inventory", roleId, userId, sale);

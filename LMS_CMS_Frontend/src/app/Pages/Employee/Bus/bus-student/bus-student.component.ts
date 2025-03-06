@@ -386,7 +386,6 @@ export class BusStudentComponent {
       }
     } catch (error) {
       this.busStudentData = [];
-      console.log('Error fetching data:', error);
     }
   }
 

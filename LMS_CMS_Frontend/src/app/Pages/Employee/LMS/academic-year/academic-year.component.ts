@@ -119,7 +119,6 @@ export class AcademicYearComponent {
       }
     } catch (error) {
       this.academicYearData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -230,7 +229,6 @@ export class AcademicYearComponent {
               this.getAcademicYearData()
             },
             error => {
-              console.log(error)
             }
           );
         } else{
@@ -240,7 +238,6 @@ export class AcademicYearComponent {
               this.getAcademicYearData()
             },
             error => {
-              console.log(error)
             }
           );
         }  

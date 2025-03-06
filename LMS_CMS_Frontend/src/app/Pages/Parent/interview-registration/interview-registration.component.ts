@@ -168,7 +168,6 @@ export class InterviewRegistrationComponent {
           this.getRegistrationFormParentIncludeRegistrationFormInterviewData()
         },
         (error) => {
-          console.log(error)
           Swal.fire({
             title: 'Error',
             text: error.error,
@@ -185,7 +184,6 @@ export class InterviewRegistrationComponent {
           this.getRegistrationFormParentIncludeRegistrationFormInterviewData()
         },
         (error) => {
-          console.log(error)
           Swal.fire({
             title: 'Error',
             text: error.error,

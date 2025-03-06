@@ -230,7 +230,6 @@ export class RegistrationConfirmationComponent {
     }
     
     this.registerationFormParentData = filteredData;
-    console.log(this.registerationFormParentData)
   }
 
   ResetFilter(){

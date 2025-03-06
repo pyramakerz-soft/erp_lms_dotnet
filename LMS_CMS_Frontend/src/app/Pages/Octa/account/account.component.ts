@@ -89,7 +89,6 @@ export class AccountComponent {
       }
     } catch (error) {
       this.accountData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -141,7 +140,6 @@ export class AccountComponent {
             this.getAccountData()
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -151,7 +149,6 @@ export class AccountComponent {
             this.getAccountData()
           },
           error => {
-            console.log(error)
           }
         );
       }  

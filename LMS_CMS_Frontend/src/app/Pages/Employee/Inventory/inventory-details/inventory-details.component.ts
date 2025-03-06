@@ -160,7 +160,6 @@ export class InventoryDetailsComponent {
         this.Data.bankID = 0
       }
 
-      console.log(this.Data)
     }
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -213,7 +212,6 @@ export class InventoryDetailsComponent {
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d
-      console.log(d)
     })
   }
 
@@ -584,7 +582,6 @@ export class InventoryDetailsComponent {
       this.validationErrors['saveID'] = 'Safe Is Required'
       return false;
     }
-    console.log(this.Data)
     if (this.Data.isVisa == true && this.Data.bankID == 0 || this.Data.isVisa == true && this.Data.bankID == null) {
       this.validationErrors['bankID'] = 'Bank Is Required'
       return false;

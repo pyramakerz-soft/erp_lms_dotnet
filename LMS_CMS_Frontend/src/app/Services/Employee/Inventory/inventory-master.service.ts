@@ -18,7 +18,6 @@ export class InventoryMasterService {
    }
  
    Get(DomainName: string, FlagId: number, pageNumber: number, pageSize: number) {
-    console.log("dd")
      if (DomainName != null) {
        this.header = DomainName
      }

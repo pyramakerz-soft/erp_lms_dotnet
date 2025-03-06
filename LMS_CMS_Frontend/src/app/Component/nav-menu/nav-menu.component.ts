@@ -150,7 +150,6 @@ export class NavMenuComponent {
     // let currentTokenn = localStorage.getItem("current_token") ?? "";
 
     // const currentIndex = this.allTokens.findIndex(token => token.value === currentTokenn);
-    // console.log(currentIndex)
 
     // if (currentIndex === -1) {
     //   return;

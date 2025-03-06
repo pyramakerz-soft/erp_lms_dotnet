@@ -119,7 +119,6 @@ export class SectionComponent {
       }
     } catch (error) {
       this.sectionData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -204,7 +203,6 @@ export class SectionComponent {
             this.getSectionData()
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -214,7 +212,6 @@ export class SectionComponent {
             this.getSectionData()
           },
           error => {
-            console.log(error)
           }
         );
       }  

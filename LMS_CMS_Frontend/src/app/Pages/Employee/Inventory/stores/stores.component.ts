@@ -165,7 +165,6 @@ export class StoresComponent {
   }
 
   CreateOREdit() {
-    console.log(this.store)
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
         this.StoresServ.Add(this.store,this.DomainName).subscribe((d)=>{
@@ -228,7 +227,6 @@ export class StoresComponent {
       }
     } catch (error) {
       this.TableData = [];
-      console.log('Error fetching data:', error);
     }
   }
 

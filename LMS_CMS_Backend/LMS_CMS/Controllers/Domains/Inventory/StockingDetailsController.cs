@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.Inventory;
 using LMS_CMS_BL.UOW;
-using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -15,13 +14,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class InventoryDetailsController : ControllerBase
+    public class StockingDetailsController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly CheckPageAccessService _checkPageAccessService;
 
-        public InventoryDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
+        public StockingDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
@@ -37,25 +36,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<InventoryDetails> salesItems = await Unit_Of_Work.inventoryDetails_Repository.Select_All_With_IncludesById<InventoryDetails>(
+            List<StockingDetails> Items = await Unit_Of_Work.stockingDetails_Repository.Select_All_With_IncludesById<StockingDetails>(
                     f => f.IsDeleted != true,
                     query => query.Include(s => s.ShopItem),
-                    query => query.Include(s => s.InventoryMaster)
+                    query => query.Include(s => s.Stocking)
                     );
 
-            if (salesItems == null || salesItems.Count == 0)
+            if (Items == null || Items.Count == 0)
             {
                 return NotFound();
             }
 
-            List<InventoryDetailsGetDTO> DTO = mapper.Map<List<InventoryDetailsGetDTO>>(salesItems);
+            List<StockingDetailsGetDto> DTO = mapper.Map<List<StockingDetailsGetDto>>(Items);
 
             return Ok(DTO);
         }
 
         ////
 
-        [HttpGet("BySaleId/{id}")]
+        [HttpGet("ByStockingId/{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
           pages: new[] { "Inventory" }
@@ -64,45 +63,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<InventoryDetails> salesItems = await Unit_Of_Work.inventoryDetails_Repository.Select_All_With_IncludesById<InventoryDetails>(
-                    f => f.IsDeleted != true&&f.InventoryMasterId==id,
+            List<StockingDetails> stockingDetails = await Unit_Of_Work.stockingDetails_Repository.Select_All_With_IncludesById<StockingDetails>(
+                    f => f.IsDeleted != true && f.StockingId == id,
                     query => query.Include(s => s.ShopItem),
-                    query => query.Include(s => s.InventoryMaster)
+                    query => query.Include(s => s.Stocking)
                     );
 
-            if (salesItems == null || salesItems.Count == 0)
+            if (stockingDetails == null || stockingDetails.Count == 0)
             {
                 return NotFound();
             }
 
-            List<InventoryDetailsGetDTO> DTO = mapper.Map<List<InventoryDetailsGetDTO>>(salesItems);
-
-            return Ok(DTO);
-        }
-
-        ////
-
-        [HttpGet("{id}")]
-        [Authorize_Endpoint_(
-        allowedTypes: new[] { "octa", "employee" },
-        pages: new[] { "Inventory" }
-        )]
-        public async Task<IActionResult> GetByIDAsync(long id)
-        {
-            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-
-            InventoryDetails salesItems = await Unit_Of_Work.inventoryDetails_Repository.FindByIncludesAsync(
-                    f => f.IsDeleted != true && f.ID == id,
-                    query => query.Include(s => s.ShopItem),
-                    query => query.Include(s => s.InventoryMaster)
-                    );
-
-            if (salesItems == null )
-            {
-                return NotFound();
-            }
-
-            InventoryDetailsGetDTO DTO = mapper.Map<InventoryDetailsGetDTO>(salesItems);
+            List<StockingDetailsGetDto> DTO = mapper.Map<List<StockingDetailsGetDto>>(stockingDetails);
 
             return Ok(DTO);
         }
@@ -111,10 +83,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpPost]
         [Authorize_Endpoint_(
-        allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "Inventory" }
-    )]
-        public async Task<IActionResult> Add(InventoryDetailsAddDTO newItem)
+      allowedTypes: new[] { "octa", "employee" },
+        pages: new[] { "Inventory" }
+  )]
+        public async Task<IActionResult> Add(StockingDetails newItem)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -138,29 +110,29 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound();
             }
 
-            InventoryMaster InventoryMaster = Unit_Of_Work.inventoryMaster_Repository.First_Or_Default(s => s.ID == newItem.InventoryMasterId && s.IsDeleted != true);
-            if (InventoryMaster == null)
+            Stocking stocking = Unit_Of_Work.stocking_Repository.First_Or_Default(s => s.ID == newItem.StockingId && s.IsDeleted != true);
+            if (stocking == null)
             {
                 return NotFound();
             }
 
-            InventoryDetails salesItem = mapper.Map<InventoryDetails>(newItem);
+            StockingDetails stockingDetails = mapper.Map<StockingDetails>(newItem);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            salesItem.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            stockingDetails.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                salesItem.InsertedByOctaId = userId;
+                stockingDetails.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                salesItem.InsertedByUserId = userId;
+                stockingDetails.InsertedByUserId = userId;
             }
 
-            Unit_Of_Work.inventoryDetails_Repository.Add(salesItem);
+            Unit_Of_Work.stockingDetails_Repository.Add(stockingDetails);
             await Unit_Of_Work.SaveChangesAsync();
 
-            return Ok(salesItem.ID);
+            return Ok(newItem);
         }
 
         ////
@@ -171,7 +143,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         allowEdit: 1,
          pages: new[] { "Inventory" }
     )]
-        public async Task<IActionResult> EditAsync(InventoryDetailsGetDTO newSale)
+        public async Task<IActionResult> EditAsync(StockingDetailsGetDto newItem)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -186,61 +158,61 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return Unauthorized("User ID, Type claim not found.");
             }
 
-            if (newSale == null)
+            if (newItem == null)
             {
-                return BadRequest("Sales Item cannot be null");
+                return BadRequest("stockingDetails Item cannot be null");
             }
 
-            InventoryDetails salesItem = Unit_Of_Work.inventoryDetails_Repository.First_Or_Default(s => s.ID == newSale.ID && s.IsDeleted != true);
-            if (salesItem == null)
+            StockingDetails stockingDetails = Unit_Of_Work.stockingDetails_Repository.First_Or_Default(s => s.ID == newItem.ID && s.IsDeleted != true);
+            if (stockingDetails == null)
             {
-                return NotFound("No SaleItem with this ID");
+                return NotFound("No stockingDetails with this ID");
             }
 
-            ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(s => s.ID == newSale.ShopItemID && s.IsDeleted != true);
+            ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(s => s.ID == newItem.ShopItemID && s.IsDeleted != true);
             if (shopItem == null)
             {
                 return NotFound();
             }
 
-            InventoryMaster sale = Unit_Of_Work.inventoryMaster_Repository.First_Or_Default(s => s.ID == newSale.InventoryMasterId && s.IsDeleted != true);
-            if (sale == null)
+            Stocking stocking = Unit_Of_Work.stocking_Repository.First_Or_Default(s => s.ID == newItem.StockingId && s.IsDeleted != true);
+            if (stocking == null)
             {
                 return NotFound();
             }
-             
+
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Inventory", roleId, userId, salesItem);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Inventory", roleId, userId, stockingDetails);
                 if (accessCheck != null)
                 {
                     return accessCheck;
                 }
             }
 
-            mapper.Map(newSale, salesItem);
+            mapper.Map(newItem, stockingDetails);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            salesItem.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            stockingDetails.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                salesItem.UpdatedByOctaId = userId;
-                if (salesItem.UpdatedByUserId != null)
+                stockingDetails.UpdatedByOctaId = userId;
+                if (stockingDetails.UpdatedByUserId != null)
                 {
-                    salesItem.UpdatedByUserId = null;
+                    stockingDetails.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                salesItem.UpdatedByUserId = userId;
-                if (salesItem.UpdatedByOctaId != null)
+                stockingDetails.UpdatedByUserId = userId;
+                if (stockingDetails.UpdatedByOctaId != null)
                 {
-                    salesItem.UpdatedByOctaId = null;
+                    stockingDetails.UpdatedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.inventoryDetails_Repository.Update(salesItem);
+            Unit_Of_Work.stockingDetails_Repository.Update(stockingDetails);
             Unit_Of_Work.SaveChanges();
-            return Ok(newSale);
+            return Ok(newItem);
         }
 
         ////
@@ -272,43 +244,43 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return BadRequest("Enter Sales Item ID");
             }
 
-            InventoryDetails salesItem = Unit_Of_Work.inventoryDetails_Repository.First_Or_Default(s => s.ID == id && s.IsDeleted != true);
-            if (salesItem == null)
+            StockingDetails stockingDetails = Unit_Of_Work.stockingDetails_Repository.First_Or_Default(s => s.ID == id && s.IsDeleted != true);
+            if (stockingDetails == null)
             {
-                return NotFound("No SaleItem with this ID");
+                return NotFound("No Stocking Details with this ID");
             }
 
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Inventory", roleId, userId, salesItem);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Inventory", roleId, userId, stockingDetails);
                 if (accessCheck != null)
                 {
                     return accessCheck;
                 }
             }
 
-            salesItem.IsDeleted = true;
+            stockingDetails.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            salesItem.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            stockingDetails.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                salesItem.DeletedByOctaId = userId;
-                if (salesItem.DeletedByUserId != null)
+                stockingDetails.DeletedByOctaId = userId;
+                if (stockingDetails.DeletedByUserId != null)
                 {
-                    salesItem.DeletedByUserId = null;
+                    stockingDetails.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                salesItem.DeletedByUserId = userId;
-                if (salesItem.DeletedByOctaId != null)
+                stockingDetails.DeletedByUserId = userId;
+                if (stockingDetails.DeletedByOctaId != null)
                 {
-                    salesItem.DeletedByOctaId = null;
+                    stockingDetails.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.inventoryDetails_Repository.Update(salesItem);
+            Unit_Of_Work.stockingDetails_Repository.Update(stockingDetails);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

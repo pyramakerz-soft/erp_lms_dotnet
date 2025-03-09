@@ -49,6 +49,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public Grade? Grade { get; set; }
 
         public ICollection<InventoryDetails> InventoryDetails { get; set; } = new HashSet<InventoryDetails>();
+        public ICollection<StockingDetails> StockingDetails { get; set; } = new HashSet<StockingDetails>();
         public ICollection<ShopItemColor> ShopItemColor { get; set; } = new HashSet<ShopItemColor>();
         public ICollection<ShopItemSize> ShopItemSize { get; set; } = new HashSet<ShopItemSize>();
         public ICollection<Cart_ShopItem> Cart_ShopItems { get; set; } = new HashSet<Cart_ShopItem>();

@@ -14,6 +14,8 @@ import { StudentService } from '../../../../Services/student.service';
 import { TableComponent } from "../../../../Component/reuse-table/reuse-table.component";
 import { DrugService } from '../../../../Services/Employee/Clinic/drug.service';
 import { DoseService } from '../../../../Services/Employee/Clinic/dose.service';
+import { ClassroomService } from '../../../../Services/Employee/LMS/classroom.service';
+import { FollowUp } from '../../../../Models/Clinic/FollowUp';
 
 @Component({
   selector: 'app-follow-up',
@@ -31,23 +33,15 @@ export class FollowUpComponent implements OnInit {
   isModalVisible = false;
 
   // Define keys for table columns
-  keys: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation'];
+  keys: string[] = ['id', 'school', 'grade', 'classroom', 'student', 'complaints', 'diagnosis', 'recommendation'];
 
   // Modal Data
-  followUp: any = {
-    schoolId: null,
-    gradeId: null,
-    classId: null,
-    studentId: null,
-    complaints: '',
-    diagnosisId: null,
-    recommendation: '',
-    sendSms: false,
-  };
+  followUp: FollowUp = new FollowUp()
 
   // Dropdown Options (Fetched from Backend)
   schools: any[] = [];
   grades: any[] = [];
+  classroom: any[] = [];
   classes: any[] = [];
   students: any[] = [];
   diagnoses: any[] = [];
@@ -62,12 +56,14 @@ export class FollowUpComponent implements OnInit {
   drugDoseList: any[] = [];
 
   // Define keysArray for search component
-  keysArray: string[] = ['schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation'];
+  keysArray: string[] = ['school', 'grade', 'classroom', 'studentName', 'complaints', 'diagnosisName', 'recommendation'];
+editMode: any;
 
   constructor(
     private followUpService: FollowUpService,
     private schoolService: SchoolService,
     private gradeService: GradeService,
+    private classroomService: ClassroomService,
     private studentService: StudentService,
     private diagnosisService: DiagnosisService,
     private drugService: DrugService,
@@ -80,90 +76,106 @@ export class FollowUpComponent implements OnInit {
     this.loadDropdownOptions();
   }
 
-  async loadFollowUps() {
-    try {
-      const domainName = this.apiService.GetHeader(); // Get the domain name from ApiService
-      const data = await firstValueFrom(this.followUpService.Get(domainName));
-
-      // Map the data to match the keys array
-      this.followUps = data.map((item) => {
-        // Find the school name using schoolId
-        const school = this.schools.find(s => s.id === item.schoolId);
-        const grade = this.grades.find(g => g.id === item.gradeId);
-        const student = this.students.find(s => s.id === item.studentId);
-        const diagnosis = this.diagnoses.find(d => d.id === item.diagnosisId);
-
-        return {
-          id: item.id,
-          schoolName: school?.name || 'N/A', // Use the school name
-          gradeName: grade?.name || 'N/A', // Use the grade name
-          studentName: student?.name || 'N/A', // Use the student name
-          complaints: item.complains,
-          diagnosisName: diagnosis?.name || 'N/A', // Use the diagnosis name
-          recommendation: item.recommendation,
-          actions: { delete: true, edit: true }, // Add actions dynamically
-        };
-      });
-    } catch (error) {
-      console.error('Error fetching follow-ups:', error);
-      Swal.fire('Error', 'Failed to load follow-ups. Please try again later.', 'error');
-    }
+async loadFollowUps() {
+  try {
+    const domainName = this.apiService.GetHeader();
+    const data = await firstValueFrom(this.followUpService.Get(domainName));
+    console.log(data)
+    
+    this.followUps = data.map((item) => {
+      return {
+        id: item.id,
+        schoolName: item.school || 'N/A', // Map 'school' to 'schoolName'
+        gradeName: item.grade || 'N/A', // Map 'grade' to 'gradeName'
+        className: item.classroom || 'N/A', // Map 'classroom' to 'className'
+        studentName: item.student || 'N/A', // Map 'student' to 'studentName'
+        complaints: item.complains || "No Complaints", // Map 'complains' to 'complaints'
+        diagnosisName: this.diagnoses.find(d => d.id === item.diagnosisId)?.name || 'N/A', // Map diagnosis ID to name
+        recommendation: item.recommendation || "No Recommendation", // Map 'recommendation'
+        actions: { edit: true, delete: true } // Add actions property
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching follow-ups:', error);
+    Swal.fire('Error', 'Failed to load follow-ups.', 'error');
   }
+}
 
-  // Load dropdown options from backend
-  async loadDropdownOptions() {
-    try {
-      const domainName = this.apiService.GetHeader(); // Get the domain name from ApiService
 
-      // Fetch schools
-      this.schools = await firstValueFrom(this.schoolService.Get(domainName));
 
-      // Fetch grades
-      this.grades = await firstValueFrom(this.gradeService.Get(domainName));
+async loadDropdownOptions() {
+  try {
+    const domainName = this.apiService.GetHeader();
+    
+    // Fetch necessary data
+    this.schools = await firstValueFrom(this.schoolService.Get(domainName));
+    this.grades = await firstValueFrom(this.gradeService.Get(domainName));
+    this.diagnoses = await firstValueFrom(this.diagnosisService.Get(domainName));
+    this.drugs = await firstValueFrom(this.drugService.Get(domainName));
+    this.doses = await firstValueFrom(this.doseService.Get(domainName));
 
-      // Fetch classes
+    // Fetch classrooms
+    this.classes = await firstValueFrom(this.classroomService.Get(domainName));
 
-      // Fetch students
-      this.students = await firstValueFrom(this.studentService.GetAll(domainName));
+    // Fetch students with correct property mapping
+    const studentsData = await firstValueFrom(this.studentService.GetAll(domainName));
+    this.students = studentsData.map(student => ({ id: student.id, name: student.en_name }));
 
-      // Fetch diagnoses
-      this.diagnoses = await firstValueFrom(this.diagnosisService.Get(domainName));
-
-      // Fetch drugs
-      this.drugs = await firstValueFrom(this.drugService.Get(domainName));
-
-      // Fetch doses
-      this.doses = await firstValueFrom(this.doseService.Get(domainName));
-    } catch (error) {
-      console.error('Error loading dropdown options:', error);
-      Swal.fire('Error', 'Failed to load dropdown options. Please try again later.', 'error');
-    }
+  } catch (error) {
+    console.error('Error loading dropdown options:', error);
+    Swal.fire('Error', 'Failed to load dropdown options.', 'error');
   }
+}
 
-  // Add drug and dose to the list
-  addDrugAndDose() {
-    if (this.selectedDrugId && this.selectedDoseId) {
-      const selectedDrug = this.drugs.find(drug => drug.id === this.selectedDrugId);
-      const selectedDose = this.doses.find(dose => dose.id === this.selectedDoseId);
 
-      if (selectedDrug && selectedDose) {
-        this.drugDoseList.push({
-          drugName: selectedDrug.name,
-          doseTimes: selectedDose.doseTimes,
-          actions: { delete: true }
-        });
+// // Fetch classes when grade is selected
+// async loadClasses() {
+//   try {
+//     const domainName = this.apiService.GetHeader();
+//     this.classes = await firstValueFrom(this.classroomService.GetByGradeId(this.followUp.gradeId, domainName));
+//   } catch (error) {
+//     console.error('Error loading classes:', error);
+//   }
+// }
 
-        // Reset selections
-        this.selectedDrugId = null;
-        this.selectedDoseId = null;
-      }
-    }
+// // Fetch students when class is selected
+// async loadStudents() {
+//   try {
+//     const domainName = this.apiService.GetHeader();
+//     this.students = await firstValueFrom(this.studentService.GetByClassID(this.followUp.classId, domainName));
+//   } catch (error) {
+//     console.error('Error loading students:', error);
+//   }
+// }
+
+
+async loadDrugsAndDoses() {
+  try {
+    const domainName = this.apiService.GetHeader();
+    this.drugs = await firstValueFrom(this.drugService.Get(domainName));
+    this.doses = await firstValueFrom(this.doseService.Get(domainName));
+  } catch (error) {
+    console.error('Error loading drugs and doses:', error);
+    Swal.fire('Error', 'Failed to load drug and dose options.', 'error');
   }
+}
 
-  // Remove drug and dose from the list
-  removeDrugAndDose(row: any) {
-    this.drugDoseList = this.drugDoseList.filter(item => item !== row);
+addDrugAndDose() {
+  if (this.selectedDrugId && this.selectedDoseId) {
+    // Add the selected drug and dose to the followUpDrugs array
+    this.followUp.followUpDrugs.push({
+      drugId: this.selectedDrugId,
+      doseId: this.selectedDoseId
+    });
+          console.log('test')
+
+
+    // Reset selections
+    this.selectedDrugId = null;
+    this.selectedDoseId = null;
   }
+}
+
 
   // Open modal for create/edit
   openModal(id?: number) {
@@ -176,16 +188,7 @@ export class FollowUpComponent implements OnInit {
       }
     } else {
       // Reset form for new entry
-      this.followUp = {
-        schoolId: null,
-        gradeId: null,
-        classId: null,
-        studentId: null,
-        complaints: '',
-        diagnosisId: null,
-        recommendation: '',
-        sendSms: false,
-      };
+      this.followUp = new FollowUp()
     }
   }
 
@@ -194,24 +197,34 @@ export class FollowUpComponent implements OnInit {
     this.isModalVisible = false;
   }
 
-  // Save or update follow-up
-  async saveFollowUp() {
-    try {
-      const domainName = this.apiService.GetHeader(); // Get the domain name from ApiService
-      if (this.followUp.id) {
-        // Update existing follow-up
-        await firstValueFrom(this.followUpService.Edit(this.followUp, domainName));
-      } else {
-        // Add new follow-up
-        await firstValueFrom(this.followUpService.Add(this.followUp, domainName));
-      }
-      this.loadFollowUps(); // Refresh the table
-      this.closeModal();
-    } catch (error) {
-      console.error('Error saving follow-up:', error);
-      Swal.fire('Error', 'Failed to save follow-up. Please try again later.', 'error');
+async saveFollowUp() {
+  try {
+    const domainName = this.apiService.GetHeader();
+
+    // Validate required fields
+    if (!this.followUp.schoolId || !this.followUp.gradeId || !this.followUp.classroomId || !this.followUp.studentId) {
+      Swal.fire('Error', 'Please fill all required fields.', 'error');
+      return;
     }
+
+    // Log the followUp object for debugging
+    console.log('FollowUp Object:', this.followUp);
+
+    if (this.followUp.id) {
+      // Update existing follow-up
+      await firstValueFrom(this.followUpService.Edit(this.followUp, domainName));
+    } else {
+      // Add new follow-up
+      await firstValueFrom(this.followUpService.Add(this.followUp, domainName));
+    }
+
+    this.loadFollowUps(); // Refresh the table
+    this.closeModal();
+  } catch (error) {
+    console.error('Error saving follow-up:', error);
+    Swal.fire('Error', 'Failed to save follow-up. Please try again later.', 'error');
   }
+}
 
   // Delete follow-up
   deleteFollowUp(row: any) {

@@ -29,31 +29,31 @@ export class MedicalHistoryService {
     return this.http.get<MedicalHistory[]>(`${this.baseUrl}/MedicalHistory/GetByDoctor`, { headers });
   }
 
-  // Add a new medical history
-  Add(medicalHistory: FormData, DomainName: string): Observable<any> {
-    if (DomainName != null) {
-      this.header = DomainName;
-    }
-    const token = localStorage.getItem('current_token');
-    const headers = new HttpHeaders()
-      .set('Domain-Name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('accept', '*/*');
-    return this.http.post<any>(`${this.baseUrl}/MedicalHistory/AddByDoctor`, medicalHistory, { headers });
-  }
 
-  // Update an existing medical history
-  Edit(medicalHistory: FormData, DomainName: string): Observable<any> {
-    if (DomainName != null) {
-      this.header = DomainName;
-    }
-    const token = localStorage.getItem('current_token');
-    const headers = new HttpHeaders()
-      .set('Domain-Name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('accept', '*/*');
-    return this.http.put<any>(`${this.baseUrl}/MedicalHistory/UpdateByDoctorAsync`, medicalHistory, { headers });
+Edit(medicalHistory: FormData, DomainName: string): Observable<any> {
+  if (DomainName != null) {
+    this.header = DomainName;
   }
+  const token = localStorage.getItem('current_token');
+  const headers = new HttpHeaders()
+    .set('Domain-Name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('accept', '*/*');
+  return this.http.put<any>(`${this.baseUrl}/MedicalHistory/UpdateByDoctorAsync`, medicalHistory, { headers });
+}
+
+Add(medicalHistory: FormData, DomainName: string): Observable<any> {
+  if (DomainName != null) {
+    this.header = DomainName;
+  }
+  const token = localStorage.getItem('current_token');
+  const headers = new HttpHeaders()
+    .set('Domain-Name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('accept', '*/*');
+  return this.http.post<any>(`${this.baseUrl}/MedicalHistory/AddByDoctor`, medicalHistory, { headers });
+}
+
 
  // Delete a medical history
   Delete(id: number, DomainName: string): Observable<any> {
@@ -64,8 +64,10 @@ export class MedicalHistoryService {
     const headers = new HttpHeaders()
       .set('Domain-Name', this.header)
       .set('Authorization', `Bearer ${token}`)
-      .set('accept', '*/*');
-    return this.http.delete(`${this.baseUrl}/MedicalHistory/${id}`, { headers, responseType: 'text' });
+      .set('accept', '*/*')
+      .set('Content-Type', 'application/json');
+
+    return this.http.delete(`${this.baseUrl}/MedicalHistory/id?id=${id}`, { headers, responseType: 'text' });
   }
 
   // Search medical histories

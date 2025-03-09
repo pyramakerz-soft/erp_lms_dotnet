@@ -14,13 +14,12 @@
     <!-- Table Section -->
     <app-table
         [headers]="['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation', 'Actions']"
-        [data]="followUps"
-        [showViewAction]="true"
+        [data]="followUps" [showViewAction]="true"
         [keys]="['id', 'schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation']"
-        (delete)="deleteFollowUp($event)" (edit)="openModal($event.id)"
- >
+        (delete)="deleteFollowUp($event)" (edit)="openModal($event.id)">
     </app-table>
 </div>
+
 <!-- Follow Up Modal -->
 <div *ngIf="isModalVisible" class="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
     <div class="relative bg-white w-[750px] max-h-[90vh] h-auto rounded-2xl p-12 gap-4 shadow-md overflow-y-auto">
@@ -31,7 +30,7 @@
         </button>
 
         <!-- Modal Header -->
-        <h1 class="font-semibold text-2xl leading-9 mb-6">Create Follow Up</h1>
+        <h1 class="font-semibold text-2xl leading-9 mb-6">{{ editMode ? 'Edit Follow Up' : 'Create Follow Up' }}</h1>
 
         <!-- Modal Content -->
         <div class="space-y-6">
@@ -58,14 +57,14 @@
 
             <!-- Class and Student -->
             <div class="grid grid-cols-2 gap-6">
-                <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="class">Class</label>
-                    <select id="class" [(ngModel)]="followUp.classId"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                        <option value="" disabled selected hidden>Choose Class</option>
-                        <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
-                    </select>
-                </div>
+    <div class="flex flex-col">
+        <label class="mb-1 primaryTxt" for="class">Class</label>
+        <select id="class" [(ngModel)]="followUp.classroomId"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option value="" disabled selected hidden>Choose Class</option>
+            <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+        </select>
+    </div>
 
                 <div class="flex flex-col">
                     <label class="mb-1 primaryTxt" for="student">Student</label>
@@ -80,7 +79,7 @@
             <!-- Complaints -->
             <div class="flex flex-col">
                 <label class="mb-1 primaryTxt" for="complaints">Complaints</label>
-                <textarea id="complaints" [(ngModel)]="followUp.complaints"
+                <textarea id="complaints" [(ngModel)]="followUp.complains"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 h-24"
                     placeholder="Enter Complaints"></textarea>
             </div>
@@ -95,38 +94,69 @@
                 </select>
             </div>
 
-            <!-- Drugs and Doses -->
-            <div class="grid grid-cols-2 gap-6">
-                <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="drug">Drug</label>
-                    <select id="drug" [(ngModel)]="selectedDrugId"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                        <option value="" disabled selected hidden>Choose Drug</option>
-                        <option *ngFor="let drug of drugs" [value]="drug.id">{{ drug.name }}</option>
-                    </select>
-                </div>
+<!-- Drugs and Doses -->
+<div class="grid grid-cols-[1fr_1fr_auto] gap-6 items-end">
+    <div class="flex flex-col">
+        <label class="mb-1 primaryTxt" for="drug">Drug</label>
+        <select id="drug" [(ngModel)]="selectedDrugId"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option value="" selected hidden>Choose Drug</option>
+            <option *ngFor="let drug of drugs" [value]="drug.id">{{ drug.name }}</option>
+        </select>
+    </div>
 
-                <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="dose">Dose</label>
-                    <select id="dose" [(ngModel)]="selectedDoseId"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                        <option value="" disabled selected hidden>Choose Dose</option>
-                        <option *ngFor="let dose of doses" [value]="dose.id">{{ dose.doseTimes }}</option>
-                    </select>
-                </div>
-            </div>
+    <div class="flex flex-col">
+        <label class="mb-1 primaryTxt" for="dose">Dose</label>
+        <select id="dose" [(ngModel)]="selectedDoseId"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            <option value="" disabled selected hidden>Choose Dose</option>
+            <option *ngFor="let dose of doses" [value]="dose.id">{{ dose.doseTimes }}</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col self-end">
+        <button (click)="addDrugAndDose()" class="secondaryBg text-white font-medium rounded-lg w-[64px] h-[40px]">
+            Add
+        </button>
+    </div>
+</div>
 
             <!-- Add Drug and Dose Button -->
-            <div class="flex justify-end">
-                <button (click)="addDrugAndDose()" class="secondaryBg text-white font-medium px-6 py-2 rounded-lg">
-                    Add
-                </button>
-            </div>
 
             <!-- Drugs and Doses Table -->
-            <app-table [headers]="['Drug', 'Dose', 'Actions']" [data]="drugDoseList" [keys]="['drugName', 'doseTimes']"
-                (delete)="removeDrugAndDose($event)">
-            </app-table>
+            <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+                <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+                    <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                        <tr>
+                            <th
+                                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                                Drug
+                            </th>
+                            <th
+                                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                                Dose
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- No Data Row -->
+                        <tr *ngIf="drugDoseList.length === 0">
+                            <td colspan="2"
+                                class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                                No Data Found
+                            </td>
+                        </tr>
+
+                        <!-- Data Rows -->
+                        <tr *ngFor="let row of drugDoseList; let i = index"
+                            [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                            class="border-t border-gray-300 text-xs md:text-sm">
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.drugName }}</td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.doseTimes }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Recommendation -->
             <div class="flex flex-col">
@@ -136,9 +166,9 @@
                     placeholder="Enter Recommendation"></textarea>
             </div>
 
-            <!-- Send SMS to Parent -->
+           <!-- Send SMS to Parent -->
             <div class="flex items-center gap-2">
-                <input type="checkbox" id="sendSms" [(ngModel)]="followUp.sendSms"
+                <input type="checkbox" id="sendSms" [(ngModel)]="followUp.sendSMSToParent"
                     class="w-4 h-4 rounded border-gray-300 text-[#FF7519] focus:ring-[#FF7519]">
                 <label for="sendSms" class="text-sm text-gray-900">Send SMS to Parent</label>
             </div>

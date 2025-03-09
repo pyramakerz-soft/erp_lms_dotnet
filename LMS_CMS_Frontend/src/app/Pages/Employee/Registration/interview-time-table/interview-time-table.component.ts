@@ -406,7 +406,6 @@ export class InterviewTimeTableComponent {
               this.getTimeTableData()
             },
             error => {
-              console.log(error)
               if(error.error == "No Dates in this Period of Time"){
                 Swal.fire({
                   title: 'No Days in This Date',
@@ -430,7 +429,6 @@ export class InterviewTimeTableComponent {
               this.getTimeTableData()
             },
             error => {
-              console.log(error)
             }
           );
         }

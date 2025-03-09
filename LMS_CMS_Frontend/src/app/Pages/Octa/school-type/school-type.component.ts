@@ -91,7 +91,6 @@ export class SchoolTypeComponent {
       }
     } catch (error) {
       this.schoolTypeData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -158,7 +157,6 @@ export class SchoolTypeComponent {
           },
           error => {
             this.isSaved = false
-            console.log(error)
           }
         );
       } else{
@@ -173,7 +171,6 @@ export class SchoolTypeComponent {
           },
           error => {
             this.isSaved = false
-            console.log(error)
           }
         );
       }  

@@ -56,7 +56,6 @@ export class SchoolComponent {
         this.schoolData = data;
       } ,(error)=>{
         this.schoolData=[];
-        console.log(error)
       });
   }
 
@@ -120,7 +119,6 @@ export class SchoolComponent {
       }
     } catch (error) {
       this.schoolData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -144,7 +142,6 @@ export class SchoolComponent {
                 this.schoolData = data;
               } ,(error)=>{
                 this.schoolData=[];
-                console.log(error)
               }
             );
           }
@@ -205,7 +202,6 @@ export class SchoolComponent {
             );
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -219,7 +215,6 @@ export class SchoolComponent {
             );
           },
           error => {
-            console.log(error)
           }
         );
       }  

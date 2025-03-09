@@ -34,6 +34,7 @@ export class InventoryMaster {
             public insertedByUserId :number =0,
             public attachments : string [] =[],
             public attachment : File [] =[] ,
+            public isEditInvoiceNumber : boolean = false ,
             public NewAttachments : File [] =[] ,
             public DeletedAttachments : string [] =[] ,
             public inventoryDetails : InventoryDetails [] =[] ,

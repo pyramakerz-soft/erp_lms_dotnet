@@ -155,7 +155,6 @@ export class FloorComponent {
       }
     } catch (error) {
       this.floorData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -220,7 +219,6 @@ export class FloorComponent {
             this.getFloorData()
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -230,7 +228,6 @@ export class FloorComponent {
             this.getFloorData()
           },
           error => {
-            console.log(error)
           }
         );
       }  

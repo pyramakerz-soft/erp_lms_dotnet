@@ -99,7 +99,6 @@ export class RegistrationFormTestAnswerComponent {
   GetAllData() {
     this.registerServ.GetByRegistrationParentId(this.RegisterFormParentID, this.TestId, this.DomainName).subscribe((d: any) => {
       this.Data = d.questionWithAnswer;
-      console.log(this.Data)
       this.TestName = d.testName
     })
   }

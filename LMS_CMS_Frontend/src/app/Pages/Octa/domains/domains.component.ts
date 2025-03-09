@@ -174,7 +174,6 @@ export class DomainsComponent {
       }
     } catch (error) {
       this.domainData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -256,7 +255,6 @@ export class DomainsComponent {
           },
           error => {
             this.isSaved = false
-            console.log(error)
           }
         );
       } else{
@@ -271,7 +269,6 @@ export class DomainsComponent {
           },
           error => {
             this.isSaved = false
-            console.log(error)
           }
         );
       }  

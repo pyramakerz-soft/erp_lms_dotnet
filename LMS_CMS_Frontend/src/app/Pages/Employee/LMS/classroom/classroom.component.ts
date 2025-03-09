@@ -164,7 +164,6 @@ export class ClassroomComponent {
       }
     } catch (error) {
       this.classroomData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -256,7 +255,6 @@ export class ClassroomComponent {
             this.getClassroomData()
           },
           error => {
-            console.log(error)
           }
         );
       } else{
@@ -266,7 +264,6 @@ export class ClassroomComponent {
             this.getClassroomData()
           },
           error => {
-            console.log(error)
           }
         );
       }  
@@ -381,7 +378,6 @@ export class ClassroomComponent {
           this.getClassroomData()
         },
         error => {
-          console.log(error)
         }
       );
     }

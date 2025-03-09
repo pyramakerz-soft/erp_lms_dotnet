@@ -141,7 +141,6 @@ export class GradeComponent {
       }
     } catch (error) {
       this.gradeData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -228,7 +227,6 @@ export class GradeComponent {
               this.getGradeData()
             },
             error => {
-              console.log(error)
             }
           );
         } else{
@@ -238,7 +236,6 @@ export class GradeComponent {
               this.getGradeData()
             },
             error => {
-              console.log(error)
             }
           );
         }  

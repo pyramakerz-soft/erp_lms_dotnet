@@ -143,7 +143,6 @@ export class SemesterComponent {
       }
     } catch (error) {
       this.semesterData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -233,7 +232,6 @@ export class SemesterComponent {
               this.getSemesterData()
             },
             error => {
-              console.log(error)
             }
           );
         } else{
@@ -243,7 +241,6 @@ export class SemesterComponent {
               this.getSemesterData()
             },
             error => {
-              console.log(error)
             }
           );
         }  

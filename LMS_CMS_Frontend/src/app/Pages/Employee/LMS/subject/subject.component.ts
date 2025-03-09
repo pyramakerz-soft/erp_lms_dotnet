@@ -90,7 +90,6 @@ export class SubjectComponent {
     this.subjectService.Get(this.DomainName).subscribe(
       (data) => {
         this.subjectData = data;
-        console.log(this.subjectData)
       }
     )
   }
@@ -238,7 +237,6 @@ export class SubjectComponent {
       }
     } catch (error) {
       this.subjectData = [];
-      console.log('Error fetching data:', error);
     }
   }
 
@@ -340,7 +338,6 @@ export class SubjectComponent {
   //           this.getSubjectData()
   //         },
   //         error => {
-  //           console.log(error)
   //         }
   //       );
   //     } else{
@@ -350,7 +347,6 @@ export class SubjectComponent {
   //           this.getSubjectData()
   //         },
   //         error => {
-  //           console.log(error)
   //         }
   //       );
   //     }  

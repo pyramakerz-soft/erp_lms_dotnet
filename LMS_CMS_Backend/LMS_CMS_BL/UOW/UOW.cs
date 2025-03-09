@@ -138,6 +138,9 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<OrderState> OrderState_Repository;
         GenericRepo<Order> Order_Repository;
         GenericRepo<Cart_ShopItem> Cart_ShopItem_Repository;
+        GenericRepo<Stocking> Stocking_Repository;
+        GenericRepo<StockingDetails> StockingDetails_Repository;
+
 
 
         public UOW(Octa_DbContext octa_Db)
@@ -1225,7 +1228,31 @@ namespace LMS_CMS_BL.UOW
                 return InventoryDetails_Repository;
             }
         }
-        
+
+        public GenericRepo<Stocking> stocking_Repository
+        {
+            get
+            {
+                if (Stocking_Repository == null)
+                {
+                    Stocking_Repository = new GenericRepo<Stocking>(db);
+                }
+                return Stocking_Repository;
+            }
+        }
+
+        public GenericRepo<StockingDetails> stockingDetails_Repository
+        {
+            get
+            {
+                if (StockingDetails_Repository == null)
+                {
+                    StockingDetails_Repository = new GenericRepo<StockingDetails>(db);
+                }
+                return StockingDetails_Repository;
+            }
+        }
+
         public GenericRepo<SalesItemAttachment> salesItemAttachment_Repository
         {
             get

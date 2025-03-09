@@ -716,6 +716,16 @@ namespace LMS_CMS_BL.Config
             CreateMap<CartShopItemAddDTO, Cart_ShopItem>();
             CreateMap<CartShopItemPutDTO, Cart_ShopItem>();
 
+            CreateMap<Stocking, StockingGetDto>();
+            CreateMap<StockingAddDTO, Stocking>();
+            CreateMap<StockingGetDto, Stocking>();
+
+            CreateMap<StockingDetails, StockingDetailsGetDto>()
+                .ForMember(dest => dest.BarCode, opt => opt.MapFrom(src => src.ShopItem.BarCode))
+                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+            CreateMap<StockingDetailsGetDto, StockingDetails>();
+            CreateMap<StockingAddDTO, StockingDetails>();
+
         }
     } 
 }

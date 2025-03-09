@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
@@ -8,7 +8,9 @@ import { CartService } from '../../../../Services/Student/cart.service';
 import { Cart } from '../../../../Models/Student/ECommerce/cart';
 import { OrderService } from '../../../../Services/Student/order.service';
 import Swal from 'sweetalert2';
-import { Order } from '../../../../Models/Student/ECommerce/order'; 
+import { Order } from '../../../../Models/Student/ECommerce/order';  
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-order-items',
@@ -17,13 +19,13 @@ import { Order } from '../../../../Models/Student/ECommerce/order';
   templateUrl: './order-items.component.html',
   styleUrl: './order-items.component.css'
 })
-export class OrderItemsComponent { 
+export class OrderItemsComponent {  
   
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   UserID: number = 0;
   DomainName: string = "";
   
-  orderID: number = 0;
+  @Input() orderID: number = 0;
 
   order:Order = new Order()
   cart:Cart = new Cart()
@@ -42,10 +44,17 @@ export class OrderItemsComponent {
     this.orderID = Number(this.activeRoute.snapshot.paramMap.get('id'))
 
     this.activeRoute.queryParams.subscribe(params => {
-      this.previousRoute = params['from']; // Store the previous route
-    });
-    
-    this.getCartData() 
+      this.previousRoute = params['from']; // Store previous route
+   
+      this.getCartData().then(() => {
+        if (params['download'] === 'true') {
+          setTimeout(() => {
+            this.DownloadOrder();
+          }, 500); 
+        }
+      });
+    });  
+
     this.getOrderById()
   }
 
@@ -69,17 +78,35 @@ export class OrderItemsComponent {
     } 
   }
 
-  getCartData(){
-    this.cartService.getByOrderID(this.orderID, this.DomainName).subscribe(
-      data => {
-        this.cart = data
+  // getCartData(){
+  //   this.cartService.getByOrderID(this.orderID, this.DomainName).subscribe(
+  //     data => {
+  //       this.cart = data
+  //       this.cart.cart_ShopItems.forEach(element => {
+  //         this.totalSalesPrices = this.totalSalesPrices + (element.salesPrice * element.quantity) 
+  //         this.totalVat = this.totalVat + (element.salesPrice * element.quantity) * (element.vatForForeign /100)
+  //       });  
+  //     }
+  //   )
+  // }
+
+  getCartData(): Promise<void> {
+    return new Promise((resolve) => {
+      this.cartService.getByOrderID(this.orderID, this.DomainName).subscribe(data => {
+        this.cart = data;
+        this.totalSalesPrices = 0;
+        this.totalVat = 0;
+  
         this.cart.cart_ShopItems.forEach(element => {
-          this.totalSalesPrices = this.totalSalesPrices + (element.salesPrice * element.quantity) 
-          this.totalVat = this.totalVat + (element.salesPrice * element.quantity) * (element.vatForForeign /100)
-        });  
-      }
-    )
+          this.totalSalesPrices += element.salesPrice * element.quantity;
+          this.totalVat += (element.salesPrice * element.quantity) * (element.vatForForeign / 100);
+        }); 
+
+        resolve(); 
+      });
+    });
   }
+  
 
   getOrderById(){
     this.orderService.getByID(this.orderID, this.DomainName).subscribe(
@@ -108,4 +135,23 @@ export class OrderItemsComponent {
       }
     });
   }
-}
+
+  DownloadOrder() {
+    let orderElement = document.getElementById('OrderToDownload');
+
+    if (!orderElement) {
+      console.error("OrderToDownload element not found!");
+      return;
+    }
+
+    html2canvas(orderElement, { scale: 2 }).then(canvas => {
+      let imgData = canvas.toDataURL('image/png');
+      let pdf = new jsPDF('p', 'mm', 'a4');
+      let imgWidth = 210;
+      let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`Order_${this.orderID}.pdf`);
+    }); 
+  }
+} 

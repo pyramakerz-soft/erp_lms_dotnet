@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { Router } from '@angular/router';
@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './order.component.html',
   styleUrl: './order.component.css'
 })
-export class OrderComponent {
+export class OrderComponent { 
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   UserID: number = 0;
   StuID: number = 0;
@@ -93,7 +93,12 @@ export class OrderComponent {
     }
   }
   
-  DownloadOrder() {
-    
+  DownloadOrder(id:number) {  
+    if(this.User_Data_After_Login.type == 'employee'){ 
+      this.router.navigate(['Employee/Order', id], { queryParams: { download: 'true' } }); 
+
+    } else{ 
+      this.router.navigate(['Student/Ecommerce/Order', id], { queryParams: { download: 'true' } }); 
+    }
   }
-}
+} 

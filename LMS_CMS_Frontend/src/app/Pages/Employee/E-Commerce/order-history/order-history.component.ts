@@ -105,6 +105,7 @@ export class OrderHistoryComponent {
     )
   }
 
-  DownloadOrder(orderID: number) {
+  DownloadOrder(orderID: number) { 
+    this.router.navigate(["Employee/Order/" + orderID], { queryParams: { from: 'order-history', download: 'true' } })
   } 
 }

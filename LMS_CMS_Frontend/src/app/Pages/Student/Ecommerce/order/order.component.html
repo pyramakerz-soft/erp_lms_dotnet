@@ -61,9 +61,10 @@
                 {{row.orderStateName}}
             </div>
             <div class="flex space-x-1">
-                <div class="w-11 h-11 bg-[#F7F7F7] rounded-md flex justify-center items-center cursor-pointer" (click)="DownloadOrder()">
+                <div class="w-11 h-11 bg-[#F7F7F7] rounded-md flex justify-center items-center cursor-pointer" (click)="DownloadOrder(row.id)">
                     <i class="fa-solid fa-download text-[#6F6F6F] text-lg"></i>
-                </div>
+                </div> 
+
                 <div class="w-11 h-11 bg-[#F7F7F7] rounded-md flex justify-center items-center cursor-pointer" (click)="goToOrderItems(row.id)">
                     <i class="fa-solid fa-eye text-[#6F6F6F] text-lg"></i>
                 </div>

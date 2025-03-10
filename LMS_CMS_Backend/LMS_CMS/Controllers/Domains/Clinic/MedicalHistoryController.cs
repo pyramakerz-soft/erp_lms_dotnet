@@ -931,8 +931,16 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 {
                     if (Directory.Exists(medicalHistoryFolder))
                     {
-                        Directory.Delete(firstReportFolder, true);
-                        Directory.Delete(secReportFolder, true);
+                        if (Directory.Exists(firstReportFolder))
+                        {
+                            Directory.Delete(firstReportFolder, true);
+                        }
+
+                        if (Directory.Exists(secReportFolder))
+                        {
+                            Directory.Delete(secReportFolder, true);
+                        }
+
                         Directory.Delete(medicalHistoryFolder, true);
                     }
                     historyPutDTO.FirstReport = null;
@@ -1376,10 +1384,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 {
                     if (Directory.Exists(medicalHistoryFolder))
                     {
-                        Directory.Delete(firstReportFolder, true);
-                        Directory.Delete(secReportFolder, true);
+                        if (Directory.Exists(firstReportFolder))
+                        {
+                            Directory.Delete(firstReportFolder, true);
+                        }
+
+                        if (Directory.Exists(secReportFolder))
+                        {
+                            Directory.Delete(secReportFolder, true);
+                        }
+
                         Directory.Delete(medicalHistoryFolder, true);
                     }
+
                     historyPutDTO.FirstReport = null;
                     historyPutDTO.SecReport = null;
                 }

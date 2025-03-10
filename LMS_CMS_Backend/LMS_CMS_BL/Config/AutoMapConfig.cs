@@ -686,7 +686,8 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name))
                 .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade.Name))
                 .ForMember(dest => dest.Classroom, opt => opt.MapFrom(src => src.Classroom.Name))
-                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name));
+                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name))
+                .ForMember(dest => dest.Diagnosis, opt => opt.MapFrom(src => src.Diagnosis.Name));
             CreateMap<FollowUpPutDTO, FollowUp>();
 
             CreateMap<FollowUpDrugAddDTO, FollowUpDrug>();

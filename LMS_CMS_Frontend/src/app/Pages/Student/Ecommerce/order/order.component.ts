@@ -26,6 +26,9 @@ export class OrderComponent {
 
   orders: Order[] = []
 
+  filteredOrders: Order[] = [] 
+  searchTerm: string = '';
+
   constructor(public account: AccountService, public ApiServ: ApiService, private router: Router, public employeeStudentService:EmployeeStudentService, private orderrService: OrderService){}
   
   ngOnInit(){
@@ -65,6 +68,7 @@ export class OrderComponent {
     this.orderrService.getByStudentID(this.StuID, this.DomainName).subscribe(
       data => {
         this.orders = data
+        this.filterOrders(); 
       }
     )
   } 
@@ -99,6 +103,19 @@ export class OrderComponent {
 
     } else{ 
       this.router.navigate(['Student/Ecommerce/Order', id], { queryParams: { download: 'true' } }); 
+    }
+  }
+
+  filterOrders() {
+    if(this.searchTerm.trim() === '') {
+      this.filteredOrders = [...this.orders]; 
+    } else {
+      this.filteredOrders = this.orders.filter(order =>
+        order.cartID.toString().toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.totalPrice.toString().toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.orderStateName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.insertedAt.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
     }
   }
 } 

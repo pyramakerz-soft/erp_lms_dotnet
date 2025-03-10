@@ -102,10 +102,6 @@ export class InterviewRegistrationComponent {
     this.today = new Date();
 
     this.ToChooseFromInterviewTimeTable = []
-
-    this.calendarMonths = [];
-    this.today = new Date();
-
     this.currentMonth = 0;
 
     this.closeModalcalender()
@@ -113,7 +109,7 @@ export class InterviewRegistrationComponent {
 
   openModalcalender() {
     document.getElementById("Calender_Modal")?.classList.remove("hidden");
-    document.getElementById("Calender_Modal")?.classList.add("flex");
+    document.getElementById("Calender_Modal")?.classList.add("flex"); 
   }
   
   closeModalcalender() {
@@ -206,10 +202,11 @@ export class InterviewRegistrationComponent {
 
   generateCalendar() {
     const dates = this.interviewTimeTable.map((item) => new Date(item.date)); 
-    const lastDate = new Date(Math.max(...dates.map((date) => date.getTime()))); 
+    const lastDate = new Date(Math.max(...dates.map((date) => date.getTime())));  
 
-    let currentMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
-    const endMonth = new Date(lastDate.getFullYear(), lastDate.getMonth(), 1);
+    let currentMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 1); 
+    
+    const endMonth = new Date(lastDate.getFullYear(), lastDate.getMonth(), 1); 
  
     while (currentMonth <= endMonth) {
       const month = currentMonth.getMonth();
@@ -217,6 +214,9 @@ export class InterviewRegistrationComponent {
       this.calendarMonths.push({ month, year });
       currentMonth = new Date(year, month + 1, 1);
     }
+    
+    this.currentMonth = this.calendarMonths[0].month
+
   }
 
   getDaysInMonth(month: number, year: number): DayWithInterviews[] { 

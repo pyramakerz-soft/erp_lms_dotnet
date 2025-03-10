@@ -156,6 +156,13 @@ export class SchoolTypeComponent {
             });
           },
           error => {
+            if(error.error == "Name Already Exists"){
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Please Enter Another School Type Name"
+              });
+            }
             this.isSaved = false
           }
         );
@@ -170,6 +177,13 @@ export class SchoolTypeComponent {
             );
           },
           error => {
+            if(error.error == "Name Already Exists"){
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Please Enter Another School Type Name"
+              });
+            }
             this.isSaved = false
           }
         );

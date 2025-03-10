@@ -80,7 +80,7 @@ export class EmployeeComponent {
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Role?',
+      title: 'Are you sure you want to delete this Employee?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -102,7 +102,7 @@ export class EmployeeComponent {
             Swal.fire({
               icon: 'success',
               title: 'Deleted!',
-              text: 'The role has been deleted successfully.',
+              text: 'The Employee has been deleted successfully.',
               confirmButtonColor: '#FF7519',
             });
             this.GetEmployee(); 

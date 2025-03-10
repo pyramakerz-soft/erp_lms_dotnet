@@ -38,12 +38,13 @@ export class ShopComponent {
   selectedInventorySubCategory = 0
   
   CurrentPage:number = 1
-  PageSize:number = 9
+  PageSize:number = 1
+
   TotalPages:number = 1
   TotalRecords:number = 0
-
+  
   cartShopItem:CartShopItem = new CartShopItem()
-
+   
   constructor(public inventoryCategoryService:InventoryCategoryService, public inventorySubCategoryService:InventorySubCategoriesService, public employeeStudentService:EmployeeStudentService,
     public account: AccountService, public ApiServ: ApiService, public shopItemService:ShopItemService, private router: Router, private cartShopItemService:CartShopItemService){}
 
@@ -98,12 +99,12 @@ export class ShopComponent {
 
   getShopPagination(){
     this.shopItemService.GetBySubCategoryIDWithGenderAndGrade(this.selectedInventorySubCategory, this.CurrentPage, this.PageSize, this.DomainName).subscribe(
-      data => {
+      data => { 
         this.CurrentPage = data.pagination.currentPage
         this.PageSize = data.pagination.pageSize
         this.TotalPages = data.pagination.totalPages
         this.TotalRecords = data.pagination.totalRecords 
-        this.ShopItem = data.data 
+        this.ShopItem = data.data
       }
     )
   }
@@ -140,7 +141,7 @@ export class ShopComponent {
 
   changeCurrentPage(currentPage:number){
     this.CurrentPage = currentPage
-    this.getShopPagination()
+    this.getShopPagination() 
   }
 
   goToShopItem(id: number) {  
@@ -165,5 +166,5 @@ export class ShopComponent {
     } else{
       this.router.navigateByUrl("Student/Ecommerce/Order")
     }
-  } 
+  }   
 }

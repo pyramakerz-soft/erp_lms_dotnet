@@ -9,8 +9,7 @@ import { CartService } from '../../../../Services/Student/cart.service';
 import { OrderService } from '../../../../Services/Student/order.service';
 import Swal from 'sweetalert2';
 import { CartShopItemService } from '../../../../Services/Student/cart-shop-item.service';
-import { CartShopItem } from '../../../../Models/Student/ECommerce/cart-shop-item';
-import { MenuService } from '../../../../Services/shared/menu.service';
+import { CartShopItem } from '../../../../Models/Student/ECommerce/cart-shop-item'; 
 import { EmplyeeStudent } from '../../../../Models/Accounting/emplyee-student';
 import { EmployeeStudentService } from '../../../../Services/Employee/Accounting/employee-student.service';
 import { FormsModule } from '@angular/forms';
@@ -34,6 +33,9 @@ export class CartComponent {
   totalVat: number = 0;
 
   cartShopItem:CartShopItem = new CartShopItem()
+
+  filteredCartShopItem: CartShopItem[] = [] 
+  searchTerm: string = '';
   
   constructor(public account: AccountService, public ApiServ: ApiService, public activeRoute: ActivatedRoute, public employeeStudentService:EmployeeStudentService,
     private router: Router, private cartService: CartService, 
@@ -82,6 +84,7 @@ export class CartComponent {
           this.totalVat = this.totalVat + (element.salesPrice *(element.vatForForeign / 100))
           this.totalSalesPrices = this.totalSalesPrices + element.salesPrice * element.quantity
         });
+        this.filterCartItems();
       }
     )
   }
@@ -135,5 +138,17 @@ export class CartComponent {
         this.getCart()
       }
     )
+  }
+
+  filterCartItems() {
+    if (this.searchTerm.trim() === '') {
+      this.filteredCartShopItem = [...this.cart.cart_ShopItems];  
+    } else {
+      this.filteredCartShopItem = this.cart.cart_ShopItems.filter(item =>
+        item.shopItemEnName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (item.shopItemColorName && item.shopItemColorName.toLowerCase().includes(this.searchTerm.toLowerCase())) ||
+        (item.shopItemSizeName && item.shopItemSizeName.toLowerCase().includes(this.searchTerm.toLowerCase()))
+      );
+    }
   }
 }

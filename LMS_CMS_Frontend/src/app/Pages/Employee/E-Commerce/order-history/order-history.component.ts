@@ -27,6 +27,9 @@ export class OrderHistoryComponent {
   orderStates: OrderState[] = []
   stateID: number = 0; 
 
+  filteredOrders: Order[] = [] 
+  searchTerm: string = '';
+
   constructor(public account: AccountService, public ApiServ: ApiService, private router: Router, private orderrService: OrderService, private orderrStateService: OrderStateService){}
   
   ngOnInit(){
@@ -52,12 +55,14 @@ export class OrderHistoryComponent {
       this.orderrService.getByOrderStateID(this.stateID, this.DomainName).subscribe(
         data => {
           this.orders = data
+          this.filterOrders(); 
         }
       )
     } else{
       this.orderrService.getAll(this.DomainName).subscribe(
         data => {
           this.orders = data
+          this.filterOrders(); 
         }
       )
     } 
@@ -108,4 +113,17 @@ export class OrderHistoryComponent {
   DownloadOrder(orderID: number) { 
     this.router.navigate(["Employee/Order/" + orderID], { queryParams: { from: 'order-history', download: 'true' } })
   } 
+
+  filterOrders() {
+    if(this.searchTerm.trim() === '') {
+      this.filteredOrders = [...this.orders]; 
+    } else {
+      this.filteredOrders = this.orders.filter(order =>
+        order.cartID.toString().toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.totalPrice.toString().toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.orderStateName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.insertedAt.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+  }
 }

@@ -62,8 +62,8 @@ export class SideMenuComponent {
       this.focusSearchInput();
     }
   }
-
-  isAnyDetailsOpen(): boolean {
-    return this.detailsList?.some((details) => details.nativeElement.open);
+ 
+  onSearchBlur() {
+    this.IsSearchFocus = false;
   }
 }

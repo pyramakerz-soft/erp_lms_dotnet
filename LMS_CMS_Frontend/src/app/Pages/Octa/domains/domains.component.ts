@@ -253,7 +253,14 @@ export class DomainsComponent {
               this.isSaved = false
             });
           },
-          error => {
+          (error) => { 
+            if(error.error == "Domain already exists."){
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Please Enter Another Name"
+              });
+            }
             this.isSaved = false
           }
         );

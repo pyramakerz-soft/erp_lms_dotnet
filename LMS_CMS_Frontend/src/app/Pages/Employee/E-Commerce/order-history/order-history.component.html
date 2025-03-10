@@ -3,8 +3,8 @@
     <div class=" relative flex items-center flex-1">
         <span class="absolute text-[#919191] ltr:ml-2 rtl:mr-2">
             <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
-        <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
+        </span> 
+        <input #searchInput type="text" [(ngModel)]="searchTerm" (keyup)="filterOrders()" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
             placeholder="Search For..." />
     </div> 
 </div>
@@ -33,7 +33,7 @@
 </div>
 
 <div *ngIf="orders.length != 0">
-    <div *ngFor="let row of orders; let i = index" class="flex justify-between w-full p-4 rounded-lg mt-8 border">
+    <div *ngFor="let row of filteredOrders; let i = index" class="flex justify-between w-full p-4 rounded-lg mt-8 border">
         <div class="flex items-center space-x-4 justify-center"> 
             <img class="rounded w-[50px] h-[50px]" [src]="row.mainImage" *ngIf="row.mainImage">
             <div class="rounded w-[50px] h-[50px] bg-[#D9D9D9]" *ngIf="!row.mainImage"></div>

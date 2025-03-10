@@ -163,25 +163,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
 
             foreach (var item in sht)
             {
-                //if (item is not null)
-                //{
                 item.HygieneFormId = hygieneForm.Id;
-                
-                //    foreach(var ht in item.HygieneTypes)
-                //    {
-                //        foreach (var htId in hygieneFormDTO.StudentHygieneTypes)
-                //        {
-                //            HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.First_Or_Default(d => d.Id == ht && d.IsDeleted != true);
-                //            item.HygieneTypes.Add(hygieneType);
-                //        }
-                            
-                //    }
-                //}
 
                 Unit_Of_Work.studentHygieneTypes_Repository.Add(item);
             }
-
-            //Unit_Of_Work.SaveChanges();
 
             return Ok(hygieneFormDTO);
         }

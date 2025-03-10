@@ -1092,6 +1092,12 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasForeignKey(p => p.StockingId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Stocking>()
+                .HasOne(p => p.Store)
+                .WithMany(p => p.Stocking)
+                .HasForeignKey(p => p.StoreID)
+                .OnDelete(DeleteBehavior.Restrict);
+
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()
                 .HasOne(b => b.DeletedByEmployee)

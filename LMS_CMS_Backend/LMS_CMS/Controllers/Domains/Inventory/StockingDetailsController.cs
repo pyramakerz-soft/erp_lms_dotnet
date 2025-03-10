@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.Inventory;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -19,12 +20,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly CheckPageAccessService _checkPageAccessService;
+        private readonly CalculateCurrentStock _calculateCurrentStock;
 
-        public StockingDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
+        public StockingDetailsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService , CalculateCurrentStock calculateCurrentStock)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _checkPageAccessService = checkPageAccessService;
+            _calculateCurrentStock = calculateCurrentStock;
         }
 
         [HttpGet]
@@ -283,6 +286,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.stockingDetails_Repository.Update(stockingDetails);
             Unit_Of_Work.SaveChanges();
             return Ok();
+        }
+
+        ////
+
+        [HttpGet("{StoreId}/{ShopItemID}/{date}")]
+        [Authorize_Endpoint_(
+                 allowedTypes: new[] { "octa", "employee" },
+                 pages: new[] { "Inventory" }
+             )]
+        public async Task<IActionResult> GetBySaleIDAsync(long StoreId , long ShopItemID , string date) 
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
+            long FirstCurrentStock1 = await _calculateCurrentStock.GetCurrentStock(db, StoreId , ShopItemID , date);
+            long SecondCurrentStock1 = await _calculateCurrentStock.GetCurrentStockInTransformedStore(db, StoreId, ShopItemID, date);
+
+            return Ok(FirstCurrentStock1+ SecondCurrentStock1);
         }
     }
 }

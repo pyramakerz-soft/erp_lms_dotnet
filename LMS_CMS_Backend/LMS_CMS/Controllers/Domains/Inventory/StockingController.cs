@@ -51,7 +51,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 .CountAsync(f => f.IsDeleted != true);
 
             List<Stocking> Data = await Unit_Of_Work.stocking_Repository.Select_All_With_IncludesById_Pagination<Stocking>(
-                    f => f.IsDeleted != true)
+                    f => f.IsDeleted != true,
+                    query => query.Include(store => store.Store))
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -92,7 +93,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             Stocking Data = await Unit_Of_Work.stocking_Repository.FindByIncludesAsync(
-                    s => s.IsDeleted != true && s.ID == id);
+                    s => s.IsDeleted != true && s.ID == id,
+                    query => query.Include(store => store.Store)
+                    );
 
             if (Data == null)
             {
@@ -110,7 +113,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
           allowedTypes: new[] { "octa", "employee" },
           pages: new[] { "Inventory" }
       )]
-        public async Task<IActionResult> Add([FromForm] StockingAddDTO newData)
+        public async Task<IActionResult> Add(StockingAddDTO newData)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -128,10 +131,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return BadRequest("Master cannot be null.");
             }
 
-            if (newData.StockingDetails.Count == 0)
-            {
-                return BadRequest("StockingDetails IsRequired");
-            }
+            //if (newData.StockingDetails.Count == 0)
+            //{
+            //    return BadRequest("StockingDetails IsRequired");
+            //}
 
             /// Create
             Stocking Master = mapper.Map<Stocking>(newData);

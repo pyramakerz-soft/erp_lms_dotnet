@@ -14,6 +14,11 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public long ID { get; set; }
         public string Date { get; set; }
         public int InvoiceNumber { get; set; }
+
+        [ForeignKey("Store")]
+        public long StoreID { get; set; }
+        public Store Store { get; set; }
+
         public ICollection<StockingDetails> StockingDetails { get; set; } = new HashSet<StockingDetails>();
     }
 }

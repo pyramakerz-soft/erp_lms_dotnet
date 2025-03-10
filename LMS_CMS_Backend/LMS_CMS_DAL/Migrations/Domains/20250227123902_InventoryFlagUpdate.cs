@@ -18,7 +18,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 UPDATE InventoryFlags SET enName = N'Disbursement Adjustment', en_Title = '', arName = N'تسوية صرف', ar_Title = '' WHERE ID = 5;
                 UPDATE InventoryFlags SET enName = N'Gifts', en_Title = '', arName = N'هدايا', ar_Title = '' WHERE ID = 6;
                 UPDATE InventoryFlags SET enName = N'Damaged', en_Title = '', arName = N'هالك', ar_Title = '' WHERE ID = 7;
-                UPDATE InventoryFlags SET enName = N'Transfer to Warehouse', en_Title = 'Store', arName = N'تحويل الي مخزن', ar_Title = N'المخزن المحول اليه' WHERE ID = 8;
+                UPDATE InventoryFlags SET enName = N'Transfer to Store', en_Title = 'Store', arName = N'تحويل الي مخزن', ar_Title = N'المخزن المحول اليه' WHERE ID = 8;
                 UPDATE InventoryFlags SET enName = N'Purchases', en_Title = 'Supplier', arName = N'مشتريات', ar_Title = N'المورد' WHERE ID = 9;
                 UPDATE InventoryFlags SET enName = N'Purchase Returns', en_Title = 'Supplier', arName = N'مردودات مشتريات', ar_Title = N'المورد' WHERE ID = 10;
                 UPDATE InventoryFlags SET enName = N'Sales', en_Title = 'Student', arName = N'مبيعات', ar_Title = N'العميل' WHERE ID = 11;

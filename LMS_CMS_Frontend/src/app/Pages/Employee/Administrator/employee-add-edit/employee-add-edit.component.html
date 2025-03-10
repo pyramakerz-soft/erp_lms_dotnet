@@ -23,48 +23,48 @@
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">English Name</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.en_name" />
+            placeholder="Enter English Name" [(ngModel)]="Data.en_name" />
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">Arabic Name</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.ar_name" />
+            placeholder="Enter Arabic Name" [(ngModel)]="Data.ar_name" />
     </div>
 
     <div *ngIf="mode == 'Create'" class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="name">password</label>
+        <label class="mb-2 primaryTxt" for="name">Password</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.password" />
+            placeholder="Enter Password" [(ngModel)]="Data.password" />
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="name">mobile</label>
+        <label class="mb-2 primaryTxt" for="name">Mobile</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.mobile" />
+            placeholder="Enter Mobile" [(ngModel)]="Data.mobile" />
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="name">phone</label>
+        <label class="mb-2 primaryTxt" for="name">Phone</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.phone" />
+            placeholder="Enter Phone" [(ngModel)]="Data.phone" />
     </div>
 
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">Email</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.email" />
+            placeholder="Enter Email" [(ngModel)]="Data.email" />
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="name">licenseNumber</label>
+        <label class="mb-2 primaryTxt" for="name">License Number</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.licenseNumber" />
+            placeholder="Enter License Number" [(ngModel)]="Data.licenseNumber" />
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="expireDate">expireDate</label>
+        <label class="mb-2 primaryTxt" for="expireDate">Expire Date</label>
         <input id="expireDate" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter Expiry Date" [(ngModel)]="Data.expireDate" />
     </div>
@@ -72,21 +72,21 @@
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">Address</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.address" />
+            placeholder="Enter Address" [(ngModel)]="Data.address" />
     </div>
 
     <div class="flex flex-col w-[49%] mb-4">
-        <label class="mb-2" for="role">Choose Role</label>
+        <label class="mb-2" for="role">Role</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="role"
             [(ngModel)]="Data.role_ID">
-            <option [value]="0" disabled selected hidden>Role</option>
+            <option [value]="0" disabled selected hidden>Choose Role</option>
             <option *ngFor="let role of Roles" [value]="role.id">{{ role.name }}</option>
             <option *ngIf="Roles.length === 0" disabled selected>No Data Found</option>
         </select>
     </div>
 
     <div class="flex flex-col w-[49%] mb-4">
-        <label class="mb-2" for="bus">Choose Bus Comapny</label>
+        <label class="mb-2" for="bus">Bus Comapny</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
             [(ngModel)]="Data.busCompanyID">
             <option [value]="0" disabled selected hidden>Choose Bus Company</option>
@@ -97,7 +97,7 @@
 
 
     <div class="flex flex-col w-[49%] mb-4">
-        <label class="mb-2" for="employeeType">Choose Employee Type</label>
+        <label class="mb-2" for="employeeType">Employee Type</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="employeeType"
             [(ngModel)]="Data.employeeTypeID">
             <option [value]="0" disabled selected hidden>Choose Employee Type</option>

@@ -168,27 +168,27 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Unauthorized("User Id claim not found.");
             }
 
-            if (string.IsNullOrWhiteSpace(domain.DomainName))
+            if (string.IsNullOrWhiteSpace(domain.Name))
             {
                 return BadRequest("Invalid domain name.");
             }
 
             var domainNameRegex = @"^[a-zA-Z_]+$";
-            if (!Regex.IsMatch(domain.DomainName, domainNameRegex))
+            if (!Regex.IsMatch(domain.Name, domainNameRegex))
             {
                 return BadRequest("Domain name can only contain letters and underscores, and no spaces or numbers.");
             }
 
-            var existingDomain = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(d => d.Name == domain.DomainName);
+            var existingDomain = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(d => d.Name == domain.Name);
             if (existingDomain != null)
             {
                 return Conflict("Domain already exists.");
             }
 
-            await _dynamicDatabaseService.AddDomainAndSetupDatabase(domain.DomainName, userId);
+            await _dynamicDatabaseService.AddDomainAndSetupDatabase(domain.Name, userId);
 
             // Make the DB Connection
-            var domainEx = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(d => d.Name == domain.DomainName);
+            var domainEx = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(d => d.Name == domain.Name);
 
             HttpContext.Items["ConnectionString"] = domainEx.ConnectionString;
 
@@ -206,7 +206,7 @@ namespace LMS_CMS_PL.Controllers.Octa
             string Pass = GenerateSecurePassword(12);
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(Pass);
 
-            Employee emp = new Employee { User_Name = domain.DomainName, en_name = domain.DomainName, Password = hashedPassword, Role_ID = 1, EmployeeTypeID = 1 };
+            Employee emp = new Employee { User_Name = domain.Name, en_name = domain.Name, Password = hashedPassword, Role_ID = 1, EmployeeTypeID = 1 };
             emp.InsertedByOctaId= userId;
             emp.InsertedAt= TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             Unit_Of_Work.employee_Repository.Add(emp);
@@ -273,7 +273,7 @@ namespace LMS_CMS_PL.Controllers.Octa
             return Ok(new
             {
                 message = "Domain and database setup successfully.",
-                userName = domain.DomainName,
+                userName = domain.Name,
                 password = Pass,
                 notFoundPages = notFoundPages.Any() ? notFoundPages : null,
                 notModulePages = notModulePages.Any() ? notModulePages : null
@@ -319,7 +319,7 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Unauthorized("User Id claim not found.");
             }
 
-            if (string.IsNullOrWhiteSpace(domain.DomainName))
+            if (string.IsNullOrWhiteSpace(domain.Name))
             {
                 return BadRequest("Invalid domain name.");
             }

@@ -35,5 +35,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public List<ShopItemColorGetDTO> shopItemColors { get; set; }
         public List<ShopItemSizeGetDTO> shopItemSizes { get; set; }
         public string BarCode { get; set; }
+        public long? InsertedByUserId { get; set; }
+
     }
 }

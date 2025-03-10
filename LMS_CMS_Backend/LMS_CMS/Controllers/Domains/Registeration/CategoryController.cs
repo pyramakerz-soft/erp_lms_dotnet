@@ -277,6 +277,35 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             }
 
             Unit_Of_Work.registrationCategory_Repository.Update(category);
+
+            List<RegistrationFormCategory> RegistrationFormCategories = Unit_Of_Work.registrationFormCategory_Repository.FindBy(
+                r => r.IsDeleted != true && r.RegistrationCategoryID == id
+                );
+
+            foreach (var item in RegistrationFormCategories)
+            {
+                item.IsDeleted = true;
+                item.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "octa")
+                {
+                    item.DeletedByOctaId = userId;
+                    if (item.DeletedByUserId != null)
+                    {
+                        item.DeletedByUserId = null;
+                    }
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    item.DeletedByUserId = userId;
+                    if (item.DeletedByOctaId != null)
+                    {
+                        item.DeletedByOctaId = null;
+                    }
+                }
+
+                Unit_Of_Work.registrationFormCategory_Repository.Update(item);
+            }
+
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

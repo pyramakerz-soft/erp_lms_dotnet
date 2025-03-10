@@ -39,5 +39,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string? StudentName { get; set; }
         public string? SaveName { get; set; }
         public string? BankName { get; set; }
+        public long? InsertedByUserId { get; set; }
     }
 }

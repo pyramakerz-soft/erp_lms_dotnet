@@ -90,11 +90,11 @@
                         <span *ngIf="domain.pages.length == 0">
                            Choose Modules
                         </span>
-                        <div *ngIf="domain.pages.length != 0" class="flex space-x-2 flex-wrap">
+                        <div *ngIf="domain.pages.length != 0" class="flex flex-wrap">
                             <div *ngFor="let moduleId of domain.pages">
                                 <p *ngFor="let module of ModulesData">
                                     @if(module.id == moduleId){
-                                        <p class="p-2 rounded-md border bg-[#EBEBEB] text-[#6F6F6F]">
+                                        <p class="p-2 rounded-md border bg-[#EBEBEB] text-[#6F6F6F] m-1">
                                             {{module.en_name}}
                                             <i class="fa-solid fa-xmark text-red-600 ml-3" (click)="removeFromModules(moduleId, $event)"></i>
                                         </p>
@@ -144,7 +144,7 @@
 <div id="View_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
     <div class="bg-white rounded-2xl p-12 w-[669px]">
         <div class="flex justify-between items-center">
-            <h1 class="font-semibold text-2xl leading-9">{{ domain.name }} Account</h1>
+            <h1 class="font-semibold text-2xl leading-9">{{ domain.name }}</h1>
             <div class="flex space-x-3">
                 <button (click)="openModal(domain.id)" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">Edit</button>
                 <button (click)="closeViewModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
@@ -158,11 +158,13 @@
             </div>
             <div class="flex flex-col mb-4 bg-[#EBEBEB] p-2 rounded-2xl">
                 <label class="mb-2 text-[#6F6F6F] font-semibold" for="type">Modules</label>
-                <div class="flex">
-                    <div *ngFor="let module of ModulesData" class="bg-white p-2 rounded-md">
-                        {{module.en_name}}
+                <div class="flex flex-wrap">
+                    <div *ngFor="let module of ModulesData">
+                        @if(domain.pages.includes(module.id)){ 
+                            <p class="bg-white p-2 rounded-md m-1">{{module.en_name}} </p>
+                        }
                     </div>
-                </div>
+                </div>  
             </div>  
         </div>
     </div>

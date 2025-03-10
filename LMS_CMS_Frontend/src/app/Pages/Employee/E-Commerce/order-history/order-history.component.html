@@ -1,0 +1,81 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9 w-1/2">Order History</h1> 
+    <div class=" relative flex items-center flex-1">
+        <span class="absolute text-[#919191] ltr:ml-2 rtl:mr-2">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span> 
+        <input #searchInput type="text" [(ngModel)]="searchTerm" (keyup)="filterOrders()" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
+            placeholder="Search For..." />
+    </div> 
+</div>
+
+<div class="mt-8 mb-6 flex flex-wrap max-h-32 overflow-y-auto items-center">
+    <div class="px-3 py-2">
+        <div
+            (click)="getOrders()"
+            [ngClass]="{'border-b-[#FF7519] text-gray-800 font-semibold': stateID == 0, 'border-b-[#A9A9A952] text-[#6F6F6F] bg-[#EEEEEE3D]': stateID != 0 }"
+            class="px-4 py-2 border-b-2">
+                <p>All</p>
+        </div>
+    </div>
+    <div *ngFor="let row of orderStates; let i = index" class="px-3 py-2">
+        <div
+        (click)="getOrders(row.id)"
+        [ngClass]="{'border-b-[#FF7519] text-gray-800 font-semibold': row.id == stateID, 'border-b-[#A9A9A952] text-[#6F6F6F] bg-[#EEEEEE3D]': row.id != stateID }"
+        class="px-4 py-2 border-b-2">
+            <p>{{ row.name }}</p>
+        </div>
+    </div>
+</div>
+ 
+<div *ngIf="orders.length == 0" class="w-full h-[90%] flex justify-center items-center">
+    <p>No Orders Yet</p>
+</div>
+
+<div *ngIf="orders.length != 0">
+    <div *ngFor="let row of filteredOrders; let i = index" class="flex justify-between w-full p-4 rounded-lg mt-8 border">
+        <div class="flex items-center space-x-4 justify-center"> 
+            <img class="rounded w-[50px] h-[50px]" [src]="row.mainImage" *ngIf="row.mainImage">
+            <div class="rounded w-[50px] h-[50px] bg-[#D9D9D9]" *ngIf="!row.mainImage"></div>
+            <div>
+                <p class="font-semibold text-xl">{{row.cartID}}</p>
+                <div class="flex items-center space-x-10 mt-6">
+                    <span class="font-normal text-base flex items-center space-x-3">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <p>{{ formatDate(row.insertedAt) }}</p>
+                    </span>
+                    <span class="text-base flex items-center space-x-3">
+                        <i class="fa-solid fa-tags"></i> 
+                        <p class="font-semibold text-xl">{{row.totalPrice}} SAR</p>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col justify-between">
+            <div *ngIf="row.orderStateID != 1" class="rounded-2xl text-center border px-2" [ngClass]="{ 
+                'bg-[#F0FFF5] text-[#22A202] border-[#C1FEB9]': row.orderStateID === 2,
+                'bg-[#FDF2FA] text-[#C11574] border-[#FCCEEE]': row.orderStateID === 3
+            }">
+                {{row.orderStateName}}
+            </div>
+            <div *ngIf="row.orderStateID == 1" class="mb-3">
+                <p >State</p>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto mt-2" 
+                [(ngModel)]="row.orderStateID"
+                    (change)="ChangeOrderState($event, row.id)"> 
+                    <option *ngFor="let OS of orderStates" [value]="OS.id">{{ OS.name }}</option> 
+                </select>
+            </div>
+            <div class="flex space-x-1 justify-end">
+                <div class="w-11 h-11 bg-[#F7F7F7] rounded-md flex justify-center items-center cursor-pointer" (click)="DownloadOrder(row.id)">
+                    <i class="fa-solid fa-download text-[#6F6F6F] text-lg"></i>
+                </div> 
+                 
+                <div class="w-11 h-11 bg-[#F7F7F7] rounded-md flex justify-center items-center cursor-pointer" (click)="goToOrderItems(row.id)">
+                    <i class="fa-solid fa-eye text-[#6F6F6F] text-lg"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>  

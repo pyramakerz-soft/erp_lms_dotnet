@@ -18,7 +18,7 @@
             <i class="fa-solid fa-magnifying-glass"></i>
         </span>
         <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 text-sm rounded-md w-full"
-            placeholder="{{ 'Search' | translate }}" [disabled]="!IsMenuOpen"/>
+            placeholder="{{ 'Search' | translate }}" [disabled]="!IsMenuOpen" (blur)="onSearchBlur()"/>
     </div>
 
     <section class="mt-6 min-w-full">

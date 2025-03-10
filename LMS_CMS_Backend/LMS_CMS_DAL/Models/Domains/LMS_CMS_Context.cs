@@ -126,6 +126,9 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<OrderState> OrderState { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<Cart_ShopItem> Cart_ShopItem { get; set; }
+        public DbSet<Stocking> Stocking { get; set; }
+        public DbSet<StockingDetails> StockingDetails { get; set; }
+
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -1075,6 +1078,24 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasOne(p => p.Cart)
                 .WithMany(p => p.Orders)
                 .HasForeignKey(p => p.CartID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StockingDetails>()
+                .HasOne(p => p.ShopItem)
+                .WithMany(p => p.StockingDetails)
+                .HasForeignKey(p => p.ShopItemID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StockingDetails>()
+                .HasOne(p => p.Stocking)
+                .WithMany(p => p.StockingDetails)
+                .HasForeignKey(p => p.StockingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Stocking>()
+                .HasOne(p => p.Store)
+                .WithMany(p => p.Stocking)
+                .HasForeignKey(p => p.StoreID)
                 .OnDelete(DeleteBehavior.Restrict);
 
             ///////////////////////// Exception: /////////////////////////

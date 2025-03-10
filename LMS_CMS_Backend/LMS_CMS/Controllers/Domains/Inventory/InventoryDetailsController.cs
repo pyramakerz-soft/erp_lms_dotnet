@@ -211,7 +211,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
              
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Sales Item", roleId, userId, salesItem);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Inventory", roleId, userId, salesItem);
                 if (accessCheck != null)
                 {
                     return accessCheck;
@@ -281,7 +281,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Sales Item", roleId, userId, salesItem);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Inventory", roleId, userId, salesItem);
                 if (accessCheck != null)
                 {
                     return accessCheck;

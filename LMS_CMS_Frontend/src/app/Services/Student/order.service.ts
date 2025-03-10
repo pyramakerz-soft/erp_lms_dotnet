@@ -40,6 +40,32 @@ export class OrderService {
     return this.http.get<Order[]>(`${this.baseUrl}/Order/ByStudentId/${id}`, { headers });
   }
 
+  getByOrderStateID(id:number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    
+    return this.http.get<Order[]>(`${this.baseUrl}/Order/ByOrderStateId/${id}`, { headers });
+  }
+
+  getAll(DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    
+    return this.http.get<Order[]>(`${this.baseUrl}/Order`, { headers });
+  }
+
   cancelOrder(id:number, DomainName: string) {
     if (DomainName != null) {
       this.header = DomainName
@@ -64,5 +90,18 @@ export class OrderService {
       .set('Content-Type', 'application/json');
     
     return this.http.get(`${this.baseUrl}/Order/ConfirmCart/${id}`, { headers });
+  }
+
+  ChangeOrderState(order:Order, DomainName: string){
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    
+    return this.http.put(`${this.baseUrl}/Order/ChangeOrderState`, order, { headers });
   }
 }

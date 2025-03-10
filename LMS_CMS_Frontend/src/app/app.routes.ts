@@ -114,6 +114,9 @@ import { OrderComponent } from './Pages/Student/Ecommerce/order/order.component'
 import { DosesComponent } from './Pages/Employee/Clinic/doses/doses.component';
 import { MedicalReportComponent } from './Pages/Employee/Clinic/medical-report/medical-report.component';
 import { OrderItemsComponent } from './Pages/Student/Ecommerce/order-items/order-items.component';
+import { OrderHistoryComponent } from './Pages/Employee/E-Commerce/order-history/order-history.component';
+import { StockingComponent } from './Pages/Employee/Inventory/stocking/stocking.component';
+import { StockingDetailsComponent } from './Pages/Employee/Inventory/stocking-details/stocking-details.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -268,7 +271,12 @@ export const routes: Routes = [
             { path: "ShopItem/:id", component: ShopItemComponent, title: "Shop Item", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Cart", component: CartComponent, title: "Cart", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Order", component: OrderComponent, title: "Order", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "Order/:id", component: OrderItemsComponent, title: "Order Items", canActivate:[noNavigateWithoutLoginGuard ] }
+            { path: "Order History", component: OrderHistoryComponent, title: "Order History", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Order/:id", component: OrderItemsComponent, title: "Order Items", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Stocking", component: StockingComponent, title: "Stocking", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Stocking Details", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Stocking Details/Edit/:id", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
+
         ]
     },
     { 

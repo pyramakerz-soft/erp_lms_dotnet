@@ -34,12 +34,8 @@ export class DomainService {
     const headers = new HttpHeaders()
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
-
-    const body = {
-      domainName: domain.name,
-      pages: domain.pages
-    }
-    return this.http.post(`${this.baseUrl}/Domain`, body, { headers })
+ 
+    return this.http.post(`${this.baseUrl}/Domain`, domain, { headers })
   }
 
   Edit(domain:Domain){

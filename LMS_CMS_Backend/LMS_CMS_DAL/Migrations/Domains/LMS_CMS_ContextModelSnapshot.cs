@@ -4154,6 +4154,135 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.ToTable("ShopItemSize");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.Stocking", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("InvoiceNumber")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("StoreID")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("StoreID");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("Stocking");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.StockingDetails", b =>
+                {
+                    b.Property<long>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+
+                    b.Property<long>("ActualStock")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("CurrentStock")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("ShopItemID")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StockingId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TheDifference")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("ShopItemID");
+
+                    b.HasIndex("StockingId");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("StockingDetails");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.Store", b =>
                 {
                     b.Property<long>("ID")
@@ -8537,6 +8666,72 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("UpdatedByEmployee");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.Stocking", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.Store", "Store")
+                        .WithMany("Stocking")
+                        .HasForeignKey("StoreID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("Store");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.StockingDetails", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.ShopItem", "ShopItem")
+                        .WithMany("StockingDetails")
+                        .HasForeignKey("ShopItemID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.Stocking", "Stocking")
+                        .WithMany("StockingDetails")
+                        .HasForeignKey("StockingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("ShopItem");
+
+                    b.Navigation("Stocking");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.Store", b =>
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
@@ -9937,6 +10132,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("ShopItemColor");
 
                     b.Navigation("ShopItemSize");
+
+                    b.Navigation("StockingDetails");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.ShopItemColor", b =>
@@ -9949,11 +10146,18 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("Cart_ShopItems");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.Stocking", b =>
+                {
+                    b.Navigation("StockingDetails");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Inventory.Store", b =>
                 {
                     b.Navigation("InventoryMasters");
 
                     b.Navigation("InventoryMastersStoreToTransform");
+
+                    b.Navigation("Stocking");
 
                     b.Navigation("StoreCategories");
                 });

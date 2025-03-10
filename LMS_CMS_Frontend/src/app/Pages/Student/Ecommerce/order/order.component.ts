@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { Router } from '@angular/router';
@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './order.component.html',
   styleUrl: './order.component.css'
 })
-export class OrderComponent {
+export class OrderComponent { 
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   UserID: number = 0;
   StuID: number = 0;
@@ -25,6 +25,9 @@ export class OrderComponent {
   DomainName: string = ""; 
 
   orders: Order[] = []
+
+  filteredOrders: Order[] = [] 
+  searchTerm: string = '';
 
   constructor(public account: AccountService, public ApiServ: ApiService, private router: Router, public employeeStudentService:EmployeeStudentService, private orderrService: OrderService){}
   
@@ -65,6 +68,7 @@ export class OrderComponent {
     this.orderrService.getByStudentID(this.StuID, this.DomainName).subscribe(
       data => {
         this.orders = data
+        this.filterOrders(); 
       }
     )
   } 
@@ -93,7 +97,25 @@ export class OrderComponent {
     }
   }
   
-  DownloadOrder() {
-    
+  DownloadOrder(id:number) {  
+    if(this.User_Data_After_Login.type == 'employee'){ 
+      this.router.navigate(['Employee/Order', id], { queryParams: { download: 'true' } }); 
+
+    } else{ 
+      this.router.navigate(['Student/Ecommerce/Order', id], { queryParams: { download: 'true' } }); 
+    }
   }
-}
+
+  filterOrders() {
+    if(this.searchTerm.trim() === '') {
+      this.filteredOrders = [...this.orders]; 
+    } else {
+      this.filteredOrders = this.orders.filter(order =>
+        order.cartID.toString().toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.totalPrice.toString().toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.orderStateName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.insertedAt.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+  }
+} 

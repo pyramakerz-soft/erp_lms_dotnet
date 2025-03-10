@@ -16,6 +16,7 @@ namespace LMS_CMS_BL.DTO.Clinic
         public string Student { get; set; }
         public string? Complains { get; set; }
         public long DiagnosisId { get; set; }
+        public string? Diagnosis { get; set; }
 
         public ICollection<FollowUpDrugGetDTO> FollowUpDrugs { get; set; } = new HashSet<FollowUpDrugGetDTO>();
 

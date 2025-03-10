@@ -1,34 +1,34 @@
 <div class="flex justify-between items-center">
-    <h1 class="primaryTxt font-semibold text-2xl leading-9 w-1/2">Orders</h1>
-    <div class="flex justify-between items-center w-1/2 space-x-4">
-        <div class=" relative flex items-center flex-1">
-            <span class="absolute text-[#919191] ltr:ml-2 rtl:mr-2">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </span>
-            <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
-                placeholder="Search For..." />
-        </div>
+    <h1 class="primaryTxt font-semibold text-2xl leading-9 w-1/2">Order History</h1> 
+    <div class=" relative flex items-center flex-1">
+        <span class="absolute text-[#919191] ltr:ml-2 rtl:mr-2">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+        <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
+            placeholder="Search For..." />
+    </div> 
+</div>
 
-        <div class="py-2 px-3 border bg-[#F7F7F7] rounded cursor-pointer" (click)="goToCart()">
-            <i class="fa-solid fa-cart-shopping text-[#919191]"></i>
+<div class="mt-8 mb-6 flex flex-wrap max-h-32 overflow-y-auto items-center">
+    <div class="px-3 py-2">
+        <div
+            (click)="getOrders()"
+            [ngClass]="{'border-b-[#FF7519] text-gray-800 font-semibold': stateID == 0, 'border-b-[#A9A9A952] text-[#6F6F6F] bg-[#EEEEEE3D]': stateID != 0 }"
+            class="px-4 py-2 border-b-2">
+                <p>All</p>
         </div>
-
-        <div class="py-2 px-3 border bg-[#F7F7F7] rounded cursor-pointer">
-            <i class="fa-solid fa-gear secondaryTxt"></i>
+    </div>
+    <div *ngFor="let row of orderStates; let i = index" class="px-3 py-2">
+        <div
+        (click)="getOrders(row.id)"
+        [ngClass]="{'border-b-[#FF7519] text-gray-800 font-semibold': row.id == stateID, 'border-b-[#A9A9A952] text-[#6F6F6F] bg-[#EEEEEE3D]': row.id != stateID }"
+        class="px-4 py-2 border-b-2">
+            <p>{{ row.name }}</p>
         </div>
     </div>
 </div>
-
-<select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto mt-8"
-    *ngIf="User_Data_After_Login.type == 'employee'"
-    (change)="getOrders()"
-    [(ngModel)]="StuID">
-    <option [value]=0 disabled selected hidden> Choose Your Student</option>
-    <option *ngFor="let empStu of emplyeeStudent" [value]="empStu.studentID">{{ empStu.studentName }}</option>
-    <option *ngIf="emplyeeStudent.length === 0" disabled selected>No Data Found</option>
-</select>
-
-<div *ngIf="orders.length == 0 && StuID != 0" class="w-full h-[90%] flex justify-center items-center">
+ 
+<div *ngIf="orders.length == 0" class="w-full h-[90%] flex justify-center items-center">
     <p>No Orders Yet</p>
 </div>
 
@@ -53,18 +53,25 @@
         </div>
 
         <div class="flex flex-col justify-between">
-            <div class="rounded-2xl text-center border px-2" [ngClass]="{
-                'bg-[#F0F9FF] text-[#026AA2] border-[#B9E6FE]': row.orderStateID === 1,
+            <div *ngIf="row.orderStateID != 1" class="rounded-2xl text-center border px-2" [ngClass]="{ 
                 'bg-[#F0FFF5] text-[#22A202] border-[#C1FEB9]': row.orderStateID === 2,
                 'bg-[#FDF2FA] text-[#C11574] border-[#FCCEEE]': row.orderStateID === 3
             }">
                 {{row.orderStateName}}
             </div>
-            <div class="flex space-x-1">
+            <div *ngIf="row.orderStateID == 1" class="mb-3">
+                <p >State</p>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto mt-2" 
+                [(ngModel)]="row.orderStateID"
+                    (change)="ChangeOrderState($event, row.id)"> 
+                    <option *ngFor="let OS of orderStates" [value]="OS.id">{{ OS.name }}</option> 
+                </select>
+            </div>
+            <div class="flex space-x-1 justify-end">
                 <div class="w-11 h-11 bg-[#F7F7F7] rounded-md flex justify-center items-center cursor-pointer" (click)="DownloadOrder(row.id)">
                     <i class="fa-solid fa-download text-[#6F6F6F] text-lg"></i>
                 </div> 
-
+                 
                 <div class="w-11 h-11 bg-[#F7F7F7] rounded-md flex justify-center items-center cursor-pointer" (click)="goToOrderItems(row.id)">
                     <i class="fa-solid fa-eye text-[#6F6F6F] text-lg"></i>
                 </div>

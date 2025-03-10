@@ -686,7 +686,8 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name))
                 .ForMember(dest => dest.Grade, opt => opt.MapFrom(src => src.Grade.Name))
                 .ForMember(dest => dest.Classroom, opt => opt.MapFrom(src => src.Classroom.Name))
-                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name));
+                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name))
+                .ForMember(dest => dest.Diagnosis, opt => opt.MapFrom(src => src.Diagnosis.Name));
             CreateMap<FollowUpPutDTO, FollowUp>();
 
             CreateMap<FollowUpDrugAddDTO, FollowUpDrug>();
@@ -711,8 +712,20 @@ namespace LMS_CMS_BL.Config
             CreateMap<Order, OrderGetDTO>()
                 .ForMember(dest => dest.OrderStateName, opt => opt.MapFrom(src => src.OrderState.Name));
 
+            CreateMap<OrderState, OrderStateGetDTO>();
+
             CreateMap<CartShopItemAddDTO, Cart_ShopItem>();
             CreateMap<CartShopItemPutDTO, Cart_ShopItem>();
+
+            CreateMap<Stocking, StockingGetDto>();
+            CreateMap<StockingAddDTO, Stocking>();
+            CreateMap<StockingGetDto, Stocking>();
+
+            CreateMap<StockingDetails, StockingDetailsGetDto>()
+                .ForMember(dest => dest.BarCode, opt => opt.MapFrom(src => src.ShopItem.BarCode))
+                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+            CreateMap<StockingDetailsGetDto, StockingDetails>();
+            CreateMap<StockingAddDTO, StockingDetails>();
 
         }
     } 

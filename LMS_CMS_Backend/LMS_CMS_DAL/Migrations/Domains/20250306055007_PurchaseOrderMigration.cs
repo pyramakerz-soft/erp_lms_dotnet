@@ -12,7 +12,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
         {
             migrationBuilder.Sql(@"
                 INSERT INTO InventoryFlags (ID, enName, FlagValue, ItemInOut, en_Title, arName, ar_Title)
-                VALUES (13, 'Purchase Order', 1, 1, 'Supplier', N'أمر الشراء', N'المورد')
+                VALUES (13, 'Purchase Order', 1, 0, 'Supplier', N'أمر الشراء', N'المورد')
                  ");
         }
         /// <inheritdoc />

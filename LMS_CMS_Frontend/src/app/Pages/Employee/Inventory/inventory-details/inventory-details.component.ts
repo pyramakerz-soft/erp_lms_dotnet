@@ -128,8 +128,7 @@ export class InventoryDetailsComponent {
       this.IsRemainingCashVisa = true
     }
 
-    if (this.FlagId == 9) {
-      if (this.mode == 'Create')
+    if (this.FlagId == 9 && this.mode == 'Create' || this.FlagId==13 && this.mode == 'Create') { //CanEditPrice
         this.IsPriceEditable = true
     }
 
@@ -406,6 +405,12 @@ export class InventoryDetailsComponent {
         this.Data.inventoryDetails = [];
       }
       this.Data.inventoryDetails.push(this.Item);
+      if(this.FlagId==9 || this.FlagId==13){
+        console.log(this.ShopItem)
+        this.shopitemServ.Edit(this.ShopItem,this.DomainName).subscribe((d)=>{
+
+        })
+      }
       this.TotalandRemainingCalculate();
     }
     if (this.mode == 'Edit') {

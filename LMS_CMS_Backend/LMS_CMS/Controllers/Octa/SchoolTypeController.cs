@@ -101,6 +101,15 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Unauthorized("Access Denied");
             }
 
+            LMS_CMS_DAL.Models.Octa.SchoolType st = _Unit_Of_Work.schoolType_Octa_Repository.First_Or_Default_Octa(
+                s => s.Name == schoolType.Name
+                );
+
+            if(st != null)
+            {
+                return BadRequest("Name Already Exists");
+            }
+
             LMS_CMS_DAL.Models.Octa.SchoolType SchoolTypeDTO = mapper.Map<LMS_CMS_DAL.Models.Octa.SchoolType>(schoolType);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             SchoolTypeDTO.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -154,6 +163,15 @@ namespace LMS_CMS_PL.Controllers.Octa
             if (schoolTypeExists == null)
             {
                 return NotFound("No School Type with this ID");
+            }
+
+            LMS_CMS_DAL.Models.Octa.SchoolType st = _Unit_Of_Work.schoolType_Octa_Repository.First_Or_Default_Octa(
+                s => s.Name == schoolType.Name
+                );
+
+            if (st != null)
+            {
+                return BadRequest("Name Already Exists");
             }
 
             mapper.Map(schoolType, schoolTypeExists);

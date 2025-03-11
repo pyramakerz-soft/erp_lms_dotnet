@@ -17,5 +17,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long StockingId { get; set; }
         public string? BarCode { get; set; }
         public string? ShopItemName { get; set; }
+        public long? InsertedByUserId { get; set; }
+
     }
 }

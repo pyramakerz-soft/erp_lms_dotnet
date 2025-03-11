@@ -146,8 +146,8 @@
                                 {{ getMonthDate(month.month, month.year) | date: 'MMM' }} {{ month.year }}
                                 </h2>
                                 <div class="flex space-x-3 text-3xl">
-                                    <p *ngIf="currentMonth!=0" (click)="lastMonth(); showTime()">&lt;</p>
-                                    <p *ngIf="currentMonth!=calendarMonths.length-1" (click)="nextMonth(); showTime()">&gt;</p>
+                                    <p *ngIf="currentMonth!=calendarMonths[0].month" (click)="lastMonth(); showTime()">&lt;</p>
+                                    <p *ngIf="currentMonth!=calendarMonths[calendarMonths.length-1].month" (click)="nextMonth(); showTime()">&gt;</p>
                                 </div>
                             </div>
 

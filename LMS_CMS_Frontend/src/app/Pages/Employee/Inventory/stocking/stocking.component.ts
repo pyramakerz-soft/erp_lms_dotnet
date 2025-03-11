@@ -1,11 +1,12 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { Stocking } from '../../../../Models/Inventory/stocking';
+import { StockingService } from '../../../../Services/Employee/Inventory/stocking.service';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SearchComponent } from '../../../../Component/search/search.component';
-import { InventoryMaster } from '../../../../Models/Inventory/InventoryMaster';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
@@ -13,17 +14,16 @@ import { BusTypeService } from '../../../../Services/Employee/Bus/bus-type.servi
 import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { InventoryFlag } from '../../../../Models/Inventory/inventory-flag';
-import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
 
 @Component({
-  selector: 'app-inventory-master',
+  selector: 'app-stocking',
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
-  templateUrl: './inventory-master.component.html',
-  styleUrl: './inventory-master.component.css'
+  templateUrl: './stocking.component.html',
+  styleUrl: './stocking.component.css'
 })
-export class InventoryMasterComponent {
+export class StockingComponent {
+
  User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
  
    AllowEdit: boolean = false;
@@ -31,7 +31,7 @@ export class InventoryMasterComponent {
    AllowEditForOthers: boolean = false;
    AllowDeleteForOthers: boolean = false;
  
-   TableData: InventoryMaster[] = [];
+   TableData: Stocking[] = [];
  
    DomainName: string = '';
    UserID: number = 0;
@@ -49,10 +49,6 @@ export class InventoryMasterComponent {
    TotalPages:number = 1
    TotalRecords:number = 0
    isDeleting:boolean = false;
-
-   FlagId:number =0;
-
-   inventoryFlag :InventoryFlag =new InventoryFlag()
  
    constructor(
      private router: Router,
@@ -63,7 +59,7 @@ export class InventoryMasterComponent {
      public DomainServ: DomainService,
      public EditDeleteServ: DeleteEditPermissionService,
      public ApiServ: ApiService,
-     public salesServ:InventoryMasterService 
+     public StockingServ:StockingService 
    ) {}
    ngOnInit() {
      this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -72,7 +68,6 @@ export class InventoryMasterComponent {
      this.activeRoute.url.subscribe((url) => {
        this.path = url[0].path;
      });
-     this.FlagId = this.activeRoute.snapshot.data['id'];
      this.menuService.menuItemsForEmployee$.subscribe((items) => {
        const settingsPage = this.menuService.findByPageName(this.path, items);
        if (settingsPage) {
@@ -85,14 +80,15 @@ export class InventoryMasterComponent {
  
      this.GetAllData(this.CurrentPage, this.PageSize)
    }
+
    Create() {
      this.mode = 'Create';
-     this.router.navigateByUrl(`Employee/${this.inventoryFlag.enName} Item/${this.FlagId}`)
+     this.router.navigateByUrl(`Employee/Stocking Details`)
    }
  
    Delete(id: number) {
      Swal.fire({
-       title: 'Are you sure you want to delete this Sales?',
+       title: 'Are you sure you want to delete this Stocking?',
        icon: 'warning',
        showCancelButton: true,
        confirmButtonColor: '#FF7519',
@@ -101,15 +97,15 @@ export class InventoryMasterComponent {
        cancelButtonText: 'Cancel',
      }).then((result) => {
        if (result.isConfirmed) {
-         this.salesServ.Delete(id,this.DomainName).subscribe((D)=>{
+         this.StockingServ.Delete(id,this.DomainName).subscribe((D)=>{
            this.GetAllData(this.CurrentPage, this.PageSize)
          })
        }
      });
    }
  
-   Edit(row: InventoryMaster) {
-     this.router.navigateByUrl(`Employee/${this.inventoryFlag.enName} Item/Edit/${row.flagId}/${row.id}`)
+   Edit(row: Stocking) {
+     this.router.navigateByUrl(`Employee/Stocking Details/Edit/${row.id}`)
    }
  
    IsAllowDelete(InsertedByID: number) {
@@ -135,7 +131,7 @@ export class InventoryMasterComponent {
      this.value = event.value;
      try {
        const data: any = await firstValueFrom(
-         this.salesServ.Get(this.DomainName, this.FlagId, this.CurrentPage, this.PageSize)
+         this.StockingServ.Get(this.DomainName, this.CurrentPage, this.PageSize)
        );
        this.TableData = data.data || [];
  
@@ -161,14 +157,13 @@ export class InventoryMasterComponent {
    }
  
    GetAllData(pageNumber:number, pageSize:number){
-     this.salesServ.Get(this.DomainName,this.FlagId, pageNumber, pageSize).subscribe(
+     this.StockingServ.Get(this.DomainName, pageNumber, pageSize).subscribe(
        (data) => {
          this.CurrentPage = data.pagination.currentPage
          this.PageSize = data.pagination.pageSize
          this.TotalPages = data.pagination.totalPages
          this.TotalRecords = data.pagination.totalRecords 
          this.TableData = data.data
-         this.inventoryFlag = data.inventoryFlag
        }, 
        (error) => { 
          if(error.status == 404){
@@ -200,10 +195,6 @@ export class InventoryMasterComponent {
      if (isNaN(value) || value === '') {
          event.target.value = '';
      }
-   }
- 
-   View(id:number){
-     this.router.navigateByUrl(`Employee/${this.inventoryFlag.enName} Item/View/${id}`)
    }
  
    validateNumber(event: any): void {

@@ -5,8 +5,8 @@
             <span class="absolute text-[#919191] ltr:ml-2 rtl:mr-2">
                 <i class="fa-solid fa-magnifying-glass"></i>
             </span>
-            <input #searchInput type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
-                placeholder="Search For..." />
+            <input #searchInput type="text" [(ngModel)]="searchTerm" (keyup)="filterCartItems()" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
+            placeholder="Search For..." />
         </div>
 
         <div class="py-2 px-3 border bg-[#F7F7F7] rounded cursor-pointer">
@@ -50,7 +50,7 @@
                       No Data Found
                     </td>
                 </tr>
-                <tr *ngFor="let row of cart.cart_ShopItems; let i = index"
+                <tr *ngFor="let row of filteredCartShopItem; let i = index"
                 [ngClass]="{ 'border-b': i != cart.cart_ShopItems.length }">
                     <td class="flex space-x-4 p-4 items-center">
                         <img class="rounded w-[100px] h-[67px]" [src]="row.mainImage" *ngIf="row.mainImage">

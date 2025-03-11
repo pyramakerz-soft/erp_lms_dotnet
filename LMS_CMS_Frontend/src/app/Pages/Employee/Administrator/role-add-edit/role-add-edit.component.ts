@@ -64,17 +64,19 @@ export class RoleAddEditComponent {
       this.DomainName = this.ApiServ.GetHeader();
       this.activeRoute.url.subscribe(url => {
         this.path = url[0].path
-        this.getAllPges();
-        if (this.path == "Role Edit") {
-          this.RoleId = Number(this.activeRoute.snapshot.paramMap.get('id'))
-          this.mode = "Edit";
-          this.GetRoleName();
-          this.GetAllPgesForEdit();
-        }
-        else if (this.path == "Role Create") {
-          this.mode = "Create";
-        }
       });
+      
+      this.getAllPges();
+
+      if (this.path == "Role Edit") {
+        this.RoleId = Number(this.activeRoute.snapshot.paramMap.get('id'))
+        this.mode = "Edit";
+        this.GetRoleName();
+        this.GetAllPgesForEdit();
+      }
+      else if (this.path == "Role Create") {
+        this.mode = "Create";
+      }
     }
   }
 
@@ -83,6 +85,7 @@ export class RoleAddEditComponent {
       this.RoleName = data.name;
     })
   }
+
   async getAllPges() {
     try {
       const data = await firstValueFrom(this.pageServ.Get_Pages(this.DomainName));
@@ -118,13 +121,13 @@ export class RoleAddEditComponent {
 
   async GetAllPgesForEdit(): Promise<void> {
     try {
-      this.dataForEdit = await firstValueFrom(
-        this.RoleDetailsServ.Get_Pages_With_RoleID(this.RoleId, this.DomainName)
-      );
+      this.dataForEdit = await firstValueFrom(this.RoleDetailsServ.Get_Pages_With_RoleID(this.RoleId, this.DomainName));
     } catch (error) {
       console.error('Error fetching pages for edit:', error);
     }
-
+     
+    console.log(this.dataForEdit)
+    
     this.dataForEdit.forEach(element => {
       const resultItems1 = this.ResultArray.find(item => item.Rowkey === 0 && item.pageId === element.id);
       if (resultItems1) {
@@ -184,6 +187,7 @@ export class RoleAddEditComponent {
       }
     }
   }
+
   checkForPage(pageId: number, RowId: number): boolean {
     const resultItem = this.ResultArray.find(item => item.Rowkey === RowId && item.pageId === pageId);
     return resultItem ? resultItem.IsSave : false;
@@ -222,9 +226,9 @@ export class RoleAddEditComponent {
   }
 
   Save() {
-    const resultItems = this.ResultArray.filter(item => item.IsSave === true);
-    if (this.RoleName == null || resultItems.length == 0) {
-      if (this.RoleName == null) {
+    const resultItems = this.ResultArray.filter(item => item.IsSave === true); 
+    if (this.RoleName == "" || resultItems.length == 0) {
+      if (this.RoleName == "") {
         Swal.fire({
           icon: 'error',
           title: 'Error',

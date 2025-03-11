@@ -14,5 +14,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string Name { get; set; } 
         public long InventoryCategoriesID { get; set; }
         public string InventoryCategoriesName { get; set; }
+        public long? InsertedByUserId { get; set; }
     }
 }

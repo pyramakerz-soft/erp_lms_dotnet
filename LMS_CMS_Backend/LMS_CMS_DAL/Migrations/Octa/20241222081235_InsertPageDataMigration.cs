@@ -12,7 +12,7 @@ namespace LMS_CMS_DAL.Migrations.Octa
         {
             migrationBuilder.Sql(@"
                 INSERT INTO Page(ID, en_name, ar_name, Page_ID, IsDisplay) VALUES
-                (1, 'Busses', N'الحافلات', NULL, 1),
+                (1, 'Buses', N'الحافلات', NULL, 1),
                 (2, 'Bus Details', N'تفاصيل الحافلات', 1, 1),
                 (3, 'Bus Types', N'أنواع الحافلات', 1, 1),
                 (4, 'Bus Districts', N'طرق الحافلات', 1, 1),

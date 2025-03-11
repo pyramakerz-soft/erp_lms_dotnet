@@ -6,6 +6,8 @@
                 <i class="fa-solid fa-magnifying-glass"></i>
             </span>
             <input type="text" class="bg-[#FFFFFF0D] ltr:pl-10 rtl:pr-10 ltr:pr-3 rtl:pl-3 py-2 rounded-lg border w-full"
+                [(ngModel)]="searchQuery"
+                (input)="searchReports()"
                 placeholder="Search For..." />
         </div>
 

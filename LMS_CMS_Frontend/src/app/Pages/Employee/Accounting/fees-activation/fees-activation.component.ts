@@ -171,10 +171,22 @@ export class FeesActivationComponent {
     });
   }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field: keyof FeesActivationAddPut): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.Fees[field] === 'string') {
+        this.Fees[field] = '' as never;  
+      }
+    }
+  }
+  
+
+  validateNumberForDiscount(event: any): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = ''; 
+      this.DiscountPercentage = 0
     }
   }
   

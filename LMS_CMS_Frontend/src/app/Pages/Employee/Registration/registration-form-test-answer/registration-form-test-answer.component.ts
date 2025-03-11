@@ -136,11 +136,14 @@ export class RegistrationFormTestAnswerComponent {
       })
     }
   }
-
-  validateNumber(event: any): void {
+ 
+  validateNumber(event: any, field: keyof RegisterationFormTest): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.RegesterForm[field] === 'string') {
+        this.RegesterForm[field] = '' as never;  
+      }
     }
   }
 }

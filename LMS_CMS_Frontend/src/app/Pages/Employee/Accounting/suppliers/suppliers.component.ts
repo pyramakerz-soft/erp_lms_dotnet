@@ -101,6 +101,7 @@ export class SuppliersComponent {
   }
 
   GetAllData() {
+    // this.TableData = []
     this.SupplierServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData=d;
     })

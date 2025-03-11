@@ -264,11 +264,14 @@ export class BusDetailsComponent {
       }
     }
   }
-
-  validateNumber(event: any): void {
+  
+  validateNumber(event: any, field: keyof Bus): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.bus[field] === 'string') {
+        this.bus[field] = '' as never;  
+      }
     }
   }
 

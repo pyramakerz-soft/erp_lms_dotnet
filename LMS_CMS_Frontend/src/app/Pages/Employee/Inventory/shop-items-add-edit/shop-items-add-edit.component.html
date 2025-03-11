@@ -52,7 +52,7 @@
     <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt font-medium" for="Purchase">Purchase Price</label>
         <input id="Purchase" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (input)="validateNumber($event)"
+            (input)="validateNumber($event, 'purchasePrice')"
             placeholder="Enter Price" [(ngModel)]="ShopItem.purchasePrice" 
             (ngModelChange)="onInputValueChange({ field: 'purchasePrice', value: $event })"/>
         <span *ngIf="validationErrors['purchasePrice']" class="text-red-500 ml-3 font-normal">{{ validationErrors['purchasePrice'] }}</span>
@@ -61,7 +61,7 @@
     <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt font-medium" for="Sales">Sales Price</label>
         <input id="Sales" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (input)="validateNumber($event)"
+            (input)="validateNumber($event, 'salesPrice')"
             placeholder="Enter Price" [(ngModel)]="ShopItem.salesPrice" 
             (ngModelChange)="onInputValueChange({ field: 'salesPrice', value: $event })"/>
         <span *ngIf="validationErrors['salesPrice']" class="text-red-500 ml-3 font-normal">{{ validationErrors['salesPrice'] }}</span>
@@ -70,7 +70,7 @@
     <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt font-medium" for="Vat">Vat for Foreign</label>
         <input id="Vat" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (input)="validateNumber($event)"
+            (input)="validateNumber($event, 'vatForForeign')"
             placeholder="Enter Vat" [(ngModel)]="ShopItem.vatForForeign" /> 
     </div>
 
@@ -134,7 +134,7 @@
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt font-medium" for="limit">Limit</label>
         <input id="limit" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (input)="validateNumber($event)"
+            (input)="validateNumber($event, 'limit')"
             (ngModelChange)="onInputValueChange({ field: 'limit', value: $event })"
             placeholder="Enter limit" [(ngModel)]="ShopItem.limit" />
         <span *ngIf="validationErrors['limit']" class="text-red-500 ml-3 font-normal">{{ validationErrors['limit'] }}</span>

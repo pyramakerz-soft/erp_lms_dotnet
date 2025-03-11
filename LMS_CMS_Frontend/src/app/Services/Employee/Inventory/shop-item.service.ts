@@ -38,7 +38,7 @@ export class ShopItemService {
     return this.http.get<ShopItem[]>(`${this.baseUrl}/ShopItem/BySubCategoryId/${SubCategoryId}`, { headers });
   }
 
-  GetBySubCategoryIDWithGenderAndGrade(SubCategoryId:number, pageNumber:number, pageSize:number, DomainName: string) {
+  GetBySubCategoryIDWithGenderAndGrade(SubCategoryId:number, pageNumber:number, pageSize:number, DomainName: string, searchQuery:string) {
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -48,7 +48,7 @@ export class ShopItemService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
   
-    return this.http.get<{ data: ShopItem[], pagination: any }>(`${this.baseUrl}/ShopItem/GetBySubCategoryIDWithGenderAndGrade/${SubCategoryId}?pageNumber=${pageNumber}&pageSize=${pageSize}`, { headers });
+    return this.http.get<{ data: ShopItem[], pagination: any }>(`${this.baseUrl}/ShopItem/GetBySubCategoryIDWithGenderAndGrade/${SubCategoryId}?pageNumber=${pageNumber}&pageSize=${pageSize}&searchQuery=${searchQuery}`, { headers });
   }
 
   GetById(id: number, DomainName: string) {

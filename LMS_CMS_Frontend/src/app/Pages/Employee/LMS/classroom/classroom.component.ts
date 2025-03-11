@@ -238,11 +238,14 @@ export class ClassroomComponent {
       this.validationErrors[field] = '';
     }
   }
-
-  validateNumber(event: any): void {
+ 
+  validateNumber(event: any, field: keyof Classroom): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.classroom[field] === 'string') {
+        this.classroom[field] = '' as never;  
+      }
     }
   }
 

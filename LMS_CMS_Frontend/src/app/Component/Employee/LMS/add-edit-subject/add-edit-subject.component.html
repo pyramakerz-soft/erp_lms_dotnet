@@ -57,7 +57,7 @@
                 <input id="orderInCertificate" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Order In Certificate" 
                 [(ngModel)]="subject.orderInCertificate"
                 (ngModelChange)="onInputValueChange({ field: 'orderInCertificate', value: $event })"
-                (input)="validateNumber($event)"/>
+                (input)="validateNumber($event, 'orderInCertificate')"/>
                 <span *ngIf="validationErrors['orderInCertificate']" class="text-red-500 ml-3 font-normal">{{ validationErrors['orderInCertificate'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
@@ -65,7 +65,7 @@
                 <input id="creditHours" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Credit Hours" 
                 [(ngModel)]="subject.creditHours"
                 (ngModelChange)="onInputValueChange({ field: 'creditHours', value: $event })"
-                (input)="validateNumber($event)"/>
+                (input)="validateNumber($event, 'creditHours')"/>
                 <span *ngIf="validationErrors['creditHours']" class="text-red-500 ml-3 font-normal">{{ validationErrors['creditHours'] }}</span>
             </div>
             <div class="flex flex-col mb-4 w-[49%]">
@@ -80,7 +80,7 @@
                 <input id="passByDegree" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Pass By Degree" 
                 [(ngModel)]="subject.passByDegree"
                 (ngModelChange)="onInputValueChange({ field: 'passByDegree', value: $event })"
-                (input)="validateNumber($event)"/>
+                (input)="validateNumber($event, 'passByDegree')"/>
                 <span *ngIf="validationErrors['passByDegree']" class="text-red-500 ml-3 font-normal">{{ validationErrors['passByDegree'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
@@ -88,7 +88,7 @@
                 <input id="totalMark" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Credit Hours" 
                 [(ngModel)]="subject.totalMark"
                 (ngModelChange)="onInputValueChange({ field: 'totalMark', value: $event })"
-                (input)="validateNumber($event)"/>
+                (input)="validateNumber($event, 'totalMark')"/>
                 <span *ngIf="validationErrors['totalMark']" class="text-red-500 ml-3 font-normal">{{ validationErrors['totalMark'] }}</span>
             </div>
             <div class="flex w-full space-x-5 items-center mb-4">
@@ -128,7 +128,7 @@
                 <input id="numberOfSessionPerWeek" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Number of session per week" 
                 [(ngModel)]="subject.numberOfSessionPerWeek"
                 (ngModelChange)="onInputValueChange({ field: 'numberOfSessionPerWeek', value: $event })"
-                (input)="validateNumber($event)"/>
+                (input)="validateNumber($event, 'numberOfSessionPerWeek')"/>
                 <span *ngIf="validationErrors['numberOfSessionPerWeek']" class="text-red-500 ml-3 font-normal">{{ validationErrors['numberOfSessionPerWeek'] }}</span>
             </div>
         </div>

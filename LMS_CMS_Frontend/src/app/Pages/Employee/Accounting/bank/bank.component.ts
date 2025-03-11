@@ -141,10 +141,13 @@ export class BankComponent {
     this.openModal();
   }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field: keyof Bank): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.bank[field] === 'string') {
+        this.bank[field] = '' as never;  
+      }
     }
   }
 

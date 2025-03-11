@@ -313,10 +313,13 @@ export class InterviewTimeTableComponent {
     }
   }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field: keyof InterviewTimeTable): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.interviewTimeTable[field] === 'string') {
+        this.interviewTimeTable[field] = '' as never;  
+      }
     }
   }
 

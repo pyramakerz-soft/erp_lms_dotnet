@@ -299,11 +299,14 @@ export class FieldsComponent {
       this.Data = [];
     }
   }
-
-  validateNumber(event: any): void {
+  
+  validateNumber(event: any, field: keyof FieldAddEdit): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.field[field] === 'string') {
+        this.field[field] = '' as never;  
+      }
     }
   }
 }

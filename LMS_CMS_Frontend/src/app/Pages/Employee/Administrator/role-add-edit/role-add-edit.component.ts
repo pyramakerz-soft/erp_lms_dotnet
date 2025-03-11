@@ -53,29 +53,34 @@ export class RoleAddEditComponent {
 
 
   dataForEdit: PagesWithRoleId[] = []
-
+  loading = true;
 
   constructor(public pageServ: PageService, public RoleDetailsServ: RoleDetailsService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, public RoleServ: RoleService, private router: Router) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
+  
     if (this.User_Data_After_Login.type === "employee") {
       this.DomainName = this.ApiServ.GetHeader();
       this.activeRoute.url.subscribe(url => {
-        this.path = url[0].path
+        this.path = url[0].path;
       });
-      
+  
       this.getAllPges();
-
-      if (this.path == "Role Edit") {
-        this.RoleId = Number(this.activeRoute.snapshot.paramMap.get('id'))
+  
+      if (this.path === "Role Edit") {
+        this.RoleId = Number(this.activeRoute.snapshot.paramMap.get('id'));
         this.mode = "Edit";
         this.GetRoleName();
-        this.GetAllPgesForEdit();
-      }
-      else if (this.path == "Role Create") {
+  
+        setTimeout(async () => {
+          await this.GetAllPgesForEdit();
+          this.loading = false; // Only set to false when the function completes
+        }, 0);
+      } else if (this.path === "Role Create") {
         this.mode = "Create";
+        this.loading = false; // Not loading in create mode
       }
     }
   }
@@ -126,7 +131,6 @@ export class RoleAddEditComponent {
       console.error('Error fetching pages for edit:', error);
     }
      
-    console.log(this.dataForEdit)
     
     this.dataForEdit.forEach(element => {
       const resultItems1 = this.ResultArray.find(item => item.Rowkey === 0 && item.pageId === element.id);
@@ -148,6 +152,7 @@ export class RoleAddEditComponent {
         }
       });
     });
+
   }
 
   togglePageCollapse(rowIndex: number, pageIndex: number) {

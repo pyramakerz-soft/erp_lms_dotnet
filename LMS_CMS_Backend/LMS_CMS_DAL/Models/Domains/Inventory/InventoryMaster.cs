@@ -24,7 +24,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public int? CashAmount { get; set; }
         public int? VisaAmount { get; set; }
         public int Remaining { get; set; }
-        public int Total { get; set; }
+        public double Total { get; set; }
         public string? Notes { get; set; }
         public List<string>? Attachments { get; set; }
 

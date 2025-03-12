@@ -173,10 +173,13 @@ export class AddEditSubjectComponent {
     return isValid;
   }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field: keyof Subject): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.subject[field] === 'string') {
+        this.subject[field] = '' as never;  
+      }
     }
   }
 

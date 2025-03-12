@@ -37,13 +37,13 @@
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">National Id</label>
-        <input id="name"  (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        <input id="name"  (input)="validateNumber($event,'nationalID')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter User Name" [(ngModel)]="Data.nationalID" />
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="passportNumber">Passport Number</label>
-        <input id="passportNumber"  (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        <input id="passportNumber"  (input)="validateNumber($event,'passportNumber')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter User passportNumber" [(ngModel)]="Data.passportNumber" />
     </div>
 
@@ -177,7 +177,7 @@
       
     <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt" for="delayAllowance">Delay Allowance</label>
-        <input id="delayAllowance"  (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        <input id="delayAllowance"  (input)="validateNumber($event, 'delayAllowance')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter delayAllowance" [(ngModel)]="Data.delayAllowance" />
     </div>
     
@@ -193,17 +193,17 @@
 
     <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt" for="annualLeaveBalance">Annual Leave Balance</label>
-        <input id="annualLeaveBalance" (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        <input id="annualLeaveBalance" (input)="validateNumber($event, 'annualLeaveBalance')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter annualLeaveBalance" [(ngModel)]="Data.annualLeaveBalance" />
     </div>
     <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt" for="casualLeavesBalance">Casual Leaves Balance</label>
-        <input id="casualLeavesBalance"  (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        <input id="casualLeavesBalance"  (input)="validateNumber($event, 'casualLeavesBalance')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter casualLeavesBalance" [(ngModel)]="Data.casualLeavesBalance" />
     </div>
     <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt" for="monthlyLeaveRequestBalance">Monthly Leave Request Balance</label>
-        <input id="monthlyLeaveRequestBalance"  (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        <input id="monthlyLeaveRequestBalance"  (input)="validateNumber($event, 'monthlyLeaveRequestBalance')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             placeholder="Enter monthlyLeaveRequestBalance" [(ngModel)]="Data.monthlyLeaveRequestBalance" />
     </div>
 
@@ -252,7 +252,7 @@
         <label class="mb-2 primaryTxt" for="graduationYear">Graduation Year</label>
         <input
           id="graduationYear"
-          (input)="validateNumber($event)"
+          (input)="validateNumber($event, 'graduationYear')"
           class="rounded-lg border border-solid border-gray-300 px-4 py-3"
           placeholder="Enter Year"
           [(ngModel)]="Data.graduationYear"

@@ -216,10 +216,33 @@ export class ReceivableDetailsComponent {
     } 
   }
 
-  validateNumber(event: any): void {
+  validateNumberReceivable(event: any, field: keyof Receivable): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.receivable[field] === 'string') {
+        this.receivable[field] = '' as never;  
+      }
+    }
+  }
+
+  validateNumberDetails(event: any, field: keyof ReceivableDetails): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = ''; 
+      if (typeof this.newDetails[field] === 'string') {
+        this.newDetails[field] = '' as never;  
+      }
+    }
+  }
+
+  validateNumberEditDetails(event: any, field: keyof ReceivableDetails): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = ''; 
+      if (typeof this.editedRowData[field] === 'string') {
+        this.editedRowData[field] = '' as never;  
+      }
     }
   }
 

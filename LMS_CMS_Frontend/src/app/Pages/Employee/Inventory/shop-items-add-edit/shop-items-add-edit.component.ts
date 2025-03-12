@@ -182,11 +182,14 @@ export class ShopItemsAddEditComponent {
       this.GetAllGrades(); 
     }
   }
-
-  validateNumber(event: any): void {
+ 
+  validateNumber(event: any, field: keyof ShopItem): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.ShopItem[field] === 'string') {
+        this.ShopItem[field] = '' as never;  
+      }
     }
   }
 

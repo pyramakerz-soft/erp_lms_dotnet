@@ -350,11 +350,16 @@ export class AccountingEmployeeEditComponent {
     this.TableData = this.TableData.filter((student) => student.id !== id);
     this.Data.students = this.Data.students.filter((id) => id !== id);  }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field?: keyof AccountingEmployee): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if(field){
+        if (typeof this.Data[field] === 'string') {
+          this.Data[field] = '' as never;  
+        } 
+      }
     }
-  }  
+  } 
 }
 

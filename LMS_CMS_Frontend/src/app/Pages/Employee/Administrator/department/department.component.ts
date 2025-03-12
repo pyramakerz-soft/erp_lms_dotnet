@@ -67,8 +67,8 @@ export class DepartmentComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public DepartmentServ:DepartmentService
-  ) {}
+    public DepartmentServ: DepartmentService
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -91,16 +91,16 @@ export class DepartmentComponent {
   }
 
   GetAllData() {
-    this.DepartmentServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d
+    this.DepartmentServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d
     })
   }
 
   Create() {
     this.mode = 'Create';
-    this.department=new Department();
+    this.department = new Department();
     this.openModal();
-    this.validationErrors={}
+    this.validationErrors = {}
   }
 
   Delete(id: number) {
@@ -114,7 +114,7 @@ export class DepartmentComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.DepartmentServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.DepartmentServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData()
         })
       }
@@ -123,10 +123,10 @@ export class DepartmentComponent {
 
   Edit(row: Department) {
     this.mode = 'Edit';
-    this.DepartmentServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.department=d
+    this.DepartmentServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.department = d
     })
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -151,13 +151,13 @@ export class DepartmentComponent {
   CreateOREdit() {
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
-        this.DepartmentServ.Add(this.department,this.DomainName).subscribe((d)=>{
+        this.DepartmentServ.Add(this.department, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal()
         })
       }
       if (this.mode == 'Edit') {
-        this.DepartmentServ.Edit(this.department,this.DomainName).subscribe((d)=>{
+        this.DepartmentServ.Edit(this.department, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal()
         })
@@ -181,7 +181,7 @@ export class DepartmentComponent {
         const field = key as keyof Department;
         if (!this.department[field]) {
           if (
-            field == 'name' 
+            field == 'name'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

@@ -44,6 +44,8 @@ export class ShopComponent {
   TotalRecords:number = 0
   
   cartShopItem:CartShopItem = new CartShopItem()
+ 
+  searchQuery: string = '';
    
   constructor(public inventoryCategoryService:InventoryCategoryService, public inventorySubCategoryService:InventorySubCategoriesService, public employeeStudentService:EmployeeStudentService,
     public account: AccountService, public ApiServ: ApiService, public shopItemService:ShopItemService, private router: Router, private cartShopItemService:CartShopItemService){}
@@ -98,13 +100,13 @@ export class ShopComponent {
   }
 
   getShopPagination(){
-    this.shopItemService.GetBySubCategoryIDWithGenderAndGrade(this.selectedInventorySubCategory, this.CurrentPage, this.PageSize, this.DomainName).subscribe(
+    this.shopItemService.GetBySubCategoryIDWithGenderAndGrade(this.selectedInventorySubCategory, this.CurrentPage, this.PageSize, this.DomainName, this.searchQuery).subscribe(
       data => { 
         this.CurrentPage = data.pagination.currentPage
         this.PageSize = data.pagination.pageSize
         this.TotalPages = data.pagination.totalPages
         this.TotalRecords = data.pagination.totalRecords 
-        this.ShopItem = data.data
+        this.ShopItem = data.data 
       }
     )
   }
@@ -166,5 +168,11 @@ export class ShopComponent {
     } else{
       this.router.navigateByUrl("Student/Ecommerce/Order")
     }
-  }   
+  }
+  
+  searchReports(): void {
+    this.ShopItem = []
+    this.CurrentPage = 1; 
+    this.getShopPagination();
+  }
 }

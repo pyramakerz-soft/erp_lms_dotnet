@@ -99,7 +99,7 @@
                 <label class="mb-2 primaryTxt" for="number">Classroom Number</label>
                 <input id="number" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Classroom Number"
                 [(ngModel)]="classroom.number" 
-                (ngModelChange)="onInputValueChange({ field: 'number', value: $event })" (input)="validateNumber($event)"/>
+                (ngModelChange)="onInputValueChange({ field: 'number', value: $event })" (input)="validateNumber($event, 'number')"/>
                 <span *ngIf="validationErrors['number']" class="text-red-500 ml-3 font-normal">{{ validationErrors['number'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">

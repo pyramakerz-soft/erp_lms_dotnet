@@ -27,8 +27,8 @@
                                 type="text" 
                                 class="rounded-lg border border-solid border-gray-300 px-4 py-3" 
                                 placeholder="{{ 'Enter' | translate }} {{ isRtl ? field.arName : field.enName }}"
-                                (change)="FillData($event, field.id, field.fieldTypeID)"
-                                (input)="validateNumber($event)" 
+                                (change)="FillData($event, field.id, field.fieldTypeID)" 
+                                (input)="validateNumber($event, field)" 
                                 [class.error-border]="isFieldInvalid(field)" 
                                 />
     

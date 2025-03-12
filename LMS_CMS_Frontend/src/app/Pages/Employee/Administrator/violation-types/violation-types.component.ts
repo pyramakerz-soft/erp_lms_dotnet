@@ -98,6 +98,7 @@ export class ViolationTypesComponent {
   }
 
   GetViolation() {
+    this.Data = []
     this.violationServ.Get_Violations(this.DomainName).subscribe((data) => {
       this.Data = data;
     });

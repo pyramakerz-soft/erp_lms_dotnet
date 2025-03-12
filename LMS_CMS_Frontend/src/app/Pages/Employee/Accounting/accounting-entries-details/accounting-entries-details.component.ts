@@ -224,12 +224,34 @@ export class AccountingEntriesDetailsComponent {
     } 
   }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field: keyof AccountingEntries): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.accountingEntries[field] === 'string') {
+        this.accountingEntries[field] = '' as never;  
+      }
     }
+  }
 
+  validateNumberNewDetails(event: any, field: keyof AccountingEntriesDetails): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = ''; 
+      if (typeof this.newDetails[field] === 'string') {
+        this.newDetails[field] = '' as never;  
+      }
+    }
+  }
+
+  validateNumberEditedRowData(event: any, field: keyof AccountingEntriesDetails): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = ''; 
+      if (typeof this.editedRowData[field] === 'string') {
+        this.editedRowData[field] = '' as never;  
+      }
+    }
   }
 
   Save(){

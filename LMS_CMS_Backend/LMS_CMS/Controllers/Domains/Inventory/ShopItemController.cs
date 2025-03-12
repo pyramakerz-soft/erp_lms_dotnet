@@ -104,7 +104,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee", "student" }
         )]
-        public async Task<IActionResult> GetBySubCategoryIDWithGenderAndGrade(long SubCategoryID, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetBySubCategoryIDWithGenderAndGrade(long SubCategoryID, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string searchQuery = null)
         {
             long gradeID = 1;
             long genderID = 1;
@@ -125,19 +125,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             int totalRecords = await Unit_Of_Work.shopItem_Repository
                 .CountAsync(f => f.IsDeleted != true);
-
-            if (userTypeClaim == "student")
-            {
-                Student student = Unit_Of_Work.student_Repository.First_Or_Default(
-                    d => d.ID == userId && d.IsDeleted != true
-                    );
-
-                if (student == null)
-                {
-                    return NotFound("There is No Student with this ID");
-                }
-            }
-
+             
             var shopItemQuery = Unit_Of_Work.shopItem_Repository
                 .Select_All_With_IncludesById_Pagination<ShopItem>(
                     b => b.IsDeleted != true && b.InventorySubCategoriesID == SubCategoryID && b.AvailableInShop == true,
@@ -149,8 +137,34 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                     query => query.Include(sub => sub.ShopItemSize)
                 );
 
-            shopItemQuery = shopItemQuery.Where(s => s.GenderID == genderID || s.GenderID == null);
-            shopItemQuery = shopItemQuery.Where(s => s.GradeID == gradeID || s.GradeID == null);
+
+            if (userTypeClaim == "student")
+            {
+                Student student = Unit_Of_Work.student_Repository.First_Or_Default(
+                    d => d.ID == userId && d.IsDeleted != true
+                    );
+
+                if (student == null)
+                {
+                    return NotFound("There is No Student with this ID");
+                }
+
+                genderID = student.GenderId;
+                 
+                shopItemQuery = shopItemQuery.Where(s => s.GenderID == genderID || s.GenderID == null);
+                shopItemQuery = shopItemQuery.Where(s => s.GradeID == gradeID || s.GradeID == null);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                string searchLower = searchQuery.ToLower();
+                shopItemQuery = shopItemQuery.Where(s =>
+                    s.EnName.ToLower().Contains(searchLower) || 
+                    s.ArName.ToLower().Contains(searchLower) || 
+                    s.EnDescription.ToLower().Contains(searchLower) ||
+                    s.ArDescription.ToLower().Contains(searchLower) 
+                );
+            }
 
             totalRecords = await shopItemQuery.CountAsync();
 

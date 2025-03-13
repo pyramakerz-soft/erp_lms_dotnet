@@ -16,7 +16,7 @@ import { HygieneFormTableComponent } from "../hygiene-form-table/hygiene-form-ta
 @Component({
   selector: 'app-hygiene-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, SearchComponent, ModalComponent, TableComponent, HygieneFormTableComponent],
+  imports: [FormsModule, CommonModule, TableComponent],
   templateUrl: './hygiene-form.component.html',
   styleUrls: ['./hygiene-form.component.css']
 })

@@ -10,8 +10,7 @@
     </div>
 </div>
 
-<app-hygiene-form-table
-  [students]="students"
-  [hygieneTypes]="hygieneTypes"
-  [hygieneForms]="hygieneForms"> <!-- Pass hygieneForms here -->
-</app-hygiene-form-table>
+<!-- Reusable Table Component -->
+    <app-table [headers]="['ID', 'Grade', 'Classes', 'Date', 'Actions']" [data]="hygieneForms"
+        [keys]="['id', 'grade', 'classRoom', 'date']" (delete)="deleteHygieneForm($event)" (edit)="openModal($event.id)">
+    </app-table>

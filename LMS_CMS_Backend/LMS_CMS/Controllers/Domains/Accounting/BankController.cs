@@ -120,6 +120,36 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
             return Ok(newBank);
         }
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Bank" }
+        )]
+        public async Task<IActionResult> GetById(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (id == 0)
+            {
+                return BadRequest("Enter Bank ID");
+            }
+
+            Bank Bank = await Unit_Of_Work.bank_Repository.FindByIncludesAsync(
+                    credit => credit.IsDeleted != true && credit.ID == id,
+                    query => query.Include(credit => credit.AccountNumber));
+
+            if (Bank == null)
+            {
+                return NotFound();
+            }
+
+            BankGetDTO BankGetDTO = mapper.Map<BankGetDTO>(Bank);
+
+            return Ok(BankGetDTO);
+        }
+
         /////////
 
         [HttpPut]

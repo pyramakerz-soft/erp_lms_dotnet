@@ -91,6 +91,7 @@ export class AcademicDegreeComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.AcademicDegreeServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData=d
     })

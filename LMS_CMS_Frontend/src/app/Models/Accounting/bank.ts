@@ -9,7 +9,7 @@ export class Bank {
         public accountOpeningDate: string = '',
         public accountClosingDate: string = '',
         public accountNumberName: string = '',
-        public accountNumberId :number =0,
+        public accountNumberID :number =0,
         public insertedByUserId :number =0,
         public insertedAt :number =0,
     ) {}

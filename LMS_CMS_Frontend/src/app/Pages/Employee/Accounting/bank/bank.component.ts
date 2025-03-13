@@ -96,8 +96,10 @@ export class BankComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.BankServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData=d;
+      console.log(this.TableData)
     })
   }
 
@@ -141,10 +143,13 @@ export class BankComponent {
     this.openModal();
   }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field: keyof Bank): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.bank[field] === 'string') {
+        this.bank[field] = '' as never;  
+      }
     }
   }
 
@@ -205,7 +210,7 @@ export class BankComponent {
             field == 'accountOpeningDate' ||
             field == 'accountClosingDate' ||
             field == 'bankAccountNumber'  ||
-            field == 'accountNumberId'
+            field == 'accountNumberID'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

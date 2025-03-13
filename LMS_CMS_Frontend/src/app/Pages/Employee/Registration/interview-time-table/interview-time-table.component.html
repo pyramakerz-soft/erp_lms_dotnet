@@ -194,7 +194,7 @@
                 <label class="mb-2 primaryTxt" for="number">{{ 'Capacity' | translate }}</label>
                 <input id="number" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="{{ 'Enter' | translate }} {{ 'Capacity' | translate }}"
                 [(ngModel)]="interviewTimeTable.capacity" 
-                (ngModelChange)="onInputValueChange({ field: 'capacity', value: $event })" (input)="validateNumber($event)"/>
+                (ngModelChange)="onInputValueChange({ field: 'capacity', value: $event })" (input)="validateNumber($event, 'capacity')"/>
                 <span *ngIf="validationErrors['capacity']" class="text-red-500 ml-3 font-normal">{{ validationErrors['capacity'] }}</span>
             </div>
         </div>

@@ -23,7 +23,7 @@
             <div class="flex flex-col w-[30%]">
                 <label class="mb-2 primaryTxt font-medium" for="DocType">Doc Number</label>
                 <input id="DocType" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                    (input)="validateNumber($event)" 
+                    (input)="validateNumber($event, 'docNumber')" 
                     placeholder="Enter Doc Type" [(ngModel)]="accountingEntries.docNumber" />
             </div> 
             <div class="flex flex-col w-[30%]">
@@ -112,12 +112,12 @@
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <input id="debitAmount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                        (input)="validateNumber($event)" [(ngModel)]="newDetails.debitAmount" 
+                        (input)="validateNumberNewDetails($event, 'debitAmount')" [(ngModel)]="newDetails.debitAmount" 
                         (ngModelChange)="onInputValueChangeForDetails({ field: 'debitAmount', value: $event })"/>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <input id="creditAmount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                        (input)="validateNumber($event)" [(ngModel)]="newDetails.creditAmount" 
+                        (input)="validateNumberNewDetails($event, 'creditAmount')" [(ngModel)]="newDetails.creditAmount" 
                         (ngModelChange)="onInputValueChangeForDetails({ field: 'creditAmount', value: $event })"/>
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
@@ -162,12 +162,12 @@
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td> 
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <input id="debitAmount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                            (input)="validateNumber($event)" [(ngModel)]="editedRowData.debitAmount" 
+                            (input)="validateNumberEditedRowData($event, 'debitAmount')" [(ngModel)]="editedRowData.debitAmount" 
                             (ngModelChange)="onInputValueChangeForDetails({ field: 'debitAmount', value: $event })"/>
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <input id="creditAmount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                            (input)="validateNumber($event)" [(ngModel)]="editedRowData.creditAmount" 
+                            (input)="validateNumberEditedRowData($event, 'creditAmount')" [(ngModel)]="editedRowData.creditAmount" 
                             (ngModelChange)="onInputValueChangeForDetails({ field: 'creditAmount', value: $event })"/>
                         </td> 
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
@@ -207,8 +207,8 @@
                     <!-- Normal row display -->
                     <ng-template #normalRow>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.creditAmount }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.debitAmount }}</td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.creditAmount }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.accountingTreeChartName }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subAccountingName }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.note }}</td>

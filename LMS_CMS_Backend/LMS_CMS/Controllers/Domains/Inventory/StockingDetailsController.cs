@@ -86,10 +86,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpPost]
         [Authorize_Endpoint_(
-      allowedTypes: new[] { "octa", "employee" },
-        pages: new[] { "Inventory" }
-  )]
-        public async Task<IActionResult> Add(StockingDetails newItem)
+              allowedTypes: new[] { "octa", "employee" },
+                pages: new[] { "Inventory" }
+          )]
+        public async Task<IActionResult> Add(StockingDetailsAddDto newItem)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -97,14 +97,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-            if (userIdClaim == null || userTypeClaim == null)
+            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(userTypeClaim))
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
 
             if (newItem == null)
             {
-                return BadRequest("Sales Item cannot be null");
+                return BadRequest("Stocking Details cannot be null");
             }
 
             ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(s => s.ID == newItem.ShopItemID && s.IsDeleted != true);

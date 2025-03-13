@@ -73,7 +73,7 @@ export class AccountingEmployeeEditComponent {
   keysArray: string[] = ['id', 'name', 'accountNumberName'];
   AccountNumbers: AccountingTreeChart[] = [];
 
-  EmployeeId: number = 1;
+  EmployeeId: number = 0;
 
   nationalities: Nationality[] = []
   departments: Department[] = []
@@ -143,7 +143,8 @@ export class AccountingEmployeeEditComponent {
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
       }
     });
-
+    this.EmployeeId = Number(this.activeRoute.snapshot.paramMap.get('id'))
+    console.log(this.EmployeeId)
     this.GetAllData();
     this.GetAllAccount();
     this.GetAllNationalitys();
@@ -152,14 +153,12 @@ export class AccountingEmployeeEditComponent {
     this.GetAllAcademicDegrees();
     this.GetAllDays();
     this.GetAllJobCategories();
-
   }
 
   GetAllData() {
     this.employeeServ.GetAcountingEmployee(this.EmployeeId, this.DomainName).subscribe((d: any) => {
       this.Data = d;
       this.JobCategoryId = this.Data.jobCategoryId;
-      this.EmployeeId = Number(this.activeRoute.snapshot.paramMap.get('id'))
       this.GetAllJobs()
       this.selectedDays = this.days
       this.selectedDays = this.days.filter(day => this.Data.days.includes(day.id));
@@ -236,6 +235,7 @@ export class AccountingEmployeeEditComponent {
   }
 
   onIsActiveChange(event: Event) {
+    console.log("EndDate")
     const isChecked = (event.target as HTMLInputElement).checked;
     this.EndDate = isChecked
   }
@@ -350,11 +350,16 @@ export class AccountingEmployeeEditComponent {
     this.TableData = this.TableData.filter((student) => student.id !== id);
     this.Data.students = this.Data.students.filter((id) => id !== id);  }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field?: keyof AccountingEmployee): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if(field){
+        if (typeof this.Data[field] === 'string') {
+          this.Data[field] = '' as never;  
+        } 
+      }
     }
-  }  
+  } 
 }
 

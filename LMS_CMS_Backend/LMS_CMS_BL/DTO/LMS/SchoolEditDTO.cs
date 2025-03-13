@@ -19,5 +19,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public string? ReportHeaderTwoAr { get; set; }
         public string? ReportImage { get; set; }
         public IFormFile? ReportImageFile { get; set; }
+        public string? VatNumber { get; set; }
     }
 }

@@ -215,15 +215,38 @@ export class PayableDetailsComponent {
     } else{
       this.isDetailsValid = false
     } 
-  }
+  } 
 
-  validateNumber(event: any): void {
+  validateNumberPayable(event: any, field: keyof Payable): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.payable[field] === 'string') {
+        this.payable[field] = '' as never;  
+      }
     }
   }
 
+  validateNumberDetails(event: any, field: keyof PayableDetails): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = ''; 
+      if (typeof this.newDetails[field] === 'string') {
+        this.newDetails[field] = '' as never;  
+      }
+    }
+  }
+
+  validateNumberEditDetails(event: any, field: keyof PayableDetails): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = ''; 
+      if (typeof this.editedRowData[field] === 'string') {
+        this.editedRowData[field] = '' as never;  
+      }
+    }
+  }
+ 
   Save() {
     if(this.isFormValid()){
       if(this.isCreate){
@@ -246,6 +269,8 @@ export class PayableDetailsComponent {
   GetPayableDetails(){
     this.payableDetailsService.Get(this.DomainName, this.PayableID).subscribe(
       (data) => {
+        console.log(data)
+
         this.payableDetailsData = data
         let total = 0
         this.payableDetailsData.forEach(element => {

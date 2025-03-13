@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250311110400_totalFloat")]
+    partial class totalFloat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3731,10 +3734,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("InsertedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("InvoiceHead")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("InvoiceNumber")
                         .HasColumnType("int");
 
@@ -3748,9 +3747,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("QRCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Remaining")
@@ -3774,9 +3770,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<double>("Total")
                         .HasColumnType("float");
 
-                    b.Property<double?>("TotalWithVat")
-                        .HasColumnType("float");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -3785,9 +3778,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<double?>("Vat")
-                        .HasColumnType("float");
 
                     b.Property<int?>("VisaAmount")
                         .HasColumnType("int");
@@ -4804,9 +4794,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("VatNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 

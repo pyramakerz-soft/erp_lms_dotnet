@@ -98,6 +98,7 @@ export class DebitsComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.DebitServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData=d;
     })

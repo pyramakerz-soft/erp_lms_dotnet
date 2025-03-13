@@ -24,6 +24,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? ReportHeaderTwoEn { get; set; }
         public string? ReportHeaderTwoAr { get; set; }
         public string? ReportImage { get; set; }
+        public string? VatNumber { get; set; }
 
         public SchoolType SchoolType { get; set; }
         public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();

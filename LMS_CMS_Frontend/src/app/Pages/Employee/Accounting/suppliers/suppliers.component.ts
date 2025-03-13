@@ -101,6 +101,7 @@ export class SuppliersComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.SupplierServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData=d;
     })
@@ -143,7 +144,9 @@ export class SuppliersComponent {
 
   Edit(row: Supplier) {
     this.mode = 'Edit';
-    this.Supplier = row;
+    this.SupplierServ.GetById(row.id,this.DomainName).subscribe((d)=>{
+      this.Supplier=d
+    })
     this.openModal();
   }
 
@@ -163,6 +166,16 @@ export class SuppliersComponent {
       this.AllowEditForOthers
     );
     return IsAllow;
+  }
+
+  validateNumber(event: any, field: keyof Supplier): void {
+    const value = event.target.value;
+    if (isNaN(value) || value === '') {
+      event.target.value = ''; 
+      if (typeof this.Supplier[field] === 'string') {
+        this.Supplier[field] = '' as never;  
+      }
+    }
   }
 
   CreateOREdit() {
@@ -216,15 +229,52 @@ export class SuppliersComponent {
       }
     }
     const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-        if (this.Supplier.email && !emailPattern.test(this.Supplier.email)) {
-          isValid = false;
-          Swal.fire({
-            icon: 'warning',
-            title: 'Warning!',
-            text: 'Email is not valid.',
-            confirmButtonColor: '#FF7519',
-          });
-        }
+    if (this.Supplier.email && !emailPattern.test(this.Supplier.email)) {
+      isValid = false;
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'Email is not valid.',
+        confirmButtonColor: '#FF7519',
+      });
+    }
+    
+    const phoenPattern = /^0(10|11|12|15)\d{8}$/;
+
+    if (this.Supplier.email && !phoenPattern.test(this.Supplier.phone1)) {
+      isValid = false;
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning!',
+        text: 'Phone 1 is not valid.',
+        confirmButtonColor: '#FF7519',
+      });
+    }
+
+    if(this.Supplier.phone2){
+      if (this.Supplier.email && !phoenPattern.test(this.Supplier.phone2)) {
+        isValid = false;
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning!',
+          text: 'Phone 2 is not valid.',
+          confirmButtonColor: '#FF7519',
+        });
+      }
+    }
+
+    if(this.Supplier.phone3){
+      if (this.Supplier.email && !phoenPattern.test(this.Supplier.phone3)) {
+        isValid = false;
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning!',
+          text: 'Phone 3 is not valid.',
+          confirmButtonColor: '#FF7519',
+        });
+      }
+    }
+
     return isValid;
   }
   capitalizeField(field: keyof Supplier): string {

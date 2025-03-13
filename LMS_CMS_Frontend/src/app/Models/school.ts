@@ -11,6 +11,7 @@ export class School {
         public reportHeaderTwoEn: string = '',
         public reportHeaderTwoAr: string = '',
         public reportImageFile : File|null = null,
+        public vatNumber: string|null = null,
         public reportImage : string = "",
     ) {}
 }

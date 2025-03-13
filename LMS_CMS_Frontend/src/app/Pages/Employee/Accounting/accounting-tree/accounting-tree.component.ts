@@ -220,41 +220,14 @@ export class AccountingTreeComponent {
     this.accountingTreeChart.id = accounting
     this.GetDataByID()
   }
-
-  async onSearchEvent(event: { key: string; value: any }) {
-    this.key = event.key;
-    this.value = event.value;
-    // try {
-    //   const data: Asset[] = await firstValueFrom(
-    //     this.AssetServ.Get(this.DomainName)
-    //   );
-    //   this.TableData = data || [];
-
-    //   if (this.value !== '') {
-    //     const numericValue = isNaN(Number(this.value))
-    //       ? this.value
-    //       : parseInt(this.value, 10);
-
-    //     this.TableData = this.TableData.filter((t) => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.TableData = [];
-    // }
-  }
-
-  validateNumber(event: any): void {
+   
+  validateNumber(event: any, field: keyof AccountingTreeChart): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-        event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.accountingTreeChart[field] === 'string') {
+        this.accountingTreeChart[field] = '' as never;  
+      } 
     }
   }
 

@@ -276,27 +276,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return NotFound("No Student With this ID");
             }
 
-
-            if (historyAddDTO.FirstReport != null)
-            {
-                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyAddDTO.FirstReport);
-
-                if (returnFileInput != null)
-                {
-                    return BadRequest(returnFileInput);
-                }
-            }
-
-            if (historyAddDTO.SecReport != null)
-            {
-                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyAddDTO.SecReport);
-
-                if (returnFileInput != null)
-                {
-                    return BadRequest(returnFileInput);
-                }
-            }
-
             MedicalHistory medicalHistory = _mapper.Map<MedicalHistory>(historyAddDTO);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -400,26 +379,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             if (historyAddDTO == null)
             {
                 return BadRequest("Medical History cannot be null");
-            }
-
-            if (historyAddDTO.FirstReport != null)
-            {
-                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyAddDTO.FirstReport);
-
-                if (returnFileInput != null)
-                {
-                    return BadRequest(returnFileInput);
-                }
-            }
-
-            if (historyAddDTO.SecReport != null)
-            {
-                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyAddDTO.SecReport);
-
-                if (returnFileInput != null)
-                {
-                    return BadRequest(returnFileInput);
-                }
             }
 
             MedicalHistory medicalHistory = _mapper.Map<MedicalHistory>(historyAddDTO);
@@ -557,24 +516,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             if (student == null || student.IsDeleted == true)
             {
                 return NotFound("No Student with this ID");
-            }
-
-            if (historyPutDTO.FirstReportFile != null)
-            {
-                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyPutDTO.FirstReportFile);
-                if (returnFileInput != null)
-                {
-                    return BadRequest(returnFileInput);
-                }
-            }
-
-            if (historyPutDTO.SecReportFile != null)
-            {
-                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyPutDTO.SecReportFile);
-                if (returnFileInput != null)
-                {
-                    return BadRequest(returnFileInput);
-                }
             }
 
             string secReportExists = medicalHistory.FirstReport;
@@ -1010,24 +951,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             if (medicalHistory == null || medicalHistory.IsDeleted == true)
             {
                 return NotFound("No Medical History with this ID");
-            }
-
-            if (historyPutDTO.FirstReportFile != null)
-            {
-                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyPutDTO.FirstReportFile);
-                if (returnFileInput != null)
-                {
-                    return BadRequest(returnFileInput);
-                }
-            }
-
-            if (historyPutDTO.SecReportFile != null)
-            {
-                string returnFileInput = _fileImageValidationService.ValidateImageFile(historyPutDTO.SecReportFile);
-                if (returnFileInput != null)
-                {
-                    return BadRequest(returnFileInput);
-                }
             }
 
             string secReportExists = medicalHistory.FirstReport;

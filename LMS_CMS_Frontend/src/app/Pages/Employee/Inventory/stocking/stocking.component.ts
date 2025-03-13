@@ -200,7 +200,8 @@ export class StockingComponent {
    validateNumber(event: any): void {
      const value = event.target.value;
      if (isNaN(value) || value === '') {
-         event.target.value = '';
+        event.target.value = '';
+        this.PageSize = 0
      }
    }
  }

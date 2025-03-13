@@ -309,12 +309,13 @@ export class RegistrationFormComponent {
     );
   }
 
-  validateNumber(event: any): void {
+  validateNumber(event: any, field: any): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
         event.target.value = '';
+        field = ''
     }
-  }
+  } 
 
   isFieldInvalid(field: any) {
     if(this.isFormSubmitted){

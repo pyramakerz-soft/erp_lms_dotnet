@@ -190,6 +190,7 @@
                     <option *ngFor="let country of contries" [value]="country.id">{{ country.name }}</option>
                     <option *ngIf="contries.length === 0" disabled>No Data Found</option>
                 </select>
+                <span *ngIf="validationErrors['countryID']" class="text-red-500 font-normal">{{ validationErrors['countryID'] }}</span>
               </div>
 
               <div class="flex flex-col w-[48%]">
@@ -243,15 +244,23 @@
               <div class="flex flex-col w-100">
                 <h6 class="font-medium text-base leading-6 mb-1 mt-3">Phone</h6>
                 <div class="flex justify-between">
+                  <div class="flex flex-col w-[32%] ">
+                    <input type="text"
+                      class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                      [(ngModel)]="Supplier.phone1" (ngModelChange)="onInputValueChange({ field: 'phone1', value: $event })"
+                      (input)="validateNumber($event, 'phone1')" 
+                      placeholder="Enter Phone 1"/>
+                    <span *ngIf="validationErrors['phone1']" class="text-red-500 font-normal">{{ validationErrors['phone1'] }}</span>
+                  </div>    
+                      
                   <input type="text"
-                      class="w-[32%] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                      [(ngModel)]="Supplier.phone1" placeholder="Enter Phone 1"/>
-                      <input type="text"
-                      class="w-[32%] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                      [(ngModel)]="Supplier.phone2" placeholder="Enter Phone 2"/>
-                      <input type="text"
-                      class="w-[32%] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                      [(ngModel)]="Supplier.phone3" placeholder="Enter Phone 3"/>
+                  class="w-[32%] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                  (input)="validateNumber($event, 'phone2')" 
+                  [(ngModel)]="Supplier.phone2" placeholder="Enter Phone 2"/>
+                  <input type="text"
+                  class="w-[32%] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+                  (input)="validateNumber($event, 'phone3')" 
+                  [(ngModel)]="Supplier.phone3" placeholder="Enter Phone 3"/>
                 </div>
               </div>
 

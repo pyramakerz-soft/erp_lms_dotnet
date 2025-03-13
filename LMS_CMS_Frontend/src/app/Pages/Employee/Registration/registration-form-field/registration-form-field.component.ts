@@ -222,11 +222,14 @@ export class RegistrationFormFieldComponent {
       this.Data = [];
     }
   }
-
-  validateNumber(event: any): void {
+  
+  validateNumber(event: any, field: keyof RegistrationCategory): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = '';
+      event.target.value = ''; 
+      if (typeof this.Category[field] === 'string') {
+        this.Category[field] = '' as never;  
+      }
     }
   }
 }

@@ -297,6 +297,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 Master.InsertedByUserId = userId;
             }
 
+            if (Master.Student.Nationality != 148)
+            {
+                Master.Vat = 15;
+            }
+
             Unit_Of_Work.inventoryMaster_Repository.Add(Master);
             await Unit_Of_Work.SaveChangesAsync();
             long SaleID = 0;

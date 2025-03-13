@@ -6,7 +6,6 @@
     <div class="flex justify-between mb-2">
         <h1 class="font-semibold text-2xl leading-9">Role</h1>
         <div class="flex justify-between items-center">
-            <!-- <app-search [keysArray]="keysArray"></app-search> -->
             <button class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2"
                 (click)="Save()">
                 Save
@@ -16,73 +15,73 @@
 
     <h6 class="font-medium text-base leading-6 mb-4">Role Name</h6>
     <div class="flex flex-col mb-4">
-        <input type="text" class="rounded-lg border border-solid border-gray-300 block w-full p-2.5"
+        <input type="text" class="rounded-lg border border-solid border-gray-300 block w-full p-2.5"  (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"
             [(ngModel)]="RoleName" placeholder="Enter new role" />
+            <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
     </div>
 
     <div class="bg-[#EAECF0] w-1/3">
-        <div *ngFor="let row of data; let i = index">
-            <div class="mb-4 ">
+        <!-- Loop through main pages -->
+        <ng-container *ngFor="let row of data">
+            <div class="mb-4">
                 <div class="flex items-center">
-                    <input type="checkbox" id="" [checked]="checkForRow(row.id)" (change)="SetForRow(row.id)"
+                    <input type="checkbox" [checked]="checkForRow(row.id)" (change)="onCheckboxChange($event, row.id, row.page_ID)"
                         class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519]" />
                     <i class="fa-solid fa-folder-open"></i>
-                    <button (click)="toggleCollapse(i)" class="w-full px-2 py-2 text-left">
+                    <button (click)="toggleCollapse(row.id)" class="w-full px-2 py-2 text-left">
                         {{ row.en_name }}
                     </button>
                 </div>
-                <div *ngIf="collapseStates[i]" class="mt-4 space-y-2">
-                    <div *ngFor="let page of row.children; let j = index">
-
-                        <div class="flex items-center" [style.marginLeft.px]="15">
-                            <input type="checkbox" id="" [checked]="checkForPage(page.id,row.id)"
-                                (change)="SetForPage(row.id,page.id)"
-                                class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519]" />
-                            <button (click)="togglePageCollapse(i, j)" class="w-full px-2 py-2 text-left">
-                                > {{ page.en_name }}
-                            </button>
-                        </div>
-                        <div *ngIf="PagecollapseStates[i][j]" class="flex flex-col space-y-2">
-                            <div class="flex items-center" [style.marginLeft.px]="35">
-                                <input type="checkbox" id="option4-{{ i }}-{{ j }}"
-                                    [checked]="getPermissionState(row.id, page.id, 'allow_Edit')"
-                                    (change)="setPermissionState(row.id, page.id, 'allow_Edit')"
-                                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" />
-                                <label for="option1-{{ i }}-{{ j }}" class="text-gray-700">
-                                    Allow Edit
-                                </label>
-                            </div>
-                            <div class="flex items-center" [style.marginLeft.px]="35">
-                                <input type="checkbox" id="option4-{{ i }}-{{ j }}"
-                                    [checked]="getPermissionState(row.id, page.id, 'allow_Delete')"
-                                    (change)="setPermissionState(row.id, page.id, 'allow_Delete')"
-                                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" />
-                                <label for="option2-{{ i }}-{{ j }}" class="text-gray-700">
-                                    Allow Delete
-                                </label>
-                            </div>
-                            <div class="flex items-center" [style.marginLeft.px]="35">
-                                <input type="checkbox" id="option4-{{ i }}-{{ j }}"
-                                    [checked]="getPermissionState(row.id, page.id, 'allow_Edit_For_Others')"
-                                    (change)="setPermissionState(row.id, page.id, 'allow_Edit_For_Others')"
-                                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" />
-                                <label for="option3-{{ i }}-{{ j }}" class="text-gray-700">
-                                    Allow Edit For Other
-                                </label>
-                            </div>
-                            <div class="flex items-center" [style.marginLeft.px]="35">
-                                <input type="checkbox" id="option4-{{ i }}-{{ j }}"
-                                    [checked]="getPermissionState(row.id, page.id, 'allow_Delete_For_Others')"
-                                    (change)="setPermissionState(row.id, page.id, 'allow_Delete_For_Others')"
-                                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" />
-                                <label for="option4-{{ i }}-{{ j }}" class="text-gray-700">
-                                    Allow Delete For Other
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Recursively render children -->
+                <div *ngIf="collapseStates[row.id]" class="mt-4 space-y-2">
+                    <ng-container *ngTemplateOutlet="recursiveChildren; context: { $implicit: row.children, parentId: row.id, level: 15 }"></ng-container>
                 </div>
             </div>
-        </div>
+        </ng-container>
     </div>
 </div>
+
+<!-- Recursive Template -->
+<ng-template #recursiveChildren let-children let-parentId="parentId" let-level="level">
+    <div *ngFor="let page of children">
+        <div class="flex items-center" [style.marginLeft.px]="level">
+            <input type="checkbox" [checked]="checkForPage(page.id, parentId)" (change)="onCheckboxChange($event, page.id, page.page_ID)"
+                class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519]" />
+            <button (click)="toggleCollapse(page.id)" class="w-full px-2 py-2 text-left">
+                > {{ page.en_name }}
+            </button>
+        </div>
+        <div *ngIf="collapseStates[page.id]" class="flex flex-col space-y-2">
+            <!-- Render permissions only if the page has no children -->
+            <ng-container *ngIf="!page.children || page.children.length === 0">
+                <div class="flex items-center" [style.marginLeft.px]="level + 20">
+                    <input type="checkbox" [checked]="getPermissionState(parentId, page.id, 'allow_Edit')"
+                        (change)="setPermissionState(parentId, page.id, 'allow_Edit')"
+                        class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519]" />
+                    <label class="text-gray-700">Allow Edit</label>
+                </div>
+                <div class="flex items-center" [style.marginLeft.px]="level + 20">
+                    <input type="checkbox" [checked]="getPermissionState(parentId, page.id, 'allow_Delete')"
+                        (change)="setPermissionState(parentId, page.id, 'allow_Delete')"
+                        class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519]" />
+                    <label class="text-gray-700">Allow Delete</label>
+                </div>
+                <div class="flex items-center" [style.marginLeft.px]="level + 20">
+                    <input type="checkbox" [checked]="getPermissionState(parentId, page.id, 'allow_Edit_For_Others')"
+                        (change)="setPermissionState(parentId, page.id, 'allow_Edit_For_Others')"
+                        class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519]" />
+                    <label class="text-gray-700">Allow Edit For Others</label>
+                </div>
+                <div class="flex items-center" [style.marginLeft.px]="level + 20">
+                    <input type="checkbox" [checked]="getPermissionState(parentId, page.id, 'allow_Delete_For_Others')"
+                        (change)="setPermissionState(parentId, page.id, 'allow_Delete_For_Others')"
+                        class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519]" />
+                    <label class="text-gray-700">Allow Delete For Others</label>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="page.children && page.children.length">
+                <ng-container *ngTemplateOutlet="recursiveChildren; context: { $implicit: page.children, parentId: page.id, level: level + 20 }"></ng-container>
+            </ng-container>
+        </div>
+    </div>
+</ng-template>

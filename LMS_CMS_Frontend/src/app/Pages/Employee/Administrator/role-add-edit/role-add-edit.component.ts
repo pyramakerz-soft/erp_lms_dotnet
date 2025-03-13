@@ -48,32 +48,30 @@ export class RoleAddEditComponent {
   RoleName: string = ""
   RoleId: number = 0;
   mode: string = ""
-  DataToSaveCreate: RoleAdd = new RoleAdd();
-  DataToSaveEdit: RolePut = new RolePut();
-
-
+  DataToSave: RolePut = new RolePut();
   dataForEdit: PagesWithRoleId[] = []
   loading = true;
+  validationErrors: { [key in keyof RolePut]?: string } = {};
 
   constructor(public pageServ: PageService, public RoleDetailsServ: RoleDetailsService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, public RoleServ: RoleService, private router: Router) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
-  
+
     if (this.User_Data_After_Login.type === "employee") {
       this.DomainName = this.ApiServ.GetHeader();
       this.activeRoute.url.subscribe(url => {
         this.path = url[0].path;
       });
-  
-      this.getAllPges();
-  
+
+      await this.getAllPges();
+
       if (this.path === "Role Edit") {
         this.RoleId = Number(this.activeRoute.snapshot.paramMap.get('id'));
         this.mode = "Edit";
         this.GetRoleName();
-  
+
         setTimeout(async () => {
           await this.GetAllPgesForEdit();
           this.loading = false; // Only set to false when the function completes
@@ -95,31 +93,31 @@ export class RoleAddEditComponent {
     try {
       const data = await firstValueFrom(this.pageServ.Get_Pages(this.DomainName));
       this.data = data;
-      this.data.forEach(item => {
-        this.ResultArray.push({
-          Rowkey: 0,
-          pageId: item.id,
-          allow_Edit: false,
-          allow_Delete: false,
-          allow_Edit_For_Others: false,
-          allow_Delete_For_Others: false,
-          IsSave: false,
-        });
-        item.children.forEach(element => {
+      this.ResultArray = [];
+      const processPages = (items: any[], parentId = 0) => {
+        items.forEach(item => {
           this.ResultArray.push({
-            Rowkey: item.id,
-            pageId: element.id,
+            Rowkey: parentId, // Parent ID
+            pageId: item.id,  // Current Page ID
             allow_Edit: false,
             allow_Delete: false,
             allow_Edit_For_Others: false,
             allow_Delete_For_Others: false,
             IsSave: false,
           });
+
+          if (item.children && Array.isArray(item.children)) {
+            processPages(item.children, item.id);
+          }
         });
-      });
+      };
+      processPages(this.data);
       this.collapseStates = new Array(this.data.length).fill(false);
-      this.PagecollapseStates = this.data.map(() => new Array(this.data[0].children.length).fill(false));
+      this.PagecollapseStates = this.data.map(() =>
+        new Array(this.data[0]?.children?.length || 0).fill(false)
+      );
     } catch (error) {
+      console.error("Error fetching pages:", error);
       this.data = [];
     }
   }
@@ -129,31 +127,30 @@ export class RoleAddEditComponent {
       this.dataForEdit = await firstValueFrom(this.RoleDetailsServ.Get_Pages_With_RoleID(this.RoleId, this.DomainName));
     } catch (error) {
       console.error('Error fetching pages for edit:', error);
+      return;
     }
-     
-    
-    this.dataForEdit.forEach(element => {
-      const resultItems1 = this.ResultArray.find(item => item.Rowkey === 0 && item.pageId === element.id);
-      if (resultItems1) {
-        resultItems1.IsSave = true;
-        resultItems1.allow_Delete = true;
-        resultItems1.allow_Edit = true;
-        resultItems1.allow_Edit_For_Others = true;
-        resultItems1.allow_Delete_For_Others = true;
-      }
-      element.children.forEach(item => {
-        const resultItems2 = this.ResultArray.find(i => i.Rowkey === element.id && i.pageId === item.id);
-        if (resultItems2) {
-          resultItems2.IsSave = true;
-          resultItems2.allow_Delete = item.allow_Delete;
-          resultItems2.allow_Edit = item.allow_Edit;
-          resultItems2.allow_Edit_For_Others = item.allow_Edit_For_Others;
-          resultItems2.allow_Delete_For_Others = item.allow_Delete_For_Others;
+
+    const processPages = (items: any[], parentId = 0) => {
+      items.forEach(element => {
+        const resultItem = this.ResultArray.find(item => item.Rowkey === parentId && item.pageId === element.id);
+        if (resultItem) {
+          resultItem.IsSave = true;
+          resultItem.allow_Delete = element.allow_Delete ?? true;
+          resultItem.allow_Edit = element.allow_Edit ?? true;
+          resultItem.allow_Edit_For_Others = element.allow_Edit_For_Others ?? true;
+          resultItem.allow_Delete_For_Others = element.allow_Delete_For_Others ?? true;
+        }
+
+        if (element.children && Array.isArray(element.children)) {
+          processPages(element.children, element.id);
         }
       });
-    });
+    };
+
+    processPages(this.dataForEdit);
 
   }
+
 
   togglePageCollapse(rowIndex: number, pageIndex: number) {
     this.PagecollapseStates[rowIndex][pageIndex] = !this.PagecollapseStates[rowIndex][pageIndex];
@@ -201,7 +198,12 @@ export class RoleAddEditComponent {
   SetForPage(RowId: number, PageId: number): void {
     const resultItem = this.ResultArray.find(item => item.Rowkey === RowId && item.pageId === PageId);
     if (resultItem) {
-      resultItem.IsSave = !resultItem.IsSave;
+      const newState = !resultItem.IsSave;
+      resultItem.IsSave = newState;
+      resultItem.allow_Delete = newState;
+      resultItem.allow_Delete_For_Others = newState;
+      resultItem.allow_Edit = newState;
+      resultItem.allow_Edit_For_Others = newState;
       const resultItems = this.ResultArray.filter(item => item.Rowkey === RowId);
       const allChecked = resultItems.every(item => item.IsSave);
       const anyChecked = resultItems.some(item => item.IsSave);
@@ -211,85 +213,146 @@ export class RoleAddEditComponent {
     }
   }
 
-  checkForRow(RowId: number): boolean {
-    const resultItems = this.ResultArray.filter(item => item.Rowkey === RowId);
+  checkForRow(id: number): boolean {
+    const resultItems = this.ResultArray.filter(item => item.pageId === id);
     return resultItems.some(item => item.IsSave);
   }
 
-  SetForRow(RowId: number): void {
-    const resultItems = this.ResultArray.filter(item => item.Rowkey === RowId);
-    const resultItems2 = this.ResultArray.find(item => item.Rowkey === 0 && item.pageId === RowId);
-    if (resultItems.length > 0) {
-      const newState = !this.checkForRow(RowId);
-      resultItems.forEach(item => {
-        item.IsSave = newState;
+  onCheckboxChange(event: Event, id: number, parentId: number): void {
+    const target = event.target as HTMLInputElement;
+    const newState = target.checked; // Extract the checked state safely
+    this.SetForRow(id, parentId, newState);
+  }
+
+  SetForRow(id: number, parentId: number, newState: boolean): void {
+    // Recursive function to update all children
+    const updateChildren = (id: number, state: boolean) => {
+      const children = this.ResultArray.filter(item => item.Rowkey === id);
+      children.forEach(child => {
+        child.IsSave = state;
+        child.allow_Delete = state;
+        child.allow_Delete_For_Others = state;
+        child.allow_Edit = state;
+        child.allow_Edit_For_Others = state;
+        updateChildren(child.pageId, state); // Recursively update deeper children
       });
-      if (resultItems2) {
-        resultItems2.IsSave = newState;
+    };
+    // Recursive function to update all parent pages up to the top level
+    const updateParents = (currentId: number) => {
+      const parentPage = this.ResultArray.find(item => item.pageId === currentId);
+      if (parentPage) {
+        // Find all children of this parent
+        const children = this.ResultArray.filter(item => item.Rowkey === currentId);
+        // Check if at least one child is selected
+        const hasActiveChild = children.some(child => child.IsSave);
+        // Update parent based on children state
+        parentPage.IsSave = hasActiveChild;
+        parentPage.allow_Delete = hasActiveChild;
+        parentPage.allow_Delete_For_Others = hasActiveChild;
+        parentPage.allow_Edit = hasActiveChild;
+        parentPage.allow_Edit_For_Others = hasActiveChild;
+        // Continue updating its parent if it has one
+        if (parentPage.Rowkey !== 0) {
+          updateParents(parentPage.Rowkey);
+        }
       }
+    };
+
+    // Update the selected page
+    if (parentId == null) parentId = 0
+    const selectedPage = this.ResultArray.find(item => item.Rowkey === parentId && item.pageId === id);
+    console.log(selectedPage, newState)
+    if (selectedPage) {
+      selectedPage.IsSave = newState;
+      selectedPage.allow_Delete = newState;
+      selectedPage.allow_Delete_For_Others = newState;
+      selectedPage.allow_Edit = newState;
+      selectedPage.allow_Edit_For_Others = newState;
     }
+    // Update all child pages recursively
+    updateChildren(id, newState);
+    // Update parent and grandparent pages recursively
+    updateParents(parentId);
   }
 
   Save() {
-    const resultItems = this.ResultArray.filter(item => item.IsSave === true); 
-    if (this.RoleName == "" || resultItems.length == 0) {
-      if (this.RoleName == "") {
+    const resultItems = this.ResultArray.filter(item => item.IsSave === true);
+    this.DataToSave.id = this.RoleId;
+    this.DataToSave.name = this.RoleName
+    this.DataToSave.pages = resultItems;
+    if (this.isFormValid()) {
+      if (this.DataToSave.pages.length == 0) {
         Swal.fire({
           icon: 'error',
           title: 'Error',
           confirmButtonColor: '#FF7519',
-          text: "Name is required",
+          text: "Pages list cannot be null or empty",
         });
       }
-      if (resultItems.length == 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          confirmButtonColor: '#FF7519',
-          text: "Modules is required",
-        });
+      else {
+        if (this.mode == "Create") {
+          this.RoleServ.AddRole(this.DataToSave, this.DomainName).subscribe({
+            next: (response) => {
+              this.router.navigateByUrl("Employee/Role")
+            },
+            error: (error) => {
+              const errorMessage = error?.error || 'An unexpected error occurred';
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                confirmButtonColor: '#FF7519',
+                text: errorMessage,
+              });
+            },
+          });
+        }
+        else if (this.mode == "Edit") {
+          this.RoleServ.EditRole(this.DataToSave, this.DomainName).subscribe({
+            next: (response) => {
+              this.router.navigateByUrl("Employee/Role")
+            },
+            error: (error) => {
+              const errorMessage = error?.error || 'An unexpected error occurred';
+
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                confirmButtonColor: '#FF7519',
+                text: errorMessage,
+              });
+            },
+          });
+        }
       }
     }
-    else {
-      if (this.mode == "Create") {
-        this.DataToSaveCreate.name = this.RoleName
-        this.DataToSaveCreate.pages = resultItems;
-        this.RoleServ.AddRole(this.DataToSaveCreate, this.DomainName).subscribe({
-          next: (response) => {
-            this.router.navigateByUrl("Employee/Role")
-          },
-          error: (error) => {
-            const errorMessage =  error?.error || 'An unexpected error occurred';
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              confirmButtonColor: '#FF7519',
-              text: errorMessage,
-            });
-          },
-        });
-      }
-      else if (this.mode == "Edit") {
-        this.DataToSaveEdit.id = this.RoleId;
-        this.DataToSaveEdit.name = this.RoleName
-        this.DataToSaveEdit.pages = resultItems;
-        this.RoleServ.EditRole(this.DataToSaveEdit, this.DomainName).subscribe({
-          next: (response) => {
-            this.router.navigateByUrl("Employee/Role")
-          },
-          error: (error) => {
-            const errorMessage =  error?.error || 'An unexpected error occurred';
-
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              confirmButtonColor: '#FF7519',
-              text: errorMessage,
-            });
-          },
-        });
+  }
+  onInputValueChange(event: { field: keyof RolePut, value: any }) {
+    const { field, value } = event;
+    if (field == "name") {
+      (this.DataToSave as any)[field] = value;
+      if (value) {
+        this.validationErrors[field] = '';
       }
     }
-
+  }
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.DataToSave) {
+      if (this.DataToSave.hasOwnProperty(key)) {
+        const field = key as keyof RolePut;
+        if (!this.DataToSave[field]) {
+          if (field == 'name') {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
+    return isValid;
+  }
+  capitalizeField(field: keyof RolePut): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 }

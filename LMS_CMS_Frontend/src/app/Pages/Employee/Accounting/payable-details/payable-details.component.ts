@@ -269,6 +269,8 @@ export class PayableDetailsComponent {
   GetPayableDetails(){
     this.payableDetailsService.Get(this.DomainName, this.PayableID).subscribe(
       (data) => {
+        console.log(data)
+
         this.payableDetailsData = data
         let total = 0
         this.payableDetailsData.forEach(element => {

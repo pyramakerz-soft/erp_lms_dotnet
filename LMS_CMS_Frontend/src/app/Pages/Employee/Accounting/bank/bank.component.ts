@@ -96,8 +96,10 @@ export class BankComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.BankServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData=d;
+      console.log(this.TableData)
     })
   }
 
@@ -208,7 +210,7 @@ export class BankComponent {
             field == 'accountOpeningDate' ||
             field == 'accountClosingDate' ||
             field == 'bankAccountNumber'  ||
-            field == 'accountNumberId'
+            field == 'accountNumberID'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

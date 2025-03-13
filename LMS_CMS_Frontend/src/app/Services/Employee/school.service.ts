@@ -69,6 +69,7 @@ export class SchoolService {
     formData.append('reportHeaderOneAr', school.reportHeaderOneAr?.toString() ?? ''); 
     formData.append('reportHeaderTwoEn', school.reportHeaderTwoEn?.toString() ?? '');
     formData.append('reportHeaderTwoAr', school.reportHeaderTwoAr?.toString() ?? '');
+    formData.append('vatNumber', school.vatNumber?.toString() ?? '');
   
     if (school.reportImageFile) {
       formData.append('reportImageFile', school.reportImageFile, school.reportImageFile.name);

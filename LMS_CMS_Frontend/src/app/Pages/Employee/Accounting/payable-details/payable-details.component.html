@@ -13,6 +13,7 @@
             <div class="flex flex-col w-[30%]">
                 <label class="mb-2 primaryTxt font-medium" for="payableDocTypesID">Doc Type</label>
                 <select (ngModelChange)="onInputValueChange({ field: 'payableDocTypeID', value: $event })"
+                [disabled]="isView"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="payableDocTypesID" [(ngModel)]="payable.payableDocTypeID">
                     <option [value]="0" disabled selected hidden>Choose Doc Type</option>
                     <option *ngFor="let dataType of dataTypesData" [value]="dataType.id">{{ dataType.name }}</option>
@@ -23,6 +24,7 @@
             <div class="flex flex-col w-[30%]">
                 <label class="mb-2 primaryTxt font-medium" for="DocType">Doc Number</label>
                 <input id="DocType" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                [disabled]="isView"
                     (input)="validateNumberPayable($event, 'docNumber')" 
                     placeholder="Enter Doc Type" [(ngModel)]="payable.docNumber" />
             </div>
@@ -30,6 +32,7 @@
                 <div class="mb-2 flex justify-evenly">
                     <div class="flex space-x-2 items-center">
                         <input type="radio" 
+                        [disabled]="isView"
                         id="save" 
                         class="square-radio"
                         name="linkFile"
@@ -41,6 +44,7 @@
     
                     <div class="flex space-x-2 items-center">
                         <input type="radio" 
+                        [disabled]="isView"
                         id="bank" 
                         class="square-radio"
                         name="linkFile"
@@ -52,6 +56,7 @@
                     <span *ngIf="validationErrors['linkFileID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['linkFileID'] }}</span>
                 </div> 
                 <select (ngModelChange)="onInputValueChange({ field: 'bankOrSaveID', value: $event })"
+                [disabled]="isView"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bankOrSaveID" 
                 [(ngModel)]="payable.bankOrSaveID">
                     <option [value]="0" disabled selected hidden>Choose Data</option>
@@ -66,6 +71,7 @@
             <div class="flex flex-col w-[45%]">
                 <label class="mb-2 primaryTxt font-medium" for="date">Date</label>
                 <input id="date" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" [(ngModel)]="payable.date"
+                [disabled]="isView"
                 (ngModelChange)="onInputValueChange({ field: 'date', value: $event })" />
                 <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{ validationErrors['date'] }}</span>
             </div>
@@ -79,6 +85,7 @@
         <div class="mt-5 flex flex-col">
             <label class="mb-2 primaryTxt font-medium" for="notes">Notes</label>
             <textarea id="notes" class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3" 
+            [disabled]="isView"
                 placeholder="Add Notes" [(ngModel)]="payable.notes">
             </textarea>
         </div>
@@ -86,12 +93,12 @@
     
     <div class="flex justify-end mt-5 space-x-4 items-center">
         <i class="fa-solid fa-print text-lg" *ngIf="!isCreate"></i>
-        <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()"> Save </button>
+        <button *ngIf="!isView" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()"> Save </button>
     </div>
 </div>
 
 <div class="mt-6" *ngIf="!isCreate">
-    <div class="flex justify-end">
+    <div class="flex justify-end" *ngIf="!isView">
         <button class="secondaryTxt secondaryBorder px-4 py-2 rounded-lg flex items-center space-x-2" (click)="AddPayableDetails()"> 
             <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
             <p>Add Row</p> 

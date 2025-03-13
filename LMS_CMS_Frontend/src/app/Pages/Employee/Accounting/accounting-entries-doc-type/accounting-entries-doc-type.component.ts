@@ -91,6 +91,7 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   GetAllData() {
+    this.TableData = []
     this.AccountingEntriesDocTypeServ.Get(this.DomainName).subscribe((d)=>{
       this.TableData=d
     })

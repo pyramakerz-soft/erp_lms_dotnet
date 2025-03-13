@@ -62,6 +62,36 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        [HttpGet("{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Supplier" }
+        )]
+        public async Task<IActionResult> GetById(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (id == 0)
+            {
+                return BadRequest("Enter Supplier ID");
+            }
+
+            Supplier Supplier = await Unit_Of_Work.supplier_Repository.FindByIncludesAsync(
+                    credit => credit.IsDeleted != true && credit.ID == id,
+                    query => query.Include(credit => credit.AccountNumber));
+
+            if (Supplier == null)
+            {
+                return NotFound();
+            }
+
+            SupplierGetDTO SupplierGetDTO = mapper.Map<SupplierGetDTO>(Supplier);
+
+            return Ok(SupplierGetDTO);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
         [Authorize_Endpoint_(
@@ -98,12 +128,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (NewSupplier.CommercialRegister == null)
             {
-                return BadRequest("the name CommercialRegister be null");
+                return BadRequest("the CommercialRegister can't be null");
             }
 
             if (NewSupplier.Email == null)
             {
-                return BadRequest("the name Email be null");
+                return BadRequest("the Email can't be null");
             }
 
             if (NewSupplier.Address == null)
@@ -113,12 +143,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (NewSupplier.Website == null)
             {
-                return BadRequest("the name Website be null");
+                return BadRequest("the Website can't be null");
             }
 
             if (NewSupplier.Phone1 == null)
             {
-                return BadRequest("the name Phone be null");
+                return BadRequest("the Phone can't be null");
             }
 
             AccountingTreeChart account = Unit_Of_Work.accountingTreeChart_Repository.First_Or_Default(t => t.IsDeleted != true && t.ID == NewSupplier.AccountNumberID);
@@ -136,7 +166,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
                 if (account.LinkFileID != 2)
                 {
-                    return BadRequest("Wrong Link File, it should be Save file link ");
+                    return BadRequest("Wrong Link File, it should be Suppliers file link ");
                 }
             }
 
@@ -204,27 +234,27 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (NewSupplier.CommercialRegister == null)
             {
-                return BadRequest("the name CommercialRegister be null");
+                return BadRequest("the CommercialRegister can't be null");
             }
 
             if (NewSupplier.Email == null)
             {
-                return BadRequest("the name Email be null");
+                return BadRequest("the Email can't be null");
             }
 
             if (NewSupplier.Address == null)
             {
-                return BadRequest("the name Address be null");
+                return BadRequest("the Address can't be null");
             }
 
             if (NewSupplier.Website == null)
             {
-                return BadRequest("the name Website be null");
+                return BadRequest("the Website can't be null");
             }
 
             if (NewSupplier.Phone1 == null)
             {
-                return BadRequest("the name Phone be null");
+                return BadRequest("the Phone can't be null");
             }
 
             Supplier supplier = Unit_Of_Work.supplier_Repository.First_Or_Default(s => s.ID == NewSupplier.ID&&s.IsDeleted!=true);
@@ -248,7 +278,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
                 if (account.LinkFileID != 2)
                 {
-                    return BadRequest("Wrong Link File, it should be Save file link ");
+                    return BadRequest("Wrong Link File, it should be Suppliers file link ");
                 }
             }
 
@@ -328,7 +358,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Save", roleId, userId, supplier);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Supplier", roleId, userId, supplier);
                 if (accessCheck != null)
                 {
                     return accessCheck;

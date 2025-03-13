@@ -47,7 +47,7 @@
                         Bus District
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Active Bus
+                        Bus Status
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Capacity
@@ -283,13 +283,13 @@
                 <label class="mb-2 primaryTxt" for="driver">Driver</label>
                 <select [(ngModel)]="bus.driverID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="driver" >
-                   <option *ngIf="!bus.driverID" [value]="null" disabled selected hidden>{{ bus.driverName || 'Select Status' }}</option>
+                   <option *ngIf="!bus.driverID" [value]="null" disabled selected hidden>{{ bus.driverName || 'Select Driver' }}</option>
                     <option *ngFor="let driver of BusDriver" [value]="driver.id">{{ driver.en_name }}</option>
                     <option *ngIf="BusDriver.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2 primaryTxt" for="assistant">Driver Assistante</label>
+                <label class="mb-2 primaryTxt" for="assistant">Driver Assistant</label>
                 <select [(ngModel)]="bus.driverAssistantID"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="assistant" >
                     <option [value]="null" disabled selected hidden>{{ bus.driverAssistantName || 'Select driver Assistant Name' }}</option>

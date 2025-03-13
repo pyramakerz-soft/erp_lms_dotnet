@@ -17,8 +17,8 @@ namespace LMS_CMS_BL.DTO.LMS
         public string? ReportHeaderTwoEn { get; set; }
         public string? ReportHeaderTwoAr { get; set; }
         public string? ReportImage { get; set; }
-        public long SchoolTypeID { get; set; }
+        public long SchoolTypeID { get; set; } 
+        public string? VatNumber { get; set; }
         public long? InsertedByUserId { get; set; }
-
     }
 }

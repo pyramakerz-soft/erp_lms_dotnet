@@ -15,11 +15,9 @@
     </app-table>
 
     <!-- Modal Overlay -->
-    <div *ngIf="isModalVisible" class="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/50"
-        (click)="closeModal()">
-        <!-- Modal Container -->
-        <div class="relative bg-white w-[750px] max-h-[90vh] h-auto rounded-2xl p-12 gap-4 shadow-md overflow-y-auto overflow-x-hidden"
-            (click)="$event.stopPropagation()">
+    <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isModalVisible}"
+        class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+        <div class="relative bg-white rounded-2xl p-12 gap-4 shadow-md overflow-y-auto max-h-[90vh]">
             <!-- Close Icon -->
             <button (click)="closeModal()"
                 class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
@@ -27,88 +25,122 @@
             </button>
 
             <!-- Modal Header -->
-            <h1 class="font-semibold text-2xl leading-9 mb-6">
-                {{ editMode ? 'Edit Medical History' : 'Create Medical History' }}
+            <h1 *ngIf="!editMode" class="font-semibold text-2xl leading-9">{{ 'Create'  }} Medical History
             </h1>
+            <h1 *ngIf="editMode" class="font-semibold text-2xl leading-9">{{ 'Edit'  }} Medical History</h1>
 
             <!-- Modal Content -->
-            <div class="space-y-6">
-                <!-- School and Grade -->
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="flex flex-col">
-                        <label class="mb-1 primaryTxt" for="school">School</label>
-                        <select id="school" [(ngModel)]="medicalHistory.schoolId"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose School</option>
-                            <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
-                        </select>
-                    </div>
-
-                    <div class="flex flex-col">
-                        <label class="mb-1 primaryTxt" for="grade">Grade</label>
-                        <select id="grade" [(ngModel)]="medicalHistory.gradeId"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose Grade</option>
-                            <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
-                        </select>
-                    </div>
+            <div class="mt-4 bg-[#F7F7F7] rounded-[24px] p-[16px_24px] gap-[20px]">
+                <!-- School -->
+                <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'School'  }}</h6>
+                <div class="flex flex-col">
+                    <select [(ngModel)]="medicalHistory.schoolId"
+                        class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                        (ngModelChange)="onInputValueChange({ field: 'schoolId', value: $event })">
+                        <option [value]="0" disabled selected hidden>{{ 'Choose'  }} School</option>
+                        <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
+                    </select>
+                    <span *ngIf="validationErrors['schoolId']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['schoolId'] }}</span>
                 </div>
 
-                <!-- Class and Student -->
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="flex flex-col">
-                        <label class="mb-1 primaryTxt" for="class">Class</label>
-                        <select id="class" [(ngModel)]="medicalHistory.classRoomID"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose Class</option>
-                            <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
-                        </select>
-                    </div>
+                <!-- Grade -->
+                <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Grade'  }}</h6>
+                <div class="flex flex-col">
+                    <select [(ngModel)]="medicalHistory.gradeId"
+                        class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                        (ngModelChange)="onInputValueChange({ field: 'gradeId', value: $event })">
+                        <option [value]="0" disabled selected hidden>{{ 'Choose'  }} Grade</option>
+                        <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
+                    </select>
+                    <span *ngIf="validationErrors['gradeId']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['gradeId'] }}</span>
+                </div>
 
-                    <div class="flex flex-col">
-                        <label class="mb-1 primaryTxt" for="student">Student</label>
-                        <select id="student" [(ngModel)]="medicalHistory.studentId"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose Student</option>
-                            <option *ngFor="let student of students" [value]="student.id">{{ student.name }}</option>
-                        </select>
-                    </div>
+                <!-- Class -->
+                <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Class'  }}</h6>
+                <div class="flex flex-col">
+                    <select [(ngModel)]="medicalHistory.classRoomID"
+                        class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                        (ngModelChange)="onInputValueChange({ field: 'classRoomID', value: $event })">
+                        <option [value]="0" disabled selected hidden>{{ 'Choose'  }} Class</option>
+                        <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+                    </select>
+                    <span *ngIf="validationErrors['classRoomID']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['classRoomID'] }}</span>
+                </div>
+
+                <!-- Student -->
+                <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Student'  }}</h6>
+                <div class="flex flex-col">
+                    <select [(ngModel)]="medicalHistory.studentId"
+                        class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                        (ngModelChange)="onInputValueChange({ field: 'studentId', value: $event })">
+                        <option [value]="0" disabled selected hidden>{{ 'Choose'  }} Student</option>
+                        <option *ngFor="let student of students" [value]="student.id">{{ student.name }}</option>
+                    </select>
+                    <span *ngIf="validationErrors['studentId']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['studentId'] }}</span>
                 </div>
 
                 <!-- Details -->
+                <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Details'  }}</h6>
                 <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="details">Details</label>
-                    <textarea id="details" [(ngModel)]="medicalHistory.details"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 h-24"
-                        placeholder="Enter Details"></textarea>
+                    <textarea [(ngModel)]="medicalHistory.details"
+                        class="w-[500px] h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+                        placeholder="{{ 'Enter'  }} Details"
+                        (ngModelChange)="onInputValueChange({ field: 'details', value: $event })"></textarea>
+                    <span *ngIf="validationErrors['details']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['details'] }}</span>
                 </div>
 
                 <!-- Permanent Drug -->
+                <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Permanent Drug'  }}</h6>
                 <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="permanentDrug">Permanent Drug</label>
-                    <input id="permanentDrug" [(ngModel)]="medicalHistory.permanentDrug"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
-                        placeholder="Enter Permanent Drug">
+                    <input type="text" [(ngModel)]="medicalHistory.permanentDrug"
+                        class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
+                        placeholder="{{ 'Enter'  }} Permanent Drug"
+                        (ngModelChange)="onInputValueChange({ field: 'permanentDrug', value: $event })" />
+                    <span *ngIf="validationErrors['permanentDrug']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['permanentDrug'] }}</span>
                 </div>
 
-                <!-- File Upload Slots -->
-                <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="firstReport">First Report</label>
-                    <input id="firstReport" type="file" (change)="onFileChange($event, 'firstReport')"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                <!-- File Upload -->
+            <!-- File Upload for FirstReport -->
+            <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
+                <div class="flex justify-center w-full">
+                    <label for="firstReportUpload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                        <img src="Images/Icon frame.png" class="w-1/4" alt="Upload Icon">
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
+                            <span class="secondaryTxt">Click To Upload</span> or drag and drop Icon
+                        </p>
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93"> (Max. File size: 25 MB)</p>
+                    </label>
+                    <input id="firstReportUpload" type="file" class="hidden" accept="image/*,video/*"
+                        (ch ange)="onFileUpload($event, 'firstReport')" />
                 </div>
-
-                <div class="flex flex-col">
-                    <label class="mb-1 primaryTxt" for="secReport">Second Report</label>
-                    <input id="secReport" type="file" (change)="onFileChange($event, 'secReport')"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+            </div>
+            
+            <!-- File Upload for SecReport -->
+            <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
+                <div class="flex justify-center w-full">
+                    <label for="secReportUpload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                        <img src="Images/Icon frame.png" class="w-1/4" alt="Upload Icon">
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
+                            <span class="secondaryTxt">Click To Upload</span> or drag and drop Icon
+                        </p>
+                        <p class="font-normal text-xs md:text-sm text-[#8E8E93"> (Max. File size: 25 MB)</p>
+                    </label>
+                    <input id="secReportUpload" type="file" class="hidden" accept="image/*,video/*"
+                        (change)="onFileUpload($event, 'secReport')" />
                 </div>
+            </div>
 
                 <!-- Save Button -->
-                <div class="flex justify-end mt-6">
-                    <button class="secondaryBg text-white font-medium px-6 py-2 rounded-lg"
+                <div class="flex justify-end">
+                    <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2"
                         (click)="saveMedicalHistory()">
-                        {{ editMode ? 'Save' : 'Create' }}
+                        {{ 'Save'  }}
                     </button>
                 </div>
             </div>

@@ -34,18 +34,18 @@ export class HygieneTypesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.DomainName = this.apiService.GetHeader(); // Get the domain name from ApiService
+    this.DomainName = this.apiService.GetHeader(); 
     this.getHygieneTypes();
   }
 
-  // Fetch hygiene types
+  
 async getHygieneTypes() {
   try {
     const data = await firstValueFrom(this.hygieneTypesService.Get(this.DomainName));
     this.hygieneTypes = data.map((item) => {
       const insertedAtDate = new Date(item.insertedAt);
 
-      // Format the date
+      
       const options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'long',
@@ -53,41 +53,41 @@ async getHygieneTypes() {
       };
       const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
 
-      // Create a new HygieneTypes object with the formatted date and actions
+      
       return {
         ...item,
-        insertedAt: formattedDate, // Pass the formatted date as a string
-        actions: { delete: true, edit: true }, // Add actions dynamically
+        insertedAt: formattedDate, 
+        actions: { delete: true, edit: true }, 
       };
     });
   } catch (error) {
     console.error('Error loading data:', error);
-    this.hygieneTypes = []; // Clear the table if there's an error
+    this.hygieneTypes = []; 
   }
 }
 
 
-  // Open modal for create/edit
+  
 openModal(id?: number) {
   if (id) {
     this.editHygieneType = true;
     this.hygieneType = this.hygieneTypes.find((ht) => ht.id === id)!;
   } else {
-    this.hygieneType = new HygieneTypes(0, '', new Date(), 0); // Reset form for new entry
+    this.hygieneType = new HygieneTypes(0, '', new Date(), 0); 
     this.editHygieneType = false;
   }
-  this.isModalVisible = true; // Show the modal
+  this.isModalVisible = true; 
 }
 
-  // Close modal
+  
   closeModal() {
-    this.isModalVisible = false; // Hide the modal
-    this.hygieneType = new HygieneTypes(0, '', new Date(), 0); // Reset form
+    this.isModalVisible = false; 
+    this.hygieneType = new HygieneTypes(0, '', new Date(), 0); 
     this.editHygieneType = false;
     this.validationErrors = {};
   }
 
-  // Save or update hygiene type
+  
   saveHygieneType() {
     if (this.validateForm()) {
       if (this.editHygieneType) {
@@ -103,8 +103,7 @@ openModal(id?: number) {
       }
     }
   }
-
-  // Delete drug
+  
   deleteHygieneType(row: any) {
     Swal.fire({
       title: 'Are you sure you want to delete this drug?',
@@ -118,12 +117,11 @@ openModal(id?: number) {
       if (result.isConfirmed) {
         this.hygieneTypesService.Delete(row.id, this.DomainName).subscribe({
           next: (response) => {
-            // Log the plain text response (optional)
+            
             console.log('Delete response:', response);
 
-            // Refresh the table after successful deletion
+            
             this.getHygieneTypes();
-            Swal.fire('Deleted!', 'The drug has been deleted.', 'success');
           },
           error: (error) => {
             console.error('Error deleting drug:', error);
@@ -134,7 +132,7 @@ openModal(id?: number) {
     });
   }
 
-  // Validate form
+  
   validateForm(): boolean {
     let isValid = true;
     if (!this.hygieneType.type) {
@@ -146,7 +144,7 @@ openModal(id?: number) {
     return isValid;
   }
 
-  // Handle input changes
+  
   onInputValueChange(event: { field: string; value: any }) {
     const { field, value } = event;
     (this.hygieneType as any)[field] = value;

@@ -10,7 +10,7 @@ import { OrderService } from '../../../../Services/Student/order.service';
 import Swal from 'sweetalert2';
 import { Order } from '../../../../Models/Student/ECommerce/order';  
 import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+// import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-order-items',
@@ -144,14 +144,14 @@ export class OrderItemsComponent {
       return;
     }
 
-    html2canvas(orderElement, { scale: 2 }).then(canvas => {
-      let imgData = canvas.toDataURL('image/png');
-      let pdf = new jsPDF('p', 'mm', 'a4');
-      let imgWidth = 210;
-      let imgHeight = (canvas.height * imgWidth) / canvas.width;
+    // html2canvas(orderElement, { scale: 2 }).then(canvas => {
+    //   let imgData = canvas.toDataURL('image/png');
+    //   let pdf = new jsPDF('p', 'mm', 'a4');
+    //   let imgWidth = 210;
+    //   let imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(`Order_${this.orderID}.pdf`);
-    }); 
+    //   pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    //   pdf.save(`Order_${this.orderID}.pdf`);
+    // }); 
   }
 } 

@@ -30,18 +30,6 @@ export class MedicalHistoryService {
   }
 
 
-Edit(medicalHistory: FormData, DomainName: string): Observable<any> {
-  if (DomainName != null) {
-    this.header = DomainName;
-  }
-  const token = localStorage.getItem('current_token');
-  const headers = new HttpHeaders()
-    .set('Domain-Name', this.header)
-    .set('Authorization', `Bearer ${token}`)
-    .set('accept', '*/*');
-  return this.http.put<any>(`${this.baseUrl}/MedicalHistory/UpdateByDoctorAsync`, medicalHistory, { headers });
-}
-
 Add(medicalHistory: FormData, DomainName: string): Observable<any> {
   if (DomainName != null) {
     this.header = DomainName;
@@ -52,6 +40,18 @@ Add(medicalHistory: FormData, DomainName: string): Observable<any> {
     .set('Authorization', `Bearer ${token}`)
     .set('accept', '*/*');
   return this.http.post<any>(`${this.baseUrl}/MedicalHistory/AddByDoctor`, medicalHistory, { headers });
+}
+
+Edit(medicalHistory: FormData, DomainName: string): Observable<any> {
+  if (DomainName != null) {
+    this.header = DomainName;
+  }
+  const token = localStorage.getItem('current_token');
+  const headers = new HttpHeaders()
+    .set('Domain-Name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('accept', '*/*');
+  return this.http.put<any>(`${this.baseUrl}/MedicalHistory/UpdateByDoctorAsync`, medicalHistory, { headers });
 }
 
 
@@ -69,6 +69,19 @@ Add(medicalHistory: FormData, DomainName: string): Observable<any> {
 
     return this.http.delete(`${this.baseUrl}/MedicalHistory/id?id=${id}`, { headers, responseType: 'text' });
   }
+  GetById(id: number, DomainName: string): Observable<MedicalHistory> {
+    if (DomainName != null) {
+        this.header = DomainName;
+    }
+    const token = localStorage.getItem('current_token');
+    const headers = new HttpHeaders()
+        .set('Domain-Name', this.header)
+        .set('Authorization', `Bearer ${token}`)
+        .set('accept', '*/*');
+
+    return this.http.get<MedicalHistory>(`${this.baseUrl}/MedicalHistory/GetByIdByDoctor/id?id=${id}`, { headers });
+}
+
 
   // Search medical histories
   Search(key: string, value: string, DomainName: string): Observable<MedicalHistory[]> {

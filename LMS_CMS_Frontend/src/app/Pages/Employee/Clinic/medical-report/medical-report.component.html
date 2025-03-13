@@ -7,9 +7,9 @@
         <!-- Tabs -->
         <div class="flex space-x-4">
             <button *ngFor="let tab of tabs" (click)="selectTab(tab)" [ngClass]="{
-          'bg-[#FF7519] text-white': selectedTab === tab,
-          'bg-gray-200 text-gray-700': selectedTab !== tab
-        }" class="px-4 py-3 text-sm font-medium rounded-sm focus:outline-none transition-colors duration-200">
+        'bg-[#FF7519] text-white': selectedTab === tab,
+        'bg-gray-200 text-gray-700': selectedTab !== tab
+      }" class="px-4 py-3 text-sm font-medium rounded-sm focus:outline-none transition-colors duration-200">
                 {{ tab }}
             </button>
         </div>
@@ -33,20 +33,45 @@
     <div *ngIf="selectedTab === 'MH By Parent'">
         <app-table [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']"
             [data]="mhByParentData" [keys]="['date', 'description', 'insertDate', 'lastModified']"
-            (delete)="deleteMHParent($event)" (edit)="editMHParent($event)"></app-table>
+            ></app-table>
     </div>
 
     <div *ngIf="selectedTab === 'MH By Doctor'">
         <app-table [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']"
             [data]="mhByDoctorData" [keys]="['date', 'description', 'insertDate', 'lastModified']"
-            (delete)="deleteMHDoctor($event)" (edit)="editMHDoctor($event)"></app-table>
+             ></app-table>
     </div>
 
-    <div *ngIf="selectedTab === 'Hygiene Form'">
-        <app-hygiene-form></app-hygiene-form>
+    <!-- Hygiene Form Table -->
+    <div *ngIf="selectedTab === 'Hygiene Form'" class="space-y-4">
+        <!-- Hide the header and buttons -->
+        <div class="hidden">
+            <app-hygiene-form></app-hygiene-form>
+        </div>
+        <!-- Show only the table -->
+        <div class="block">
+            <app-table [headers]="['ID', 'School', 'Grade', 'Class Room', 'Date', 'Actions']" [data]="hygieneForms"
+                [keys]="['id', 'school', 'grade', 'classRoom', 'date']" (delete)="deleteHygieneForm($event)"
+                >
+            </app-table>
+        </div>
     </div>
 
-    <div *ngIf="selectedTab === 'Follow Up'">
-        <app-follow-up></app-follow-up>
+    <!-- Follow Up Table -->
+    <div *ngIf="selectedTab === 'Follow Up'" class="space-y-4">
+        <!-- Hide the header and buttons -->
+        <div class="hidden">
+            <app-follow-up></app-follow-up>
+        </div>
+        <!-- Show only the table -->
+        <div class="block">
+            <app-table
+                [headers]="['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation', 'Actions']"
+                [data]="followUps"
+                [keys]="['id', 'schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation']"
+                (delete)="deleteFollowUp($event)" 
+                >
+            </app-table>
+        </div>
     </div>
 </div>

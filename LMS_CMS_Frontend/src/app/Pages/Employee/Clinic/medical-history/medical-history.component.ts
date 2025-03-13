@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -20,6 +20,12 @@ import { MedicalHistory } from '../../../../Models/Clinic/MedicalHistory';
   styleUrls: ['./medical-history.component.css'],
 })
 export class MedicalHistoryComponent implements OnInit {
+  @ViewChild('firstReportInput') firstReportInput!: ElementRef;
+  @ViewChild('secReportInput') secReportInput!: ElementRef;
+
+  firstReportPreview: string | null = null;
+  secReportPreview: string | null = null;
+
   headers: string[] = ['ID', 'School', 'Grade', 'Class', 'Student', 'Details', 'Permanent Drug', 'Date', 'Actions'];
   keys: string[] = ['id', 'school', 'grade', 'classRoom', 'student', 'details', 'permanentDrug', 'insertedAt'];
   medicalHistories: any[] = [];
@@ -31,6 +37,8 @@ export class MedicalHistoryComponent implements OnInit {
   grades: any[] = [];
   classes: any[] = [];
   students: any[] = [];
+
+  validationErrors: { [key: string]: string } = {};
 
   constructor(
     private medicalHistoryService: MedicalHistoryService,
@@ -50,7 +58,8 @@ export class MedicalHistoryComponent implements OnInit {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalHistoryService.Get(domainName));
-      console.log(data)
+      console.log(data);
+
       this.medicalHistories = data.map(item => ({
         ...item,
         insertedAt: new Date(item.insertedAt).toLocaleDateString(),
@@ -82,6 +91,8 @@ export class MedicalHistoryComponent implements OnInit {
       const existingHistory = this.medicalHistories.find(mh => mh.id === id);
       if (existingHistory) {
         this.medicalHistory = { ...existingHistory };
+        this.firstReportPreview = existingHistory.firstReport; // Set the preview to the existing file link
+        this.secReportPreview = existingHistory.secReport; // Set the preview to the existing file link
       }
     } else {
       this.editMode = false;
@@ -92,54 +103,105 @@ export class MedicalHistoryComponent implements OnInit {
   closeModal() {
     this.isModalVisible = false;
     this.medicalHistory = new MedicalHistory(0, 0, 0, 0, 0, '', '', new Date().toISOString(), null, null);
+    this.validationErrors = {};
+    this.firstReportPreview = null;
+    this.secReportPreview = null;
   }
 
-  onFileChange(event: any, field: string) {
-    const file = event.target.files[0];
-    if (file) {
-      if (field === 'firstReport') {
-        this.medicalHistory.firstReport = file;
-      } else if (field === 'secReport') {
-        this.medicalHistory.secReport = file;
+  onInputValueChange(event: { field: string; value: any }) {
+    const { field, value } = event;
+    (this.medicalHistory as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    } else {
+      this.validationErrors[field] = `*${this.capitalizeField(field)} is required`;
+    }
+  }
+
+  capitalizeField(field: string): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
+  onFileUpload(event: Event, field: 'firstReport' | 'secReport') {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const fileType = file.type;
+      if (fileType.startsWith('image/') || fileType.startsWith('video/')) {
+        this.medicalHistory[field] = file; // Store the new file
+        if (field === 'firstReport') {
+          this.firstReportPreview = URL.createObjectURL(file); // Update the preview
+        } else if (field === 'secReport') {
+          this.secReportPreview = URL.createObjectURL(file); // Update the preview
+        }
+      } else {
+        alert('Invalid file type. Please upload an image or video.');
       }
     }
   }
 
   async saveMedicalHistory() {
-    try {
-      const domainName = this.apiService.GetHeader();
-      const formData = new FormData();
+    // if (this.isFormValid()) {
+      try {
+        const domainName = this.apiService.GetHeader();
+        const formData = new FormData();
 
-      // Append all fields to FormData
-      formData.append('Id', this.medicalHistory.id.toString());
-      formData.append('SchoolId', this.medicalHistory.schoolId.toString());
-      formData.append('GradeId', this.medicalHistory.gradeId.toString());
-      formData.append('ClassRoomID', this.medicalHistory.classRoomID.toString());
-      formData.append('StudentId', this.medicalHistory.studentId.toString());
-      formData.append('Details', this.medicalHistory.details);
-      formData.append('PermanentDrug', this.medicalHistory.permanentDrug);
-      formData.append('Date', this.medicalHistory.insertedAt);
+        // Append all fields to FormData
+        formData.append('Id', this.medicalHistory.id.toString());
+        formData.append('SchoolId', this.medicalHistory.schoolId.toString());
+        formData.append('GradeId', this.medicalHistory.gradeId.toString());
+        formData.append('ClassRoomID', this.medicalHistory.classRoomID.toString());
+        formData.append('StudentId', this.medicalHistory.studentId.toString());
+        formData.append('Details', this.medicalHistory.details);
+        formData.append('PermanentDrug', this.medicalHistory.permanentDrug);
+        formData.append('Date', this.medicalHistory.insertedAt);
 
-      // Append files if they exist
-      if (this.medicalHistory.firstReport) {
-        formData.append('FirstReportFile', this.medicalHistory.firstReport);
+        // Handle FirstReport
+        if (this.medicalHistory.firstReport instanceof File) {
+          formData.append('FirstReportFile', this.medicalHistory.firstReport, this.medicalHistory.firstReport.name);
+          formData.append('FirstReport', ''); // Set FirstReport to null when a new file is uploaded
+        } else if (this.medicalHistory.firstReport === null) {
+          formData.append('FirstReport', ''); // Set FirstReport to null if the file is deleted
+        } else {
+          formData.append('FirstReport', this.medicalHistory.firstReport); // Retain the existing FirstReport if no new file is uploaded
+        }
+
+        // Handle SecReport
+        if (this.medicalHistory.secReport instanceof File) {
+          formData.append('SecReportFile', this.medicalHistory.secReport, this.medicalHistory.secReport.name);
+          formData.append('SecReport', ''); // Set SecReport to null when a new file is uploaded
+        } else if (this.medicalHistory.secReport === null) {
+          formData.append('SecReport', ''); // Set SecReport to null if the file is deleted
+        } else {
+          formData.append('SecReport', this.medicalHistory.secReport); // Retain the existing SecReport if no new file is uploaded
+        }
+
+        if (this.editMode) {
+          await firstValueFrom(this.medicalHistoryService.Edit(formData, domainName));
+        } else {
+          await firstValueFrom(this.medicalHistoryService.Add(formData, domainName));
+        }
+
+        this.loadMedicalHistories();
+        this.closeModal();
+      } catch (error) {
+        console.error('Error saving medical history:', error);
+        Swal.fire('Error', 'Failed to save medical history. Please try again later.', 'error');
       }
-      if (this.medicalHistory.secReport) {
-        formData.append('SecReportFile', this.medicalHistory.secReport);
-      }
+    // }
+  }
 
-      if (this.editMode) {
-        await firstValueFrom(this.medicalHistoryService.Edit(formData, domainName));
-      } else {
-        await firstValueFrom(this.medicalHistoryService.Add(formData, domainName));
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.medicalHistory) {
+      if (this.medicalHistory.hasOwnProperty(key)) {
+        if (!this.medicalHistory[key]) {
+          this.validationErrors[key] = `*${this.capitalizeField(key)} is required`;
+          isValid = false;
+        }
       }
-
-      this.loadMedicalHistories();
-      this.closeModal();
-    } catch (error) {
-      console.error('Error saving medical history:', error);
-      Swal.fire('Error', 'Failed to save medical history. Please try again later.', 'error');
     }
+    return isValid;
   }
 
   deleteMedicalHistory(row: any) {

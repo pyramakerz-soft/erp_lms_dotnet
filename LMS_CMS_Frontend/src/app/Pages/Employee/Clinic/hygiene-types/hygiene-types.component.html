@@ -12,13 +12,11 @@
 
   <app-table [headers]="['ID', 'Hygiene Type', 'Date', 'Actions']" [data]="hygieneTypes"
     [keys]="['id', 'type', 'insertedAt']" (delete)="deleteHygieneType($event)" (edit)="openModal($event.id)">
-  </app-table> 
+  </app-table>
 
   <!-- Reusable Modal -->
-  <app-modal [title]="editHygieneType ? 'Edit Hygiene Type' : 'Create Hygiene Type'" [isEditMode]="editHygieneType"
-    [buttonText]="editHygieneType ? 'Save' : 'Create'" (save)="saveHygieneType()" (close)="closeModal()"
-    [ngClass]="{ hidden: !isModalVisible }">
-    <!-- Modal Content -->
+  <app-modal [title]="'Hygiene Type'" [isEditMode]="editHygieneType" [buttonText]="editHygieneType ? 'Save' : 'Create'"
+    (save)="saveHygieneType()" (close)="closeModal()" [ngClass]="{ hidden: !isModalVisible }">
     <div class="flex flex-col w-full mb-4">
       <label class="mb-2 primaryTxt" for="name">Hygiene Type</label>
       <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"

@@ -1,4 +1,6 @@
 export class Student {
+      [key: string]: any; // Add this line to allow dynamic properties
+
     constructor(
         public id: number = 0,
         public user_Name: string = '',

@@ -1,0 +1,17 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Hygiene Forms</h1>
+    <div class="flex justify-between items-center">
+        <!-- Add the Search Component -->
+        <!-- <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> -->
+        <button (click)="navigateToCreateHygieneForm()"
+            class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
+            Create Hygiene Form
+        </button>
+    </div>
+</div>
+
+<app-hygiene-form-table
+  [students]="students"
+  [hygieneTypes]="hygieneTypes"
+  [hygieneForms]="hygieneForms"> <!-- Pass hygieneForms here -->
+</app-hygiene-form-table>

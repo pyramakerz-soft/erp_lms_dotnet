@@ -100,8 +100,8 @@ import { ShopItemsAddEditComponent } from './Pages/Employee/Inventory/shop-items
 import { StoresComponent } from './Pages/Employee/Inventory/stores/stores.component';
 import { InventoryMasterComponent } from './Pages/Employee/Inventory/inventory-master/inventory-master.component';
 import { InventoryDetailsComponent } from './Pages/Employee/Inventory/inventory-details/inventory-details.component';
-import { CreateHygieneFormComponent } from './Pages/Employee/Clinic/create-hygiene-form/create-hygiene-form.component';
-import { HygieneFormComponent } from './Pages/Employee/Clinic/hygiene-form/hygiene-form.component';
+import { CreateHygieneFormComponent } from './Pages/Employee/Clinic/hygiene_form/create-hygiene-form/create-hygiene-form.component';
+import { HygieneFormComponent } from './Pages/Employee/Clinic/hygiene_form/hygiene-form/hygiene-form.component';
 import { DrugsComponent } from './Pages/Employee/Clinic/drugs/drugs.component';
 import { DiagnosisComponent } from './Pages/Employee/Clinic/diagnosis/diagnosis.component';
 import { HygieneTypesComponent } from './Pages/Employee/Clinic/hygiene-types/hygiene-types.component';

@@ -21,7 +21,7 @@ export class DiagnosisComponent implements OnInit {
   diagnosis: Diagnosis = new Diagnosis(0, '', new Date(), 0);
   editDiagnosis = false;
   validationErrors: { [key: string]: string } = {};
-  keysArray: string[] = ['id', 'name', 'insertedAt'];
+  keysArray: string[] = ['id', 'name'];
   key: string = "id";
   value: any = "";
   isModalVisible = false;
@@ -119,12 +119,9 @@ deleteDiagnosis(row: any) {
     if (result.isConfirmed) {
       this.diagnosisService.Delete(row.id, this.DomainName).subscribe({
         next: (response) => {
-          
           console.log('Delete response:', response);
-
-          
           this.getDiagnoses();
-          Swal.fire('Deleted!', 'The diagnosis has been deleted.', 'success');
+          // Swal.fire('Deleted!', 'The diagnosis has been deleted.', 'success');
         },
         error: (error) => {
           console.error('Error deleting diagnosis:', error);

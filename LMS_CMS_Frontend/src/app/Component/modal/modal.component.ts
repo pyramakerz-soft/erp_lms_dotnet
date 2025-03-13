@@ -9,18 +9,16 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./modal.component.css']
 })
 export class ModalComponent {
-  @Input() title: string = ''; // Title of the modal
-  @Input() isEditMode: boolean = false; // Whether the modal is in edit mode
-  @Input() buttonText: string = 'Create'; // Dynamic button text
-  @Output() save = new EventEmitter<void>(); // Emit when the save button is clicked
-  @Output() close = new EventEmitter<void>(); // Emit when the modal is closed
+  @Input() title: string = '';
+  @Input() isEditMode: boolean = false;
+  @Input() buttonText: string = 'Create';
+  @Output() save = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>();
 
-  // Close the modal
   closeModal() {
     this.close.emit();
   }
 
-  // Save action
   onSave() {
     this.save.emit();
   }

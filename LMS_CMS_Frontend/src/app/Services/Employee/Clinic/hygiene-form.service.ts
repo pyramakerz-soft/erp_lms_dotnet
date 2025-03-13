@@ -27,4 +27,17 @@ Get(DomainName: string): Observable<HygieneForm[]> {
     .set('accept', '*/*');
   return this.http.get<HygieneForm[]>(`${this.baseUrl}/HygieneForm`, { headers });
 }
+
+Delete(id: number, DomainName: string): Observable<any> {
+  if (DomainName != null) {
+    this.header = DomainName;
+  }
+  const token = localStorage.getItem('current_token');
+  const headers = new HttpHeaders()
+    .set('Domain-Name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('accept', '*/*')
+    .set('Content-Type', 'application/json');
+  return this.http.delete(`${this.baseUrl}/HygieneForm?id=${id}`, { headers, responseType: 'text' });
+}
 }

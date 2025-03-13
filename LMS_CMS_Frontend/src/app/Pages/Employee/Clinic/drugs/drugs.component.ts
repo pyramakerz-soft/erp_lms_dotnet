@@ -21,7 +21,7 @@ export class DrugsComponent implements OnInit {
   drug: Drug = new Drug(0, '', new Date());
   editDrug = false;
   validationErrors: { [key: string]: string } = {};
-  keysArray: string[] = ['id', 'name', 'insertedAt'];
+  keysArray: string[] = ['id', 'name'];
   key: string = "id";
   value: any = "";
   isModalVisible = false;
@@ -124,7 +124,7 @@ export class DrugsComponent implements OnInit {
 
             // Refresh the table after successful deletion
             this.getDrugs();
-            Swal.fire('Deleted!', 'The drug has been deleted.', 'success');
+            // Swal.fire('Deleted!', 'The drug has been deleted.', 'success');
           },
           error: (error) => {
             console.error('Error deleting drug:', error);

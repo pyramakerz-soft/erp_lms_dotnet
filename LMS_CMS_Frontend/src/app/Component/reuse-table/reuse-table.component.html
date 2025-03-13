@@ -30,9 +30,11 @@
                 <!-- Actions Column -->
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     <div class="flex space-x-4">
-                        <!-- Eye Icon (Conditional) -->
-                        <button *ngIf="showViewAction && row.actions?.view" (click)="onView(row)">
-                            <i class="fa-regular fa-eye"></i>
+
+
+                        <!-- Delete Icon -->
+                        <button *ngIf="row.actions?.delete" (click)="onDelete(row)">
+                            <i class="fa-regular fa-trash-can"></i>
                         </button>
 
                         <!-- Edit Icon -->
@@ -40,10 +42,12 @@
                             <i class="fa-solid fa-pencil"></i>
                         </button>
 
-                        <!-- Delete Icon -->
-                        <button *ngIf="row.actions?.delete" (click)="onDelete(row)">
-                            <i class="fa-regular fa-trash-can"></i>
+                        <!-- Eye Icon (Conditional) -->
+                        <button *ngIf="showViewAction && row.actions?.view" (click)="onView(row)">
+                            <i class="fa-regular fa-eye"></i>
                         </button>
+
+
                     </div>
                 </td>
             </tr>

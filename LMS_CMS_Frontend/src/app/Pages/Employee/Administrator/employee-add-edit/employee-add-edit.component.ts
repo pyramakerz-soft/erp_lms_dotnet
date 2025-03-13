@@ -24,33 +24,23 @@ import Swal from 'sweetalert2';
   templateUrl: './employee-add-edit.component.html',
   styleUrl: './employee-add-edit.component.css'
 })
-export class EmployeeAddEditComponent { 
+export class EmployeeAddEditComponent {
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-
   DomainName: string = "";
   UserID: number = 0;
   path: string = "";
-
   Data: EmployeeGet = new EmployeeGet()
-
   BusCompany: BusType[] = []
   Roles: Role[] = []
-
   empTypes: EmployeeTypeGet[] = []
-
   mode: string = ""
-
   BusCompanyId: number = 0;
   RoleId: number = 0;
   EmpType: number = 0;
-
   EmpId: number = 0;
-
   validationErrors: { [key in keyof EmployeeGet]?: string } = {};
-
   emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   mobilePattern = /^0(10|11|12|15)\d{8}$/;
-
   DeletedFiles: number[] = []
   constructor(public RoleServ: RoleService, public empTypeServ: EmployeeTypeService, public BusCompanyServ: BusCompanyService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router, public EmpServ: EmployeeService) { }
 
@@ -63,7 +53,7 @@ export class EmployeeAddEditComponent {
         this.path = url[0].path
 
         if (this.path == "Employee Create") {
-          this.mode = "Create"; 
+          this.mode = "Create";
         } else if (this.path == "Employee Edit") {
           this.mode = "Edit";
           this.EmpId = Number(this.activeRoute.snapshot.paramMap.get('id'))
@@ -78,7 +68,7 @@ export class EmployeeAddEditComponent {
 
         this.GetBusCompany();
         this.GetRole();
-        this.GetEmployeeType(); 
+        this.GetEmployeeType();
       });
     }
   }
@@ -126,7 +116,7 @@ export class EmployeeAddEditComponent {
       a.click();
       // URL.revokeObjectURL(fileURL);
     }
-    else if(this.mode=="Edit"){
+    else if (this.mode == "Edit") {
       const fileURL = file.link;
       const a = document.createElement('a');
       a.href = fileURL;
@@ -144,40 +134,40 @@ export class EmployeeAddEditComponent {
         if (!this.Data[field]) {
           if (field == 'user_Name' || field == 'en_name' || field == 'password' || field == 'role_ID' || field == 'employeeTypeID') {
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`;
-            isValid = false; 
+            isValid = false;
           }
         }
       }
     }
 
-    if(this.Data.employeeTypeID == 2){
-      if(this.Data.licenseNumber == ""){
+    if (this.Data.employeeTypeID == 2) {
+      if (this.Data.licenseNumber == "") {
         this.validationErrors["licenseNumber"] = `*License Number is required`;
         isValid = false;
       }
-      if(this.Data.expireDate == ""){
+      if (this.Data.expireDate == "") {
         this.validationErrors["expireDate"] = `*Expire Data is required`;
         isValid = false;
-      } 
+      }
     }
 
-    if(this.Data.email && !this.emailPattern.test(this.Data.email)){
+    if (this.Data.email && !this.emailPattern.test(this.Data.email)) {
       this.validationErrors["email"] = `*Email is not valid`;
       isValid = false;
     }
 
-    if(this.Data.mobile && !this.mobilePattern.test(this.Data.mobile)){
+    if (this.Data.mobile && !this.mobilePattern.test(this.Data.mobile)) {
       this.validationErrors["mobile"] = `*Mobile Number is not valid`;
       isValid = false;
     }
 
-    if(this.Data.phone && !this.mobilePattern.test(this.Data.phone)){
+    if (this.Data.phone && !this.mobilePattern.test(this.Data.phone)) {
       this.validationErrors["phone"] = `*Phone Number is not valid`;
       isValid = false;
     }
     return isValid;
   }
-  
+
   capitalizeField(field: keyof EmployeeGet): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
@@ -189,43 +179,33 @@ export class EmployeeAddEditComponent {
       this.validationErrors[field] = '';
     }
   }
-  
+
   validateNumber(event: any, field: keyof EmployeeGet): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.Data[field] === 'string') {
-        this.Data[field] = '' as never;  
+        this.Data[field] = '' as never;
       }
     }
   }
- 
-  async Save() {  
-    if(this.isFormValid()){
+
+  async Save() {
+    if (this.isFormValid()) {
       if (this.mode == "Create") {
         return this.EmpServ.Add(this.Data, this.DomainName).toPromise().then(
           (data) => {
             this.moveToEmployee();
             return true;
           },
-          (error) => { 
-            if(error.error.errors["Password"][0].includes("Password must be between 6 and 100")){
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: "Password must be between 6 and 100",
-                confirmButtonColor: '#FF7519',
-              });
-              return false;
-            } else{
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.error.errors || 'An unexpected error occurred',
-                confirmButtonColor: '#FF7519',
-              });
-              return false; 
-            }
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error || 'An unexpected error occurred',
+              confirmButtonColor: '#FF7519',
+            });
+            return false;
           }
         );
       } else if (this.mode == "Edit") {
@@ -240,31 +220,20 @@ export class EmployeeAddEditComponent {
             return true;
           },
           (error) => {
-            if(error.error.errors["Password"].includes("Password must be between 6 and 100")){
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: "Password must be between 6 and 100",
-                confirmButtonColor: '#FF7519',
-              });
-              return false;
-            } else{
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.error.errors || 'An unexpected error occurred',
-                confirmButtonColor: '#FF7519',
-              });
-              return false; 
-            }
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error || 'An unexpected error occurred',
+              confirmButtonColor: '#FF7519',
+            });
+            return false;
           }
         );
       }
     }
-    
+
     return Promise.resolve(true); // Default resolve if all logic completes
   }
-  
 
   moveToEmployee() {
     this.router.navigateByUrl("Employee/Employee")

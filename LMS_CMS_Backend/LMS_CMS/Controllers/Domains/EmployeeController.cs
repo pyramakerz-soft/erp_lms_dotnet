@@ -240,6 +240,11 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("This User Name Already Exist");
             }
+            Employee CheckEmail = Unit_Of_Work.employee_Repository.First_Or_Default(e => e.Email == NewEmployee.Email);
+            if (CheckEmail != null)
+            {
+                return BadRequest("This Email Already Exist");
+            }
             if (NewEmployee.BusCompanyID != null && NewEmployee.BusCompanyID != 0)
             {
                 BusCompany bus = Unit_Of_Work.busCompany_Repository.First_Or_Default(b => b.ID == NewEmployee.BusCompanyID && b.IsDeleted != true);
@@ -362,7 +367,11 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("Employee cannot be null");
             }
-
+            Employee CheckEmail = Unit_Of_Work.employee_Repository.First_Or_Default(e => e.Email == newEmployee.Email && e.ID!= newEmployee.ID);
+            if (CheckEmail != null)
+            {
+                return BadRequest("This Email Already Exist");
+            }
             Employee oldEmp = await Unit_Of_Work.employee_Repository.Select_By_IdAsync(newEmployee.ID);
             if (oldEmp == null)
             {

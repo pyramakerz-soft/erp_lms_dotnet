@@ -290,8 +290,9 @@ export class PayableDetailsComponent {
   }
   
   GetLinkFilesTypeData(){ 
+    this.linkFileTypesData = []
     this.dataAccordingToLinkFileService.Get(this.DomainName, +this.newDetails.linkFileID).subscribe(
-      (data) => {
+      (data) => { 
         this.linkFileTypesData = data
       }
     )

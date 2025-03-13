@@ -267,8 +267,9 @@ export class ReceivableDetailsComponent {
 
 
   GetReceivableDetails(){
+    this.receivableDetailsData = []
     this.receivableDetailsService.Get(this.DomainName, this.ReceivableID).subscribe(
-      (data) => {
+      (data) => { 
         this.receivableDetailsData = data
         let total = 0
         this.receivableDetailsData.forEach(element => {
@@ -288,6 +289,7 @@ export class ReceivableDetailsComponent {
   }
   
   GetLinkFilesTypeData(){
+    this.linkFileTypesData = []
     this.dataAccordingToLinkFileService.Get(this.DomainName, +this.newDetails.linkFileID).subscribe(
       (data) => {
         this.linkFileTypesData = data

@@ -172,7 +172,7 @@ export class BankComponent {
   }
 
   CreateOREdit() {
-    if (this.isFormValid()) {
+    if (this.isFormValid()) { 
       if (this.mode == 'Create') {
         this.BankServ.Add(this.bank,this.DomainName).subscribe((d)=>{
           this.GetAllData()
@@ -184,8 +184,7 @@ export class BankComponent {
         })
       }
       this.closeModal()
-    }
-    this.GetAllData()
+    } 
   }
 
   closeModal() {
@@ -220,6 +219,19 @@ export class BankComponent {
         }
       }
     }
+    const openingDate = new Date(this.bank.accountOpeningDate);
+    const closingDate = new Date(this.bank.accountClosingDate);
+
+    if (closingDate < openingDate) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Dates',
+        text: 'Account Closing Date must be after Account Opening Date!',
+        confirmButtonText: 'OK',
+      });
+      isValid = false;
+    }
+
     return isValid;
   }
   capitalizeField(field: keyof Bank): string {

@@ -15,8 +15,9 @@
 
     <h6 class="font-medium text-base leading-6 mb-4">Role Name</h6>
     <div class="flex flex-col mb-4">
-        <input type="text" class="rounded-lg border border-solid border-gray-300 block w-full p-2.5"
+        <input type="text" class="rounded-lg border border-solid border-gray-300 block w-full p-2.5"  (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"
             [(ngModel)]="RoleName" placeholder="Enter new role" />
+            <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
     </div>
 
     <div class="bg-[#EAECF0] w-1/3">

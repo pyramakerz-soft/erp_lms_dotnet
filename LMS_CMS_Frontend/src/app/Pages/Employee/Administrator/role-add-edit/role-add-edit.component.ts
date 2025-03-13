@@ -48,10 +48,10 @@ export class RoleAddEditComponent {
   RoleName: string = ""
   RoleId: number = 0;
   mode: string = ""
-  DataToSaveCreate: RoleAdd = new RoleAdd();
-  DataToSaveEdit: RolePut = new RolePut();
+  DataToSave: RolePut = new RolePut();
   dataForEdit: PagesWithRoleId[] = []
   loading = true;
+  validationErrors: { [key in keyof RolePut]?: string } = {};
 
   constructor(public pageServ: PageService, public RoleDetailsServ: RoleDetailsService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, public RoleServ: RoleService, private router: Router) { }
 
@@ -225,12 +225,9 @@ export class RoleAddEditComponent {
   }
 
   SetForRow(id: number, parentId: number, newState: boolean): void {
-    console.log(id, parentId)
-    // const newState = !this.checkForRow(id);
     // Recursive function to update all children
     const updateChildren = (id: number, state: boolean) => {
       const children = this.ResultArray.filter(item => item.Rowkey === id);
-      console.log(children, state)
       children.forEach(child => {
         child.IsSave = state;
         child.allow_Delete = state;
@@ -262,7 +259,9 @@ export class RoleAddEditComponent {
     };
 
     // Update the selected page
+    if (parentId == null) parentId = 0
     const selectedPage = this.ResultArray.find(item => item.Rowkey === parentId && item.pageId === id);
+    console.log(selectedPage, newState)
     if (selectedPage) {
       selectedPage.IsSave = newState;
       selectedPage.allow_Delete = newState;
@@ -278,63 +277,82 @@ export class RoleAddEditComponent {
 
   Save() {
     const resultItems = this.ResultArray.filter(item => item.IsSave === true);
-    if (this.RoleName == "" || resultItems.length == 0) {
-      if (this.RoleName == "") {
+    this.DataToSave.id = this.RoleId;
+    this.DataToSave.name = this.RoleName
+    this.DataToSave.pages = resultItems;
+    if (this.isFormValid()) {
+      if (this.DataToSave.pages.length == 0) {
         Swal.fire({
           icon: 'error',
           title: 'Error',
           confirmButtonColor: '#FF7519',
-          text: "Name is required",
+          text: "Pages list cannot be null or empty",
         });
       }
-      if (resultItems.length == 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          confirmButtonColor: '#FF7519',
-          text: "Modules is required",
-        });
-      }
-    }
-    else {
-      if (this.mode == "Create") {
-        this.DataToSaveCreate.name = this.RoleName
-        this.DataToSaveCreate.pages = resultItems;
-        this.RoleServ.AddRole(this.DataToSaveCreate, this.DomainName).subscribe({
-          next: (response) => {
-            this.router.navigateByUrl("Employee/Role")
-          },
-          error: (error) => {
-            const errorMessage = error?.error || 'An unexpected error occurred';
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              confirmButtonColor: '#FF7519',
-              text: errorMessage,
-            });
-          },
-        });
-      }
-      else if (this.mode == "Edit") {
-        this.DataToSaveEdit.id = this.RoleId;
-        this.DataToSaveEdit.name = this.RoleName
-        this.DataToSaveEdit.pages = resultItems;
-        this.RoleServ.EditRole(this.DataToSaveEdit, this.DomainName).subscribe({
-          next: (response) => {
-            this.router.navigateByUrl("Employee/Role")
-          },
-          error: (error) => {
-            const errorMessage = error?.error || 'An unexpected error occurred';
+      else {
+        if (this.mode == "Create") {
+          this.RoleServ.AddRole(this.DataToSave, this.DomainName).subscribe({
+            next: (response) => {
+              this.router.navigateByUrl("Employee/Role")
+            },
+            error: (error) => {
+              const errorMessage = error?.error || 'An unexpected error occurred';
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                confirmButtonColor: '#FF7519',
+                text: errorMessage,
+              });
+            },
+          });
+        }
+        else if (this.mode == "Edit") {
+          this.RoleServ.EditRole(this.DataToSave, this.DomainName).subscribe({
+            next: (response) => {
+              this.router.navigateByUrl("Employee/Role")
+            },
+            error: (error) => {
+              const errorMessage = error?.error || 'An unexpected error occurred';
 
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              confirmButtonColor: '#FF7519',
-              text: errorMessage,
-            });
-          },
-        });
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                confirmButtonColor: '#FF7519',
+                text: errorMessage,
+              });
+            },
+          });
+        }
       }
     }
+  }
+  onInputValueChange(event: { field: keyof RolePut, value: any }) {
+    const { field, value } = event;
+    if (field == "name") {
+      (this.DataToSave as any)[field] = value;
+      if (value) {
+        this.validationErrors[field] = '';
+      }
+    }
+  }
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.DataToSave) {
+      if (this.DataToSave.hasOwnProperty(key)) {
+        const field = key as keyof RolePut;
+        if (!this.DataToSave[field]) {
+          if (field == 'name') {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
+    return isValid;
+  }
+  capitalizeField(field: keyof RolePut): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 }

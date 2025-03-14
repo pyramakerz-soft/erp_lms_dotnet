@@ -1,56 +1,65 @@
 <div class="container mx-auto pr-6">
     <!-- Header Section -->
     <div class="flex justify-between">
-        <h1 class="font-semibold text-2xl leading-9">Create Hygiene Form</h1>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Create Hygiene Form</h1>
         <div class="flex justify-between items-center">
             <button (click)="saveHygieneForm()"
-                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+                class=" text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2" style="background-color: #FF7519;">
                 Save
             </button>
         </div>
     </div>
 
-    <!-- Selection Inputs -->
-    <div class="mt-5">
-        <div class="grid grid-cols-2 gap-4">
-            <!-- School Select -->
-            <div>
-                <label for="school" class="block mb-2 text-sm font-medium text-gray-900">School</label>
-                <select id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                    <option value="" disabled selected hidden>Select a School</option>
-                    <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
-                </select>
-            </div>
+<!-- Error Message -->
+<div *ngIf="errorMessage" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg mx-auto text-center mb-4 mt-4
+">
+    {{ errorMessage }}
+</div>
 
-            <!-- Grade Select -->
-            <div>
-                <label for="grade" class="block mb-2 text-sm font-medium text-gray-900">Grade</label>
-                <select id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                    <option value="" disabled selected hidden>Select a Grade</option>
-                    <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
-                </select>
-            </div>
+
+        
+    <!-- Selection Inputs -->
+    <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+        <!-- School Select -->
+        <div class="flex flex-col mb-4 w-[49%]">
+            <label class="mb-2 primaryTxt" for="school">School</label>
+            <select id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto">
+                <option [value]="null" disabled selected hidden>Choose School</option>
+                <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
+                <option *ngIf="schools.length === 0" disabled selected>No Data Found</option>
+            </select>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mt-4">
-            <!-- Class Select -->
-            <div>
-                <label for="class" class="block mb-2 text-sm font-medium text-gray-900">Class</label>
-                <select id="class" [(ngModel)]="selectedClass" (change)="onClassChange()"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
-                    <option value="" disabled selected hidden>Select a Class</option>
-                    <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
-                </select>
-            </div>
+        <!-- Grade Select -->
+        <div class="flex flex-col mb-4 w-[49%]">
+            <label class="mb-2 primaryTxt" for="grade">Grade</label>
+            <select id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                [disabled]="!selectedSchool">
+                <option [value]="null" disabled selected hidden>Choose Grade</option>
+                <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
+                <option *ngIf="grades.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
 
-            <!-- Date Input -->
-            <div>
-                <label for="date" class="block mb-2 text-sm font-medium text-gray-900">Date</label>
-                <input type="date" id="date" [(ngModel)]="selectedDate"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
-            </div>
+        <!-- Class Select -->
+        <div class="flex flex-col mb-4 w-[49%]">
+            <label class="mb-2 primaryTxt" for="class">Class</label>
+            <select id="class" [(ngModel)]="selectedClass" (change)="onClassChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                [disabled]="!selectedGrade">
+                <option [value]="null" disabled selected hidden>Choose Class</option>
+                <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+                <option *ngIf="classes.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
+
+        <!-- Date Input -->
+        <div class="flex flex-col mb-4 w-[49%]">
+            <label class="mb-2 primaryTxt" for="date">Date</label>
+            <input type="date" id="date" [(ngModel)]="selectedDate"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3" [disabled]="!selectedClass">
         </div>
     </div>
 

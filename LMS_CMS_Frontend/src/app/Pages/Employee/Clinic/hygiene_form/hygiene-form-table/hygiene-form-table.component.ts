@@ -13,15 +13,16 @@ import { Student } from '../../../../../Models/student';
 export class HygieneFormTableComponent {
   @Input() students: any[] = [];
   @Input() hygieneTypes: any[] = [];
-  @Input() hygieneForms: any[] = []; // Add this line
 
-  // Set Attendance
-setAttendance(student: Student, value: boolean) {
-  student['attendance'] = value; // Use bracket notation
-}
+  // Set Hygiene Type for a Specific Student
+  setHygieneType(student: Student, hygieneTypeId: number, value: boolean) {
+    student[`hygieneType_${hygieneTypeId}`] = value;
+  }
 
-// Set Hygiene Type
-setHygieneType(student: Student, hygieneTypeId: number, value: boolean) {
-  student[`hygieneType_${hygieneTypeId}`] = value; // This is already using bracket notation
-}
+  // Set All Hygiene Types for a Specific Student
+  setAllHygieneTypesForStudent(student: Student, value: boolean) {
+    this.hygieneTypes.forEach(hygieneType => {
+      student[`hygieneType_${hygieneType.id}`] = value;
+    });
+  }
 }

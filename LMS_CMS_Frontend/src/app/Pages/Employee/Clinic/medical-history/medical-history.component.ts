@@ -49,7 +49,7 @@ export class MedicalHistoryComponent implements OnInit {
     private studentService: StudentService
   ) {}
 
-  ngOnInit(): void {
+   ngOnInit(): void {
     this.loadMedicalHistories();
     this.loadDropdownOptions();
   }
@@ -81,6 +81,71 @@ export class MedicalHistoryComponent implements OnInit {
     } catch (error) {
       console.error('Error loading dropdown options:', error);
       Swal.fire('Error', 'Failed to load dropdown options. Please try again later.', 'error');
+    }
+  }
+    onSchoolChange(event: Event) {
+    this.medicalHistory.gradeId = 0;
+    this.medicalHistory.classRoomID = 0;
+    this.medicalHistory.studentId = 0;
+    this.grades = [];
+    this.classes = [];
+    this.students = [];
+
+    const selectedSchoolId = (event.target as HTMLSelectElement).value;
+    if (selectedSchoolId) {
+      this.loadGrades(Number(selectedSchoolId));
+    }
+  }
+    onGradeChange(event: Event) {
+    this.medicalHistory.classRoomID = 0;
+    this.medicalHistory.studentId = 0;
+    this.classes = [];
+    this.students = [];
+
+    const selectedGradeId = (event.target as HTMLSelectElement).value;
+    if (selectedGradeId) {
+      this.loadClasses(Number(selectedGradeId));
+    }
+  }
+    onClassChange(event: Event) {
+    this.medicalHistory.studentId = 0;
+    this.students = [];
+
+    const selectedClassId = (event.target as HTMLSelectElement).value;
+    if (selectedClassId) {
+      this.loadStudents(Number(selectedClassId));
+    }
+  }
+    async loadGrades(schoolId: number) {
+    try {
+      const domainName = this.apiService.GetHeader();
+      const data = await firstValueFrom(this.gradeService.GetBySchoolId(schoolId, domainName));
+      this.grades = data;
+    } catch (error) {
+      console.error('Error loading grades:', error);
+      Swal.fire('Error', 'Failed to load grades.', 'error');
+    }
+  }
+
+  async loadClasses(gradeId: number) {
+    try {
+      const domainName = this.apiService.GetHeader();
+      const data = await firstValueFrom(this.classroomService.GetByGradeId(gradeId, domainName));
+      this.classes = data;
+    } catch (error) {
+      console.error('Error loading classes:', error);
+      Swal.fire('Error', 'Failed to load classes.', 'error');
+    }
+  }
+
+  async loadStudents(classId: number) {
+    try {
+      const domainName = this.apiService.GetHeader();
+      const data = await firstValueFrom(this.studentService.GetByClassID(classId, domainName));
+      this.students = data.map(student => ({ id: student.id, name: student.en_name }));
+    } catch (error) {
+      console.error('Error loading students:', error);
+      Swal.fire('Error', 'Failed to load students.', 'error');
     }
   }
 
@@ -122,23 +187,31 @@ export class MedicalHistoryComponent implements OnInit {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
-  onFileUpload(event: Event, field: 'firstReport' | 'secReport') {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const fileType = file.type;
-      if (fileType.startsWith('image/') || fileType.startsWith('video/')) {
-        this.medicalHistory[field] = file; // Store the new file
+onFileUpload(event: Event, field: 'firstReport' | 'secReport') {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const fileType = file.type;
+
+    // Validate file type (image or video)
+    if (fileType.startsWith('image/') || fileType.startsWith('video/')) {
+      this.medicalHistory[field] = file; // Store the file in the medicalHistory object
+
+      // Create a preview URL for the file
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
         if (field === 'firstReport') {
-          this.firstReportPreview = URL.createObjectURL(file); // Update the preview
+          this.firstReportPreview = e.target.result; // Update the preview for firstReport
         } else if (field === 'secReport') {
-          this.secReportPreview = URL.createObjectURL(file); // Update the preview
+          this.secReportPreview = e.target.result; // Update the preview for secReport
         }
-      } else {
-        alert('Invalid file type. Please upload an image or video.');
-      }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('Invalid file type. Please upload an image or video.');
     }
   }
+}
 
   async saveMedicalHistory() {
     // if (this.isFormValid()) {
@@ -158,11 +231,14 @@ export class MedicalHistoryComponent implements OnInit {
 
         // Handle FirstReport
         if (this.medicalHistory.firstReport instanceof File) {
-          formData.append('FirstReportFile', this.medicalHistory.firstReport, this.medicalHistory.firstReport.name);
+          console.log('this.medicalHistory.firstReport instanceof File')
+          // formData.append('FirstReportFile', this.medicalHistory.firstReport, this.medicalHistory.firstReport.name);
           formData.append('FirstReport', ''); // Set FirstReport to null when a new file is uploaded
         } else if (this.medicalHistory.firstReport === null) {
+          console.log('this.medicalHistory.firstReport === null')
           formData.append('FirstReport', ''); // Set FirstReport to null if the file is deleted
         } else {
+          console.log('else')
           formData.append('FirstReport', this.medicalHistory.firstReport); // Retain the existing FirstReport if no new file is uploaded
         }
 

@@ -31,6 +31,7 @@ export class CreateHygieneFormComponent implements OnInit {
   classes: Classroom[] = [];
   students: Student[] = [];
   hygieneTypes: HygieneTypes[] = [];
+  errorMessage: string | null = null;
 
   selectedSchool: number | null = null;
   selectedGrade: number | null = null;
@@ -59,8 +60,8 @@ export class CreateHygieneFormComponent implements OnInit {
       const data = await firstValueFrom(this.hygieneTypesService.Get(domainName));
       this.hygieneTypes = data;
     } catch (error) {
-      console.error('Error loading hygiene types:', error);
-      Swal.fire('Error', 'Failed to load hygiene types.', 'error');
+        console.error('Error loading hygiene types:', error);
+        this.errorMessage = 'Failed to load hygiene types.';
     }
   }
 
@@ -71,7 +72,7 @@ export class CreateHygieneFormComponent implements OnInit {
       this.schools = data;
     } catch (error) {
       console.error('Error loading schools:', error);
-      Swal.fire('Error', 'Failed to load schools.', 'error');
+      this.errorMessage = 'Failed to load schools.';
     }
   }
 
@@ -83,7 +84,7 @@ export class CreateHygieneFormComponent implements OnInit {
         this.grades = data;
       } catch (error) {
         console.error('Error loading grades:', error);
-        Swal.fire('Error', 'Failed to load grades.', 'error');
+        this.errorMessage = 'Failed to load grades.';
       }
     }
   }
@@ -96,36 +97,34 @@ export class CreateHygieneFormComponent implements OnInit {
         this.classes = data;
       } catch (error) {
         console.error('Error loading classes:', error);
-        Swal.fire('Error', 'Failed to load classes.', 'error');
+        this.errorMessage = 'Failed to load classes.';
       }
     }
   }
 
-async loadStudents() {
-  if (this.selectedClass) {
-    try {
-      const domainName = this.apiService.GetHeader();
-      const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
-
-      if (data.length === 0) {
-        // Handle the case when no students are found
-        Swal.fire('Info', 'No students found for the selected class.', 'info');
-        this.students = []; // Clear the students array
-      } else {
-        // Map the students and add dynamic properties
-        this.students = data.map(student => ({
-          ...student,
-          attendance: null,
-          comment: '',
-          actionTaken: ''
-        }));
+  async loadStudents() {
+    if (this.selectedClass) {
+      try {
+        const domainName = this.apiService.GetHeader();
+        const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
+        console.log(data)
+        if (data.length === 0) {
+          this.errorMessage = 'No students found for the selected class.';
+          this.students = [];
+        } else {
+          this.students = data.map(student => ({
+            ...student,
+            attendance: null,
+            comment: '',
+            actionTaken: ''
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading students: ', error);
+        this.errorMessage = 'Failed to load students.';
       }
-    } catch (error) {
-      console.error('Error loading students:', error);
-      Swal.fire('Error', 'Failed to load students.', 'error');
     }
   }
-}
 
   onSchoolChange() {
     this.selectedGrade = null;
@@ -148,48 +147,48 @@ async loadStudents() {
     this.loadStudents();
   }
 
-saveHygieneForm() {
-  const domainName = this.apiService.GetHeader();
-  const token = localStorage.getItem('current_token');
+  saveHygieneForm() {
+    const domainName = this.apiService.GetHeader();
+    const token = localStorage.getItem('current_token');
 
-  const headers = new HttpHeaders()
-    .set('Domain-Name', domainName)
-    .set('Authorization', `Bearer ${token}`)
-    .set('Content-Type', 'application/json');
+    const headers = new HttpHeaders()
+      .set('Domain-Name', domainName)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
 
-  const studentHygieneTypes = this.students.map(student => {
-    const hygieneTypesIds = this.hygieneTypes
-      .filter(ht => student[`hygieneType_${ht.id}`] === true)
-      .map(ht => ht.id);
+    const studentHygieneTypes = this.students.map(student => {
+      const hygieneTypesIds = this.hygieneTypes
+        .filter(ht => student[`hygieneType_${ht.id}`] === true)
+        .map(ht => ht.id);
 
-    return {
-      studentId: student.id,
-      hygieneTypesIds: hygieneTypesIds,
-      attendance: student['attendance'], // Use bracket notation
-      comment: student['comment'],       // Use bracket notation
-      actionTaken: student['actionTaken'] // Use bracket notation
-    };
-  });
-
-  const requestBody = {
-    schoolId: this.selectedSchool,
-    gradeId: this.selectedGrade,
-    classRoomID: this.selectedClass,
-    date: new Date(this.selectedDate).toISOString(),
-    studentHygieneTypes: studentHygieneTypes
-  };
-
-  this.http.post(`${this.apiService.BaseUrl}/HygieneForm`, requestBody, { headers })
-    .subscribe({
-      next: (response) => {
-        console.log('Hygiene form saved successfully:', response);
-        Swal.fire('Success', 'Hygiene form saved successfully!', 'success');
-        this.router.navigate(['/Employee/HygieneForm']);
-      },
-      error: (error) => {
-        console.error('Error saving hygiene form:', error);
-        Swal.fire('Error', 'Failed to save hygiene form.', 'error');
-      }
+      return {
+        studentId: student.id,
+        hygieneTypesIds: hygieneTypesIds,
+        attendance: student['attendance'],
+        comment: student['comment'],
+        actionTaken: student['actionTaken']
+      };
     });
-}
+
+    const requestBody = {
+      schoolId: this.selectedSchool,
+      gradeId: this.selectedGrade,
+      classRoomID: this.selectedClass,
+      date: new Date(this.selectedDate).toISOString(),
+      studentHygieneTypes: studentHygieneTypes
+    };
+
+    this.http.post(`${this.apiService.BaseUrl}/HygieneForm`, requestBody, { headers })
+      .subscribe({
+        next: (response) => {
+          console.log('Hygiene form saved successfully:', response);
+          Swal.fire('Success', 'Hygiene form saved successfully!', 'success');
+          this.router.navigate(['/Employee/Hygiene Form Medical Report']);
+        },
+        error: (error) => {
+          console.error('Error saving hygiene form:', error);
+          this.errorMessage ='Failed to save hygiene form.';
+        }
+      });
+  }
 }

@@ -63,7 +63,7 @@ export class HygieneFormComponent implements OnInit {
   }
 
   navigateToCreateHygieneForm() {
-    this.router.navigate(['/Employee/CreateHygieneForm']);
+    this.router.navigate(['/Employee/Create Hygiene Form']);
   }
 
   openModal(id?: number) {

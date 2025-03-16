@@ -1,5 +1,5 @@
-<div>
-    <div class="flex justify-between items-center">
+<div id="DataToDownload">
+    <div class="no-print flex justify-between items-center">
         <div class="flex justify-between items-center space-x-5">
             <i class="fa-solid fa-chevron-left" (click)="moveToPayable()"></i>
             <h1 *ngIf="isCreate" class="primaryTxt font-semibold text-2xl leading-9"> Create Payable</h1>
@@ -91,14 +91,14 @@
         </div>
     </div>
     
-    <div class="flex justify-end mt-5 space-x-4 items-center">
-        <i class="fa-solid fa-print text-lg" *ngIf="!isCreate"></i>
+    <div class="no-print flex justify-end mt-5 space-x-4 items-center">
+        <i class="fa-solid fa-print text-lg" *ngIf="!isCreate" (click)="DownloadData()"></i>
         <button *ngIf="!isView" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()"> Save </button>
     </div>
 </div>
 
 <div class="mt-6" *ngIf="!isCreate">
-    <div class="flex justify-end" *ngIf="!isView">
+    <div class="no-print flex justify-end" *ngIf="!isView">
         <button class="secondaryTxt secondaryBorder px-4 py-2 rounded-lg flex items-center space-x-2" (click)="AddPayableDetails()"> 
             <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
             <p>Add Row</p> 
@@ -124,7 +124,7 @@
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         Notes
                     </th> 
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    <th class="no-print py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0" *ngIf="!isView">
                         Actions
                     </th>
                 </tr>
@@ -138,7 +138,7 @@
                 </tr>
     
                 <!-- New Row with Inputs -->
-                <tr *ngIf="isNewDetails" class="bg-white border-t border-gray-300 text-xs md:text-sm">
+                <tr *ngIf="isNewDetails" class="no-print bg-white border-t border-gray-300 text-xs md:text-sm">
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
@@ -184,7 +184,7 @@
                     class="border-t border-gray-300 text-xs md:text-sm">
                     
                     <!-- If the row is being edited, show inputs -->
-                    <ng-container *ngIf="editingRowId === row.id; else normalRow">
+                    <ng-container *ngIf="editingRowId === row.id; else normalRow" class="no-print">
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <input type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
@@ -232,7 +232,7 @@
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.linkFileName }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.linkFileTypeName }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.notes }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <td class="no-print py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0" *ngIf="!isView">
                             <div class="flex space-x-4">
                                 <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
                                     (click)="DeleteDetail(row.id)">

@@ -105,7 +105,7 @@ export class ReasonsforleavingworkComponent {
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Reason?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',

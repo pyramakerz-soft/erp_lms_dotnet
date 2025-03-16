@@ -74,6 +74,7 @@ export class RegistrationFormComponent {
   currentCategory = 1;
 
   emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  ageIsCompatibleWithGrade = false
 
   isSuccess:boolean = false
 
@@ -200,10 +201,10 @@ export class RegistrationFormComponent {
  
   getGrades(sectionId: number){
     this.gradeServce.GetBySectionId(sectionId, this.DomainName).subscribe(
-      (data) => {
+      (data) => { 
         data.forEach(element => {
           this.Grades.push(element)
-        });
+        }); 
       }
     )
   }
@@ -398,6 +399,37 @@ export class RegistrationFormComponent {
     return true
   }
 
+  CheckAgeForGrade(){ 
+    this.ageIsCompatibleWithGrade = false
+    
+    let choosedGradeID: string | number = 0
+    let ageDate = ""
+    let grade = new Grade()
+    
+    this.registrationForm.registerationFormSubmittions.forEach(element => {
+      if(element.categoryFieldID == 4){
+        ageDate = element.textAnswer ? element.textAnswer : ""
+      }        
+      if(element.categoryFieldID == 9){
+        choosedGradeID = element.textAnswer ? element.textAnswer : 0
+      }        
+    });
+
+    this.Grades.forEach(element => {
+      if(choosedGradeID == element.id){
+        grade = element
+      }
+    }); 
+
+    const dateToCheckObj = new Date(ageDate);
+    const fromDate = new Date(grade.dateFrom);
+    const toDate = new Date(grade.dateTo); 
+
+    if(dateToCheckObj >= fromDate && dateToCheckObj <= toDate){
+      this.ageIsCompatibleWithGrade = true
+    } 
+  }
+
   Save(){
     this.isFormSubmitted = true;
     this.isGuardianEmailValid = true;
@@ -418,27 +450,38 @@ export class RegistrationFormComponent {
         }
       }
     }
-
-
+     
     if (valid) {
       this.IsEmailValid()
       if(this.isMotherEmailValid && this.isGuardianEmailValid && this.isGuardianEmailSameAsParent){
-        this.registrationFormService.Add(this.registrationForm, this.registrationFormForFiles, this.DomainName).subscribe(
-          (data) => {
-            this.DoneSuccessfully()
-          },
-          (error) => {
-            if(error.error == "Email Already Exists"){
-              Swal.fire({
-                icon: 'warning',
-                title: 'Warning!',
-                text: 'Guardian’s Email Already Exists',
-                confirmButtonColor: '#FF7519',
-              });
-              this.goToCategory(2)
+        this.CheckAgeForGrade()
+        if(this.ageIsCompatibleWithGrade){
+          this.registrationFormService.Add(this.registrationForm, this.registrationFormForFiles, this.DomainName).subscribe(
+            (data) => {
+              this.DoneSuccessfully()
+            },
+            (error) => {
+              if(error.error == "Email Already Exists"){
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'Warning!',
+                  text: 'Guardian’s Email Already Exists',
+                  confirmButtonColor: '#FF7519',
+                });
+                this.goToCategory(2)
+              }
             }
-          }
-        )
+          )
+        }
+        else{
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning!',
+            text: 'The selected grade is not compatible with the student\'s age. Please choose an appropriate grade.',
+            confirmButtonColor: '#FF7519',
+          });
+          this.goToCategory(1)
+        }
       } else if(!this.isGuardianEmailValid || !this.isGuardianEmailSameAsParent){
         this.goToCategory(2)
       } else if(!this.isMotherEmailValid){

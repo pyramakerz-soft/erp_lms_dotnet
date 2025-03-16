@@ -166,6 +166,10 @@ namespace LMS_CMS
             app.UseMiddleware<DbConnection_Check_Middleware>();
             app.UseCors("AllowSpecificOrigin");
 
+            /// 3)
+            app.UseCors(txt);
+
+
             //////// Authentication
             app.UseAuthentication();
 
@@ -189,12 +193,7 @@ namespace LMS_CMS
             /// For Endpoint, to check if the user has access for this endpoint or not
             /// Make sure to be here before UseAuthorization
             app.UseMiddleware<Endpoint_Authorization_Middleware>();
-
-
-            /// 3)
-            app.UseCors(txt);
-
-
+             
             app.UseAuthorization();
 
             app.MapControllers();

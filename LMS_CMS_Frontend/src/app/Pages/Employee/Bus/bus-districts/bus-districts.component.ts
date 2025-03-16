@@ -50,6 +50,7 @@ export class BusDistrictsComponent {
   keysArray: string[] = ['id', 'name'];
 
   validationErrors: { [key in keyof BusType]?: string } = {};
+  isLoading = false;
 
   constructor(private router: Router, public activeRoute: ActivatedRoute, private menuService: MenuService, public account: AccountService, public busDistrictServ: BusDistrictService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
@@ -96,6 +97,7 @@ export class BusDistrictsComponent {
   }
 
   async GetTableData() {
+    this.TableData = [];
     try {
       const data = await firstValueFrom(this.busDistrictServ.Get(this.DomainName));
       this.TableData = data;
@@ -177,22 +179,30 @@ export class BusDistrictsComponent {
   }
 
   AddNewType() {
+    this.isLoading = true;
     this.busDistrictServ.Add(this.busDistrict, this.DomainName).subscribe((data) => {
       this.closeModal();
       this.GetTableData();
+      this.isLoading = false; // Hide spinner
       this.busDistrict = new BusType()
     },
       error => {
+      this.isLoading = false; // Hide spinner
       });
   }
 
   Save() {
+    this.isLoading = true;
     this.busDistrictServ.Edit(this.busDistrict, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
+      this.isLoading = false; // Hide spinner
       this.busDistrict = new BusType()
-    })
-  }
+    },
+    error => {
+    this.isLoading = false; // Hide spinner
+    });
+}
 
   CreateOREdit() {
     if(this.isFormValid()){

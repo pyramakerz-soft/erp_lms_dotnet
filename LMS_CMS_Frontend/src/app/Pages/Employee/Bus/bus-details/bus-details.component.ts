@@ -59,6 +59,7 @@ export class BusDetailsComponent {
   keysArray: string[] = ['id', 'name','capacity','backPrice','twoWaysPrice','morningPrice','busTypeName','busDistrictsName','busStatusName','driverName','driverAssistantName','busCompanyName'];
 
   path:string = ""
+  isLoading = false;
 
   constructor(public busService:BusService, public account:AccountService, public activeRoute:ActivatedRoute, public DomainServ: DomainService, public BusTypeServ: BusTypeService, 
     public busDistrictServ: BusDistrictService, public busStatusServ: BusStatusService, public BusCompanyServ: BusCompanyService, public EmployeeServ: EmployeeService, 
@@ -276,11 +277,14 @@ export class BusDetailsComponent {
   }
 
   SaveBus(){
+    this.isLoading = true;
     if (this.isFormValid()) {
       if(this.editBus == false){
         this.busService.Add(this.bus,this.DomainName).subscribe(
           (result: any) => {
             this.closeModal()
+            this.isLoading = false; // Hide spinner
+            this.busData=[]
             this.busService.Get(this.DomainName).subscribe(
               (data: any) => {
                 this.busData = data;
@@ -288,12 +292,15 @@ export class BusDetailsComponent {
             );
           },
           error => {
+            this.isLoading = false; // Hide spinner
           }
         );
       } else{
         this.busService.Edit(this.bus,this.DomainName).subscribe(
           (result: any) => {
             this.closeModal()
+            this.isLoading = false; // Hide spinner
+            this.busData=[]
             this.busService.Get(this.DomainName).subscribe(
               (data: any) => {
                 this.busData = data;
@@ -301,6 +308,7 @@ export class BusDetailsComponent {
             );
           },
           error => {
+            this.isLoading = false; // Hide spinner
           }
         );
       }  

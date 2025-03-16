@@ -67,6 +67,7 @@ export class BusStudentComponent {
   Students:Student[] = [];
 
   validationErrors: { [key in keyof BusStudent]?: string } = {};
+  isLoading = false;
 
   path:string = ""
 
@@ -340,6 +341,7 @@ export class BusStudentComponent {
   }
 
   SaveBusStudent(){
+    this.isLoading = true;
     this.busStudent.busID = this.busId
     this.busStudent.studentID = this.id
 
@@ -352,12 +354,20 @@ export class BusStudentComponent {
       if(this.editBusStudent == false){
         this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
           this.closeModal()
+          this.isLoading = false; // Hide spinner
           this.GetStudentsByBusId(this.busId);
+        },
+        error => {
+        this.isLoading = false; // Hide spinner
         });
-      } else{ 
+    }   else{ 
         this.busStudentService.Edit(this.busStudent, this.DomainName).subscribe((data) => {
           this.closeModal()
+          this.isLoading = false; // Hide spinner
           this.GetStudentsByBusId(this.busId);
+        },
+        error => {
+        this.isLoading = false; // Hide spinner
         });
       }
     }

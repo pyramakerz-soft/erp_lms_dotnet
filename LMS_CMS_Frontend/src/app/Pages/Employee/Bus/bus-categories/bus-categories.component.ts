@@ -50,6 +50,8 @@ export class BusCategoriesComponent {
   keysArray: string[] = ['id', 'name'];
 
   validationErrors: { [key in keyof BusType]?: string } = {};
+  isLoading = false;
+
 
   constructor(private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public BusTypeServ: BusCategoryService, public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService) { }
 
@@ -96,6 +98,7 @@ export class BusCategoriesComponent {
   }
 
   async GetTableData() {
+    this.TableData=[]
     try {
       const data = await firstValueFrom(this.BusTypeServ.Get(this.DomainName));
       this.TableData = data;
@@ -177,18 +180,40 @@ export class BusCategoriesComponent {
   }
 
   Save() {
+    this.isLoading = true;
     this.BusTypeServ.Edit(this.busCategory, this.DomainName).subscribe(() => {
       this.GetTableData();
       this.closeModal();
+      this.isLoading = false; // Hide spinner
       this.busCategory = new BusType()
-    })
+    }, (error) => {
+      this.isLoading = false; // Hide spinner
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Try Again Later!',
+        confirmButtonText: 'Okay',
+        customClass: { confirmButton: 'secondaryBg' }
+      });
+    });
   }
 
   AddNewType() {
+    this.isLoading = true;
     this.BusTypeServ.Add(this.busCategory, this.DomainName).subscribe((data) => {
       this.GetTableData();
       this.closeModal();
+      this.isLoading = false; // Hide spinner
       this.busCategory = new BusType()
+    }, (error) => {
+      this.isLoading = false; // Hide spinner
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Try Again Later!',
+        confirmButtonText: 'Okay',
+        customClass: { confirmButton: 'secondaryBg' }
+      });
     });
   }
 

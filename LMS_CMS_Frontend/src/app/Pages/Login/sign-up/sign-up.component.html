@@ -65,15 +65,20 @@
           <span *ngIf="validationErrors['password']" class="text-red-500 ml-3 font-normal">{{ validationErrors['password'] }}</span>
 
           <div class="mb-2 w-full">
-            <label for="password" class="py-6">Congirm Password:</label>
-            <input class="w-full h-[56px] rounded-[8px] border px-2" id="password" type="password"
-            (ngModelChange)="onInputValueChange({ field: 'password', value: $event })"
-              [(ngModel)]="ConfirmPassword" (input)="onPasswordChange()" />
+            <label for="ConfirmPassword" class="py-6">Congirm Password:</label>
+            <input class="w-full h-[56px] rounded-[8px] border px-2" id="ConfirmPassword" type="password"
+              [(ngModel)]="ConfirmPassword" (input)="onConfirmPasswordChange()" />
           </div>
           <span *ngIf="validationErrors['password']" class="text-red-500 ml-3 font-normal">{{ validationErrors['password'] }}</span>
   
-          <button (click)="SignUp()" class="mt-2 secondaryBg text-white p-2 rounded w-full">Save</button>
-  
+          <button 
+          (click)="SignUp()" 
+          [disabled]="isLoading" 
+          class="mt-2 secondaryBg text-white p-2 rounded w-full flex items-center justify-center">
+          <span *ngIf="!isLoading">Sign Up</span>
+          <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        </button>
+          
           <div class="flex justify-around mt-2">
             <p class="font-poppins text-base font-normal leading-[21px]">Already have an account? <a (click)="login()" class="secondaryTxt mr-2 cursor-pointer">login</a>
             </p>

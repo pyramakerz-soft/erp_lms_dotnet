@@ -64,6 +64,9 @@ export class ClassroomComponent {
   selectedSection = null
   selectedBuilding = null
 
+  isLoading=false
+  isLoadingSaveClassroom=false
+
   copyClassroom:CopyClassroom = new CopyClassroom()
 
   constructor(public account: AccountService, public buildingService: BuildingService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
@@ -178,6 +181,7 @@ export class ClassroomComponent {
   }
 
   getClassroomData(){
+    this.classroomData=[]
     this.classroomService.Get(this.DomainName).subscribe(
       (data) => {
         this.classroomData = data;
@@ -250,14 +254,24 @@ export class ClassroomComponent {
   }
 
   SaveClassroom(){
+    this.isLoadingSaveClassroom=true
     if(this.isFormValid()){
       if(this.editClassroom == false){
         this.classroomService.Add(this.classroom, this.DomainName).subscribe(
           (result: any) => {
             this.closeModal()
+            this.isLoadingSaveClassroom=false
             this.getClassroomData()
           },
           error => {
+            this.isLoadingSaveClassroom=false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
           }
         );
       } else{
@@ -265,8 +279,17 @@ export class ClassroomComponent {
           (result: any) => {
             this.closeModal()
             this.getClassroomData()
+            this.isLoadingSaveClassroom=false
           },
           error => {
+            this.isLoadingSaveClassroom=false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
           }
         );
       }  
@@ -371,16 +394,27 @@ export class ClassroomComponent {
   }
 
   SaveCopy(){
+    this.isLoading=true
     if(this.copyClassroom.fromAcademicYearID == this.copyClassroom.toAcademicYearID){
       this.closeCopyModal()
       this.getClassroomData()
+      this.isLoading=false
     } else{
       this.classroomService.CopyClassroom(this.copyClassroom, this.DomainName).subscribe(
         (result: any) => {
           this.closeCopyModal()
           this.getClassroomData()
+          this.isLoading=false
         },
         error => {
+          this.isLoading=false
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         }
       );
     }

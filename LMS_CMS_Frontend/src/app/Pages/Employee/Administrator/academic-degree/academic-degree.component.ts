@@ -20,7 +20,7 @@ import { firstValueFrom } from 'rxjs';
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
   templateUrl: './academic-degree.component.html',
-  styleUrl: './academic-degree.component.css'
+  styleUrl: './academic-degree.component.css',
 })
 export class AcademicDegreeComponent {
   User_Data_After_Login: TokenData = new TokenData(
@@ -57,6 +57,7 @@ export class AcademicDegreeComponent {
   academicDegree: AcademicDegree = new AcademicDegree();
 
   validationErrors: { [key in keyof AcademicDegree]?: string } = {};
+  isLoading = false;
 
   constructor(
     private router: Router,
@@ -67,7 +68,7 @@ export class AcademicDegreeComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public AcademicDegreeServ :AcademicDegreeService
+    public AcademicDegreeServ: AcademicDegreeService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -91,16 +92,16 @@ export class AcademicDegreeComponent {
   }
 
   GetAllData() {
-    this.TableData = []
-    this.AcademicDegreeServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d
-    })
+    this.TableData = [];
+    this.AcademicDegreeServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d;
+    });
   }
 
   Create() {
     this.mode = 'Create';
-    this.academicDegree=new AcademicDegree()
-    this.validationErrors={}
+    this.academicDegree = new AcademicDegree();
+    this.validationErrors = {};
     this.openModal();
   }
 
@@ -115,18 +116,18 @@ export class AcademicDegreeComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.AcademicDegreeServ.Delete(id,this.DomainName).subscribe((d)=>{
-          this.GetAllData()
-        })
+        this.AcademicDegreeServ.Delete(id, this.DomainName).subscribe((d) => {
+          this.GetAllData();
+        });
       }
     });
   }
 
   Edit(row: AcademicDegree) {
     this.mode = 'Edit';
-    this.AcademicDegreeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.academicDegree=d
-    })
+    this.AcademicDegreeServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.academicDegree = d;
+    });
     this.openModal();
   }
 
@@ -149,21 +150,54 @@ export class AcademicDegreeComponent {
   }
 
   CreateOREdit() {
+    this.isLoading = true;
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
-        this.AcademicDegreeServ.Add(this.academicDegree,this.DomainName).subscribe((d)=>{
-          this.GetAllData()
-          this.closeModal()
-        })
+        this.AcademicDegreeServ.Add(
+          this.academicDegree,
+          this.DomainName
+        ).subscribe(
+          (d) => {
+            this.GetAllData();
+            this.isLoading = false;
+            this.closeModal();
+          },
+          (error) => {
+            this.isLoading = false; // Hide spinner
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' }
+            });
+          }
+        );
       }
       if (this.mode == 'Edit') {
-        this.AcademicDegreeServ.Edit(this.academicDegree,this.DomainName).subscribe((d)=>{
-          this.GetAllData()
-          this.closeModal()
-        })
+        this.AcademicDegreeServ.Edit(
+          this.academicDegree,
+          this.DomainName
+        ).subscribe(
+          (d) => {
+            this.GetAllData();
+            this.isLoading = false;
+            this.closeModal();
+          },
+          (error) => {
+            this.isLoading = false; // Hide spinner
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' }
+            });
+          }
+        );
       }
     }
-    this.GetAllData()
+    this.GetAllData();
   }
 
   closeModal() {
@@ -180,9 +214,7 @@ export class AcademicDegreeComponent {
       if (this.academicDegree.hasOwnProperty(key)) {
         const field = key as keyof AcademicDegree;
         if (!this.academicDegree[field]) {
-          if (
-            field == 'name' 
-          ) {
+          if (field == 'name') {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
             )} is required`;
@@ -196,42 +228,41 @@ export class AcademicDegreeComponent {
   capitalizeField(field: keyof AcademicDegree): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
- onInputValueChange(event: { field: keyof AcademicDegree; value: any }) {
-     const { field, value } = event;
-     (this.academicDegree as any)[field] = value;
-     if (value) {
-       this.validationErrors[field] = '';
-     }
-   }
- 
-   async onSearchEvent(event: { key: string; value: any }) {
-     this.key = event.key;
-     this.value = event.value;
-     try {
-       const data: AcademicDegree[] = await firstValueFrom(
+  onInputValueChange(event: { field: keyof AcademicDegree; value: any }) {
+    const { field, value } = event;
+    (this.academicDegree as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    }
+  }
+
+  async onSearchEvent(event: { key: string; value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: AcademicDegree[] = await firstValueFrom(
         this.AcademicDegreeServ.Get(this.DomainName)
-       );
-       this.TableData = data || [];
- 
-       if (this.value !== '') {
-         const numericValue = isNaN(Number(this.value))
-           ? this.value
-           : parseInt(this.value, 10);
- 
-         this.TableData = this.TableData.filter((t) => {
-           const fieldValue = t[this.key as keyof typeof t];
-           if (typeof fieldValue === 'string') {
-             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-           }
-           if (typeof fieldValue === 'number') {
-             return fieldValue === numericValue;
-           }
-           return fieldValue == this.value;
-         });
-       }
-     } catch (error) {
-       this.TableData = [];
-     }
-   }
- }
- 
+      );
+      this.TableData = data || [];
+
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
+
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
+  }
+}

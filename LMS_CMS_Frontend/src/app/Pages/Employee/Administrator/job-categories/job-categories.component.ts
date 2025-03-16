@@ -21,10 +21,10 @@ import { Job } from '../../../../Models/Administrator/job';
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
   templateUrl: './job-categories.component.html',
-  styleUrl: './job-categories.component.css'
+  styleUrl: './job-categories.component.css',
 })
 export class JobCategoriesComponent {
-User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -58,6 +58,7 @@ User_Data_After_Login: TokenData = new TokenData(
   jobCategories: JobCategories = new JobCategories();
 
   validationErrors: { [key in keyof JobCategories]?: string } = {};
+  isLoading = false;
 
   constructor(
     private router: Router,
@@ -68,7 +69,7 @@ User_Data_After_Login: TokenData = new TokenData(
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public JobCategoryServ:JobCategoriesService
+    public JobCategoryServ: JobCategoriesService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -92,15 +93,16 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   GetAllData() {
-    this.JobCategoryServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d;
-    })
+    this.TableData = [];
+    this.JobCategoryServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d;
+    });
   }
 
   Create() {
     this.mode = 'Create';
-    this.jobCategories=new JobCategories()
-    this.validationErrors={}
+    this.jobCategories = new JobCategories();
+    this.validationErrors = {};
     this.openModal();
   }
 
@@ -115,18 +117,18 @@ User_Data_After_Login: TokenData = new TokenData(
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.JobCategoryServ.Delete(id,this.DomainName).subscribe((d)=>{
-          this.GetAllData()
-        })
+        this.JobCategoryServ.Delete(id, this.DomainName).subscribe((d) => {
+          this.GetAllData();
+        });
       }
     });
   }
 
   Edit(row: JobCategories) {
     this.mode = 'Edit';
-    this.JobCategoryServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.jobCategories=d
-    })
+    this.JobCategoryServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.jobCategories = d;
+    });
     this.openModal();
   }
 
@@ -149,22 +151,50 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   CreateOREdit() {
+    this.isLoading = true;
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
-        this.JobCategoryServ.Add(this.jobCategories,this.DomainName).subscribe((d)=>{
-          this.GetAllData()
-          this.closeModal()
-        })
+        this.JobCategoryServ.Add(this.jobCategories, this.DomainName).subscribe(
+          (d) => {
+            this.GetAllData();
+            this.closeModal();
+            this.isLoading = false;
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error || 'An unexpected error occurred',
+              confirmButtonColor: '#FF7519',
+            });
+            return false;
+          }
+        );
       }
       if (this.mode == 'Edit') {
-        this.JobCategoryServ.Edit(this.jobCategories,this.DomainName).subscribe((d)=>{
-          this.GetAllData()
-          this.closeModal()
-        })
+        this.JobCategoryServ.Edit(
+          this.jobCategories,
+          this.DomainName
+        ).subscribe(
+          (d) => {
+            this.GetAllData();
+            this.closeModal();
+            this.isLoading = false;
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error || 'An unexpected error occurred',
+              confirmButtonColor: '#FF7519',
+            });
+            return false;
+          }
+        );
       }
     }
-    this.GetAllData()
-
   }
 
   closeModal() {
@@ -181,9 +211,7 @@ User_Data_After_Login: TokenData = new TokenData(
       if (this.jobCategories.hasOwnProperty(key)) {
         const field = key as keyof JobCategories;
         if (!this.jobCategories[field]) {
-          if (
-            field == 'name' 
-          ) {
+          if (field == 'name') {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
             )} is required`;
@@ -234,7 +262,7 @@ User_Data_After_Login: TokenData = new TokenData(
       this.TableData = [];
     }
   }
-  view(id:number){
-    this.router.navigateByUrl(`Employee/Job/${id}`)
+  view(id: number) {
+    this.router.navigateByUrl(`Employee/Job/${id}`);
   }
 }

@@ -15,7 +15,7 @@ export class ApiService {
   constructor() { }
 
   GetHeader(){   
-    var Header = "Domain_Two"     
+    var Header = "domain"     
     return Header;
   }
 }

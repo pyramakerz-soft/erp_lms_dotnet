@@ -262,8 +262,8 @@ export class AcademicYearComponent {
   }
 
   Save() {
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.checkFromToDate()) {
         if (this.editAcademicYear == false) {
           this.acadimicYearServicea

@@ -54,6 +54,7 @@ export class RegistrationConfirmationTestDetailsComponent {
   StudentName: string = ""
 
   MarkIsEmpty : boolean=false;
+  isLoading=false
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -99,6 +100,7 @@ export class RegistrationConfirmationTestDetailsComponent {
   }
 
   GetAllData() {
+    this.Data=[]
     this.testServ.GetByRegistrationFormParentIDAndGrade(this.RegisterFormParentID, this.DomainName).subscribe((d:any) => {
       this.Data = d.tests;
       this.StudentName=d.studentName
@@ -111,9 +113,21 @@ export class RegistrationConfirmationTestDetailsComponent {
       this.MarkIsEmpty=true
     }
     else{
+      this.isLoading=true
       this.registrationserv.Edit(this.RegesterForm, this.DomainName).subscribe(() => {
         this.GetAllData();
         this.closeModal();
+        this.isLoading=false
+      },
+      error => {
+        this.isLoading=false
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Try Again Later!',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
       })
     }
   }

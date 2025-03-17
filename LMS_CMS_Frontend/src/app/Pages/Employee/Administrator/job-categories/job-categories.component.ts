@@ -151,8 +151,8 @@ export class JobCategoriesComponent {
   }
 
   CreateOREdit() {
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.mode == 'Create') {
         this.JobCategoryServ.Add(this.jobCategories, this.DomainName).subscribe(
           (d) => {

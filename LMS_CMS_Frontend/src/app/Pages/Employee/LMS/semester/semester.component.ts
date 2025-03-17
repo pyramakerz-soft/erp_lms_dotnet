@@ -224,8 +224,8 @@ export class SemesterComponent {
   }
 
   SaveSemester(){
-    this.isLoading = true;
     if(this.isFormValid()){
+      this.isLoading = true;
       this.semester.academicYearID = this.academicYearId
       if(this.checkFromToDate()){
         if(this.editSemester == false){

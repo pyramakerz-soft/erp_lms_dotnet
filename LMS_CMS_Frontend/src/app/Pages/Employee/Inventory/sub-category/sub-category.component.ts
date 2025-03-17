@@ -25,7 +25,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './sub-category.component.css'
 })
 export class SubCategoryComponent {
- User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -57,9 +57,10 @@ export class SubCategoryComponent {
   keysArray: string[] = ['id', 'name'];
 
   category: Category = new Category();
-  CategoryId :number = 0;
-  SubCategory :SubCategory = new SubCategory()
+  CategoryId: number = 0;
+  SubCategory: SubCategory = new SubCategory()
   validationErrors: { [key in keyof SubCategory]?: string } = {};
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -69,11 +70,11 @@ export class SubCategoryComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
-    public CategoryServ :InventoryCategoryService ,
-    public InventorySubCategoryServ :InventorySubCategoriesService
-  ) {}
-  
+    public ApiServ: ApiService,
+    public CategoryServ: InventoryCategoryService,
+    public InventorySubCategoryServ: InventorySubCategoriesService
+  ) { }
+
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -98,25 +99,26 @@ export class SubCategoryComponent {
   }
 
   GetAllData() {
-   this.InventorySubCategoryServ.GetByCategoryId(this.CategoryId,this.DomainName).subscribe((d)=>{
-    this.TableData=d
-   })
-  }
-  GetCategoryInfo(){
-    this.CategoryServ.GetById(this.CategoryId,this.DomainName).subscribe((d)=>{
-      this.category=d
+    this.TableData = []
+    this.InventorySubCategoryServ.GetByCategoryId(this.CategoryId, this.DomainName).subscribe((d) => {
+      this.TableData = d
     })
   }
- 
+  GetCategoryInfo() {
+    this.CategoryServ.GetById(this.CategoryId, this.DomainName).subscribe((d) => {
+      this.category = d
+    })
+  }
+
   Create() {
     this.mode = 'Create';
     this.SubCategory = new SubCategory();
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
-  moveToCategory(){
-   this.router.navigateByUrl(`Employee/Inventory Categories`)
+  moveToCategory() {
+    this.router.navigateByUrl(`Employee/Inventory Categories`)
   }
 
   Delete(id: number) {
@@ -130,17 +132,17 @@ export class SubCategoryComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-       this.InventorySubCategoryServ.Delete(id,this.DomainName).subscribe((d)=>{
-        this.GetAllData()
-       })
+        this.InventorySubCategoryServ.Delete(id, this.DomainName).subscribe((d) => {
+          this.GetAllData()
+        })
       }
     });
   }
 
-  Edit(id:number) {
+  Edit(id: number) {
     this.mode = 'Edit';
-    this.InventorySubCategoryServ.GetById(id,this.DomainName).subscribe((d)=>{
-      this.SubCategory=d
+    this.InventorySubCategoryServ.GetById(id, this.DomainName).subscribe((d) => {
+      this.SubCategory = d
     })
     this.openModal();
   }
@@ -164,20 +166,43 @@ export class SubCategoryComponent {
   }
 
   CreateOREdit() {
-    if (this.isFormValid()) { 
-      this.SubCategory.inventoryCategoriesID = this.CategoryId 
+    if (this.isFormValid()) {
+      this.isLoading = true
+      this.SubCategory.inventoryCategoriesID = this.CategoryId
       if (this.mode == 'Create') {
-        this.InventorySubCategoryServ.Add(this.SubCategory,this.DomainName).subscribe((d)=>{
+        this.InventorySubCategoryServ.Add(this.SubCategory, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
         console.log(this.SubCategory)
-        this.InventorySubCategoryServ.Edit(this.SubCategory,this.DomainName).subscribe((d)=>{
+        this.InventorySubCategoryServ.Edit(this.SubCategory, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
     this.GetAllData();
@@ -199,7 +224,7 @@ export class SubCategoryComponent {
         const field = key as keyof SubCategory;
         if (!this.SubCategory[field]) {
           if (
-            field == 'name' 
+            field == 'name'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

@@ -23,7 +23,7 @@ import { InventoryCategoryService } from '../../../../Services/Employee/Inventor
   styleUrl: './categories.component.css'
 })
 export class CategoriesComponent {
- User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -56,6 +56,7 @@ export class CategoriesComponent {
 
   category: Category = new Category();
   validationErrors: { [key in keyof Category]?: string } = {};
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -65,10 +66,10 @@ export class CategoriesComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
-    public InventoryCategoryServ : InventoryCategoryService
-  ) {}
-  
+    public ApiServ: ApiService,
+    public InventoryCategoryServ: InventoryCategoryService
+  ) { }
+
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -91,15 +92,16 @@ export class CategoriesComponent {
   }
 
   GetAllData() {
-   this.InventoryCategoryServ.Get(this.DomainName).subscribe((d)=>{
-    this.TableData=d
-   })
+    this.TableData = []
+    this.InventoryCategoryServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d
+    })
   }
- 
+
   Create() {
     this.mode = 'Create';
     this.category = new Category();
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -114,17 +116,17 @@ export class CategoriesComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-       this.InventoryCategoryServ.Delete(id,this.DomainName).subscribe((d)=>{
-        this.GetAllData()
-       })
+        this.InventoryCategoryServ.Delete(id, this.DomainName).subscribe((d) => {
+          this.GetAllData()
+        })
       }
     });
   }
 
-  Edit(id:number) {
+  Edit(id: number) {
     this.mode = 'Edit';
-    this.InventoryCategoryServ.GetById(id,this.DomainName).subscribe((d)=>{
-      this.category=d
+    this.InventoryCategoryServ.GetById(id, this.DomainName).subscribe((d) => {
+      this.category = d
     })
     this.openModal();
   }
@@ -149,17 +151,40 @@ export class CategoriesComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.InventoryCategoryServ.Add(this.category,this.DomainName).subscribe((d)=>{
+        this.InventoryCategoryServ.Add(this.category, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          error => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
-        this.InventoryCategoryServ.Edit(this.category,this.DomainName).subscribe((d)=>{
+        this.InventoryCategoryServ.Edit(this.category, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          error => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
     this.GetAllData();
@@ -181,7 +206,7 @@ export class CategoriesComponent {
         const field = key as keyof Category;
         if (!this.category[field]) {
           if (
-            field == 'name' 
+            field == 'name'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
@@ -235,7 +260,7 @@ export class CategoriesComponent {
     }
   }
 
-  View(id:number){
-   this.router.navigateByUrl(`Employee/Inventory Sub Categories/${id}`)
+  View(id: number) {
+    this.router.navigateByUrl(`Employee/Inventory Sub Categories/${id}`)
   }
 }

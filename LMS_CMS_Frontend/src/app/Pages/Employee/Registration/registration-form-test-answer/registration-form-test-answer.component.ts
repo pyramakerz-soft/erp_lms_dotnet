@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { RegisterationFormTest } from '../../../../Models/Registration/registeration-form-test';
 import { RegisterationFormTestService } from '../../../../Services/Employee/Registration/registeration-form-test.service';
 import { TranslateModule } from '@ngx-translate/core';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registration-form-test-answer',
@@ -56,6 +57,7 @@ export class RegistrationFormTestAnswerComponent {
   MarkIsEmpty : boolean=false;
 
   RegesterForm: RegisterationFormTest = new RegisterationFormTest();
+  isLoading=false
   
   constructor(
     public activeRoute: ActivatedRoute,
@@ -97,6 +99,7 @@ export class RegistrationFormTestAnswerComponent {
   }
 
   GetAllData() {
+    this.Data=[]
     this.registerServ.GetByRegistrationParentId(this.RegisterFormParentID, this.TestId, this.DomainName).subscribe((d: any) => {
       this.Data = d.questionWithAnswer;
       this.TestName = d.testName
@@ -130,9 +133,21 @@ export class RegistrationFormTestAnswerComponent {
       this.MarkIsEmpty=true
     }
     else{
+      this.isLoading=true
       this.registrationserv.Edit(this.RegesterForm, this.DomainName).subscribe(() => {
         this.GetAllData();
         this.closeModal();
+        this.isLoading=false
+      },
+      error => {
+        this.isLoading=false
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Try Again Later!',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
       })
     }
   }

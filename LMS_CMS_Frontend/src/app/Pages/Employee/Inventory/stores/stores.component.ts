@@ -65,7 +65,8 @@ export class StoresComponent {
   value: any = "";
 
   validationErrors: { [key in keyof Store]?: string } = {};
-  
+  isLoading = false
+
   constructor(
     public violationServ: ViolationService,
     public empTypeVioletionServ: EmployeeTypeViolationService,
@@ -74,9 +75,9 @@ export class StoresComponent {
     public ApiServ: ApiService,
     private menuService: MenuService,
     public EditDeleteServ: DeleteEditPermissionService,
-    private router: Router ,
-    public StoresServ :StoresService , 
-    public CategoryServ : InventoryCategoryService
+    private router: Router,
+    public StoresServ: StoresService,
+    public CategoryServ: InventoryCategoryService
   ) { }
 
   ngOnInit() {
@@ -100,14 +101,15 @@ export class StoresComponent {
   }
 
   GetAllData() {
-   this.StoresServ.Get(this.DomainName).subscribe((d)=>{
-    this.TableData=d
-   })
+    this.TableData = []
+    this.StoresServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d
+    })
   }
 
-  GetAllCategories(){
-    this.CategoryServ.Get(this.DomainName).subscribe((d)=>{
-      this.Categories=d
+  GetAllCategories() {
+    this.CategoryServ.Get(this.DomainName).subscribe((d) => {
+      this.Categories = d
     })
   }
 
@@ -126,19 +128,19 @@ export class StoresComponent {
   Edit(row: Store): void {
     this.mode = 'Edit';
     this.store.id = row.id;
-    this.store.name=  row.name;
-    this.store.categoriesIds=  row.storeCategories.map(s=>s.id);
-    this.CategoriesSelected=row.storeCategories
+    this.store.name = row.name;
+    this.store.categoriesIds = row.storeCategories.map(s => s.id);
+    this.CategoriesSelected = row.storeCategories
     this.openModal();
     this.dropdownOpen = false;
   }
 
-  selectCategory(category:Category){
+  selectCategory(category: Category) {
     if (!this.CategoriesSelected.some((e) => e.id === category.id)) {
       this.CategoriesSelected.push(category);
     }
     this.store.categoriesIds.push(category.id);
-    this.dropdownOpen = false; 
+    this.dropdownOpen = false;
   }
 
 
@@ -153,7 +155,7 @@ export class StoresComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.StoresServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.StoresServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData()
         })
       }
@@ -166,17 +168,40 @@ export class StoresComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.StoresServ.Add(this.store,this.DomainName).subscribe((d)=>{
+        this.StoresServ.Add(this.store, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
-        this.StoresServ.Edit(this.store,this.DomainName).subscribe((d)=>{
+        this.StoresServ.Edit(this.store, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
     this.GetAllData();
@@ -208,7 +233,7 @@ export class StoresComponent {
     this.key = event.key;
     this.value = event.value;
     try {
-      const data: Store[] = await firstValueFrom(this.StoresServ.Get(this.DomainName));  
+      const data: Store[] = await firstValueFrom(this.StoresServ.Get(this.DomainName));
       this.TableData = data || [];
 
       if (this.value !== "") {
@@ -231,33 +256,33 @@ export class StoresComponent {
   }
 
   isFormValid(): boolean {
-      let isValid = true;
-      for (const key in this.store) {
-        if (this.store.hasOwnProperty(key)) {
-          const field = key as keyof StoreAdd;
-          if (!this.store[field]) {
-            if (
-              field == 'name' 
-            ) {
-              this.validationErrors[field] = `*${this.capitalizeField(
-                field
-              )} is required`;
-              isValid = false;
-            }
+    let isValid = true;
+    for (const key in this.store) {
+      if (this.store.hasOwnProperty(key)) {
+        const field = key as keyof StoreAdd;
+        if (!this.store[field]) {
+          if (
+            field == 'name'
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
           }
         }
       }
-      return isValid;
     }
-    capitalizeField(field: keyof Store): string {
-      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+    return isValid;
+  }
+  capitalizeField(field: keyof Store): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
+  onInputValueChange(event: { field: keyof Store; value: any }) {
+    const { field, value } = event;
+    (this.store as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
     }
-  
-    onInputValueChange(event: { field: keyof Store; value: any }) {
-      const { field, value } = event;
-      (this.store as any)[field] = value;
-      if (value) {
-        this.validationErrors[field] = '';
-      }
-    }
+  }
 }

@@ -64,6 +64,7 @@ export class QuestionsComponent {
   NewOption: string = '';
 
   validationErrors: { [key in keyof QuestionAddEdit]?: string } = {};
+  isLoading = false
 
   key: string = 'id';
   value: any = '';
@@ -85,7 +86,7 @@ export class QuestionsComponent {
     public testServ: TestService,
     public QuestionServ: QuestionService,
     public QuestionTypeServ: QuestionTypeService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -115,6 +116,7 @@ export class QuestionsComponent {
   }
 
   GetAllData() {
+    this.Data = []
     this.QuestionServ.GetByTestID(this.testId, this.DomainName).subscribe(
       (d: any) => {
         this.Data = d;
@@ -187,17 +189,40 @@ export class QuestionsComponent {
     this.question.options = this.options;
     this.question.testID = this.testId;
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
         this.QuestionServ.Add(this.question, this.DomainName).subscribe(() => {
           this.GetAllData();
           this.closeModal();
-        });
+          this.isLoading = false
+        },
+          error => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       if (this.mode == 'Edit') {
         this.QuestionServ.Edit(this.question, this.DomainName).subscribe(() => {
           this.GetAllData();
           this.closeModal();
-        });
+          this.isLoading = false
+        },
+          error => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
     }
   }

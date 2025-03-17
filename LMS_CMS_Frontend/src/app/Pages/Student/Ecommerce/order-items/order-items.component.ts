@@ -50,6 +50,8 @@ export class OrderItemsComponent {
           this.cart.cart_ShopItems.forEach((row) => {
             if (row.mainImage) {
               row.mainImage = row.mainImage.replace(/ /g, "%20");
+              console.log(row.mainImage)
+              this.convertToDataURL(row.mainImage)
             }
           });
           setTimeout(() => {
@@ -156,5 +158,15 @@ export class OrderItemsComponent {
       html2canvas: { scale: 3, useCORS: true, allowTaint: true },
       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
     }).save();
+  }
+
+  async convertToDataURL(source: any) {
+    const blob = await fetch(source).then((result) => result.blob());
+    const dataUrl = await new Promise((resolve) => {
+      let reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+    return dataUrl;
   }
 }

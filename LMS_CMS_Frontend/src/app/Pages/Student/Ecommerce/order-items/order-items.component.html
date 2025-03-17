@@ -30,7 +30,7 @@
                     <p class="font-medium text-base mt-1">X {{row.quantity}}</p>
                 </div>
                 <div class="flex space-x-2 items-center">
-                    <img class="rounded w-[50px] h-[50px]" [src]="row.mainImage" *ngIf="row.mainImage"> 
+                    <img class="rounded w-[50px] h-[50px]" [src]="row.mainImage" *ngIf="row.mainImage" >  
                     <div class="rounded w-[50px] h-[50px] bg-[#D9D9D9]" *ngIf="!row.mainImage"></div>
                     <p class="text-base font-semibold"><span *ngIf="row.shopItemColorID">{{row.shopItemColorName}}</span> {{row.shopItemEnName}} <span *ngIf="row.shopItemSizeID">({{row.shopItemSizeName}})</span></p>
                 </div>

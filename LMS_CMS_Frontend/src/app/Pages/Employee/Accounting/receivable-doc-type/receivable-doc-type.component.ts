@@ -57,6 +57,7 @@ export class ReceivableDocTypeComponent {
   data: ReceivableDocType = new ReceivableDocType();
 
   validationErrors: { [key in keyof ReceivableDocType]?: string } = {};
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -91,6 +92,7 @@ export class ReceivableDocTypeComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.ReceivableDocTypeServ.Get(this.DomainName).subscribe((d) => {
       this.TableData = d
     })
@@ -98,7 +100,7 @@ export class ReceivableDocTypeComponent {
 
   Create() {
     this.mode = 'Create';
-    this.data=new ReceivableDocType()
+    this.data = new ReceivableDocType()
     this.openModal();
   }
 
@@ -122,10 +124,10 @@ export class ReceivableDocTypeComponent {
 
   Edit(row: ReceivableDocType) {
     this.mode = 'Edit';
-    this.ReceivableDocTypeServ.GetByID(row.id,this.DomainName).subscribe((d)=>{
-      this.data=d
+    this.ReceivableDocTypeServ.GetByID(row.id, this.DomainName).subscribe((d) => {
+      this.data = d
     })
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -149,17 +151,40 @@ export class ReceivableDocTypeComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
         this.ReceivableDocTypeServ.Add(this.data, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
         this.ReceivableDocTypeServ.Edit(this.data, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
   }

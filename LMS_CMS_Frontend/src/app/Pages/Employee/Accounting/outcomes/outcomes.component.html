@@ -126,9 +126,11 @@ class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h
           validationErrors['accountNumberID'] }}</span>
       </div>
       <div class="flex justify-end">
-        <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
-          Save
-        </button>
+        <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+        (click)="CreateOREdit()">
+        <span *ngIf="!isLoading">Save</span>
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+      </button>
       </div>
   </div>
 </div>

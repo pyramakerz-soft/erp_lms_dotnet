@@ -5,8 +5,9 @@
             {{Data.user_Name}}
         </h1>
     </div>
-    <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
-        Save
+    <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+        <span *ngIf="!isLoading">Save</span>
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
     </button>
 </div>
 
@@ -20,7 +21,7 @@
             <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
         </select>
     </div>
-    
+
     <div class="flex flex-col w-[49%] mb-4">
         <label class="mb-2" for="bus">Choose Nationality</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
@@ -37,13 +38,13 @@
             placeholder="Enter User Name" [(ngModel)]="Data.address" />
     </div>
 
-    
+
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="mobile">Mobile Number</label>
         <input id="mobile" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-        placeholder="Enter User mobile" [(ngModel)]="Data.mobile" />
+            placeholder="Enter User mobile" [(ngModel)]="Data.mobile" />
     </div>
-    
+
     <div class="flex flex-col mb-4 w-full">
         <label class="mb-2 primaryTxt" for="name">Phone</label>
         <input id="phone" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
@@ -53,14 +54,12 @@
     <div class="flex flex-col mb-4 w-full">
         <h6 class="font-medium text-base leading-6 mb-1 mt-3">Note</h6>
         <div class="flex justify-start gap-2 items-start">
-          <div class="flex flex-col w-full">
-            <textarea
-              class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
-              [(ngModel)]="Data.note"
-              placeholder="Enter Note"
-            ></textarea>
-          </div>
+            <div class="flex flex-col w-full">
+                <textarea
+                    class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+                    [(ngModel)]="Data.note" placeholder="Enter Note"></textarea>
+            </div>
         </div>
-      </div>
+    </div>
 
 </div>

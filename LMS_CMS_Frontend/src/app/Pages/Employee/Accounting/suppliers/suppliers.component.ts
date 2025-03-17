@@ -57,13 +57,14 @@ export class SuppliersComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' , "commercialRegister" ,"taxCard" ,"address" ,"website" ,"email" ,"countryName"];
+  keysArray: string[] = ['id', 'name', "commercialRegister", "taxCard", "address", "website", "email", "countryName"];
 
   Supplier: Supplier = new Supplier();
 
   validationErrors: { [key in keyof Supplier]?: string } = {};
-  AccountNumbers:AccountingTreeChart[]=[];
-  contries:Country[] = [];
+  AccountNumbers: AccountingTreeChart[] = [];
+  contries: Country[] = [];
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -72,11 +73,11 @@ export class SuppliersComponent {
     public account: AccountService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
-    public SupplierServ:SupplierService,
-    public accountServ:AccountingTreeChartService ,
-    public countryServ :CountryService
-  ) {}
+    public ApiServ: ApiService,
+    public SupplierServ: SupplierService,
+    public accountServ: AccountingTreeChartService,
+    public countryServ: CountryService
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -102,25 +103,25 @@ export class SuppliersComponent {
 
   GetAllData() {
     this.TableData = []
-    this.SupplierServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d;
+    this.SupplierServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d;
     })
   }
 
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(2,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(2, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
 
-  GetAllCountries(){
-    this.countryServ.Get().subscribe((d)=>{
-      this.contries=d;
+  GetAllCountries() {
+    this.countryServ.Get().subscribe((d) => {
+      this.contries = d;
     });
   }
   Create() {
     this.mode = 'Create';
-    this.Supplier=new Supplier()
+    this.Supplier = new Supplier()
     this.openModal();
   }
 
@@ -135,7 +136,7 @@ export class SuppliersComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.SupplierServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.SupplierServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData()
         })
       }
@@ -144,8 +145,8 @@ export class SuppliersComponent {
 
   Edit(row: Supplier) {
     this.mode = 'Edit';
-    this.SupplierServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.Supplier=d
+    this.SupplierServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.Supplier = d
     })
     this.openModal();
   }
@@ -171,24 +172,49 @@ export class SuppliersComponent {
   validateNumber(event: any, field: keyof Supplier): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.Supplier[field] === 'string') {
-        this.Supplier[field] = '' as never;  
+        this.Supplier[field] = '' as never;
       }
     }
   }
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.SupplierServ.Add(this.Supplier,this.DomainName).subscribe((d)=>{
+        this.SupplierServ.Add(this.Supplier, this.DomainName).subscribe((d) => {
           this.GetAllData()
-        })
+          this.isLoading = false
+
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
-        this.SupplierServ.Edit(this.Supplier,this.DomainName).subscribe((d)=>{
+        this.SupplierServ.Edit(this.Supplier, this.DomainName).subscribe((d) => {
           this.GetAllData()
-        })
+          this.isLoading = false
+
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       this.closeModal()
     }
@@ -217,8 +243,8 @@ export class SuppliersComponent {
             field == 'phone1' ||
             field == 'taxCard' ||
             field == 'commercialRegister' ||
-            field == 'accountNumberID'  ||
-            field == 'address'   
+            field == 'accountNumberID' ||
+            field == 'address'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
@@ -238,7 +264,7 @@ export class SuppliersComponent {
         confirmButtonColor: '#FF7519',
       });
     }
-    
+
     const phoenPattern = /^0(10|11|12|15)\d{8}$/;
 
     if (this.Supplier.email && !phoenPattern.test(this.Supplier.phone1)) {
@@ -251,7 +277,7 @@ export class SuppliersComponent {
       });
     }
 
-    if(this.Supplier.phone2){
+    if (this.Supplier.phone2) {
       if (this.Supplier.email && !phoenPattern.test(this.Supplier.phone2)) {
         isValid = false;
         Swal.fire({
@@ -263,7 +289,7 @@ export class SuppliersComponent {
       }
     }
 
-    if(this.Supplier.phone3){
+    if (this.Supplier.phone3) {
       if (this.Supplier.email && !phoenPattern.test(this.Supplier.phone3)) {
         isValid = false;
         Swal.fire({

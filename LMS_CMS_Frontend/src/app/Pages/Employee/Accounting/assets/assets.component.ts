@@ -55,12 +55,13 @@ export class AssetsComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' ,'accountNumberName'];
+  keysArray: string[] = ['id', 'name', 'accountNumberName'];
 
   asset: Asset = new Asset();
 
   validationErrors: { [key in keyof Asset]?: string } = {};
-  AccountNumbers:AccountingTreeChart[]=[];
+  AccountNumbers: AccountingTreeChart[] = [];
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -70,10 +71,10 @@ export class AssetsComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
-    public AssetServ : AssetService,
-    public accountServ:AccountingTreeChartService ,
-  ) {}
+    public ApiServ: ApiService,
+    public AssetServ: AssetService,
+    public accountServ: AccountingTreeChartService,
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -97,20 +98,21 @@ export class AssetsComponent {
   }
 
   GetAllData() {
-    this.AssetServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d
+    this.TableData = []
+    this.AssetServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d
     })
   }
 
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(9,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(9, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
   Create() {
     this.mode = 'Create';
     this.asset = new Asset();
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -125,7 +127,7 @@ export class AssetsComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.AssetServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.AssetServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData();
         })
       }
@@ -134,8 +136,8 @@ export class AssetsComponent {
 
   Edit(row: Asset) {
     this.mode = 'Edit';
-    this.AssetServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.asset=d
+    this.AssetServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.asset = d
     })
     this.openModal();
   }
@@ -160,15 +162,38 @@ export class AssetsComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.AssetServ.Add(this.asset,this.DomainName).subscribe(data => {
+        this.AssetServ.Add(this.asset, this.DomainName).subscribe(data => {
           this.closeModal()
-        });
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       if (this.mode == 'Edit') {
-        this.AssetServ.Edit(this.asset,this.DomainName).subscribe(data => {
+        this.AssetServ.Edit(this.asset, this.DomainName).subscribe(data => {
           this.closeModal()
-        });
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       this.GetAllData();
     }
@@ -184,23 +209,23 @@ export class AssetsComponent {
   }
 
   isFormValid(): boolean {
-     let isValid = true;
-        for (const key in this.asset) {
-          if (this.asset.hasOwnProperty(key)) {
-            const field = key as keyof Asset;
-            if (!this.asset[field]) {
-              if (
-                field == 'name' ||
-                field == 'accountNumberID' 
-              ) {
-                this.validationErrors[field] = `*${this.capitalizeField(
-                  field
-                )} is required`;
-                isValid = false;
-              }
-            }
+    let isValid = true;
+    for (const key in this.asset) {
+      if (this.asset.hasOwnProperty(key)) {
+        const field = key as keyof Asset;
+        if (!this.asset[field]) {
+          if (
+            field == 'name' ||
+            field == 'accountNumberID'
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
           }
         }
+      }
+    }
     return isValid;
   }
   capitalizeField(field: keyof Asset): string {

@@ -57,6 +57,7 @@ User_Data_After_Login: TokenData = new TokenData(
   accountingEntriesDocType: AccountingEntriesDocType = new AccountingEntriesDocType();
 
   validationErrors: { [key in keyof AccountingEntriesDocType]?: string } = {};
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -148,16 +149,41 @@ User_Data_After_Login: TokenData = new TokenData(
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading=true
       if (this.mode == 'Create') {
         this.AccountingEntriesDocTypeServ.Add(this.accountingEntriesDocType,this.DomainName).subscribe((d)=>{
           this.GetAllData();
           this.closeModal()
+          this.isLoading = false
+
+       },
+        err => {
+          this.isLoading = false
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         })
       }
       if (this.mode == 'Edit') {
         this.AccountingEntriesDocTypeServ.Edit(this.accountingEntriesDocType,this.DomainName).subscribe((d)=>{
           this.GetAllData();
           this.closeModal()
+          this.isLoading = false
+
+        },
+        err => {
+          this.isLoading = false
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         })
       }
     }

@@ -61,9 +61,11 @@
 </div>
 
 <div *ngIf="mode!='View'" class="flex justify-end mb-3">
-    <button class="secondaryBg text-white font-medium px-6 py-3 rounded-lg" (click)="Save()">
-        Save
-    </button>
+    <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+    (click)="Save()">
+    <span *ngIf="!isLoading">Save</span>
+    <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+  </button>
 </div>
 
 <div *ngIf="mode=='Edit'" class="flex justify-end">

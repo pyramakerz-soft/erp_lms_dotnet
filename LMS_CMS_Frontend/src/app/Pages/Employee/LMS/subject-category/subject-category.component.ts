@@ -39,6 +39,7 @@ export class SubjectCategoryComponent {
   DomainName: string = "";
   UserID: number = 0;
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+  isLoading = false;
   
   constructor(public account: AccountService, public subjectCategoryService: SubjectCategoryService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, public activeRoute: ActivatedRoute, private menuService: MenuService){}
   
@@ -66,6 +67,7 @@ export class SubjectCategoryComponent {
   }
 
   getSubjectCategoryData(){
+    this.subjectCategoryData=[]
     this.subjectCategoryService.Get(this.DomainName).subscribe(
       (data) => {
         this.subjectCategoryData = data;
@@ -178,13 +180,23 @@ export class SubjectCategoryComponent {
 
   SaveSubjectCategory(){
     if(this.isFormValid()){
+      this.isLoading = true;
       if(this.editSubjectCategory == false){
         this.subjectCategoryService.Add(this.subjectCategory, this.DomainName).subscribe(
           (result: any) => {
             this.closeModal()
+            this.isLoading = false;
             this.getSubjectCategoryData()
           },
           error => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
           }
         );
       } else{
@@ -192,8 +204,17 @@ export class SubjectCategoryComponent {
           (result: any) => {
             this.closeModal()
             this.getSubjectCategoryData()
+            this.isLoading = false;
           },
           error => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
           }
         );
       }  

@@ -61,8 +61,9 @@ export class SavesComponent {
 
   validationErrors: { [key in keyof Saves]?: string } = {};
 
-  AccountNumbers:AccountingTreeChart[]=[];
-  
+  AccountNumbers: AccountingTreeChart[] = [];
+  isLoading = false
+
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -72,10 +73,10 @@ export class SavesComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public SaveServ :SaveService,
-    public accountServ:AccountingTreeChartService ,
+    public SaveServ: SaveService,
+    public accountServ: AccountingTreeChartService,
 
-  ) {}
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -99,20 +100,21 @@ export class SavesComponent {
   }
 
   GetAllData() {
-    this.SaveServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData =d
+    this.TableData = []
+    this.SaveServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d
     })
   }
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(5,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(5, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
 
   Create() {
     this.mode = 'Create';
     this.save = new Saves();
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -127,7 +129,7 @@ export class SavesComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.SaveServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.SaveServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData()
         })
       }
@@ -136,10 +138,10 @@ export class SavesComponent {
 
   Edit(id: number) {
     this.mode = 'Edit';
-    this.SaveServ.GetById(id,this.DomainName).subscribe((d)=>{
-      this.save=d
+    this.SaveServ.GetById(id, this.DomainName).subscribe((d) => {
+      this.save = d
     })
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -163,17 +165,42 @@ export class SavesComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.SaveServ.Add(this.save,this.DomainName).subscribe((d)=>{
+        this.SaveServ.Add(this.save, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal();
-        })
+          this.isLoading = false
+
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
-        this.SaveServ.Edit(this.save,this.DomainName).subscribe((d)=>{
+        this.SaveServ.Edit(this.save, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal();
-        })
+          this.isLoading = false
+
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
     this.GetAllData()
@@ -187,26 +214,26 @@ export class SavesComponent {
     this.isModalVisible = true;
   }
 
- isFormValid(): boolean {
-     let isValid = true;
-     for (const key in this.save) {
-       if (this.save.hasOwnProperty(key)) {
-         const field = key as keyof Saves;
-         if (!this.save[field]) {
-           if (
-             field == 'name' ||
-             field == 'accountNumberID'
-           ) {
-             this.validationErrors[field] = `*${this.capitalizeField(
-               field
-             )} is required`;
-             isValid = false;
-           }
-         }
-       }
-     }
-     return isValid;
-   }
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.save) {
+      if (this.save.hasOwnProperty(key)) {
+        const field = key as keyof Saves;
+        if (!this.save[field]) {
+          if (
+            field == 'name' ||
+            field == 'accountNumberID'
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
+    return isValid;
+  }
   capitalizeField(field: keyof Saves): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }

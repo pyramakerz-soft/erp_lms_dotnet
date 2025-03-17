@@ -20,11 +20,12 @@ import { AcadimicYearService } from '../../../../Services/Employee/LMS/academic-
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-classrooms-accommodation',
   standalone: true,
-  imports: [CommonModule, FormsModule , SearchComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, SearchComponent, TranslateModule],
   templateUrl: './classrooms-accommodation.component.html',
   styleUrl: './classrooms-accommodation.component.css',
 })
@@ -64,14 +65,15 @@ export class ClassroomsAccommodationComponent {
   Schools: School[] = [];
   Years: AcademicYear[] = [];
 
-  SelectedSchoolId :number =0;
-  SelectedYearId:number =0;
-  SelectedGradeId:number =0;
-  IsSearch:boolean=false;
+  SelectedSchoolId: number = 0;
+  SelectedYearId: number = 0;
+  SelectedGradeId: number = 0;
+  IsSearch: boolean = false;
 
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'studentName','gradeName'];
+  keysArray: string[] = ['id', 'studentName', 'gradeName'];
+  isLoading = false;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -85,7 +87,7 @@ export class ClassroomsAccommodationComponent {
     public SchoolServ: SchoolService,
     public GradeServ: GradeService,
     public YearServ: AcadimicYearService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -110,21 +112,34 @@ export class ClassroomsAccommodationComponent {
     this.GetAllData();
   }
   GetAllData() {
+    this.Data = []
+    this.OriginalData = []
     this.registerationFormParentService
       .GetAll(this.DomainName)
       .subscribe((data) => {
         this.Data = [];
         this.Data = data;
-        this.OriginalData=data;
+        this.OriginalData = data;
       });
   }
 
   Save() {
+    this.isLoading = true
     this.classroomServ
       .AddStudentToClass(this.RpId, this.ClassroomId, this.DomainName)
       .subscribe((d) => {
         this.GetAllData();
         this.closeModal();
+        this.isLoading = false
+      }, (error) => {
+        this.isLoading = false
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Try Again Later!',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
       });
   }
   Create(id: number) {
@@ -165,23 +180,23 @@ export class ClassroomsAccommodationComponent {
   }
 
   Search() {
-    this.IsSearch=true;
-    this.Data=[]
+    this.IsSearch = true;
+    this.Data = []
     this.Data = this.OriginalData.filter((item: any) => {
       const schoolMatch = this.SelectedSchoolId == 0 || item.schoolID == this.SelectedSchoolId;
       const yearMatch = this.SelectedYearId == 0 || item.yearID == this.SelectedYearId;
       const gradeMatch = this.SelectedGradeId == 0 || item.gradeID == this.SelectedGradeId;
       return schoolMatch && yearMatch && gradeMatch;
     });
-  
+
   }
 
-  ResetFilter(){
-    this.IsSearch=false;
-    this.SelectedGradeId=0;
-    this.SelectedSchoolId=0;
-    this.SelectedYearId=0;
-    this.Data=this.OriginalData
+  ResetFilter() {
+    this.IsSearch = false;
+    this.SelectedGradeId = 0;
+    this.SelectedSchoolId = 0;
+    this.SelectedYearId = 0;
+    this.Data = this.OriginalData
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
@@ -190,7 +205,7 @@ export class ClassroomsAccommodationComponent {
     try {
       const data: RegisterationFormParent[] = await firstValueFrom(
         this.registerationFormParentService
-        .GetAll(this.DomainName)
+          .GetAll(this.DomainName)
       );
       this.Data = data || [];
 

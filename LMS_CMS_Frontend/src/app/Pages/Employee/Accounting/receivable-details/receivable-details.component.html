@@ -1,251 +1,271 @@
-<div>
-    <div class="flex justify-between items-center">
-        <div class="flex justify-between items-center space-x-5">
-            <i class="fa-solid fa-chevron-left" (click)="moveToReceivable()"></i>
-            <h1 *ngIf="isCreate" class="primaryTxt font-semibold text-2xl leading-9"> Create Receivable</h1>
-            <h1 *ngIf="isEdit" class="primaryTxt font-semibold text-2xl leading-9"> Edit Receivable</h1>
-            <h1 *ngIf="isView" class="primaryTxt font-semibold text-2xl leading-9"> Receivable</h1>
-        </div>
-    </div>
-    
-    <div class="mt-6">
-        <div class="flex justify-between">
-            <div class="flex flex-col w-[30%]">
-                <label class="mb-2 primaryTxt font-medium" for="receivableDocTypesID">Doc Type</label>
-                <select (ngModelChange)="onInputValueChange({ field: 'receivableDocTypesID', value: $event })"
-                [disabled]="isView"
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="receivableDocTypesID" [(ngModel)]="receivable.receivableDocTypesID">
-                    <option [value]="0" disabled selected hidden>Choose Doc Type</option>
-                    <option *ngFor="let dataType of dataTypesData" [value]="dataType.id">{{ dataType.name }}</option>
-                    <option *ngIf="dataTypesData.length === 0" disabled selected>No Data Found</option>
-                </select>
-                <span *ngIf="validationErrors['receivableDocTypesID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['receivableDocTypesID'] }}</span>
-            </div>
-            <div class="flex flex-col w-[30%]">
-                <label class="mb-2 primaryTxt font-medium" for="DocType">Doc Number</label>
-                <input id="DocType" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                [disabled]="isView"
-                (input)="validateNumberReceivable($event, 'docNumber')" 
-                    placeholder="Enter Doc Type" [(ngModel)]="receivable.docNumber" />
-            </div>
-            <div class="flex flex-col w-[30%]"> 
-                <div class="mb-2 flex justify-evenly">
-                    <div class="flex space-x-2 items-center">
-                        <input type="radio" 
-                        [disabled]="isView"
-                        id="save" 
-                        class="square-radio"
-                        name="linkFile"
-                        [(ngModel)]="receivable.linkFileID"
-                        (ngModelChange)="getSaveData(); onInputValueChange({ field: 'linkFileID', value: $event })"
-                        [value]="5"/>
-                        <label for="save" class="ml-2 font-medium">Safe ID</label>
-                    </div>
-    
-                    <div class="flex space-x-2 items-center">
-                        <input type="radio" 
-                        [disabled]="isView"
-                        id="bank" 
-                        class="square-radio"
-                        name="linkFile"
-                        [(ngModel)]="receivable.linkFileID"
-                        (ngModelChange)="getBankData(); onInputValueChange({ field: 'linkFileID', value: $event })"
-                        [value]="6"/>
-                        <label for="bank" class="ml-2 font-medium">Bank ID</label>
-                    </div> 
-                    <span *ngIf="validationErrors['linkFileID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['linkFileID'] }}</span>
-                </div> 
-                <select (ngModelChange)="onInputValueChange({ field: 'bankOrSaveID', value: $event })"
-                [disabled]="isView"
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bankOrSaveID" 
-                [(ngModel)]="receivable.bankOrSaveID">
-                    <option [value]="0" disabled selected hidden>Choose Data</option>
-                    <option *ngFor="let bankOrSave of bankOrSaveData" [value]="bankOrSave.id">{{ bankOrSave.name }}</option>
-                    <option *ngIf="bankOrSaveData.length === 0" disabled selected>No Data Found</option>
-                </select>
-                <span *ngIf="validationErrors['bankOrSaveID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['bankOrSaveID'] }}</span>
+<div id="DataToDownload">
+    <div>
+        <div class="no-print flex justify-between items-center">
+            <div class="flex justify-between items-center space-x-5">
+                <i class="fa-solid fa-chevron-left" (click)="moveToReceivable()"></i>
+                <h1 *ngIf="isCreate" class="primaryTxt font-semibold text-2xl leading-9"> Create Receivable</h1>
+                <h1 *ngIf="isEdit" class="primaryTxt font-semibold text-2xl leading-9"> Edit Receivable</h1>
+                <h1 *ngIf="isView" class="primaryTxt font-semibold text-2xl leading-9"> Receivable</h1>
             </div>
         </div>
     
-        <div class="mt-5 flex justify-between">
-            <div class="flex flex-col w-[45%]">
-                <label class="mb-2 primaryTxt font-medium" for="date">Date</label>
-                <input id="date" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" [(ngModel)]="receivable.date"
-                [disabled]="isView"
-                (ngModelChange)="onInputValueChange({ field: 'date', value: $event })" />
-                <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{ validationErrors['date'] }}</span>
-            </div>
-            
-            <div class="flex flex-col w-[45%]" *ngIf="!isCreate">
-                <label class="mb-2 primaryTxt font-medium" for="total">Total</label>
-                <input id="total" type="text" disabled class="rounded-lg border border-solid border-gray-300 px-4 py-3" [(ngModel)]="totalAmount" />
-            </div>
-        </div>
-    
-        <div class="mt-5 flex flex-col">
-            <label class="mb-2 primaryTxt font-medium" for="notes">Notes</label>
-            <textarea id="notes" class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3" 
-            [disabled]="isView"
-                placeholder="Add Notes" [(ngModel)]="receivable.notes">
-            </textarea>
-        </div>
-    </div>
-    
-    <div class="flex justify-end mt-5 space-x-4 items-center">
-        <i class="fa-solid fa-print text-lg" *ngIf="!isCreate"></i>
-        <button *ngIf="!isView" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()"> Save </button>
-    </div>
-</div>
-
-<div class="mt-6" *ngIf="!isCreate">
-    <div class="flex justify-end" *ngIf="!isView">
-        <button class="secondaryTxt secondaryBorder px-4 py-2 rounded-lg flex items-center space-x-2" (click)="AddReceivableDetails()"> 
-            <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
-            <p>Add Row</p> 
-        </button>
-    </div>
-
-    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
-        <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
-            <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
-                <tr>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        ID
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                        Amount
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Link File
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                        Link File Data
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Notes
-                    </th> 
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- No Data Row -->
-                <tr *ngIf="receivableDetailsData.length === 0 && !isNewDetails">
-                    <td colspan="6" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                        No Data Found
-                    </td>
-                </tr>
-    
-                <!-- New Row with Inputs -->
-                <tr *ngIf="isNewDetails" class="bg-white border-t border-gray-300 text-xs md:text-sm">
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input id="amount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                        (input)="validateNumberDetails($event, 'amount')" [(ngModel)]="newDetails.amount" 
-                        (ngModelChange)="onInputValueChangeForDetails({ field: 'amount', value: $event })"/>
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <select (change)="GetLinkFilesTypeData()"
-                        (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileID', value: $event })"
-                        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFileID" [(ngModel)]="newDetails.linkFileID">
-                            <option [value]="0" disabled selected hidden>Choose Link File</option>
-                            <option *ngFor="let linkFile of linkFilesData" [value]="linkFile.id">{{ linkFile.name }}</option>
-                            <option *ngIf="linkFilesData.length === 0" disabled selected>No Data Found</option>
-                        </select>
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <select [disabled]="this.newDetails.linkFileID == 0"
-                        (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileTypeID', value: $event })"
-                        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFileTypeID" [(ngModel)]="newDetails.linkFileTypeID">
-                            <option [value]="0" disabled selected hidden>Choose Link File Data</option>
-                            <option *ngFor="let linkFile of linkFileTypesData" [value]="linkFile.id">{{ linkFile.name ? linkFile.name : linkFile.en_name }}</option>
-                            <option *ngIf="linkFileTypesData.length === 0" disabled selected>No Data Found</option>
-                        </select>
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <textarea id="notes" class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3" 
-                            placeholder="Add Notes" [(ngModel)]="newDetails.notes">
-                        </textarea>
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div class="flex space-x-4">
-                            <button (click)="SaveNewDetails()" [disabled]="!isDetailsValid" [ngClass]="{'cursor-not-allowed opacity-50' : !isDetailsValid}">
-                                <i class="fa-solid fa-check secondaryTxt secondaryBorder rounded-full p-1"></i>
-                            </button> 
+        <div class="mt-6">
+            <div class="flex justify-between">
+                <div class="flex flex-col w-[30%]">
+                    <label class="mb-2 primaryTxt font-medium" for="receivableDocTypesID">Doc Type</label>
+                    <select (ngModelChange)="onInputValueChange({ field: 'receivableDocTypesID', value: $event })"
+                        [disabled]="isView" class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto text-lg"
+                        id="receivableDocTypesID" [(ngModel)]="receivable.receivableDocTypesID">
+                        <option [value]="0" disabled selected hidden>Choose Doc Type</option>
+                        <option *ngFor="let dataType of dataTypesData" [value]="dataType.id">{{ dataType.name }}</option>
+                        <option *ngIf="dataTypesData.length === 0" disabled selected>No Data Found</option>
+                    </select>
+                    <span *ngIf="validationErrors['receivableDocTypesID']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['receivableDocTypesID'] }}</span>
+                </div>
+                <div class="flex flex-col w-[30%]">
+                    <label class="mb-2 primaryTxt font-medium" for="DocType">Doc Number</label>
+                    <input id="DocType" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 text-lg"
+                        [disabled]="isView" (input)="validateNumberReceivable($event, 'docNumber')"
+                        placeholder="Enter Doc Type" [(ngModel)]="receivable.docNumber" />
+                </div>
+                <div class="flex flex-col w-[30%]">
+                    <div class="mb-2 flex justify-evenly">
+                        <div class="flex space-x-2 items-center">
+                            <input type="radio" [disabled]="isView" id="save" class="square-radio" name="linkFile"
+                                [(ngModel)]="receivable.linkFileID"
+                                (ngModelChange)="getSaveData(); onInputValueChange({ field: 'linkFileID', value: $event })"
+                                [value]="5" />
+                            <label for="save" class="ml-2 font-medium">Safe ID</label>
                         </div>
-                    </td>
-                </tr>
-
-                <!-- Data Rows -->
-                <tr *ngFor="let row of receivableDetailsData; let i = index"
-                    [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
-                    class="border-t border-gray-300 text-xs md:text-sm">
-                    
-                    <!-- If the row is being edited, show inputs -->
-                    <ng-container *ngIf="editingRowId === row.id; else normalRow">
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+    
+                        <div class="flex space-x-2 items-center">
+                            <input type="radio" [disabled]="isView" id="bank" class="square-radio" name="linkFile"
+                                [(ngModel)]="receivable.linkFileID"
+                                (ngModelChange)="getBankData(); onInputValueChange({ field: 'linkFileID', value: $event })"
+                                [value]="6" />
+                            <label for="bank" class="ml-2 font-medium">Bank ID</label>
+                        </div>
+                        <span *ngIf="validationErrors['linkFileID']" class="text-red-500 ml-3 font-normal">{{
+                            validationErrors['linkFileID'] }}</span>
+                    </div>
+                    <select (ngModelChange)="onInputValueChange({ field: 'bankOrSaveID', value: $event })"
+                        [disabled]="isView" class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto text-lg"
+                        id="bankOrSaveID" [(ngModel)]="receivable.bankOrSaveID">
+                        <option [value]="0" disabled selected hidden>Choose Data</option>
+                        <option *ngFor="let bankOrSave of bankOrSaveData" [value]="bankOrSave.id">{{ bankOrSave.name }}
+                        </option>
+                        <option *ngIf="bankOrSaveData.length === 0" disabled selected>No Data Found</option>
+                    </select>
+                    <span *ngIf="validationErrors['bankOrSaveID']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['bankOrSaveID'] }}</span>
+                </div>
+            </div>
+    
+            <div class="mt-5 flex justify-between">
+                <div class="flex flex-col w-[45%]">
+                    <label class="mb-2 primaryTxt font-medium" for="date">Date</label>
+                    <input id="date" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3 text-lg"
+                        [(ngModel)]="receivable.date" [disabled]="isView"
+                        (ngModelChange)="onInputValueChange({ field: 'date', value: $event })" />
+                    <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{ validationErrors['date']
+                        }}</span>
+                </div>
+    
+                <div class="flex flex-col w-[45%]" *ngIf="!isCreate">
+                    <label class="mb-2 primaryTxt font-medium" for="total">Total</label>
+                    <input id="total" type="text" disabled class="rounded-lg border border-solid border-gray-300 px-4 py-3 text-lg"
+                        [(ngModel)]="totalAmount" />
+                </div>
+            </div>
+    
+            <div class="mt-5 flex flex-col">
+                <label class="mb-2 primaryTxt font-medium" for="notes">Notes</label>
+                <textarea id="notes" class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3"
+                    [disabled]="isView" placeholder="Add Notes" [(ngModel)]="receivable.notes">
+                </textarea>
+            </div>
+        </div>
+    
+        <div class="no-print flex justify-end mt-5 space-x-4 items-center">
+            <i class="fa-solid fa-print text-lg cursor-pointer" *ngIf="!isCreate" (click)="DownloadData()"></i>
+            <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+                <span *ngIf="!isLoading">Save</span>
+                <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="mt-6" *ngIf="!isCreate">
+        <div class="no-print flex justify-end" *ngIf="!isView">
+            <button class="secondaryTxt secondaryBorder px-4 py-2 rounded-lg flex items-center space-x-2"
+                (click)="AddReceivableDetails()">
+                <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
+                <p>Add Row</p>
+            </button>
+        </div>
+    
+        <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+            <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+                <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                    <tr>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            ID
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                            Amount
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Link File
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                            Link File Data
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Notes
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+                            *ngIf="!isView">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- No Data Row -->
+                    <tr *ngIf="receivableDetailsData.length === 0 && !isNewDetails">
+                        <td colspan="6"
+                            class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                            No Data Found
+                        </td>
+                    </tr>
+    
+                    <!-- New Row with Inputs -->
+                    <tr *ngIf="isNewDetails" class="no-print bg-white border-t border-gray-300 text-xs md:text-sm">
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            <input type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                                (input)="validateNumberEditDetails($event, 'amount')"
-                                [(ngModel)]="editedRowData.amount" (ngModelChange)="onInputValueChangeForDetails({ field: 'amount', value: $event })"/>
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            <input id="amount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                                (input)="validateNumberDetails($event, 'amount')" [(ngModel)]="newDetails.amount"
+                                (ngModelChange)="onInputValueChangeForDetails({ field: 'amount', value: $event })" />
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <select (change)="GetLinkFilesTypeData()"
-                            (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileID', value: $event })"
-                            class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFileID" [(ngModel)]="editedRowData.linkFileID">
+                                (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileID', value: $event })"
+                                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                                id="linkFileID" [(ngModel)]="newDetails.linkFileID">
                                 <option [value]="0" disabled selected hidden>Choose Link File</option>
-                                <option *ngFor="let linkFile of linkFilesData" [value]="linkFile.id">{{ linkFile.name }}</option>
+                                <option *ngFor="let linkFile of linkFilesData" [value]="linkFile.id">{{ linkFile.name }}
+                                </option>
                                 <option *ngIf="linkFilesData.length === 0" disabled selected>No Data Found</option>
                             </select>
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            <select [disabled]="this.editedRowData.linkFileID == 0"
-                            (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileTypeID', value: $event })"
-                            class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="linkFileTypeID" [(ngModel)]="editedRowData.linkFileTypeID">
+                            <select [disabled]="this.newDetails.linkFileID == 0"
+                                (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileTypeID', value: $event })"
+                                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                                id="linkFileTypeID" [(ngModel)]="newDetails.linkFileTypeID">
                                 <option [value]="0" disabled selected hidden>Choose Link File Data</option>
-                                <option *ngFor="let linkFile of linkFileTypesData" [value]="linkFile.id">{{ linkFile.name ? linkFile.name : linkFile.en_name }}</option>
+                                <option *ngFor="let linkFile of linkFileTypesData" [value]="linkFile.id">{{ linkFile.name ?
+                                    linkFile.name : linkFile.en_name }}</option>
                                 <option *ngIf="linkFileTypesData.length === 0" disabled selected>No Data Found</option>
                             </select>
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            <textarea class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3" [(ngModel)]="editedRowData.notes"></textarea>
+                            <textarea id="notes" class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3"
+                                placeholder="Add Notes" [(ngModel)]="newDetails.notes">
+                            </textarea>
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <div class="flex space-x-4">
-                                <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
-                                (click)="DeleteDetail(row.id)">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
-                                <button (click)="SaveEditedDetail()" [disabled]="!isDetailsValid" [ngClass]="{'cursor-not-allowed opacity-50' : !isDetailsValid}">
+                                <button (click)="SaveNewDetails()" [disabled]="!isDetailsValid"
+                                    [ngClass]="{'cursor-not-allowed opacity-50' : !isDetailsValid}">
                                     <i class="fa-solid fa-check secondaryTxt secondaryBorder rounded-full p-1"></i>
                                 </button>
                             </div>
                         </td>
-                    </ng-container>
-
-                    <!-- Normal row display -->
-                    <ng-template #normalRow>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.amount }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.linkFileName }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.linkFileTypeName }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.notes }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            <div class="flex space-x-4">
-                                <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
-                                    (click)="DeleteDetail(row.id)">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
-                                <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="EditDetail(row)">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </button> 
-                            </div>
-                        </td>
-                    </ng-template> 
-                </tr>
-            </tbody>
-        </table>
-    </div>    
+                    </tr>
+    
+                    <!-- Data Rows -->
+                    <tr *ngFor="let row of receivableDetailsData; let i = index"
+                        [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                        class="border-t border-gray-300 text-xs md:text-sm">
+    
+                        <!-- If the row is being edited, show inputs -->
+                        <ng-container *ngIf="editingRowId === row.id; else normalRow" class="no-print">
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                <input type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                                    (input)="validateNumberEditDetails($event, 'amount')" [(ngModel)]="editedRowData.amount"
+                                    (ngModelChange)="onInputValueChangeForDetails({ field: 'amount', value: $event })" />
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                <select (change)="GetLinkFilesTypeData()"
+                                    (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileID', value: $event })"
+                                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                                    id="linkFileID" [(ngModel)]="editedRowData.linkFileID">
+                                    <option [value]="0" disabled selected hidden>Choose Link File</option>
+                                    <option *ngFor="let linkFile of linkFilesData" [value]="linkFile.id">{{ linkFile.name }}
+                                    </option>
+                                    <option *ngIf="linkFilesData.length === 0" disabled selected>No Data Found</option>
+                                </select>
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                <select [disabled]="this.editedRowData.linkFileID == 0"
+                                    (ngModelChange)="onInputValueChangeForDetails({ field: 'linkFileTypeID', value: $event })"
+                                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                                    id="linkFileTypeID" [(ngModel)]="editedRowData.linkFileTypeID">
+                                    <option [value]="0" disabled selected hidden>Choose Link File Data</option>
+                                    <option *ngFor="let linkFile of linkFileTypesData" [value]="linkFile.id">{{
+                                        linkFile.name ? linkFile.name : linkFile.en_name }}</option>
+                                    <option *ngIf="linkFileTypesData.length === 0" disabled selected>No Data Found</option>
+                                </select>
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                <textarea class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3"
+                                    [(ngModel)]="editedRowData.notes"></textarea>
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                <div class="flex space-x-4">
+                                    <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                                        (click)="DeleteDetail(row.id)">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                    <button (click)="SaveEditedDetail()" [disabled]="!isDetailsValid"
+                                        [ngClass]="{'cursor-not-allowed opacity-50' : !isDetailsValid}">
+                                        <i class="fa-solid fa-check secondaryTxt secondaryBorder rounded-full p-1"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-container>
+    
+                        <!-- Normal row display -->
+                        <ng-template #normalRow>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.amount }}</td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.linkFileName }}</td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.linkFileTypeName }}
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.notes }}</td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0" *ngIf="!isView">
+                                <div class="flex space-x-4">
+                                    <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                                        (click)="DeleteDetail(row.id)">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                    <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)"
+                                        (click)="EditDetail(row)">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </ng-template>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ParentAdd } from '../../../Models/parent-add';
 import { ParentService } from '../../../Services/parent.service';
 import { ApiService } from '../../../Services/api.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-sign-up',
@@ -33,6 +34,7 @@ export class SignUpComponent {
 
   userNameError: string = "";
   passwordError: string = "";
+  ConfirmPasswordError: string = "";
   somthingError: string = "";
 
   token1 = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
@@ -46,6 +48,7 @@ export class SignUpComponent {
   validationErrors: { [key in keyof ParentAdd]?: string } = {};
 
   parentInfo: ParentAdd = new ParentAdd()
+  isLoading = false; // Initialize loading state
 
   constructor(private router: Router, public accountService: AccountService, public ParentServ: ParentService , public ApiServ: ApiService) { }
   ngOnInit() {
@@ -63,11 +66,29 @@ export class SignUpComponent {
     this.somthingError = ""
   }
 
+  onConfirmPasswordChange() {
+    this.ConfirmPasswordError = ""
+    this.somthingError = ""
+  }
+
   SignUp() {
     if (this.isFormValid()) {
-      this.ParentServ.AddParent(this.parentInfo,this.DomainName).subscribe(() => {
-        this.router.navigateByUrl("")
-      })
+      this.isLoading = true; // Start loading
+      this.ParentServ.AddParent(this.parentInfo, this.DomainName).subscribe(() => {
+        this.isLoading = false; // Stop loading
+        this.router.navigateByUrl(""); // Navigate after success
+      }, (error) => {
+        this.isLoading = false; // Stop loading on error
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Try Again Later!',
+          confirmButtonText: 'Okay',
+          customClass: {
+            confirmButton: 'secondaryBg'
+          }
+        });
+      });
     }
   }
 
@@ -103,6 +124,11 @@ export class SignUpComponent {
           }
         }
       }
+    }
+    const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    if (this.parentInfo.email && !emailPattern.test(this.parentInfo.email)) {
+      this.validationErrors['email'] = 'Email is not valid';
+      isValid = false;
     }
     if (this.parentInfo.password.length < 6) {
       this.validationErrors['password'] = 'Password must be between 6 and 100 characters ';

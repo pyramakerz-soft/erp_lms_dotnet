@@ -21,31 +21,31 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-interview-time-table',
   standalone: true,
-  imports: [FormsModule,CommonModule,SearchComponent, TranslateModule],
+  imports: [FormsModule, CommonModule, SearchComponent, TranslateModule],
   templateUrl: './interview-time-table.component.html',
   styleUrl: './interview-time-table.component.css'
 })
 export class InterviewTimeTableComponent {
-  keysArray: string[] = ['id', 'date','fromTime' ,'toTime','capacity','reserved','academicYearName'];
-  key: string= "id";
+  keysArray: string[] = ['id', 'date', 'fromTime', 'toTime', 'capacity', 'reserved', 'academicYearName'];
+  key: string = "id";
   value: any = "";
 
   interviewTimeTableData: InterviewTimeTable[] = []
-  
+
   SchoolData: School[] = []
   AcademicYearData: AcademicYear[] = []
-  
+
   DomainName: string = "";
   UserID: number = 0;
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-  
+
   AllowEdit: boolean = false;
   AllowEditForOthers: boolean = false;
   AllowDelete: boolean = false;
   AllowDeleteForOthers: boolean = false;
-  
+
   path: string = ""
-  
+
   interviewTimeTableByYearData: InterviewTimeTable[] = []
   interviewTimeTableBySchoolData: InterviewTimeTable[] = []
   selectedYear = 0
@@ -53,12 +53,12 @@ export class InterviewTimeTableComponent {
 
   selectedSchoolForModal = 0
 
-  interviewTimeTable:InterviewTimeTable = new InterviewTimeTable()
-  editInterviewTimeTable:boolean = false
+  interviewTimeTable: InterviewTimeTable = new InterviewTimeTable()
+  editInterviewTimeTable: boolean = false
   validationErrors: { [key in keyof InterviewTimeTable]?: string } = {};
 
-  schoolsForModal:School[] = []
-  yearsForModal:AcademicYear[] = []
+  schoolsForModal: School[] = []
+  yearsForModal: AcademicYear[] = []
 
   days = ['Sunday',
     'Monday',
@@ -68,12 +68,14 @@ export class InterviewTimeTableComponent {
     'Friday',
     'Saturday']
 
-  constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
-        private menuService: MenuService, public activeRoute: ActivatedRoute, public router:Router, 
-        public yearService: AcadimicYearService, public interviewTimeTableService: InterviewTimeTableService,
-        public schoolService: SchoolService){}
+  isLoading = false
 
-  ngOnInit(){
+  constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService,
+    private menuService: MenuService, public activeRoute: ActivatedRoute, public router: Router,
+    public yearService: AcadimicYearService, public interviewTimeTableService: InterviewTimeTableService,
+    public schoolService: SchoolService) { }
+
+  ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
 
@@ -127,13 +129,13 @@ export class InterviewTimeTableComponent {
       this.interviewTimeTableData = [];
     }
   }
-  
+
 
   openModal(InterviewId?: number) {
     if (InterviewId) {
       this.editInterviewTimeTable = true;
-      this.getinterviewById(InterviewId); 
-    } else{
+      this.getinterviewById(InterviewId);
+    } else {
       this.days = ['Sunday',
         'Monday',
         'Tuesday',
@@ -142,7 +144,7 @@ export class InterviewTimeTableComponent {
         'Friday',
         'Saturday']
     }
-     
+
     this.getSchoolsForModal()
 
     document.getElementById("Add_Modal")?.classList.remove("hidden");
@@ -153,7 +155,7 @@ export class InterviewTimeTableComponent {
     document.getElementById("Add_Modal")?.classList.remove("flex");
     document.getElementById("Add_Modal")?.classList.add("hidden");
 
-    this.interviewTimeTable= new InterviewTimeTable()
+    this.interviewTimeTable = new InterviewTimeTable()
     this.schoolsForModal = []
     this.yearsForModal = []
 
@@ -161,34 +163,35 @@ export class InterviewTimeTableComponent {
 
     this.selectedSchoolForModal = 0
 
-    if(this.editInterviewTimeTable){
+    if (this.editInterviewTimeTable) {
       this.editInterviewTimeTable = false
     }
-    this.validationErrors = {}; 
+    this.validationErrors = {};
   }
 
-  getTimeTableData(){
+  getTimeTableData() {
+    this.interviewTimeTableData = []
     this.interviewTimeTableService.Get(this.DomainName).subscribe(
       (data) => {
         this.interviewTimeTableData = data
       }
     )
   }
-  
-  convertTo24HourFormat(time:string) {
+
+  convertTo24HourFormat(time: string) {
     const [timePart, modifier] = time.split(' ');
     let [hours, minutes] = timePart.split(':').map(Number);
 
     if (modifier === 'PM' && hours !== 12) {
-        hours += 12;
+      hours += 12;
     } else if (modifier === 'AM' && hours === 12) {
-        hours = 0;
+      hours = 0;
     }
 
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   }
-  
-  getinterviewById(id: number){
+
+  getinterviewById(id: number) {
     this.interviewTimeTableService.GetById(id, this.DomainName).subscribe(
       (data) => {
         this.interviewTimeTable = data
@@ -198,7 +201,7 @@ export class InterviewTimeTableComponent {
       }
     )
   }
-  
+
   // getinterviewByYearId(id: number){
   //   this.interviewTimeTableService.GetByYearId(id, this.DomainName).subscribe(
   //     (data) => {
@@ -206,7 +209,7 @@ export class InterviewTimeTableComponent {
   //     }
   //   )
   // }
-  
+
   // getinterviewBySchoolId(id: number){
   //   this.interviewTimeTableService.GetBySchoolId(id, this.DomainName).subscribe(
   //     (data) => {
@@ -223,7 +226,7 @@ export class InterviewTimeTableComponent {
       console.error('Error fetching year data:', error);
     }
   }
-  
+
   async getinterviewBySchoolId(id: number) {
     try {
       const data = await lastValueFrom(this.interviewTimeTableService.GetBySchoolId(id, this.DomainName));
@@ -243,7 +246,7 @@ export class InterviewTimeTableComponent {
     return IsAllow;
   }
 
-  getSchools(){
+  getSchools() {
     this.schoolService.Get(this.DomainName).subscribe(
       (data) => {
         this.SchoolData = data;
@@ -251,7 +254,7 @@ export class InterviewTimeTableComponent {
     )
   }
 
-  getSchoolsForModal(){
+  getSchoolsForModal() {
     this.schoolService.Get(this.DomainName).subscribe(
       (data) => {
         this.schoolsForModal = data;
@@ -259,54 +262,54 @@ export class InterviewTimeTableComponent {
     )
   }
 
-  getYears(){
+  getYears() {
     this.yearService.Get(this.DomainName).subscribe(
       (data) => {
         this.AcademicYearData = data;
       }
     )
   }
-  
-  getYearsForModal(){
+
+  getYearsForModal() {
     this.yearService.Get(this.DomainName).subscribe(
       (data) => {
         this.yearsForModal = data.filter((academic_year) => this.checkSchool(academic_year))
       }
     )
   }
-  
-  getYearsForModalByID(){
+
+  getYearsForModalByID() {
     this.yearService.GetByID(this.interviewTimeTable.academicYearID, this.DomainName).subscribe(
       (data) => {
         this.selectedSchoolForModal = data.schoolID
-        this.getYearsForModal();    
+        this.getYearsForModal();
       }
     )
   }
 
-  checkSchool(element:any) {
+  checkSchool(element: any) {
     return element.schoolID == this.selectedSchoolForModal
   }
 
   onSchoolChange(event: Event) {
-    this.yearsForModal = [] 
+    this.yearsForModal = []
 
     this.interviewTimeTable.academicYearID = 0
 
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.selectedSchoolForModal = Number(selectedValue)
     if (this.selectedSchoolForModal) {
-      this.getYearsForModal(); 
+      this.getYearsForModal();
     }
   }
 
   capitalizeField(field: keyof InterviewTimeTable): string {
-      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
   onInputValueChange(event: { field: keyof InterviewTimeTable, value: any }) {
     const { field, value } = event;
-    
+
     (this.interviewTimeTable as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
@@ -316,20 +319,20 @@ export class InterviewTimeTableComponent {
   validateNumber(event: any, field: keyof InterviewTimeTable): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.interviewTimeTable[field] === 'string') {
-        this.interviewTimeTable[field] = '' as never;  
+        this.interviewTimeTable[field] = '' as never;
       }
     }
   }
 
-  handleDays(event:Event, optionSelected:string){
+  handleDays(event: Event, optionSelected: string) {
     const checkbox = event.target as HTMLInputElement;
-    
+
     if (checkbox.checked) {
       this.interviewTimeTable.days.push(optionSelected)
     } else {
-      this.interviewTimeTable.days = this.interviewTimeTable.days.filter(option => 
+      this.interviewTimeTable.days = this.interviewTimeTable.days.filter(option =>
         option !== optionSelected
       );
     }
@@ -341,18 +344,18 @@ export class InterviewTimeTableComponent {
       if (this.interviewTimeTable.hasOwnProperty(key)) {
         const field = key as keyof InterviewTimeTable;
         if (!this.interviewTimeTable[field]) {
-          if(field == "academicYearID"|| field == "capacity" || field == "fromTime" || field == "toTime" || ((field == "fromDate"  || field == "toDate" || field == "days") && !this.editInterviewTimeTable)){
+          if (field == "academicYearID" || field == "capacity" || field == "fromTime" || field == "toTime" || ((field == "fromDate" || field == "toDate" || field == "days") && !this.editInterviewTimeTable)) {
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
           }
         } else {
-          if(!this.editInterviewTimeTable){
-            if(this.interviewTimeTable.days.length == 0 ){
+          if (!this.editInterviewTimeTable) {
+            if (this.interviewTimeTable.days.length == 0) {
               this.validationErrors["days"] = `*${this.capitalizeField("days")} is required`
               isValid = false;
-            } 
+            }
           }
-          else{
+          else {
             this.validationErrors[field] = '';
           }
         }
@@ -362,7 +365,7 @@ export class InterviewTimeTableComponent {
 
   }
 
-  isFromTimeAfterToTime(fromTime:string, toTime:string) {
+  isFromTimeAfterToTime(fromTime: string, toTime: string) {
     const fromTimeParts = fromTime.split(':').map(Number);
     const toTimeParts = toTime.split(':').map(Number);
 
@@ -372,17 +375,17 @@ export class InterviewTimeTableComponent {
     return fromTimeInMinutes > toTimeInMinutes;
   }
 
-  isFromDateAfterToDate(fromDate:string, toDate:string) {
+  isFromDateAfterToDate(fromDate: string, toDate: string) {
     const from = new Date(fromDate);
     const to = new Date(toDate);
 
     return from > to;
   }
 
-  Save(){
-    if(this.isFormValid()){
+  Save() {
+    if (this.isFormValid()) {
       const timeCheck = this.isFromTimeAfterToTime(this.interviewTimeTable.fromTime, this.interviewTimeTable.toTime);
-      if(timeCheck){
+      if (timeCheck) {
         Swal.fire({
           title: "From Time cant't be After To Time",
           icon: 'warning',
@@ -390,9 +393,9 @@ export class InterviewTimeTableComponent {
           confirmButtonText: 'OK',
         })
       }
-      if(this.editInterviewTimeTable == false){
+      if (this.editInterviewTimeTable == false) {
         const dateCheck = this.isFromDateAfterToDate(this.interviewTimeTable.fromDate, this.interviewTimeTable.toDate);
-        if(dateCheck){
+        if (dateCheck) {
           Swal.fire({
             title: "From Date cant't be After To Date",
             icon: 'warning',
@@ -400,16 +403,19 @@ export class InterviewTimeTableComponent {
             confirmButtonText: 'OK',
           })
         }
-        if(!timeCheck && !dateCheck){
+        if (!timeCheck && !dateCheck) {
           this.interviewTimeTable.fromTime += ":00"
           this.interviewTimeTable.toTime += ":00"
+          this.isLoading = true
           this.interviewTimeTableService.Add(this.interviewTimeTable, this.DomainName).subscribe(
             (result: any) => {
               this.closeModal()
               this.getTimeTableData()
+              this.isLoading = false
             },
             error => {
-              if(error.error == "No Dates in this Period of Time"){
+              this.isLoading = false
+              if (error.error == "No Dates in this Period of Time") {
                 Swal.fire({
                   title: 'No Days in This Date',
                   icon: 'warning',
@@ -422,24 +428,34 @@ export class InterviewTimeTableComponent {
             }
           );
         }
-      } else{
-        if(!timeCheck){
+      } else {
+        if (!timeCheck) {
           this.interviewTimeTable.fromTime += ":00"
           this.interviewTimeTable.toTime += ":00"
+          this.isLoading = true
           this.interviewTimeTableService.Edit(this.interviewTimeTable, this.DomainName).subscribe(
             (result: any) => {
               this.closeModal()
               this.getTimeTableData()
+              this.isLoading = false
             },
             error => {
+              this.isLoading = false
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Try Again Later!',
+                confirmButtonText: 'Okay',
+                customClass: { confirmButton: 'secondaryBg' },
+              });
             }
           );
         }
-      }  
+      }
     }
   }
 
-  ResetFilter(){
+  ResetFilter() {
     this.selectedYear = 0
     this.selectedSchool = 0
 
@@ -452,16 +468,16 @@ export class InterviewTimeTableComponent {
   async Search() {
     this.interviewTimeTableBySchoolData = []
     this.interviewTimeTableByYearData = []
-    
+
     this.getTimeTableData()
-  
+
     if (this.selectedSchool != 0) {
       await this.getinterviewBySchoolId(this.selectedSchool)
     }
     if (this.selectedYear != 0) {
       await this.getinterviewByYearId(this.selectedYear)
     }
-  
+
     let filteredData = [...this.interviewTimeTableData];
 
     if (this.selectedSchool !== 0) {
@@ -476,15 +492,15 @@ export class InterviewTimeTableComponent {
       );
     }
 
-    if((this.selectedSchool != 0 && this.interviewTimeTableBySchoolData.length == 0) ||
-    (this.selectedYear != 0 && this.interviewTimeTableByYearData.length == 0)){
+    if ((this.selectedSchool != 0 && this.interviewTimeTableBySchoolData.length == 0) ||
+      (this.selectedYear != 0 && this.interviewTimeTableByYearData.length == 0)) {
       filteredData = []
     }
-    
+
     this.interviewTimeTableData = filteredData;
   }
 
-  deleteInterview(id:number){
+  deleteInterview(id: number) {
     Swal.fire({
       title: 'Are you sure you want to delete this Interview Time?',
       icon: 'warning',
@@ -497,7 +513,7 @@ export class InterviewTimeTableComponent {
       if (result.isConfirmed) {
         this.interviewTimeTableService.Delete(id, this.DomainName).subscribe(
           (data: any) => {
-            this.interviewTimeTableData=[]
+            this.interviewTimeTableData = []
             this.getTimeTableData()
           }
         )
@@ -505,7 +521,7 @@ export class InterviewTimeTableComponent {
     });
   }
 
-  MoveToInterviewRegistration(id:number){
+  MoveToInterviewRegistration(id: number) {
     this.router.navigateByUrl('Employee/Interview Registration/' + id);
   }
 }

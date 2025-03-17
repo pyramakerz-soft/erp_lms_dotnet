@@ -42,6 +42,8 @@ export class EmployeeAddEditComponent {
   emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   mobilePattern = /^0(10|11|12|15)\d{8}$/;
   DeletedFiles: number[] = []
+  isLoading = false;
+
   constructor(public RoleServ: RoleService, public empTypeServ: EmployeeTypeService, public BusCompanyServ: BusCompanyService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router, public EmpServ: EmployeeService) { }
 
   ngOnInit() {
@@ -192,13 +194,16 @@ export class EmployeeAddEditComponent {
 
   async Save() {
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.mode == "Create") {
         return this.EmpServ.Add(this.Data, this.DomainName).toPromise().then(
           (data) => {
             this.moveToEmployee();
+            this.isLoading = false;
             return true;
           },
           (error) => {
+            this.isLoading = false;
             Swal.fire({
               icon: 'error',
               title: 'Error',
@@ -217,9 +222,11 @@ export class EmployeeAddEditComponent {
         return this.EmpServ.Edit(this.Data, this.DomainName).toPromise().then(
           (data) => {
             this.moveToEmployee();
+            this.isLoading = false;
             return true;
           },
           (error) => {
+            this.isLoading = false;
             Swal.fire({
               icon: 'error',
               title: 'Error',

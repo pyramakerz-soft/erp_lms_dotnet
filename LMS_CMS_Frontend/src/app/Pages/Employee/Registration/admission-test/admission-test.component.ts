@@ -26,7 +26,7 @@ import { LanguageService } from '../../../../Services/shared/language.service';
 @Component({
   selector: 'app-admission-test',
   standalone: true,
-  imports: [CommonModule, FormsModule ,SearchComponent, TranslateModule],
+  imports: [CommonModule, FormsModule, SearchComponent, TranslateModule],
   templateUrl: './admission-test.component.html',
   styleUrl: './admission-test.component.css'
 })
@@ -72,9 +72,10 @@ export class AdmissionTestComponent {
 
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'title', 'totalMark','subjectName' ,'academicYearName'];
+  keysArray: string[] = ['id', 'title', 'totalMark', 'subjectName', 'academicYearName'];
   isRtl: boolean = false;
   subscription!: Subscription;
+  isLoading = false;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -148,6 +149,7 @@ export class AdmissionTestComponent {
   }
 
   GetAllData() {
+    this.Data = []
     this.testServ.Get(this.DomainName).subscribe((d) => {
       this.Data = d
     })
@@ -206,8 +208,8 @@ export class AdmissionTestComponent {
 
   Edit(row: Test) {
     this.mode = 'Edit';
-    this.testServ.GetByID(row.id,this.DomainName).subscribe((d)=>{
-      this.test=d
+    this.testServ.GetByID(row.id, this.DomainName).subscribe((d) => {
+      this.test = d
     })
     this.openModal();
   }
@@ -224,16 +226,41 @@ export class AdmissionTestComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == "Create") {
         this.testServ.Add(this.test, this.DomainName).subscribe(() => {
           this.GetAllData();
-          this.closeModal()
-        })
+          this.closeModal();
+          this.isLoading = false
+        },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       } if (this.mode == "Edit") {
         this.testServ.Edit(this.test, this.DomainName).subscribe(() => {
           this.GetAllData();
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
     }
   }
@@ -256,11 +283,11 @@ export class AdmissionTestComponent {
       if (this.test.hasOwnProperty(key)) {
         const field = key as keyof Test;
         if (!this.test[field]) {
-          if(field == "title" || field == "totalMark" || field == "subjectID" || field == "gradeID" || field == "academicYearID"){
+          if (field == "title" || field == "totalMark" || field == "subjectID" || field == "gradeID" || field == "academicYearID") {
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
           }
-        } 
+        }
       }
     }
     return isValid;
@@ -278,33 +305,33 @@ export class AdmissionTestComponent {
     }
   }
 
-   async onSearchEvent(event: { key: string; value: any }) {
-      this.key = event.key;
-      this.value = event.value;
-      try {
-        const data: Test[] = await firstValueFrom(
-          this.testServ.Get(this.DomainName)
-        );
-        this.Data = data || [];
-  
-        if (this.value !== '') {
-          const numericValue = isNaN(Number(this.value))
-            ? this.value
-            : parseInt(this.value, 10);
-  
-          this.Data = this.Data.filter((t) => {
-            const fieldValue = t[this.key as keyof typeof t];
-            if (typeof fieldValue === 'string') {
-              return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-            }
-            if (typeof fieldValue === 'number') {
-              return fieldValue === numericValue;
-            }
-            return fieldValue == this.value;
-          });
-        }
-      } catch (error) {
-        this.Data = [];
+  async onSearchEvent(event: { key: string; value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: Test[] = await firstValueFrom(
+        this.testServ.Get(this.DomainName)
+      );
+      this.Data = data || [];
+
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
+
+        this.Data = this.Data.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
       }
+    } catch (error) {
+      this.Data = [];
     }
+  }
 }

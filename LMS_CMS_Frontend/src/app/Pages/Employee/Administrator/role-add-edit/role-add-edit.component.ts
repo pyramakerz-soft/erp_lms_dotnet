@@ -52,6 +52,7 @@ export class RoleAddEditComponent {
   dataForEdit: PagesWithRoleId[] = []
   loading = true;
   validationErrors: { [key in keyof RolePut]?: string } = {};
+  isLoading=false
 
   constructor(public pageServ: PageService, public RoleDetailsServ: RoleDetailsService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, public RoleServ: RoleService, private router: Router) { }
 
@@ -276,6 +277,7 @@ export class RoleAddEditComponent {
   }
 
   Save() {
+    this.isLoading=true
     const resultItems = this.ResultArray.filter(item => item.IsSave === true);
     this.DataToSave.id = this.RoleId;
     this.DataToSave.name = this.RoleName
@@ -296,6 +298,7 @@ export class RoleAddEditComponent {
               this.router.navigateByUrl("Employee/Role")
             },
             error: (error) => {
+              this.isLoading=false
               const errorMessage = error?.error || 'An unexpected error occurred';
               Swal.fire({
                 icon: 'error',
@@ -313,7 +316,7 @@ export class RoleAddEditComponent {
             },
             error: (error) => {
               const errorMessage = error?.error || 'An unexpected error occurred';
-
+              this.isLoading=false
               Swal.fire({
                 icon: 'error',
                 title: 'Error',

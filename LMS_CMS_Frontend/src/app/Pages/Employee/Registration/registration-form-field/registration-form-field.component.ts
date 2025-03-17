@@ -57,6 +57,7 @@ export class RegistrationFormFieldComponent {
   keysArray: string[] = ['id', 'arName', 'enName', 'orderInForm'];
 
   validationErrors: { [key in keyof RegistrationCategory]?: string } = {};
+  isLoading = false
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -91,6 +92,7 @@ export class RegistrationFormFieldComponent {
   }
 
   GetAllData() {
+    this.Data = []
     this.CategoryServ.Get(this.DomainName).subscribe((d) => {
       this.Data = d;
     })
@@ -126,8 +128,8 @@ export class RegistrationFormFieldComponent {
 
   Edit(row: RegistrationCategory) {
     this.mode = 'Edit';
-    this.CategoryServ.GetByID(row.id,this.DomainName).subscribe((d)=>{
-      this.Category=d
+    this.CategoryServ.GetByID(row.id, this.DomainName).subscribe((d) => {
+      this.Category = d
     })
     this.openModal();
   }
@@ -145,16 +147,39 @@ export class RegistrationFormFieldComponent {
   CreateOREdit() {
     this.Category.registrationFormId = 1;
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == "Create") {
         this.CategoryServ.Add(this.Category, this.DomainName).subscribe(() => {
           this.GetAllData();
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          error => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       } if (this.mode == "Edit") {
         this.CategoryServ.Edit(this.Category, this.DomainName).subscribe(() => {
           this.GetAllData();
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          error => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
   }
@@ -222,13 +247,13 @@ export class RegistrationFormFieldComponent {
       this.Data = [];
     }
   }
-  
+
   validateNumber(event: any, field: keyof RegistrationCategory): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.Category[field] === 'string') {
-        this.Category[field] = '' as never;  
+        this.Category[field] = '' as never;
       }
     }
   }

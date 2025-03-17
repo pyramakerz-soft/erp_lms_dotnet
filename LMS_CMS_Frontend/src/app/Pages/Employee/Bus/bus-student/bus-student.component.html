@@ -313,9 +313,13 @@
         </div>
 
         <div class="flex justify-end">
-            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="SaveBusStudent()" >
-                Save Student
-            </button>
+            <button  
+            [disabled]="isLoading" 
+            class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" 
+            (click)="SaveBusStudent()">
+            <span *ngIf="!isLoading">Save</span>
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          </button>
         </div>
     </div>
 </div>

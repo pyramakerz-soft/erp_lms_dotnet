@@ -43,6 +43,7 @@ export class GradeComponent {
   UserID: number = 0;
   sectionId: number = 0;
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+  isLoading = false;
     
   constructor(public account: AccountService, public sectionService: SectionService, public gradeService: GradeService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
     private menuService: MenuService, public activeRoute: ActivatedRoute, public router:Router){}
@@ -83,6 +84,7 @@ export class GradeComponent {
   }
 
   getGradeData(){
+    this.gradeData=[]
     this.gradeService.GetBySectionId(this.sectionId, this.DomainName).subscribe(
       (data) => {
         this.gradeData = data;
@@ -217,6 +219,7 @@ export class GradeComponent {
 
   SaveGrade(){
     if(this.isFormValid()){
+      this.isLoading = true;
       this.grade.sectionID = this.sectionId
       this.checkFromToDate()
       if(this.checkFromToDate()){
@@ -224,9 +227,18 @@ export class GradeComponent {
           this.gradeService.Add(this.grade, this.DomainName).subscribe(
             (result: any) => {
               this.closeModal()
+              this.isLoading = false;
               this.getGradeData()
             },
             error => {
+              this.isLoading = false;
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Try Again Later!',
+                confirmButtonText: 'Okay',
+                customClass: { confirmButton: 'secondaryBg' },
+              });
             }
           );
         } else{
@@ -234,8 +246,18 @@ export class GradeComponent {
             (result: any) => {
               this.closeModal()
               this.getGradeData()
+              this.isLoading = false;
+
             },
             error => {
+              this.isLoading = false;
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Try Again Later!',
+                confirmButtonText: 'Okay',
+                customClass: { confirmButton: 'secondaryBg' },
+              });
             }
           );
         }  

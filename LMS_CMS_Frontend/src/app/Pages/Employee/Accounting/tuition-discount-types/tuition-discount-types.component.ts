@@ -59,8 +59,8 @@ export class TuitionDiscountTypesComponent {
   tuitionDiscountTypes: TuitionDiscountTypes = new TuitionDiscountTypes();
 
   validationErrors: { [key in keyof TuitionDiscountTypes]?: string } = {};
-  AccountNumbers:AccountingTreeChart[]=[];
-
+  AccountNumbers: AccountingTreeChart[] = [];
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -70,9 +70,9 @@ export class TuitionDiscountTypesComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
-    public tuitionServ :TuitionDiscountTypeService,
-    public accountServ:AccountingTreeChartService ,
+    public ApiServ: ApiService,
+    public tuitionServ: TuitionDiscountTypeService,
+    public accountServ: AccountingTreeChartService,
   ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -96,22 +96,23 @@ export class TuitionDiscountTypesComponent {
     this.GetAllAccount()
   }
 
-  GetAllData() { 
-    this.tuitionServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d;
+  GetAllData() {
+    this.TableData = []
+    this.tuitionServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d;
     })
 
   }
 
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(12,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(12, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
   Create() {
     this.mode = 'Create';
     this.tuitionDiscountTypes = new TuitionDiscountTypes();
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -126,7 +127,7 @@ export class TuitionDiscountTypesComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.tuitionServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.tuitionServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData()
         })
       }
@@ -135,10 +136,10 @@ export class TuitionDiscountTypesComponent {
 
   Edit(row: TuitionDiscountTypes) {
     this.mode = 'Edit';
-    this.tuitionServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.tuitionDiscountTypes=d
+    this.tuitionServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.tuitionDiscountTypes = d
     })
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -162,17 +163,40 @@ export class TuitionDiscountTypesComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.tuitionServ.Add(this.tuitionDiscountTypes,this.DomainName).subscribe((d)=>{
+        this.tuitionServ.Add(this.tuitionDiscountTypes, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
-        this.tuitionServ.Edit(this.tuitionDiscountTypes,this.DomainName).subscribe((d)=>{
+        this.tuitionServ.Edit(this.tuitionDiscountTypes, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal();
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
     this.GetAllData()
@@ -219,32 +243,32 @@ export class TuitionDiscountTypesComponent {
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
-      this.key = event.key;
-      this.value = event.value;
-      try {
-        const data: TuitionDiscountTypes[] = await firstValueFrom(
-          this.tuitionServ.Get(this.DomainName)
-        );
-        this.TableData = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: TuitionDiscountTypes[] = await firstValueFrom(
+        this.tuitionServ.Get(this.DomainName)
+      );
+      this.TableData = data || [];
 
-        if (this.value !== '') {
-          const numericValue = isNaN(Number(this.value))
-            ? this.value
-            : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-          this.TableData = this.TableData.filter((t) => {
-            const fieldValue = t[this.key as keyof typeof t];
-            if (typeof fieldValue === 'string') {
-              return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-            }
-            if (typeof fieldValue === 'number') {
-              return fieldValue === numericValue;
-            }
-            return fieldValue == this.value;
-          });
-        }
-      } catch (error) {
-        this.TableData = [];
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
       }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 }

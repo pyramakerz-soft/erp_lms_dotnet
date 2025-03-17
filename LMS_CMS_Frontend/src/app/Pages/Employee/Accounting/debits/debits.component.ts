@@ -26,7 +26,7 @@ import { AccountingTreeChartService } from '../../../../Services/Employee/Accoun
   styleUrl: './debits.component.css'
 })
 export class DebitsComponent {
- User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -55,12 +55,13 @@ export class DebitsComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' ,'accountNumberName'];
+  keysArray: string[] = ['id', 'name', 'accountNumberName'];
 
   debit: Debit = new Debit();
 
-  AccountNumbers:AccountingTreeChart[]=[];
+  AccountNumbers: AccountingTreeChart[] = [];
   validationErrors: { [key in keyof Debit]?: string } = {};
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -71,10 +72,10 @@ export class DebitsComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public DebitServ :DebitService,
-    public accountServ:AccountingTreeChartService ,
-  ) {}
-  
+    public DebitServ: DebitService,
+    public accountServ: AccountingTreeChartService,
+  ) { }
+
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -99,21 +100,21 @@ export class DebitsComponent {
 
   GetAllData() {
     this.TableData = []
-    this.DebitServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d;
+    this.DebitServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d;
     })
 
   }
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(3,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(3, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
 
   Create() {
     this.mode = 'Create';
     this.debit = new Debit();
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -128,17 +129,17 @@ export class DebitsComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.DebitServ.Delete(id,this.DomainName).subscribe((D)=>{
+        this.DebitServ.Delete(id, this.DomainName).subscribe((D) => {
           this.GetAllData();
         })
       }
     });
   }
 
-  Edit(id:number) {
+  Edit(id: number) {
     this.mode = 'Edit';
-    this.DebitServ.GetById(id,this.DomainName).subscribe((d)=>{
-      this.debit=d
+    this.DebitServ.GetById(id, this.DomainName).subscribe((d) => {
+      this.debit = d
     })
     this.openModal();
   }
@@ -163,17 +164,38 @@ export class DebitsComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.DebitServ.Add(this.debit,this.DomainName).subscribe((d)=>{
+        this.DebitServ.Add(this.debit, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
-        })
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       if (this.mode == 'Edit') {
-        this.DebitServ.Edit(this.debit,this.DomainName).subscribe((d)=>{
+        this.DebitServ.Edit(this.debit, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
-        })
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
     }
     this.GetAllData();
@@ -196,7 +218,7 @@ export class DebitsComponent {
         if (!this.debit[field]) {
           if (
             field == 'name' ||
-            field == 'accountNumberID' 
+            field == 'accountNumberID'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

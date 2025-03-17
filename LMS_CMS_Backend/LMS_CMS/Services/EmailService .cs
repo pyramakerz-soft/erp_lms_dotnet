@@ -1,31 +1,46 @@
-﻿using System.Net.Mail;
-using System.Net;
+﻿using System;
+using System.Threading.Tasks;
+using MimeKit;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 
 namespace LMS_CMS_PL.Services
 {
-    public class EmailService : IEmailService
+    public class EmailService 
     {
-        public async Task SendEmailAsync(string toEmail, string subject, string body)
+        private readonly string smtpHost = "smtp.gmail.com";
+        private readonly int smtpPort = 587;
+        private readonly string smtpUser = "your-email@gmail.com"; // Replace with your Gmail
+        private readonly string smtpPass = "abcdabcdefghijmnop"; // Replace with your App Password
+
+        public async Task SendEmailAsync(string fromEmail, string toEmail, string subject, string body)
         {
-            var smtpClient = new SmtpClient("smtp.example.com")
+            try
             {
-                Port = 587,
-                Credentials = new NetworkCredential("teasting.team616@gmail.com", "HMo127755"),
-                EnableSsl = true,
-            };
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Sender Name", fromEmail));
+                message.To.Add(new MailboxAddress("", toEmail));
+                message.Subject = subject;
 
-            var mailMessage = new MailMessage
+                var bodyBuilder = new BodyBuilder
+                {
+                    HtmlBody = body // Supports HTML emails
+                };
+                message.Body = bodyBuilder.ToMessageBody();
+
+                using var client = new MailKit.Net.Smtp.SmtpClient();
+
+                await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(smtpUser, smtpPass);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+
+                Console.WriteLine("✅ Email sent successfully!");
+            }
+            catch (Exception ex)
             {
-                From = new MailAddress("teasting.team616@gmail.com"),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true,
-            };
-
-            mailMessage.To.Add(toEmail);
-
-            await smtpClient.SendMailAsync(mailMessage);
+                Console.WriteLine($"❌ Email sending failed: {ex.Message}");
+            }
         }
     }
-
 }

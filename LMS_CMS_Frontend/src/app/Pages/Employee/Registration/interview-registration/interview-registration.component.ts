@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { InterviewState } from '../../../../Models/Registration/interview-state';
 import { InterviewStateService } from '../../../../Services/Employee/Registration/interview-state.service';
 import { TranslateModule } from '@ngx-translate/core';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-interview-registration',
@@ -32,6 +33,8 @@ export class InterviewRegistrationComponent {
   registrationFormInterview:RegistrationFormInterview = new RegistrationFormInterview()
   StateData:InterviewState[] = []
 
+  isLoading=false
+
   constructor(public ApiServ: ApiService, public activeRoute: ActivatedRoute, public router:Router, public interviewStateService: InterviewStateService,
     public interviewTimeTableService: InterviewTimeTableService, public registrationFormInterviewService: RegistrationFormInterviewService ){}
   
@@ -44,6 +47,7 @@ export class InterviewRegistrationComponent {
   }
 
   getRegistrationFormInterviewData(){
+    this.registrationFormInterviewData = []
     this.registrationFormInterviewService.GetRegistrationFormInterviewByInterviewID(this.interviewTimeID, this.DomainName).subscribe(
       (data) => {
         this.registrationFormInterviewData = data
@@ -97,12 +101,22 @@ export class InterviewRegistrationComponent {
   }
 
   Submit(){
+    this.isLoading=true
     this.registrationFormInterviewService.Edit(this.registrationFormInterview.id, this.registrationFormInterview.interviewStateID, this.DomainName).subscribe(
       (result: any) => {
         this.closeModal()
         this.getRegistrationFormInterviewData()
+        this.isLoading=false
       },
       error => {
+        this.isLoading=false
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Try Again Later!',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
       }
     );
   }

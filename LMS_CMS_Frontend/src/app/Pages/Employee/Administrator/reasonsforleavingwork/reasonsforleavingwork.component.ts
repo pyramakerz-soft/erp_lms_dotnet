@@ -151,8 +151,8 @@ export class ReasonsforleavingworkComponent {
   }
 
   CreateOREdit() {
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.mode == 'Create') {
         this.reasonServ
           .Add(this.reasonsforleavingwork, this.DomainName)

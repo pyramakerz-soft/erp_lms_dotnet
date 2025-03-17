@@ -179,8 +179,8 @@ export class SubjectCategoryComponent {
   }
 
   SaveSubjectCategory(){
-    this.isLoading = true;
     if(this.isFormValid()){
+      this.isLoading = true;
       if(this.editSubjectCategory == false){
         this.subjectCategoryService.Add(this.subjectCategory, this.DomainName).subscribe(
           (result: any) => {

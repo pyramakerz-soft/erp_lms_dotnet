@@ -60,6 +60,7 @@ export class IncomesComponent {
 
 
   validationErrors: { [key in keyof Income]?: string } = {};
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -70,7 +71,7 @@ export class IncomesComponent {
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
     public IncomeServ: IncomeService,
-    public accountServ:AccountingTreeChartService ,
+    public accountServ: AccountingTreeChartService,
 
   ) { }
   ngOnInit() {
@@ -96,20 +97,21 @@ export class IncomesComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.IncomeServ.Get(this.DomainName).subscribe((d) => {
       this.TableData = d;
     })
   }
 
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(7,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(7, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
   Create() {
     this.mode = 'Create';
     this.income = new Income();
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -134,10 +136,10 @@ export class IncomesComponent {
   Edit(row: Income) {
     this.mode = 'Edit';
     this.income = row;
-    this.IncomeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.income=d
+    this.IncomeServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.income = d
     })
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -161,20 +163,45 @@ export class IncomesComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.IncomeServ.Add(this.income,this.DomainName).subscribe(data => {
+        this.IncomeServ.Add(this.income, this.DomainName).subscribe(data => {
           this.GetAllData();
           this.closeModal();
-        });
+          this.isLoading = false
+
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       if (this.mode == 'Edit') {
-        this.IncomeServ.Edit(this.income,this.DomainName).subscribe(data => {
+        this.IncomeServ.Edit(this.income, this.DomainName).subscribe(data => {
           this.GetAllData();
           this.closeModal();
-        });
+          this.isLoading = false
+
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
-   }
-   this.GetAllData()
+    }
+    this.GetAllData()
   }
 
   closeModal() {

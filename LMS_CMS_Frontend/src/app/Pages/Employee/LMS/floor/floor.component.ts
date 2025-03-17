@@ -248,8 +248,8 @@ export class FloorComponent {
   }
 
   SaveFloor() {
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       this.floor.buildingID = this.buildingId;
       if (this.editFloor == false) {
         this.floorService.Add(this.floor, this.DomainName).subscribe(

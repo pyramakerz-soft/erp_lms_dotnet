@@ -151,8 +151,8 @@ export class DepartmentComponent {
   }
 
   CreateOREdit() {
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.mode == 'Create') {
         this.DepartmentServ.Add(this.department, this.DomainName).subscribe(
           (d) => {

@@ -222,8 +222,8 @@ export class SchoolComponent {
   }
 
   SaveSchool() {
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       this.schoolService.Edit(this.school, this.DomainName).subscribe(
         (result: any) => {
           this.closeModal();

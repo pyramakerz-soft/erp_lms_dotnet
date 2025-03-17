@@ -25,7 +25,7 @@ import { AccountingTreeChartService } from '../../../../Services/Employee/Accoun
   styleUrl: './tuition-fees-types.component.css'
 })
 export class TuitionFeesTypesComponent {
-User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -59,8 +59,8 @@ User_Data_After_Login: TokenData = new TokenData(
   tuitionFeesType: TuitionFeesType = new TuitionFeesType();
 
   validationErrors: { [key in keyof TuitionFeesType]?: string } = {};
-  AccountNumbers:AccountingTreeChart[]=[];
-  
+  AccountNumbers: AccountingTreeChart[] = [];
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -70,11 +70,11 @@ User_Data_After_Login: TokenData = new TokenData(
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
-    public TuitionFeesTypeServ :TuitionFeesTypeService,
-    public accountServ:AccountingTreeChartService ,
+    public ApiServ: ApiService,
+    public TuitionFeesTypeServ: TuitionFeesTypeService,
+    public accountServ: AccountingTreeChartService,
 
-  ) {}
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -98,21 +98,22 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   GetAllData() {
-    this.TuitionFeesTypeServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d
+    this.TableData = []
+    this.TuitionFeesTypeServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d
     })
   }
 
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(11,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(11, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
 
   Create() {
     this.mode = 'Create';
     this.tuitionFeesType = new TuitionFeesType();
-    this.validationErrors ={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -127,7 +128,7 @@ User_Data_After_Login: TokenData = new TokenData(
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.TuitionFeesTypeServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.TuitionFeesTypeServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData()
         })
       }
@@ -136,9 +137,9 @@ User_Data_After_Login: TokenData = new TokenData(
 
   Edit(row: TuitionFeesType) {
     this.mode = 'Edit';
-    this.validationErrors ={}
-    this.TuitionFeesTypeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.tuitionFeesType=d
+    this.validationErrors = {}
+    this.TuitionFeesTypeServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.tuitionFeesType = d
     })
     this.openModal();
   }
@@ -163,17 +164,41 @@ User_Data_After_Login: TokenData = new TokenData(
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
+
       if (this.mode == 'Create') {
-        this.TuitionFeesTypeServ.Add(this.tuitionFeesType,this.DomainName).subscribe((d)=>{
+        this.TuitionFeesTypeServ.Add(this.tuitionFeesType, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
-        this.TuitionFeesTypeServ.Edit(this.tuitionFeesType,this.DomainName).subscribe((d)=>{
+        this.TuitionFeesTypeServ.Edit(this.tuitionFeesType, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
     this.GetAllData()
@@ -188,23 +213,23 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   isFormValid(): boolean {
-     let isValid = true;
-       for (const key in this.tuitionFeesType) {
-         if (this.tuitionFeesType.hasOwnProperty(key)) {
-           const field = key as keyof TuitionFeesType;
-           if (!this.tuitionFeesType[field]) {
-             if (
-               field == 'name' ||
-               field == 'accountNumberID'
-             ) {
-               this.validationErrors[field] = `*${this.capitalizeField(
-                 field
-               )} is required`;
-               isValid = false;
-             }
-           }
-         }
-       }
+    let isValid = true;
+    for (const key in this.tuitionFeesType) {
+      if (this.tuitionFeesType.hasOwnProperty(key)) {
+        const field = key as keyof TuitionFeesType;
+        if (!this.tuitionFeesType[field]) {
+          if (
+            field == 'name' ||
+            field == 'accountNumberID'
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+      }
+    }
     return isValid;
   }
   capitalizeField(field: keyof TuitionFeesType): string {

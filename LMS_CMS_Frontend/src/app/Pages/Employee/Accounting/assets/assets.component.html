@@ -90,25 +90,28 @@
         <input type="text" class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2"
           [(ngModel)]="asset.name" placeholder="Enter Name" (ngModelChange)="
                 onInputValueChange({ field: 'name', value: $event })" />
-        <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors["name"]}}</span>
+        <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{
+          validationErrors["name"]}}</span>
       </div>
-        <div class="flex flex-col my-4">
-          <label class="mb-2 " for="Account Number">Account Number</label>
-          <select (ngModelChange)="onInputValueChange({ field: 'accountNumberID', value: $event })"
-            class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-full h-[45px]"  id="accountNumberID"
-            [(ngModel)]="asset.accountNumberID">
-            <option [value]="0" disabled selected hidden>Choose Account Number</option>
-            <option *ngFor="let num of AccountNumbers" [value]="num.id">{{ num.name }}</option>
-            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
-          </select>
-          <span *ngIf="validationErrors['accountNumberID']" class="text-red-500 ml-3 font-normal">{{
-            validationErrors['accountNumberID'] }}</span>
-        </div>
-        <div class="flex justify-end">
-          <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
-            Save
-          </button>
-        </div>
+      <div class="flex flex-col my-4">
+        <label class="mb-2 " for="Account Number">Account Number</label>
+        <select (ngModelChange)="onInputValueChange({ field: 'accountNumberID', value: $event })"
+          class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-full h-[45px]"
+          id="accountNumberID" [(ngModel)]="asset.accountNumberID">
+          <option [value]="0" disabled selected hidden>Choose Account Number</option>
+          <option *ngFor="let num of AccountNumbers" [value]="num.id">{{ num.name }}</option>
+          <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
+        </select>
+        <span *ngIf="validationErrors['accountNumberID']" class="text-red-500 ml-3 font-normal">{{
+          validationErrors['accountNumberID'] }}</span>
+      </div>
+      <div class="flex justify-end">
+        <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+          (click)="CreateOREdit()">
+          <span *ngIf="!isLoading">Save</span>
+          <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        </button>
+      </div>
     </div>
   </div>
 </div>

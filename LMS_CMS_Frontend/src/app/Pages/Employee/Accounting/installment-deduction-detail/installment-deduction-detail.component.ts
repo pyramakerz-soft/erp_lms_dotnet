@@ -50,14 +50,15 @@ export class InstallmentDeductionDetailComponent {
 
   employees: Employee[] = []
   students: Student[] = []
-  FeesType :TuitionFeesType[]=[]
+  FeesType: TuitionFeesType[] = []
 
   TableData: InstallmentDeductionDetail[] = []
-  Detail:InstallmentDeductionDetail =new InstallmentDeductionDetail()
-  MasterId :number =0;
-  editingRowId :any =0;
+  Detail: InstallmentDeductionDetail = new InstallmentDeductionDetail()
+  MasterId: number = 0;
+  editingRowId: any = 0;
 
-  IsOpenToAdd :boolean=false
+  IsOpenToAdd: boolean = false
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -69,10 +70,10 @@ export class InstallmentDeductionDetailComponent {
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
     public EmployeeServ: EmployeeService,
-    public StudentServ: StudentService ,
-    public installmentDeductionDetailServ :InstallmentDeductionDetailService ,
-    public installmentDeductionMasterServ :InstallmentDeductionMasterService ,
-    public TuitionFeesTypeServ :TuitionFeesTypeService
+    public StudentServ: StudentService,
+    public installmentDeductionDetailServ: InstallmentDeductionDetailService,
+    public installmentDeductionMasterServ: InstallmentDeductionMasterService,
+    public TuitionFeesTypeServ: TuitionFeesTypeService
   ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -84,18 +85,18 @@ export class InstallmentDeductionDetailComponent {
 
     this.MasterId = Number(this.activeRoute.snapshot.paramMap.get('id'))
 
-    if(!this.MasterId){
+    if (!this.MasterId) {
       this.mode = "Create"
-    }else{
+    } else {
       this.GetTableDataByID();
       this.GetMasterInfo();
     }
 
     this.activeRoute.url.subscribe(url => {
       this.path = url[0].path
-      if(url[1].path == "View"){ 
+      if (url[1].path == "View") {
         this.mode = "View"
-      } else if(url[1].path == "Edit"){ 
+      } else if (url[1].path == "Edit") {
         this.mode = "Edit"
       }
     });
@@ -110,7 +111,7 @@ export class InstallmentDeductionDetailComponent {
       }
     });
 
-    if(this.mode=="Create"){
+    if (this.mode == "Create") {
 
     }
     this.GetAllEmployees()
@@ -123,16 +124,39 @@ export class InstallmentDeductionDetailComponent {
   }
 
   Save() {
-    if(this.mode=="Create"){
-      this.installmentDeductionMasterServ.Add(this.Data,this.DomainName).subscribe((d)=>{
-       this.MasterId=d
-       this.router.navigateByUrl(`Employee/Installment Deduction Details/Edit/${this.MasterId}`)
-      })
+    this.isLoading = true
+    if (this.mode == "Create") {
+      this.installmentDeductionMasterServ.Add(this.Data, this.DomainName).subscribe((d) => {
+        this.MasterId = d
+        this.isLoading = false
+        this.router.navigateByUrl(`Employee/Installment Deduction Details/Edit/${this.MasterId}`)
+      },
+        err => {
+          this.isLoading = false
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
+        })
     }
-    if(this.mode=="Edit"){
-      this.installmentDeductionMasterServ.Edit(this.Data,this.DomainName).subscribe((d)=>{
+    if (this.mode == "Edit") {
+      this.installmentDeductionMasterServ.Edit(this.Data, this.DomainName).subscribe((d) => {
         this.GetMasterInfo()
-       })
+        this.isLoading = false
+      },
+        err => {
+          this.isLoading = false
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
+        })
     }
   }
 
@@ -148,42 +172,42 @@ export class InstallmentDeductionDetailComponent {
     })
   }
 
-  GetMasterInfo(){
-    this.installmentDeductionMasterServ.GetById(this.MasterId,this.DomainName).subscribe((d)=>{
-      this.Data=d
+  GetMasterInfo() {
+    this.installmentDeductionMasterServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
+      this.Data = d
     })
   }
 
-  GetTableDataByID(){
-    this.installmentDeductionDetailServ.GetByMasterId(this.MasterId,this.DomainName).subscribe((d)=>{
-      this.TableData=d;
+  GetTableDataByID() {
+    this.installmentDeductionDetailServ.GetByMasterId(this.MasterId, this.DomainName).subscribe((d) => {
+      this.TableData = d;
     })
   }
 
   AddDetail() {
-    this.IsOpenToAdd=true
+    this.IsOpenToAdd = true
   }
 
   Edit(id: number) {
-    this.editingRowId=id
+    this.editingRowId = id
   }
 
   Delete(id: number) {
-  Swal.fire({
-        title: 'Are you sure you want to delete this Installment Deduction Details?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#FF7519',
-        cancelButtonColor: '#17253E',
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.installmentDeductionDetailServ.Delete(id, this.DomainName).subscribe((D) => {
-            this.GetTableDataByID();
-          })
-        }
-      });
+    Swal.fire({
+      title: 'Are you sure you want to delete this Installment Deduction Details?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#17253E',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.installmentDeductionDetailServ.Delete(id, this.DomainName).subscribe((D) => {
+          this.GetTableDataByID();
+        })
+      }
+    });
   }
 
   IsAllowDelete(InsertedByID: number) {
@@ -204,28 +228,28 @@ export class InstallmentDeductionDetailComponent {
     return IsAllow;
   }
 
-  GetAllTuitionFeesType(){
-    this.TuitionFeesTypeServ.Get(this.DomainName).subscribe((d)=>{
-      this.FeesType=d
+  GetAllTuitionFeesType() {
+    this.TuitionFeesTypeServ.Get(this.DomainName).subscribe((d) => {
+      this.FeesType = d
     })
   }
 
-  SaveRow(){
-    this.Detail.installmentDeductionMasterID=this.MasterId
-    this.installmentDeductionDetailServ.Add(this.Detail,this.DomainName).subscribe((d)=>{
+  SaveRow() {
+    this.Detail.installmentDeductionMasterID = this.MasterId
+    this.installmentDeductionDetailServ.Add(this.Detail, this.DomainName).subscribe((d) => {
       this.GetTableDataByID();
     })
-    this.IsOpenToAdd=false
-    this.Detail=new InstallmentDeductionDetail()
+    this.IsOpenToAdd = false
+    this.Detail = new InstallmentDeductionDetail()
   }
 
-  CancelAdd(){
-    this.IsOpenToAdd=false
+  CancelAdd() {
+    this.IsOpenToAdd = false
   }
 
-  SaveEdit(row:InstallmentDeductionDetail){
+  SaveEdit(row: InstallmentDeductionDetail) {
     this.editingRowId = null;
-    this.installmentDeductionDetailServ.Edit(row,this.DomainName).subscribe((d)=>{
+    this.installmentDeductionDetailServ.Edit(row, this.DomainName).subscribe((d) => {
       this.GetTableDataByID();
     })
   }

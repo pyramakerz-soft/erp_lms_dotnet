@@ -23,16 +23,17 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { Student } from '../../../../Models/student';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-accounting-student-edit',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './accounting-student-edit.component.html',
   styleUrl: './accounting-student-edit.component.css'
 })
 export class AccountingStudentEditComponent {
- User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
+  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
@@ -51,10 +52,10 @@ export class AccountingStudentEditComponent {
   key: string = 'id';
   value: any = '';
   keysArray: string[] = ['id', 'name', 'accountNumberName'];
-  AccountNumbers:AccountingTreeChart[]=[];
-  StudentId:number =1;
-  nationalities:Nationality[]=[]
-
+  AccountNumbers: AccountingTreeChart[] = [];
+  StudentId: number = 1;
+  nationalities: Nationality[] = []
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -64,12 +65,12 @@ export class AccountingStudentEditComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
+    public ApiServ: ApiService,
     public EmployeeServ: EmployeeService,
-    public accountServ:AccountingTreeChartService ,
-    public StudentServ:StudentService,
-    public NationalityServ :NationalityService ,
-  ) {}
+    public accountServ: AccountingTreeChartService,
+    public StudentServ: StudentService,
+    public NationalityServ: NationalityService,
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -94,35 +95,44 @@ export class AccountingStudentEditComponent {
   }
 
   GetAllData() {
-   this.StudentServ.GetByID(this.StudentId,this.DomainName).subscribe((d:any)=>{
-    this.Data=d;
-    this.StudentId = Number(this.activeRoute.snapshot.paramMap.get('id'))
-   })
+    this.StudentServ.GetByID(this.StudentId, this.DomainName).subscribe((d: any) => {
+      this.Data = d;
+      this.StudentId = Number(this.activeRoute.snapshot.paramMap.get('id'))
+    })
   }
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(13,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(13, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
 
-  GetAllNationalitys(){
-    this.NationalityServ.Get().subscribe((d)=>{
-      this.nationalities=d;
+  GetAllNationalitys() {
+    this.NationalityServ.Get().subscribe((d) => {
+      this.nationalities = d;
     });
   }
 
 
-  moveToEmployee(){
+  moveToEmployee() {
     this.router.navigateByUrl(`Employee/Student Accounting`)
   }
-  Save(){
-   this.StudentServ.EditAccountingEmployee(this.Data,this.DomainName).subscribe((d)=>{
-    this.GetAllData();
-    this.router.navigateByUrl(`Employee/Student Accounting`)
-   })
+  Save() {
+    this.isLoading = true
+    this.StudentServ.EditAccountingEmployee(this.Data, this.DomainName).subscribe((d) => {
+      this.GetAllData();
+      this.router.navigateByUrl(`Employee/Student Accounting`)
+      this.isLoading = false
+    },
+      err => {
+        this.isLoading = false
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Try Again Later!',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
+      })
   }
- 
-
-
 }
 

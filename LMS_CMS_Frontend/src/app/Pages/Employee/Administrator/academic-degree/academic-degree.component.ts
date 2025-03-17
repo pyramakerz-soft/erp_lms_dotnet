@@ -150,8 +150,8 @@ export class AcademicDegreeComponent {
   }
 
   CreateOREdit() {
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.mode == 'Create') {
         this.AcademicDegreeServ.Add(
           this.academicDegree,

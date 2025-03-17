@@ -110,19 +110,12 @@ namespace LMS_CMS
             /// 2)
             builder.Services.AddCors(option =>
             {
-                //option.AddPolicy(txt, builder => {
-                //    builder.AllowAnyOrigin();
-                //    builder.AllowAnyMethod();
-                //    builder.AllowAnyHeader();
-                //    builder.WithHeaders("domain-name", "content-type", "Domain-Name");
-                //});
-
-                option.AddPolicy("AllowSpecificOrigin", builder =>
+                option.AddPolicy(txt, builder =>
                 {
-                    builder.AllowAnyOrigin()  
-                           .AllowAnyMethod()  
-                           .AllowAnyHeader()  
-                           .WithHeaders( "content-type", "Domain-Name");  
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .WithHeaders("content-type", "Domain-Name");
                 });
             });
 
@@ -153,22 +146,20 @@ namespace LMS_CMS
 
             var app = builder.Build();
 
+
+            /// 1) For DB Check
+            app.UseMiddleware<DbConnection_Check_Middleware>(); 
+
+            /// 3)
+            app.UseCors(txt); 
+
             ///////// send files
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
-                RequestPath = "/uploads"
+                RequestPath = "/Uploads"
             });
-
-
-            /// 1) For DB Check
-            app.UseMiddleware<DbConnection_Check_Middleware>();
-            app.UseCors("AllowSpecificOrigin");
-
-            /// 3)
-            app.UseCors(txt);
-
 
             //////// Authentication
             app.UseAuthentication();

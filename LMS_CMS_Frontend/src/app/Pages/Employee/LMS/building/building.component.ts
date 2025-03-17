@@ -227,8 +227,8 @@ export class BuildingComponent {
   }
 
   SaveBuilding() {
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.editBuilding == false) {
         this.buildingService.Add(this.building, this.DomainName).subscribe(
           (result: any) => {

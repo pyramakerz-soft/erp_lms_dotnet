@@ -86,10 +86,11 @@ export class AccountingEmployeeEditComponent {
   EndDate: boolean = false;
   emplyeeStudent: EmplyeeStudent = new EmplyeeStudent();
   TableData: EmplyeeStudent[] = [];
-  Student:Student=new Student();
-  NationalID : string ="";
+  Student: Student = new Student();
+  NationalID: string = "";
 
   selectedDays: { id: number; name: string }[] = [];
+  isLoading = false
 
   isDropdownOpen = false;
 
@@ -228,10 +229,22 @@ export class AccountingEmployeeEditComponent {
 
   Save() {
     this.getFormattedTime()
+    this.isLoading = true
     this.employeeServ.EditAccountingEmployee(this.Data, this.DomainName).subscribe((d) => {
       this.GetAllData();
       this.router.navigateByUrl(`Employee/Employee Accounting`)
-    });
+      this.isLoading = false
+    },
+      err => {
+        this.isLoading = false
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Try Again Later!',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
+      })
   }
 
   onIsActiveChange(event: Event) {
@@ -313,12 +326,12 @@ export class AccountingEmployeeEditComponent {
 
   CreateOREdit() {
     if (this.emplyeeStudent.studentID != 0) {
-     var EmployeeStudent=new EmplyeeStudent()
-     EmployeeStudent.studentName= this.Student.user_Name;
-     EmployeeStudent.studentID=this.emplyeeStudent.id;
-     this.TableData.push(EmployeeStudent)
-     this.Data.students.push(this.emplyeeStudent.studentID)
-     this.closeModal()
+      var EmployeeStudent = new EmplyeeStudent()
+      EmployeeStudent.studentName = this.Student.user_Name;
+      EmployeeStudent.studentID = this.emplyeeStudent.id;
+      this.TableData.push(EmployeeStudent)
+      this.Data.students.push(this.emplyeeStudent.studentID)
+      this.closeModal()
     }
     else {
       Swal.fire({
@@ -340,26 +353,27 @@ export class AccountingEmployeeEditComponent {
 
   Create() {
     this.mode = 'Create';
-    this.Student=new Student()
-    this.NationalID=""
+    this.Student = new Student()
+    this.NationalID = ""
     this.emplyeeStudent = new EmplyeeStudent()
     this.openModal();
   }
 
-  DeleteChild(id:number){
+  DeleteChild(id: number) {
     this.TableData = this.TableData.filter((student) => student.id !== id);
-    this.Data.students = this.Data.students.filter((id) => id !== id);  }
+    this.Data.students = this.Data.students.filter((id) => id !== id);
+  }
 
   validateNumber(event: any, field?: keyof AccountingEmployee): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
-      if(field){
+      event.target.value = '';
+      if (field) {
         if (typeof this.Data[field] === 'string') {
-          this.Data[field] = '' as never;  
-        } 
+          this.Data[field] = '' as never;
+        }
       }
     }
-  } 
+  }
 }
 

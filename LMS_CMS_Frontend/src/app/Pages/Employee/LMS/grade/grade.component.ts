@@ -218,8 +218,8 @@ export class GradeComponent {
   }
 
   SaveGrade(){
-    this.isLoading = true;
     if(this.isFormValid()){
+      this.isLoading = true;
       this.grade.sectionID = this.sectionId
       this.checkFromToDate()
       if(this.checkFromToDate()){

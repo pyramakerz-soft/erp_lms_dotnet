@@ -376,21 +376,23 @@ export class PayableDetailsComponent {
         console.error("Page body not found!");
         return;
     }
- 
-    document.querySelectorAll('.no-print').forEach(el => {
-      (el as HTMLElement).style.display = 'none';
-    }); 
 
-    html2pdf().from(orderElement).set({
-        margin: 10,
-        filename: `Payable_${this.PayableID}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, allowTaint: true },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-    }).save().then(() => { 
-      document.querySelectorAll('.no-print').forEach(el => {
-            (el as HTMLElement).style.display = '';
-        }); 
+    document.querySelectorAll('.no-print').forEach(el => {
+        (el as HTMLElement).style.display = 'none';
     });
+
+    setTimeout(() => {
+        html2pdf().from(orderElement).set({
+            margin: 10,
+            filename: `Payable_${this.PayableID}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+        }).save().then(() => {
+            document.querySelectorAll('.no-print').forEach(el => {
+                (el as HTMLElement).style.display = '';
+            });
+        });
+    }, 500);
   } 
 }

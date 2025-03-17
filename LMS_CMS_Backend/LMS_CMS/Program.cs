@@ -100,7 +100,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<GenerateJWTService>();
             builder.Services.AddScoped<FileImageValidationService>();
             builder.Services.AddScoped<CancelInterviewDayMessageService>();
-            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped< EmailService>();
             builder.Services.AddScoped<GenerateBarCodeEan13>(); 
             builder.Services.AddScoped<CheckPageAccessService>(); 
             builder.Services.AddScoped<InVoiceNumberCreate>();

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { StockingDetails } from '../../../Models/Inventory/stocking-details';
 import { Store } from '../../../Models/Inventory/store';
 import { ApiService } from '../../api.service';
+import { ShopItem } from '../../../Models/Inventory/shop-item';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +92,18 @@ export class StockingDetailsService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
     return this.http.get<number>(`${this.baseUrl}/StockingDetails/${StoreId}/${ShopItemId}/${date}`, { headers })
+  }
+
+  GetCurrentStockForAllItems(StoreId: number,CategoryId:number ,date :string , DomainName: string) {
+    if (DomainName != null) {  
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<ShopItem[]>(`${this.baseUrl}/StockingDetails/CurrentStockByCategoryId/${StoreId}/${CategoryId}/${date}`, { headers })
   }
 
 }

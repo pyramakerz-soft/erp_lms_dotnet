@@ -20,7 +20,7 @@ import { firstValueFrom } from 'rxjs';
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
   templateUrl: './department.component.html',
-  styleUrl: './department.component.css'
+  styleUrl: './department.component.css',
 })
 export class DepartmentComponent {
   User_Data_After_Login: TokenData = new TokenData(
@@ -57,6 +57,7 @@ export class DepartmentComponent {
   department: Department = new Department();
 
   validationErrors: { [key in keyof Department]?: string } = {};
+  isLoading = false;
 
   constructor(
     private router: Router,
@@ -68,7 +69,7 @@ export class DepartmentComponent {
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
     public DepartmentServ: DepartmentService
-  ) { }
+  ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -91,16 +92,17 @@ export class DepartmentComponent {
   }
 
   GetAllData() {
+    this.TableData = [];
     this.DepartmentServ.Get(this.DomainName).subscribe((d) => {
-      this.TableData = d
-    })
+      this.TableData = d;
+    });
   }
 
   Create() {
     this.mode = 'Create';
     this.department = new Department();
     this.openModal();
-    this.validationErrors = {}
+    this.validationErrors = {};
   }
 
   Delete(id: number) {
@@ -115,8 +117,8 @@ export class DepartmentComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.DepartmentServ.Delete(id, this.DomainName).subscribe((d) => {
-          this.GetAllData()
-        })
+          this.GetAllData();
+        });
       }
     });
   }
@@ -124,9 +126,9 @@ export class DepartmentComponent {
   Edit(row: Department) {
     this.mode = 'Edit';
     this.DepartmentServ.GetById(row.id, this.DomainName).subscribe((d) => {
-      this.department = d
-    })
-    this.validationErrors = {}
+      this.department = d;
+    });
+    this.validationErrors = {};
     this.openModal();
   }
 
@@ -150,20 +152,47 @@ export class DepartmentComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.mode == 'Create') {
-        this.DepartmentServ.Add(this.department, this.DomainName).subscribe((d) => {
-          this.GetAllData()
-          this.closeModal()
-        })
+        this.DepartmentServ.Add(this.department, this.DomainName).subscribe(
+          (d) => {
+            this.GetAllData();
+            this.isLoading = false;
+            this.closeModal();
+          },
+          (error) => {
+            this.isLoading = false; // Hide spinner
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
       if (this.mode == 'Edit') {
-        this.DepartmentServ.Edit(this.department, this.DomainName).subscribe((d) => {
-          this.GetAllData()
-          this.closeModal()
-        })
+        this.DepartmentServ.Edit(this.department, this.DomainName).subscribe(
+          (d) => {
+            this.GetAllData();
+            this.isLoading = false;
+            this.closeModal();
+          },
+          (error) => {
+            this.isLoading = false; // Hide spinner
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
     }
-    this.GetAllData()
+    this.GetAllData();
   }
 
   closeModal() {
@@ -180,9 +209,7 @@ export class DepartmentComponent {
       if (this.department.hasOwnProperty(key)) {
         const field = key as keyof Department;
         if (!this.department[field]) {
-          if (
-            field == 'name'
-          ) {
+          if (field == 'name') {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
             )} is required`;

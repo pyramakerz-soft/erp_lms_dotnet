@@ -20,6 +20,7 @@ import { LinkFile } from '../../../../Models/Accounting/link-file';
 import { LinkFileService } from '../../../../Services/Employee/Accounting/link-file.service';
 import { DataAccordingToLinkFileService } from '../../../../Services/Employee/Accounting/data-according-to-link-file.service';
 import Swal from 'sweetalert2';
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-receivable-details',
@@ -34,7 +35,7 @@ export class ReceivableDetailsComponent {
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
-  AllowDeleteForOthers: boolean = false; 
+  AllowDeleteForOthers: boolean = false;
 
   DomainName: string = '';
   UserID: number = 0;
@@ -42,35 +43,36 @@ export class ReceivableDetailsComponent {
   path: string = '';
   ReceivableID: number = 0;
 
-  isCreate:boolean = false
-  isEdit:boolean = false
-  isView:boolean = false
+  isCreate: boolean = false
+  isEdit: boolean = false
+  isView: boolean = false
 
-  receivable:Receivable = new Receivable()
+  receivable: Receivable = new Receivable()
   validationErrors: { [key in keyof Receivable]?: string } = {};
   validationErrorsForDetails: { [key in keyof ReceivableDetails]?: string } = {};
-  
+
   dataTypesData: ReceivableDocType[] = []
   bankOrSaveData: any[] = []
   receivableDetailsData: ReceivableDetails[] = []
-  newDetails:ReceivableDetails = new ReceivableDetails()
+  newDetails: ReceivableDetails = new ReceivableDetails()
   linkFilesData: LinkFile[] = []
   linkFileTypesData: any[] = []
   totalAmount: number = 0;
 
-  isNewDetails:boolean = false
-  isDetailsValid:boolean = false
+  isNewDetails: boolean = false
+  isDetailsValid: boolean = false
 
   editingRowId: number | null = null;
-  editedRowData:ReceivableDetails = new ReceivableDetails()
+  editedRowData: ReceivableDetails = new ReceivableDetails()
+  isLoading = false
 
   constructor(
-    private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public receivableDocTypeService:ReceivableDocTypeService,
-    public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public receivableService:ReceivableService,
-    public bankService:BankService, public saveService:SaveService, public receivableDetailsService:ReceivableDetailsService, public linkFileService:LinkFileService,
-    public dataAccordingToLinkFileService: DataAccordingToLinkFileService){}
-  
-  ngOnInit(){
+    private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public receivableDocTypeService: ReceivableDocTypeService,
+    public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public receivableService: ReceivableService,
+    public bankService: BankService, public saveService: SaveService, public receivableDetailsService: ReceivableDetailsService, public linkFileService: LinkFileService,
+    public dataAccordingToLinkFileService: DataAccordingToLinkFileService) { }
+
+  ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
 
@@ -78,24 +80,24 @@ export class ReceivableDetailsComponent {
 
     this.ReceivableID = Number(this.activeRoute.snapshot.paramMap.get('id'))
 
-    if(!this.ReceivableID){
+    if (!this.ReceivableID) {
       this.isCreate = true
-    }else{
+    } else {
       this.GetReceivableByID()
       this.GetReceivableDetails()
     }
 
     this.activeRoute.url.subscribe(url => {
       this.path = url[0].path
-      if(url[1].path == "View"){ 
+      if (url[1].path == "View") {
         this.isView = true
-      } else{
-        if(this.ReceivableID){
+      } else {
+        if (this.ReceivableID) {
           this.isEdit = true
         }
-      } 
+      }
     });
- 
+
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
@@ -112,22 +114,23 @@ export class ReceivableDetailsComponent {
   moveToReceivable() {
     this.router.navigateByUrl("Employee/Receivable")
   }
-  
-  GetDocType(){
+
+  GetDocType() {
+    this.dataTypesData = []
     this.receivableDocTypeService.Get(this.DomainName).subscribe(
       (data) => {
         this.dataTypesData = data
       }
     )
   }
-  
-  GetReceivableByID(){
+
+  GetReceivableByID() {
     this.receivableService.GetByID(this.ReceivableID, this.DomainName).subscribe(
       (data) => {
         this.receivable = data
-        if(this.receivable.linkFileID==5){
-          this.getSaveData() 
-        } else if(this.receivable.linkFileID==6){
+        if (this.receivable.linkFileID == 5) {
+          this.getSaveData()
+        } else if (this.receivable.linkFileID == 6) {
           this.getBankData()
         }
       }
@@ -142,16 +145,16 @@ export class ReceivableDetailsComponent {
       }
     )
   }
-  
+
   getSaveData() {
-    this.bankOrSaveData = [] 
+    this.bankOrSaveData = []
     this.saveService.Get(this.DomainName).subscribe(
       (data) => {
         this.bankOrSaveData = data
       }
     )
   }
-  
+
   IsAllowDelete(InsertedByID: number) {
     const IsAllow = this.EditDeleteServ.IsAllowDelete(InsertedByID, this.UserID, this.AllowDeleteForOthers);
     return IsAllow;
@@ -172,11 +175,11 @@ export class ReceivableDetailsComponent {
       if (this.receivable.hasOwnProperty(key)) {
         const field = key as keyof Receivable;
         if (!this.receivable[field]) {
-          if(field == "receivableDocTypesID" || field == "linkFileID" || field == "bankOrSaveID" || field == "date"){
+          if (field == "receivableDocTypesID" || field == "linkFileID" || field == "bankOrSaveID" || field == "date") {
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
           }
-        } else { 
+        } else {
           this.validationErrors[field] = '';
         }
       }
@@ -191,7 +194,7 @@ export class ReceivableDetailsComponent {
       this.validationErrors[field] = '';
     }
 
-    if(field == "linkFileID"){
+    if (field == "linkFileID") {
       this.receivable.bankOrSaveID = 0
     }
   }
@@ -202,26 +205,26 @@ export class ReceivableDetailsComponent {
     if (value) {
       this.validationErrorsForDetails[field] = '';
     }
-    if(field == "linkFileID"){
+    if (field == "linkFileID") {
       this.newDetails.linkFileTypeID = 0
     }
-    
-    if((this.newDetails.amount || this.editedRowData.amount) &&  
-    (!isNaN(this.newDetails.amount?this.newDetails.amount:0) && !isNaN(this.editedRowData.amount?this.editedRowData.amount:0)) && 
-    (this.newDetails.linkFileID || this.editedRowData.linkFileID) && 
-    (this.newDetails.linkFileTypeID || this.editedRowData.linkFileTypeID)){
+
+    if ((this.newDetails.amount || this.editedRowData.amount) &&
+      (!isNaN(this.newDetails.amount ? this.newDetails.amount : 0) && !isNaN(this.editedRowData.amount ? this.editedRowData.amount : 0)) &&
+      (this.newDetails.linkFileID || this.editedRowData.linkFileID) &&
+      (this.newDetails.linkFileTypeID || this.editedRowData.linkFileTypeID)) {
       this.isDetailsValid = true
-    } else{
+    } else {
       this.isDetailsValid = false
-    } 
+    }
   }
 
   validateNumberReceivable(event: any, field: keyof Receivable): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.receivable[field] === 'string') {
-        this.receivable[field] = '' as never;  
+        this.receivable[field] = '' as never;
       }
     }
   }
@@ -229,9 +232,9 @@ export class ReceivableDetailsComponent {
   validateNumberDetails(event: any, field: keyof ReceivableDetails): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.newDetails[field] === 'string') {
-        this.newDetails[field] = '' as never;  
+        this.newDetails[field] = '' as never;
       }
     }
   }
@@ -239,26 +242,50 @@ export class ReceivableDetailsComponent {
   validateNumberEditDetails(event: any, field: keyof ReceivableDetails): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.editedRowData[field] === 'string') {
-        this.editedRowData[field] = '' as never;  
+        this.editedRowData[field] = '' as never;
       }
     }
   }
 
   Save() {
-    if(this.isFormValid()){ 
-      if(this.isCreate){
+    if (this.isFormValid()) {
+      this.isLoading = true
+      if (this.isCreate) {
         this.receivableService.Add(this.receivable, this.DomainName).subscribe(
           (data) => {
             let id = JSON.parse(data).id
             this.router.navigateByUrl(`Employee/Receivable Details/${id}`)
+            this.isLoading = false
+          },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
           }
         )
-      } else if(this.isEdit){
+      } else if (this.isEdit) {
+        this.isLoading = false
         this.receivableService.Edit(this.receivable, this.DomainName).subscribe(
           (data) => {
             this.GetReceivableByID()
+            this.isLoading = false
+          },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
           }
         )
       }
@@ -266,28 +293,30 @@ export class ReceivableDetailsComponent {
   }
 
 
-  GetReceivableDetails(){
+  GetReceivableDetails() {
+    this.receivableDetailsData = []
     this.receivableDetailsService.Get(this.DomainName, this.ReceivableID).subscribe(
       (data) => {
         this.receivableDetailsData = data
         let total = 0
         this.receivableDetailsData.forEach(element => {
-          total = total + (element.amount?element.amount:0)
+          total = total + (element.amount ? element.amount : 0)
         });
         this.totalAmount = total
       }
     )
   }
-  
-  GetLinkFiles(){
+
+  GetLinkFiles() {
     this.linkFileService.Get(this.DomainName).subscribe(
       (data) => {
         this.linkFilesData = data
       }
     )
   }
-  
-  GetLinkFilesTypeData(){
+
+  GetLinkFilesTypeData() {
+    this.linkFileTypesData = []
     this.dataAccordingToLinkFileService.Get(this.DomainName, +this.newDetails.linkFileID).subscribe(
       (data) => {
         this.linkFileTypesData = data
@@ -295,28 +324,28 @@ export class ReceivableDetailsComponent {
     )
   }
 
-  AddReceivableDetails(){
+  AddReceivableDetails() {
     this.isDetailsValid = false
-    this.editingRowId = null; 
-    this.editedRowData = new ReceivableDetails(); 
+    this.editingRowId = null;
+    this.editedRowData = new ReceivableDetails();
     this.isNewDetails = true
     this.GetLinkFiles()
   }
-  
-  SaveNewDetails(){
+
+  SaveNewDetails() {
     this.newDetails.receivableMasterID = this.ReceivableID
     this.receivableDetailsService.Add(this.newDetails, this.DomainName).subscribe(
       (data) => {
         this.isNewDetails = false
         this.newDetails = new ReceivableDetails()
         this.GetReceivableDetails()
-        this.editingRowId = null; 
-        this.editedRowData = new ReceivableDetails(); 
+        this.editingRowId = null;
+        this.editedRowData = new ReceivableDetails();
         this.isDetailsValid = false
       }
     )
   }
-  
+
   EditDetail(row: ReceivableDetails) {
     this.isNewDetails = false
     this.isDetailsValid = true
@@ -324,28 +353,28 @@ export class ReceivableDetailsComponent {
     this.GetLinkFiles()
     this.editingRowId = row.id
     this.editedRowData = { ...row }
-    if(this.editedRowData.linkFileID){
+    if (this.editedRowData.linkFileID) {
       this.dataAccordingToLinkFileService.Get(this.DomainName, +this.editedRowData.linkFileID).subscribe(
         (data) => {
           this.linkFileTypesData = data
         }
       )
     }
- 
+
   }
 
   SaveEditedDetail() {
     this.receivableDetailsService.Edit(this.editedRowData, this.DomainName).subscribe(
-      (data) =>{
-        this.editingRowId = null; 
-        this.editedRowData = new ReceivableDetails(); 
+      (data) => {
+        this.editingRowId = null;
+        this.editedRowData = new ReceivableDetails();
         this.isDetailsValid = false
         this.isNewDetails = false
         this.newDetails = new ReceivableDetails()
         this.GetReceivableDetails()
       }
     )
-  } 
+  }
 
   DeleteDetail(id: number) {
     Swal.fire({
@@ -366,4 +395,31 @@ export class ReceivableDetailsComponent {
       }
     });
   }
+
+  DownloadData() { 
+    let orderElement = document.getElementById('DataToDownload');
+
+    if (!orderElement) {
+        console.error("Page body not found!");
+        return;
+    }
+
+    document.querySelectorAll('.no-print').forEach(el => {
+        (el as HTMLElement).style.display = 'none';
+    });
+
+    setTimeout(() => {
+        html2pdf().from(orderElement).set({
+            margin: 10,
+            filename: `Receivable_${this.ReceivableID}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+        }).save().then(() => {
+            document.querySelectorAll('.no-print').forEach(el => {
+                (el as HTMLElement).style.display = '';
+            });
+        });
+    }, 500);
+  } 
 }

@@ -65,6 +65,7 @@ export class ShopItemsAddEditComponent {
   Categories: Category[] = []
   InventorySubCategories: SubCategory[] = []
   gender: Gender[] = []
+  isLoading=false
 
   constructor(
     private router: Router, 
@@ -208,11 +209,12 @@ export class ShopItemsAddEditComponent {
     }
     
     if (this.isFormValid()) { 
+      this.isLoading=true
       if (this.mode == 'Create') {
         this.shopItemService.Add(this.ShopItem, this.DomainName).subscribe(
           data => {
             this.router.navigateByUrl(`Employee/Shop`)
-
+            this.isLoading=false
             Swal.fire({
               title: "Added Successfully!",
               icon: "success"
@@ -220,6 +222,7 @@ export class ShopItemsAddEditComponent {
           }, 
           err => { 
             if(err.error == "BarCode Must Be unique"){
+            this.isLoading=false
               Swal.fire({
                 title: "BarCode Must Be unique",
                 text: "Please change the BarCode",
@@ -233,13 +236,14 @@ export class ShopItemsAddEditComponent {
         this.shopItemService.Edit(this.ShopItem, this.DomainName).subscribe(
           data => {
             this.router.navigateByUrl(`Employee/Shop`) 
-            
+            this.isLoading=false
             Swal.fire({
               title: "Edited Successfully!",
               icon: "success"
             });
           }, 
           err => {
+            this.isLoading=false
             if(err.error == "BarCode Must Be unique"){
               Swal.fire({
                 title: "BarCode Must Be unique",

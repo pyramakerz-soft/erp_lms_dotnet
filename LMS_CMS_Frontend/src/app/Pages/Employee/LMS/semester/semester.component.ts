@@ -45,6 +45,7 @@ export class SemesterComponent {
   UserID: number = 0;
   academicYearId: number = 0;
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+  isLoading = false;
   
   constructor(public account: AccountService, public semesterService: SemesterService, public acadimicYearService: AcadimicYearService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
     private menuService: MenuService, public activeRoute: ActivatedRoute, public router:Router){}
@@ -85,6 +86,7 @@ export class SemesterComponent {
   }
 
   getSemesterData(){
+    this.semesterData=[]
     this.semesterService.GetByAcademicYearId(this.academicYearId, this.DomainName).subscribe(
       (data) => {
         this.semesterData = data;
@@ -223,15 +225,25 @@ export class SemesterComponent {
 
   SaveSemester(){
     if(this.isFormValid()){
+      this.isLoading = true;
       this.semester.academicYearID = this.academicYearId
       if(this.checkFromToDate()){
         if(this.editSemester == false){
           this.semesterService.Add(this.semester, this.DomainName).subscribe(
             (result: any) => {
               this.closeModal()
+              this.isLoading = false;
               this.getSemesterData()
             },
             error => {
+              this.isLoading = false;
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Try Again Later!',
+                confirmButtonText: 'Okay',
+                customClass: { confirmButton: 'secondaryBg' },
+              });
             }
           );
         } else{
@@ -239,8 +251,17 @@ export class SemesterComponent {
             (result: any) => {
               this.closeModal()
               this.getSemesterData()
+              this.isLoading = false;
             },
             error => {
+              this.isLoading = false;
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Try Again Later!',
+                confirmButtonText: 'Okay',
+                customClass: { confirmButton: 'secondaryBg' },
+              });
             }
           );
         }  

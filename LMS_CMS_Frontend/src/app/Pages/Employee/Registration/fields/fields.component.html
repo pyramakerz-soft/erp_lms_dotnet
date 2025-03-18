@@ -27,8 +27,8 @@
         <div class="flex justify-between items-center ">
             <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="Create()"
-            class="rounded-lg secondaryBg text-white px-4 py-3 flex items-center justify-center gap-2">
-            {{ 'Add Field' | translate }}
+                class="rounded-lg secondaryBg text-white px-4 py-3 flex items-center justify-center gap-2">
+                {{ 'Add Field' | translate }}
             </button>
         </div>
     </div>
@@ -41,7 +41,8 @@
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         {{ 'ID' | translate }}
                     </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    <th
+                        class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
                         {{ 'Name of Field English' | translate }}
                     </th>
                     <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
@@ -77,8 +78,8 @@
                     <td
                         class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e] hover:bg-gray-200">
                         {{ row.id }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.enName }}</td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arName }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.enName }}</td>
+                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arName }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.orderInForm }}</td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <i *ngIf="row.isMandatory" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
@@ -114,18 +115,20 @@
 
         <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">{{ 'Add Field' | translate }}</h1>
         <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">{{ 'Edit Field' | translate }}</h1>
-        
+
         <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Name of Field English' | translate }}</h6>
             <div class="flex justify-start  gap-2 items-start">
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.enName" placeholder="{{ 'Enter' | translate }} {{ 'Name of Field English' | translate }}" 
-                        (ngModelChange)="onInputValueChange({ field: 'enName', value: $event })"/>
-                <span *ngIf="validationErrors['enName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['enName'] }}</span>
+                        [(ngModel)]="field.enName"
+                        placeholder="{{ 'Enter' | translate }} {{ 'Name of Field English' | translate }}"
+                        (ngModelChange)="onInputValueChange({ field: 'enName', value: $event })" />
+                    <span *ngIf="validationErrors['enName']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['enName'] }}</span>
 
-                        
+
                 </div>
             </div>
 
@@ -134,32 +137,34 @@
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.arName" placeholder="{{ 'Enter' | translate }} {{ 'Name of Field Arabic' | translate }}" 
-                        (ngModelChange)="onInputValueChange({ field: 'arName', value: $event })"/>
-                <span *ngIf="validationErrors['arName']" class="text-red-500 ml-3 font-normal">{{ validationErrors['arName'] }}</span>
+                        [(ngModel)]="field.arName"
+                        placeholder="{{ 'Enter' | translate }} {{ 'Name of Field Arabic' | translate }}"
+                        (ngModelChange)="onInputValueChange({ field: 'arName', value: $event })" />
+                    <span *ngIf="validationErrors['arName']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['arName'] }}</span>
                 </div>
             </div>
 
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Field Type Name' | translate }}</h6>
             <div class="flex flex-col mb-4">
-              <select
-                (ngModelChange)="onInputValueChange({ field: 'fieldTypeID', value: $event })"
-                
-                class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
-                id="fieldType"
-                [(ngModel)]="field.fieldTypeID">
-                <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Field Type Name' | translate }}</option>
-                <option *ngFor="let type of fieldTypes" [value]="type.id">{{ type.name }}</option>
-                <option *ngIf="fieldTypes.length === 0" disabled>{{ 'No Data Found' | translate }}</option>
-              </select>
-              <span *ngIf="validationErrors['fieldTypeID']" class="text-red-500 ml-3 font-normal">
-                {{ validationErrors['fieldTypeID'] }}
-              </span>
+                <select (ngModelChange)="onInputValueChange({ field: 'fieldTypeID', value: $event })"
+                    class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
+                    id="fieldType" [(ngModel)]="field.fieldTypeID">
+                    <option [value]="0" disabled selected hidden>{{ 'Choose' | translate }} {{ 'Field Type Name' |
+                        translate }}</option>
+                    <option *ngFor="let type of fieldTypes" [value]="type.id">{{ type.name }}</option>
+                    <option *ngIf="fieldTypes.length === 0" disabled>{{ 'No Data Found' | translate }}</option>
+                </select>
+                <span *ngIf="validationErrors['fieldTypeID']" class="text-red-500 ml-3 font-normal">
+                    {{ validationErrors['fieldTypeID'] }}
+                </span>
             </div>
 
 
-            <h6 *ngIf="field.fieldTypeID==4||field.fieldTypeID==5||field.fieldTypeID==7" class="font-medium text-base leading-6 mb-1 mt-3">Options</h6>
-            <div *ngIf="field.fieldTypeID==4||field.fieldTypeID==5||field.fieldTypeID==7" class="border border-gray-300 rounded-lg w-[500px] px-2 py-2 flex flex-wrap gap-2 mb-4">
+            <h6 *ngIf="field.fieldTypeID==4||field.fieldTypeID==5||field.fieldTypeID==7"
+                class="font-medium text-base leading-6 mb-1 mt-3">Options</h6>
+            <div *ngIf="field.fieldTypeID==4||field.fieldTypeID==5||field.fieldTypeID==7"
+                class="border border-gray-300 rounded-lg w-[500px] px-2 py-2 flex flex-wrap gap-2 mb-4">
                 <span *ngFor="let opt of options; let i = index"
                     class="flex items-centermr-2 mb-1 bg-gray-200  rounded-full px-3 py-1 text-sm">
                     {{ opt }}
@@ -170,9 +175,9 @@
                 </span>
                 <input type="text" class="flex-grow outline-none text-sm" [(ngModel)]="inputValue"
                     (keydown.enter)="addOption()" placeholder="Enter option" />
-                    <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">
-                        {{ validationErrors['options'] }}
-                      </span>
+                <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">
+                    {{ validationErrors['options'] }}
+                </span>
             </div>
 
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Order In Form' | translate }}</h6>
@@ -180,24 +185,27 @@
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.orderInForm" placeholder=" "  (input)="validateNumber($event, 'orderInForm')" min="0" step="1" 
-                        (ngModelChange)="onInputValueChange({ field: 'orderInForm', value: $event })"/>
-                    <span *ngIf="validationErrors['orderInForm']" class="text-red-500 ml-3 font-normal">{{ validationErrors['orderInForm'] }}</span>
+                        [(ngModel)]="field.orderInForm" placeholder=" " (input)="validateNumber($event, 'orderInForm')"
+                        min="0" step="1"
+                        (ngModelChange)="onInputValueChange({ field: 'orderInForm', value: $event })" />
+                    <span *ngIf="validationErrors['orderInForm']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['orderInForm'] }}</span>
                 </div>
             </div>
 
             <div class="flex items-center">
                 <input type="checkbox" id="i" [(ngModel)]="field.isMandatory"
-                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" 
-                    />
+                    class="h-5 w-5 mr-2 ml-2 border-2 border-[#FF7519] focus:ring-0 checked:border-[#FF7519] checked:bg-[#FF7519] text-[#FF7519" />
                 <label for="i" class="text-gray-700">
                     {{ 'Is Mandatory' | translate }}
                 </label>
             </div>
 
             <div class="flex justify-end">
-                <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg mt-2" (click)="CreateOREdit()">
-                    {{ 'Save' | translate }}
+                <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg mt-2"
+                    (click)="CreateOREdit()">
+                    <span *ngIf="!isLoading">{{ 'Save' | translate }}</span>
+                    <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
                 </button>
             </div>
         </div>

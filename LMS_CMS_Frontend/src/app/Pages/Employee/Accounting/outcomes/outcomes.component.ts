@@ -62,6 +62,7 @@ export class OutcomesComponent {
   outcome: Outcome = new Outcome();
 
   validationErrors: { [key in keyof Outcome]?: string } = {};
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -73,7 +74,7 @@ export class OutcomesComponent {
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
     public OutComeServ: OutComeService,
-    public accountServ:AccountingTreeChartService ,
+    public accountServ: AccountingTreeChartService,
 
   ) { }
   ngOnInit() {
@@ -99,20 +100,21 @@ export class OutcomesComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.OutComeServ.Get(this.DomainName).subscribe((d) => {
       this.TableData = d;
     })
   }
 
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(8,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(8, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
   Create() {
     this.mode = 'Create';
-    this.validationErrors={}
-    this.outcome=new Outcome()
+    this.validationErrors = {}
+    this.outcome = new Outcome()
     this.openModal();
   }
 
@@ -127,7 +129,7 @@ export class OutcomesComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.OutComeServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.OutComeServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData()
         })
       }
@@ -136,10 +138,10 @@ export class OutcomesComponent {
 
   Edit(row: Outcome) {
     this.mode = 'Edit';
-    this.OutComeServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.outcome=d
+    this.OutComeServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.outcome = d
     })
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -163,17 +165,40 @@ export class OutcomesComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.OutComeServ.Add(this.outcome,this.DomainName).subscribe((d)=>{
+        this.OutComeServ.Add(this.outcome, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
       if (this.mode == 'Edit') {
-        this.OutComeServ.Edit(this.outcome,this.DomainName).subscribe((d)=>{
+        this.OutComeServ.Edit(this.outcome, this.DomainName).subscribe((d) => {
           this.GetAllData()
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          })
       }
     }
   }

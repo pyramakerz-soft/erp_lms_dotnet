@@ -192,11 +192,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 {
                     return NotFound($"Drug with ID: {followUpDrug.DrugId} not found.");
                 }
-            }
 
-            foreach (var followUpDrug in followUpDto.FollowUpDrugs)
-            {
-                Drug drug = Unit_Of_Work.drug_Repository.First_Or_Default(d => d.Id == followUpDrug.DoseId && d.IsDeleted != true);
+                Dose dose = Unit_Of_Work.dose_Repository.First_Or_Default(d => d.Id == followUpDrug.DoseId && d.IsDeleted != true);
                 if (drug == null)
                 {
                     return NotFound($"Dose with ID: {followUpDrug.DoseId} not found.");
@@ -266,6 +263,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
             if (followUp == null)
             {
                 return NotFound();
+            }
+
+            foreach (var followUpDrug in followUpDto.FollowUpDrugs)
+            {
+                Drug drug = Unit_Of_Work.drug_Repository.First_Or_Default(d => d.Id == followUpDrug.DrugId && d.IsDeleted != true);
+                if (drug == null)
+                {
+                    return NotFound($"Drug with ID: {followUpDrug.DrugId} not found.");
+                }
+
+                Dose dose = Unit_Of_Work.dose_Repository.First_Or_Default(d => d.Id == followUpDrug.DoseId && d.IsDeleted != true);
+                if (drug == null)
+                {
+                    return NotFound($"Dose with ID: {followUpDrug.DoseId} not found.");
+                }
             }
 
             _mapper.Map(followUpDto, followUp);

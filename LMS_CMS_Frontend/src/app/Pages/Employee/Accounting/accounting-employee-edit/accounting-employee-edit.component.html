@@ -5,9 +5,11 @@
             {{Data.user_Name}}
         </h1>
     </div>
-    <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
-        Save
-    </button>
+    <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg mt-2"
+    (click)="Save()">
+    <span *ngIf="!isLoading">Save</span>
+    <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+</button>
 </div>
 
 <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap py-3">

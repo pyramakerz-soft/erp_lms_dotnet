@@ -3703,8 +3703,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("BankID")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("CashAmount")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("CashAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Date")
                         .IsRequired()
@@ -3718,6 +3718,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("DigestValue")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("FlagId")
                         .HasColumnType("bigint");
@@ -3750,14 +3753,23 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PublicKeyCertificate")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("QRCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Remaining")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Remaining")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<long?>("SaveID")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("SignatureValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StampCertificate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("StoreID")
                         .HasColumnType("bigint");
@@ -3771,11 +3783,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("SupplierId")
                         .HasColumnType("bigint");
 
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double?>("TotalWithVat")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("TotalWithVat")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -3786,11 +3798,17 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("UpdatedByUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<double?>("Vat")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("Vat")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("VisaAmount")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("VatAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("VisaAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("XmlInvoiceFile")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 

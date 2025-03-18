@@ -38,7 +38,7 @@ export class ShopComponent {
   selectedInventorySubCategory = 0
   
   CurrentPage:number = 1
-  PageSize:number = 1
+  PageSize:number = 9
 
   TotalPages:number = 1
   TotalRecords:number = 0

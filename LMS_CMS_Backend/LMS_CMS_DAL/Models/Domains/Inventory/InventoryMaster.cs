@@ -22,12 +22,18 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public string Date { get; set; }
         public bool IsCash { get; set; }
         public bool IsVisa { get; set; }
-        public int? CashAmount { get; set; }
-        public int? VisaAmount { get; set; }
-        public int Remaining { get; set; }
-        public double Total { get; set; }
-        public double? Vat { get; set; }
-        public double? TotalWithVat { get; set; }
+        public decimal? CashAmount { get; set; }
+        public decimal? VisaAmount { get; set; }
+        public decimal Remaining { get; set; }
+        public decimal Total { get; set; }
+        public decimal? Vat { get; set; }
+        public decimal? TotalWithVat { get; set; }
+        public decimal? VatAmount { get; set; }
+        public string? DigestValue { get; set; }
+        public string? SignatureValue { get; set; }
+        public string? PublicKeyCertificate { get; set; }
+        public string? StampCertificate { get; set; }
+        public string? XmlInvoiceFile { get; set; }
         public string? Notes { get; set; }
         public string? QRCode { get; set; }
         public List<string>? Attachments { get; set; }

@@ -22,7 +22,7 @@ import { JobCategories } from '../../../../Models/Administrator/job-categories';
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
   templateUrl: './job.component.html',
-  styleUrl: './job.component.css'
+  styleUrl: './job.component.css',
 })
 export class JobComponent {
   User_Data_After_Login: TokenData = new TokenData(
@@ -57,9 +57,11 @@ export class JobComponent {
   keysArray: string[] = ['id', 'name'];
 
   job: Job = new Job();
-  JobCategoryID : number = 0;
+  JobCategoryID: number = 0;
   validationErrors: { [key in keyof Job]?: string } = {};
-  Category:JobCategories=new JobCategories()
+  Category: JobCategories = new JobCategories();
+
+  isLoading = false;
 
   constructor(
     private router: Router,
@@ -70,8 +72,8 @@ export class JobComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public jobServ:JobService,
-    public JobCategoryServ :JobCategoriesService
+    public jobServ: JobService,
+    public JobCategoryServ: JobCategoriesService
   ) {}
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -80,8 +82,8 @@ export class JobComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
     });
-    this.JobCategoryID = Number(this.activeRoute.snapshot.paramMap.get('id'))
-    this.GetJobCategoryInfo()
+    this.JobCategoryID = Number(this.activeRoute.snapshot.paramMap.get('id'));
+    this.GetJobCategoryInfo();
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
@@ -96,22 +98,27 @@ export class JobComponent {
   }
 
   GetAllData() {
-    this.jobServ.GetByCtegoty(this.JobCategoryID,this.DomainName).subscribe((d)=>{
-      this.TableData=d
-    })
+    this.TableData = [];
+    this.jobServ
+      .GetByCtegoty(this.JobCategoryID, this.DomainName)
+      .subscribe((d) => {
+        this.TableData = d;
+      });
   }
 
-  GetJobCategoryInfo(){
-    this.JobCategoryServ.GetById(this.JobCategoryID,this.DomainName).subscribe((d)=>{
-      this.Category=d
-    })
+  GetJobCategoryInfo() {
+    this.JobCategoryServ.GetById(this.JobCategoryID, this.DomainName).subscribe(
+      (d) => {
+        this.Category = d;
+      }
+    );
   }
 
   Create() {
     this.mode = 'Create';
-    this.job=new Job()
+    this.job = new Job();
     this.openModal();
-    this.validationErrors={}
+    this.validationErrors = {};
   }
 
   Delete(id: number) {
@@ -125,19 +132,19 @@ export class JobComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.jobServ.Delete(id,this.DomainName).subscribe((d)=>{
-          this.GetAllData()
-        })
+        this.jobServ.Delete(id, this.DomainName).subscribe((d) => {
+          this.GetAllData();
+        });
       }
     });
   }
 
   Edit(row: Job) {
     this.mode = 'Edit';
-    this.jobServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.job=d
-    })
-    this.validationErrors={}
+    this.jobServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.job = d;
+    });
+    this.validationErrors = {};
     this.openModal();
   }
 
@@ -160,20 +167,47 @@ export class JobComponent {
   }
 
   CreateOREdit() {
-    this.job.JobCategoryId=this.JobCategoryID;
+    this.job.JobCategoryId = this.JobCategoryID;
+    this.isLoading = true;
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
-        this.jobServ.Add(this.job,this.DomainName).subscribe((d)=>{
-          this.TableData=d;
-          this.GetAllData()
-          this.closeModal()
-        })
+        this.jobServ.Add(this.job, this.DomainName).subscribe(
+          (d) => {
+            this.TableData = d;
+            this.GetAllData();
+            this.closeModal();
+            this.isLoading = false;
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error || 'An unexpected error occurred',
+              confirmButtonColor: '#FF7519',
+            });
+            return false;
+          }
+        );
       }
       if (this.mode == 'Edit') {
-        this.jobServ.Edit(this.job,this.DomainName).subscribe((d)=>{
-          this.GetAllData()
-          this.closeModal()
-        })
+        this.jobServ.Edit(this.job, this.DomainName).subscribe(
+          (d) => {
+            this.GetAllData();
+            this.closeModal();
+            this.isLoading = false;
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.error || 'An unexpected error occurred',
+              confirmButtonColor: '#FF7519',
+            });
+            return false;
+          }
+        );
       }
     }
   }
@@ -192,10 +226,7 @@ export class JobComponent {
       if (this.job.hasOwnProperty(key)) {
         const field = key as keyof Job;
         if (!this.job[field]) {
-          if (
-            field == 'name' ||
-            field == 'JobCategoryId' 
-          ) {
+          if (field == 'name' || field == 'JobCategoryId') {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
             )} is required`;
@@ -222,7 +253,7 @@ export class JobComponent {
     this.value = event.value;
     try {
       const data: Job[] = await firstValueFrom(
-        this.jobServ.GetByCtegoty(this.JobCategoryID,this.DomainName)
+        this.jobServ.GetByCtegoty(this.JobCategoryID, this.DomainName)
       );
       this.TableData = data || [];
 
@@ -246,7 +277,7 @@ export class JobComponent {
       this.TableData = [];
     }
   }
-  moveToBack(){
-    this.router.navigateByUrl(`Employee/Job Category`)
+  moveToBack() {
+    this.router.navigateByUrl(`Employee/Job Category`);
   }
 }

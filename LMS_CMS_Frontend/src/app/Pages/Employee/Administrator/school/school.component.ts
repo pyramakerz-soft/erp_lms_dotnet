@@ -12,99 +12,124 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-school',
   standalone: true,
-  imports: [FormsModule,CommonModule,SearchComponent, TranslateModule],
+  imports: [FormsModule, CommonModule, SearchComponent, TranslateModule],
   templateUrl: './school.component.html',
-  styleUrl: './school.component.css'
+  styleUrl: './school.component.css',
 })
 export class SchoolComponent {
-  keysArray: string[] = ['id', 'name','address','schoolTypeName'];
-  key: string= "id";
-  value: any = "";
+  keysArray: string[] = ['id', 'name', 'address', 'schoolTypeName'];
+  key: string = 'id';
+  value: any = '';
 
-  schoolData:School[] = []
-  school:School = new School()
-  editBuilding:boolean = false
+  schoolData: School[] = [];
+  school: School = new School();
+  editBuilding: boolean = false;
   validationErrors: { [key in keyof School]?: string } = {};
 
-  AllowEdit: boolean = false; 
-  AllowEditForOthers: boolean = false; 
-  path: string = ""
+  AllowEdit: boolean = false;
+  AllowEditForOthers: boolean = false;
+  path: string = '';
 
-  DomainName: string = "";
+  DomainName: string = '';
   UserID: number = 0;
-  User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
+  User_Data_After_Login: TokenData = new TokenData(
+    '',
+    0,
+    0,
+    0,
+    0,
+    '',
+    '',
+    '',
+    '',
+    ''
+  );
+  isLoading = false;
 
-  constructor(public account: AccountService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
-    private menuService: MenuService, public activeRoute: ActivatedRoute, public schoolService: SchoolService, public router:Router){}
-  
-  ngOnInit(){
+  constructor(
+    public account: AccountService,
+    public ApiServ: ApiService,
+    public EditDeleteServ: DeleteEditPermissionService,
+    private menuService: MenuService,
+    public activeRoute: ActivatedRoute,
+    public schoolService: SchoolService,
+    public router: Router
+  ) {}
+
+  ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
 
     this.DomainName = this.ApiServ.GetHeader();
 
-    this.activeRoute.url.subscribe(url => {
-      this.path = url[0].path
+    this.activeRoute.url.subscribe((url) => {
+      this.path = url[0].path;
     });
 
-    this.getSchoolData()
+    this.getSchoolData();
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
         this.AllowEdit = settingsPage.allow_Edit;
-        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
+        this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
       }
     });
   }
 
-  getSchoolData(){
-    this.schoolService.Get(this.DomainName).subscribe(
-      (data) => {
-        this.schoolData = data;
-      }
-    )
+  getSchoolData() {
+    this.schoolData=[]
+    this.schoolService.Get(this.DomainName).subscribe((data) => {
+      this.schoolData = data;
+    });
   }
 
   GetSchoolById(schoolId: number) {
-    this.schoolService.GetBySchoolId(schoolId, this.DomainName).subscribe((data) => {
-      this.school = data;
-    });
+    this.schoolService
+      .GetBySchoolId(schoolId, this.DomainName)
+      .subscribe((data) => {
+        this.school = data;
+      });
   }
 
   openModal(schoolId: number) {
-    this.GetSchoolById(schoolId); 
-      
-    this.getSchoolData()
+    this.GetSchoolById(schoolId);
 
-    document.getElementById("Add_Modal")?.classList.remove("hidden");
-    document.getElementById("Add_Modal")?.classList.add("flex");
+    this.getSchoolData();
+
+    document.getElementById('Add_Modal')?.classList.remove('hidden');
+    document.getElementById('Add_Modal')?.classList.add('flex');
   }
 
   closeModal() {
-    document.getElementById("Add_Modal")?.classList.remove("flex");
-    document.getElementById("Add_Modal")?.classList.add("hidden");
+    document.getElementById('Add_Modal')?.classList.remove('flex');
+    document.getElementById('Add_Modal')?.classList.add('hidden');
 
-    this.school= new School()
- 
-    this.validationErrors = {}; 
+    this.school = new School();
+
+    this.validationErrors = {};
   }
 
-  async onSearchEvent(event: { key: string, value: any }) {
+  async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
     try {
-      const data: School[] = await firstValueFrom(this.schoolService.Get(this.DomainName));  
+      const data: School[] = await firstValueFrom(
+        this.schoolService.Get(this.DomainName)
+      );
       this.schoolData = data || [];
-  
-      if (this.value !== "") {
-        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
-  
-        this.schoolData = this.schoolData.filter(t => {
+
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
+
+        this.schoolData = this.schoolData.filter((t) => {
           const fieldValue = t[this.key as keyof typeof t];
           if (typeof fieldValue === 'string') {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
@@ -124,9 +149,9 @@ export class SchoolComponent {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
-  onInputValueChange(event: { field: keyof School, value: any }) {
+  onInputValueChange(event: { field: keyof School; value: any }) {
     const { field, value } = event;
-    
+
     (this.school as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
@@ -134,7 +159,11 @@ export class SchoolComponent {
   }
 
   IsAllowEdit(InsertedByID: number) {
-    const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(
+      InsertedByID,
+      this.UserID,
+      this.AllowEditForOthers
+    );
     return IsAllow;
   }
 
@@ -144,17 +173,21 @@ export class SchoolComponent {
       if (this.school.hasOwnProperty(key)) {
         const field = key as keyof School;
         if (!this.school[field]) {
-          if(field == "name"){
-            this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
+          if (field == 'name') {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
             isValid = false;
           }
         } else {
-          if(field == "name"){
-            if(this.school.name.length > 100){
-              this.validationErrors[field] = `*${this.capitalizeField(field)} cannot be longer than 100 characters`
+          if (field == 'name') {
+            if (this.school.name.length > 100) {
+              this.validationErrors[field] = `*${this.capitalizeField(
+                field
+              )} cannot be longer than 100 characters`;
               isValid = false;
             }
-          } else{
+          } else {
             this.validationErrors[field] = '';
           }
         }
@@ -165,37 +198,49 @@ export class SchoolComponent {
 
   onImageFileSelected(event: any) {
     const file: File = event.target.files[0];
-    
+
     if (file) {
       if (file.size > 25 * 1024 * 1024) {
-        this.validationErrors['reportImageFile'] = 'The file size exceeds the maximum limit of 25 MB.';
+        this.validationErrors['reportImageFile'] =
+          'The file size exceeds the maximum limit of 25 MB.';
         this.school.reportImageFile = null;
-        return; 
+        return;
       }
       if (file.type === 'image/jpeg' || file.type === 'image/png') {
-        this.school.reportImageFile = file; 
-        this.validationErrors['reportImageFile'] = ''; 
+        this.school.reportImageFile = file;
+        this.validationErrors['reportImageFile'] = '';
 
         const reader = new FileReader();
         reader.readAsDataURL(file);
       } else {
-        this.validationErrors['reportImageFile'] = 'Invalid file type. Only JPEG, JPG and PNG are allowed.';
+        this.validationErrors['reportImageFile'] =
+          'Invalid file type. Only JPEG, JPG and PNG are allowed.';
         this.school.reportImageFile = null;
-        return; 
+        return;
       }
     }
   }
 
-  SaveSchool(){
-    if(this.isFormValid()){
+  SaveSchool() {
+    if (this.isFormValid()) {
+      this.isLoading = true;
       this.schoolService.Edit(this.school, this.DomainName).subscribe(
         (result: any) => {
-          this.closeModal()
-          this.getSchoolData()
+          this.closeModal();
+          this.isLoading = false;
+          this.getSchoolData();
         },
-        error => {
+        (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         }
       );
     }
-  } 
+  }
 }

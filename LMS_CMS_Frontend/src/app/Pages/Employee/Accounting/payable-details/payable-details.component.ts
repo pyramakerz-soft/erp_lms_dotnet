@@ -21,6 +21,7 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { PayableDetailsService } from '../../../../Services/Employee/Accounting/payable-details.service';
 import Swal from 'sweetalert2';
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-payable-details',
@@ -268,9 +269,7 @@ export class PayableDetailsComponent {
 
   GetPayableDetails(){
     this.payableDetailsService.Get(this.DomainName, this.PayableID).subscribe(
-      (data) => {
-        console.log(data)
-
+      (data) => { 
         this.payableDetailsData = data
         let total = 0
         this.payableDetailsData.forEach(element => {
@@ -290,8 +289,9 @@ export class PayableDetailsComponent {
   }
   
   GetLinkFilesTypeData(){ 
+    this.linkFileTypesData = []
     this.dataAccordingToLinkFileService.Get(this.DomainName, +this.newDetails.linkFileID).subscribe(
-      (data) => {
+      (data) => { 
         this.linkFileTypesData = data
       }
     )
@@ -368,4 +368,31 @@ export class PayableDetailsComponent {
       }
     });
   }
+ 
+  DownloadData() { 
+    let orderElement = document.getElementById('DataToDownload');
+
+    if (!orderElement) {
+        console.error("Page body not found!");
+        return;
+    }
+
+    document.querySelectorAll('.no-print').forEach(el => {
+        (el as HTMLElement).style.display = 'none';
+    });
+
+    setTimeout(() => {
+        html2pdf().from(orderElement).set({
+            margin: 10,
+            filename: `Payable_${this.PayableID}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+        }).save().then(() => {
+            document.querySelectorAll('.no-print').forEach(el => {
+                (el as HTMLElement).style.display = '';
+            });
+        });
+    }, 500);
+  } 
 }

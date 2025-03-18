@@ -14,6 +14,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+//using Zatca.EInvoice.SDK.Contracts;
+//using Zatca.EInvoice.SDK;
+//using Zatca.EInvoice.SDK.Contracts.Models;
 
 namespace LMS_CMS
 {
@@ -100,29 +103,26 @@ namespace LMS_CMS
             builder.Services.AddScoped<GenerateJWTService>();
             builder.Services.AddScoped<FileImageValidationService>();
             builder.Services.AddScoped<CancelInterviewDayMessageService>();
-            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped< EmailService>();
             builder.Services.AddScoped<GenerateBarCodeEan13>(); 
             builder.Services.AddScoped<CheckPageAccessService>(); 
             builder.Services.AddScoped<InVoiceNumberCreate>();
             builder.Services.AddScoped<CalculateCurrentStock>();
+            //builder.Services.AddScoped<IEInvoiceHashGenerator, EInvoiceHashGenerator>();
+            //builder.Services.AddScoped<ICsrGenerator, CsrGenerator>();
+            //builder.Services.AddScoped<RequestResult>();
 
 
             /// 2)
             builder.Services.AddCors(option =>
             {
-                //option.AddPolicy(txt, builder => {
-                //    builder.AllowAnyOrigin();
-                //    builder.AllowAnyMethod();
-                //    builder.AllowAnyHeader();
-                //    builder.WithHeaders("domain-name", "content-type", "Domain-Name");
-                //});
-
-                option.AddPolicy("AllowSpecificOrigin", builder =>
+                option.AddPolicy(txt, builder =>
                 {
-                    builder.AllowAnyOrigin()  
-                           .AllowAnyMethod()  
-                           .AllowAnyHeader()  
-                           .WithHeaders( "content-type", "Domain-Name");  
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .WithHeaders("content-type", "Domain-Name")
+                           .WithExposedHeaders("Content-Disposition");
                 });
             });
 
@@ -153,18 +153,24 @@ namespace LMS_CMS
 
             var app = builder.Build();
 
+
+            /// 1) For DB Check
+            app.UseMiddleware<DbConnection_Check_Middleware>(); 
+
+            /// 3)
+            app.UseCors(txt); 
+
             ///////// send files
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
-                RequestPath = "/uploads"
+                RequestPath = "/Uploads",
+                OnPrepareResponse = ctx =>
+                {
+                    ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                }
             });
-
-
-            /// 1) For DB Check
-            app.UseMiddleware<DbConnection_Check_Middleware>();
-            app.UseCors("AllowSpecificOrigin");
 
             //////// Authentication
             app.UseAuthentication();
@@ -189,12 +195,7 @@ namespace LMS_CMS
             /// For Endpoint, to check if the user has access for this endpoint or not
             /// Make sure to be here before UseAuthorization
             app.UseMiddleware<Endpoint_Authorization_Middleware>();
-
-
-            /// 3)
-            app.UseCors(txt);
-
-
+             
             app.UseAuthorization();
 
             app.MapControllers();

@@ -26,7 +26,7 @@
             </th>
             <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
               IBAN
-            </th> 
+            </th>
             <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
               Bank Account Number
             </th>
@@ -69,7 +69,7 @@
             </td>
             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
               {{ row.iban }}
-            </td> 
+            </td>
             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
               {{ row.bankAccountNumber }}
             </td>
@@ -184,8 +184,10 @@
 
         <!-- Save Button -->
         <div class="flex justify-end mt-4">
-          <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg" (click)="CreateOREdit()">
-            Save
+          <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+            (click)="CreateOREdit()">
+            <span *ngIf="!isLoading">Save</span>
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
           </button>
         </div>
       </div>

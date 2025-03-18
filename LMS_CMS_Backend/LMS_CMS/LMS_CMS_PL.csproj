@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt" Version="1.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="MailKit" Version="4.11.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
@@ -17,6 +18,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="MimeKit" Version="4.11.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
@@ -27,6 +29,15 @@
   <ItemGroup>
     <Folder Include="Uploads\Attachments\" />
     <Folder Include="Uploads\Questions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Zatca.EInvoice.SDK">
+      <HintPath>E:\هيئة الزكاة والدخل\zatca-einvoicing-sdk-DotNet-238-R3.3.9\Lib\Dot-Net8\DLL\Zatca.EInvoice.SDK\net8.0\Zatca.EInvoice.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="Zatca.EInvoice.SDK.Contracts">
+      <HintPath>E:\هيئة الزكاة والدخل\zatca-einvoicing-sdk-DotNet-238-R3.3.9\Lib\Dot-Net8\DLL\Zatca.EInvoice.SDK\net8.0\Zatca.EInvoice.SDK.Contracts.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -76,6 +76,7 @@ export class FieldsComponent {
   ];
 
   validationErrors: { [key in keyof Field]?: string } = {};
+  isLoading = false;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -87,7 +88,7 @@ export class FieldsComponent {
     public CategoryServ: RegistrationCategoryService,
     public fieldServ: FieldsService,
     public fieldTypeServ: FieldTypeService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -119,6 +120,7 @@ export class FieldsComponent {
   }
 
   GetAllData() {
+    this.Data = []
     this.fieldServ.GetByID(this.CategoryId, this.DomainName).subscribe((d) => {
       this.Data = d;
     });
@@ -191,16 +193,37 @@ export class FieldsComponent {
     this.field.registrationCategoryID = this.CategoryId;
     if (this) this.field.options = this.options;
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
         this.fieldServ.Add(this.field, this.DomainName).subscribe(() => {
           this.GetAllData();
           this.closeModal();
+          this.isLoading = false
+        }, (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         });
       }
       if (this.mode == 'Edit') {
         this.fieldServ.Edit(this.field, this.DomainName).subscribe(() => {
           this.GetAllData();
           this.closeModal();
+          this.isLoading = false
+        }, (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         });
       }
     }
@@ -299,13 +322,13 @@ export class FieldsComponent {
       this.Data = [];
     }
   }
-  
+
   validateNumber(event: any, field: keyof FieldAddEdit): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.field[field] === 'string') {
-        this.field[field] = '' as never;  
+        this.field[field] = '' as never;
       }
     }
   }

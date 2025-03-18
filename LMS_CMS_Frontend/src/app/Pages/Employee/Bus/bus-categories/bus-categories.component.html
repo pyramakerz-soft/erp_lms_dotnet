@@ -107,10 +107,13 @@
                         [(ngModel)]="busCategory.name" placeholder="Enter new category" (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"/>
                     <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
                 </div>
-                <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" 
-                    (click)="CreateOREdit()">
-                    Save
-                </button>
+                <button  
+                [disabled]="isLoading" 
+                class="secondaryBg text-white font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-2" 
+                (click)="CreateOREdit()">
+                <span *ngIf="!isLoading">Save</span>
+                <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+              </button>
             </div>
         </div>
     </div>

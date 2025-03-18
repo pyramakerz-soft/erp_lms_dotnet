@@ -25,7 +25,7 @@ import { AccountingTreeChartService } from '../../../../Services/Employee/Accoun
   styleUrl: './credits.component.css'
 })
 export class CreditsComponent {
-User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
+  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
@@ -43,13 +43,14 @@ User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' ,'accountNumberName'];
+  keysArray: string[] = ['id', 'name', 'accountNumberName'];
 
   credit: Credit = new Credit();
 
-  AccountNumbers:AccountingTreeChart[]=[];
+  AccountNumbers: AccountingTreeChart[] = [];
 
   validationErrors: { [key in keyof Credit]?: string } = {};
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -60,9 +61,9 @@ User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public CreditServ :CreditService,
-    public accountServ:AccountingTreeChartService 
-  ) {}
+    public CreditServ: CreditService,
+    public accountServ: AccountingTreeChartService
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -86,20 +87,21 @@ User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
   }
 
   GetAllData() {
-    this.CreditServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d;
+    this.TableData = []
+    this.CreditServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d;
     })
   }
 
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(4,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(4, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
   Create() {
     this.mode = 'Create';
     this.credit = new Credit();
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
@@ -114,17 +116,17 @@ User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.CreditServ.Delete(id,this.DomainName).subscribe((D)=>{
+        this.CreditServ.Delete(id, this.DomainName).subscribe((D) => {
           this.GetAllData();
         })
       }
     });
   }
 
-  Edit(id:number) {
+  Edit(id: number) {
     this.mode = 'Edit';
-    this.CreditServ.GetById(id,this.DomainName).subscribe((d)=>{
-      this.credit=d
+    this.CreditServ.GetById(id, this.DomainName).subscribe((d) => {
+      this.credit = d
     })
     this.openModal();
   }
@@ -149,15 +151,38 @@ User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
-        this.CreditServ.Add(this.credit,this.DomainName).subscribe((d)=>{
+        this.CreditServ.Add(this.credit, this.DomainName).subscribe((d) => {
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       if (this.mode == 'Edit') {
-        this.CreditServ.Edit(this.credit,this.DomainName).subscribe((d)=>{
+        this.CreditServ.Edit(this.credit, this.DomainName).subscribe((d) => {
           this.closeModal()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       this.GetAllData()
     }
@@ -180,7 +205,7 @@ User_Data_After_Login: TokenData = new TokenData('',0,0,0,0,'','','','','');
         if (!this.credit[field]) {
           if (
             field == 'name' ||
-            field == 'accountNumberID' 
+            field == 'accountNumberID'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field

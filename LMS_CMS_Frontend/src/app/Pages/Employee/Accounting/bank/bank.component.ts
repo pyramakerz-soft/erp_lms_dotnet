@@ -25,7 +25,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
   styleUrl: './bank.component.css'
 })
 export class BankComponent {
- User_Data_After_Login: TokenData = new TokenData(
+  User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
     0,
@@ -54,12 +54,13 @@ export class BankComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' ,"iban", "bankName", "bankAccountName" ,"accountClosingDate","accountOpeningDate" ,"accountNumberName" ];
+  keysArray: string[] = ['id', 'name', "iban", "bankName", "bankAccountName", "accountClosingDate", "accountOpeningDate", "accountNumberName"];
 
   bank: Bank = new Bank();
 
   validationErrors: { [key in keyof Bank]?: string } = {};
-  AccountNumbers:AccountingTreeChart[]=[];
+  AccountNumbers: AccountingTreeChart[] = [];
+  isLoading = false
 
   constructor(
     private router: Router,
@@ -69,10 +70,10 @@ export class BankComponent {
     public BusTypeServ: BusTypeService,
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
-    public ApiServ: ApiService ,
-    public BankServ:BankService,
-    public accountServ:AccountingTreeChartService ,
-  ) {}
+    public ApiServ: ApiService,
+    public BankServ: BankService,
+    public accountServ: AccountingTreeChartService,
+  ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -97,23 +98,23 @@ export class BankComponent {
 
   GetAllData() {
     this.TableData = []
-    this.BankServ.Get(this.DomainName).subscribe((d)=>{
-      this.TableData=d;
+    this.BankServ.Get(this.DomainName).subscribe((d) => {
+      this.TableData = d;
       console.log(this.TableData)
     })
   }
 
-  GetAllAccount(){
-    this.accountServ.GetBySubAndFileLinkID(6,this.DomainName).subscribe((d)=>{
-      this.AccountNumbers=d;
+  GetAllAccount() {
+    this.accountServ.GetBySubAndFileLinkID(6, this.DomainName).subscribe((d) => {
+      this.AccountNumbers = d;
     })
   }
 
   Create() {
     this.mode = 'Create';
-    this.bank=new Bank()
+    this.bank = new Bank()
     this.openModal();
-    this.validationErrors={}
+    this.validationErrors = {}
   }
 
   Delete(id: number) {
@@ -127,7 +128,7 @@ export class BankComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.BankServ.Delete(id,this.DomainName).subscribe((d)=>{
+        this.BankServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData()
         })
       }
@@ -136,19 +137,19 @@ export class BankComponent {
 
   Edit(row: Bank) {
     this.mode = 'Edit';
-    this.BankServ.GetById(row.id,this.DomainName).subscribe((d)=>{
-      this.bank=d
+    this.BankServ.GetById(row.id, this.DomainName).subscribe((d) => {
+      this.bank = d
     })
-    this.validationErrors={}
+    this.validationErrors = {}
     this.openModal();
   }
 
   validateNumber(event: any, field: keyof Bank): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.bank[field] === 'string') {
-        this.bank[field] = '' as never;  
+        this.bank[field] = '' as never;
       }
     }
   }
@@ -173,19 +174,42 @@ export class BankComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
+
       if (this.mode == 'Create') {
-        this.BankServ.Add(this.bank,this.DomainName).subscribe((d)=>{
+        this.BankServ.Add(this.bank, this.DomainName).subscribe((d) => {
           this.GetAllData()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       if (this.mode == 'Edit') {
-        this.BankServ.Edit(this.bank,this.DomainName).subscribe((d)=>{
+        this.BankServ.Edit(this.bank, this.DomainName).subscribe((d) => {
           this.GetAllData()
-        })
+          this.isLoading = false
+        },
+          err => {
+            this.isLoading = false
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          });
       }
       this.closeModal()
     }
-    this.GetAllData()
   }
 
   closeModal() {
@@ -209,7 +233,7 @@ export class BankComponent {
             field == 'iban' ||
             field == 'accountOpeningDate' ||
             field == 'accountClosingDate' ||
-            field == 'bankAccountNumber'  ||
+            field == 'bankAccountNumber' ||
             field == 'accountNumberID'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
@@ -220,6 +244,19 @@ export class BankComponent {
         }
       }
     }
+    const openingDate = new Date(this.bank.accountOpeningDate);
+    const closingDate = new Date(this.bank.accountClosingDate);
+
+    if (closingDate < openingDate) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Dates',
+        text: 'Account Closing Date must be after Account Opening Date!',
+        confirmButtonText: 'OK',
+      });
+      isValid = false;
+    }
+
     return isValid;
   }
   capitalizeField(field: keyof Bank): string {

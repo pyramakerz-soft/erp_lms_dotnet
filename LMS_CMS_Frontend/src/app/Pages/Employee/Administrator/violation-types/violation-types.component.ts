@@ -64,6 +64,7 @@ export class ViolationTypesComponent {
   keysArray: string[] = ['id', 'name'];
   key: string= "id";
   value: any = "";
+  isLoading=false
 
   constructor(
     public violationServ: ViolationService,
@@ -167,6 +168,7 @@ export class ViolationTypesComponent {
     this.isModalVisible = false;
   }
   CreateOREdit() {
+    this.isLoading=true
     if (this.violation.violationName == '') {
       Swal.fire({
         title: 'Error',
@@ -182,8 +184,10 @@ export class ViolationTypesComponent {
             next: (response) => {
               this.GetViolation();
               this.closeModal();
+             this.isLoading=false
             },
             error: (error) => {
+             this.isLoading=false
               const errorMessage =
                 error?.error || 'An unexpected error occurred';
               Swal.fire({
@@ -201,8 +205,10 @@ export class ViolationTypesComponent {
             next: (response) => {
               this.GetViolation();
               this.closeModal();
+              this.isLoading=false
             },
             error: (error) => {
+              this.isLoading=false
               const errorMessage =
                 error?.error || 'An unexpected error occurred';
               Swal.fire({

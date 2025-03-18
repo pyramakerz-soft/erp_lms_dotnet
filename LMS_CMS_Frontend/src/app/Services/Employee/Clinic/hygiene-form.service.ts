@@ -28,6 +28,18 @@ Get(DomainName: string): Observable<HygieneForm[]> {
   return this.http.get<HygieneForm[]>(`${this.baseUrl}/HygieneForm`, { headers });
 }
 
+GetById(id: number, DomainName: string): Observable<HygieneForm> {
+  if (DomainName != null) {
+    this.header = DomainName;
+  }
+  const token = localStorage.getItem('current_token');
+  const headers = new HttpHeaders()
+    .set('Domain-Name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('accept', '*/*');
+  return this.http.get<HygieneForm>(`${this.baseUrl}/HygieneForm/id?id=${id}`, { headers });
+}
+
 Delete(id: number, DomainName: string): Observable<any> {
   if (DomainName != null) {
     this.header = DomainName;

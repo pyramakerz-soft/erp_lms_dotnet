@@ -25,6 +25,9 @@ import { MedicalReportService } from '../../../../Services/Employee/Clinic/medic
   standalone:true
 })
 export class MedicalReportComponent implements OnInit {
+onView($event: any) {
+throw new Error('Method not implemented.');
+}
   // Tabs
   tabs = ['MH By Parent', 'MH By Doctor', 'Hygiene Form', 'Follow Up'];
   selectedTab = this.tabs[0]; // Default selected tab
@@ -76,15 +79,16 @@ filteredFollowUps: any[] = [];
 
 filterFollowUps() {
   if (this.selectedSchool && this.selectedGrade && this.selectedClass) {
-    console.log('Filtering follow-ups...');
+    // console.log('Filtering follow-ups...');
     console.log('Selected School ID:', this.selectedSchool);
-    console.log('Selected Grade ID:', this.selectedGrade);
-    console.log('Selected Class ID:', this.selectedClass);
+    // console.log('Selected Grade ID:', this.selectedGrade);
+    // console.log('Selected Class ID:', this.selectedClass);
 
+    // console.log(this.followUps)
     this.filteredFollowUps = this.followUps.filter(followUp =>
-      followUp.schoolId === this.selectedSchool &&
-      followUp.gradeId === this.selectedGrade &&
-      followUp.classRoomID === this.selectedClass
+      followUp.schoolId == this.selectedSchool &&
+      followUp.gradeId == this.selectedGrade &&
+      followUp.classRoomID == this.selectedClass
     );
 
     console.log('Filtered Follow Ups:', this.filteredFollowUps); // Log the filtered data
@@ -101,7 +105,7 @@ filterFollowUps() {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.schoolService.Get(domainName));
-      console.log(data)
+      // console.log(data)
       this.schools = data;
     } catch (error) {
       console.error('Error loading schools:', error);
@@ -140,8 +144,8 @@ filterFollowUps() {
       try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
-        console.log(data)
-        console.log('test')
+        // console.log(data)
+        // console.log('test')
         this.students = data.map(student => ({
           ...student,
           attendance: null,
@@ -157,7 +161,7 @@ filterFollowUps() {
   
 
 onSchoolChange() {
-  console.log('School changed');
+  // console.log('School changed');
   this.selectedGrade = null;
   this.selectedClass = null;
   this.grades = [];
@@ -167,7 +171,7 @@ onSchoolChange() {
 }
 
 onGradeChange() {
-  console.log('Grade changed');
+  // console.log('Grade changed');
   this.selectedClass = null;
   this.classes = [];
   this.filteredFollowUps = this.followUps; // Reset filtered follow-ups
@@ -175,7 +179,7 @@ onGradeChange() {
 }
 
 onClassChange() {
-  console.log('Class changed');
+  // console.log('Class changed');
   this.filteredFollowUps = this.followUps; // Reset filtered follow-ups
 }
 
@@ -189,7 +193,7 @@ onClassChange() {
         description: item.details || 'No details',
         insertDate: new Date(item.insertedAt).toLocaleDateString(),
         lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified',
-        actions: { delete: true, edit: true }
+        actions: { delete: true, edit: true ,view: true  }
       }));
     } catch (error) {
       console.error('Error fetching MH By Parent data:', error);
@@ -207,10 +211,10 @@ async loadMHByDoctorData() {
       description: item.details || 'No details', // Ensure description is mapped
       insertDate: new Date(item.insertedAt).toLocaleDateString(), // Ensure insertDate is formatted
       lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified', // Ensure lastModified is formatted
-      actions: { delete: true, edit: true } // Add actions if needed
+      actions: { delete: true, edit: true ,view: true  } // Add actions if needed
     }));
 
-    console.log('MH By Doctor Data:', this.mhByDoctorData); // Log the mapped data for debugging
+    // console.log('MH By Doctor Data:', this.mhByDoctorData); // Log the mapped data for debugging
   } catch (error) {
     console.error('Error fetching MH By Doctor data:', error);
   }
@@ -220,7 +224,7 @@ async loadAllHygieneForms() {
   try {
     const domainName = this.apiService.GetHeader();
     const data = await firstValueFrom(this.medicalreportService.getAllHygieneForms(domainName));
-    console.log('All Hygiene Forms:', data); // Log the fetched hygiene forms
+    console.log(data)
     this.allHygieneForms = data;
 
     // Map the data to the expected structure for the hygiene-form-table
@@ -245,12 +249,10 @@ async loadAllHygieneForms() {
   
 filterStudents() {
   // if (this.selectedSchool && this.selectedGrade && this.selectedClass) {
-    console.log('testa7777777777777777')
     const filteredForms = this.allHygieneForms.filter(form =>
-      form.schoolId === this.selectedSchool 
-      // &&
-      // form.gradeId === this.selectedGrade &&
-      // form.classRoomID === this.selectedClass
+      form.schoolId == this.selectedSchool &&
+      form.gradeId == this.selectedGrade &&
+      form.classRoomID == this.selectedClass
     );
 
     if (filteredForms.length > 0) {
@@ -275,9 +277,9 @@ async loadHygieneForms() {
   try {
     const domainName = this.apiService.GetHeader();
     const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
-    console.log('start')
-    console.log(data)
-    console.log('end')
+    // console.log('start')
+    // console.log(data)
+    // console.log('end')
 
     this.hygieneForms = data.map((item) => ({
       ...item,
@@ -297,7 +299,7 @@ async loadFollowUps() {
   try {
     const domainName = this.apiService.GetHeader();
     const data = await firstValueFrom(this.followUpService.Get(domainName));
-    console.log('Fetched Follow Ups:', data); // Log the fetched data
+    // console.log('Fetched Follow Ups:', data); // Log the fetched data
 
     // Map the data to the expected structure
     this.followUps = data.map((item) => ({

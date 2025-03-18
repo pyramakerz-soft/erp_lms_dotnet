@@ -2,7 +2,7 @@
     <h1 class="primaryTxt font-semibold text-2xl leading-9">Hygiene Forms</h1>
     <div class="flex justify-between items-center">
         <!-- Add the Search Component -->
-        <!-- <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> -->
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
         <button (click)="navigateToCreateHygieneForm()"
             class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
             Create Hygiene Form
@@ -12,5 +12,7 @@
 
 <!-- Reusable Table Component -->
     <app-table [headers]="['ID', 'Grade', 'Classes', 'Date', 'Actions']" [data]="hygieneForms"
-        [keys]="['id', 'grade', 'classRoom', 'date']" (delete)="deleteHygieneForm($event)" (edit)="openModal($event.id)">
+        [keys]="['id', 'grade', 'classRoom', 'date']"
+            [showViewAction]="true"
+ (delete)="deleteHygieneForm($event)" (edit)="openModal($event.id)" (view)="onView($event)">
     </app-table>

@@ -191,4 +191,8 @@ export class CreateHygieneFormComponent implements OnInit {
         }
       });
   }
+    // Handle view action
+  onView(row: any) {
+    this.router.navigate(['/view hygiene form', row.id]);
+  }
 }

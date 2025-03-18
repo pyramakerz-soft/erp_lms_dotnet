@@ -16,7 +16,7 @@ import { HygieneFormTableComponent } from "../hygiene-form-table/hygiene-form-ta
 @Component({
   selector: 'app-hygiene-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, TableComponent],
+  imports: [FormsModule, CommonModule, TableComponent, SearchComponent],
   templateUrl: './hygiene-form.component.html',
   styleUrls: ['./hygiene-form.component.css']
 })
@@ -173,4 +173,8 @@ export class HygieneFormComponent implements OnInit {
       });
     }
   }
+  
+onView(row: any) {
+  this.router.navigate(['/Employee/view hygiene form', row.id]);
+}
 }

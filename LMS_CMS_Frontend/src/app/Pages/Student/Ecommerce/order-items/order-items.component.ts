@@ -10,7 +10,7 @@ import { OrderService } from '../../../../Services/Student/order.service';
 import Swal from 'sweetalert2';
 import { Order } from '../../../../Models/Student/ECommerce/order';  
 // import html2canvas from 'html2canvas';
-import html2pdf from 'html2pdf.js';
+// import html2pdf from 'html2pdf.js';
 // import jsPDF from 'jspdf';
 // import { Order } from '../../../../Models/Student/ECommerce/order';   
 // import html2pdf from 'html2pdf.js';
@@ -164,13 +164,13 @@ export class OrderItemsComponent {
     //   pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
     //   pdf.save(`Order_${this.orderID}.pdf`);
     // }); 
-    html2pdf().from(orderElement).set({
-      margin: 10,
-      filename: `Order_${this.orderID}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 3, useCORS: true, allowTaint: true },
-      jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-    }).save();
+    // html2pdf().from(orderElement).set({
+    //   margin: 10,
+    //   filename: `Order_${this.orderID}.pdf`,
+    //   image: { type: 'jpeg', quality: 0.98 },
+    //   html2canvas: { scale: 3, useCORS: true, allowTaint: true },
+    //   jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+    // }).save();
   }
 
   async convertToDataURL(source: any) {

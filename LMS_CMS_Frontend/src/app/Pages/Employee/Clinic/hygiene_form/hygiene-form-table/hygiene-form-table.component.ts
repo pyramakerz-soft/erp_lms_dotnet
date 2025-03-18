@@ -13,7 +13,9 @@ import { Student } from '../../../../../Models/student';
 export class HygieneFormTableComponent {
   @Input() students: any[] = [];
   @Input() hygieneTypes: any[] = [];
-    @Input() isViewOnly: boolean = false; // Add this input
+  @Input() isViewOnly: boolean = false; // Add this input
+  @Input() showSelectAll: boolean = true; // New input property to control visibility of "Select All" column
+
 
 
   // Set Hygiene Type for a Specific Student

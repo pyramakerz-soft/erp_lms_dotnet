@@ -117,6 +117,7 @@ import { OrderItemsComponent } from './Pages/Student/Ecommerce/order-items/order
 import { OrderHistoryComponent } from './Pages/Employee/E-Commerce/order-history/order-history.component';
 import { StockingComponent } from './Pages/Employee/Inventory/stocking/stocking.component';
 import { StockingDetailsComponent } from './Pages/Employee/Inventory/stocking-details/stocking-details.component';
+import { ViewHygieneFormComponent } from './Pages/Employee/Clinic/hygiene_form/veiw-hygiene-form/veiw-hygiene-form.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -135,6 +136,8 @@ export const routes: Routes = [
             { path: "Drugs", component: DrugsComponent, title: "Drugs" },
             { path: "Hygiene Form Medical Report", component: HygieneFormComponent, title: "Hygiene Form" },
             { path: "Create Hygiene Form", component: CreateHygieneFormComponent, title: "Create Hygiene Form" },
+            { path: 'view hygiene form/:id', component: ViewHygieneFormComponent },
+
             { path: "Follow Up", component: FollowUpComponent, title: "Follow Up" },
             { path: "Medical History", component: MedicalHistoryComponent, title: "Medical History" },
             { path: "Medical Report", component: MedicalReportComponent, title: "Medical Report" },

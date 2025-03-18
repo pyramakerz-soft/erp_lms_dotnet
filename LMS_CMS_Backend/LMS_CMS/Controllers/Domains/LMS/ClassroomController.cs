@@ -473,9 +473,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpPost("AddStudentToClassroom/{registrationFormParentID}/{classroomid}")]
         [Authorize_Endpoint_(
-       allowedTypes: new[] { "octa", "employee" },
-       pages: new[] { "Classroom" }
-   )]
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Classroom" }
+        )]
         public async Task<IActionResult> AddStudent(long registrationFormParentID, long classroomid)
         {
             try
@@ -535,14 +535,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     return NotFound("Academic year not found.");
                 }
 
-
-                string name = GenerateUniqueUserName(registerationFormParent.StudentName);
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(name);
+                 
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerationFormParent.StudentName);
                 Student student = new Student
                 {
                     en_name = submittionEName.TextAnswer,
                     ar_name = submittionAName.TextAnswer,
-                    User_Name = name,
+                    User_Name = registerationFormParent.StudentName,
                     Nationality = NationaltyId,
                     Parent_Id = parentId,
                     GenderId = GenderId,
@@ -703,14 +702,6 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 Console.WriteLine($"Error: {ex.Message}\n{ex.StackTrace}");
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
-        }
-        string GenerateUniqueUserName(string baseName)
-        {
-            // Create a unique suffix using a timestamp or GUID.
-            string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6); // 6-character unique ID.
-            return $"{baseName}_{uniqueSuffix}";
-        }
-
-      
+        }  
     }
 }

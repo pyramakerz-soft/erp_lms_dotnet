@@ -116,13 +116,14 @@
 <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{ hidden: !isModalVisible }"
   class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
   <div class="relative bg-white w-[669px] rounded-2xl p-12 gap-4 shadow-md overflow-y-auto max-h-[90vh]">
-    <!-- Close Icon -->
-    <button (click)="closeModal()"
-      class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
-      <i class="fa-solid fa-xmark text-2xl"></i>
-    </button>
-
-    <h1 class="font-semibold text-2xl leading-9">{{ 'Add' | translate }} {{ 'Student' | translate }} {{ 'To' | translate }} {{ 'Classroom' | translate }}</h1>
+    <div class="flex items-center justify-between">     
+      <!-- Close Icon -->
+      <h1 class="font-semibold text-2xl leading-9">{{ 'Add' | translate }} {{ 'Student' | translate }} {{ 'To' | translate }} {{ 'Classroom' | translate }}</h1>
+      <button (click)="closeModal()"
+        class="text-gray-400 hover:text-gray-900 transition duration-200">
+        <i class="fa-solid fa-xmark text-2xl"></i>
+      </button>
+    </div>
     <div class="mt-4 bg-[#F7F7F7] w-[573px] rounded-[24px] p-[16px_24px] gap-[20px]">
       <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Classroom' | translate }}</h6>
       <div class="flex justify-start gap-2 items-start">

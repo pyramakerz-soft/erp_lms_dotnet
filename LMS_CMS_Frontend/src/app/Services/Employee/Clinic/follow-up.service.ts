@@ -26,6 +26,7 @@ Get(DomainName: string): Observable<FollowUp[]> {
 }
 
 
+
 Add(followUp: FollowUp, DomainName: string): Observable<any> {
   const token = localStorage.getItem('current_token');
   const headers = new HttpHeaders()

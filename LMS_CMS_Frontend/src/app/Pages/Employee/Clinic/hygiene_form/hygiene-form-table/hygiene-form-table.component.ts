@@ -13,6 +13,8 @@ import { Student } from '../../../../../Models/student';
 export class HygieneFormTableComponent {
   @Input() students: any[] = [];
   @Input() hygieneTypes: any[] = [];
+    @Input() isViewOnly: boolean = false; // Add this input
+
 
   // Set Hygiene Type for a Specific Student
   setHygieneType(student: Student, hygieneTypeId: number, value: boolean) {

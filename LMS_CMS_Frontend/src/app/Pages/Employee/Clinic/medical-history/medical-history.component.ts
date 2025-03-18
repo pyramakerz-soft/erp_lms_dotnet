@@ -213,72 +213,58 @@ onFileUpload(event: Event, field: 'firstReport' | 'secReport') {
   }
 }
 
-  async saveMedicalHistory() {
-    // if (this.isFormValid()) {
-      try {
-        const domainName = this.apiService.GetHeader();
-        const formData = new FormData();
+async saveMedicalHistory() {
+  if (this.isFormValid()) {
+    try {
+      const domainName = this.apiService.GetHeader();
 
-        // Append all fields to FormData
-        formData.append('Id', this.medicalHistory.id.toString());
-        formData.append('SchoolId', this.medicalHistory.schoolId.toString());
-        formData.append('GradeId', this.medicalHistory.gradeId.toString());
-        formData.append('ClassRoomID', this.medicalHistory.classRoomID.toString());
-        formData.append('StudentId', this.medicalHistory.studentId.toString());
-        formData.append('Details', this.medicalHistory.details);
-        formData.append('PermanentDrug', this.medicalHistory.permanentDrug);
-        formData.append('Date', this.medicalHistory.insertedAt);
-
-        // Handle FirstReport
-        if (this.medicalHistory.firstReport instanceof File) {
-          console.log('this.medicalHistory.firstReport instanceof File')
-          // formData.append('FirstReportFile', this.medicalHistory.firstReport, this.medicalHistory.firstReport.name);
-          formData.append('FirstReport', ''); // Set FirstReport to null when a new file is uploaded
-        } else if (this.medicalHistory.firstReport === null) {
-          console.log('this.medicalHistory.firstReport === null')
-          formData.append('FirstReport', ''); // Set FirstReport to null if the file is deleted
-        } else {
-          console.log('else')
-          formData.append('FirstReport', this.medicalHistory.firstReport); // Retain the existing FirstReport if no new file is uploaded
-        }
-
-        // Handle SecReport
-        if (this.medicalHistory.secReport instanceof File) {
-          formData.append('SecReportFile', this.medicalHistory.secReport, this.medicalHistory.secReport.name);
-          formData.append('SecReport', ''); // Set SecReport to null when a new file is uploaded
-        } else if (this.medicalHistory.secReport === null) {
-          formData.append('SecReport', ''); // Set SecReport to null if the file is deleted
-        } else {
-          formData.append('SecReport', this.medicalHistory.secReport); // Retain the existing SecReport if no new file is uploaded
-        }
-
-        if (this.editMode) {
-          await firstValueFrom(this.medicalHistoryService.Edit(formData, domainName));
-        } else {
-          await firstValueFrom(this.medicalHistoryService.Add(formData, domainName));
-        }
-
-        this.loadMedicalHistories();
-        this.closeModal();
-      } catch (error) {
-        console.error('Error saving medical history:', error);
-        Swal.fire('Error', 'Failed to save medical history. Please try again later.', 'error');
+      if (this.editMode) {
+        await firstValueFrom(this.medicalHistoryService.Edit(this.medicalHistory, domainName));
+      } else {
+        await firstValueFrom(this.medicalHistoryService.Add(this.medicalHistory, domainName));
       }
-    // }
-  }
 
-  isFormValid(): boolean {
-    let isValid = true;
-    for (const key in this.medicalHistory) {
-      if (this.medicalHistory.hasOwnProperty(key)) {
-        if (!this.medicalHistory[key]) {
-          this.validationErrors[key] = `*${this.capitalizeField(key)} is required`;
-          isValid = false;
-        }
-      }
+      this.loadMedicalHistories();
+      this.closeModal();
+    } catch (error) {
+      console.error('Error saving medical history:', error);
+      Swal.fire('Error', 'Failed to save medical history. Please try again later.', 'error');
     }
-    return isValid;
   }
+}
+
+isFormValid(): boolean {
+  let isValid = true;
+
+  // Reset validation errors
+  this.validationErrors = {};
+
+  // Validate School
+  if (!this.medicalHistory.schoolId || this.medicalHistory.schoolId === 0) {
+    this.validationErrors['schoolId'] = '*School is required';
+    isValid = false;
+  }
+
+  // Validate Grade
+  if (!this.medicalHistory.gradeId || this.medicalHistory.gradeId === 0) {
+    this.validationErrors['gradeId'] = '*Grade is required';
+    isValid = false;
+  }
+
+  // Validate Class
+  if (!this.medicalHistory.classRoomID || this.medicalHistory.classRoomID === 0) {
+    this.validationErrors['classRoomID'] = '*Class is required';
+    isValid = false;
+  }
+
+  // Validate Student
+  if (!this.medicalHistory.studentId || this.medicalHistory.studentId === 0) {
+    this.validationErrors['studentId'] = '*Student is required';
+    isValid = false;
+  }
+
+  return isValid;
+}
 
   deleteMedicalHistory(row: any) {
     Swal.fire({

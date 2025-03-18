@@ -14,9 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Metrics;
 using System.Xml;
 using System.Xml.Linq;
-using Zatca.EInvoice.SDK;
-using Zatca.EInvoice.SDK.Contracts;
-using Zatca.EInvoice.SDK.Contracts.Models;
+//using Zatca.EInvoice.SDK;
+//using Zatca.EInvoice.SDK.Contracts;
+//using Zatca.EInvoice.SDK.Contracts.Models;
 
 namespace LMS_CMS_PL.Controllers.Domains.Inventory
 {
@@ -29,19 +29,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         IMapper mapper;
         public  InVoiceNumberCreate _InVoiceNumberCreate;
         private readonly CheckPageAccessService _checkPageAccessService;
-        private readonly IEInvoiceHashGenerator _eInvoiceHashGenerator;
-        private readonly ICsrGenerator _csrGenerator;
-        private readonly RequestResult _requestResult;
+        //private readonly IEInvoiceHashGenerator _eInvoiceHashGenerator;
+        //private readonly ICsrGenerator _csrGenerator;
+        //private readonly RequestResult _requestResult;
 
-        public InventoryMasterController(DbContextFactoryService dbContextFactory, IMapper mapper  , InVoiceNumberCreate inVoiceNumberCreate, CheckPageAccessService checkPageAccessService, IEInvoiceHashGenerator eInvoiceHashGenerator, ICsrGenerator csrGenerator, RequestResult requestResult)
+        //public InventoryMasterController(DbContextFactoryService dbContextFactory, IMapper mapper  , InVoiceNumberCreate inVoiceNumberCreate, CheckPageAccessService checkPageAccessService, IEInvoiceHashGenerator eInvoiceHashGenerator, ICsrGenerator csrGenerator, RequestResult requestResult)
+        public InventoryMasterController(DbContextFactoryService dbContextFactory, IMapper mapper  , InVoiceNumberCreate inVoiceNumberCreate, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             this._InVoiceNumberCreate = inVoiceNumberCreate;
             _checkPageAccessService = checkPageAccessService;
-            _eInvoiceHashGenerator = eInvoiceHashGenerator;
-            _csrGenerator = csrGenerator;
-            _requestResult = requestResult;
+            //_eInvoiceHashGenerator = eInvoiceHashGenerator;
+            //_csrGenerator = csrGenerator;
+            //_requestResult = requestResult;
         }
 
 
@@ -433,24 +434,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 invoiceXml.Load(xmlReader);
             }
 
-            HashResult hash = _eInvoiceHashGenerator.GenerateEInvoiceHashing(invoiceXml);
+            //HashResult hash = _eInvoiceHashGenerator.GenerateEInvoiceHashing(invoiceXml);
 
-            CsrGenerationDto csrGenerationDto = new CsrGenerationDto(
-                    Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
-                    Master.InvoiceNumber.ToString(),                    
-                    Master.Student.StudentAcademicYears.FirstOrDefault().School.ID.ToString(),
-                    Master.Student.StudentAcademicYears.FirstOrDefault().School.Address,
-                    Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
-                    "KSA",
-                    "Simplified",
-                    "Makka",
-                    "test"
-                );
+            //CsrGenerationDto csrGenerationDto = new CsrGenerationDto(
+            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
+            //        Master.InvoiceNumber.ToString(),                    
+            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.ID.ToString(),
+            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Address,
+            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
+            //        "KSA",
+            //        "Simplified",
+            //        "Makka",
+            //        "test"
+            //    );
 
-            CsrResult csr = _csrGenerator.GenerateCsr(csrGenerationDto, EnvironmentType.NonProduction, true);
+            //CsrResult csr = _csrGenerator.GenerateCsr(csrGenerationDto, EnvironmentType.NonProduction, true);
 
-            csr.SaveCsrToFile(Path.Combine(invoiceFolder, "csr.pem"));
-            csr.SavePrivateKeyToFile(Path.Combine(invoiceFolder, "private.pem"));
+            //csr.SaveCsrToFile(Path.Combine(invoiceFolder, "csr.pem"));
+            //csr.SavePrivateKeyToFile(Path.Combine(invoiceFolder, "private.pem"));
 
             return Ok(Master.ID);
         }

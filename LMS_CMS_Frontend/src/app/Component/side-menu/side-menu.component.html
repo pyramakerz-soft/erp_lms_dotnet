@@ -1,13 +1,15 @@
-<div *ngIf="!IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-full min-h-[100vh] py-10 px-3 flex flex-col items-center text-sm lg:text-xl space-y-4">
+<div *ngIf="!IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-[89vh] py-10 px-3 flex flex-col items-center text-sm lg:text-xl space-y-4">
     <img class="w-3 lg:w-fit" src="Images/logo-orange 1 1.png" (click)="toggleMenu()">
-    <i class="fa-solid fa-magnifying-glass p-3" (click)="toggleSearch()"></i>
-    <!-- <img *ngFor="let item of menuItemsForEmployee" class="w-3 lg:w-fit" src="Icons/Dashboard.png" (click)="toggleMenu()"> -->
-    <img *ngFor="let item of menuItemsForEmployee" class="w-3 lg:w-fit" src="Icons/DashboardGray.png" (click)="toggleMenu()">
-    <!-- <img *ngFor="let item of menuItems" class="w-3 lg:w-fit" src="Icons/Dashboard.png" (click)="toggleMenu()"> -->
-    <img *ngFor="let item of menuItems" class="w-3 lg:w-fit" src="Icons/DashboardGray.png" (click)="toggleMenu()">
+    <i class="fa-solid fa-magnifying-glass p-3" (click)="toggleSearch()"></i> 
+    <div *ngFor="let item of menuItemsForEmployee" (click)="toggleMenu()"> 
+        <img class="w-3 lg:w-fit" [src]="'Icons/SideMenuIcons/' + item.en_name.replace(' ',  '_') + '.png'" />
+    </div>
+    <div *ngFor="let item of menuItems" (click)="toggleMenu()"> 
+        <img *ngIf="item.icon" class="w-3 lg:w-fit" [src]="'Icons/SideMenuIcons/' + item.icon.replace(' ',  '_') + '.png'" />
+    </div> 
 </div>
 
-<div *ngIf="IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-full min-h-[100vh] py-10 px-4 flex flex-col   text-sm lg:text-xl">
+<div *ngIf="IsMenuOpen" class="primaryBg rounded-lg text-[#919191] h-[89vh] py-10 px-4 flex flex-col text-sm lg:text-xl">
     <div class="px-7 text-base flex space-x-4 rtl:space-x-reverse items-center" (click)="toggleMenu()">
         <i class="fa-solid fa-angle-left"></i>
         <h1 class="uppercase text-sm lg:text-base font-semibold w-max">{{ 'Dashboard' | translate }}</h1>
@@ -21,7 +23,7 @@
             placeholder="{{ 'Search' | translate }}" [disabled]="!IsMenuOpen" (blur)="onSearchBlur()"/>
     </div>
 
-    <section class="mt-6 min-w-full">
+    <section class="mt-6 min-w-full overflow-y-auto custom-scrollbar">
         <div class="py-4 px-9">
             <h1 class="uppercase text-sm lg:text-lg font-semibold text-[#FFFFFF]">{{ 'Main Menu' | translate }}</h1>
         </div>
@@ -32,7 +34,7 @@
                 [routerLink]="item.route"  
                 class="px-9 py-3 lg:py-4 flex space-x-3 rtl:space-x-reverse items-center justify-between hover:bg-[rgba(255,255,255,0.1)] ltr:hover:rounded-r-lg rtl:hover:rounded-l-lg ltr:hover:border-l-2 rtl:hover:border-r-2 cursor-pointer">
                     <div class="flex items-center space-x-3 rtl:space-x-reverse w-max">
-                        <img class="w-3 lg:w-fit" src="Icons/Dashboard.png">
+                        <img *ngIf="item.icon" class="w-3 lg:w-fit" [src]="'Icons/SideMenuIcons/' + item.icon.replace(' ',  '_') + '.png'">
                         <p>{{ item.label }}</p>
                     </div>
                     <img *ngIf="item.subItems" class="w-3 lg:w-fit" src="Icons/Drop-Down.png">

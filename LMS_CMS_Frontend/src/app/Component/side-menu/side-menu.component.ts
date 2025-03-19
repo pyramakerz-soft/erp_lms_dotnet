@@ -16,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './side-menu.component.css'
 })
 export class SideMenuComponent {
-  @Input() menuItems?: { label: string; route?: string;  subItems?: { label: string; route: string }[]}[] = [];
+  @Input() menuItems?: { label: string; route?: string; icon?:string;  subItems?: { label: string; route: string; icon?:string }[]}[] = [];
   @Input() menuItemsForEmployee?: PagesWithRoleId[];
 
   @ViewChild('searchInput') searchInput: any;

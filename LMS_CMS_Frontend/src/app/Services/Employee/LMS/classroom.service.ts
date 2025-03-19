@@ -127,7 +127,7 @@ baseUrl = ""
         .set('Authorization', `Bearer ${token}`)
         .set('Content-Type', 'application/json');
   
-      return this.http.get(`${this.baseUrl}/Classroom/AddStudentToClassroom/${RegistrationParentId}/${ClassId}`, { headers })
+      return this.http.post(`${this.baseUrl}/Classroom/AddStudentToClassroom/${RegistrationParentId}/${ClassId}`, {}, { headers })
     }
 
 }

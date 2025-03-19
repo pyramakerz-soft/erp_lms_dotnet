@@ -72,6 +72,10 @@ namespace LMS_CMS_BL.Repository
         {
             db.Set<TEntity>().Add(entity);
         }
+        public void AddRange(IEnumerable<TEntity> entities)
+        {
+            db.Set<TEntity>().AddRange(entities);
+        }
         public async Task AddAsync(TEntity entity)
         {
             await db.Set<TEntity>().AddAsync(entity);

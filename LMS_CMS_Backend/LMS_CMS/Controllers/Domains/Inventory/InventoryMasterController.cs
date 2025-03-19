@@ -353,105 +353,105 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
-            XDocument xmlDoc = new XDocument(
-                new XElement("Invoice",
-                    new XElement("cac:AccountingSupplierParty",
-                        new XElement("cac:Party",
-                            new XElement("cac:PartyLegalEntity",
-                                new XElement("cbc:RegistrationName", 
-                                    Master.Student.StudentAcademicYears.FirstOrDefault().School.Name)
-                            ),
-                            new XElement("cac:PartyTaxScheme",
-                                new XElement("cbc:CompanyID", 
-                                    Master.Student.StudentAcademicYears.FirstOrDefault().School.VatNumber)
-                            )
-                        )
-                    ),
-                    new XElement("cbc:IssueDateTime",
-                        DateTime.Parse(Master.Date).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                    ),
-                    new XElement("cac:LegalMonetaryTotal",
-                        new XElement("cbc:TaxInclusiveAmount", Master.TotalWithVat)
-                    ),
-                    new XElement("cac:TaxTotal",
-                        new XElement("cbc:TaxAmount", Master.VatAmount)
-                    ),
-                    new XElement("ext:UBLExtensions",
-                        new XElement("ext:UBLExtension",
-                            new XElement("ext:ExtensionContent",
-                                new XElement("sig:UBLDocumentSignatures",
-                                    new XElement("sac:SignatureInformation",
-                                        new XElement("ds:Signature",
-                                            new XElement("ds:SignedInfo",
-                                                new XElement("ds:Reference",
-                                                    new XElement("ds:DigestValue", Master.DigestValue)
-                                                )
-                                            ),
-                                            new XElement("ds:SignatureValue", Master.SignatureValue),
-                                            new XElement("ds:KeyInfo",
-                                                new XElement("ds:X509Data",
-                                                    new XElement("ds:X509Certificate", Master.PublicKeyCertificate)
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        new XElement("ext:UBLExtension",
-                            new XElement("ext:ExtensionContent",
-                                new XElement("UBLDocumentSignatures",
-                                    new XElement("SignatureInformation",
-                                        new XElement("Signature",
-                                            new XElement("KeyInfo",
-                                                new XElement("X509Data",
-                                                    new XElement("X509Certificate", "")
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
+            //XDocument xmlDoc = new XDocument(
+            //    new XElement("Invoice",
+            //        new XElement("cac:AccountingSupplierParty",
+            //            new XElement("cac:Party",
+            //                new XElement("cac:PartyLegalEntity",
+            //                    new XElement("cbc:RegistrationName", 
+            //                        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name)
+            //                ),
+            //                new XElement("cac:PartyTaxScheme",
+            //                    new XElement("cbc:CompanyID", 
+            //                        Master.Student.StudentAcademicYears.FirstOrDefault().School.VatNumber)
+            //                )
+            //            )
+            //        ),
+            //        new XElement("cbc:IssueDateTime",
+            //            DateTime.Parse(Master.Date).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            //        ),
+            //        new XElement("cac:LegalMonetaryTotal",
+            //            new XElement("cbc:TaxInclusiveAmount", Master.TotalWithVat)
+            //        ),
+            //        new XElement("cac:TaxTotal",
+            //            new XElement("cbc:TaxAmount", Master.VatAmount)
+            //        ),
+            //        new XElement("ext:UBLExtensions",
+            //            new XElement("ext:UBLExtension",
+            //                new XElement("ext:ExtensionContent",
+            //                    new XElement("sig:UBLDocumentSignatures",
+            //                        new XElement("sac:SignatureInformation",
+            //                            new XElement("ds:Signature",
+            //                                new XElement("ds:SignedInfo",
+            //                                    new XElement("ds:Reference",
+            //                                        new XElement("ds:DigestValue", Master.DigestValue)
+            //                                    )
+            //                                ),
+            //                                new XElement("ds:SignatureValue", Master.SignatureValue),
+            //                                new XElement("ds:KeyInfo",
+            //                                    new XElement("ds:X509Data",
+            //                                        new XElement("ds:X509Certificate", Master.PublicKeyCertificate)
+            //                                    )
+            //                                )
+            //                            )
+            //                        )
+            //                    )
+            //                )
+            //            ),
+            //            new XElement("ext:UBLExtension",
+            //                new XElement("ext:ExtensionContent",
+            //                    new XElement("UBLDocumentSignatures",
+            //                        new XElement("SignatureInformation",
+            //                            new XElement("Signature",
+            //                                new XElement("KeyInfo",
+            //                                    new XElement("X509Data",
+            //                                        new XElement("X509Certificate", "")
+            //                                    )
+            //                                )
+            //                            )
+            //                        )
+            //                    )
+            //                )
+            //            )
+            //        )
+            //    )
             
-            );
+            //);
 
-            var xmlFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Invoices");
-            var invoiceFolder = Path.Combine(xmlFolder, Master.ID.ToString());
+            //var xmlFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Invoices");
+            //var invoiceFolder = Path.Combine(xmlFolder, Master.ID.ToString());
 
-            if (!Directory.Exists(invoiceFolder))
-            {
-                Directory.CreateDirectory(invoiceFolder);
-            }
+            //if (!Directory.Exists(invoiceFolder))
+            //{
+            //    Directory.CreateDirectory(invoiceFolder);
+            //}
 
-            var xmlUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Invoices/{Master.ID}/{xmlDoc.GetHashCode}";
+            //var xmlUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Invoices/{Master.ID}/{xmlDoc.GetHashCode}";
 
-            XmlDocument invoiceXml = new XmlDocument();
-            using (var xmlReader = xmlDoc.CreateReader())
-            {
-                invoiceXml.Load(xmlReader);
-            }
+            //XmlDocument invoiceXml = new XmlDocument();
+            //using (var xmlReader = xmlDoc.CreateReader())
+            //{
+            //    invoiceXml.Load(xmlReader);
+            //}
 
-            //HashResult hash = _eInvoiceHashGenerator.GenerateEInvoiceHashing(invoiceXml);
+            ////HashResult hash = _eInvoiceHashGenerator.GenerateEInvoiceHashing(invoiceXml);
 
-            //CsrGenerationDto csrGenerationDto = new CsrGenerationDto(
-            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
-            //        Master.InvoiceNumber.ToString(),                    
-            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.ID.ToString(),
-            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Address,
-            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
-            //        "KSA",
-            //        "Simplified",
-            //        "Makka",
-            //        "test"
-            //    );
+            ////CsrGenerationDto csrGenerationDto = new CsrGenerationDto(
+            ////        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
+            ////        Master.InvoiceNumber.ToString(),                    
+            ////        Master.Student.StudentAcademicYears.FirstOrDefault().School.ID.ToString(),
+            ////        Master.Student.StudentAcademicYears.FirstOrDefault().School.Address,
+            ////        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
+            ////        "KSA",
+            ////        "Simplified",
+            ////        "Makka",
+            ////        "test"
+            ////    );
 
-            //CsrResult csr = _csrGenerator.GenerateCsr(csrGenerationDto, EnvironmentType.NonProduction, true);
+            ////CsrResult csr = _csrGenerator.GenerateCsr(csrGenerationDto, EnvironmentType.NonProduction, true);
 
-            //csr.SaveCsrToFile(Path.Combine(invoiceFolder, "csr.pem"));
-            //csr.SavePrivateKeyToFile(Path.Combine(invoiceFolder, "private.pem"));
+            ////csr.SaveCsrToFile(Path.Combine(invoiceFolder, "csr.pem"));
+            ////csr.SavePrivateKeyToFile(Path.Combine(invoiceFolder, "private.pem"));
 
             return Ok(Master.ID);
         }

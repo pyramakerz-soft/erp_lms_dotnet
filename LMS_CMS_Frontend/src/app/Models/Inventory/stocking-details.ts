@@ -9,6 +9,7 @@ export class StockingDetails {
         public shopItemName :string = '',
         public barCode: string = '',
         public insertedAt :string ="",
+        public ItemPrice : number =0 ,
         public insertedByUserId :number =0,
     ) {}
 }

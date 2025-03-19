@@ -10,7 +10,6 @@ namespace LMS_CMS_BL.DTO.Inventory
     public class StockingAddDTO
     {
         public string Date { get; set; }
-        public int InvoiceNumber { get; set; }
         public long StoreID { get; set; }
 
         public List<StockingDetailsAddDto>? StockingDetails { get; set; }

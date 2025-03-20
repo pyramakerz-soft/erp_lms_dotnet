@@ -1,0 +1,49 @@
+<div class="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Medical History By Parent</h2>
+
+    <!-- Wrap the content in *ngIf -->
+    <div *ngIf="medicalHistory">
+        <!-- Date Section -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
+            <label class="text-gray-600 font-medium">Date:</label>
+            <p class="text-gray-800">{{ medicalHistory.insertedAt | date }}</p>
+        </div>
+
+        <!-- Description Section -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
+            <label class="text-gray-600 font-medium">Description:</label>
+            <p class="text-gray-800">{{ medicalHistory.details || 'No description' }}</p>
+        </div>
+
+        <!-- Permanent Drug Section -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
+            <label class="text-gray-600 font-medium">Permanent Drug:</label>
+            <p class="text-gray-800">{{ medicalHistory.permanentDrug || 'No permanent drug' }}</p>
+        </div>
+
+        <!-- Attached Files Section -->
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            <label class="text-gray-600 font-medium">Attached Files:</label>
+            <div class="mt-2">
+                <div *ngIf="medicalHistory.firstReport">
+                    <a [href]="medicalHistory.firstReport" target="_blank" class="text-blue-500 hover:underline">
+                        View First Report
+                    </a>
+                </div>
+                <div *ngIf="medicalHistory.secReport">
+                    <a [href]="medicalHistory.secReport" target="_blank" class="text-blue-500 hover:underline">
+                        View Second Report
+                    </a>
+                </div>
+                <div *ngIf="!medicalHistory.firstReport && !medicalHistory.secReport">
+                    <p class="text-gray-800">No attached files</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <button (click)="goBack()" class="mt-6 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+        Back
+    </button>
+</div>

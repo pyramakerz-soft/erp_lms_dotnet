@@ -112,12 +112,13 @@ import { ShopItemComponent } from './Pages/Student/Ecommerce/shop-item/shop-item
 import { CartComponent } from './Pages/Student/Ecommerce/cart/cart.component';
 import { OrderComponent } from './Pages/Student/Ecommerce/order/order.component';
 import { DosesComponent } from './Pages/Employee/Clinic/doses/doses.component';
-import { MedicalReportComponent } from './Pages/Employee/Clinic/medical-report/medical-report.component';
+import { MedicalReportComponent } from './Pages/Employee/Clinic/medical-report/medical-report/medical-report.component';
 import { OrderItemsComponent } from './Pages/Student/Ecommerce/order-items/order-items.component';
 import { OrderHistoryComponent } from './Pages/Employee/E-Commerce/order-history/order-history.component';
 import { StockingComponent } from './Pages/Employee/Inventory/stocking/stocking.component';
 import { StockingDetailsComponent } from './Pages/Employee/Inventory/stocking-details/stocking-details.component';
 import { ViewHygieneFormComponent } from './Pages/Employee/Clinic/hygiene_form/veiw-hygiene-form/veiw-hygiene-form.component';
+import { MedicalHistoryByParentComponent } from './Pages/Employee/Clinic/medical-report/medical-history-by-parent/medical-history-by-parent/medical-history-by-parent.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -137,6 +138,8 @@ export const routes: Routes = [
             { path: "Hygiene Form Medical Report", component: HygieneFormComponent, title: "Hygiene Form" },
             { path: "Create Hygiene Form", component: CreateHygieneFormComponent, title: "Create Hygiene Form" },
             { path: 'view hygiene form/:id', component: ViewHygieneFormComponent },
+            { path: 'mh by parent/:id', component: MedicalHistoryByParentComponent },
+
 
             { path: "Follow Up", component: FollowUpComponent, title: "Follow Up" },
             { path: "Medical History", component: MedicalHistoryComponent, title: "Medical History" },

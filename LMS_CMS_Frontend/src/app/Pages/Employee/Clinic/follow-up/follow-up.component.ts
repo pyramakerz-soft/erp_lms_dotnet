@@ -104,6 +104,7 @@ closeDrugModal() {
     this.isDrugModalVisible = false;
 }
 
+
 // Save Drug
 async saveDrug() {
     if (!this.drug.name) {

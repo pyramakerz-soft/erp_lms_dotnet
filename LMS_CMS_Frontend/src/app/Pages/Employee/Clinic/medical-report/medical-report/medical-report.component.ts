@@ -1,21 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { HygieneFormService } from '../../../../Services/Employee/Clinic/hygiene-form.service';
-import { FollowUpService } from '../../../../Services/Employee/Clinic/follow-up.service';
-import { ApiService } from '../../../../Services/api.service';
+import { HygieneFormService } from '../../../../../Services/Employee/Clinic/hygiene-form.service';
+import { FollowUpService } from '../../../../../Services/Employee/Clinic/follow-up.service';
+import { ApiService } from '../../../../../Services/api.service';
 import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
-import { TableComponent } from "../../../../Component/reuse-table/reuse-table.component";
-import { FollowUpComponent } from "../follow-up/follow-up.component";
+import { TableComponent } from "../../../../../Component/reuse-table/reuse-table.component";
+import { FollowUpComponent } from "../../follow-up/follow-up.component";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HygieneFormComponent } from "../hygiene_form/hygiene-form/hygiene-form.component";
-import { CreateHygieneFormComponent } from "../hygiene_form/create-hygiene-form/create-hygiene-form.component";
-import { HygieneFormTableComponent } from "../hygiene_form/hygiene-form-table/hygiene-form-table.component";
-import { SchoolService } from '../../../../Services/Employee/school.service';
-import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
-import { ClassroomService } from '../../../../Services/Employee/LMS/classroom.service';
-import { StudentService } from '../../../../Services/student.service';
-import { MedicalReportService } from '../../../../Services/Employee/Clinic/medical-report.service';
+import { HygieneFormComponent } from "../../hygiene_form/hygiene-form/hygiene-form.component";
+import { CreateHygieneFormComponent } from "../../hygiene_form/create-hygiene-form/create-hygiene-form.component";
+import { HygieneFormTableComponent } from "../../hygiene_form/hygiene-form-table/hygiene-form-table.component";
+import { SchoolService } from '../../../../../Services/Employee/school.service';
+import { GradeService } from '../../../../../Services/Employee/LMS/grade.service';
+import { ClassroomService } from '../../../../../Services/Employee/LMS/classroom.service';
+import { StudentService } from '../../../../../Services/student.service';
+import { MedicalReportService } from '../../../../../Services/Employee/Clinic/medical-report.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-medical-report',
@@ -25,8 +26,10 @@ import { MedicalReportService } from '../../../../Services/Employee/Clinic/medic
   standalone:true
 })
 export class MedicalReportComponent implements OnInit {
-onView($event: any) {
-throw new Error('Method not implemented.');
+
+  
+onView(id: number) {
+  this.router.navigate(['/Employee/mh-by-parent', id]); // Corrected route
 }
   // Tabs
   tabs = ['MH By Parent', 'MH By Doctor', 'Hygiene Form', 'Follow Up'];
@@ -42,6 +45,7 @@ throw new Error('Method not implemented.');
   followUps: any[] = [];
 
   constructor(
+    private router: Router,
     private hygieneFormService: HygieneFormService,
     private followUpService: FollowUpService,
     private apiService: ApiService,
@@ -78,26 +82,27 @@ throw new Error('Method not implemented.');
 filteredFollowUps: any[] = [];
 
 filterFollowUps() {
-  if (this.selectedSchool && this.selectedGrade && this.selectedClass) {
-    // console.log('Filtering follow-ups...');
-    console.log('Selected School ID:', this.selectedSchool);
-    // console.log('Selected Grade ID:', this.selectedGrade);
-    // console.log('Selected Class ID:', this.selectedClass);
+  let filteredFollowUps = this.followUps;
 
-    // console.log(this.followUps)
-    this.filteredFollowUps = this.followUps.filter(followUp =>
-      followUp.schoolId == this.selectedSchool &&
-      followUp.gradeId == this.selectedGrade &&
-      followUp.classRoomID == this.selectedClass
-    );
-
-    console.log('Filtered Follow Ups:', this.filteredFollowUps); // Log the filtered data
-    if (this.filteredFollowUps.length === 0) {
-      console.log('No follow-ups found for the selected criteria.');
-    }
-  } else {
-    console.log('Please select all filtration criteria (School, Grade, and Class).');
+  if (this.selectedSchool) {
+    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.schoolId == this.selectedSchool);
   }
+
+  if (this.selectedGrade) {
+    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.gradeId == this.selectedGrade);
+  }
+
+  if (this.selectedClass) {
+    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.classRoomID == this.selectedClass);
+  }
+
+  console.log('Filtered Follow Ups:', filteredFollowUps);
+
+  if (filteredFollowUps.length === 0) {
+    console.log('No follow-ups found for the selected criteria.');
+  }
+
+  this.filteredFollowUps = filteredFollowUps;
 }
 
   // Add these methods for the filtration system
@@ -187,6 +192,7 @@ onClassChange() {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
+      console.log(data)
 
       this.mhByParentData = data.map((item) => ({
         date: new Date(item.insertedAt).toLocaleDateString(),
@@ -248,27 +254,33 @@ async loadAllHygieneForms() {
 
   
 filterStudents() {
-  // if (this.selectedSchool && this.selectedGrade && this.selectedClass) {
-    const filteredForms = this.allHygieneForms.filter(form =>
-      form.schoolId == this.selectedSchool &&
-      form.gradeId == this.selectedGrade &&
-      form.classRoomID == this.selectedClass
-    );
+  let filteredForms = this.allHygieneForms;
 
-    if (filteredForms.length > 0) {
-      this.students = filteredForms[0].studentHygieneTypes.map((student: any) => ({
-        ...student,
-        attendance: student.attendance,
-        comment: student.comment,
-        actionTaken: student.actionTaken
-      }));
-    } else {
-      this.students = [];
-      console.log('No students found for the selected criteria.');
-    }
-  // } else {
-  //   console.log('Please select all filtration criteria (School, Grade, Class, and Date).');
-  // }
+  if (this.selectedSchool) {
+    filteredForms = filteredForms.filter(form => form.schoolId == this.selectedSchool);
+  }
+
+  if (this.selectedGrade) {
+    filteredForms = filteredForms.filter(form => form.gradeId == this.selectedGrade);
+  }
+
+  if (this.selectedClass) {
+    filteredForms = filteredForms.filter(form => form.classRoomID == this.selectedClass);
+  }
+
+  console.log(filteredForms);
+
+  if (filteredForms.length > 0) {
+    this.students = filteredForms[0].studentHygieneTypes.map((student: any) => ({
+      ...student,
+      attendance: student.attendance,
+      comment: student.comment,
+      actionTaken: student.actionTaken
+    }));
+  } else {
+    this.students = [];
+    console.log('No students found for the selected criteria.');
+  }
 }
   
 
@@ -277,9 +289,9 @@ async loadHygieneForms() {
   try {
     const domainName = this.apiService.GetHeader();
     const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
-    // console.log('start')
-    // console.log(data)
-    // console.log('end')
+    console.log('start')
+    console.log(data)
+    console.log('end')
 
     this.hygieneForms = data.map((item) => ({
       ...item,

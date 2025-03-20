@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { MedicalHistoryByParent } from '../../../Models/Clinic/mh-by-parent';
 import { ApiService } from '../../api.service';
 
 @Injectable({
@@ -27,6 +28,21 @@ export class MedicalReportService {
 
     return this.http.get<any[]>(`${this.baseUrl}/MedicalReport/GetAllMHByParent`, { headers });
   }
+
+  // Method to get medical history by parent ID
+  getMHByParentById(id: number, DomainName: string): Observable<MedicalHistoryByParent> {
+    if (DomainName != null) {
+      this.header = DomainName;
+    }
+    const token = localStorage.getItem('current_token');
+    const headers = new HttpHeaders()
+      .set('Domain-Name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('accept', '*/*');
+
+    return this.http.get<MedicalHistoryByParent>(`${this.baseUrl}/MedicalHistory/GetByIdByParent/id?id=${id}`, { headers });
+  }
+
 
 
     getAllMHByDoctor(DomainName: string): Observable<any[]> {

@@ -48,7 +48,7 @@ ngOnInit(): void {
 
 async loadHygieneForm(id: number) {
   try {
-const domainName = this.apiService.GetHeader();
+    const domainName = this.apiService.GetHeader();
     this.hygieneFormService.GetById(id, domainName).subscribe({
       next: (hygieneForm) => {
         this.hygieneForm = hygieneForm;

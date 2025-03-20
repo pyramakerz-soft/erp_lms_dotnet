@@ -39,17 +39,37 @@ GetById(id: number, DomainName: string): Observable<HygieneForm> {
     .set('accept', '*/*');
   return this.http.get<HygieneForm>(`${this.baseUrl}/HygieneForm/id?id=${id}`, { headers });
 }
+  // Add a new hygiene form
+  Add(hygieneFormData: any, DomainName: string): Observable<any> {
+    if (DomainName != null) {
+      this.header = DomainName;
+    }
+    const token = localStorage.getItem('current_token');
+    const headers = new HttpHeaders()
+      .set('Domain-Name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
 
-Delete(id: number, DomainName: string): Observable<any> {
-  if (DomainName != null) {
-    this.header = DomainName;
+    // Ensure attendance is either true or false
+    hygieneFormData.studentHygieneTypes = hygieneFormData.studentHygieneTypes.map((student: any) => ({
+      ...student,
+      attendance: student.attendance === true || student.attendance === false ? student.attendance : false, // Default to false if not provided
+    }));
+
+    return this.http.post(`${this.baseUrl}/HygieneForm`, hygieneFormData, { headers });
   }
-  const token = localStorage.getItem('current_token');
-  const headers = new HttpHeaders()
-    .set('Domain-Name', this.header)
-    .set('Authorization', `Bearer ${token}`)
-    .set('accept', '*/*')
-    .set('Content-Type', 'application/json');
-  return this.http.delete(`${this.baseUrl}/HygieneForm?id=${id}`, { headers, responseType: 'text' });
-}
+
+  Delete(id: number, DomainName: string): Observable<any> {
+    if (DomainName != null) {
+      this.header = DomainName;
+    }
+    const token = localStorage.getItem('current_token');
+    const headers = new HttpHeaders()
+      .set('Domain-Name', this.header) // Add Domain-Name header
+      .set('Authorization', `Bearer ${token}`) // Add Authorization header
+      .set('accept', '*/*')
+      .set('Content-Type', 'application/json');
+
+    return this.http.delete(`${this.baseUrl}/HygieneForm?id=${id}`, { headers, responseType: 'text' });
+  }
 }

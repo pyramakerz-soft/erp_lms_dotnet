@@ -21,7 +21,8 @@ import { HygieneFormTableComponent } from "../hygiene-form-table/hygiene-form-ta
   styleUrls: ['./hygiene-form.component.css']
 })
 export class HygieneFormComponent implements OnInit {
-  hygieneForms: HygieneForm[] = []; // Declare the hygieneForms property
+  hygieneForms: HygieneForm[] = []; // Filtered hygiene forms
+  originalHygieneForms: HygieneForm[] = []; // Original unfiltered hygiene forms
   @Input() students: any[] = [];
   @Input() hygieneTypes: any[] = [];
 
@@ -31,6 +32,11 @@ export class HygieneFormComponent implements OnInit {
   isModalVisible = false;
   DomainName: string = '';
 
+  // Search properties
+  key: string = 'id'; // Default search key
+  value: any = ''; // Search value
+  keysArray: string[] = ['id', 'school', 'grade', 'classRoom', 'date']; // Keys available for search
+
   constructor(
     private router: Router,
     private hygieneFormService: HygieneFormService,
@@ -38,7 +44,7 @@ export class HygieneFormComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadHygieneForms(); 
+    this.loadHygieneForms();
   }
 
   async loadHygieneForms() {
@@ -48,7 +54,8 @@ export class HygieneFormComponent implements OnInit {
 
       console.log(data);
 
-      this.hygieneForms = data.map((item) => ({
+      // Store the original data
+      this.originalHygieneForms = data.map((item) => ({
         ...item,
         school: item.school,
         grade: item.grade,
@@ -56,10 +63,46 @@ export class HygieneFormComponent implements OnInit {
         date: new Date(item.date).toLocaleDateString(),
         actions: { delete: true, edit: true, view: true } // Enable view action
       }));
+
+      // Reset the filtered data to the original data
+      this.hygieneForms = [...this.originalHygieneForms];
+
+      // Apply search filter if a value is provided
+      if (this.value) {
+        this.applySearchFilter();
+      }
     } catch (error) {
       console.error('Error fetching hygiene forms:', error);
-      Swal.fire('Error', 'Failed to load hygiene forms. Please try again later.', 'error');
     }
+  }
+
+  // Handle search event
+  async onSearchEvent(event: { key: string, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+
+    // Reset the hygieneForms array to the original data
+    this.hygieneForms = [...this.originalHygieneForms];
+
+    if (this.value !== '') {
+      this.applySearchFilter(); // Apply search filter
+    }
+  }
+
+  // Apply search filter
+  applySearchFilter() {
+    const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+
+    this.hygieneForms = this.hygieneForms.filter((form) => {
+      const fieldValue = form[this.key as keyof HygieneForm];
+      if (typeof fieldValue === 'string') {
+        return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+      }
+      if (typeof fieldValue === 'number') {
+        return fieldValue === numericValue;
+      }
+      return false;
+    });
   }
 
   navigateToCreateHygieneForm() {
@@ -71,15 +114,15 @@ export class HygieneFormComponent implements OnInit {
       this.editHygieneForm = true;
       this.hygieneForm = this.hygieneForms.find(hf => hf.id === id);
     } else {
-      this.hygieneForm = { id: null, grade: '', classes: '' }; 
+      this.hygieneForm = { id: null, grade: '', classes: '' };
       this.editHygieneForm = false;
     }
-    this.isModalVisible = true; 
+    this.isModalVisible = true;
   }
 
   closeModal() {
-    this.isModalVisible = false; 
-    this.hygieneForm = { id: null, grade: '', classes: '' }; 
+    this.isModalVisible = false;
+    this.hygieneForm = { id: null, grade: '', classes: '' };
     this.editHygieneForm = false;
     this.validationErrors = {};
   }
@@ -88,12 +131,12 @@ export class HygieneFormComponent implements OnInit {
     if (this.validateForm()) {
       if (this.editHygieneForm) {
         const index = this.hygieneForms.findIndex(hf => hf.id === this.hygieneForm.id);
-        this.hygieneForms[index] = { ...this.hygieneForm, actions: { delete: true, edit: true } }; 
+        this.hygieneForms[index] = { ...this.hygieneForm, actions: { delete: true, edit: true } };
       } else {
-        this.hygieneForm.id = this.hygieneForms.length + 1; 
-        this.hygieneForms.push({ ...this.hygieneForm, date: new Date().toISOString().split('T')[0], actions: { delete: true, edit: true } }); 
+        this.hygieneForm.id = this.hygieneForms.length + 1;
+        this.hygieneForms.push({ ...this.hygieneForm, date: new Date().toISOString().split('T')[0], actions: { delete: true, edit: true } });
       }
-      this.closeModal(); 
+      this.closeModal();
     }
   }
 
@@ -103,8 +146,8 @@ export class HygieneFormComponent implements OnInit {
       text: 'You will not be able to recover this hygiene form!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#FF7519', 
-      cancelButtonColor: '#2E3646', 
+      confirmButtonColor: '#FF7519',
+      cancelButtonColor: '#2E3646',
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, keep it'
     }).then((result) => {
@@ -148,33 +191,7 @@ export class HygieneFormComponent implements OnInit {
     }
   }
 
-  key: string = 'id'; // Default search key (can be changed dynamically)
-  value: any = ''; // Search value
-  keysArray: string[] = ['id', 'school', 'grade', 'classRoom']; // Keys available for search
-
-  async onSearchEvent(event: { key: string, value: any }) {
-    this.key = event.key;
-    this.value = event.value;
-
-    if (this.value === '') {
-      await this.loadHygieneForms(); // Reset to full list if search is empty
-    } else {
-      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
-
-      this.hygieneForms = this.hygieneForms.filter((form) => {
-        const fieldValue = form[this.key as keyof HygieneForm];
-        if (typeof fieldValue === 'string') {
-          return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-        }
-        if (typeof fieldValue === 'number') {
-          return fieldValue === numericValue;
-        }
-        return false;
-      });
-    }
+  onView(row: any) {
+    this.router.navigate(['/Employee/view hygiene form', row.id]);
   }
-  
-onView(row: any) {
-  this.router.navigate(['/Employee/view hygiene form', row.id]);
-}
 }

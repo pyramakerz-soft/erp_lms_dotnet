@@ -1,23 +1,23 @@
 <div class="container mx-auto pr-6">
     <!-- Header Section -->
     <div class="flex justify-between">
-        <h1 class="primaryTxt font-semibold text-2xl leading-9">Create Hygiene Form</h1>
-        <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center space-x-5 rtl:space-x-reverse">
+        <i class="fa-solid fa-chevron-left rtl:rotate-180" (click)="moveToHygieneForm()"></i>
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Hygiene Form</h1>
+    </div>        <div class="flex justify-between items-center">
             <button (click)="saveHygieneForm()"
-                class=" text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2" style="background-color: #FF7519;">
+                class="text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2"
+                style="background-color: #FF7519;">
                 Save
             </button>
         </div>
     </div>
 
-<!-- Error Message -->
-<div *ngIf="errorMessage" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg mx-auto text-center mb-4 mt-4
-">
-    {{ errorMessage }}
-</div>
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg mx-auto text-center mb-4 mt-4">
+        {{ errorMessage }}
+    </div>
 
-
-        
     <!-- Selection Inputs -->
     <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
         <!-- School Select -->
@@ -29,6 +29,8 @@
                 <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
                 <option *ngIf="schools.length === 0" disabled selected>No Data Found</option>
             </select>
+            <span *ngIf="validationErrors['school']" class="text-red-500 ml-3 font-normal">{{ validationErrors['school']
+                }}</span>
         </div>
 
         <!-- Grade Select -->
@@ -41,6 +43,8 @@
                 <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
                 <option *ngIf="grades.length === 0" disabled selected>No Data Found</option>
             </select>
+            <span *ngIf="validationErrors['grade']" class="text-red-500 ml-3 font-normal">{{ validationErrors['grade']
+                }}</span>
         </div>
 
         <!-- Class Select -->
@@ -53,6 +57,8 @@
                 <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
                 <option *ngIf="classes.length === 0" disabled selected>No Data Found</option>
             </select>
+            <span *ngIf="validationErrors['class']" class="text-red-500 ml-3 font-normal">{{ validationErrors['class']
+                }}</span>
         </div>
 
         <!-- Date Input -->
@@ -60,6 +66,8 @@
             <label class="mb-2 primaryTxt" for="date">Date</label>
             <input type="date" id="date" [(ngModel)]="selectedDate"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3" [disabled]="!selectedClass">
+            <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{ validationErrors['date']
+                }}</span>
         </div>
     </div>
 

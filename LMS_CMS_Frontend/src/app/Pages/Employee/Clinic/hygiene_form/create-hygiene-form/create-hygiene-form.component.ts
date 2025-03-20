@@ -26,6 +26,9 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./create-hygiene-form.component.css'],
 })
 export class CreateHygieneFormComponent implements OnInit {
+moveToHygieneForm() {
+this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
+}
   schools: School[] = [];
   grades: Grade[] = [];
   classes: Classroom[] = [];
@@ -37,6 +40,9 @@ export class CreateHygieneFormComponent implements OnInit {
   selectedGrade: number | null = null;
   selectedClass: number | null = null;
   selectedDate: string = '';
+
+  // Validation errors
+  validationErrors: { [key: string]: string } = {};
 
   constructor(
     private http: HttpClient,
@@ -60,8 +66,8 @@ export class CreateHygieneFormComponent implements OnInit {
       const data = await firstValueFrom(this.hygieneTypesService.Get(domainName));
       this.hygieneTypes = data;
     } catch (error) {
-        console.error('Error loading hygiene types:', error);
-        this.errorMessage = 'Failed to load hygiene types.';
+      console.error('Error loading hygiene types:', error);
+      this.errorMessage = 'Failed to load hygiene types.';
     }
   }
 
@@ -107,16 +113,16 @@ export class CreateHygieneFormComponent implements OnInit {
       try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
-        console.log(data)
+        console.log(data);
         if (data.length === 0) {
           this.errorMessage = 'No students found for the selected class.';
           this.students = [];
         } else {
-          this.students = data.map(student => ({
+          this.students = data.map((student) => ({
             ...student,
             attendance: null,
             comment: '',
-            actionTaken: ''
+            actionTaken: '',
           }));
         }
       } catch (error) {
@@ -147,39 +153,64 @@ export class CreateHygieneFormComponent implements OnInit {
     this.loadStudents();
   }
 
+  // Validate the form
+  validateForm(): boolean {
+    let isValid = true;
+    this.validationErrors = {}; // Reset validation errors
+
+    if (!this.selectedSchool) {
+      this.validationErrors['school'] = '*School is required';
+      isValid = false;
+    }
+    if (!this.selectedGrade) {
+      this.validationErrors['grade'] = '*Grade is required';
+      isValid = false;
+    }
+    if (!this.selectedClass) {
+      this.validationErrors['class'] = '*Class is required';
+      isValid = false;
+    }
+    if (!this.selectedDate) {
+      this.validationErrors['date'] = '*Date is required';
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
   saveHygieneForm() {
-    const domainName = this.apiService.GetHeader();
-    const token = localStorage.getItem('current_token');
+    if (this.validateForm()) {
+      const domainName = this.apiService.GetHeader();
+      const token = localStorage.getItem('current_token');
 
-    const headers = new HttpHeaders()
-      .set('Domain-Name', domainName)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
+      const headers = new HttpHeaders()
+        .set('Domain-Name', domainName)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Content-Type', 'application/json');
 
-    const studentHygieneTypes = this.students.map(student => {
-      const hygieneTypesIds = this.hygieneTypes
-        .filter(ht => student[`hygieneType_${ht.id}`] === true)
-        .map(ht => ht.id);
+      const studentHygieneTypes = this.students.map((student) => {
+        const hygieneTypesIds = this.hygieneTypes
+          .filter((ht) => student[`hygieneType_${ht.id}`] === true)
+          .map((ht) => ht.id);
 
-      return {
-        studentId: student.id,
-        hygieneTypesIds: hygieneTypesIds,
-        attendance: student['attendance'],
-        comment: student['comment'],
-        actionTaken: student['actionTaken']
+        return {
+          studentId: student.id,
+          hygieneTypesIds: hygieneTypesIds,
+          attendance: student['attendance'],
+          comment: student['comment'],
+          actionTaken: student['actionTaken'],
+        };
+      });
+
+      const requestBody = {
+        schoolId: this.selectedSchool,
+        gradeId: this.selectedGrade,
+        classRoomID: this.selectedClass,
+        date: new Date(this.selectedDate).toISOString(),
+        studentHygieneTypes: studentHygieneTypes,
       };
-    });
 
-    const requestBody = {
-      schoolId: this.selectedSchool,
-      gradeId: this.selectedGrade,
-      classRoomID: this.selectedClass,
-      date: new Date(this.selectedDate).toISOString(),
-      studentHygieneTypes: studentHygieneTypes
-    };
-
-    this.http.post(`${this.apiService.BaseUrl}/HygieneForm`, requestBody, { headers })
-      .subscribe({
+      this.http.post(`${this.apiService.BaseUrl}/HygieneForm`, requestBody, { headers }).subscribe({
         next: (response) => {
           console.log('Hygiene form saved successfully:', response);
           Swal.fire('Success', 'Hygiene form saved successfully!', 'success');
@@ -187,11 +218,16 @@ export class CreateHygieneFormComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error saving hygiene form:', error);
-          this.errorMessage ='Failed to save hygiene form.';
-        }
+          this.errorMessage = 'Failed to save hygiene form.';
+        },
       });
+    } else {
+      // Display error messages for missing fields
+      this.errorMessage = 'Please fill out all required fields.';
+    }
   }
-    // Handle view action
+
+  // Handle view action
   onView(row: any) {
     this.router.navigate(['/view hygiene form', row.id]);
   }

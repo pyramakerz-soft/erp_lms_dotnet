@@ -13,6 +13,8 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         [Key]
         public long ID { get; set; }
         public string Date { get; set; }
+        public long? AdditionId { get; set; }
+        public long? DisbursementId { get; set; }
 
         [ForeignKey("Store")]
         public long StoreID { get; set; }

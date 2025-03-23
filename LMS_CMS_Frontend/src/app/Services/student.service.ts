@@ -76,7 +76,7 @@ export class StudentService {
     return this.http.get<Student>(`${this.baseUrl}/Student/SearchByNationality/${NationalID}`, { headers })
   }
   
-  GetBySchoolYearGradeClassID(schoolId?: number, yearId?: number, gradeId?: number, classId?: number, DomainName?: string){
+  GetBySchoolGradeClassID(schoolId: number, gradeId: number, classId: number, DomainName: string){
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -87,12 +87,10 @@ export class StudentService {
     .set('Content-Type', 'application/json');
 
     let params = new HttpParams();
-    
-    if (schoolId !== undefined) params = params.set('schoolId', schoolId.toString());
-    if (yearId !== undefined) params = params.set('yearId', yearId.toString());
-    if (gradeId !== undefined) params = params.set('gradeId', gradeId.toString());
-    if (classId !== undefined) params = params.set('classId', classId.toString());
+    params = params.set('schoolId', schoolId.toString()); 
+    params = params.set('gradeId', gradeId.toString());
+    params = params.set('classId', classId.toString());
 
-    return this.http.get<Student[]>(`${this.baseUrl}/GetBySchoolYearGradeClassID`, { headers, params });
+    return this.http.get<any>(`${this.baseUrl}/Student/GetBySchoolGradeClassID`, { headers, params });
   }
 }

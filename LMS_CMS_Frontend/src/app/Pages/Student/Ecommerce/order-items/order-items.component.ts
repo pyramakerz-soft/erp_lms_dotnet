@@ -10,6 +10,7 @@ import { OrderService } from '../../../../Services/Student/order.service';
 import Swal from 'sweetalert2';
 import { Order } from '../../../../Models/Student/ECommerce/order';   
 import html2pdf from 'html2pdf.js';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-order-items',
@@ -33,7 +34,7 @@ export class OrderItemsComponent {
   previousRoute: any;
   
   constructor(public account: AccountService, public ApiServ: ApiService, private router: Router, public cartService:CartService, 
-    public orderService:OrderService, public activeRoute: ActivatedRoute){}
+    public orderService:OrderService, public activeRoute: ActivatedRoute, public reportsService:ReportsService){}
   
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -46,14 +47,7 @@ export class OrderItemsComponent {
       this.previousRoute = params['from']; // Store previous route
    
       this.getCartData().then(() => {
-        if (params['download'] === 'true') {
-          this.cart.cart_ShopItems.forEach((row) => {
-            if (row.mainImage) {
-              row.mainImage = row.mainImage.replace(/ /g, "%20");
-              console.log(row.mainImage)
-              this.convertToDataURL(row.mainImage)
-            }
-          });
+        if (params['download'] === 'true') { 
           setTimeout(() => {
             this.DownloadOrder();
             this.moveToOrders()
@@ -143,30 +137,7 @@ export class OrderItemsComponent {
     });
   }
   
-  DownloadOrder() {
-    let orderElement = document.getElementById('OrderToDownload');
-  
-    if (!orderElement) {
-      console.error("OrderToDownload element not found!");
-      return;
-    } 
-
-    html2pdf().from(orderElement).set({
-      margin: 10,
-      filename: `Order_${this.orderID}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 3, useCORS: true, allowTaint: true },
-      jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-    }).save();
-  }
-
-  async convertToDataURL(source: any) {
-    const blob = await fetch(source).then((result) => result.blob());
-    const dataUrl = await new Promise((resolve) => {
-      let reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
-    });
-    return dataUrl;
-  }
+  DownloadOrder() { 
+    this.reportsService.DownloadAsPDF(`Order_${this.orderID}`)
+  } 
 }

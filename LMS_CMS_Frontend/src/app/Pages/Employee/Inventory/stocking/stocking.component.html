@@ -29,7 +29,7 @@
           <tbody>
             <!-- No Data Row -->
             <tr *ngIf="TableData.length === 0">
-              <td colspan="11"
+              <td colspan="3"
                 class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                 No Data Found
               </td>
@@ -41,10 +41,7 @@
               class="border-t border-gray-300 text-xs md:text-sm">
               <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                 {{ row.id }}
-              </td>
-              <!-- <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                {{ row.invoiceNumber }}
-              </td> -->
+              </td>  
               <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                 {{ row.date }}
               </td>

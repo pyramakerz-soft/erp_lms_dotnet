@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Student } from '../Models/student';
@@ -28,6 +28,7 @@ export class StudentService {
 
     return this.http.get<Student[]>(`${this.baseUrl}/Student`, { headers })
   }
+
   GetByID(id:number,DomainName?:string){
     if(DomainName!=null) {
       this.header=DomainName 
@@ -73,5 +74,25 @@ export class StudentService {
     .set('Content-Type', 'application/json');
 
     return this.http.get<Student>(`${this.baseUrl}/Student/SearchByNationality/${NationalID}`, { headers })
+  }
+  
+  GetBySchoolYearGradeClassID(schoolId?: number, yearId?: number, gradeId?: number, classId?: number, DomainName?: string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    let params = new HttpParams();
+    
+    if (schoolId !== undefined) params = params.set('schoolId', schoolId.toString());
+    if (yearId !== undefined) params = params.set('yearId', yearId.toString());
+    if (gradeId !== undefined) params = params.set('gradeId', gradeId.toString());
+    if (classId !== undefined) params = params.set('classId', classId.toString());
+
+    return this.http.get<Student[]>(`${this.baseUrl}/GetBySchoolYearGradeClassID`, { headers, params });
   }
 }

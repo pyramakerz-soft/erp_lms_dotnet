@@ -22,6 +22,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public string? NationalityName { get; set; }
         public long? AccountNumberID { get; set; }
         public string? AccountNumberName { get; set; }
-
+        public long GenderId { get; set; }
+        public string GenderName { get; set; }
     }
 }

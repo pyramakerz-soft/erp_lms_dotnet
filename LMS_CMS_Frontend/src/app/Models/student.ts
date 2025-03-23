@@ -15,5 +15,7 @@ export class Student {
         public nationality :number =0,
         public email: string = '',
         public insertedByUserId :number =0,
+        public genderName: string = '',
+        public genderId :number =0,
     ) {}
 }

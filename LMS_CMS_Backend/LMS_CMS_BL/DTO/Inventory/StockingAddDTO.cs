@@ -11,7 +11,8 @@ namespace LMS_CMS_BL.DTO.Inventory
     {
         public string Date { get; set; }
         public long StoreID { get; set; }
-
+        public long? AdditionId { get; set; }
+        public long? DisbursementId { get; set; }
         public List<StockingDetailsAddDto>? StockingDetails { get; set; }
     }
 }

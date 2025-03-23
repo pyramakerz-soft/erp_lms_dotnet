@@ -43,7 +43,8 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             List<Student> students = await Unit_Of_Work.student_Repository.Select_All_With_IncludesById<Student>(
                 query => query.IsDeleted != true,
-                query => query.Include(stu => stu.AccountNumber));
+                query => query.Include(stu => stu.AccountNumber),
+                query => query.Include(stu => stu.Gender));
 
             if (students == null || students.Count == 0)
             {
@@ -69,6 +70,7 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             Student student = await Unit_Of_Work.student_Repository.FindByIncludesAsync(
                 query => query.IsDeleted != true && query.ID == Id,
+                query => query.Include(stu => stu.Gender),
                 query => query.Include(stu => stu.AccountNumber));
 
             if (student == null || student.IsDeleted == true)
@@ -128,6 +130,88 @@ namespace LMS_CMS_PL.Controllers.Domains
             List<StudentGetDTO> studentDTOs = mapper.Map<List<StudentGetDTO>>(students);
 
             return Ok(studentDTOs);
+        }
+
+        /////
+      
+        [HttpGet("GetBySchoolYearGradeClassID")]
+        public async Task<IActionResult> GetBySchoolYearGradeClassID([FromQuery] long? schoolId, [FromQuery] long? yearId, [FromQuery] long? gradeId, [FromQuery] long? classId)
+        { 
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (schoolId != null)
+            {
+                School school = Unit_Of_Work.school_Repository.First_Or_Default(
+                    d => d.IsDeleted != true && d.ID == classId
+                    );
+                if (school == null)
+                {
+                    return NotFound("No School with this Id");
+                }
+            }
+            
+            if (yearId != null)
+            {
+                AcademicYear year = Unit_Of_Work.academicYear_Repository.First_Or_Default(
+                    d => d.IsDeleted != true && d.ID == classId
+                    );
+                if (year == null)
+                {
+                    return NotFound("No Year with this Id");
+                }
+            }
+            
+            if (gradeId != null)
+            {
+                Grade grade = Unit_Of_Work.grade_Repository.First_Or_Default(
+                    d => d.IsDeleted != true && d.ID == classId
+                    );
+                if (grade == null)
+                {
+                    return NotFound("No Grade with this Id");
+                }
+            }
+
+            if (classId != null)
+            {
+                Classroom cls = Unit_Of_Work.classroom_Repository.First_Or_Default(
+                    d => d.IsDeleted != true && d.ID == classId
+                    );
+                if (cls == null)
+                {
+                    return NotFound("No Class with this Id");
+                }
+            }
+
+            //IQueryable<StudentAcademicYear> query = Unit_Of_Work.studentAcademicYear_Repository.GetQueryable()
+            //    .Where(stu => !stu.IsDeleted)
+            //    .Include(stu => stu.Student);
+
+            //List<StudentAcademicYear> studentAcademicYears = await Unit_Of_Work.studentAcademicYear_Repository.Select_All_With_IncludesById<StudentAcademicYear>(
+            //    query => query.IsDeleted != true && query.ClassID == classId,
+            //    query => query.Include(stu => stu.Student)
+            //);
+
+            //if (studentAcademicYears == null || studentAcademicYears.Count == 0)
+            //{
+            //    return NotFound("No students found.");
+            //}
+
+            //List<Student> students = studentAcademicYears.Select(sa => sa.Student).ToList();
+            //List<StudentGetDTO> studentDTOs = mapper.Map<List<StudentGetDTO>>(students);
+
+            //return Ok(studentDTOs);
+            return Ok();
         }
 
         //////
@@ -232,6 +316,7 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             Student student = await Unit_Of_Work.student_Repository.FindByIncludesAsync(
                 query => query.IsDeleted != true && query.NationalID == NationalID,
+                query => query.Include(stu => stu.Gender),
                 query => query.Include(stu => stu.AccountNumber));
 
             if (student == null || student.IsDeleted == true)

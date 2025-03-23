@@ -133,7 +133,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<ParentGetDTO, Parent>();
 
             CreateMap<Student, StudentGetDTO>()
-              .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+              .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name))
+              .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.Gender.Name));
             CreateMap<StudentGetDTO, Student>();
 
 

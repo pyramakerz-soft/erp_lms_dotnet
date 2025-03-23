@@ -258,7 +258,7 @@ export const routes: Routes = [
             { path: "Stocking", component: StockingComponent, title: "Stocking", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Stocking Details", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Stocking Details/Edit/:id", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "StudentsNamesInClass", component: StudentsNamesInClassComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "StudentsNamesInClass", component: StudentsNamesInClassComponent, title: "Students' Names In Class", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

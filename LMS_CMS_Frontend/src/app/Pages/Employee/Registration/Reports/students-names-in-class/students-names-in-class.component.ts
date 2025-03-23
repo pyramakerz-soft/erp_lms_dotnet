@@ -15,6 +15,7 @@ import { AcadimicYearService } from '../../../../../Services/Employee/LMS/academ
 import { ClassroomService } from '../../../../../Services/Employee/LMS/classroom.service';
 import { Student } from '../../../../../Models/student';
 import { StudentService } from '../../../../../Services/student.service';
+import { ReportsService } from '../../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-students-names-in-class',
@@ -24,6 +25,7 @@ import { StudentService } from '../../../../../Services/student.service';
   styleUrl: './students-names-in-class.component.css'
 })
 export class StudentsNamesInClassComponent {
+[x: string]: any;
   SchoolId:number = 0
   AcademicYearId:number = 0
   GradeId:number = 0
@@ -34,10 +36,18 @@ export class StudentsNamesInClassComponent {
   Classrooms:Classroom[] = []
   
   StudentData:Student[] = []
+  class:Classroom = new Classroom()
+  school:School = new School()
+  date:string = ""
+  studentsCount = 0
+
+  showTable = false
 
   User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
   DomainName: string = '';
   UserID: number = 0;
+
+  direction: string = "";
 
   constructor(  
     public account: AccountService,
@@ -47,13 +57,27 @@ export class StudentsNamesInClassComponent {
     public GradeServ: GradeService,
     public classroomService: ClassroomService,
     public acadimicYearService: AcadimicYearService,
-    public studentService: StudentService
+    public studentService: StudentService,
+    public reportsService:ReportsService
   ) { }
 
   ngOnInit() {
+    this.direction = document.dir || 'ltr';
+
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
     this.DomainName = this.ApiServ.GetHeader();
+
+    this.getSchool()
+  }
+
+  getSchool(){
+    this.Schools = []
+    this.SchoolServ.Get(this.DomainName).subscribe(
+      data => {
+        this.Schools = data
+      }
+    )
   }
 
   onSchoolChange(event: Event) { 
@@ -68,6 +92,14 @@ export class StudentsNamesInClassComponent {
   onGradeChange(event: Event) { 
     const selectedValue = (event.target as HTMLSelectElement).value; 
     this.GradeId = Number(selectedValue)
+    if (this.GradeId) {
+      this.GetClassData(); 
+    }
+  } 
+
+  onYearChange(event: Event) { 
+    const selectedValue = (event.target as HTMLSelectElement).value; 
+    this.AcademicYearId = Number(selectedValue)
     if (this.GradeId) {
       this.GetClassData(); 
     }
@@ -89,15 +121,39 @@ export class StudentsNamesInClassComponent {
 
   GetClassData() {
     this.Classrooms = []
-    this.classroomService.GetByGradeId(this.GradeId, this.DomainName).subscribe((d) => {
+    this.classroomService.GetByGradeAndAcYearId(this.GradeId, this.AcademicYearId, this.DomainName).subscribe((d) => {
       this.Classrooms = d
     })
   }
 
   ViewReport() {
     this.StudentData = []
-    this.studentService.GetBySchoolYearGradeClassID(this.SchoolId, this.AcademicYearId, this.GradeId, this.ClassId, this.DomainName).subscribe((d) => {
-      this.StudentData = d
-    })
+    this.showTable = true
+    this.studentService.GetBySchoolGradeClassID(this.SchoolId, this.GradeId, this.ClassId, this.DomainName).subscribe(
+      (d) => {
+        this.StudentData = d.students
+        this.class = d.class
+        this.school = d.school
+        this.studentsCount = d.studentsCount 
+        this.date = d.date 
+        this.date = this.formatDate(this.date, this.direction);
+      }
+    )
+  }
+
+  formatDate(dateString: string, dir: string): string {
+    const date = new Date(dateString);
+    const locale = dir === 'rtl' ? 'ar-EG' : 'en-US';  
+    return date.toLocaleDateString(locale, { weekday: 'long', month: 'long', year: 'numeric' });
+  }
+
+  Print() {
+  } 
+
+  DownloadAsPDF() {
+    this.reportsService.DownloadAsPDF("List of students' names in class")
+  }
+
+  DownloadAsExcel() {
   }
 }

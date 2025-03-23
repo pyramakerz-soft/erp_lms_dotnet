@@ -159,6 +159,32 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             return Ok(classroomsDTO);
         }
+        
+        [HttpGet("ByGradeAndAcademicYearID/{GradeId}/{AcYeaId}")]
+        [Authorize_Endpoint_(
+          allowedTypes: new[] { "octa", "employee" },
+          pages: new[] { "Classroom" }
+        )]
+        public async Task<IActionResult> GetByGradeAnAcYearIdAsync(long GradeId, long AcYeaId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<Classroom> classrooms = await Unit_Of_Work.classroom_Repository.Select_All_With_IncludesById<Classroom>(
+                    f => f.IsDeleted != true && f.GradeID== GradeId && f.AcademicYearID == AcYeaId,
+                    query => query.Include(emp => emp.Grade),
+                    query => query.Include(emp => emp.AcademicYear),
+                    query => query.Include(emp => emp.Floor)
+                    );
+
+            if (classrooms == null || classrooms.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<ClassroomGetDTO> classroomsDTO = mapper.Map<List<ClassroomGetDTO>>(classrooms);
+
+            return Ok(classroomsDTO);
+        }
 
 
         [HttpPost]

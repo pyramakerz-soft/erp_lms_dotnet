@@ -5,11 +5,8 @@ import { ApiService } from '../../../../../Services/api.service';
 import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import { TableComponent } from "../../../../../Component/reuse-table/reuse-table.component";
-import { FollowUpComponent } from "../../follow-up/follow-up.component";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HygieneFormComponent } from "../../hygiene_form/hygiene-form/hygiene-form.component";
-import { CreateHygieneFormComponent } from "../../hygiene_form/create-hygiene-form/create-hygiene-form.component";
 import { HygieneFormTableComponent } from "../../hygiene_form/hygiene-form-table/hygiene-form-table.component";
 import { SchoolService } from '../../../../../Services/Employee/school.service';
 import { GradeService } from '../../../../../Services/Employee/LMS/grade.service';
@@ -17,55 +14,41 @@ import { ClassroomService } from '../../../../../Services/Employee/LMS/classroom
 import { StudentService } from '../../../../../Services/student.service';
 import { MedicalReportService } from '../../../../../Services/Employee/Clinic/medical-report.service';
 import { Router } from '@angular/router';
+import * as XLSX from 'xlsx';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { MedicalHistoryService } from '../../../../../Services/Employee/Clinic/medical-history.service';
+import { SearchComponent } from "../../../../../Component/search/search.component";
 
 @Component({
   selector: 'app-medical-report',
   templateUrl: './medical-report.component.html',
   styleUrls: ['./medical-report.component.css'],
-  imports: [TableComponent, FollowUpComponent, CommonModule, FormsModule, HygieneFormComponent, CreateHygieneFormComponent, HygieneFormTableComponent],
-  standalone:true
+  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, SearchComponent],
+  standalone: true
 })
 export class MedicalReportComponent implements OnInit {
-
-  
-onView(id: number) {
-  this.router.navigate(['/Employee/mh-by-parent', id]); // Corrected route
+onView($event: any) {
+throw new Error('Method not implemented.');
 }
   // Tabs
   tabs = ['MH By Parent', 'MH By Doctor', 'Hygiene Form', 'Follow Up'];
   selectedTab = this.tabs[0]; // Default selected tab
+
+  // Data for tables
   mhByParentData: any[] = [];
   mhByDoctorData: any[] = [];
-
-
-  // Data for Hygiene Form
+  filteredMHByDoctorData: any[] = [];
   hygieneForms: any[] = [];
-
-  // Data for Follow Up
   followUps: any[] = [];
+  filteredFollowUps: any[] = [];
 
-  constructor(
-    private router: Router,
-    private hygieneFormService: HygieneFormService,
-    private followUpService: FollowUpService,
-    private apiService: ApiService,
-    private medicalreportService: MedicalReportService,
-    private schoolService: SchoolService,
-    private gradeService: GradeService,
-    private classroomService: ClassroomService,
-    private studentService: StudentService
-  ) {}
+  // Search functionality
+  searchKey: string = 'id';
+  searchValue: any = '';
+  searchKeysArray: string[] = ['id', 'school', 'grade', 'class', 'student', 'date'];
 
- ngOnInit(): void {
-  this.loadHygieneForms();
-  this.loadFollowUps();
-  this.loadMHByParentData();
-  this.loadSchools(); // Load schools when the component initializes
-  this.loadAllHygieneForms(); // Load all hygiene forms
-  this.loadMHByDoctorData(); // Load MH By Doctor data
-
-}
-
+  // Filtration system
   schools: any[] = [];
   grades: any[] = [];
   classes: any[] = [];
@@ -76,45 +59,77 @@ onView(id: number) {
   selectedSchool: number | null = null;
   selectedGrade: number | null = null;
   selectedClass: number | null = null;
+  selectedStudent: number | null = null; // Added for student selection
   selectedDate: string = '';
-  
-  // Add a new property to store filtered follow-ups
-filteredFollowUps: any[] = [];
 
-filterFollowUps() {
-  let filteredFollowUps = this.followUps;
+  constructor(
+    private router: Router,
+    private hygieneFormService: HygieneFormService,
+    private medicalHistoryService: MedicalHistoryService,
+    private followUpService: FollowUpService,
+    private apiService: ApiService,
+    private medicalreportService: MedicalReportService,
+    private schoolService: SchoolService,
+    private gradeService: GradeService,
+    private classroomService: ClassroomService,
+    private studentService: StudentService
+  ) {}
 
-  if (this.selectedSchool) {
-    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.schoolId == this.selectedSchool);
+  ngOnInit(): void {
+    this.loadHygieneForms();
+    this.loadFollowUps();
+    this.loadMHByParentData();
+    this.loadSchools();
+    this.loadAllHygieneForms();
+    this.loadMHByDoctorData();
   }
 
-  if (this.selectedGrade) {
-    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.gradeId == this.selectedGrade);
+  // ==================== Search Functionality ====================
+  onSearchEvent(event: { key: string, value: any }) {
+    this.searchKey = event.key;
+    this.searchValue = event.value;
+
+    switch (this.selectedTab) {
+      case 'MH By Parent':
+        this.mhByParentData = this.applySearchFilter(this.mhByParentData);
+        break;
+      case 'MH By Doctor':
+        this.filteredMHByDoctorData = this.applySearchFilter(this.mhByDoctorData);
+        break;
+      case 'Hygiene Form':
+        this.students = this.applySearchFilter(this.students);
+        break;
+      case 'Follow Up':
+        this.filteredFollowUps = this.applySearchFilter(this.followUps);
+        break;
+    }
   }
 
-  if (this.selectedClass) {
-    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.classRoomID == this.selectedClass);
+  applySearchFilter(data: any[]): any[] {
+    if (!this.searchValue) return data;
+
+    const numericValue = isNaN(Number(this.searchValue)) ? this.searchValue : parseInt(this.searchValue, 10);
+
+    return data.filter((item) => {
+      const fieldValue = item[this.searchKey as keyof typeof item];
+      if (typeof fieldValue === 'string') {
+        return fieldValue.toLowerCase().includes(this.searchValue.toLowerCase());
+      }
+      if (typeof fieldValue === 'number') {
+        return fieldValue === numericValue;
+      }
+      return false;
+    });
   }
 
-  console.log('Filtered Follow Ups:', filteredFollowUps);
-
-  if (filteredFollowUps.length === 0) {
-    console.log('No follow-ups found for the selected criteria.');
-  }
-
-  this.filteredFollowUps = filteredFollowUps;
-}
-
-  // Add these methods for the filtration system
+  // ==================== Filtration System ====================
   async loadSchools() {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.schoolService.Get(domainName));
-      // console.log(data)
       this.schools = data;
     } catch (error) {
       console.error('Error loading schools:', error);
-      // this.errorMessage = 'Failed to load schools.';
     }
   }
 
@@ -126,7 +141,6 @@ filterFollowUps() {
         this.grades = data;
       } catch (error) {
         console.error('Error loading grades:', error);
-        // this.errorMessage = 'Failed to load grades.';
       }
     }
   }
@@ -139,7 +153,6 @@ filterFollowUps() {
         this.classes = data;
       } catch (error) {
         console.error('Error loading classes:', error);
-        // this.errorMessage = 'Failed to load classes.';
       }
     }
   }
@@ -149,8 +162,6 @@ filterFollowUps() {
       try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
-        // console.log(data)
-        // console.log('test')
         this.students = data.map(student => ({
           ...student,
           attendance: null,
@@ -159,188 +170,230 @@ filterFollowUps() {
         }));
       } catch (error) {
         console.error('Error loading students:', error);
-        // this.errorMessage = 'Failed to load students.';
       }
     }
   }
-  
 
-onSchoolChange() {
-  // console.log('School changed');
-  this.selectedGrade = null;
-  this.selectedClass = null;
-  this.grades = [];
-  this.classes = [];
-  this.filteredFollowUps = this.followUps; // Reset filtered follow-ups
-  this.loadGrades();
-}
+  onSchoolChange() {
+    this.selectedGrade = null;
+    this.selectedClass = null;
+    this.selectedStudent = null;
+    this.grades = [];
+    this.classes = [];
+    this.students = [];
+    this.filteredMHByDoctorData = this.mhByDoctorData;
+    this.loadGrades();
+  }
 
-onGradeChange() {
-  // console.log('Grade changed');
-  this.selectedClass = null;
-  this.classes = [];
-  this.filteredFollowUps = this.followUps; // Reset filtered follow-ups
-  this.loadClasses();
-}
+  onGradeChange() {
+    this.selectedClass = null;
+    this.selectedStudent = null;
+    this.classes = [];
+    this.students = [];
+    this.filteredMHByDoctorData = this.mhByDoctorData;
+    this.loadClasses();
+  }
 
-onClassChange() {
-  // console.log('Class changed');
-  this.filteredFollowUps = this.followUps; // Reset filtered follow-ups
-}
+  onClassChange() {
+    this.selectedStudent = null;
+    this.students = [];
+    this.filteredMHByDoctorData = this.mhByDoctorData;
+    this.loadStudents();
+  }
 
-    async loadMHByParentData() {
+  onStudentChange() {
+    this.filteredMHByDoctorData = this.mhByDoctorData;
+    this.filteredFollowUps = this.followUps;
+  }
+
+  // ==================== Data Loading ====================
+  async loadMHByParentData() {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
-      console.log(data)
-
       this.mhByParentData = data.map((item) => ({
+        id: item.id,
         date: new Date(item.insertedAt).toLocaleDateString(),
         description: item.details || 'No details',
         insertDate: new Date(item.insertedAt).toLocaleDateString(),
         lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified',
-        actions: { delete: true, edit: true ,view: true  }
+        actions: { delete: true, edit: true, view: true }
       }));
     } catch (error) {
       console.error('Error fetching MH By Parent data:', error);
-      // Swal.fire('Error', 'Failed to load MH By Parent data. Please try again later.', 'error');
     }
   }
-  
-async loadMHByDoctorData() {
-  try {
-    const domainName = this.apiService.GetHeader();
-    const data = await firstValueFrom(this.medicalreportService.getAllMHByDoctor(domainName));
 
-    this.mhByDoctorData = data.map((item: any) => ({
-      date: new Date(item.insertedAt).toLocaleDateString(), // Ensure date is formatted correctly
-      description: item.details || 'No details', // Ensure description is mapped
-      insertDate: new Date(item.insertedAt).toLocaleDateString(), // Ensure insertDate is formatted
-      lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified', // Ensure lastModified is formatted
-      actions: { delete: true, edit: true ,view: true  } // Add actions if needed
-    }));
-
-    // console.log('MH By Doctor Data:', this.mhByDoctorData); // Log the mapped data for debugging
-  } catch (error) {
-    console.error('Error fetching MH By Doctor data:', error);
+  async loadMHByDoctorData() {
+    try {
+      const domainName = this.apiService.GetHeader();
+      const data = await firstValueFrom(this.medicalHistoryService.GetByDoctor(domainName));
+      this.mhByDoctorData = data.map((item: any) => ({
+        id: item.id,
+        date: new Date(item.insertedAt).toLocaleDateString(),
+        description: item.details || 'No details',
+        insertDate: new Date(item.insertedAt).toLocaleDateString(),
+        lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified',
+        schoolId: item.schoolId,
+        gradeId: item.gradeId,
+        classRoomID: item.classRoomID,
+        studentId: item.studentId,
+        actions: { delete: true, edit: true, view: true }
+      }));
+      this.filteredMHByDoctorData = this.mhByDoctorData;
+    } catch (error) {
+      console.error('Error fetching MH By Doctor data:', error);
+    }
   }
-}
 
-async loadAllHygieneForms() {
-  try {
-    const domainName = this.apiService.GetHeader();
-    const data = await firstValueFrom(this.medicalreportService.getAllHygieneForms(domainName));
-    console.log(data)
-    this.allHygieneForms = data;
+  async loadAllHygieneForms() {
+    try {
+      const domainName = this.apiService.GetHeader();
+      const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
+      this.allHygieneForms = data;
+      this.students = this.allHygieneForms.flatMap(form =>
+        form.studentHygieneTypes.map((student: any) => ({
+          id: student.studentId,
+          en_name: student.student,
+          attendance: student.attendance,
+          comment: student.comment,
+          actionTaken: student.actionTaken,
+          hygieneType_1: student.hygieneTypeId === 1,
+          hygieneType_2: student.hygieneTypeId === 2,
+        }))
+      );
+    } catch (error) {
+      console.error('Error loading hygiene forms:', error);
+    }
+  }
 
-    // Map the data to the expected structure for the hygiene-form-table
-    this.students = this.allHygieneForms.flatMap(form => 
-      form.studentHygieneTypes.map((student: any) => ({
-        id: student.studentId,
-        en_name: student.student, // Assuming 'student' contains the name
+  async loadHygieneForms() {
+    try {
+      const domainName = this.apiService.GetHeader();
+      const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
+      this.hygieneForms = data.map((item) => ({
+        ...item,
+        school: item.school,
+        grade: item.grade,
+        classRoom: item.classRoom,
+        date: new Date(item.date).toLocaleDateString(),
+        actions: { delete: true, edit: true, view: true }
+      }));
+    } catch (error) {
+      console.error('Error fetching hygiene forms:', error);
+    }
+  }
+
+  async loadFollowUps() {
+    try {
+      const domainName = this.apiService.GetHeader();
+      const data = await firstValueFrom(this.followUpService.Get(domainName));
+      this.followUps = data.map((item) => ({
+        id: item.id,
+        schoolId: item.schoolId,
+        schoolName: item.school || 'N/A',
+        gradeId: item.gradeId,
+        gradeName: item.grade || 'N/A',
+        classRoomID: item.classroomId,
+        className: item.classroom || 'N/A',
+        studentName: item.student || 'N/A',
+        complaints: item.complains || "No Complaints",
+        diagnosisName: item.diagnosis || 'N/A',
+        recommendation: item.recommendation || "No Recommendation",
+        actions: { edit: true, delete: true }
+      }));
+      this.filteredFollowUps = this.followUps;
+    } catch (error) {
+      console.error('Error fetching follow-ups:', error);
+    }
+  }
+
+  // ==================== Filtering Logic ====================
+  filterMHByDoctor() {
+    let filteredData = this.mhByDoctorData;
+
+    if (this.selectedSchool) {
+      filteredData = filteredData.filter(item => item.schoolId == this.selectedSchool);
+    }
+
+    if (this.selectedGrade) {
+      filteredData = filteredData.filter(item => item.gradeId == this.selectedGrade);
+    }
+
+    if (this.selectedClass) {
+      filteredData = filteredData.filter(item => item.classRoomID == this.selectedClass);
+    }
+
+    if (this.selectedStudent) {
+      filteredData = filteredData.filter(item => item.studentId == this.selectedStudent);
+    }
+
+    console.log('Filtered MH By Doctor Data:', filteredData);
+    this.filteredMHByDoctorData = filteredData;
+  }
+
+  filterStudents() {
+    let filteredForms = this.allHygieneForms;
+
+    if (this.selectedSchool) {
+      filteredForms = filteredForms.filter(form => form.schoolId == this.selectedSchool);
+    }
+
+    if (this.selectedGrade) {
+      filteredForms = filteredForms.filter(form => form.gradeId == this.selectedGrade);
+    }
+
+    if (this.selectedClass) {
+      filteredForms = filteredForms.filter(form => form.classRoomID == this.selectedClass);
+    }
+
+    if (this.selectedStudent) {
+      filteredForms = filteredForms.filter(form => form.studentId == this.selectedStudent);
+    }
+
+    console.log(filteredForms);
+
+    if (filteredForms.length > 0) {
+      this.students = filteredForms[0].studentHygieneTypes.map((student: any) => ({
+        ...student,
         attendance: student.attendance,
         comment: student.comment,
-        actionTaken: student.actionTaken,
-        // Add hygiene type properties if needed
-        hygieneType_1: student.hygieneTypeId === 1, // Example for hygiene type 1
-        hygieneType_2: student.hygieneTypeId === 2, // Example for hygiene type 2
-        // Add more hygiene types as needed
-      }))
-    );
-  } catch (error) {
-    console.error('Error loading hygiene forms:', error);
-  }
-}
-
-  
-filterStudents() {
-  let filteredForms = this.allHygieneForms;
-
-  if (this.selectedSchool) {
-    filteredForms = filteredForms.filter(form => form.schoolId == this.selectedSchool);
+        actionTaken: student.actionTaken
+      }));
+    } else {
+      this.students = [];
+      console.log('No students found for the selected criteria.');
+    }
   }
 
-  if (this.selectedGrade) {
-    filteredForms = filteredForms.filter(form => form.gradeId == this.selectedGrade);
+  filterFollowUps() {
+    let filteredFollowUps = this.followUps;
+
+    if (this.selectedSchool) {
+      filteredFollowUps = filteredFollowUps.filter(followUp => followUp.schoolId == this.selectedSchool);
+    }
+
+    if (this.selectedGrade) {
+      filteredFollowUps = filteredFollowUps.filter(followUp => followUp.gradeId == this.selectedGrade);
+    }
+
+    if (this.selectedClass) {
+      filteredFollowUps = filteredFollowUps.filter(followUp => followUp.classRoomID == this.selectedClass);
+    }
+
+    if (this.selectedStudent) {
+      filteredFollowUps = filteredFollowUps.filter(followUp => followUp.studentId == this.selectedStudent);
+    }
+
+    console.log('Filtered Follow Ups:', filteredFollowUps);
+    this.filteredFollowUps = filteredFollowUps;
   }
 
-  if (this.selectedClass) {
-    filteredForms = filteredForms.filter(form => form.classRoomID == this.selectedClass);
-  }
-
-  console.log(filteredForms);
-
-  if (filteredForms.length > 0) {
-    this.students = filteredForms[0].studentHygieneTypes.map((student: any) => ({
-      ...student,
-      attendance: student.attendance,
-      comment: student.comment,
-      actionTaken: student.actionTaken
-    }));
-  } else {
-    this.students = [];
-    console.log('No students found for the selected criteria.');
-  }
-}
-  
-
-// hygiene-form.component.ts
-async loadHygieneForms() {
-  try {
-    const domainName = this.apiService.GetHeader();
-    const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
-    console.log('start')
-    console.log(data)
-    console.log('end')
-
-    this.hygieneForms = data.map((item) => ({
-      ...item,
-      school: item.school,
-      grade: item.grade,
-      classRoom: item.classRoom,
-      date: new Date(item.date).toLocaleDateString(),
-      actions: { delete: true, edit: true, view: true } // Enable view action
-    }));
-  } catch (error) {
-    console.error('Error fetching hygiene forms:', error);
-    // Swal.fire('Error', 'Failed to load hygiene forms. Please try again later.', 'error');
-  }
-}
-
-async loadFollowUps() {
-  try {
-    const domainName = this.apiService.GetHeader();
-    const data = await firstValueFrom(this.followUpService.Get(domainName));
-    // console.log('Fetched Follow Ups:', data); // Log the fetched data
-
-    // Map the data to the expected structure
-    this.followUps = data.map((item) => ({
-      id: item.id,
-      schoolId: item.schoolId, // Add schoolId
-      schoolName: item.school || 'N/A',
-      gradeId: item.gradeId, // Add gradeId
-      gradeName: item.grade || 'N/A',
-      classRoomID: item.classroomId, // Add classRoomID
-      className: item.classroom || 'N/A',
-      studentName: item.student || 'N/A',
-      complaints: item.complains || "No Complaints",
-      diagnosisName: item.diagnosis || 'N/A', // Map diagnosis if available
-      recommendation: item.recommendation || "No Recommendation",
-      actions: { edit: true, delete: true }
-    }));
-
-    // Initialize filteredFollowUps with the full list of follow-ups
-    this.filteredFollowUps = this.followUps;
-  } catch (error) {
-    console.error('Error fetching follow-ups:', error);
-  }
-}
-
-  // Delete Hygiene Form
-  deleteHygieneForm(row: any) {
+  // ==================== Delete Functionality ====================
+  deleteMH(row: any) {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this hygiene form!',
+      text: 'You will not be able to recover this medical history!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -349,13 +402,23 @@ async loadFollowUps() {
       cancelButtonText: 'No, keep it',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.hygieneForms = this.hygieneForms.filter((item) => item.id !== row.id);
-        Swal.fire('Deleted!', 'The hygiene form has been deleted.', 'success');
+        const domainName = this.apiService.GetHeader();
+        this.medicalHistoryService.Delete(row.id, domainName).subscribe({
+          next: (response) => {
+            console.log('Delete response:', response);
+            this.loadMHByParentData();
+            this.loadMHByDoctorData();
+            Swal.fire('Deleted!', 'The medical history has been deleted.', 'success');
+          },
+          error: (error) => {
+            console.error('Error deleting medical history:', error);
+            Swal.fire('Error!', 'Failed to delete the medical history.', 'error');
+          },
+        });
       }
     });
   }
 
-  // Delete Follow Up
   deleteFollowUp(row: any) {
     Swal.fire({
       title: 'Are you sure?',
@@ -368,25 +431,191 @@ async loadFollowUps() {
       cancelButtonText: 'No, keep it',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.followUps = this.followUps.filter((item) => item.id !== row.id);
-        Swal.fire('Deleted!', 'The follow-up has been deleted.', 'success');
+        const domainName = this.apiService.GetHeader();
+        this.followUpService.Delete(row.id, domainName).subscribe({
+          next: () => {
+            this.loadFollowUps();
+          },
+          error: (error) => {
+            console.error('Error deleting follow-up:', error);
+            Swal.fire('Error', 'Failed to delete follow-up. Please try again later.', 'error');
+          },
+        });
       }
     });
   }
 
+  // ==================== Tab Selection ====================
   selectTab(tab: string) {
     this.selectedTab = tab;
   }
 
+  // ==================== Export Functionality ====================
+
+  // Export to Excel
   exportToExcel() {
-    console.log('Exporting to Excel:', this.selectedTab);
+    let data: any[] = [];
+    let fileName = '';
+
+    switch (this.selectedTab) {
+      case 'MH By Parent':
+        data = this.mhByParentData;
+        fileName = 'MH_By_Parent.xlsx';
+        break;
+      case 'MH By Doctor':
+        data = this.filteredMHByDoctorData;
+        fileName = 'MH_By_Doctor.xlsx';
+        break;
+      case 'Hygiene Form':
+        data = this.students;
+        fileName = 'Hygiene_Form.xlsx';
+        break;
+      case 'Follow Up':
+        data = this.filteredFollowUps;
+        fileName = 'Follow_Up.xlsx';
+        break;
+      default:
+        Swal.fire('Error', 'No data available for export.', 'error');
+        return;
+    }
+
+    if (data.length === 0) {
+      Swal.fire('Error', 'No data available for export.', 'error');
+      return;
+    }
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, fileName);
   }
 
-  exportToPDF() {
-    console.log('Exporting to PDF:', this.selectedTab);
+
+exportToPDF() {
+  let data: any[] = [];
+  let headers: string[] = [];
+  let fileName = '';
+
+  switch (this.selectedTab) {
+    case 'MH By Parent':
+      data = this.mhByParentData;
+      headers = ['Date', 'Description', 'Insert Date', 'Last Modified'];
+      fileName = 'MH_By_Parent.pdf';
+      break;
+    case 'MH By Doctor':
+      data = this.filteredMHByDoctorData;
+      headers = ['Date', 'Description', 'Insert Date', 'Last Modified'];
+      fileName = 'MH_By_Doctor.pdf';
+      break;
+    case 'Hygiene Form':
+      data = this.students;
+      headers = ['Student', 'Attendance', 'Comment', 'Action Taken'];
+      fileName = 'Hygiene_Form.pdf';
+      break;
+    case 'Follow Up':
+      data = this.filteredFollowUps;
+      headers = ['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation'];
+      fileName = 'Follow_Up.pdf';
+      break;
+    default:
+      Swal.fire('Error', 'No data available for export.', 'error');
+      return;
   }
 
-  printTable() {
-    console.log('Printing Table:', this.selectedTab);
+  if (data.length === 0) {
+    Swal.fire('Error', 'No data available for export.', 'error');
+    return;
   }
+
+  // Create a new jsPDF instance
+  const doc = new jsPDF();
+
+  // Prepare the data for the table
+  const tableData = data.map((item) => {
+    return headers.map((header) => {
+      // Convert header to lowercase and replace spaces with underscores to match the data keys
+      const key = header.toLowerCase().replace(/ /g, '_');
+      return item[key] || ''; // Use empty string if the key doesn't exist
+    });
+  });
+
+  // Add the table to the PDF using autoTable
+  autoTable(doc, {
+    head: [headers], // Table headers
+    body: tableData, // Table data
+  });
+
+  // Save the PDF
+  doc.save(fileName);
 }
+
+  // Print Table
+  printTable() {
+    let data: any[] = [];
+    let headers: string[] = [];
+
+    switch (this.selectedTab) {
+      case 'MH By Parent':
+        data = this.mhByParentData;
+        headers = ['Date', 'Description', 'Insert Date', 'Last Modified'];
+        break;
+      case 'MH By Doctor':
+        data = this.filteredMHByDoctorData;
+        headers = ['Date', 'Description', 'Insert Date', 'Last Modified'];
+        break;
+      case 'Hygiene Form':
+        data = this.students;
+        headers = ['Student', 'Attendance', 'Comment', 'Action Taken'];
+        break;
+      case 'Follow Up':
+        data = this.filteredFollowUps;
+        headers = ['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation'];
+        break;
+      default:
+        Swal.fire('Error', 'No data available for printing.', 'error');
+        return;
+    }
+
+    if (data.length === 0) {
+      Swal.fire('Error', 'No data available for printing.', 'error');
+      return;
+    }
+
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Table</title>
+            <style>
+              table { width: 100%; border-collapse: collapse; }
+              th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+              th { background-color: #f2f2f2; }
+            </style>
+          </head>
+          <body>
+            <table>
+              <thead>
+                <tr>${headers.map((header) => `<th>${header}</th>`).join('')}</tr>
+              </thead>
+              <tbody>
+                ${data
+                  .map(
+                    (item) =>
+                      `<tr>${headers
+                        .map((header) => `<td>${item[header.toLowerCase().replace(/ /g, '')]}</td>`)
+                        .join('')}</tr>`
+                  )
+                  .join('')}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    } else {
+      Swal.fire('Error', 'Unable to open print window.', 'error');
+    }
+  }
+    }

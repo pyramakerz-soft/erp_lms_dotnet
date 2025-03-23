@@ -57,7 +57,7 @@ export class MedicalHistoryComponent implements OnInit {
   async loadMedicalHistories() {
     try {
       const domainName = this.apiService.GetHeader();
-      const data = await firstValueFrom(this.medicalHistoryService.Get(domainName));
+      const data = await firstValueFrom(this.medicalHistoryService.GetByDoctor(domainName));
       console.log(data);
 
       this.medicalHistories = data.map(item => ({
@@ -219,9 +219,9 @@ async saveMedicalHistory() {
       const domainName = this.apiService.GetHeader();
 
       if (this.editMode) {
-        await firstValueFrom(this.medicalHistoryService.Edit(this.medicalHistory, domainName));
+        await firstValueFrom(this.medicalHistoryService.UpdateByDoctorAsync(this.medicalHistory, domainName));
       } else {
-        await firstValueFrom(this.medicalHistoryService.Add(this.medicalHistory, domainName));
+        await firstValueFrom(this.medicalHistoryService.AddByDoctor(this.medicalHistory, domainName));
       }
 
       this.loadMedicalHistories();

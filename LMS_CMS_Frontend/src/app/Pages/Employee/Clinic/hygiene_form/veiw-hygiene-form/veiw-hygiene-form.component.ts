@@ -10,12 +10,13 @@ import { Student } from '../../../../../Models/student';
 import { HygieneTypes } from '../../../../../Models/Clinic/hygiene-types';
 import { HygieneFormTableComponent } from "../hygiene-form-table/hygiene-form-table.component";
 import { ApiService } from '../../../../../Services/api.service';
+import { DatePipe } from '@angular/common'; // Import DatePipe
 
 @Component({
   selector: 'app-view-hygiene-form',
   templateUrl: './veiw-hygiene-form.component.html',
   styleUrl: './veiw-hygiene-form.component.css',
-  imports: [HygieneFormTableComponent],  standalone: true,
+  imports: [HygieneFormTableComponent , DatePipe],  standalone: true,
 
 })
 export class ViewHygieneFormComponent implements OnInit {

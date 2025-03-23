@@ -17,7 +17,7 @@ export class MedicalHistoryService {
   }
 
   // Fetch all medical histories
-  Get(DomainName: string): Observable<MedicalHistory[]> {
+  GetByDoctor(DomainName: string): Observable<MedicalHistory[]> {
     if (DomainName != null) {
       this.header = DomainName;
     }
@@ -30,7 +30,7 @@ export class MedicalHistoryService {
   }
 
   // Add a new medical history
-  Add(medicalHistory: MedicalHistory, DomainName: string): Observable<any> {
+  AddByDoctor(medicalHistory: MedicalHistory, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName;
     }
@@ -67,12 +67,12 @@ export class MedicalHistoryService {
     } else {
       formData.append('SecReport', medicalHistory.secReport); // Retain existing link
     }
-
+    console.log("doctor")
     return this.http.post(`${this.baseUrl}/MedicalHistory/AddByDoctor`, formData, { headers });
   }
 
   // Edit an existing medical history
-  Edit(medicalHistory: MedicalHistory, DomainName: string): Observable<any> {
+  UpdateByDoctorAsync(medicalHistory: MedicalHistory, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName;
     }
@@ -128,7 +128,7 @@ export class MedicalHistoryService {
   }
 
   // Get medical history by ID
-  GetById(id: number, DomainName: string): Observable<MedicalHistory> {
+  GetByIdByDoctor(id: number, DomainName: string): Observable<MedicalHistory> {
     if (DomainName != null) {
       this.header = DomainName;
     }
@@ -152,4 +152,68 @@ export class MedicalHistoryService {
       .set('accept', '*/*');
     return this.http.get<MedicalHistory[]>(`${this.baseUrl}/MedicalHistory/search?key=${key}&value=${value}`, { headers });
   }
+
+  
+  // Fetch all medical histories by parent
+  GetByParent(DomainName: string): Observable<MedicalHistory[]> {
+    if (DomainName != null) {
+      this.header = DomainName;
+    }
+    const token = localStorage.getItem('current_token');
+    const headers = new HttpHeaders()
+      .set('Domain-Name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('accept', '*/*');
+    return this.http.get<MedicalHistory[]>(`${this.baseUrl}/MedicalHistory/GetByParent`, { headers });
+  }
+
+  // Fetch medical history by ID for parent
+  GetByIdByParent(id: number, DomainName: string): Observable<MedicalHistory> {
+    if (DomainName != null) {
+      this.header = DomainName;
+    }
+    const token = localStorage.getItem('current_token');
+    const headers = new HttpHeaders()
+      .set('Domain-Name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('accept', '*/*');
+    return this.http.get<MedicalHistory>(`${this.baseUrl}/MedicalHistory/GetByIdByParent/id?id=${id}`, { headers });
+  }
+
+  // Add a new medical history by parent
+  AddByParent(medicalHistory: MedicalHistory, DomainName: string): Observable<any> {
+    if (DomainName != null) {
+      this.header = DomainName;
+    }
+
+    const token = localStorage.getItem('current_token');
+    const headers = new HttpHeaders()
+      .set('Domain-Name', this.header)
+      .set('Authorization', `Bearer ${token}`);
+
+    const formData = new FormData();
+    formData.append('Details', medicalHistory.details ?? '');
+    formData.append('PermanentDrug', medicalHistory.permanentDrug ?? '');
+
+    // Handle FirstReport file
+    if (medicalHistory.firstReport instanceof File) {
+      formData.append('FirstReport', medicalHistory.firstReport, medicalHistory.firstReport.name);
+    } else if (medicalHistory.firstReport === null) {
+      formData.append('FirstReport', ''); // Set to empty if file is deleted
+    } else {
+      formData.append('FirstReport', medicalHistory.firstReport); // Retain existing link
+    }
+
+    // Handle SecReport file
+    if (medicalHistory.secReport instanceof File) {
+      formData.append('SecReport', medicalHistory.secReport, medicalHistory.secReport.name);
+    } else if (medicalHistory.secReport === null) {
+      formData.append('SecReport', ''); // Set to empty if file is deleted
+    } else {
+      formData.append('SecReport', medicalHistory.secReport); // Retain existing link
+    }
+
+    return this.http.post(`${this.baseUrl}/MedicalHistory/AddByParent`, formData, { headers });
+  }
+
 }

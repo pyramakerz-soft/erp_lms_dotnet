@@ -25,7 +25,7 @@ export class MedicalReportService {
       .set('Domain-Name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('accept', '*/*');
-
+     console.log("parent")
     return this.http.get<any[]>(`${this.baseUrl}/MedicalReport/GetAllMHByParent`, { headers });
   }
 

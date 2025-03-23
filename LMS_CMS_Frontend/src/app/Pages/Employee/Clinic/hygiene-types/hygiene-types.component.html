@@ -10,9 +10,9 @@
     </div>
   </div>
 
-  <app-table [headers]="['ID', 'Hygiene Type', 'Date', 'Actions']" [data]="hygieneTypes"
-    [keys]="['id', 'type', 'insertedAt']" (delete)="deleteHygieneType($event)" (edit)="openModal($event.id)">
-  </app-table>
+<app-table [headers]="['ID', 'Hygiene Type', 'Date', 'Actions']" [data]="hygieneTypes"
+  [keys]="['id', 'type', 'insertedAt']" (delete)="deleteHygieneType($event)" (edit)="openModal($event.id)">
+</app-table>
 
   <!-- Reusable Modal -->
   <app-modal [title]="'Hygiene Type'" [isEditMode]="editHygieneType" [buttonText]="editHygieneType ? 'Save' : 'Create'"

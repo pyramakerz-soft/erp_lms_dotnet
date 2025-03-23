@@ -59,17 +59,18 @@ GetById(id: number, DomainName: string): Observable<HygieneForm> {
     return this.http.post(`${this.baseUrl}/HygieneForm`, hygieneFormData, { headers });
   }
 
-  Delete(id: number, DomainName: string): Observable<any> {
-    if (DomainName != null) {
-      this.header = DomainName;
-    }
-    const token = localStorage.getItem('current_token');
-    const headers = new HttpHeaders()
-      .set('Domain-Name', this.header) // Add Domain-Name header
-      .set('Authorization', `Bearer ${token}`) // Add Authorization header
-      .set('accept', '*/*')
-      .set('Content-Type', 'application/json');
-
-    return this.http.delete(`${this.baseUrl}/HygieneForm?id=${id}`, { headers, responseType: 'text' });
+  
+Delete(id: number, DomainName: string): Observable<any> {
+  if (DomainName != null) {
+    this.header = DomainName;
   }
+  const token = localStorage.getItem('current_token');
+  const headers = new HttpHeaders()
+    .set('Domain-Name', this.header) // Add Domain-Name header
+    .set('Authorization', `Bearer ${token}`) // Add Authorization header
+    .set('accept', '*/*')
+    .set('Content-Type', 'application/json');
+
+  return this.http.delete(`${this.baseUrl}/HygieneForm?id=${id}`, { headers, responseType: 'text' });
+}
 }

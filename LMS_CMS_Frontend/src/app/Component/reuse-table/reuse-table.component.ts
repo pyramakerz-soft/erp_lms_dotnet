@@ -1,10 +1,11 @@
 // reuse-table.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { DatePipe } from '@angular/common'; // Import DatePipe
 
 @Component({
   selector: 'app-table',
-  imports: [CommonModule],
+  imports: [CommonModule , DatePipe],
   standalone: true,
   templateUrl: './reuse-table.component.html',
   styleUrls: ['./reuse-table.component.css']

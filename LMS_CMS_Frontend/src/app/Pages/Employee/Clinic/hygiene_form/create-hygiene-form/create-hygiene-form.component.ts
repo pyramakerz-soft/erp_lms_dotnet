@@ -178,54 +178,57 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
     return isValid;
   }
 
-  saveHygieneForm() {
-    if (this.validateForm()) {
-      const domainName = this.apiService.GetHeader();
-      const token = localStorage.getItem('current_token');
+saveHygieneForm() {
+  if (this.validateForm()) {
+    const domainName = this.apiService.GetHeader();
+    const token = localStorage.getItem('current_token');
 
-      const headers = new HttpHeaders()
-        .set('Domain-Name', domainName)
-        .set('Authorization', `Bearer ${token}`)
-        .set('Content-Type', 'application/json');
+    const headers = new HttpHeaders()
+      .set('Domain-Name', domainName)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
 
-      const studentHygieneTypes = this.students.map((student) => {
-        const hygieneTypesIds = this.hygieneTypes
-          .filter((ht) => student[`hygieneType_${ht.id}`] === true)
-          .map((ht) => ht.id);
+    const studentHygieneTypes = this.students.map((student) => {
+      const hygieneTypesIds = this.hygieneTypes
+        .filter((ht) => student[`hygieneType_${ht.id}`] === true)
+        .map((ht) => ht.id);
 
-        return {
-          studentId: student.id,
-          hygieneTypesIds: hygieneTypesIds,
-          attendance: student['attendance'],
-          comment: student['comment'],
-          actionTaken: student['actionTaken'],
-        };
-      });
+      // Ensure attendance is set to false if it is null or undefined
+      const attendance = student['attendance'] === true ? true : false;
 
-      const requestBody = {
-        schoolId: this.selectedSchool,
-        gradeId: this.selectedGrade,
-        classRoomID: this.selectedClass,
-        date: new Date(this.selectedDate).toISOString(),
-        studentHygieneTypes: studentHygieneTypes,
+      return {
+        studentId: student.id,
+        hygieneTypesIds: hygieneTypesIds,
+        attendance: attendance, // Ensure attendance is always a boolean
+        comment: student['comment'],
+        actionTaken: student['actionTaken'],
       };
+    });
 
-      this.http.post(`${this.apiService.BaseUrl}/HygieneForm`, requestBody, { headers }).subscribe({
-        next: (response) => {
-          console.log('Hygiene form saved successfully:', response);
-          Swal.fire('Success', 'Hygiene form saved successfully!', 'success');
-          this.router.navigate(['/Employee/Hygiene Form Medical Report']);
-        },
-        error: (error) => {
-          console.error('Error saving hygiene form:', error);
-          this.errorMessage = 'Failed to save hygiene form.';
-        },
-      });
-    } else {
-      // Display error messages for missing fields
-      this.errorMessage = 'Please fill out all required fields.';
-    }
+    const requestBody = {
+      schoolId: this.selectedSchool,
+      gradeId: this.selectedGrade,
+      classRoomID: this.selectedClass,
+      date: new Date(this.selectedDate).toISOString(),
+      studentHygieneTypes: studentHygieneTypes,
+    };
+
+    this.http.post(`${this.apiService.BaseUrl}/HygieneForm`, requestBody, { headers }).subscribe({
+      next: (response) => {
+        console.log('Hygiene form saved successfully:', response);
+        Swal.fire('Success', 'Hygiene form saved successfully!', 'success');
+        this.router.navigate(['/Employee/Hygiene Form Medical Report']);
+      },
+      error: (error) => {
+        console.error('Error saving hygiene form:', error);
+        this.errorMessage = 'Failed to save hygiene form.';
+      },
+    });
+  } else {
+    // Display error messages for missing fields
+    this.errorMessage = 'Please fill out all required fields.';
   }
+}
 
   // Handle view action
   onView(row: any) {

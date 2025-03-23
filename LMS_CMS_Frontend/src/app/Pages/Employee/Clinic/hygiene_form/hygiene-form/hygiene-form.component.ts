@@ -3,15 +3,15 @@ import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../../../../Component/search/search.component';
-import { ModalComponent } from '../../../../../Component/modal/modal.component';
+// import { ModalComponent } from '../../../../../Component/modal/modal.component';
 import Swal from 'sweetalert2';
 import { TableComponent } from "../../../../../Component/reuse-table/reuse-table.component";
 import { Router } from '@angular/router';
 import { HygieneFormService } from '../../../../../Services/Employee/Clinic/hygiene-form.service';
 import { ApiService } from '../../../../../Services/api.service';
 import { HygieneForm } from '../../../../../Models/Clinic/HygieneForm';
-import { Classroom } from '../../../../../Models/LMS/classroom';
-import { HygieneFormTableComponent } from "../hygiene-form-table/hygiene-form-table.component";
+// import { Classroom } from '../../../../../Models/LMS/classroom';
+// import { HygieneFormTableComponent } from "../hygiene-form-table/hygiene-form-table.component";
 
 @Component({
   selector: 'app-hygiene-form',
@@ -44,6 +44,7 @@ export class HygieneFormComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+      this.DomainName = this.apiService.GetHeader(); // Set the DomainName
     this.loadHygieneForms();
   }
 
@@ -140,31 +141,31 @@ export class HygieneFormComponent implements OnInit {
     }
   }
 
-  deleteHygieneForm(row: any) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this hygiene form!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#FF7519',
-      cancelButtonColor: '#2E3646',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.hygieneFormService.Delete(row.id, this.DomainName).subscribe({
-          next: (response) => {
-            console.log('Delete response:', response);
-            this.loadHygieneForms();
-          },
-          error: (error) => {
-            console.error('Error deleting hygiene form:', error);
-            Swal.fire('Error!', 'Failed to delete the hygiene form.', 'error');
-          },
-        });
-      }
-    });
-  }
+deleteHygieneForm(row: any) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You will not be able to recover this hygiene form!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#FF7519',
+    cancelButtonColor: '#2E3646',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, keep it'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.hygieneFormService.Delete(row.id, this.DomainName).subscribe({
+        next: (response) => {
+          console.log('Delete response:', response);
+          this.loadHygieneForms(); // Reload the hygiene forms after deletion
+        },
+        error: (error) => {
+          console.error('Error deleting hygiene form:', error);
+          Swal.fire('Error!', 'Failed to delete the hygiene form.', 'error');
+        },
+      });
+    }
+  });
+}
 
   validateForm(): boolean {
     let isValid = true;

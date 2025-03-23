@@ -349,7 +349,7 @@
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         <ng-container *ngIf="editingRowId === row.id; else textModequantity">
-                            <input [(ngModel)]="row.quantity" (ngModelChange)="CalculateTotalPrice(row)"
+                            <input [(ngModel)]="row.quantity" (ngModelChange)="CalculateTotalPrice(row)" type="number"
                                 class="w-full border border-gray-300 px-2 py-1 rounded-md">
                         </ng-container>
                         <ng-template #textModequantity>{{ row.quantity }}</ng-template>
@@ -393,11 +393,11 @@
                         {{Item.shopItemName}}
                     </td>
                     <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="Item.quantity"  (ngModelChange)="CalculateTotalPrice()"
+                        <input [(ngModel)]="Item.quantity"  (ngModelChange)="CalculateTotalPrice()" type="number"
                             class="w-full border border-gray-300 px-2 py-1 rounded-md">
                     </td>
                     <td *ngIf="IsPriceEditable" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="SelectedSopItem.purchasePrice"  (ngModelChange)="EditPrice()"
+                        <input [(ngModel)]="SelectedSopItem.purchasePrice"  (ngModelChange)="EditPrice()" type="number"
                             class="w-full border border-gray-300 px-2 py-1 rounded-md">
                     </td>
                     <td *ngIf="!IsPriceEditable" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">

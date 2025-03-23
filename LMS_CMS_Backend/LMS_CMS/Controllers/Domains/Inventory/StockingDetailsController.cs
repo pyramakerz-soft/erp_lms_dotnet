@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace LMS_CMS_PL.Controllers.Domains.Inventory
 {
@@ -295,7 +296,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                  allowedTypes: new[] { "octa", "employee" },
                  pages: new[] { "Inventory" }
              )]
-        public async Task<IActionResult> GetBySaleIDAsync(long StoreId , long ShopItemID , string date) 
+        public async Task<IActionResult> GetCurrentStockByIDAsync(long StoreId , long ShopItemID , string date) 
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
             LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
@@ -303,6 +304,42 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             long SecondCurrentStock1 = await _calculateCurrentStock.GetCurrentStockInTransformedStore(db, StoreId, ShopItemID, date);
 
             return Ok(FirstCurrentStock1+ SecondCurrentStock1);
+        }
+
+        ////
+
+        [HttpGet("CurrentStockByCategoryId/{StoreId}/{CategoryId}/{date}")]
+        [Authorize_Endpoint_(
+                 allowedTypes: new[] { "octa", "employee" },
+                 pages: new[] { "Inventory" }
+             )]
+        public async Task<IActionResult> GetCurrentStockByCategoryId(long StoreId, long CategoryId, string date)
+        {
+
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
+
+            List<InventorySubCategories> inventorySubCategories = await Unit_Of_Work.inventorySubCategories_Repository
+                .Select_All_With_IncludesById<InventorySubCategories>(
+                    f => f.InventoryCategoriesID == CategoryId && f.IsDeleted != true
+                );
+
+            List<long> subCategoryIds = inventorySubCategories.Select(s => s.ID).ToList();
+
+            List<ShopItem> shopItems = await Unit_Of_Work.shopItem_Repository
+                .Select_All_With_IncludesById<ShopItem>(
+                    f => f.IsDeleted != true && subCategoryIds.Contains(f.InventorySubCategoriesID) );
+
+            List<ShopItemGetDTO> shopItemGetDTO = mapper.Map<List<ShopItemGetDTO>>(shopItems);
+
+            foreach (var item in shopItemGetDTO)
+            {
+                long FirstCurrentStock1 = await _calculateCurrentStock.GetCurrentStock(db, StoreId, item.ID, date);
+                long SecondCurrentStock1 = await _calculateCurrentStock.GetCurrentStockInTransformedStore(db, StoreId, item.ID, date);
+                item.CurrentStock = FirstCurrentStock1 + SecondCurrentStock1;
+            }
+
+            return Ok(shopItemGetDTO);
         }
     }
 }

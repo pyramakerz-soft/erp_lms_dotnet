@@ -345,7 +345,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             {
                 registerationFormParent.InsertedByOctaId = userId;
             }
+
             Unit_Of_Work.registerationFormParent_Repository.Add(registerationFormParent);
+            Unit_Of_Work.SaveChanges();
+
+            registerationFormParent.StudentName = $"{registerationFormParent.StudentName.Replace(" ", "_")}_{registerationFormParent.ID}";
+            Unit_Of_Work.registerationFormParent_Repository.Update(registerationFormParent);
+
             Unit_Of_Work.SaveChanges();
 
 

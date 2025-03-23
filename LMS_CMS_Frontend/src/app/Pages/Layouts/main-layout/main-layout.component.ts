@@ -19,7 +19,7 @@ import { routes } from '../../../app.routes';
   styleUrl: './main-layout.component.css'
 })
 export class MainLayoutComponent {
-  menuItems: { label: string; route?: string; subItems?: { label: string; route: string }[] }[] = [];
+  menuItems: { label: string; route?: string; icon?:string; subItems?: { label: string; route: string; icon?:string }[] }[] = [];
   menuItemsForEmployee?: PagesWithRoleId[];
 
   User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
@@ -42,20 +42,20 @@ export class MainLayoutComponent {
     } else if (this.User_Data_After_Login.type == "student") {
       this.menuItems = [
         {
-          label: 'Dashboard Student', route: '#'
+          label: 'Dashboard Student', route: '#', icon: 'Dashboard'
         },
         {
           label: 'ECommerce', subItems: [
             {
               label: 'Shop', route: 'Ecommerce/Shop'
             }
-          ]
+          ], icon: 'E-Commerce'
         }
       ]
     } else if (this.User_Data_After_Login.type == "parent") {
       this.menuItems = [
         {
-          label: 'Dashboard Parent', route: '#'
+          label: 'Dashboard Parent', route: '#', icon: 'Dashboard'
         },
         {
           label: 'Registrations', subItems: [
@@ -68,7 +68,7 @@ export class MainLayoutComponent {
             {
               label: 'Interview Registration', route: 'Interview Registration'
             }
-          ]
+          ], icon: 'Registration'
         }
       ]
     }
@@ -88,7 +88,7 @@ export class MainLayoutComponent {
             {
               label: "Account", route: "Account"
             }
-          ]
+          ], icon: "Administrator"
         }
       ]
     }

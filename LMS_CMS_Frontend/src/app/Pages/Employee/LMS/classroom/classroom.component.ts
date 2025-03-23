@@ -254,8 +254,8 @@ export class ClassroomComponent {
   }
 
   SaveClassroom(){
-    this.isLoadingSaveClassroom=true
     if(this.isFormValid()){
+      this.isLoadingSaveClassroom=true
       if(this.editClassroom == false){
         this.classroomService.Add(this.classroom, this.DomainName).subscribe(
           (result: any) => {

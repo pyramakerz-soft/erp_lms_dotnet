@@ -28,5 +28,6 @@ export class ShopItem {
         public shopItemColors :any[] = [],
         public shopItemSizes :any[] = [],
         public barCode :string ="",
+        public currentStock:number =0,
     ) {}
 }         

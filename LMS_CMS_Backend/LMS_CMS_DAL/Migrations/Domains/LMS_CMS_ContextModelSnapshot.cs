@@ -3735,7 +3735,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("bigint");
 
                     b.Property<string>("InvoiceHead")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("InvoiceNumber")
@@ -4193,6 +4192,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
+                    b.Property<long?>("AdditionId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Date")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -4206,6 +4208,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("DisbursementId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -4214,9 +4219,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<long?>("InsertedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<int>("InvoiceNumber")
-                        .HasColumnType("int");
 
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");

@@ -119,6 +119,7 @@ import { StockingComponent } from './Pages/Employee/Inventory/stocking/stocking.
 import { StockingDetailsComponent } from './Pages/Employee/Inventory/stocking-details/stocking-details.component';
 import { ViewHygieneFormComponent } from './Pages/Employee/Clinic/hygiene_form/veiw-hygiene-form/veiw-hygiene-form.component';
 import { MedicalHistoryByParentComponent } from './Pages/Employee/Clinic/medical-report/medical-history-by-parent/medical-history-by-parent/medical-history-by-parent.component';
+import { StudentsNamesInClassComponent } from './Pages/Employee/Registration/Reports/students-names-in-class/students-names-in-class.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -282,7 +283,7 @@ export const routes: Routes = [
             { path: "Stocking", component: StockingComponent, title: "Stocking", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Stocking Details", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Stocking Details/Edit/:id", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
-
+            { path: "StudentsNamesInClass", component: StudentsNamesInClassComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

@@ -46,7 +46,8 @@
     <div class="mt-6 mb-4 rounded-3xl flex justify-start space-x-2 flex-wrap py-3 print-section">
         <div class="flex flex-col w-[24%] mb-4">
             <label class="mb-2" for="store">Store</label>
-            <select  *ngIf="!IsActualStockHiddenForBlankPrint" class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Store"
+            <select *ngIf="!IsActualStockHiddenForBlankPrint"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Store"
                 (ngModelChange)=" onInputValueChange({ field: 'storeID', value: $event })" [(ngModel)]="Data.storeID"
                 (ngModelChange)="onStoreChange($event)">
                 <option [value]=0 disabled selected hidden>Choose Store</option>
@@ -63,7 +64,8 @@
 
         <div class="flex flex-col mb-4 w-[24%]">
             <label class="mb-2 primaryTxt" for="name">Date</label>
-            <input *ngIf="!IsActualStockHiddenForBlankPrint" id="name" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            <input *ngIf="!IsActualStockHiddenForBlankPrint" id="name" type="date"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 (ngModelChange)=" onInputValueChange({ field: 'date', value: $event })" placeholder="Enter Date"
                 [(ngModel)]="Data.date" />
             <span *ngIf="validationErrors['date']"
@@ -77,19 +79,18 @@
 
 
     <div class="flex justify-end items-center space-x-2">
-        <!-- <div class="flex justify-between items-center">
-        <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500"
-        style="width: 22.51px; height: 22.51px; font-size: 22.51px;" *ngIf="!IsSearchOpen" (click)="SearchToggle()">
-    </i>
-    <div *ngIf="IsSearchOpen"
-    class="relative flex items-center w-full max-w-[432px] sm:max-w-[300px] xs:max-w-[200px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg py-3 ltr:mr-3">
-    <input type="number"
-    class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full ltr:pl-1 rtl:pr-1" />
-</div>
-<i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500" *ngIf="IsSearchOpen"
-style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBarCode()">
-</i>
-</div> -->
+        <div class="flex justify-between items-center" *ngIf="IsOpenToAdd==true">
+            <div
+                class="relative flex items-center w-full max-w-[432px] sm:max-w-[300px] xs:max-w-[200px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg py-3 ltr:mr-3">
+                <input type="number" [(ngModel)]="BarCode" (keydown.enter)="SearchOnBarCode()"
+                    placeholder="Search by Barcode"
+                    class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full ltr:pl-1 rtl:pr-1" />
+                <i class="fas fa-times cursor-pointer text-gray-400 ml-2" (click)="CloseSearch()"></i>
+            </div>
+            <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500 cursor-pointer"
+                style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBarCode()">
+            </i>
+        </div>
 
         <button class="secondaryTxt secondaryBorder px-1 py-2 rounded-lg flex items-center space-x-1"
             (click)="AddDetail()">

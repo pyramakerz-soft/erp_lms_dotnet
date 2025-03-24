@@ -79,7 +79,7 @@ export class StockingDetailsComponent {
 
   IsOpenToAdd: boolean = false;
   IsSearchOpen: boolean = false;
-  BarCode: number = 0;
+  BarCode: string = "";
   HasBallance: boolean = false;
   AllItems: boolean = true;
   ShopItems: ShopItem[] = [];
@@ -284,6 +284,48 @@ export class StockingDetailsComponent {
       (s) => s.shopItemID == item.id
     );
     this.SelectedSopItem = item;
+  }
+
+  SearchToggle() {
+    this.IsSearchOpen = true;
+    setTimeout(() => {
+      const input = document.querySelector('input[type="number"]') as HTMLInputElement;
+      if (input) input.focus();
+    }, 100);
+  }
+
+  CloseSearch() {
+    this.IsSearchOpen = false;
+    this.BarCode = '';
+  }
+
+  SearchOnBarCode() {
+    if (!this.BarCode) return;
+    this.shopitemServ.GetByBarcode(this.BarCode, this.DomainName).subscribe(d => {
+      const detail: StockingDetails = {
+        id: Date.now() + Math.floor(Math.random() * 1000),
+        insertedAt: '',
+        insertedByUserId: 0,
+        currentStock: d.currentStock,
+        actualStock: 0,
+        theDifference: 0,
+        shopItemID: d.id,
+        stockingId: this.MasterId,
+        shopItemName: d.arName,
+        barCode: d.barCode,
+        ItemPrice: d.purchasePrice ?? 0,
+      };
+      const exists = this.FilteredDetails.some(x => x.shopItemID === d.id);
+      if (!exists) this.FilteredDetails.push(detail);
+      this.BarCode = ''; // Clear input after search
+    }, (error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'This Item Not Exist',
+        confirmButtonText: 'Okay',
+        customClass: { confirmButton: 'secondaryBg' },
+      });
+    });
   }
 
   async GetTableDataByID(): Promise<void> {

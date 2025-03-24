@@ -1,4 +1,4 @@
-<div id="DataToDownload">
+<div>
     <div class="flex justify-between items-center">
         <div class="flex justify-between items-center space-x-5">
             <i class="fa-solid fa-chevron-left" (click)="moveToMaster()"></i>
@@ -43,10 +43,11 @@
         </div>
     </div>
 
-    <div class="mt-6 mb-4 rounded-3xl flex justify-start space-x-2 flex-wrap py-3">
+    <div class="mt-6 mb-4 rounded-3xl flex justify-start space-x-2 flex-wrap py-3 print-section">
         <div class="flex flex-col w-[24%] mb-4">
             <label class="mb-2" for="store">Store</label>
-            <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Store"
+            <select *ngIf="!IsActualStockHiddenForBlankPrint"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Store"
                 (ngModelChange)=" onInputValueChange({ field: 'storeID', value: $event })" [(ngModel)]="Data.storeID"
                 (ngModelChange)="onStoreChange($event)">
                 <option [value]=0 disabled selected hidden>Choose Store</option>
@@ -55,33 +56,41 @@
             </select>
             <span *ngIf="validationErrors['storeID']" class="text-red-500 ml-3 font-normal">{{
                 validationErrors["storeID"]}}</span>
+            <span *ngIf="IsActualStockHiddenForBlankPrint"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block">
+                {{ getStoreNameById(Data.storeID) }}
+            </span>
         </div>
 
         <div class="flex flex-col mb-4 w-[24%]">
             <label class="mb-2 primaryTxt" for="name">Date</label>
-            <input id="name" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            <input *ngIf="!IsActualStockHiddenForBlankPrint" id="name" type="date"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 (ngModelChange)=" onInputValueChange({ field: 'date', value: $event })" placeholder="Enter Date"
                 [(ngModel)]="Data.date" />
             <span *ngIf="validationErrors['date']"
                 class="text-red-500 ml-3 font-normal">{{validationErrors["date"]}}</span>
+            <span *ngIf="IsActualStockHiddenForBlankPrint"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block">
+                {{ Data.date }}
+            </span>
         </div>
     </div>
 
 
     <div class="flex justify-end items-center space-x-2">
-        <!-- <div class="flex justify-between items-center">
-        <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500"
-        style="width: 22.51px; height: 22.51px; font-size: 22.51px;" *ngIf="!IsSearchOpen" (click)="SearchToggle()">
-    </i>
-    <div *ngIf="IsSearchOpen"
-    class="relative flex items-center w-full max-w-[432px] sm:max-w-[300px] xs:max-w-[200px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg py-3 ltr:mr-3">
-    <input type="number"
-    class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full ltr:pl-1 rtl:pr-1" />
-</div>
-<i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500" *ngIf="IsSearchOpen"
-style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBarCode()">
-</i>
-</div> -->
+        <div class="flex justify-between items-center" *ngIf="IsOpenToAdd==true">
+            <div
+                class="relative flex items-center w-full max-w-[432px] sm:max-w-[300px] xs:max-w-[200px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg py-3 ltr:mr-3">
+                <input type="number" [(ngModel)]="BarCode" (keydown.enter)="SearchOnBarCode()"
+                    placeholder="Search by Barcode"
+                    class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full ltr:pl-1 rtl:pr-1" />
+                <i class="fas fa-times cursor-pointer text-gray-400 ml-2" (click)="CloseSearch()"></i>
+            </div>
+            <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500 cursor-pointer"
+                style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBarCode()">
+            </i>
+        </div>
 
         <button class="secondaryTxt secondaryBorder px-1 py-2 rounded-lg flex items-center space-x-1"
             (click)="AddDetail()">
@@ -101,7 +110,7 @@ style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBa
         </label>
     </div>
 
-    <div *ngIf="IsOpenToAdd==true" class="flex justify-start space-x-5">
+    <div *ngIf="IsOpenToAdd==true" class="flex justify-start space-x-5 ">
         <div class="w-[30%] bg-[#F7F7F7] flex flex-col rounded-[16px] py-3">
             <h1 class="font-semibold text-2xl leading-9 ml-3">Categories</h1>
             <div
@@ -147,7 +156,7 @@ style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBa
         </div>
     </div>
 
-    <div>
+    <div class="print-section">
         <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
             <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
                 <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
@@ -214,7 +223,9 @@ style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBa
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             {{ row.currentStock }}
                         </td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <!-- Show actual stock when NOT hiding for blank print -->
+                        <td *ngIf="!IsActualStockHiddenForBlankPrint"
+                            class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <ng-container *ngIf="editingRowId === row.id; else textModeactualStock">
                                 <input [(ngModel)]="row.actualStock" type="number"
                                     (ngModelChange)="onStockChangeWhenEditRow(row)"
@@ -222,8 +233,18 @@ style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBa
                             </ng-container>
                             <ng-template #textModeactualStock>{{ row.actualStock }}</ng-template>
                         </td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                        <!-- Show empty input when hiding actual stock (e.g., Blank Print) -->
+                        <td *ngIf="IsActualStockHiddenForBlankPrint"
+                            class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            <input class="w-full border border-gray-300 px-2 py-1 rounded-md" />
+                        </td>
+                        <td *ngIf="!IsActualStockHiddenForBlankPrint"
+                            class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             {{ row.theDifference }}
+                        </td>
+                        <td *ngIf="IsActualStockHiddenForBlankPrint"
+                            class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            <input class="w-full border border-gray-300 px-2 py-1 rounded-md" />
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <div class="flex space-x-4">
@@ -252,16 +273,26 @@ style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBa
                             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                                 {{ newRow.shopItemName }}
                             </td>
-                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            <td class="py-5 px-4 border border-[#ececec] border-t-0 border-l-0">
                                 {{ newRow.currentStock }}
                             </td>
-                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            <td *ngIf="!IsActualStockHiddenForBlankPrint"
+                                class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                                 <input [(ngModel)]="newRow.actualStock"
                                     (ngModelChange)="onStockChangeWhenAddRow(newRow)" type="number"
                                     class="w-full border border-gray-300 px-2 py-1 rounded-md">
                             </td>
-                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            <td *ngIf="IsActualStockHiddenForBlankPrint"
+                                class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                <input class="w-full border border-gray-300 px-2 py-1 rounded-md" />
+                            </td>
+                            <td *ngIf="!IsActualStockHiddenForBlankPrint"
+                                class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                                 {{ newRow.theDifference }}
+                            </td>
+                            <td *ngIf="IsActualStockHiddenForBlankPrint"
+                                class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                <input class="w-full border border-gray-300 px-2 py-1 rounded-md" />
                             </td>
                             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                                 <div class="flex space-x-4">
@@ -280,18 +311,21 @@ style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="SearchOnBa
         </div>
     </div>
 
-
     <div class="flex justify-end space-x-2 mt-3 items-end">
-        <div class="flex flex-col mb-4 w-[7%]">
+        <div class="flex flex-col mb-4 w-[7%] print-section">
             <label class="mb-2 primaryTxt" for="addition">Addition</label>
-            <input id="addition" type="text" [(ngModel)]="Data.additionId" readonly disabled
-                class="rounded-lg border border-solid px-4 py-3 border-gray-300 placeholder-gray-400 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed" />
+            <span
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-gray-500 text-sm leading-5 block h-[48px]">
+                {{ Data.additionId || '—' }}
+            </span>
         </div>
 
-        <div class="flex flex-col mb-4 w-[7%]">
+        <div class="flex flex-col mb-4 w-[7%] print-section">
             <label class="mb-2 primaryTxt" for="disbursement">Disbursement</label>
-            <input id="disbursement" type="text" [(ngModel)]="Data.disbursementId" readonly disabled
-                class="rounded-lg border border-solid px-4 py-3 border-gray-300 placeholder-gray-400 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed" />
+            <span
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-gray-500 text-sm leading-5 block h-[48px]">
+                {{ Data.disbursementId || '—' }}
+            </span>
         </div>
 
         <div class="flex items-end mb-4">

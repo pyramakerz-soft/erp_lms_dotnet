@@ -16,6 +16,8 @@ import { ClassroomService } from '../../../../../Services/Employee/LMS/classroom
 import { Student } from '../../../../../Models/student';
 import { StudentService } from '../../../../../Services/student.service';
 import { ReportsService } from '../../../../../Services/shared/reports.service';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-students-names-in-class',
@@ -144,16 +146,95 @@ export class StudentsNamesInClassComponent {
   formatDate(dateString: string, dir: string): string {
     const date = new Date(dateString);
     const locale = dir === 'rtl' ? 'ar-EG' : 'en-US';  
-    return date.toLocaleDateString(locale, { weekday: 'long', month: 'long', year: 'numeric' });
+    return date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   Print() {
+    this.reportsService.PrintPDF()
   } 
 
   DownloadAsPDF() {
     this.reportsService.DownloadAsPDF("List of students' names in class")
   }
 
-  DownloadAsExcel() {
+  DownloadAsExcel() { 
+    const tableElement = document.getElementById("TableData");
+    if (!tableElement) {
+      console.error("Table not found!");
+      return;
+    }
+
+    const html = `
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; } 
+            .header-table { 
+              width: 100%; 
+            } 
+            .header-table td {
+              padding: 10px;
+              vertical-align: middle;
+            }
+            .header-right p{
+              text-align: right; 
+            }
+            .header-right, .heade-left{
+              text-align: right; 
+              vertical-align: middle;
+            }
+            table { 
+              border: 1px solid #BDBDBD; 
+              width: 100%; 
+              border-collapse: collapse; 
+              background: #EBEBEB; 
+            } 
+            th, td {  
+              text-align: left;  
+            } 
+            .text-center { text-align: center; }
+            .text-base{
+              font-weight: bold;
+              font-size: 18px;
+            }
+            .text-sm{
+              font-weight: lighter;
+              font-size: 14px;
+            }  
+          </style>
+        </head>
+        <body>
+          <table class="header-table">
+            <tr>
+              <td class="header-left">
+                <p class="text-base">${this.school.reportHeaderOneEn}</p>
+                <p class="text-sm">${this.school.reportHeaderTwoEn}</p>
+              </td>
+              <td class="header-center">
+                <img src="${this.school.reportImage}" width="120" height="120">
+              </td>
+              <td class="header-right">
+                <p class="text-base">${this.school.reportHeaderOneAr}</p>
+                <p class="text-sm">${this.school.reportHeaderTwoAr}</p>
+              </td>
+            </tr>
+          </table>
+
+          <div class="my-10">
+            <p class="text-base">Class: <span class="text-sm">${this.class.name}</span></p>
+            <p class="text-base">Number Of Students: <span class="text-sm">${this.studentsCount}</span></p> 
+            <p class="text-base">Date: <span class="text-sm">${this.date}</span></p>  
+          </div>
+
+          <div class="table-container">
+            ${tableElement.outerHTML}
+          </div>
+        </body>
+      </html>
+    `;
+
+    const blob = new Blob([html], { type: "application/vnd.ms-excel" });
+    saveAs(blob, "List of students' names in class.xls");
   }
 }

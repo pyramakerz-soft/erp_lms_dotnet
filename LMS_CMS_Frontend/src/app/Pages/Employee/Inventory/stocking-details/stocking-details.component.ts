@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Stocking } from '../../../../Models/Inventory/stocking';
 import { StockingDetails } from '../../../../Models/Inventory/stocking-details';
 import { StockingService } from '../../../../Services/Employee/Inventory/stocking.service';
@@ -96,6 +96,7 @@ export class StockingDetailsComponent {
   AllShopItems: ShopItem[] = [];
   isLoading = false;
   showPrintMenu = false;
+  IsActualStockHiddenForBlankPrint: boolean = false
 
   constructor(
     private router: Router,
@@ -112,7 +113,8 @@ export class StockingDetailsComponent {
     public shopitemServ: ShopItemService,
     public StockingServ: StockingService,
     public StockingDetailsServ: StockingDetailsService,
-    public InventoryMastrServ: InventoryMasterService
+    public InventoryMastrServ: InventoryMasterService,
+    private cdr: ChangeDetectorRef
   ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -195,7 +197,7 @@ export class StockingDetailsComponent {
   selectCategory(categoryId: number) {
     this.SelectedCategoryId = categoryId;
     this.GetSubCategories();
-      this.GetAllShopItems();
+    this.GetAllShopItems();
   }
 
   GetAllShopItems() {
@@ -221,10 +223,10 @@ export class StockingDetailsComponent {
           barCode: item.barCode,
           ItemPrice: item.purchasePrice ?? 0,
         }));
-        if(this.AllItems==true){
+        if (this.AllItems == true) {
           this.FilteredDetails = this.MultiDetails;
         }
-        if (this.HasBallance == true&& this.AllItems==true) {
+        if (this.HasBallance == true && this.AllItems == true) {
           this.FilteredDetails = this.MultiDetails.filter(
             (f) => f.currentStock != 0
           );
@@ -245,13 +247,13 @@ export class StockingDetailsComponent {
   }
 
   selectSubCategory(subCategoryId: number) {
-    this.FilteredDetails=[]
+    this.FilteredDetails = []
     this.SelectedSubCategoryId = subCategoryId;
     this.FilteredShopItems = this.ShopItems.filter(
       (s) => s.inventorySubCategoriesID == subCategoryId
     );
     this.SelectedSopItem = null;
-    if(this.AllItems){
+    if (this.AllItems) {
       this.FilteredDetails = this.FilteredShopItems.map((item) => ({
         id: Date.now() + Math.floor(Math.random() * 1000),
         insertedAt: '',
@@ -267,7 +269,7 @@ export class StockingDetailsComponent {
       }));
     }
 
-    if (this.HasBallance == true && this.AllItems ==true) {
+    if (this.HasBallance == true && this.AllItems == true) {
       this.FilteredDetails = this.FilteredDetails.filter(
         (f) => f.currentStock != 0
       );
@@ -308,7 +310,7 @@ export class StockingDetailsComponent {
   toggleHasBalance() {
     if (this.HasBallance == true) {
       this.FilteredDetails = this.FilteredDetails.filter(
-        (f) => f.currentStock !=  0
+        (f) => f.currentStock != 0
       );
       this.FilteredShopItems = this.FilteredShopItems.filter(
         (s) => s.currentStock != 0
@@ -675,11 +677,10 @@ export class StockingDetailsComponent {
   togglePrintMenu() {
     this.showPrintMenu = !this.showPrintMenu;
   }
-  
+
   selectPrintOption(type: string) {
     this.showPrintMenu = false;
     console.log('Selected Print Type:', type);
-  
     // Call different print logic based on type
     switch (type) {
       case 'Blank':
@@ -693,63 +694,72 @@ export class StockingDetailsComponent {
         break;
     }
   }
-  
-  Blank() { 
-    let orderElement = document.getElementById('DataToDownload');
-    if (!orderElement) {
-      console.error("Page body not found!");
-      return;
-    }
-    document.querySelectorAll('.no-print').forEach(el => {
-      (el as HTMLElement).style.display = 'none';
-    });
-    orderElement.classList.add('pdf-scale');
-    setTimeout(() => {
-      html2pdf().from(orderElement).set({
-        margin: 5,
-        filename: `Stocking.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
-      }).save().then(() => {
-        document.querySelectorAll('.no-print').forEach(el => {
-          (el as HTMLElement).style.display = '';
-        });
-        orderElement.classList.remove('pdf-scale');
-      });
-    }, 500);
+
+  Blank() {
+    this.IsActualStockHiddenForBlankPrint = true
+    this.cdr.detectChanges();
+    setTimeout(async () => {
+      await this.Print();
+      this.IsActualStockHiddenForBlankPrint = false
+      this.cdr.detectChanges(); // Update view again
+    }, 300);
   }
-  
-  
-  Differences() {
-    this.FilteredDetails = this.FilteredDetails.filter(f=>f.theDifference>0)
-    let orderElement = document.getElementById('DataToDownload');
-    if (!orderElement) {
-      console.error("Page body not found!");
-      return;
+
+  async Differences() {
+    const backupFilteredDetails = [...this.FilteredDetails];
+    const backupTableData = [...this.TableData];
+    if (this.mode === "Create") {
+      this.FilteredDetails = this.FilteredDetails.filter(f => f.theDifference != 0);
+    } else if (this.mode === "Edit") {
+      this.TableData = this.TableData.filter(f => f.theDifference != 0);
     }
-    document.querySelectorAll('.no-print').forEach(el => {
-      (el as HTMLElement).style.display = 'none';
-    });
-    orderElement.classList.add('pdf-scale');
-    setTimeout(() => {
-      html2pdf().from(orderElement).set({
-        margin: 5,
-        filename: `Stocking.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
-      }).save().then(() => {
-        document.querySelectorAll('.no-print').forEach(el => {
-          (el as HTMLElement).style.display = '';
-        });
-        orderElement.classList.remove('pdf-scale');
-      });
-    }, 500);
+    this.cdr.detectChanges();
+    setTimeout(async () => {
+      await this.Print();
+      this.FilteredDetails = backupFilteredDetails;
+      if (this.mode === "Create") {
+      } else if (this.mode === "Edit") {
+        this.TableData = backupTableData;
+      }
+      this.cdr.detectChanges(); // Update view again
+    }, 300);
   }
-    
+
   Print() {
-    // Print logic for type 3
+    const sections = document.querySelectorAll('.print-section');
+    if (!sections.length) {
+      console.error('No print sections found!');
+      return;
+    }
+    let combinedHTML = '';
+    sections.forEach(el => {
+      combinedHTML += el.outerHTML;
+    });
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = combinedHTML;
+    tempContainer.style.padding = '20px';
+    tempContainer.classList.add('pdf-scale');
+    document.body.appendChild(tempContainer);
+    setTimeout(() => {
+      html2pdf()
+        .from(tempContainer)
+        .set({
+          margin: 5,
+          filename: 'Stocking.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
+        })
+        .save()
+        .then(() => {
+          document.body.removeChild(tempContainer);
+        });
+    }, 500);
+  }
+
+  getStoreNameById(id: number): string {
+    const store = this.Stores?.find(s => s.id === id);
+    return store ? store.name : '—';
   }
 }
 

@@ -64,66 +64,65 @@
         </div>
     </div>
 
-    <!-- Hygiene Form Tab -->
-    <div *ngIf="selectedTab === 'Hygiene Form'" class="space-y-4">
-        <!-- Filtration System -->
-        <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
-            <!-- School Select -->
-            <div class="flex flex-col mb-4 w-[32%]">
-                <label class="mb-2 primaryTxt" for="school">School</label>
-                <select id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
-                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto">
-                    <option [value]="null" disabled selected hidden>Choose School</option>
-                    <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
-                    <option *ngIf="schools.length === 0" disabled selected>No Data Found</option>
-                </select>
-            </div>
+<div *ngIf="selectedTab === 'Hygiene Form'" class="space-y-4">
+    <!-- Filtration System -->
+    <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+        <!-- School Select -->
+        <div class="flex flex-col mb-4 w-[32%]">
+            <label class="mb-2 primaryTxt" for="school">School</label>
+            <select id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto">
+                <option [value]="null" disabled selected hidden>Choose School</option>
+                <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
+                <option *ngIf="schools.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
 
-            <!-- Grade Select -->
-            <div class="flex flex-col mb-4 w-[32%]">
-                <label class="mb-2 primaryTxt" for="grade">Grade</label>
-                <select id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()"
-                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
-                    [disabled]="!selectedSchool">
-                    <option [value]="null" disabled selected hidden>Choose Grade</option>
-                    <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
-                    <option *ngIf="grades.length === 0" disabled selected>No Data Found</option>
-                </select>
-            </div>
+        <!-- Grade Select -->
+        <div class="flex flex-col mb-4 w-[32%]">
+            <label class="mb-2 primaryTxt" for="grade">Grade</label>
+            <select id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                [disabled]="!selectedSchool">
+                <option [value]="null" disabled selected hidden>Choose Grade</option>
+                <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
+                <option *ngIf="grades.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
 
-            <!-- Class Select -->
-            <div class="flex flex-col mb-4 w-[32%]">
-                <label class="mb-2 primaryTxt" for="class">Class</label>
-                <select id="class" [(ngModel)]="selectedClass" (change)="onClassChange()"
-                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
-                    [disabled]="!selectedGrade">
-                    <option [value]="null" disabled selected hidden>Choose Class</option>
-                    <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
-                    <option *ngIf="classes.length === 0" disabled selected>No Data Found</option>
-                </select>
-            </div>
+        <!-- Class Select -->
+        <div class="flex flex-col mb-4 w-[32%]">
+            <label class="mb-2 primaryTxt" for="class">Class</label>
+            <select id="class" [(ngModel)]="selectedClass" (change)="onClassChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                [disabled]="!selectedGrade">
+                <option [value]="null" disabled selected hidden>Choose Class</option>
+                <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+                <option *ngIf="classes.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
 
-            <!-- Student Select -->
-            <div class="flex flex-col mb-4 w-[87%]">
-                <label class="mb-2 primaryTxt" for="student">Student</label>
-                <select id="student" [(ngModel)]="selectedStudent" (change)="onStudentChange()"
-                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
-                    [disabled]="!selectedClass">
-                    <option [value]="null" disabled selected hidden>Choose Student</option>
-                    <option *ngFor="let student of students" [value]="student.id">{{ student.en_name }}</option>
-                    <option *ngIf="students.length === 0" disabled selected>No Data Found</option>
-                </select>
-            </div>
+        <!-- Student Select -->
+        <div class="flex flex-col mb-4 w-[87%]">
+            <label class="mb-2 primaryTxt" for="student">Student</label>
+            <select id="student" [(ngModel)]="selectedStudent"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                [disabled]="!selectedClass">
+                <option [value]="null" disabled selected hidden>Choose Student</option>
+                <option *ngFor="let student of students" [value]="student.id">{{ student.en_name }}</option>
+                <option *ngIf="students.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
 
-            <!-- Filter Button -->
-            <div class="flex flex-col mb-4 w-[12%] justify-end">
-                <button (click)="filterStudents()"
-                    class="text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 bg-[#FF7519]">
-                    Search for
-                </button>
-            </div>
+        <!-- Filter Button -->
+        <div class="flex flex-col mb-4 w-[12%] justify-end">
+            <button (click)="filterHygieneForms()"
+                class="text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 bg-[#FF7519]">
+                Search for
+            </button>
         </div>
     </div>
+</div>
 
     <!-- Follow Up Tab -->
     <div *ngIf="selectedTab === 'Follow Up'" class="space-y-4">

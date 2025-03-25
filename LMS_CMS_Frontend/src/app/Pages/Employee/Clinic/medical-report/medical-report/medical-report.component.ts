@@ -28,6 +28,7 @@ import { SearchComponent } from "../../../../../Component/search/search.componen
   standalone: true
 })
 export class MedicalReportComponent implements OnInit {
+  
 onView($event: any) {
 throw new Error('Method not implemented.');
 }
@@ -42,6 +43,7 @@ throw new Error('Method not implemented.');
   hygieneForms: any[] = [];
   followUps: any[] = [];
   filteredFollowUps: any[] = [];
+  // filterHygieneForms: any[] = [];
 
   // Search functionality
   searchKey: string = 'id';
@@ -62,8 +64,11 @@ throw new Error('Method not implemented.');
   selectedStudent: number | null = null; // Added for student selection
   selectedDate: string = '';
 
+  studentSearchTerm: string = '';
+  filteredHygieneForms: any[] = [];
+
   constructor(
-    private router: Router,
+    // private router: Router,
     private hygieneFormService: HygieneFormService,
     private medicalHistoryService: MedicalHistoryService,
     private followUpService: FollowUpService,
@@ -157,22 +162,22 @@ throw new Error('Method not implemented.');
     }
   }
 
-  async loadStudents() {
-    if (this.selectedClass) {
-      try {
-        const domainName = this.apiService.GetHeader();
-        const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
-        this.students = data.map(student => ({
-          ...student,
-          attendance: null,
-          comment: '',
-          actionTaken: ''
-        }));
-      } catch (error) {
-        console.error('Error loading students:', error);
-      }
+async loadStudents() {
+  if (this.selectedClass) {
+    try {
+      const domainName = this.apiService.GetHeader();
+      const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
+      this.students = data.map(student => ({
+        ...student,
+        attendance: null,
+        comment: '',
+        actionTaken: '',
+      }));
+    } catch (error) {
+      console.error('Error loading students:', error);
     }
   }
+}
 
   onSchoolChange() {
     this.selectedGrade = null;
@@ -180,8 +185,7 @@ throw new Error('Method not implemented.');
     this.selectedStudent = null;
     this.grades = [];
     this.classes = [];
-    this.students = [];
-    this.filteredMHByDoctorData = this.mhByDoctorData;
+    // this.students = [];
     this.loadGrades();
   }
 
@@ -189,17 +193,15 @@ throw new Error('Method not implemented.');
     this.selectedClass = null;
     this.selectedStudent = null;
     this.classes = [];
-    this.students = [];
-    this.filteredMHByDoctorData = this.mhByDoctorData;
+    // this.students = [];
     this.loadClasses();
   }
 
-  onClassChange() {
-    this.selectedStudent = null;
-    this.students = [];
-    this.filteredMHByDoctorData = this.mhByDoctorData;
-    this.loadStudents();
-  }
+onClassChange() {
+  this.selectedStudent = null;
+  // this.students = [];
+  this.loadStudents();
+}
 
   onStudentChange() {
     this.filteredMHByDoctorData = this.mhByDoctorData;
@@ -211,6 +213,7 @@ throw new Error('Method not implemented.');
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
+      // console.log(data)
       this.mhByParentData = data.map((item) => ({
         id: item.id,
         date: new Date(item.insertedAt).toLocaleDateString(),
@@ -228,6 +231,7 @@ throw new Error('Method not implemented.');
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalHistoryService.GetByDoctor(domainName));
+      console.log(data)
       this.mhByDoctorData = data.map((item: any) => ({
         id: item.id,
         date: new Date(item.insertedAt).toLocaleDateString(),
@@ -246,18 +250,32 @@ throw new Error('Method not implemented.');
     }
   }
 
-  async loadAllHygieneForms() {
+async loadAllHygieneForms() {
+  try {
+    const domainName = this.apiService.GetHeader();
+    const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
+    this.allHygieneForms = data;
+    this.filteredHygieneForms = [...data];
+    this.prepareStudentsData();
+  } catch (error) {
+    console.error('Error loading hygiene forms:', error);
+  }
+}
+
+  async loadHygieneForms() {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
       this.allHygieneForms = data;
-      this.students = this.allHygieneForms.flatMap(form =>
+
+      // Initialize students with all students from all forms (if needed)
+      this.students = data.flatMap(form => 
         form.studentHygieneTypes.map((student: any) => ({
           id: student.studentId,
-          en_name: student.student,
+          en_name: student.student || 'N/A',
           attendance: student.attendance,
-          comment: student.comment,
-          actionTaken: student.actionTaken,
+          comment: student.comment || '',
+          actionTaken: student.actionTaken || '',
           hygieneType_1: student.hygieneTypeId === 1,
           hygieneType_2: student.hygieneTypeId === 2,
         }))
@@ -267,27 +285,11 @@ throw new Error('Method not implemented.');
     }
   }
 
-  async loadHygieneForms() {
-    try {
-      const domainName = this.apiService.GetHeader();
-      const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
-      this.hygieneForms = data.map((item) => ({
-        ...item,
-        school: item.school,
-        grade: item.grade,
-        classRoom: item.classRoom,
-        date: new Date(item.date).toLocaleDateString(),
-        actions: { delete: true, edit: true, view: true }
-      }));
-    } catch (error) {
-      console.error('Error fetching hygiene forms:', error);
-    }
-  }
-
   async loadFollowUps() {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.followUpService.Get(domainName));
+      // console.log(data)
       this.followUps = data.map((item) => ({
         id: item.id,
         schoolId: item.schoolId,
@@ -332,39 +334,47 @@ throw new Error('Method not implemented.');
     this.filteredMHByDoctorData = filteredData;
   }
 
-  filterStudents() {
-    let filteredForms = this.allHygieneForms;
+filterHygieneForms() {
+  // Only filter if we have hygiene forms data
+  if (this.allHygieneForms.length === 0) return;
 
-    if (this.selectedSchool) {
-      filteredForms = filteredForms.filter(form => form.schoolId == this.selectedSchool);
-    }
+  // Reset filtered forms to all data first
+  let filteredForms = [...this.allHygieneForms];
 
-    if (this.selectedGrade) {
-      filteredForms = filteredForms.filter(form => form.gradeId == this.selectedGrade);
-    }
-
-    if (this.selectedClass) {
-      filteredForms = filteredForms.filter(form => form.classRoomID == this.selectedClass);
-    }
-
-    if (this.selectedStudent) {
-      filteredForms = filteredForms.filter(form => form.studentId == this.selectedStudent);
-    }
-
-    console.log(filteredForms);
-
-    if (filteredForms.length > 0) {
-      this.students = filteredForms[0].studentHygieneTypes.map((student: any) => ({
-        ...student,
-        attendance: student.attendance,
-        comment: student.comment,
-        actionTaken: student.actionTaken
-      }));
-    } else {
-      this.students = [];
-      console.log('No students found for the selected criteria.');
-    }
+  // Apply school filter if selected
+  if (this.selectedSchool) {
+    filteredForms = filteredForms.filter(
+      form => form.schoolId == this.selectedSchool
+    );
   }
+
+  // Apply grade filter if selected
+  if (this.selectedGrade) {
+    filteredForms = filteredForms.filter(
+      form => form.gradeId == this.selectedGrade
+    );
+  }
+
+  // Apply class filter if selected
+  if (this.selectedClass) {
+    filteredForms = filteredForms.filter(
+      form => form.classRoomID == this.selectedClass
+    );
+  }
+
+  // Apply student filter if selected
+  if (this.selectedStudent) {
+    filteredForms = filteredForms.filter(form => {
+      return form.studentHygieneTypes.some((student: any) => 
+        student.studentId == this.selectedStudent
+      );
+    });
+  }
+
+  // Update the filtered forms and prepare students data
+  this.filteredHygieneForms = filteredForms;
+  this.prepareStudentsData();
+}
 
   filterFollowUps() {
     let filteredFollowUps = this.followUps;
@@ -388,6 +398,26 @@ throw new Error('Method not implemented.');
     console.log('Filtered Follow Ups:', filteredFollowUps);
     this.filteredFollowUps = filteredFollowUps;
   }
+
+
+prepareStudentsData() {
+  this.students = this.filteredHygieneForms.flatMap(form => 
+    form.studentHygieneTypes.map((student: any) => ({
+      id: student.studentId,
+      en_name: student.student || 'N/A',
+      attendance: student.attendance,
+      comment: student.comment || '',
+      actionTaken: student.actionTaken || '',
+      hygieneType_1: student.hygieneTypeId === 1,
+      hygieneType_2: student.hygieneTypeId === 2,
+      formId: form.id,
+      formDate: new Date(form.date).toLocaleDateString(),
+      schoolName: form.school,
+      gradeName: form.grade,
+      className: form.classRoom
+    }))
+  );
+}
 
   // ==================== Delete Functionality ====================
   deleteMH(row: any) {
@@ -446,9 +476,36 @@ throw new Error('Method not implemented.');
   }
 
   // ==================== Tab Selection ====================
-  selectTab(tab: string) {
+selectTab(tab: string) {
     this.selectedTab = tab;
-  }
+
+    // Reset filters
+    this.selectedSchool = null;
+    this.selectedGrade = null;
+    this.selectedClass = null;
+    this.selectedStudent = null;
+    this.studentSearchTerm = '';
+
+    // Clear dependent dropdowns
+    this.grades = [];
+    this.classes = [];
+    this.students = [];
+
+    // Reset filtered data
+    this.filteredMHByDoctorData = [...this.mhByDoctorData];
+    this.filteredFollowUps = [...this.followUps];
+    this.filteredHygieneForms = [...this.allHygieneForms];
+
+    // If switching to a tab that requires fresh data, reload it
+    if (tab === 'Hygiene Form') {
+        this.loadAllHygieneForms();
+    } else if (tab === 'MH By Doctor') {
+        this.loadMHByDoctorData();
+    } else if (tab === 'Follow Up') {
+        this.loadFollowUps();
+    }
+}
+
 
   // ==================== Export Functionality ====================
 

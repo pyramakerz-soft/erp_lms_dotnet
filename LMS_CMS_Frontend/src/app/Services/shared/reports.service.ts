@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
+import FileSaver from 'file-saver';
 import saveAs from 'file-saver';
 import html2pdf from 'html2pdf.js'; 
+import html2canvas from 'html2canvas';
+import * as ExcelJS from 'exceljs'
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +29,7 @@ export class ReportsService {
     }).save();
   } 
 
-  PrintPDF() {
+  PrintPDF(name:string) {
     let Element = document.getElementById('Data');
 
     if (!Element) {
@@ -39,16 +42,15 @@ export class ReportsService {
         console.error("Failed to open print window.");
         return;
     }
-
-    // Get all stylesheets and their CSS rules
+ 
     let styles = Array.from(document.styleSheets)
         .map(styleSheet => {
             try {
-                return Array.from(styleSheet.cssRules) // Convert CSSRuleList to an array
+                return Array.from(styleSheet.cssRules)
                     .map(rule => rule.cssText)
                     .join("\n");
             } catch (e) {
-                return ""; // Ignore cross-origin stylesheet errors
+                return "";
             }
         })
         .join("\n");
@@ -56,7 +58,7 @@ export class ReportsService {
     printWindow.document.write(`
         <html>
         <head>
-            <title>Print Report</title>
+            <title>${name}</title>
             <style>${styles}</style>  <!-- Injects all styles -->
         </head>
         <body>
@@ -74,6 +76,15 @@ export class ReportsService {
     printWindow.document.close();
   }
 
-
-
+  async getBase64ImageFromUrl(imageUrl: string): Promise<string> {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+  
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
 }

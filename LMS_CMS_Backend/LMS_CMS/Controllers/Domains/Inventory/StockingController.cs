@@ -165,7 +165,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             allowEdit: 1,
              pages: new[] { "Inventory" }
         )]
-        public async Task<IActionResult> EditAsync([FromForm] StockingGetDto newData)
+        public async Task<IActionResult> EditAsync( StockingGetDto newData)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

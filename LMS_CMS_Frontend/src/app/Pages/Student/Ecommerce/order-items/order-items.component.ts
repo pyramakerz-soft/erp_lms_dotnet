@@ -14,6 +14,8 @@ import { Order } from '../../../../Models/Student/ECommerce/order';
 // import jsPDF from 'jspdf';
 // import { Order } from '../../../../Models/Student/ECommerce/order';   
 // import html2pdf from 'html2pdf.js';
+import html2pdf from 'html2pdf.js';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-order-items',
@@ -37,7 +39,7 @@ export class OrderItemsComponent {
   previousRoute: any;
   
   constructor(public account: AccountService, public ApiServ: ApiService, private router: Router, public cartService:CartService, 
-    public orderService:OrderService, public activeRoute: ActivatedRoute){}
+    public orderService:OrderService, public activeRoute: ActivatedRoute, public reportsService:ReportsService){}
   
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -50,14 +52,7 @@ export class OrderItemsComponent {
       this.previousRoute = params['from']; // Store previous route
    
       this.getCartData().then(() => {
-        if (params['download'] === 'true') {
-          this.cart.cart_ShopItems.forEach((row) => {
-            if (row.mainImage) {
-              row.mainImage = row.mainImage.replace(/ /g, "%20");
-              console.log(row.mainImage)
-              this.convertToDataURL(row.mainImage)
-            }
-          });
+        if (params['download'] === 'true') { 
           setTimeout(() => {
             this.DownloadOrder();
             this.moveToOrders()

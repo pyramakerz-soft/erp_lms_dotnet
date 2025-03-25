@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Stocking } from '../../../../Models/Inventory/stocking';
 import { StockingDetails } from '../../../../Models/Inventory/stocking-details';
 import { StockingService } from '../../../../Services/Employee/Inventory/stocking.service';
@@ -24,6 +24,7 @@ import { DeleteEditPermissionService } from '../../../../Services/shared/delete-
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { InventoryMaster } from '../../../../Models/Inventory/InventoryMaster';
 import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-stocking-details',
@@ -78,7 +79,7 @@ export class StockingDetailsComponent {
 
   IsOpenToAdd: boolean = false;
   IsSearchOpen: boolean = false;
-  BarCode: number = 0;
+  BarCode: string = "";
   HasBallance: boolean = false;
   AllItems: boolean = true;
   ShopItems: ShopItem[] = [];
@@ -93,6 +94,9 @@ export class StockingDetailsComponent {
   adiustmentAddition: InventoryMaster = new InventoryMaster();
   adiustmentDisbursement: InventoryMaster = new InventoryMaster();
   AllShopItems: ShopItem[] = [];
+  isLoading = false;
+  showPrintMenu = false;
+  IsActualStockHiddenForBlankPrint: boolean = false
 
   constructor(
     private router: Router,
@@ -109,8 +113,9 @@ export class StockingDetailsComponent {
     public shopitemServ: ShopItemService,
     public StockingServ: StockingService,
     public StockingDetailsServ: StockingDetailsService,
-    public InventoryMastrServ: InventoryMasterService
-  ) {}
+    public InventoryMastrServ: InventoryMasterService,
+    private cdr: ChangeDetectorRef
+  ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -161,7 +166,6 @@ export class StockingDetailsComponent {
   GetMasterInfo() {
     this.StockingServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d;
-      console.log(this.Data, d);
     });
   }
 
@@ -219,10 +223,12 @@ export class StockingDetailsComponent {
           barCode: item.barCode,
           ItemPrice: item.purchasePrice ?? 0,
         }));
-        this.FilteredDetails = this.MultiDetails;
-        if (this.HasBallance == true) {
+        if (this.AllItems == true) {
+          this.FilteredDetails = this.MultiDetails;
+        }
+        if (this.HasBallance == true && this.AllItems == true) {
           this.FilteredDetails = this.MultiDetails.filter(
-            (f) => f.currentStock > 0
+            (f) => f.currentStock != 0
           );
         }
       });
@@ -241,32 +247,34 @@ export class StockingDetailsComponent {
   }
 
   selectSubCategory(subCategoryId: number) {
+    this.FilteredDetails = []
     this.SelectedSubCategoryId = subCategoryId;
     this.FilteredShopItems = this.ShopItems.filter(
       (s) => s.inventorySubCategoriesID == subCategoryId
     );
-    this.FilteredDetails = this.FilteredShopItems.map((item) => ({
-      id: Date.now() + Math.floor(Math.random() * 1000),
-      insertedAt: '',
-      insertedByUserId: 0,
-      currentStock: item.currentStock,
-      actualStock: 0,
-      theDifference: 0,
-      shopItemID: item.id,
-      stockingId: this.MasterId,
-      shopItemName: item.enName,
-      barCode: item.barCode,
-      ItemPrice: item.purchasePrice ?? 0,
-    }));
-
     this.SelectedSopItem = null;
+    if (this.AllItems) {
+      this.FilteredDetails = this.FilteredShopItems.map((item) => ({
+        id: Date.now() + Math.floor(Math.random() * 1000),
+        insertedAt: '',
+        insertedByUserId: 0,
+        currentStock: item.currentStock,
+        actualStock: 0,
+        theDifference: 0,
+        shopItemID: item.id,
+        stockingId: this.MasterId,
+        shopItemName: item.enName,
+        barCode: item.barCode,
+        ItemPrice: item.purchasePrice ?? 0,
+      }));
+    }
 
-    if (this.HasBallance == true) {
+    if (this.HasBallance == true && this.AllItems == true) {
       this.FilteredDetails = this.FilteredDetails.filter(
-        (f) => f.currentStock > 0
+        (f) => f.currentStock != 0
       );
       this.FilteredShopItems = this.FilteredShopItems.filter(
-        (f) => f.currentStock > 0
+        (f) => f.currentStock != 0
       );
     }
   }
@@ -276,6 +284,48 @@ export class StockingDetailsComponent {
       (s) => s.shopItemID == item.id
     );
     this.SelectedSopItem = item;
+  }
+
+  SearchToggle() {
+    this.IsSearchOpen = true;
+    setTimeout(() => {
+      const input = document.querySelector('input[type="number"]') as HTMLInputElement;
+      if (input) input.focus();
+    }, 100);
+  }
+
+  CloseSearch() {
+    this.IsSearchOpen = false;
+    this.BarCode = '';
+  }
+
+  SearchOnBarCode() {
+    if (!this.BarCode) return;
+    this.shopitemServ.GetByBarcode(this.BarCode, this.DomainName).subscribe(d => {
+      const detail: StockingDetails = {
+        id: Date.now() + Math.floor(Math.random() * 1000),
+        insertedAt: '',
+        insertedByUserId: 0,
+        currentStock: d.currentStock,
+        actualStock: 0,
+        theDifference: 0,
+        shopItemID: d.id,
+        stockingId: this.MasterId,
+        shopItemName: d.arName,
+        barCode: d.barCode,
+        ItemPrice: d.purchasePrice ?? 0,
+      };
+      const exists = this.FilteredDetails.some(x => x.shopItemID === d.id);
+      if (!exists) this.FilteredDetails.push(detail);
+      this.BarCode = ''; // Clear input after search
+    }, (error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'This Item Not Exist',
+        confirmButtonText: 'Okay',
+        customClass: { confirmButton: 'secondaryBg' },
+      });
+    });
   }
 
   async GetTableDataByID(): Promise<void> {
@@ -302,10 +352,10 @@ export class StockingDetailsComponent {
   toggleHasBalance() {
     if (this.HasBallance == true) {
       this.FilteredDetails = this.FilteredDetails.filter(
-        (f) => f.currentStock > 0
+        (f) => f.currentStock != 0
       );
       this.FilteredShopItems = this.FilteredShopItems.filter(
-        (s) => s.currentStock > 0
+        (s) => s.currentStock != 0
       );
     } else if (this.SelectedSopItem != null) {
       this.FilteredDetails = this.MultiDetails.filter(
@@ -369,17 +419,15 @@ export class StockingDetailsComponent {
   }
 
   Save() {
-    console.log(this.Data);
     if (this.isFormValid()) {
       if (this.mode == 'Create') {
-        console.log(this.Data);
         this.StockingServ.Add(this.Data, this.DomainName).subscribe((d) => {
           this.MasterId = d;
           this.router.navigateByUrl(`Employee/Stocking`);
         });
       }
       if (this.mode == 'Edit') {
-        
+
         this.StockingServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/Stocking`);
         });
@@ -392,8 +440,6 @@ export class StockingDetailsComponent {
   }
 
   Delete(row: StockingDetails) {
-    console.log(this.Data.stockingDetails);
-    console.log(row);
     if (this.mode == 'Edit') {
       Swal.fire({
         title: 'Are you sure you want to delete this Item?',
@@ -441,7 +487,6 @@ export class StockingDetailsComponent {
     }
     if (this.mode == 'Edit') {
       this.Item.stockingId = this.MasterId;
-      console.log(this.Item);
       this.StockingDetailsServ.Add(this.Item, this.DomainName).subscribe(
         async (d) => {
           await this.GetTableDataByID();
@@ -467,7 +512,7 @@ export class StockingDetailsComponent {
         async (d) => {
           await this.GetTableDataByID();
           this.StockingServ.Edit(this.Data, this.DomainName).subscribe(
-            (d) => {}
+            (d) => { }
           );
         }
       );
@@ -497,7 +542,6 @@ export class StockingDetailsComponent {
       }
     } else if (this.mode == 'Edit') {
       const removedRow = this.FilteredDetails.splice(index, 1)[0];
-      console.log(removedRow);
       if (removedRow) {
         this.TableData.push(removedRow);
         this.StockingDetailsServ.Add(removedRow, this.DomainName).subscribe(
@@ -592,81 +636,173 @@ export class StockingDetailsComponent {
 
   async Adjustment() {
     if (!this.isFormValid()) return;
-    if (this.mode === 'Create') {
-      console.log("Data")
-      try {
+    this.isLoading = true;
+    try {
+      if (this.mode === 'Create') {
+        this.TableData = this.Data.stockingDetails;
         const addedData = await this.StockingServ.Add(this.Data, this.DomainName).toPromise();
         this.Data.id = addedData;
-  
+        this.MasterId = addedData;
+        const result = await this.StockingServ.GetById(this.Data.id, this.DomainName).toPromise();
+        if (result) this.Data = result;
         this.Data.additionId = await this.prepareAdjustment(2, (s) => s.theDifference > 0);
         this.Data.disbursementId = await this.prepareAdjustment(4, (s) => s.theDifference < 0);
-      } catch (error) {
-        console.error('Error during Adjustment (Create):', error);
       }
-    }
-  
-    if (this.mode === 'Edit') {
-      try {
-        console.log(this.TableData);
-  
-        if (this.Data.additionId) {
-          await this.InventoryMastrServ.Delete(this.Data.additionId, this.DomainName).toPromise();
+      if (this.mode === 'Edit') {
+        if (this.Data.additionId != 0) {
+          try {
+            await this.InventoryMastrServ.Delete(this.Data.additionId, this.DomainName).toPromise();
+          } catch (error) {
+            console.error("Error deleting additionId:", error);
+          }
         }
-        if (this.Data.disbursementId) {
-          await this.InventoryMastrServ.Delete(this.Data.disbursementId, this.DomainName).toPromise();
+        if (this.Data.disbursementId != 0) {
+          try {
+            await this.InventoryMastrServ.Delete(this.Data.disbursementId, this.DomainName).toPromise();
+          } catch (error) {
+            console.error("Error deleting disbursementId:", error);
+          }
         }
-  
         this.Data.additionId = await this.prepareAdjustment(2, (s) => s.theDifference > 0);
         this.Data.disbursementId = await this.prepareAdjustment(4, (s) => s.theDifference < 0);
-  
-      } catch (error) {
-        console.error('Error during Adjustment (Edit):', error);
       }
+      await this.StockingServ.Edit(this.Data, this.DomainName).toPromise();
+      this.router.navigateByUrl(`Employee/Stocking`);
+    } catch (error) {
+      console.error('Unexpected error in Adjustment():', error);
+    } finally {
+      this.isLoading = false;
     }
-    console.log(this.Data)
-    await this.StockingServ.Edit(this.Data, this.DomainName).toPromise();
-    console.log(this.Data);
   }
-  
+
   private async prepareAdjustment(flagId: number, filterCondition: (item: any) => boolean) {
 
     this.adiustmentDisbursement.date = this.Data.date;
-      this.adiustmentDisbursement.storeID = this.Data.storeID;
-      this.adiustmentDisbursement.flagId = flagId;
-      this.adiustmentDisbursement.inventoryDetails = this.TableData.filter(filterCondition).map((item) => {
-        const foundItem = this.AllShopItems.find(
-          (s) => s.id == item.shopItemID
-        );
-        const price = foundItem?.purchasePrice ?? 0;
-        const quantity = item.theDifference ?? 0;
-        return {
-          id: Date.now() + Math.floor(Math.random() * 1000),
-          insertedAt: '',
-          barCode: '',
-          name: '',
-          shopItemName: '',
-          salesName: '',
-          notes: '',
-          insertedByUserId: 0,
-          shopItemID: item.shopItemID,
-          quantity: -1 * quantity,
-          price: price,
-          totalPrice: -1 * price * quantity,
-          inventoryMasterId: this.MasterId,
-        };
-      });
-      this.adiustmentDisbursement.total =
-        this.adiustmentDisbursement.inventoryDetails.reduce(
-          (sum, item) => sum + (item.totalPrice ?? 0),
-          0
-        );
-   
-    const response = await this.InventoryMastrServ.Add(this.adiustmentDisbursement, this.DomainName).toPromise();
-    return response;
+    this.adiustmentDisbursement.storeID = this.Data.storeID;
+    this.adiustmentDisbursement.flagId = flagId;
+    this.adiustmentDisbursement.inventoryDetails = this.TableData.filter(filterCondition).map((item) => {
+      const foundItem = this.AllShopItems.find(
+        (s) => s.id == item.shopItemID
+      );
+      const price = foundItem?.purchasePrice ?? 0;
+      const quantity = item.theDifference ?? 0;
+      return {
+        id: Date.now() + Math.floor(Math.random() * 1000),
+        insertedAt: '',
+        barCode: '',
+        name: '',
+        shopItemName: '',
+        salesName: '',
+        notes: '',
+        insertedByUserId: 0,
+        shopItemID: item.shopItemID,
+        quantity: -1 * quantity,
+        price: price,
+        totalPrice: -1 * price * quantity,
+        inventoryMasterId: this.MasterId,
+      };
+    });
+    this.adiustmentDisbursement.total =
+      this.adiustmentDisbursement.inventoryDetails.reduce(
+        (sum, item) => sum + (item.totalPrice ?? 0),
+        0
+      );
+    if (this.adiustmentDisbursement.inventoryDetails.length > 0) {
+      const response = await this.InventoryMastrServ.Add(this.adiustmentDisbursement, this.DomainName).toPromise();
+      return response;
+    }
+    else return
   }
-  
 
   //////// print
+
+  togglePrintMenu() {
+    this.showPrintMenu = !this.showPrintMenu;
+  }
+
+  selectPrintOption(type: string) {
+    this.showPrintMenu = false;
+    console.log('Selected Print Type:', type);
+    // Call different print logic based on type
+    switch (type) {
+      case 'Blank':
+        this.Blank();
+        break;
+      case 'Differences':
+        this.Differences();
+        break;
+      case 'Print':
+        this.Print();
+        break;
+    }
+  }
+
+  Blank() {
+    this.IsActualStockHiddenForBlankPrint = true
+    this.cdr.detectChanges();
+    setTimeout(async () => {
+      await this.Print();
+      this.IsActualStockHiddenForBlankPrint = false
+      this.cdr.detectChanges(); // Update view again
+    }, 300);
+  }
+
+  async Differences() {
+    const backupFilteredDetails = [...this.FilteredDetails];
+    const backupTableData = [...this.TableData];
+    if (this.mode === "Create") {
+      this.FilteredDetails = this.FilteredDetails.filter(f => f.theDifference != 0);
+    } else if (this.mode === "Edit") {
+      this.TableData = this.TableData.filter(f => f.theDifference != 0);
+    }
+    this.cdr.detectChanges();
+    setTimeout(async () => {
+      await this.Print();
+      this.FilteredDetails = backupFilteredDetails;
+      if (this.mode === "Create") {
+      } else if (this.mode === "Edit") {
+        this.TableData = backupTableData;
+      }
+      this.cdr.detectChanges(); // Update view again
+    }, 300);
+  }
+
+  Print() {
+    const sections = document.querySelectorAll('.print-section');
+    if (!sections.length) {
+      console.error('No print sections found!');
+      return;
+    }
+    let combinedHTML = '';
+    sections.forEach(el => {
+      combinedHTML += el.outerHTML;
+    });
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = combinedHTML;
+    tempContainer.style.padding = '20px';
+    tempContainer.classList.add('pdf-scale');
+    document.body.appendChild(tempContainer);
+    setTimeout(() => {
+      html2pdf()
+        .from(tempContainer)
+        .set({
+          margin: 5,
+          filename: 'Stocking.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
+        })
+        .save()
+        .then(() => {
+          document.body.removeChild(tempContainer);
+        });
+    }, 500);
+  }
+
+  getStoreNameById(id: number): string {
+    const store = this.Stores?.find(s => s.id === id);
+    return store ? store.name : '—';
+  }
 }
 
 

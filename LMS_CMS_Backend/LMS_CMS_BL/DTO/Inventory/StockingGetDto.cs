@@ -16,6 +16,5 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long? DisbursementId { get; set; }
         public string? StoreName { get; set; }
         public long? InsertedByUserId { get; set; }
-
     }
 }

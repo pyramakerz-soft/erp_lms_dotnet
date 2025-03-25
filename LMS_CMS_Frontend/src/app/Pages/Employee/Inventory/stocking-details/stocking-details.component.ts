@@ -97,11 +97,11 @@ export class StockingDetailsComponent {
   isLoading = false;
   showPrintMenu = false;
   IsActualStockHiddenForBlankPrint: boolean = false
+  StoreAndDateSpanWhenPrint: boolean = false
 
   SelectedCategoryIds: number[] = [];
   SelectedSubCategoryIds: number[] = [];
   SelectedSopItems: ShopItem[] = [];
-
 
   constructor(
     private router: Router,
@@ -418,16 +418,34 @@ export class StockingDetailsComponent {
 
   Save() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
         this.StockingServ.Add(this.Data, this.DomainName).subscribe((d) => {
           this.MasterId = d;
           this.router.navigateByUrl(`Employee/Stocking`);
+        }, (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         });
       }
       if (this.mode == 'Edit') {
-
         this.StockingServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/Stocking`);
+        }, (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         });
       }
     }
@@ -718,31 +736,36 @@ export class StockingDetailsComponent {
     this.showPrintMenu = !this.showPrintMenu;
   }
 
-  selectPrintOption(type: string) {
+  async selectPrintOption(type: string) {
     this.showPrintMenu = false;
+    this.StoreAndDateSpanWhenPrint = true;
     console.log('Selected Print Type:', type);
-    // Call different print logic based on type
     switch (type) {
       case 'Blank':
-        this.Blank();
+        await this.Blank();
         break;
       case 'Differences':
-        this.Differences();
+        await this.Differences();
         break;
       case 'Print':
-        this.Print();
+        await this.Print();
         break;
     }
+    this.StoreAndDateSpanWhenPrint = false; // Now it's truly after printing
   }
 
-  Blank() {
-    this.IsActualStockHiddenForBlankPrint = true
+
+  async Blank() {
+    this.IsActualStockHiddenForBlankPrint = true;
     this.cdr.detectChanges();
-    setTimeout(async () => {
-      await this.Print();
-      this.IsActualStockHiddenForBlankPrint = false
-      this.cdr.detectChanges(); // Update view again
-    }, 300);
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        await this.GeneralPrint();
+        this.IsActualStockHiddenForBlankPrint = false;
+        this.cdr.detectChanges();
+        resolve();
+      }, 300);
+    });
   }
 
   async Differences() {
@@ -754,18 +777,32 @@ export class StockingDetailsComponent {
       this.TableData = this.TableData.filter(f => f.theDifference != 0);
     }
     this.cdr.detectChanges();
-    setTimeout(async () => {
-      await this.Print();
-      this.FilteredDetails = backupFilteredDetails;
-      if (this.mode === "Create") {
-      } else if (this.mode === "Edit") {
-        this.TableData = backupTableData;
-      }
-      this.cdr.detectChanges(); // Update view again
-    }, 300);
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        await this.GeneralPrint();
+        // Restore data
+        this.FilteredDetails = backupFilteredDetails;
+        if (this.mode === "Edit") {
+          this.TableData = backupTableData;
+        }
+        this.cdr.detectChanges();
+        resolve();
+      }, 300);
+    });
+  }
+  
+  Print(){
+    this.cdr.detectChanges();
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        await this.GeneralPrint();
+        this.cdr.detectChanges();
+        resolve();
+      }, 300);
+    });
   }
 
-  Print() {
+  GeneralPrint() {
     const sections = document.querySelectorAll('.print-section');
     if (!sections.length) {
       console.error('No print sections found!');

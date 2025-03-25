@@ -66,17 +66,7 @@ async getDiagnoses() {
   }
 }
 
-  
-  openModal(id?: number) {
-    if (id) {
-      this.editDiagnosis = true;
-      this.diagnosis = this.diagnoses.find((diag) => diag.id === id)!;
-    } else {
-      this.diagnosis = new Diagnosis(0, '', new Date(), 0); 
-      this.editDiagnosis = false;
-    }
-    this.isModalVisible = true; 
-  }
+
 
   
   closeModal() {
@@ -85,25 +75,55 @@ async getDiagnoses() {
     this.editDiagnosis = false;
     this.validationErrors = {};
   }
+  // Update openModal to create a copy of the diagnosis
+openModal(id?: number) {
+  if (id) {
+    this.editDiagnosis = true;
+    const originalDiagnosis = this.diagnoses.find((diag) => diag.id === id)!;
+    this.diagnosis = new Diagnosis(
+      originalDiagnosis.id,
+      originalDiagnosis.name,
+      new Date(originalDiagnosis.insertedAt),
+      originalDiagnosis.insertedByUserId
+    );
+  } else {
+    this.diagnosis = new Diagnosis(0, '', new Date(), 0);
+    this.editDiagnosis = false;
+  }
+  this.isModalVisible = true;
+}
 
-  
-  saveDiagnosis() {
-    if (this.validateForm()) {
-      if (this.editDiagnosis) {
-        this.diagnosisService.Edit(this.diagnosis, this.DomainName).subscribe(() => {
-          this.getDiagnoses();
+// Update saveDiagnosis to handle errors and loading state
+saveDiagnosis() {
+  if (this.validateForm()) {
+    if (this.editDiagnosis) {
+      this.diagnosisService.Edit(this.diagnosis, this.DomainName).subscribe({
+        next: () => {
+          this.getDiagnoses(); // Refresh from server
           this.closeModal();
-        });
-      } else {
-        
-        this.diagnosis.insertedAt = new Date().toISOString();
-        this.diagnosisService.Add(this.diagnosis, this.DomainName).subscribe(() => {
-          this.getDiagnoses();
+          Swal.fire('Success', 'Diagnosis saved successfully', 'success');
+        },
+        error: (err) => {
+          console.error('Error updating diagnosis:', err);
+          Swal.fire('Error', 'Failed to save diagnosis', 'error');
+        }
+      });
+    } else {
+      this.diagnosis.insertedAt = new Date().toISOString();
+      this.diagnosisService.Add(this.diagnosis, this.DomainName).subscribe({
+        next: () => {
+          this.getDiagnoses(); // Refresh from server
           this.closeModal();
-        });
-      }
+          Swal.fire('Success', 'Diagnosis created successfully', 'success');
+        },
+        error: (err) => {
+          console.error('Error creating diagnosis:', err);
+          Swal.fire('Error', 'Failed to create diagnosis', 'error');
+        }
+      });
     }
   }
+}
 
 
 deleteDiagnosis(row: any) {
@@ -154,23 +174,24 @@ deleteDiagnosis(row: any) {
   }
 
   
-  async onSearchEvent(event: { key: string; value: any }) {
+async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
-    await this.getDiagnoses();
+    
+    // First get all data from server
+    await this.getDiagnoses(); // Change this to the appropriate method for each component (getDrugs, getDiagnoses, getDoses)
+    
     if (this.value != "") {
-      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
-
-      this.diagnoses = this.diagnoses.filter(t => {
-        const fieldValue = t[this.key as keyof typeof t];
-        if (typeof fieldValue === 'string') {
-          return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-        }
-        if (typeof fieldValue === 'number') {
-          return fieldValue === numericValue;
-        }
-        return fieldValue == this.value;
-      });
+        this.diagnoses = this.diagnoses.filter((item: any) => { // Change data to the appropriate array (drugs, diagnoses, doses)
+            const fieldValue = item[this.key as keyof typeof item];
+            
+            // Convert both values to string for consistent comparison
+            const searchString = this.value.toString().toLowerCase();
+            const fieldString = fieldValue?.toString().toLowerCase() || '';
+            
+            // Check if the field string includes the search string
+            return fieldString.includes(searchString);
+        });
     }
-  }
+}
 }

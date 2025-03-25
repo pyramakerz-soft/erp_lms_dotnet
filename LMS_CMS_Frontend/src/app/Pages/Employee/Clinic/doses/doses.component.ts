@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { CommonModule, formatDate } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../../../Component/search/search.component';
 import { ModalComponent } from '../../../../Component/modal/modal.component';
 import { TableComponent } from '../../../../Component/reuse-table/reuse-table.component';
@@ -31,74 +31,74 @@ export class DosesComponent implements OnInit {
   constructor(private doseService: DoseService, private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.DomainName = this.apiService.GetHeader(); // Get the domain name from ApiService
+    this.DomainName = this.apiService.GetHeader();
     this.getDoses();
   }
 
-async getDoses() {
-  try {
-    const data = await firstValueFrom(this.doseService.Get(this.DomainName));
-    this.doses = data.map((item) => {
-      const insertedAtDate = new Date(item.insertedAt);
-
-      // Format the date as "Month Day, Year"
-      const options: Intl.DateTimeFormatOptions = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      };
-      const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
-
-      return {
-        ...item,
-        insertedAt: formattedDate, // Replace the raw date with the formatted date
-        actions: { delete: true, edit: true }, // Add actions dynamically
-      };
-    });
-  } catch (error) {
-    console.error('Error loading doses:', error);
-    this.doses = []; // Clear the table if there's an error
-  }
-}
-
-  // Open modal for create/edit
-  openModal(id?: number) {
-    if (id) {
-      this.editDose = true;
-      this.dose = this.doses.find((d) => d.id === id)!;
-    } else {
-      this.dose = new Dose(0, '', ''); // Reset form for new entry
-      this.editDose = false;
+  async getDoses() {
+    try {
+      const data = await firstValueFrom(this.doseService.Get(this.DomainName));
+      this.doses = data.map((item) => {
+        const insertedAtDate = new Date(item.insertedAt);
+        const options: Intl.DateTimeFormatOptions = {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        };
+        const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
+        return {
+          ...item,
+          insertedAt: formattedDate,
+          actions: { delete: true, edit: true },
+        };
+      });
+    } catch (error) {
+      this.handleError('Error loading doses:', error);
     }
-    this.isModalVisible = true; // Show the modal
   }
 
-  // Close modal
   closeModal() {
-    this.isModalVisible = false; // Hide the modal
-    this.dose = new Dose(0, '', ''); // Reset form
+    this.isModalVisible = false;
+    this.dose = new Dose(0, '', '');
     this.editDose = false;
     this.validationErrors = {};
   }
 
-  // Save or update dose
+  openModal(id?: number) {
+    if (id) {
+      this.editDose = true;
+      const originalDose = this.doses.find((d) => d.id === id)!;
+      this.dose = new Dose(
+        originalDose.id,
+        originalDose.doseTimes,
+        originalDose.insertedAt
+      );
+    } else {
+      this.dose = new Dose(0, '', '');
+      this.editDose = false;
+    }
+    this.isModalVisible = true;
+  }
+
   saveDose() {
     if (this.validateForm()) {
-      if (this.editDose) {
-        this.doseService.Edit(this.dose, this.DomainName).subscribe(() => {
+      const operation = this.editDose 
+        ? this.doseService.Edit(this.dose, this.DomainName)
+        : this.doseService.Add(this.dose, this.DomainName);
+
+      operation.subscribe({
+        next: () => {
           this.getDoses();
           this.closeModal();
-        });
-      } else {
-        this.doseService.Add(this.dose, this.DomainName).subscribe(() => {
-          this.getDoses();
-          this.closeModal();
-        });
-      }
+          Swal.fire('Success', `Dose ${this.editDose ? 'updated' : 'created'} successfully`, 'success');
+        },
+        error: (error) => {
+          this.handleError(`Error ${this.editDose ? 'updating' : 'creating'} dose:`, error);
+        }
+      });
     }
   }
 
-  // Delete dose
   deleteDose(row: Dose) {
     Swal.fire({
       title: 'Are you sure you want to delete this dose?',
@@ -116,66 +116,45 @@ async getDoses() {
             Swal.fire('Deleted!', 'The dose has been deleted.', 'success');
           },
           error: (error) => {
-            console.error('Error deleting dose:', error);
-            Swal.fire('Error!', 'Failed to delete the dose.', 'error');
+            this.handleError('Error deleting dose:', error);
           },
         });
       }
     });
   }
 
-  // Validate form
   validateForm(): boolean {
-    let isValid = true;
+    this.validationErrors = {};
     if (!this.dose.doseTimes) {
       this.validationErrors['doseTimes'] = '*Dose Times is required';
-      isValid = false;
-    } else {
-      this.validationErrors['doseTimes'] = '';
+      return false;
     }
-    return isValid;
+    return true;
   }
 
-  // Handle input changes
   onInputValueChange(event: { field: string; value: any }) {
     const { field, value } = event;
     (this.dose as any)[field] = value;
-    if (value) {
+    if (value && this.validationErrors[field]) {
       this.validationErrors[field] = '';
     }
   }
 
-async onSearchEvent(event: { key: string; value: any }) {
-  this.key = event.key;
-  this.value = event.value;
-  if (this.value !== '') {
-    try {
-      const data = await firstValueFrom(
-        this.doseService.Search(this.key, this.value, this.DomainName)
-      );
-      this.doses = data.map((item) => {
-        const insertedAtDate = new Date(item.insertedAt);
-
-        // Format the date as "Month Day, Year"
-        const options: Intl.DateTimeFormatOptions = {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        };
-        const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
-
-        return {
-          ...item,
-          insertedAt: formattedDate, // Replace the raw date with the formatted date
-          actions: { delete: true, edit: true }, // Add actions dynamically
-        };
+  async onSearchEvent(event: { key: string; value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    await this.getDoses();
+    
+    if (this.value) {
+      this.doses = this.doses.filter(dose => {
+        const fieldValue = dose[this.key as keyof typeof dose]?.toString().toLowerCase() || '';
+        return fieldValue.includes(this.value.toString().toLowerCase());
       });
-    } catch (error) {
-      console.error('Error searching doses:', error);
-      this.doses = [];
     }
-  } else {
-    this.getDoses(); // Reset to original data if search is empty
   }
-}
+
+  private handleError(message: string, error: any) {
+    console.error(message, error);
+    Swal.fire('Error!', 'An error occurred. Please try again.', 'error');
+  }
 }

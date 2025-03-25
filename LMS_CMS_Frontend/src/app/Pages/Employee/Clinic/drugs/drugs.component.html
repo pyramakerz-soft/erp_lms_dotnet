@@ -15,7 +15,7 @@
     </app-table>
 
     <!-- Reusable Modal -->
-    <app-modal [title]="editDrug ? 'Edit Drug' : 'Create Drug'" [isEditMode]="editDrug" (save)="saveDrug()"
+    <app-modal [title]="editDrug ? 'Drug' : 'Create Drug'" [isEditMode]="editDrug" (save)="saveDrug()"
         (close)="closeModal()" [ngClass]="{ hidden: !isModalVisible }">
         <!-- Modal Content -->
         <div class="flex flex-col w-full mb-4">

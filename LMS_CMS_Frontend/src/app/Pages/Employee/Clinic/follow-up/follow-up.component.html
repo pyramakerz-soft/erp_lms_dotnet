@@ -1,17 +1,15 @@
 <div class="container mx-auto pr-6 overflow-hidden">
-    <!-- Header Section -->
     <div class="flex justify-between">
-        <h1 class="font-semibold text-2xl leading-9  mt-2">Follow Up</h1>
+        <h1 class="font-semibold text-2xl leading-9 mt-2">Follow Up</h1>
         <div class="flex justify-between items-center">
             <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="openModal()"
-                class="rounded-lg secondaryBorder secondaryTxt px-5 py-3 flex items-center justify-center gap-2 font-medium ">
+                class="rounded-lg secondaryBorder secondaryTxt px-5 py-3 flex items-center justify-center gap-2 font-medium">
                 Follow Up
             </button>
         </div>
     </div>
 
-    <!-- Table Section -->
     <app-table
         [headers]="['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation', 'Actions']"
         [data]="followUps" [showViewAction]="true"
@@ -20,69 +18,71 @@
     </app-table>
 </div>
 
-<!-- Follow Up Modal -->
 <div *ngIf="isModalVisible" class="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
     <div class="relative bg-white w-[750px] max-h-[90vh] h-auto rounded-2xl p-12 gap-4 shadow-md overflow-y-auto">
-        <!-- Close Icon -->
         <button (click)="closeModal()"
             class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
             <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
 
-        <!-- Modal Header -->
-        <h1 class="font-semibold text-2xl leading-9 mb-6">{{ editMode ? 'Edit Follow Up' : 'Create Follow Up' }}</h1>
+        <h1 class="font-semibold text-2xl leading-9 mb-6">{{ followUp.id ? 'Edit Follow Up' : 'Create Follow Up' }}</h1>
 
-        <!-- Modal Content -->
         <div class="space-y-6">
-<!-- School and Grade -->
-<div class="grid grid-cols-2 gap-6">
-    <!-- School Dropdown -->
-    <div class="flex flex-col">
-        <label class="mb-1 primaryTxt" for="school">School</label>
-        <select id="school" [(ngModel)]="followUp.schoolId" (change)="onSchoolChange($event)"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-            <option [value]="0" disabled selected hidden>Choose School</option> <!-- Placeholder -->
-            <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
-        </select>
-    </div>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="flex flex-col">
+                    <label class="mb-1 primaryTxt" for="school">School</label>
+                    <select id="school" [(ngModel)]="followUp.schoolId" (change)="onSchoolChange($event)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
+                        <option [value]="0" disabled selected hidden>Choose School</option>
+                        <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
+                    </select>
+                    <span *ngIf="validationErrors['schoolId']" class="text-red-500 ml-3 font-normal text-sm">
+                        {{ validationErrors['schoolId'] }}
+                    </span>
+                </div>
 
-    <!-- Grade Dropdown -->
-    <div class="flex flex-col">
-        <label class="mb-1 primaryTxt" for="grade">Grade</label>
-        <select id="grade" [(ngModel)]="followUp.gradeId" (change)="onGradeChange($event)"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
-            [disabled]="!followUp.schoolId">
-            <option [value]="0" disabled selected hidden>Choose Grade</option> <!-- Placeholder -->
-            <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
-        </select>
-    </div>
-</div>
+                <div class="flex flex-col">
+                    <label class="mb-1 primaryTxt" for="grade">Grade</label>
+                    <select id="grade" [(ngModel)]="followUp.gradeId" (change)="onGradeChange($event)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
+                        [disabled]="!followUp.schoolId">
+                        <option [value]="0" disabled selected hidden>Choose Grade</option>
+                        <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
+                    </select>
+                    <span *ngIf="validationErrors['gradeId']" class="text-red-500 ml-3 font-normal text-sm">
+                        {{ validationErrors['gradeId'] }}
+                    </span>
+                </div>
+            </div>
 
-<!-- Class and Student -->
-<div class="grid grid-cols-2 gap-6">
-    <!-- Class Dropdown -->
-    <div class="flex flex-col">
-        <label class="mb-1 primaryTxt" for="class">Class</label>
-        <select id="class" [(ngModel)]="followUp.classroomId" (change)="onClassChange($event)"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
-            [disabled]="!followUp.gradeId">
-            <option [value]="0" disabled selected hidden>Choose Class</option> <!-- Placeholder -->
-            <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
-        </select>
-    </div>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="flex flex-col">
+                    <label class="mb-1 primaryTxt" for="class">Class</label>
+                    <select id="class" [(ngModel)]="followUp.classroomId" (change)="onClassChange($event)"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
+                        [disabled]="!followUp.gradeId">
+                        <option [value]="0" disabled selected hidden>Choose Class</option>
+                        <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+                    </select>
+                    <span *ngIf="validationErrors['classroomId']" class="text-red-500 ml-3 font-normal text-sm">
+                        {{ validationErrors['classroomId'] }}
+                    </span>
+                </div>
 
-    <!-- Student Dropdown -->
-    <div class="flex flex-col">
-        <label class="mb-1 primaryTxt" for="student">Student</label>
-        <select id="student" [(ngModel)]="followUp.studentId"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
-            [disabled]="!followUp.classroomId">
-            <option [value]="0" disabled selected hidden>Choose Student</option> <!-- Placeholder -->
-            <option *ngFor="let student of students" [value]="student.id">{{ student.name }}</option>
-        </select>
-    </div>
-</div>
-            <!-- Complaints -->
+                <div class="flex flex-col">
+                    <label class="mb-1 primaryTxt" for="student">Student</label>
+                    <select id="student" [(ngModel)]="followUp.studentId"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
+                        [disabled]="!followUp.classroomId">
+                        <option [value]="0" disabled selected hidden>Choose Student</option>
+                        <option *ngFor="let student of students" [value]="student.id">{{ student.name }}</option>
+                    </select>
+                    <span *ngIf="validationErrors['studentId']" class="text-red-500 ml-3 font-normal text-sm">
+                        {{ validationErrors['studentId'] }}
+                    </span>
+                </div>
+            </div>
+
             <div class="flex flex-col">
                 <label class="mb-1 primaryTxt" for="complaints">Complaints</label>
                 <textarea id="complaints" [(ngModel)]="followUp.complains"
@@ -90,24 +90,25 @@
                     placeholder="Enter Complaints"></textarea>
             </div>
 
-            <!-- Diagnosis -->
             <div class="flex flex-col">
                 <label class="mb-1 primaryTxt" for="diagnosis">Diagnosis</label>
                 <select id="diagnosis" [(ngModel)]="followUp.diagnosisId"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                    <option value="" disabled selected hidden>Choose Diagnosis</option>
+                    <option [value]="0" disabled selected hidden>Choose Diagnosis</option>
                     <option *ngFor="let diagnosis of diagnoses" [value]="diagnosis.id">{{ diagnosis.name }}</option>
                 </select>
+                <span *ngIf="validationErrors['diagnosisId']" class="text-red-500 ml-3 font-normal text-sm">
+                    {{ validationErrors['diagnosisId'] }}
+                </span>
             </div>
 
-            
-            <!-- Drugs and Doses Section -->
             <div class="grid grid-cols-[1fr_1fr_auto] gap-6 items-end">
                 <div class="flex flex-col">
                     <label class="mb-1 primaryTxt" for="drug">Drug</label>
                     <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                        <select id="drug" [(ngModel)]="selectedDrugId" class="bg-gray-50 text-gray-900 text-sm w-full p-2.5">
-                            <option value="" selected hidden>Choose Drug</option>
+                        <select id="drug" [(ngModel)]="selectedDrugId"
+                            class="bg-gray-50 text-gray-900 text-sm w-full p-2.5">
+                            <option [value]="null" selected hidden>Choose Drug</option>
                             <option *ngFor="let drug of drugs" [value]="drug.id">{{ drug.name }}</option>
                         </select>
                         <button (click)="openDrugModal()"
@@ -116,13 +117,13 @@
                         </button>
                     </div>
                 </div>
-            
+
                 <div class="flex flex-col">
                     <label class="mb-1 primaryTxt" for="dose">Dose</label>
                     <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                         <select id="dose" [(ngModel)]="selectedDoseId"
                             class="bg-gray-50 text-gray-900 text-sm rounded-lg w-full p-2.5">
-                            <option value="" disabled selected hidden>Choose Dose</option>
+                            <option [value]="null" disabled selected hidden>Choose Dose</option>
                             <option *ngFor="let dose of doses" [value]="dose.id">{{ dose.doseTimes }}</option>
                         </select>
                         <button (click)="openDoseModal()"
@@ -131,61 +132,56 @@
                         </button>
                     </div>
                 </div>
-            
+
                 <div class="flex flex-col self-end">
-                    <button (click)="addDrugAndDose()" class="secondaryBg text-white font-medium rounded-lg w-[64px] h-[40px]">
+                    <button (click)="addDrugAndDose()"
+                        class="secondaryBg text-white font-medium rounded-lg w-[64px] h-[40px]">
                         Add
                     </button>
                 </div>
             </div>
 
-            <!-- Add Drug and Dose Button -->
-
-            <!-- Drugs and Doses Table -->
-
-            
-            <!-- Drugs and Doses Table -->
             <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
                 <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
                     <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
                         <tr>
-                            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            <th
+                                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                                 Drug
                             </th>
-                            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            <th
+                                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                                 Dose
                             </th>
-                            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            <th
+                                class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                                 Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- No Data Row -->
                         <tr *ngIf="drugDoseList.length === 0">
                             <td colspan="3"
                                 class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                                 No Data Found
                             </td>
                         </tr>
-            
-                        <!-- Data Rows -->
+
                         <tr *ngFor="let row of drugDoseList; let i = index"
                             [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
                             class="border-t border-gray-300 text-xs md:text-sm">
                             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.drugName }}</td>
                             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.doseTimes }}</td>
                             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                                <button (click)="deleteDrugDoseRow(i)" >
-                            <i class="fa-regular fa-trash-can"></i>
-                               </button>
+                                <button (click)="deleteDrugDoseRow(i)">
+                                    <i class="fa-regular fa-trash-can text-red-500 hover:text-red-700"></i>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Recommendation -->
             <div class="flex flex-col">
                 <label class="mb-1 primaryTxt" for="recommendation">Recommendation</label>
                 <textarea id="recommendation" [(ngModel)]="followUp.recommendation"
@@ -193,7 +189,6 @@
                     placeholder="Enter Recommendation"></textarea>
             </div>
 
-           <!-- Send SMS to Parent -->
             <div class="flex items-center gap-2">
                 <input type="checkbox" id="sendSms" [(ngModel)]="followUp.sendSMSToParent"
                     class="w-4 h-4 rounded border-gray-300 text-[#FF7519] focus:ring-[#FF7519]">
@@ -201,7 +196,6 @@
             </div>
         </div>
 
-        <!-- Save Button -->
         <div class="flex justify-end mt-6">
             <button class="secondaryBg text-white font-medium w-full py-2 rounded-lg" (click)="saveFollowUp()">
                 Submit
@@ -210,52 +204,28 @@
     </div>
 </div>
 
-<!-- Drug Modal -->
-<div *ngIf="isDrugModalVisible" class="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
-    <div class="relative bg-white w-[669px] h-[257px] rounded-2xl p-8 flex flex-col gap-6 shadow-md">
-        <h1 class="font-semibold text-2xl leading-9">{{ editDrug ? 'Edit Drug' : 'Create Drug' }}</h1>
-        <div class="bg-gray-100 px-5 py-3 rounded-3xl flex items-center gap-4 w-full">
-            <div class="flex flex-col w-full mb-4">
-                <label class="mb-2 primaryTxt" for="name">Drug Name</label>
-                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                    placeholder="Enter Drug Name" [(ngModel)]="drug.name" />
-                <span *ngIf="drugValidationErrors['name']" class="text-red-500 ml-3 font-normal">
-                    {{ drugValidationErrors['name'] }}
-                </span>
-            </div>
-            <button class="text-white font-medium px-5 py-3 rounded-xl text-lg transition-colors hover:bg-[#FF8C42]"
-                style="background-color: #FF7519;" (click)="saveDrug()">
-                {{ editDrug ? 'Save' : 'Create' }}
-            </button>
-        </div>
-        <button (click)="closeDrugModal()"
-            class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
-            <i class="fa-solid fa-xmark text-2xl"></i>
-        </button>
+<app-modal [title]="editDrug ? 'Edit Drug' : 'Create Drug'" [isEditMode]="editDrug"
+    [buttonText]="editDrug ? 'Save' : 'Create'" (save)="saveDrug()" (close)="closeDrugModal()"
+    [ngClass]="{ 'hidden': !isDrugModalVisible }">
+    <div class="flex flex-col w-full mb-4">
+        <label class="mb-2 primaryTxt" for="drugName">Drug Name</label>
+        <input id="drugName" type="text" class="rounded-lg border border-gray-300 px-4 py-3" [(ngModel)]="drug.name"
+            placeholder="Enter Drug Name">
+        <span *ngIf="drugValidationErrors['name']" class="text-red-500 ml-3 font-normal text-sm">
+            {{ drugValidationErrors['name'] }}
+        </span>
     </div>
-</div>
+</app-modal>
 
-<!-- Dose Modal -->
-<div *ngIf="isDoseModalVisible" class="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
-    <div class="relative bg-white w-[669px] h-[257px] rounded-2xl p-8 flex flex-col gap-6 shadow-md">
-        <h1 class="font-semibold text-2xl leading-9">{{ editDose ? 'Edit Dose' : 'Create Dose' }}</h1>
-        <div class="bg-gray-100 px-5 py-3 rounded-3xl flex items-center gap-4 w-full">
-            <div class="flex flex-col w-full mb-4">
-                <label class="mb-2 primaryTxt" for="name">Dose Times</label>
-                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                    placeholder="Enter Dose Times" [(ngModel)]="dose.doseTimes" />
-                <span *ngIf="doseValidationErrors['doseTimes']" class="text-red-500 ml-3 font-normal">
-                    {{ doseValidationErrors['doseTimes'] }}
-                </span>
-            </div>
-            <button class="text-white font-medium px-5 py-3 rounded-xl text-lg transition-colors hover:bg-[#FF8C42]"
-                style="background-color: #FF7519;" (click)="saveDose()">
-                {{ editDose ? 'Save' : 'Create' }}
-            </button>
-        </div>
-        <button (click)="closeDoseModal()"
-            class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
-            <i class="fa-solid fa-xmark text-2xl"></i>
-        </button>
+<app-modal [title]="editDose ? 'Edit Dose' : 'Create Dose'" [isEditMode]="editDose"
+    [buttonText]="editDose ? 'Save' : 'Create'" (save)="saveDose()" (close)="closeDoseModal()"
+    [ngClass]="{ 'hidden': !isDoseModalVisible }">
+    <div class="flex flex-col w-full mb-4">
+        <label class="mb-2 primaryTxt" for="doseTimes">Dose Times</label>
+        <input id="doseTimes" type="text" class="rounded-lg border border-gray-300 px-4 py-3"
+            [(ngModel)]="dose.doseTimes" placeholder="Enter Dose Times">
+        <span *ngIf="doseValidationErrors['doseTimes']" class="text-red-500 ml-3 font-normal text-sm">
+            {{ doseValidationErrors['doseTimes'] }}
+        </span>
     </div>
-</div>
+</app-modal>

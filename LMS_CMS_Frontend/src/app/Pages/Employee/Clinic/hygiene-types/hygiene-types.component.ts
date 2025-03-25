@@ -71,12 +71,19 @@ async getHygieneTypes() {
 openModal(id?: number) {
   if (id) {
     this.editHygieneType = true;
-    this.hygieneType = this.hygieneTypes.find((ht) => ht.id === id)!;
+    // Create a deep copy of the hygiene type to avoid modifying the original data
+    const originalHygieneType = this.hygieneTypes.find((ht) => ht.id === id)!;
+    this.hygieneType = new HygieneTypes(
+      originalHygieneType.id,
+      originalHygieneType.type,
+      new Date(originalHygieneType.insertedAt),
+      originalHygieneType.insertedByUserId // Changed from clinicId to insertedByUserId
+    );
   } else {
-    this.hygieneType = new HygieneTypes(0, '', new Date(), 0); 
+    this.hygieneType = new HygieneTypes(0, '', new Date(), 0);
     this.editHygieneType = false;
   }
-  this.isModalVisible = true; 
+  this.isModalVisible = true;
 }
 
   
@@ -88,25 +95,48 @@ openModal(id?: number) {
   }
 
   
-  saveHygieneType() {
-    if (this.validateForm()) {
-      if (this.editHygieneType) {
-        this.hygieneTypesService.Edit(this.hygieneType, this.DomainName).subscribe(() => {
+saveHygieneType() {
+  if (this.validateForm()) {
+    if (this.editHygieneType) {
+      this.hygieneTypesService.Edit(this.hygieneType, this.DomainName).subscribe({
+        next: () => {
+          // Refresh the table data from server after successful edit
           this.getHygieneTypes();
           this.closeModal();
-        });
-      } else {
-        this.hygieneTypesService.Add(this.hygieneType, this.DomainName).subscribe(() => {
+        },
+        error: (err) => {
+          console.error('Error updating hygiene type:', err);
+          // Show error message if needed
+        }
+      });
+    } else {
+      this.hygieneTypesService.Add(this.hygieneType, this.DomainName).subscribe({
+        next: () => {
+          // Refresh the table data from server after successful add
           this.getHygieneTypes();
           this.closeModal();
-        });
-      }
+        },
+        error: (err) => {
+          console.error('Error adding hygiene type:', err);
+          // Show error message if needed
+        }
+      });
     }
   }
+}
+private formatDate(date: Date | string): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+  return dateObj.toLocaleDateString(undefined, options);
+}
   
   deleteHygieneType(row: any) {
     Swal.fire({
-      title: 'Are you sure you want to delete this drug?',
+      title: 'Are you sure you want to delete this Hygiene Type?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -124,8 +154,8 @@ openModal(id?: number) {
             this.getHygieneTypes();
           },
           error: (error) => {
-            console.error('Error deleting drug:', error);
-            Swal.fire('Error!', 'Failed to delete the drug.', 'error');
+            console.error('Error deleting Hygiene Type:', error);
+            Swal.fire('Error!', 'Failed to delete the Hygiene Type.', 'error');
           },
         });
       }
@@ -156,21 +186,22 @@ openModal(id?: number) {
 async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
+    
+    // First get all data from server
     await this.getHygieneTypes();
+    
     if (this.value != "") {
-      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
-
-      this.hygieneTypes = this.hygieneTypes.filter(t => {
-        const fieldValue = t[this.key as keyof typeof t];
-        if (typeof fieldValue === 'string') {
-          return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-        }
-        if (typeof fieldValue === 'number') {
-          return fieldValue === numericValue;
-        }
-        return fieldValue == this.value;
-      });
+        this.hygieneTypes = this.hygieneTypes.filter(t => {
+            const fieldValue = t[this.key as keyof typeof t];
+            
+            // Convert both values to string for consistent comparison
+            const searchString = this.value.toString().toLowerCase();
+            const fieldString = fieldValue?.toString().toLowerCase() || '';
+            
+            // Check if the field string includes the search string
+            return fieldString.includes(searchString);
+        });
     }
-  }
+}
 
 } 

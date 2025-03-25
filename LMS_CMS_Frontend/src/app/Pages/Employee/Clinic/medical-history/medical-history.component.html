@@ -2,6 +2,7 @@
     <div class="flex justify-between items-center">
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Medical History</h1>
         <div class="flex justify-between items-center">
+            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="openModal()"
                 class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
                 Create Medical History
@@ -144,7 +145,7 @@
                     validationErrors['secReport'] }}</span>
 
 
-                <div class="flex justify-end w-full pt-6"> <!-- Constrain width to match selection boxes -->
+                <div class="flex justify-end w-full pt-6">
                     <button
                         class="bg-[#FF7519] text-white font-medium px-5 py-3 rounded-lg transition duration-200 w-full"
                         (click)="saveMedicalHistory()">

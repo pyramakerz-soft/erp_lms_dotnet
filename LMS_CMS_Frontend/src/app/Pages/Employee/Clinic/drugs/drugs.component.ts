@@ -66,17 +66,7 @@ export class DrugsComponent implements OnInit {
     }
   }
 
-  // Open modal for create/edit
-  openModal(id?: number) {
-    if (id) {
-      this.editDrug = true;
-      this.drug = this.drugs.find((drug) => drug.id === id)!;
-    } else {
-      this.drug = new Drug(0, '', new Date()); // Reset form for new entry
-      this.editDrug = false;
-    }
-    this.isModalVisible = true; // Show the modal
-  }
+
 
   // Close modal
   closeModal() {
@@ -85,25 +75,54 @@ export class DrugsComponent implements OnInit {
     this.editDrug = false;
     this.validationErrors = {};
   }
+  // Update openModal to create a copy of the drug
+openModal(id?: number) {
+  if (id) {
+    this.editDrug = true;
+    const originalDrug = this.drugs.find((drug) => drug.id === id)!;
+    this.drug = new Drug(
+      originalDrug.id,
+      originalDrug.name,
+      new Date(originalDrug.insertedAt)
+    );
+  } else {
+    this.drug = new Drug(0, '', new Date());
+    this.editDrug = false;
+  }
+  this.isModalVisible = true;
+}
 
-  // Save or update drug
-  saveDrug() {
-    if (this.validateForm()) {
-      if (this.editDrug) {
-        this.drugService.Edit(this.drug, this.DomainName).subscribe(() => {
-          this.getDrugs();
+// Update saveDrug to handle errors and loading state
+saveDrug() {
+  if (this.validateForm()) {
+    if (this.editDrug) {
+      this.drugService.Edit(this.drug, this.DomainName).subscribe({
+        next: () => {
+          this.getDrugs(); // Refresh from server
           this.closeModal();
-        });
-      } else {
-        // Set the current date for new drugs
-        this.drug.insertedAt = new Date().toISOString();
-        this.drugService.Add(this.drug, this.DomainName).subscribe(() => {
-          this.getDrugs();
+          Swal.fire('Success', 'Drug saved successfully', 'success');
+        },
+        error: (err) => {
+          console.error('Error updating drug:', err);
+          Swal.fire('Error', 'Failed to save drug', 'error');
+        }
+      });
+    } else {
+      this.drug.insertedAt = new Date().toISOString();
+      this.drugService.Add(this.drug, this.DomainName).subscribe({
+        next: () => {
+          this.getDrugs(); // Refresh from server
           this.closeModal();
-        });
-      }
+          Swal.fire('Success', 'Drug created successfully', 'success');
+        },
+        error: (err) => {
+          console.error('Error creating drug:', err);
+          Swal.fire('Error', 'Failed to create drug', 'error');
+        }
+      });
     }
   }
+}
 
   // Delete drug
   deleteDrug(row: any) {
@@ -156,24 +175,24 @@ export class DrugsComponent implements OnInit {
     }
   }
 
-  // Handle search
-  async onSearchEvent(event: { key: string; value: any }) {
+async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
-    await this.getDrugs();
+    
+    // First get all data from server
+    await this.getDrugs(); // Change this to the appropriate method for each component (getDrugs, getDiagnoses, getDoses)
+    
     if (this.value != "") {
-      const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
-
-      this.drugs = this.drugs.filter(t => {
-        const fieldValue = t[this.key as keyof typeof t];
-        if (typeof fieldValue === 'string') {
-          return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-        }
-        if (typeof fieldValue === 'number') {
-          return fieldValue === numericValue;
-        }
-        return fieldValue == this.value;
-      });
+        this.drugs = this.drugs.filter((item: any) => { // Change data to the appropriate array (drugs, diagnoses, doses)
+            const fieldValue = item[this.key as keyof typeof item];
+            
+            // Convert both values to string for consistent comparison
+            const searchString = this.value.toString().toLowerCase();
+            const fieldString = fieldValue?.toString().toLowerCase() || '';
+            
+            // Check if the field string includes the search string
+            return fieldString.includes(searchString);
+        });
     }
-  }
+}
 }

@@ -14,7 +14,7 @@
     [keys]="['id', 'name', 'insertedAt']" (delete)="deleteDiagnosis($event)" (edit)="openModal($event.id)">
   </app-table>
 
-  <app-modal [title]="editDiagnosis ? 'Edit Diagnosis' : 'Create Diagnosis'" [isEditMode]="editDiagnosis"
+  <app-modal [title]="editDiagnosis ? 'Diagnosis' : 'Create Diagnosis'" [isEditMode]="editDiagnosis"
     (save)="saveDiagnosis()" (close)="closeModal()" [ngClass]="{ hidden: !isModalVisible }">
     
     <div class="flex flex-col w-full mb-4">

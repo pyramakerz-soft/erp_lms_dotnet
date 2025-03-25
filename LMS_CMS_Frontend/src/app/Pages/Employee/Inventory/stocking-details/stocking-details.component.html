@@ -46,7 +46,7 @@
     <div class="mt-6 mb-4 rounded-3xl flex justify-start space-x-2 flex-wrap py-3 print-section">
         <div class="flex flex-col w-[24%] mb-4">
             <label class="mb-2" for="store">Store</label>
-            <select *ngIf="!IsActualStockHiddenForBlankPrint"
+            <select *ngIf="!StoreAndDateSpanWhenPrint"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Store"
                 (ngModelChange)=" onInputValueChange({ field: 'storeID', value: $event })" [(ngModel)]="Data.storeID"
                 (ngModelChange)="onStoreChange($event)">
@@ -56,7 +56,7 @@
             </select>
             <span *ngIf="validationErrors['storeID']" class="text-red-500 ml-3 font-normal">{{
                 validationErrors["storeID"]}}</span>
-            <span *ngIf="IsActualStockHiddenForBlankPrint"
+            <span *ngIf="StoreAndDateSpanWhenPrint"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block">
                 {{ getStoreNameById(Data.storeID) }}
             </span>
@@ -64,25 +64,24 @@
 
         <div class="flex flex-col mb-4 w-[24%]">
             <label class="mb-2 primaryTxt" for="name">Date</label>
-            <input *ngIf="!IsActualStockHiddenForBlankPrint" id="name" type="date"
+            <input *ngIf="!StoreAndDateSpanWhenPrint" id="name" type="date"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 (ngModelChange)=" onInputValueChange({ field: 'date', value: $event })" placeholder="Enter Date"
                 [(ngModel)]="Data.date" />
             <span *ngIf="validationErrors['date']"
                 class="text-red-500 ml-3 font-normal">{{validationErrors["date"]}}</span>
-            <span *ngIf="IsActualStockHiddenForBlankPrint"
+            <span *ngIf="StoreAndDateSpanWhenPrint"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block">
                 {{ Data.date }}
             </span>
         </div>
     </div>
 
-
     <div class="flex justify-end items-center space-x-2">
         <div class="flex justify-between items-center" *ngIf="IsOpenToAdd==true">
             <div
                 class="relative flex items-center w-full max-w-[432px] sm:max-w-[300px] xs:max-w-[200px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg py-3 ltr:mr-3">
-                <input type="number" [(ngModel)]="BarCode" (keydown.enter)="SearchOnBarCode()"
+                <input type="text" [(ngModel)]="BarCode" (keydown.enter)="SearchOnBarCode()"
                     placeholder="Search by Barcode"
                     class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full ltr:pl-1 rtl:pr-1" />
                 <i class="fas fa-times cursor-pointer text-gray-400 ml-2" (click)="CloseSearch()"></i>
@@ -100,10 +99,6 @@
     </div>
 
     <div *ngIf="IsOpenToAdd==true" class="flex justify-start items-center space-x-[30%] mb-3">
-        <label class="mr-10">
-            <input type="checkbox" [(ngModel)]="AllItems" />
-            ALL Items
-        </label>
         <label>
             <input type="checkbox" [(ngModel)]="HasBallance" (change)="toggleHasBalance()" />
             Has Balance
@@ -116,8 +111,8 @@
             <div
                 class="flex flex-wrap gap-2  mx-3 overflow-y-auto max-h-60 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
                 <div *ngFor="let c of Categories; let i = index">
-                    <p (click)="selectCategory(c.id)" [class.secondaryBg]="SelectedCategoryId === c.id"
-                        [class.text-white]="SelectedCategoryId === c.id"
+                    <p (click)="selectCategory(c.id)" [class.secondaryBg]="SelectedCategoryIds.includes(c.id)"
+                        [class.text-white]="SelectedCategoryIds.includes(c.id)"
                         class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
                         {{c.name}}
                     </p>
@@ -128,10 +123,11 @@
             <h1 class="font-semibold text-2xl leading-9 ml-2 mb-2">Sub_Categories</h1>
             <div
                 class="flex flex-wrap gap-2 mx-3 overflow-y-auto max-h-60 px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                <ng-container *ngIf="SelectedCategoryId != null">
+                <ng-container *ngIf="SelectedCategoryIds.length > 0">
                     <div *ngFor="let sc of subCategories; let i = index">
-                        <p (click)="selectSubCategory(sc.id)" [class.secondaryBg]="SelectedSubCategoryId === sc.id"
-                            [class.text-white]="SelectedSubCategoryId === sc.id"
+                        <p (click)="selectSubCategory(sc.id)"
+                            [class.secondaryBg]="SelectedSubCategoryIds.includes(sc.id)"
+                            [class.text-white]="SelectedSubCategoryIds.includes(sc.id)"
                             class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
                             {{sc.name}}
                         </p>
@@ -143,10 +139,11 @@
             <h1 class="font-semibold text-2xl leading-9 ml-2">Items</h1>
             <div
                 class="flex flex-wrap gap-2 overflow-y-auto max-h-60 px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                <ng-container *ngIf="SelectedSubCategoryId != null">
+                <ng-container *ngIf="SelectedSubCategoryIds.length > 0">
                     <div *ngFor="let item of FilteredShopItems; let i = index">
-                        <p (click)="selectShopItem(item)" [class.secondaryBg]="SelectedSopItem === item"
-                            [class.text-white]="SelectedSopItem === item"
+                        <p (click)="selectShopItem(item)" 
+                            [class.secondaryBg]="SelectedSopItems.includes(item)"
+                            [class.text-white]="SelectedSopItems.includes(item)"
                             class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
                             {{item.enName}}
                         </p>

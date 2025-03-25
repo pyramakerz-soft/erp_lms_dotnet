@@ -739,7 +739,15 @@ export class StockingDetailsComponent {
   async selectPrintOption(type: string) {
     this.showPrintMenu = false;
     this.StoreAndDateSpanWhenPrint = true;
-    console.log('Selected Print Type:', type);
+    console.log(this.Data.stockingDetails)
+    if (this.mode === 'Create') {
+      this.TableData = this.Data.stockingDetails;
+      const addedData = await this.StockingServ.Add(this.Data, this.DomainName).toPromise();
+      this.Data.id = addedData;
+      this.MasterId = addedData;
+      const result = await this.StockingServ.GetById(this.Data.id, this.DomainName).toPromise();
+      if (result) this.Data = result;
+    } 
     switch (type) {
       case 'Blank':
         await this.Blank();
@@ -753,7 +761,6 @@ export class StockingDetailsComponent {
     }
     this.StoreAndDateSpanWhenPrint = false; // Now it's truly after printing
   }
-
 
   async Blank() {
     this.IsActualStockHiddenForBlankPrint = true;
@@ -771,27 +778,19 @@ export class StockingDetailsComponent {
   async Differences() {
     const backupFilteredDetails = [...this.FilteredDetails];
     const backupTableData = [...this.TableData];
-    if (this.mode === "Create") {
-      this.FilteredDetails = this.FilteredDetails.filter(f => f.theDifference != 0);
-    } else if (this.mode === "Edit") {
-      this.TableData = this.TableData.filter(f => f.theDifference != 0);
-    }
+    this.TableData = this.TableData.filter(f => f.theDifference != 0);
     this.cdr.detectChanges();
     return new Promise<void>((resolve) => {
       setTimeout(async () => {
         await this.GeneralPrint();
-        // Restore data
-        this.FilteredDetails = backupFilteredDetails;
-        if (this.mode === "Edit") {
-          this.TableData = backupTableData;
-        }
+        this.TableData = backupTableData;
         this.cdr.detectChanges();
         resolve();
       }, 300);
     });
   }
-  
-  Print(){
+
+  Print() {
     this.cdr.detectChanges();
     return new Promise<void>((resolve) => {
       setTimeout(async () => {

@@ -81,7 +81,7 @@
         <div class="flex justify-between items-center" *ngIf="IsOpenToAdd==true">
             <div
                 class="relative flex items-center w-full max-w-[432px] sm:max-w-[300px] xs:max-w-[200px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg py-3 ltr:mr-3">
-                <input type="number" [(ngModel)]="BarCode" (keydown.enter)="SearchOnBarCode()"
+                <input type="text" [(ngModel)]="BarCode" (keydown.enter)="SearchOnBarCode()"
                     placeholder="Search by Barcode"
                     class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full ltr:pl-1 rtl:pr-1" />
                 <i class="fas fa-times cursor-pointer text-gray-400 ml-2" (click)="CloseSearch()"></i>

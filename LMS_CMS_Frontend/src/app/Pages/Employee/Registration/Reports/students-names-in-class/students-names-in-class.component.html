@@ -109,76 +109,78 @@
         </tbody>
     </table>
 </div>
-
-<div id="Data" *ngIf="showTable">
-    <div class="flex justify-between items-center">
-        <div class="w-[40%]"> 
-            <p class="text-base font-semibold mb-1">{{school.reportHeaderOneEn}}</p>
-            <p class="text-sm font-normal">{{school.reportHeaderTwoEn}}</p>
+ 
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <div class="flex justify-between items-center">
+            <div class="w-[40%]"> 
+                <p class="text-base font-semibold mb-1">{{school.reportHeaderOneEn}}</p>
+                <p class="text-sm font-normal">{{school.reportHeaderTwoEn}}</p>
+            </div>
+            <div class="flex justify-center w-[15%]">
+                <img [src]="school.reportImage" class="w-full">
+            </div>
+            <div class="rtl   text-end w-[40%]">
+                <p class="text-base font-semibold mb-1">{{school.reportHeaderOneAr}}</p>
+                <p class="text-sm font-normal">{{school.reportHeaderTwoAr}}</p>
+            </div>
         </div>
-        <div class="flex justify-center w-[15%]">
-            <img [src]="school.reportImage" class="w-full">
-        </div>
-        <div class="rtl   text-end w-[40%]">
-            <p class="text-base font-semibold mb-1">{{school.reportHeaderOneAr}}</p>
-            <p class="text-sm font-normal">{{school.reportHeaderTwoAr}}</p>
-        </div>
-    </div>
-
-    <div class="my-10">
-        <p class="text-xl font-semibold">Class: <span class="text-xl font-light"> {{class.name}}</span></p>
-        <p class="text-xl font-semibold">Number Of Students: <span class="text-xl font-light"> {{studentsCount}}</span></p> 
-        <p class="text-xl font-semibold">Date: <span class="text-xl font-light"> {{date}}</span></p>  
-    </div>
-
-    <div class="overflow-x-auto mt-5 rounded-2xl border border-[#BDBDBD]">
-        <table class="w-full table inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F] rounded-2xl" id="TableData">
-            <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
-                <tr>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        ID
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Name
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Mobile
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Nationality
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Gender
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngIf="StudentData.length === 0">
-                    <td colspan="5" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                        No Data Found
-                    </td>
-                </tr>
     
-                <tr *ngFor="let row of StudentData; let i = index"
-                    [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
-                    class="border-t border-gray-300 text-xs md:text-sm">
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.id }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.en_name }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.mobile }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.nationalityName }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.genderName }}
-                    </td> 
-                </tr>
-            </tbody>
-        </table>
+        <div class="my-10">
+            <p class="text-xl font-semibold">Class: <span class="text-xl font-light"> {{class.name}}</span></p>
+            <p class="text-xl font-semibold">Number Of Students: <span class="text-xl font-light"> {{studentsCount}}</span></p> 
+            <p class="text-xl font-semibold">Date: <span class="text-xl font-light"> {{date}}</span></p>  
+        </div>
+    
+        <div class="overflow-x-auto mt-5 rounded-2xl border border-[#BDBDBD]">
+            <table class="w-full table inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F] rounded-2xl">
+                <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                    <tr>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            ID
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Name
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Mobile
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Nationality
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Gender
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="StudentData.length === 0">
+                        <td colspan="5" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                            No Data Found
+                        </td>
+                    </tr>
+        
+                    <tr *ngFor="let row of StudentData; let i = index"
+                        [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                        class="border-t border-gray-300 text-xs md:text-sm">
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.id }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.en_name }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.mobile }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.nationalityName }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.genderName }}
+                        </td> 
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

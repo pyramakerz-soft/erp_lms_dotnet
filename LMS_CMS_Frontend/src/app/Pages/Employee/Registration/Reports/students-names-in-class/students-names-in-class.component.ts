@@ -17,7 +17,8 @@ import { Student } from '../../../../../Models/student';
 import { StudentService } from '../../../../../Services/student.service';
 import { ReportsService } from '../../../../../Services/shared/reports.service';
 import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
+import FileSaver, { saveAs } from 'file-saver';
+import * as ExcelJS from 'exceljs'
 
 @Component({
   selector: 'app-students-names-in-class',
@@ -82,7 +83,21 @@ export class StudentsNamesInClassComponent {
     )
   }
 
-  onSchoolChange(event: Event) { 
+  onSchoolChange(event: Event) {  
+    this.AcademicYearId = 0
+    this.GradeId = 0
+    this.ClassId = 0 
+    this.AcademicYears  = []
+    this.Grades = []
+    this.Classrooms = []
+    this.showTable = false
+
+    this.StudentData = []
+    this.class = new Classroom()
+    this.school = new School()
+    this.date = ""
+    this.studentsCount = 0
+
     const selectedValue = (event.target as HTMLSelectElement).value; 
     this.SchoolId = Number(selectedValue)
     if (this.SchoolId) {
@@ -91,7 +106,17 @@ export class StudentsNamesInClassComponent {
     }
   } 
 
-  onGradeChange(event: Event) { 
+  onGradeChange(event: Event) {  
+    this.ClassId = 0  
+    this.Classrooms = []
+    this.showTable = false
+
+    this.StudentData = []
+    this.class = new Classroom()
+    this.school = new School()
+    this.date = ""
+    this.studentsCount = 0
+
     const selectedValue = (event.target as HTMLSelectElement).value; 
     this.GradeId = Number(selectedValue)
     if (this.GradeId) {
@@ -100,6 +125,16 @@ export class StudentsNamesInClassComponent {
   } 
 
   onYearChange(event: Event) { 
+    this.ClassId = 0  
+    this.Classrooms = []
+    this.showTable = false
+    
+    this.StudentData = []
+    this.class = new Classroom()
+    this.school = new School()
+    this.date = ""
+    this.studentsCount = 0
+
     const selectedValue = (event.target as HTMLSelectElement).value; 
     this.AcademicYearId = Number(selectedValue)
     if (this.GradeId) {
@@ -149,92 +184,110 @@ export class StudentsNamesInClassComponent {
     return date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  Print() {
-    this.reportsService.PrintPDF()
-  } 
-
-  DownloadAsPDF() {
-    this.reportsService.DownloadAsPDF("List of students' names in class")
-  }
-
-  DownloadAsExcel() { 
-    const tableElement = document.getElementById("TableData");
-    if (!tableElement) {
-      console.error("Table not found!");
+  Print() {     
+    let element = document.getElementById("Data");
+    if (!element) {
+      console.error("Element not found!");
       return;
     }
+    
+    element.classList.remove("hidden"); 
+    
+    setTimeout(() => {
+      this.reportsService.PrintPDF("List of students' names in class") 
+  
+      setTimeout(() => {
+        element.classList.add("hidden"); 
+      }, 1000); 
+    }, 200); 
+  } 
 
-    const html = `
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; } 
-            .header-table { 
-              width: 100%; 
-            } 
-            .header-table td {
-              padding: 10px;
-              vertical-align: middle;
-            }
-            .header-right p{
-              text-align: right; 
-            }
-            .header-right, .heade-left{
-              text-align: right; 
-              vertical-align: middle;
-            }
-            table { 
-              border: 1px solid #BDBDBD; 
-              width: 100%; 
-              border-collapse: collapse; 
-              background: #EBEBEB; 
-            } 
-            th, td {  
-              text-align: left;  
-            } 
-            .text-center { text-align: center; }
-            .text-base{
-              font-weight: bold;
-              font-size: 18px;
-            }
-            .text-sm{
-              font-weight: lighter;
-              font-size: 14px;
-            }  
-          </style>
-        </head>
-        <body>
-          <table class="header-table">
-            <tr>
-              <td class="header-left">
-                <p class="text-base">${this.school.reportHeaderOneEn}</p>
-                <p class="text-sm">${this.school.reportHeaderTwoEn}</p>
-              </td>
-              <td class="header-center">
-                <img src="${this.school.reportImage}" width="120" height="120">
-              </td>
-              <td class="header-right">
-                <p class="text-base">${this.school.reportHeaderOneAr}</p>
-                <p class="text-sm">${this.school.reportHeaderTwoAr}</p>
-              </td>
-            </tr>
-          </table>
+  DownloadAsPDF() {  
+    let element = document.getElementById("Data");
+    if (!element) {
+      console.error("Element not found!");
+      return;
+    }
+    
+    element.style.display = 'block'; 
+    element.style.top = '0px';
+    element.style.left = '0px';
+    element.style.zIndex = '-5';
+    
+    setTimeout(() => {
+      this.reportsService.DownloadAsPDF("List of students' names in class")  
+  
+      setTimeout(() => {
+        element.style.display = 'none';
+      }, 1000); 
+    }, 200); 
+  }
 
-          <div class="my-10">
-            <p class="text-base">Class: <span class="text-sm">${this.class.name}</span></p>
-            <p class="text-base">Number Of Students: <span class="text-sm">${this.studentsCount}</span></p> 
-            <p class="text-base">Date: <span class="text-sm">${this.date}</span></p>  
-          </div>
+  async DownloadAsExcel() {  
+    const workbook = new ExcelJS.Workbook();
 
-          <div class="table-container">
-            ${tableElement.outerHTML}
-          </div>
-        </body>
-      </html>
-    `;
+    let base64Image = '';
+    if (this.school.reportImage.startsWith('http')) {
+      base64Image = await this.reportsService.getBase64ImageFromUrl(this.school.reportImage);
+    } else {
+      base64Image = this.school.reportImage; 
+    }
 
-    const blob = new Blob([html], { type: "application/vnd.ms-excel" });
-    saveAs(blob, "List of students' names in class.xls");
+    const worksheet = workbook.addWorksheet("List of students' names in class"); 
+    worksheet.mergeCells('A1:E1');
+    worksheet.getCell('A1').value = this.school.reportHeaderOneEn;
+    worksheet.getCell('A1').font = { bold: true, size: 14 };
+    worksheet.getCell('A1').alignment = { horizontal: 'left' };
+
+    worksheet.mergeCells('F1:J1');
+    worksheet.getCell('F1').value = this.school.reportHeaderOneAr;
+    worksheet.getCell('F1').font = { bold: true, size: 14 };
+    worksheet.getCell('F1').alignment = { horizontal: 'right' };
+
+    worksheet.mergeCells('A2:E2');
+    worksheet.getCell('A2').value = this.school.reportHeaderTwoEn;
+    worksheet.getCell('A2').font = { size: 12 };
+    worksheet.getCell('A2').alignment = { horizontal: 'left' };
+
+    worksheet.mergeCells('F2:J2');
+    worksheet.getCell('F2').value = this.school.reportHeaderTwoAr;
+    worksheet.getCell('F2').font = { size: 12 };
+    worksheet.getCell('F2').alignment = { horizontal: 'right' };
+
+    if (base64Image) {
+      const imageId = workbook.addImage({
+        base64: base64Image.split(',')[1], 
+        extension: 'png',
+      });
+  
+      worksheet.addImage(imageId, {
+        tl: { col: 4, row: 0 },
+        ext: { width: 100, height: 50 },
+      });
+    }
+
+    worksheet.addRow([]);
+    worksheet.addRow([`Class: ${this.class.name}`]).font = { bold: true, size: 12 };
+    worksheet.addRow([`Number of Students: ${this.studentsCount}`]).font = { bold: true, size: 12 };
+    worksheet.addRow([`Date: ${this.date}`]).font = { bold: true, size: 12 };
+    worksheet.addRow([]);
+   
+    const headerRow = worksheet.addRow(['ID', 'Name', 'Mobile', 'Nationality', 'Gender']);
+    headerRow.font = { bold: true, color: { argb: 'FFFFFF' } };
+    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4F81BD' } };
+    headerRow.eachCell((cell) => {
+      cell.border = { bottom: { style: 'thin' } };
+    });
+   
+    this.StudentData.forEach((row) => {
+      worksheet.addRow([row.id, row.en_name, row.mobile, row.nationalityName, row.genderName]);
+    });
+   
+    worksheet.columns.forEach((column) => {
+      column.width = 20;
+    });
+   
+    const buffer = await workbook.xlsx.writeBuffer();
+    FileSaver.saveAs(new Blob([buffer]), "List of students' names in class.xlsx"); 
   }
 }

@@ -77,7 +77,6 @@
         </div>
     </div>
 
-
     <div class="flex justify-end items-center space-x-2">
         <div class="flex justify-between items-center" *ngIf="IsOpenToAdd==true">
             <div
@@ -100,10 +99,6 @@
     </div>
 
     <div *ngIf="IsOpenToAdd==true" class="flex justify-start items-center space-x-[30%] mb-3">
-        <label class="mr-10">
-            <input type="checkbox" [(ngModel)]="AllItems" />
-            ALL Items
-        </label>
         <label>
             <input type="checkbox" [(ngModel)]="HasBallance" (change)="toggleHasBalance()" />
             Has Balance
@@ -116,8 +111,8 @@
             <div
                 class="flex flex-wrap gap-2  mx-3 overflow-y-auto max-h-60 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
                 <div *ngFor="let c of Categories; let i = index">
-                    <p (click)="selectCategory(c.id)" [class.secondaryBg]="SelectedCategoryId === c.id"
-                        [class.text-white]="SelectedCategoryId === c.id"
+                    <p (click)="selectCategory(c.id)" [class.secondaryBg]="SelectedCategoryIds.includes(c.id)"
+                        [class.text-white]="SelectedCategoryIds.includes(c.id)"
                         class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
                         {{c.name}}
                     </p>
@@ -128,10 +123,11 @@
             <h1 class="font-semibold text-2xl leading-9 ml-2 mb-2">Sub_Categories</h1>
             <div
                 class="flex flex-wrap gap-2 mx-3 overflow-y-auto max-h-60 px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                <ng-container *ngIf="SelectedCategoryId != null">
+                <ng-container *ngIf="SelectedCategoryIds.length > 0">
                     <div *ngFor="let sc of subCategories; let i = index">
-                        <p (click)="selectSubCategory(sc.id)" [class.secondaryBg]="SelectedSubCategoryId === sc.id"
-                            [class.text-white]="SelectedSubCategoryId === sc.id"
+                        <p (click)="selectSubCategory(sc.id)"
+                            [class.secondaryBg]="SelectedSubCategoryIds.includes(sc.id)"
+                            [class.text-white]="SelectedSubCategoryIds.includes(sc.id)"
                             class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
                             {{sc.name}}
                         </p>
@@ -143,10 +139,11 @@
             <h1 class="font-semibold text-2xl leading-9 ml-2">Items</h1>
             <div
                 class="flex flex-wrap gap-2 overflow-y-auto max-h-60 px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                <ng-container *ngIf="SelectedSubCategoryId != null">
+                <ng-container *ngIf="SelectedSubCategoryIds.length > 0">
                     <div *ngFor="let item of FilteredShopItems; let i = index">
-                        <p (click)="selectShopItem(item)" [class.secondaryBg]="SelectedSopItem === item"
-                            [class.text-white]="SelectedSopItem === item"
+                        <p (click)="selectShopItem(item)" 
+                            [class.secondaryBg]="SelectedSopItems.includes(item)"
+                            [class.text-white]="SelectedSopItems.includes(item)"
                             class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
                             {{item.enName}}
                         </p>

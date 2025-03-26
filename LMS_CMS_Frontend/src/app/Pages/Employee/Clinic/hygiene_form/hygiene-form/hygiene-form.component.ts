@@ -3,15 +3,15 @@ import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../../../../Component/search/search.component';
-// import { ModalComponent } from '../../../../../Component/modal/modal.component';
+
 import Swal from 'sweetalert2';
 import { TableComponent } from "../../../../../Component/reuse-table/reuse-table.component";
 import { Router } from '@angular/router';
 import { HygieneFormService } from '../../../../../Services/Employee/Clinic/hygiene-form.service';
 import { ApiService } from '../../../../../Services/api.service';
 import { HygieneForm } from '../../../../../Models/Clinic/HygieneForm';
-// import { Classroom } from '../../../../../Models/LMS/classroom';
-// import { HygieneFormTableComponent } from "../hygiene-form-table/hygiene-form-table.component";
+
+
 
 @Component({
   selector: 'app-hygiene-form',
@@ -21,8 +21,8 @@ import { HygieneForm } from '../../../../../Models/Clinic/HygieneForm';
   styleUrls: ['./hygiene-form.component.css']
 })
 export class HygieneFormComponent implements OnInit {
-  hygieneForms: HygieneForm[] = []; // Filtered hygiene forms
-  originalHygieneForms: HygieneForm[] = []; // Original unfiltered hygiene forms
+  hygieneForms: HygieneForm[] = []; 
+  originalHygieneForms: HygieneForm[] = []; 
   @Input() students: any[] = [];
   @Input() hygieneTypes: any[] = [];
 
@@ -32,10 +32,10 @@ export class HygieneFormComponent implements OnInit {
   isModalVisible = false;
   DomainName: string = '';
 
-  // Search properties
-  key: string = 'id'; // Default search key
-  value: any = ''; // Search value
-  keysArray: string[] = ['id', 'school', 'grade', 'classRoom', 'date']; // Keys available for search
+  
+  key: string = 'id'; 
+  value: any = ''; 
+  keysArray: string[] = ['id', 'school', 'grade', 'classRoom', 'date']; 
 
   constructor(
     private router: Router,
@@ -44,67 +44,69 @@ export class HygieneFormComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-      this.DomainName = this.apiService.GetHeader(); // Set the DomainName
+      this.DomainName = this.apiService.GetHeader(); 
     this.loadHygieneForms();
   }
 
   async loadHygieneForms() {
-    try {
-      const domainName = this.apiService.GetHeader();
-      const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
+      try {
+          const domainName = this.apiService.GetHeader();
+          const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
 
-      console.log(data);
+          
+          this.originalHygieneForms = data.map((item) => ({
+              ...item,
+              school: item.school,
+              grade: item.grade,
+              classRoom: item.classRoom,
+              date: new Date(item.date).toLocaleDateString(),
+              actions: { delete: true, edit: true, view: true }
+          }));
 
-      // Store the original data
-      this.originalHygieneForms = data.map((item) => ({
-        ...item,
-        school: item.school,
-        grade: item.grade,
-        classRoom: item.classRoom,
-        date: new Date(item.date).toLocaleDateString(),
-        actions: { delete: true, edit: true, view: true } // Enable view action
-      }));
-
-      // Reset the filtered data to the original data
-      this.hygieneForms = [...this.originalHygieneForms];
-
-      // Apply search filter if a value is provided
-      if (this.value) {
-        this.applySearchFilter();
+          
+          this.hygieneForms = [...this.originalHygieneForms];
+      } catch (error) {
+          console.error('Error fetching hygiene forms:', error);
       }
-    } catch (error) {
-      console.error('Error fetching hygiene forms:', error);
-    }
   }
 
-  // Handle search event
   async onSearchEvent(event: { key: string, value: any }) {
-    this.key = event.key;
-    this.value = event.value;
-
-    // Reset the hygieneForms array to the original data
-    this.hygieneForms = [...this.originalHygieneForms];
-
-    if (this.value !== '') {
-      this.applySearchFilter(); // Apply search filter
-    }
+      this.key = event.key;
+      this.value = event.value;
+      
+      
+      this.hygieneForms = [...this.originalHygieneForms];
+      
+      if (this.value !== '') {
+          this.hygieneForms = this.hygieneForms.filter(t => {
+              const fieldValue = t[this.key as keyof typeof t];
+              
+              
+              if (typeof fieldValue === 'string') {
+                  return fieldValue.toLowerCase().includes(this.value.toString().toLowerCase());
+              } else if (typeof fieldValue === 'number') {
+                  return fieldValue.toString().includes(this.value.toString());
+              }
+              return false;
+          });
+      }
   }
 
-  // Apply search filter
-  applySearchFilter() {
-    const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+  
+  // applySearchFilter() {
+  //   const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 
-    this.hygieneForms = this.hygieneForms.filter((form) => {
-      const fieldValue = form[this.key as keyof HygieneForm];
-      if (typeof fieldValue === 'string') {
-        return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-      }
-      if (typeof fieldValue === 'number') {
-        return fieldValue === numericValue;
-      }
-      return false;
-    });
-  }
+  //   this.hygieneForms = this.hygieneForms.filter((form) => {
+  //     const fieldValue = form[this.key as keyof HygieneForm];
+  //     if (typeof fieldValue === 'string') {
+  //       return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+  //     }
+  //     if (typeof fieldValue === 'number') {
+  //       return fieldValue === numericValue;
+  //     }
+  //     return false;
+  //   });
+  // }
 
   navigateToCreateHygieneForm() {
     this.router.navigate(['/Employee/Create Hygiene Form']);
@@ -156,7 +158,7 @@ deleteHygieneForm(row: any) {
       this.hygieneFormService.Delete(row.id, this.DomainName).subscribe({
         next: (response) => {
           console.log('Delete response:', response);
-          this.loadHygieneForms(); // Reload the hygiene forms after deletion
+          this.loadHygieneForms(); 
         },
         error: (error) => {
           console.error('Error deleting hygiene form:', error);

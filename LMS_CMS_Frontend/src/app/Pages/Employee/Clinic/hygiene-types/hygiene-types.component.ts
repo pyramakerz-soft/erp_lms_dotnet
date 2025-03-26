@@ -20,6 +20,7 @@ import { HygieneTypes } from '../../../../Models/Clinic/hygiene-types';
 export class HygieneTypesComponent implements OnInit {
   hygieneType: HygieneTypes = new HygieneTypes(0, '', new Date(), 0);
   editHygieneType = false;
+
   validationErrors: { [key: string]: string } = {};
   keysArray: string[] = ['id', 'type'];
   key: string = "id";
@@ -71,13 +72,13 @@ async getHygieneTypes() {
 openModal(id?: number) {
   if (id) {
     this.editHygieneType = true;
-    // Create a deep copy of the hygiene type to avoid modifying the original data
+    
     const originalHygieneType = this.hygieneTypes.find((ht) => ht.id === id)!;
     this.hygieneType = new HygieneTypes(
       originalHygieneType.id,
       originalHygieneType.type,
       new Date(originalHygieneType.insertedAt),
-      originalHygieneType.insertedByUserId // Changed from clinicId to insertedByUserId
+      originalHygieneType.insertedByUserId 
     );
   } else {
     this.hygieneType = new HygieneTypes(0, '', new Date(), 0);
@@ -100,25 +101,25 @@ saveHygieneType() {
     if (this.editHygieneType) {
       this.hygieneTypesService.Edit(this.hygieneType, this.DomainName).subscribe({
         next: () => {
-          // Refresh the table data from server after successful edit
+          
           this.getHygieneTypes();
           this.closeModal();
         },
         error: (err) => {
           console.error('Error updating hygiene type:', err);
-          // Show error message if needed
+          
         }
       });
     } else {
       this.hygieneTypesService.Add(this.hygieneType, this.DomainName).subscribe({
         next: () => {
-          // Refresh the table data from server after successful add
+          
           this.getHygieneTypes();
           this.closeModal();
         },
         error: (err) => {
           console.error('Error adding hygiene type:', err);
-          // Show error message if needed
+          
         }
       });
     }
@@ -187,18 +188,18 @@ async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
     
-    // First get all data from server
+    
     await this.getHygieneTypes();
     
     if (this.value != "") {
         this.hygieneTypes = this.hygieneTypes.filter(t => {
             const fieldValue = t[this.key as keyof typeof t];
             
-            // Convert both values to string for consistent comparison
+            
             const searchString = this.value.toString().toLowerCase();
             const fieldString = fieldValue?.toString().toLowerCase() || '';
             
-            // Check if the field string includes the search string
+            
             return fieldString.includes(searchString);
         });
     }

@@ -14,7 +14,6 @@
         (delete)="deleteDrug($event)" (edit)="openModal($event.id)">
     </app-table>
 
-    <!-- Reusable Modal -->
     <app-modal [title]="editDrug ? 'Drug' : 'Create Drug'" [isEditMode]="editDrug" (save)="saveDrug()"
         (close)="closeModal()" [ngClass]="{ hidden: !isModalVisible }">
         <!-- Modal Content -->

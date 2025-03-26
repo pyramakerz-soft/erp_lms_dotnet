@@ -45,7 +45,7 @@ async getDiagnoses() {
     this.diagnoses = data.map((item) => {
       const insertedAtDate = new Date(item.insertedAt);
 
-      // Format the date
+      
       const options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'long',
@@ -53,16 +53,16 @@ async getDiagnoses() {
       };
       const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
 
-      // Create a new Diagnosis object with the formatted date and actions
+      
       return {
         ...item,
-        insertedAt: formattedDate, // Pass the formatted date as a string
-        actions: { delete: true, edit: true }, // Add actions dynamically
+        insertedAt: formattedDate, 
+        actions: { delete: true, edit: true }, 
       };
     });
   } catch (error) {
     console.error('Error loading data:', error);
-    this.diagnoses = []; // Clear the table if there's an error
+    this.diagnoses = []; 
   }
 }
 
@@ -75,7 +75,7 @@ async getDiagnoses() {
     this.editDiagnosis = false;
     this.validationErrors = {};
   }
-  // Update openModal to create a copy of the diagnosis
+  
 openModal(id?: number) {
   if (id) {
     this.editDiagnosis = true;
@@ -93,13 +93,13 @@ openModal(id?: number) {
   this.isModalVisible = true;
 }
 
-// Update saveDiagnosis to handle errors and loading state
+
 saveDiagnosis() {
   if (this.validateForm()) {
     if (this.editDiagnosis) {
       this.diagnosisService.Edit(this.diagnosis, this.DomainName).subscribe({
         next: () => {
-          this.getDiagnoses(); // Refresh from server
+          this.getDiagnoses(); 
           this.closeModal();
           Swal.fire('Success', 'Diagnosis saved successfully', 'success');
         },
@@ -112,7 +112,7 @@ saveDiagnosis() {
       this.diagnosis.insertedAt = new Date().toISOString();
       this.diagnosisService.Add(this.diagnosis, this.DomainName).subscribe({
         next: () => {
-          this.getDiagnoses(); // Refresh from server
+          this.getDiagnoses(); 
           this.closeModal();
           Swal.fire('Success', 'Diagnosis created successfully', 'success');
         },
@@ -141,7 +141,7 @@ deleteDiagnosis(row: any) {
         next: (response) => {
           console.log('Delete response:', response);
           this.getDiagnoses();
-          // Swal.fire('Deleted!', 'The diagnosis has been deleted.', 'success');
+          
         },
         error: (error) => {
           console.error('Error deleting diagnosis:', error);
@@ -178,18 +178,18 @@ async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
     
-    // First get all data from server
-    await this.getDiagnoses(); // Change this to the appropriate method for each component (getDrugs, getDiagnoses, getDoses)
+    
+    await this.getDiagnoses(); 
     
     if (this.value != "") {
-        this.diagnoses = this.diagnoses.filter((item: any) => { // Change data to the appropriate array (drugs, diagnoses, doses)
+        this.diagnoses = this.diagnoses.filter((item: any) => { 
             const fieldValue = item[this.key as keyof typeof item];
             
-            // Convert both values to string for consistent comparison
+            
             const searchString = this.value.toString().toLowerCase();
             const fieldString = fieldValue?.toString().toLowerCase() || '';
             
-            // Check if the field string includes the search string
+            
             return fieldString.includes(searchString);
         });
     }

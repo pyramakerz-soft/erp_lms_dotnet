@@ -43,18 +43,18 @@ export class FollowUpComponent implements OnInit {
   selectedDrugId: number | null = null;
   selectedDoseId: number | null = null;
   drugDoseList: any[] = [];
-  keysArray: string[] = ['schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation'];
+keysArray: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation'];
   searchKey: string = 'schoolName';
   searchValue: string = '';
   validationErrors: { [key: string]: string } = {};
 
-  // Drug Modal
+  
   isDrugModalVisible: boolean = false;
   drug: Drug = new Drug(0, '', new Date().toISOString());
   editDrug: boolean = false;
   drugValidationErrors: { [key: string]: string } = {};
 
-  // Dose Modal
+  
   isDoseModalVisible: boolean = false;
   dose: Dose = new Dose(0, '', new Date().toISOString());
   editDose: boolean = false;
@@ -77,18 +77,22 @@ export class FollowUpComponent implements OnInit {
     this.loadDropdownOptions();
   }
 
-  async onSearchEvent(event: { key: string, value: any }) {
-    this.searchKey = event.key;
-    this.searchValue = event.value;
-    await this.loadFollowUps();
-    
-    if (this.searchValue) {
-        this.followUps = this.followUps.filter(f => {
-            const fieldValue = f[this.searchKey as keyof typeof f]?.toString().toLowerCase() || '';
-            return fieldValue.includes(this.searchValue.toString().toLowerCase());
-        });
+    async onSearchEvent(event: { key: string, value: any }) {
+        this.searchKey = event.key;
+        this.searchValue = event.value;
+        
+        
+        await this.loadFollowUps();
+        
+        if (this.searchValue) {
+            this.followUps = this.followUps.filter(f => {
+                const fieldValue = f[this.searchKey as keyof typeof f]?.toString() || '';
+                
+                
+                return fieldValue.toLowerCase().includes(this.searchValue.toString().toLowerCase());
+            });
+        }
     }
-  }
 
   onSchoolChange(event: Event) {
     const selectedSchoolId = (event.target as HTMLSelectElement).value;

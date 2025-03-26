@@ -34,18 +34,18 @@ export class DrugsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.DomainName = this.apiService.GetHeader(); // Get the domain name from ApiService
+    this.DomainName = this.apiService.GetHeader(); 
     this.getDrugs();
   }
 
-  // Fetch drugs
+  
   async getDrugs() {
     try {
       const data = await firstValueFrom(this.drugService.Get(this.DomainName));
       this.drugs = data.map((item) => {
         const insertedAtDate = new Date(item.insertedAt);
 
-        // Format the date
+        
         const options: Intl.DateTimeFormatOptions = {
           year: 'numeric',
           month: 'long',
@@ -53,29 +53,29 @@ export class DrugsComponent implements OnInit {
         };
         const formattedDate: string = insertedAtDate.toLocaleDateString(undefined, options);
 
-        // Create a new Drug object with the formatted date and actions
+        
         return {
           ...item,
-          insertedAt: formattedDate, // Pass the formatted date as a string
-          actions: { delete: true, edit: true }, // Add actions dynamically
+          insertedAt: formattedDate, 
+          actions: { delete: true, edit: true }, 
         };
       });
     } catch (error) {
       console.error('Error loading data:', error);
-      this.drugs = []; // Clear the table if there's an error
+      this.drugs = []; 
     }
   }
 
 
 
-  // Close modal
+  
   closeModal() {
-    this.isModalVisible = false; // Hide the modal
-    this.drug = new Drug(0, '', new Date()); // Reset form
+    this.isModalVisible = false; 
+    this.drug = new Drug(0, '', new Date()); 
     this.editDrug = false;
     this.validationErrors = {};
   }
-  // Update openModal to create a copy of the drug
+  
 openModal(id?: number) {
   if (id) {
     this.editDrug = true;
@@ -92,13 +92,13 @@ openModal(id?: number) {
   this.isModalVisible = true;
 }
 
-// Update saveDrug to handle errors and loading state
+
 saveDrug() {
   if (this.validateForm()) {
     if (this.editDrug) {
       this.drugService.Edit(this.drug, this.DomainName).subscribe({
         next: () => {
-          this.getDrugs(); // Refresh from server
+          this.getDrugs(); 
           this.closeModal();
           Swal.fire('Success', 'Drug saved successfully', 'success');
         },
@@ -111,7 +111,7 @@ saveDrug() {
       this.drug.insertedAt = new Date().toISOString();
       this.drugService.Add(this.drug, this.DomainName).subscribe({
         next: () => {
-          this.getDrugs(); // Refresh from server
+          this.getDrugs(); 
           this.closeModal();
           Swal.fire('Success', 'Drug created successfully', 'success');
         },
@@ -124,7 +124,7 @@ saveDrug() {
   }
 }
 
-  // Delete drug
+  
   deleteDrug(row: any) {
     Swal.fire({
       title: 'Are you sure you want to delete this drug?',
@@ -138,12 +138,12 @@ saveDrug() {
       if (result.isConfirmed) {
         this.drugService.Delete(row.id, this.DomainName).subscribe({
           next: (response) => {
-            // Log the plain text response (optional)
+            
             console.log('Delete response:', response);
 
-            // Refresh the table after successful deletion
+            
             this.getDrugs();
-            // Swal.fire('Deleted!', 'The drug has been deleted.', 'success');
+            
           },
           error: (error) => {
             console.error('Error deleting drug:', error);
@@ -154,7 +154,7 @@ saveDrug() {
     });
   }
 
-  // Validate form
+  
   validateForm(): boolean {
     let isValid = true;
     if (!this.drug.name) {
@@ -166,7 +166,7 @@ saveDrug() {
     return isValid;
   }
 
-  // Handle input changes
+  
   onInputValueChange(event: { field: string; value: any }) {
     const { field, value } = event;
     (this.drug as any)[field] = value;
@@ -179,18 +179,18 @@ async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
     
-    // First get all data from server
-    await this.getDrugs(); // Change this to the appropriate method for each component (getDrugs, getDiagnoses, getDoses)
+    
+    await this.getDrugs(); 
     
     if (this.value != "") {
-        this.drugs = this.drugs.filter((item: any) => { // Change data to the appropriate array (drugs, diagnoses, doses)
+        this.drugs = this.drugs.filter((item: any) => { 
             const fieldValue = item[this.key as keyof typeof item];
             
-            // Convert both values to string for consistent comparison
+            
             const searchString = this.value.toString().toLowerCase();
             const fieldString = fieldValue?.toString().toLowerCase() || '';
             
-            // Check if the field string includes the search string
+            
             return fieldString.includes(searchString);
         });
     }

@@ -19,12 +19,13 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { MedicalHistoryService } from '../../../../../Services/Employee/Clinic/medical-history.service';
 import { SearchComponent } from "../../../../../Component/search/search.component";
+import { MedicalHistoryModalComponent } from "../../medical-history/medical-history-modal/medical-history-modal.component";
 
 @Component({
   selector: 'app-medical-report',
   templateUrl: './medical-report.component.html',
   styleUrls: ['./medical-report.component.css'],
-  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, SearchComponent],
+  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, SearchComponent, MedicalHistoryModalComponent],
   standalone: true
 })
 export class MedicalReportComponent implements OnInit {
@@ -32,25 +33,25 @@ export class MedicalReportComponent implements OnInit {
 onView($event: any) {
 throw new Error('Method not implemented.');
 }
-  // Tabs
+  
   tabs = ['MH By Parent', 'MH By Doctor', 'Hygiene Form', 'Follow Up'];
-  selectedTab = this.tabs[0]; // Default selected tab
+  selectedTab = this.tabs[0]; 
 
-  // Data for tables
+  
   mhByParentData: any[] = [];
   mhByDoctorData: any[] = [];
   filteredMHByDoctorData: any[] = [];
   hygieneForms: any[] = [];
   followUps: any[] = [];
   filteredFollowUps: any[] = [];
-  // filterHygieneForms: any[] = [];
+  
 
-  // Search functionality
+  
   searchKey: string = 'id';
   searchValue: any = '';
   searchKeysArray: string[] = ['id', 'school', 'grade', 'class', 'student', 'date'];
 
-  // Filtration system
+  
   schools: any[] = [];
   grades: any[] = [];
   classes: any[] = [];
@@ -61,14 +62,14 @@ throw new Error('Method not implemented.');
   selectedSchool: number | null = null;
   selectedGrade: number | null = null;
   selectedClass: number | null = null;
-  selectedStudent: number | null = null; // Added for student selection
+  selectedStudent: number | null = null; 
   selectedDate: string = '';
 
   studentSearchTerm: string = '';
   filteredHygieneForms: any[] = [];
 
   constructor(
-    // private router: Router,
+    
     private hygieneFormService: HygieneFormService,
     private medicalHistoryService: MedicalHistoryService,
     private followUpService: FollowUpService,
@@ -89,7 +90,7 @@ throw new Error('Method not implemented.');
     this.loadMHByDoctorData();
   }
 
-  // ==================== Search Functionality ====================
+  
   onSearchEvent(event: { key: string, value: any }) {
     this.searchKey = event.key;
     this.searchValue = event.value;
@@ -127,7 +128,7 @@ throw new Error('Method not implemented.');
     });
   }
 
-  // ==================== Filtration System ====================
+  
   async loadSchools() {
     try {
       const domainName = this.apiService.GetHeader();
@@ -162,21 +163,20 @@ throw new Error('Method not implemented.');
     }
   }
 
+
 async loadStudents() {
-  if (this.selectedClass) {
-    try {
-      const domainName = this.apiService.GetHeader();
-      const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
-      this.students = data.map(student => ({
-        ...student,
-        attendance: null,
-        comment: '',
-        actionTaken: '',
-      }));
-    } catch (error) {
-      console.error('Error loading students:', error);
+    if (this.selectedClass) {
+        try {
+            const domainName = this.apiService.GetHeader();
+            const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
+            this.students = data.map(student => ({
+                id: student.id,
+                en_name: student.en_name
+            }));
+        } catch (error) {
+            console.error('Error loading students:', error);
+        }
     }
-  }
 }
 
   onSchoolChange() {
@@ -185,7 +185,7 @@ async loadStudents() {
     this.selectedStudent = null;
     this.grades = [];
     this.classes = [];
-    // this.students = [];
+    
     this.loadGrades();
   }
 
@@ -193,27 +193,38 @@ async loadStudents() {
     this.selectedClass = null;
     this.selectedStudent = null;
     this.classes = [];
-    // this.students = [];
+    
     this.loadClasses();
   }
 
 onClassChange() {
-  this.selectedStudent = null;
-  // this.students = [];
-  this.loadStudents();
+    this.selectedStudent = null;
+    this.loadStudents();
 }
 
-  onStudentChange() {
-    this.filteredMHByDoctorData = this.mhByDoctorData;
-    this.filteredFollowUps = this.followUps;
-  }
 
-  // ==================== Data Loading ====================
+  // onStudentChange() {
+  //   this.filteredMHByDoctorData = this.mhByDoctorData;
+  //   this.filteredFollowUps = this.followUps;
+  // }
+
+  isEditModalVisible = false;
+
+selectedMedicalHistory: any = null;
+
+openEditModal(row: any) {
+    this.selectedMedicalHistory = row;
+    this.isEditModalVisible = true;
+}
+
+
+
+  
   async loadMHByParentData() {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
-      // console.log(data)
+      
       this.mhByParentData = data.map((item) => ({
         id: item.id,
         date: new Date(item.insertedAt).toLocaleDateString(),
@@ -268,7 +279,7 @@ async loadAllHygieneForms() {
       const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
       this.allHygieneForms = data;
 
-      // Initialize students with all students from all forms (if needed)
+      
       this.students = data.flatMap(form => 
         form.studentHygieneTypes.map((student: any) => ({
           id: student.studentId,
@@ -285,32 +296,33 @@ async loadAllHygieneForms() {
     }
   }
 
-  async loadFollowUps() {
+async loadFollowUps() {
     try {
-      const domainName = this.apiService.GetHeader();
-      const data = await firstValueFrom(this.followUpService.Get(domainName));
-      // console.log(data)
-      this.followUps = data.map((item) => ({
-        id: item.id,
-        schoolId: item.schoolId,
-        schoolName: item.school || 'N/A',
-        gradeId: item.gradeId,
-        gradeName: item.grade || 'N/A',
-        classRoomID: item.classroomId,
-        className: item.classroom || 'N/A',
-        studentName: item.student || 'N/A',
-        complaints: item.complains || "No Complaints",
-        diagnosisName: item.diagnosis || 'N/A',
-        recommendation: item.recommendation || "No Recommendation",
-        actions: { edit: true, delete: true }
-      }));
-      this.filteredFollowUps = this.followUps;
+        const domainName = this.apiService.GetHeader();
+        const data = await firstValueFrom(this.followUpService.Get(domainName));
+        
+        this.followUps = data.map((item) => ({
+            id: item.id,
+            schoolId: item.schoolId,
+            schoolName: item.school || 'N/A',
+            gradeId: item.gradeId,
+            gradeName: item.grade || 'N/A',
+            classRoomID: item.classroomId,
+            className: item.classroom || 'N/A',
+            studentId: item.studentId, // Make sure this is included
+            studentName: item.student || 'N/A',
+            complaints: item.complains || "No Complaints",
+            diagnosisName: item.diagnosis || 'N/A',
+            recommendation: item.recommendation || "No Recommendation",
+            actions: { edit: true, delete: true }
+        }));
+        this.filteredFollowUps = this.followUps;
     } catch (error) {
-      console.error('Error fetching follow-ups:', error);
+        console.error('Error fetching follow-ups:', error);
     }
-  }
+}
 
-  // ==================== Filtering Logic ====================
+  
   filterMHByDoctor() {
     let filteredData = this.mhByDoctorData;
 
@@ -335,34 +347,34 @@ async loadAllHygieneForms() {
   }
 
 filterHygieneForms() {
-  // Only filter if we have hygiene forms data
+  
   if (this.allHygieneForms.length === 0) return;
 
-  // Reset filtered forms to all data first
+  
   let filteredForms = [...this.allHygieneForms];
 
-  // Apply school filter if selected
+  
   if (this.selectedSchool) {
     filteredForms = filteredForms.filter(
       form => form.schoolId == this.selectedSchool
     );
   }
 
-  // Apply grade filter if selected
+  
   if (this.selectedGrade) {
     filteredForms = filteredForms.filter(
       form => form.gradeId == this.selectedGrade
     );
   }
 
-  // Apply class filter if selected
+  
   if (this.selectedClass) {
     filteredForms = filteredForms.filter(
       form => form.classRoomID == this.selectedClass
     );
   }
 
-  // Apply student filter if selected
+  
   if (this.selectedStudent) {
     filteredForms = filteredForms.filter(form => {
       return form.studentHygieneTypes.some((student: any) => 
@@ -371,33 +383,33 @@ filterHygieneForms() {
     });
   }
 
-  // Update the filtered forms and prepare students data
+  
   this.filteredHygieneForms = filteredForms;
   this.prepareStudentsData();
 }
 
-  filterFollowUps() {
+filterFollowUps() {
     let filteredFollowUps = this.followUps;
 
     if (this.selectedSchool) {
-      filteredFollowUps = filteredFollowUps.filter(followUp => followUp.schoolId == this.selectedSchool);
+        filteredFollowUps = filteredFollowUps.filter(followUp => followUp.schoolId == this.selectedSchool);
     }
 
     if (this.selectedGrade) {
-      filteredFollowUps = filteredFollowUps.filter(followUp => followUp.gradeId == this.selectedGrade);
+        filteredFollowUps = filteredFollowUps.filter(followUp => followUp.gradeId == this.selectedGrade);
     }
 
     if (this.selectedClass) {
-      filteredFollowUps = filteredFollowUps.filter(followUp => followUp.classRoomID == this.selectedClass);
+        filteredFollowUps = filteredFollowUps.filter(followUp => followUp.classRoomID == this.selectedClass);
     }
 
     if (this.selectedStudent) {
-      filteredFollowUps = filteredFollowUps.filter(followUp => followUp.studentId == this.selectedStudent);
+        filteredFollowUps = filteredFollowUps.filter(followUp => followUp.studentId == this.selectedStudent);
     }
 
     console.log('Filtered Follow Ups:', filteredFollowUps);
     this.filteredFollowUps = filteredFollowUps;
-  }
+}
 
 
 prepareStudentsData() {
@@ -419,7 +431,7 @@ prepareStudentsData() {
   );
 }
 
-  // ==================== Delete Functionality ====================
+  
   deleteMH(row: any) {
     Swal.fire({
       title: 'Are you sure?',
@@ -475,28 +487,37 @@ prepareStudentsData() {
     });
   }
 
-  // ==================== Tab Selection ====================
+  
 selectTab(tab: string) {
     this.selectedTab = tab;
-
-    // Reset filters
+    
+    // Reset all filters
     this.selectedSchool = null;
     this.selectedGrade = null;
     this.selectedClass = null;
     this.selectedStudent = null;
     this.studentSearchTerm = '';
-
-    // Clear dependent dropdowns
+    
+    // Reset dropdowns
     this.grades = [];
     this.classes = [];
     this.students = [];
-
-    // Reset filtered data
-    this.filteredMHByDoctorData = [...this.mhByDoctorData];
-    this.filteredFollowUps = [...this.followUps];
-    this.filteredHygieneForms = [...this.allHygieneForms];
-
-    // If switching to a tab that requires fresh data, reload it
+    
+    // Reset filtered data to show all
+    switch(tab) {
+        case 'MH By Doctor':
+            this.filteredMHByDoctorData = [...this.mhByDoctorData];
+            break;
+        case 'Hygiene Form':
+            this.filteredHygieneForms = [...this.allHygieneForms];
+            this.prepareStudentsData();
+            break;
+        case 'Follow Up':
+            this.filteredFollowUps = [...this.followUps];
+            break;
+    }
+    
+    // Load fresh data if needed
     if (tab === 'Hygiene Form') {
         this.loadAllHygieneForms();
     } else if (tab === 'MH By Doctor') {
@@ -506,10 +527,6 @@ selectTab(tab: string) {
     }
 }
 
-
-  // ==================== Export Functionality ====================
-
-  // Export to Excel
   exportToExcel() {
     let data: any[] = [];
     let fileName = '';
@@ -584,29 +601,29 @@ exportToPDF() {
     return;
   }
 
-  // Create a new jsPDF instance
+  
   const doc = new jsPDF();
 
-  // Prepare the data for the table
+  
   const tableData = data.map((item) => {
     return headers.map((header) => {
-      // Convert header to lowercase and replace spaces with underscores to match the data keys
+      
       const key = header.toLowerCase().replace(/ /g, '_');
-      return item[key] || ''; // Use empty string if the key doesn't exist
+      return item[key] || ''; 
     });
   });
 
-  // Add the table to the PDF using autoTable
+  
   autoTable(doc, {
-    head: [headers], // Table headers
-    body: tableData, // Table data
+    head: [headers], 
+    body: tableData, 
   });
 
-  // Save the PDF
+  
   doc.save(fileName);
 }
 
-  // Print Table
+  
   printTable() {
     let data: any[] = [];
     let headers: string[] = [];

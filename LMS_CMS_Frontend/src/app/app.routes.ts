@@ -106,7 +106,7 @@ import { DrugsComponent } from './Pages/Employee/Clinic/drugs/drugs.component';
 import { DiagnosisComponent } from './Pages/Employee/Clinic/diagnosis/diagnosis.component';
 import { HygieneTypesComponent } from './Pages/Employee/Clinic/hygiene-types/hygiene-types.component';
 import { FollowUpComponent } from './Pages/Employee/Clinic/follow-up/follow-up.component';
-import { MedicalHistoryComponent } from './Pages/Employee/Clinic/medical-history/medical-history.component';
+import { MedicalHistoryComponent } from './Pages/Employee/Clinic/medical-history/medical-history-table/medical-history.component';
 import { ShopComponent } from './Pages/Student/Ecommerce/shop/shop.component';
 import { ShopItemComponent } from './Pages/Student/Ecommerce/shop-item/shop-item.component';
 import { CartComponent } from './Pages/Student/Ecommerce/cart/cart.component';
@@ -140,13 +140,10 @@ export const routes: Routes = [
             { path: "Create Hygiene Form", component: CreateHygieneFormComponent, title: "Create Hygiene Form" },
             { path: 'view hygiene form/:id', component: ViewHygieneFormComponent },
             { path: 'mh by parent/:id', component: MedicalHistoryByParentComponent },
-
-
             { path: "Follow Up", component: FollowUpComponent, title: "Follow Up" },
             { path: "Medical History", component: MedicalHistoryComponent, title: "Medical History" },
             { path: "Medical Report", component: MedicalReportComponent, title: "Medical Report" },
             { path: "Doses", component: DosesComponent, title: "Doses" },
-
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }, 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Students/:domainName/:busId", component: BusStudentComponent, title: "Bus Students", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]}, 

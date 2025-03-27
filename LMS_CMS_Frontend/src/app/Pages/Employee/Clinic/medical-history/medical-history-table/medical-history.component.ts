@@ -2,17 +2,17 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { TableComponent } from '../../../../Component/reuse-table/reuse-table.component';
+import { TableComponent } from '../../../../../Component/reuse-table/reuse-table.component';
 import Swal from 'sweetalert2';
-import { MedicalHistoryService } from '../../../../Services/Employee/Clinic/medical-history.service';
-import { ApiService } from '../../../../Services/api.service';
-import { SchoolService } from '../../../../Services/Employee/school.service';
-import { GradeService } from '../../../../Services/Employee/LMS/grade.service';
-import { ClassroomService } from '../../../../Services/Employee/LMS/classroom.service';
-import { StudentService } from '../../../../Services/student.service';
-import { MedicalHistory } from '../../../../Models/Clinic/MedicalHistory';
-import { SearchComponent } from '../../../../Component/search/search.component';
-import { MedicalHistoryModalComponent } from "./medical-history-modal/medical-history-modal.component";
+import { MedicalHistoryService } from '../../../../../Services/Employee/Clinic/medical-history.service';
+import { ApiService } from '../../../../../Services/api.service';
+import { SchoolService } from '../../../../../Services/Employee/school.service';
+import { GradeService } from '../../../../../Services/Employee/LMS/grade.service';
+import { ClassroomService } from '../../../../../Services/Employee/LMS/classroom.service';
+import { StudentService } from '../../../../../Services/student.service';
+import { MedicalHistory } from '../../../../../Models/Clinic/MedicalHistory';
+import { SearchComponent } from '../../../../../Component/search/search.component';
+import { MedicalHistoryModalComponent } from "../medical-history-modal/medical-history-modal.component";
 
 @Component({
   selector: 'app-medical-history',

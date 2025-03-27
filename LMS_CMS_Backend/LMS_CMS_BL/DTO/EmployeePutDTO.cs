@@ -33,12 +33,14 @@ namespace LMS_CMS_BL.DTO
         public string? LicenseNumber { get; set; }
         public string? ExpireDate { get; set; }
         public string? Address { get; set; }
+        public bool? CanReceiveRequest { get; set; }
+        public bool? CanReceiveMessage { get; set; }
+
         [Required]
         public long Role_ID { get; set; }
         [Required]
         public long? BusCompanyID { get; set; }
         [Required]
         public long EmployeeTypeID { get; set; }
-
     }
 }

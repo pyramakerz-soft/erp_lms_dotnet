@@ -308,6 +308,7 @@ export class InventoryDetailsComponent {
     if (this.isFormValid()) {
       this.isLoading = true
       if (this.mode == "Create") {
+        console.log(this.Data)
         this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
           this.MasterId = d
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)

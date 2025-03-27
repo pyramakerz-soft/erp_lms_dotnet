@@ -150,6 +150,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            decimal vat = 0;
 
             if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(userTypeClaim))
             {
@@ -172,6 +173,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 if (student == null)
                 {
                     return NotFound("Student not found.");
+                }
+
+                if (student.Nationality != 148)
+                {
+                    vat = 15;
                 }
             }
             else
@@ -310,10 +316,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
             if (newData.StudentID != 0 && newData.StudentID != null)
             {
-                if (Master.Student.Nationality != 148)
-                {
-                   Master.Vat = 15;
-                }
+                Master.Vat = vat;
             }
 
             Unit_Of_Work.inventoryMaster_Repository.Add(Master);

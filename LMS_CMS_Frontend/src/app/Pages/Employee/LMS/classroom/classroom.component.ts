@@ -25,6 +25,8 @@ import { FloorService } from '../../../../Services/Employee/LMS/floor.service';
 import { CopyClassroom } from '../../../../Models/LMS/copy-classroom';
 import { Grade } from '../../../../Models/LMS/grade';
 import { firstValueFrom } from 'rxjs';
+import { Employee } from '../../../../Models/Employee/employee';
+import { EmployeeService } from '../../../../Services/Employee/employee.service';
 
 @Component({
   selector: 'app-classroom',
@@ -60,6 +62,7 @@ export class ClassroomComponent {
   Sections: Section[] = []
   Grades:Grade[] = []
   Floors:Floor[] = []
+  Employees:Employee[] = []
   Buildings:Building[] = []
   selectedSection = null
   selectedBuilding = null
@@ -70,7 +73,7 @@ export class ClassroomComponent {
   copyClassroom:CopyClassroom = new CopyClassroom()
 
   constructor(public account: AccountService, public buildingService: BuildingService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
-      private menuService: MenuService, public activeRoute: ActivatedRoute, public schoolService: SchoolService, public classroomService: ClassroomService,
+      private menuService: MenuService, public activeRoute: ActivatedRoute, public schoolService: SchoolService, public classroomService: ClassroomService, public employeeServ : EmployeeService ,
       public sectionService:SectionService, public gradeService:GradeService, public acadimicYearService:AcadimicYearService, public floorService: FloorService){}
       
   ngOnInit(){
@@ -84,6 +87,7 @@ export class ClassroomComponent {
     });
 
     this.getClassroomData()
+    this.getEmployeeData()
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
@@ -201,6 +205,14 @@ export class ClassroomComponent {
     this.schoolService.Get(this.DomainName).subscribe(
       (data) => {
         this.Schools = data;
+      }
+    )
+  }
+
+  getEmployeeData(){
+    this.employeeServ.GetWithTypeId(1,this.DomainName).subscribe(
+      (data) => {
+        this.Employees = data;
       }
     )
   }

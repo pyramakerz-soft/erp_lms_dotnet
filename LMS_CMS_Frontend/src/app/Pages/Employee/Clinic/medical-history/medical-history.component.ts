@@ -17,7 +17,7 @@ import { MedicalHistoryModalComponent } from "./medical-history-modal/medical-hi
 @Component({
   selector: 'app-medical-history',
   standalone: true,
-  imports: [FormsModule, CommonModule, TableComponent, SearchComponent, MedicalHistoryModalComponent],
+  imports: [FormsModule, CommonModule, TableComponent, SearchComponent, MedicalHistoryModalComponent ],
   templateUrl: './medical-history.component.html',
   styleUrls: ['./medical-history.component.css'],
 })
@@ -78,15 +78,18 @@ export class MedicalHistoryComponent implements OnInit {
     }
   }
 
-openModal(row?: any) {
+   selectedMedicalHistory: MedicalHistory | null = null;
+  @ViewChild(MedicalHistoryModalComponent) medicalHistoryModal!: MedicalHistoryModalComponent;
+
+  openModal(row?: any) {
     this.isModalVisible = true;
     if (row) {
-        // If row is provided, we're in edit mode
-        this.medicalHistoryModal.medicalHistoryData = row;
+      this.selectedMedicalHistory = row;
+    } else {
+      this.selectedMedicalHistory = null;
     }
-}
+  }
 
-@ViewChild(MedicalHistoryModalComponent) medicalHistoryModal!: MedicalHistoryModalComponent;
 
   closeModal() {
     this.isModalVisible = false;

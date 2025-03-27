@@ -14,7 +14,7 @@
             <!-- Wrapper for print icon and dropdown -->
             <div class="relative inline-block text-left" (clickOutside)="showPrintMenu = false">
                 <!-- Print Icon Button -->
-                <button (click)="togglePrintMenu()" class="text-gray-700 hover:text-blue-600">
+                <button *ngIf="mode=='Edit'" (click)="togglePrintMenu()" class="text-gray-700 hover:text-blue-600">
                     <i class="fa-solid fa-print text-2xl"></i>
                 </button>
 

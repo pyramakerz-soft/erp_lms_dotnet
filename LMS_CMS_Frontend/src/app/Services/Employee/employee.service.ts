@@ -70,6 +70,8 @@ export class EmployeeService {
     formData.append('role_ID', employee.role_ID.toString());
     formData.append('busCompanyID', employee.busCompanyID.toString());
     formData.append('employeeTypeID', employee.employeeTypeID.toString());
+    formData.append('canReceiveMessage', employee.canReceiveMessage.toString());
+    formData.append('canReceiveRequest', employee.canReceiveRequest.toString());
 
     if (employee.files && employee.files.length > 0) {
       employee.files.forEach((file, index) => {
@@ -106,6 +108,8 @@ export class EmployeeService {
     formData.append('role_ID', employee.role_ID.toString());
     formData.append('busCompanyID', employee.busCompanyID.toString());
     formData.append('employeeTypeID', employee.employeeTypeID.toString());
+    formData.append('canReceiveMessage', employee.canReceiveMessage.toString());
+    formData.append('canReceiveRequest', employee.canReceiveRequest.toString());
 
     if (employee.files && employee.files.length > 0) {
       employee.files.forEach((file, index) => {

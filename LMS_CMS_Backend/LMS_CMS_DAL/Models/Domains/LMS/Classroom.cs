@@ -16,12 +16,23 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         public string Name { get; set; }
         public int Number { get; set; }
+
+
         [ForeignKey("Floor")]
         public long FloorID { get; set; }
         public Floor Floor { get; set; }
+
+
+        [ForeignKey("HomeroomTeacher")]
+        public long HomeroomTeacherID { get; set; }
+        public Employee HomeroomTeacher { get; set; }
+
+
         [ForeignKey("Grade")]
         public long GradeID { get; set; }
         public Grade Grade { get; set; }
+
+
         [ForeignKey("AcademicYear")]
         public long AcademicYearID { get; set; }
         public AcademicYear AcademicYear { get; set; }

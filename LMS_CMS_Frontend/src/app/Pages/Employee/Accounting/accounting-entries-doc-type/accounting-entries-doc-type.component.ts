@@ -155,7 +155,6 @@ User_Data_After_Login: TokenData = new TokenData(
           this.GetAllData();
           this.closeModal()
           this.isLoading = false
-
        },
         err => {
           this.isLoading = false

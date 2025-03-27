@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250327100940_FloorMonitorHomeroomTeacher")]
+    partial class FloorMonitorHomeroomTeacher
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4581,6 +4584,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("FloorID")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("FloorMonitorID")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("GradeID")
                         .HasColumnType("bigint");
 
@@ -4623,6 +4629,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("FloorID");
+
+                    b.HasIndex("FloorMonitorID");
 
                     b.HasIndex("GradeID");
 
@@ -8908,6 +8916,12 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "FloorMonitor")
+                        .WithMany("FloorMonitorClassrooms")
+                        .HasForeignKey("FloorMonitorID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Grade", "Grade")
                         .WithMany("Classrooms")
                         .HasForeignKey("GradeID")
@@ -8933,6 +8947,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("DeletedByEmployee");
 
                     b.Navigation("Floor");
+
+                    b.Navigation("FloorMonitor");
 
                     b.Navigation("Grade");
 
@@ -10126,6 +10142,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("EmployeeDays");
 
                     b.Navigation("EmployeeStudents");
+
+                    b.Navigation("FloorMonitorClassrooms");
 
                     b.Navigation("Floors");
 

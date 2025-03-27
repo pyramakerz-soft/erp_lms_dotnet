@@ -497,6 +497,12 @@ namespace LMS_CMS_DAL.Models.Domains
                  .HasForeignKey(p => p.FloorID)
                  .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Classroom>()
+                 .HasOne(p => p.HomeroomTeacher)
+                 .WithMany(p => p.HomeroomTeacherClassrooms)
+                 .HasForeignKey(p => p.HomeroomTeacherID)
+                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Semester>()
                  .HasOne(p => p.AcademicYear)
                  .WithMany(p => p.Semesters)
@@ -1134,6 +1140,12 @@ namespace LMS_CMS_DAL.Models.Domains
                .WithMany()  
                .HasForeignKey(f => f.DeletedByUserId)
                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Classroom>()
+                .HasOne(c => c.DeletedByEmployee)
+                .WithMany()
+                .HasForeignKey(c => c.DeletedByUserId)
+                .OnDelete(DeleteBehavior.Restrict); // Optional
 
 
             ///////////////////////// Optional ID According to other field: /////////////////////////  

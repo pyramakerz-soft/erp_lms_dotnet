@@ -8,30 +8,29 @@
             {{ mode == 'Create' ? 'Create Employee' : 'Edit Employee' }}
         </h1>
     </div>
-    <button  
-    [disabled]="isLoading" 
-    class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" 
-    (click)="Save()">
-    <span *ngIf="!isLoading">Save</span>
-    <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
-  </button>
+    <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+        <span *ngIf="!isLoading">Save</span>
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+    </button>
 </div>
 
 <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">User Name</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.user_Name" 
-            (ngModelChange)="onInputValueChange({ field: 'user_Name', value: $event })"/>
-        <span *ngIf="validationErrors['user_Name']" class="text-red-500 ml-3 font-normal">{{ validationErrors["user_Name"]}}</span>
+            placeholder="Enter User Name" [(ngModel)]="Data.user_Name"
+            (ngModelChange)="onInputValueChange({ field: 'user_Name', value: $event })" />
+        <span *ngIf="validationErrors['user_Name']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["user_Name"]}}</span>
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">English Name</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (ngModelChange)="onInputValueChange({ field: 'en_name', value: $event })"
-            placeholder="Enter English Name" [(ngModel)]="Data.en_name" />
-        <span *ngIf="validationErrors['en_name']" class="text-red-500 ml-3 font-normal">{{ validationErrors["en_name"]}}</span>
+            (ngModelChange)="onInputValueChange({ field: 'en_name', value: $event })" placeholder="Enter English Name"
+            [(ngModel)]="Data.en_name" />
+        <span *ngIf="validationErrors['en_name']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["en_name"]}}</span>
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
@@ -43,36 +42,38 @@
     <div *ngIf="mode == 'Create'" class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">Password</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (ngModelChange)="onInputValueChange({ field: 'password', value: $event })"
-            placeholder="Enter Password" [(ngModel)]="Data.password" />
-        <span *ngIf="validationErrors['password']" class="text-red-500 ml-3 font-normal">{{ validationErrors["password"]}}</span>
+            (ngModelChange)="onInputValueChange({ field: 'password', value: $event })" placeholder="Enter Password"
+            [(ngModel)]="Data.password" />
+        <span *ngIf="validationErrors['password']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["password"]}}</span>
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">Mobile</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             (ngModelChange)="onInputValueChange({ field: 'mobile', value: $event })"
-            (input)="validateNumber($event, 'mobile')" 
-            placeholder="Enter Mobile" [(ngModel)]="Data.mobile" />
-        <span *ngIf="validationErrors['mobile']" class="text-red-500 ml-3 font-normal">{{ validationErrors["mobile"]}}</span>
+            (input)="validateNumber($event, 'mobile')" placeholder="Enter Mobile" [(ngModel)]="Data.mobile" />
+        <span *ngIf="validationErrors['mobile']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["mobile"]}}</span>
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">Phone</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
             (ngModelChange)="onInputValueChange({ field: 'phone', value: $event })"
-            (input)="validateNumber($event, 'phone')" 
-            placeholder="Enter Phone" [(ngModel)]="Data.phone" />
-        <span *ngIf="validationErrors['phone']" class="text-red-500 ml-3 font-normal">{{ validationErrors["phone"]}}</span>
+            (input)="validateNumber($event, 'phone')" placeholder="Enter Phone" [(ngModel)]="Data.phone" />
+        <span *ngIf="validationErrors['phone']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["phone"]}}</span>
     </div>
 
 
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">Email</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (ngModelChange)="onInputValueChange({ field: 'email', value: $event })"
-            placeholder="Enter Email" [(ngModel)]="Data.email" />
-        <span *ngIf="validationErrors['email']" class="text-red-500 ml-3 font-normal">{{ validationErrors["email"]}}</span>
+            (ngModelChange)="onInputValueChange({ field: 'email', value: $event })" placeholder="Enter Email"
+            [(ngModel)]="Data.email" />
+        <span *ngIf="validationErrors['email']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["email"]}}</span>
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
@@ -84,13 +85,13 @@
     <div class="flex flex-col w-[49%] mb-4">
         <label class="mb-2" for="role">Role</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="role"
-            (ngModelChange)="onInputValueChange({ field: 'role_ID', value: $event })"
-            [(ngModel)]="Data.role_ID">
+            (ngModelChange)="onInputValueChange({ field: 'role_ID', value: $event })" [(ngModel)]="Data.role_ID">
             <option [value]="0" disabled selected hidden>Choose Role</option>
             <option *ngFor="let role of Roles" [value]="role.id">{{ role.name }}</option>
             <option *ngIf="Roles.length === 0" disabled selected>No Data Found</option>
         </select>
-        <span *ngIf="validationErrors['role_ID']" class="text-red-500 ml-3 font-normal">{{ validationErrors["role_ID"]}}</span>
+        <span *ngIf="validationErrors['role_ID']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["role_ID"]}}</span>
     </div>
 
     <div class="flex flex-col w-[49%] mb-4">
@@ -102,25 +103,28 @@
             <option *ngFor="let employeeType of empTypes" [value]="employeeType.id">{{ employeeType.name }}</option>
             <option *ngIf="empTypes.length === 0" disabled selected>No Data Found</option>
         </select>
-        <span *ngIf="validationErrors['employeeTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors["employeeTypeID"]}}</span>
+        <span *ngIf="validationErrors['employeeTypeID']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["employeeTypeID"]}}</span>
     </div>
 
     <div *ngIf="Data.employeeTypeID == 2" class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">License Number</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (ngModelChange)="onInputValueChange({ field: 'licenseNumber', value: $event })" 
-            (input)="validateNumber($event, 'licenseNumber')" 
-            placeholder="Enter License Number" [(ngModel)]="Data.licenseNumber" />
-        <span *ngIf="validationErrors['licenseNumber']" class="text-red-500 ml-3 font-normal">{{ validationErrors["licenseNumber"]}}</span>
+            (ngModelChange)="onInputValueChange({ field: 'licenseNumber', value: $event })"
+            (input)="validateNumber($event, 'licenseNumber')" placeholder="Enter License Number"
+            [(ngModel)]="Data.licenseNumber" />
+        <span *ngIf="validationErrors['licenseNumber']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["licenseNumber"]}}</span>
     </div>
 
     <div *ngIf="Data.employeeTypeID == 2" class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="expireDate">Expire Date</label>
         <input id="expireDate" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (ngModelChange)="onInputValueChange({ field: 'expireDate', value: $event })"
-            placeholder="Enter Expiry Date" [(ngModel)]="Data.expireDate" />
-        <span *ngIf="validationErrors['expireDate']" class="text-red-500 ml-3 font-normal">{{ validationErrors["expireDate"]}}</span>
-    </div> 
+            (ngModelChange)="onInputValueChange({ field: 'expireDate', value: $event })" placeholder="Enter Expiry Date"
+            [(ngModel)]="Data.expireDate" />
+        <span *ngIf="validationErrors['expireDate']" class="text-red-500 ml-3 font-normal">{{
+            validationErrors["expireDate"]}}</span>
+    </div>
 
     <div *ngIf="Data.employeeTypeID == 2" class="flex flex-col w-[49%] mb-4">
         <label class="mb-2" for="bus">Bus Comapny</label>
@@ -131,7 +135,19 @@
             <option *ngIf="BusCompany.length === 0" disabled selected>No Data Found</option>
         </select>
     </div>
- 
+
+    <div class="flex align-middle space-x-2 mb-4 w-full">
+        <input type="checkbox" id="canReceiveRequest" class="w-5 h-5"
+               [(ngModel)]="Data.canReceiveRequest">
+        <label class="mb-2" for="canReceiveRequest">Can Receive Request</label>
+      </div>
+      
+      <div class="flex align-middle space-x-2 mb-4 w-full">
+        <input type="checkbox" id="canReceiveMessage" class="w-5 h-5"
+               [(ngModel)]="Data.canReceiveMessage">
+        <label class="mb-2" for="canReceiveMessage">Can Receive Messages</label>
+      </div>
+
     <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed mb-4 border-2">
         <div class="flex justify-center w-full">
             <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">

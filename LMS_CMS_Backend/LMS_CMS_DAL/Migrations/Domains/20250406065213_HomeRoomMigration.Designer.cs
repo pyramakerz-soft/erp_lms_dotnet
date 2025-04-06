@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20250327112216_FloorMonitorDelete")]
-    partial class FloorMonitorDelete
+    [Migration("20250406065213_HomeRoomMigration")]
+    partial class HomeRoomMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4587,7 +4587,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("GradeID")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("HomeroomTeacherID")
+                    b.Property<long?>("HomeroomTeacherID")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("InsertedAt")
@@ -8920,8 +8920,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "HomeroomTeacher")
                         .WithMany("HomeroomTeacherClassrooms")
                         .HasForeignKey("HomeroomTeacherID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()

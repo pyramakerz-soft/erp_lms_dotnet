@@ -28,7 +28,7 @@ import * as ExcelJS from 'exceljs'
   styleUrl: './students-names-in-class.component.css'
 })
 export class StudentsNamesInClassComponent {
-[x: string]: any;
+ 
   SchoolId:number = 0
   AcademicYearId:number = 0
   GradeId:number = 0
@@ -52,6 +52,7 @@ export class StudentsNamesInClassComponent {
 
   direction: string = "";
 
+  today = new Date();
   constructor(  
     public account: AccountService,
     public DomainServ: DomainService, 

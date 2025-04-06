@@ -16,7 +16,9 @@ export class ApiService {
 
 
   GetHeader(){    
-    var Header = "domain"      
+    // const hostname = window.location.hostname;  
+    // var Header = hostname.split('.')[0] 
+    var Header = "Domain_Two"      
     return Header;
   }
 }

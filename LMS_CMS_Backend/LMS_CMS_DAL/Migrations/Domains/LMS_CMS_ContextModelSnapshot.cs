@@ -4584,7 +4584,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("GradeID")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("HomeroomTeacherID")
+                    b.Property<long?>("HomeroomTeacherID")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("InsertedAt")
@@ -8917,8 +8917,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "HomeroomTeacher")
                         .WithMany("HomeroomTeacherClassrooms")
                         .HasForeignKey("HomeroomTeacherID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()

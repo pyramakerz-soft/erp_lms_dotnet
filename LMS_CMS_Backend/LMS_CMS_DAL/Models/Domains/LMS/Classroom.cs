@@ -24,7 +24,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
 
 
         [ForeignKey("HomeroomTeacher")]
-        public long HomeroomTeacherID { get; set; }
+        public long? HomeroomTeacherID { get; set; }
         public Employee HomeroomTeacher { get; set; }
 
 

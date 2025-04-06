@@ -5,7 +5,7 @@
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     /// <inheritdoc />
-    public partial class FloorMonitorHomeroomTeacher : Migration
+    public partial class HomeRoomMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,23 +15,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 table: "Classroom");
 
             migrationBuilder.AddColumn<long>(
-                name: "FloorMonitorID",
-                table: "Classroom",
-                type: "bigint",
-                nullable: false,
-                defaultValue: 0L);
-
-            migrationBuilder.AddColumn<long>(
                 name: "HomeroomTeacherID",
                 table: "Classroom",
                 type: "bigint",
-                nullable: false,
-                defaultValue: 0L);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Classroom_FloorMonitorID",
-                table: "Classroom",
-                column: "FloorMonitorID");
+                nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Classroom_HomeroomTeacherID",
@@ -42,14 +29,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 name: "FK_Classroom_Employee_DeletedByUserId",
                 table: "Classroom",
                 column: "DeletedByUserId",
-                principalTable: "Employee",
-                principalColumn: "ID",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Classroom_Employee_FloorMonitorID",
-                table: "Classroom",
-                column: "FloorMonitorID",
                 principalTable: "Employee",
                 principalColumn: "ID",
                 onDelete: ReferentialAction.Restrict);
@@ -71,23 +50,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                 table: "Classroom");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Classroom_Employee_FloorMonitorID",
-                table: "Classroom");
-
-            migrationBuilder.DropForeignKey(
                 name: "FK_Classroom_Employee_HomeroomTeacherID",
                 table: "Classroom");
 
             migrationBuilder.DropIndex(
-                name: "IX_Classroom_FloorMonitorID",
-                table: "Classroom");
-
-            migrationBuilder.DropIndex(
                 name: "IX_Classroom_HomeroomTeacherID",
-                table: "Classroom");
-
-            migrationBuilder.DropColumn(
-                name: "FloorMonitorID",
                 table: "Classroom");
 
             migrationBuilder.DropColumn(

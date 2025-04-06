@@ -15,8 +15,10 @@ export class ApiService {
   BaseUrlOcta="http://44.210.155.226:5000/api"
   constructor() { }
 
-  GetHeader(){   
-    var Header = "Domain_One"     
+  GetHeader(){    
+    const hostname = window.location.hostname;  
+    var Header = hostname.split('.')[0] 
+    // var Header = "Domain_Two"      
     return Header;
   }
 }

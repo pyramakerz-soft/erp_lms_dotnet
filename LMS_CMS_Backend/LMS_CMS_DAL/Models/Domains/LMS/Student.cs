@@ -40,6 +40,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? Address { get; set; }
         public string? Note { get; set; }
         public string? NationalID { get; set; }
+        public string? NationalIDExpiredDate { get; set; }
         public long? Nationality { get; set; }
 
         [ForeignKey("Parent")]
@@ -53,6 +54,22 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("Gender")]
         public long GenderId { get; set; }
         public Gender Gender { get; set; }
+
+        public string? DateOfBirth {  get; set; }
+        public string? PlaceOfBirth { get; set; }
+        public string? Religion {  get; set; } 
+        public string? PassportNo { get; set; }
+        public string? PassportExpiredDate { get; set; }
+        public string? PreviousSchool { get; set; } 
+        public string? EmergencyContactName { get; set; }
+        public string? EmergencyContactRelation { get; set; }
+        public string? EmergencyContactMobile { get; set; }
+        public string? PickUpContactName { get; set; }
+        public string? PickUpContactRelation { get; set; }
+        public string? PickUpContactMobile { get; set; } 
+        public bool? IsRegisteredInNoor { get; set; }
+        //public string? GuardianName { get; set; }
+        //public string? Relation { get; set; }
 
         public AccountingTreeChart AccountNumber { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();

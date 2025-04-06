@@ -51,8 +51,7 @@ export class StudentsNamesInClassComponent {
   UserID: number = 0;
 
   direction: string = "";
-
-  today = new Date();
+ 
   constructor(  
     public account: AccountService,
     public DomainServ: DomainService, 

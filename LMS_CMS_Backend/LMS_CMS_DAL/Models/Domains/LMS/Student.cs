@@ -10,6 +10,7 @@ using LMS_CMS_DAL.Models.Domains.BusModule;
 using LMS_CMS_DAL.Models.Domains.ClinicModule;
 using LMS_CMS_DAL.Models.Domains.ECommerce;
 using LMS_CMS_DAL.Models.Domains.Inventory;
+using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 
 namespace LMS_CMS_DAL.Models.Domains.LMS
 {
@@ -44,8 +45,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public long? Nationality { get; set; }
 
         [ForeignKey("Parent")]
-        public long? Parent_Id { get; set; }
-
+        public long? Parent_Id { get; set; } 
         public Parent Parent { get; set; }
 
         [ForeignKey("AccountNumber")]
@@ -54,6 +54,10 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("Gender")]
         public long GenderId { get; set; }
         public Gender Gender { get; set; }
+
+        [ForeignKey("RegistrationFormParent")]
+        public long? RegistrationFormParentID { get; set; }
+        public RegisterationFormParent RegistrationFormParent { get; set; }
 
         public string? DateOfBirth {  get; set; }
         public string? PlaceOfBirth { get; set; }
@@ -78,6 +82,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? MotherEmail { get; set; }
         public string? MotherExperiences { get; set; }
         public string? MotherProfession { get; set; }
+        public string? MotherMobile { get; set; }
         public string? GuardianRelation { get; set; }
 
         public AccountingTreeChart AccountNumber { get; set; }

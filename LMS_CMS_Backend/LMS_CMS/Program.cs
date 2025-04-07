@@ -108,6 +108,8 @@ namespace LMS_CMS
             builder.Services.AddScoped<CheckPageAccessService>(); 
             builder.Services.AddScoped<InVoiceNumberCreate>();
             builder.Services.AddScoped<CalculateCurrentStock>();
+            builder.Services.AddScoped<CreateStudentService>();
+            builder.Services.AddScoped<RemoveAllRegistrationFormParentService>();
             //builder.Services.AddScoped<IEInvoiceHashGenerator, EInvoiceHashGenerator>();
             //builder.Services.AddScoped<ICsrGenerator, CsrGenerator>();
             //builder.Services.AddScoped<RequestResult>();

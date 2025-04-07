@@ -44,7 +44,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public long? Nationality { get; set; }
 
         [ForeignKey("Parent")]
-        public long Parent_Id { get; set; }
+        public long? Parent_Id { get; set; }
 
         public Parent Parent { get; set; }
 
@@ -67,9 +67,18 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? PickUpContactName { get; set; }
         public string? PickUpContactRelation { get; set; }
         public string? PickUpContactMobile { get; set; } 
-        public bool? IsRegisteredInNoor { get; set; }
-        //public string? GuardianName { get; set; }
-        //public string? Relation { get; set; }
+        public bool? IsRegisteredInNoor { get; set; } 
+        public string? MotherName { get; set; }
+        public string? MotherPassportNo { get; set; }
+        public string? MotherPassportExpireDate { get; set; }
+        public string? MotherNationalID { get; set; }
+        public string? MotherNationalIDExpiredDate { get; set; }
+        public string? MotherQualification { get; set; }
+        public string? MotherWorkPlace { get; set; }
+        public string? MotherEmail { get; set; }
+        public string? MotherExperiences { get; set; }
+        public string? MotherProfession { get; set; }
+        public string? GuardianRelation { get; set; }
 
         public AccountingTreeChart AccountNumber { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
@@ -80,7 +89,6 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<InventoryMaster> InventoryMaster { get; set; } = new HashSet<InventoryMaster>();
         public ICollection<Cart> Carts { get; set; } = new HashSet<Cart>();
         public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
-
         public ICollection<StudentHygieneTypes> StudentHygieneTypes { get; set; } = new HashSet<StudentHygieneTypes>();
     }
 }

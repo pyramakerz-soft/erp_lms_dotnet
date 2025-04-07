@@ -37,9 +37,11 @@
     </div>
 
     <div class="flex flex-col w-[40%] mb-4">
-        <label class="mb-2" for="Class" [ngClass]="{ 'text-gray-400': !GradeId || !AcademicYearId, 'primaryTxt': GradeId && AcademicYearId }">Class</label>
+        <label class="mb-2" for="Class"
+            [ngClass]="{ 'text-gray-400': !GradeId || !AcademicYearId, 'primaryTxt': GradeId && AcademicYearId }">Class</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Class"
-            [disabled]="!GradeId || !AcademicYearId" [ngClass]="{ 'bg-[#EBEBEB]': !GradeId || !AcademicYearId }" [(ngModel)]="ClassId">
+            [disabled]="!GradeId || !AcademicYearId" [ngClass]="{ 'bg-[#EBEBEB]': !GradeId || !AcademicYearId }"
+            [(ngModel)]="ClassId">
             <option [value]="0" disabled selected hidden>Choose Class</option>
             <option *ngFor="let g of Classrooms" [value]="g.id">{{ g.name }}</option>
             <option *ngIf="Classrooms.length === 0" disabled selected>No Data Found</option>
@@ -48,8 +50,9 @@
 
     <div>
         <button class="p-4  font-medium text-xl rounded-lg" (click)="ViewReport()"
-        [disabled]="!SchoolId || !GradeId || !AcademicYearId || !ClassId"
-        [ngClass]="{ 'bg-gray-100 text-gray-300': !SchoolId || !GradeId || !AcademicYearId || !ClassId, 'secondaryBg text-white': SchoolId && GradeId && AcademicYearId && ClassId }">View Report</button>
+            [disabled]="!SchoolId || !GradeId || !AcademicYearId || !ClassId"
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !SchoolId || !GradeId || !AcademicYearId || !ClassId, 'secondaryBg text-white': SchoolId && GradeId && AcademicYearId && ClassId }">View
+            Report</button>
     </div>
 </div>
 
@@ -82,7 +85,8 @@
         </thead>
         <tbody>
             <tr *ngIf="StudentData.length === 0">
-                <td colspan="5" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                <td colspan="5"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                     No Data Found
                 </td>
             </tr>
@@ -104,24 +108,32 @@
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     {{ row.genderName }}
-                </td> 
+                </td>
             </tr>
         </tbody>
     </table>
 </div>
- 
-<app-pdf-print 
-  *ngIf="showPDF"
-  [school]="school"
-  [fileName]="'List of students names in class'"
-  [infoRows]="[
-  { key: 'Class', value: class.name },
-  { key: 'Number Of Students', value: studentsCount.toString() },
-  { key: 'Date', value: date }
-]"
-  [tableHeaders]="['ID', 'Name', 'Mobile', 'Nationality', 'Gender']"
-  [tableData]="StudentData"
-></app-pdf-print>
+
+<app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
+  {
+    keyEn: 'Class',
+    valueEn: this.class.name,
+    keyAr: 'الصف',
+    valueAr: 'الاول'
+  },
+  {
+    keyEn: 'Number of Students',
+    valueEn: this.studentsCount.toString(),
+    keyAr: 'عدد الطلاب',
+    valueAr: this.studentsCount.toString()
+  },
+  {
+    keyEn: 'Date',
+    valueEn: this.date,
+    keyAr: 'التاريخ',
+    valueAr: 555
+  }
+]" [tableHeaders]="['ID', 'Name', 'Mobile', 'Nationality', 'Gender']" [tableData]="StudentData"></app-pdf-print>
 
 <!-- <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">

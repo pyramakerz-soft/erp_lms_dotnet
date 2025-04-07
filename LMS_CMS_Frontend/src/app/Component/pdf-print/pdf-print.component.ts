@@ -6,18 +6,22 @@ import html2pdf from 'html2pdf.js';
 @Component({
   selector: 'app-pdf-print',
   standalone: true,
-  imports: [CommonModule , FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './pdf-print.component.html',
   styleUrl: './pdf-print.component.css'
 })
 export class PdfPrintComponent {
 
   @Input() school: any;
-  @Input() tableHeaders: string[] = [];
-  @Input() tableData: any[] = [];
+  @Input() tableHeaders: string[] | null = null;
+  @Input() tableData: any[] | null = null;
   @Input() fileName: string = 'report';
-  @Input() infoRows: { key: string, value: string }[] = [];
-
+  @Input() infoRows: {
+    keyEn: string;
+    valueEn: string | number;
+    keyAr: string;
+    valueAr: string | number;
+  }[] = []
   @ViewChild('printContainer') printContainer!: ElementRef;
 
   ngAfterViewInit(): void {

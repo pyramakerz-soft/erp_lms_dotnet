@@ -19,11 +19,12 @@ import { ReportsService } from '../../../../../Services/shared/reports.service';
 import * as XLSX from 'xlsx';
 import FileSaver, { saveAs } from 'file-saver';
 import * as ExcelJS from 'exceljs'
+import { PdfPrintComponent } from '../../../../../Component/pdf-print/pdf-print.component';
 
 @Component({
   selector: 'app-students-names-in-class',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule , PdfPrintComponent],
   templateUrl: './students-names-in-class.component.html',
   styleUrl: './students-names-in-class.component.css'
 })
@@ -51,6 +52,8 @@ export class StudentsNamesInClassComponent {
   UserID: number = 0;
 
   direction: string = "";
+
+  showPDF = false;
 
   constructor(
     public account: AccountService,
@@ -202,26 +205,31 @@ export class StudentsNamesInClassComponent {
     }, 200);
   }
 
+  // DownloadAsPDF() {
+  //   let element = document.getElementById("Data");
+  //   console.log("Element", element)
+  //   if (!element) {
+  //     console.error("Element not found!");
+  //     return;
+  //   }
+
+  //   element.style.display = 'block';
+  //   element.style.top = '0px';
+  //   element.style.left = '0px';
+  //   element.style.zIndex = '-5';
+
+  //   setTimeout(() => {
+  //     this.reportsService.DownloadAsPDF("List of students' names in class")
+
+  //     setTimeout(() => {
+  //       element.style.display = 'none';
+  //     }, 1000);
+  //   }, 200);
+  // }
+
   DownloadAsPDF() {
-    let element = document.getElementById("Data");
-    console.log("Element", element)
-    if (!element) {
-      console.error("Element not found!");
-      return;
-    }
-
-    element.style.display = 'block';
-    element.style.top = '0px';
-    element.style.left = '0px';
-    element.style.zIndex = '-5';
-
-    setTimeout(() => {
-      this.reportsService.DownloadAsPDF("List of students' names in class")
-
-      setTimeout(() => {
-        element.style.display = 'none';
-      }, 1000);
-    }, 200);
+    this.showPDF = true;
+    setTimeout(() => this.showPDF = false, 1); 
   }
 
   async DownloadAsExcel() {

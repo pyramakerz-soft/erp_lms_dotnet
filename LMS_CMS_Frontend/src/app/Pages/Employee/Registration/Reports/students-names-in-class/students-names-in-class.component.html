@@ -110,7 +110,20 @@
     </table>
 </div>
  
-<div class="absolute -top-[9999px] -left-[9999px]">
+<app-pdf-print 
+  *ngIf="showPDF"
+  [school]="school"
+  [fileName]="'List of students names in class'"
+  [infoRows]="[
+  { key: 'Class', value: class.name },
+  { key: 'Number Of Students', value: studentsCount.toString() },
+  { key: 'Date', value: date }
+]"
+  [tableHeaders]="['ID', 'Name', 'Mobile', 'Nationality', 'Gender']"
+  [tableData]="StudentData"
+></app-pdf-print>
+
+<!-- <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">
         <div class="flex justify-between items-center">
             <div class="w-[40%]"> 
@@ -183,7 +196,7 @@
             </table>
         </div>
     </div>
-</div>
+</div> -->
 
 
 <!-- <div class="absolute -top-[9999px] -left-[9999px]">

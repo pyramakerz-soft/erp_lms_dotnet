@@ -1,0 +1,42 @@
+<div #printContainer class="p-5 text-sm font-sans">
+    <div class="flex justify-between items-center mb-6">
+      <div class="w-[40%]">
+        <p class="text-base font-semibold mb-1">{{ school?.reportHeaderOneEn }}</p>
+        <p class="text-sm">{{ school?.reportHeaderTwoEn }}</p>
+      </div>
+      <div class="flex justify-center w-[15%]">
+        <img [src]="school?.reportImage" class="w-full max-w-[100px]">
+      </div>
+      <div class="rtl text-end w-[40%]">
+        <p class="text-base font-semibold mb-1">{{ school?.reportHeaderOneAr }}</p>
+        <p class="text-sm">{{ school?.reportHeaderTwoAr }}</p>
+      </div>
+    </div>
+  
+    <div class="my-6 space-y-2">
+      <p *ngFor="let info of infoRows" class="text-xl font-semibold">
+        {{ info.key }}: <span class="font-light">{{ info.value }}</span>
+      </p>
+    </div>
+  
+    <table class="w-full border border-gray-300 text-left text-gray-700">
+      <thead>
+        <tr class="bg-gray-200 text-sm">
+          <th *ngFor="let header of tableHeaders" class="p-2 border">{{ header }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="tableData.length === 0">
+          <td [attr.colspan]="tableHeaders.length" class="text-center p-4">No Data Found</td>
+        </tr>
+        <tr *ngFor="let row of tableData; let i = index" [ngClass]="{ 'bg-gray-100': i % 2 === 1 }">
+          <td class="p-2 border">{{ row.id }}</td>
+          <td class="p-2 border">{{ row.en_name }}</td>
+          <td class="p-2 border">{{ row.mobile }}</td>
+          <td class="p-2 border">{{ row.nationalityName }}</td>
+          <td class="p-2 border">{{ row.genderName }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

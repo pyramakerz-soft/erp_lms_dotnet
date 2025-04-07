@@ -519,6 +519,13 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
+                var registerationFormParent = Unit_Of_Work.registerationFormParent_Repository
+                    .First_Or_Default(r => r.ID == registrationFormParentID && r.IsDeleted != true);
+                if (registerationFormParent == null)
+                {
+                    return NotFound("Registration form parent not found.");
+                }
+
                 var submittionAName = Unit_Of_Work.registerationFormSubmittion_Repository
                     .First_Or_Default(c => c.RegisterationFormParentID == registrationFormParentID && c.IsDeleted != true && c.CategoryFieldID == 2);
                 if (submittionAName == null)
@@ -533,27 +540,31 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     return NotFound("English name submission not found.");
                 }
 
-                var registerationFormParent = Unit_Of_Work.registerationFormParent_Repository
-                    .First_Or_Default(r => r.ID == registrationFormParentID && r.IsDeleted != true);
-                if (registerationFormParent == null)
-                {
-                    return NotFound("Registration form parent not found.");
-                }
-
-                if (registerationFormParent.ParentID == null ||
-                    registerationFormParent.AcademicYearID == null ||
+                if (registerationFormParent.AcademicYearID == null ||
                     registerationFormParent.GradeID == null)
                 {
                     return StatusCode(400, "Missing required fields in registration form parent.");
                 }
 
-                long parentId = Convert.ToInt64(registerationFormParent.ParentID);
+                long parentId = 0;
+                if(registerationFormParent.ParentID != null)
+                {
+                    parentId = Convert.ToInt64(registerationFormParent.ParentID);
+                }
+
                 long AccademicYearId = Convert.ToInt64(registerationFormParent.AcademicYearID);
                 long GradeId = Convert.ToInt64(registerationFormParent.GradeID);
+
                 RegisterationFormSubmittion registerationFormSubmittion = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 3 && r.RegisterationFormParentID == registrationFormParentID);
                 long GenderId = Convert.ToInt64(registerationFormSubmittion.TextAnswer);
                 RegisterationFormSubmittion registerationFormSubmittion2 = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 5 && r.RegisterationFormParentID == registrationFormParentID);
                 long NationaltyId = Convert.ToInt64(registerationFormSubmittion2.TextAnswer);
+                
+                RegisterationFormSubmittion submittionBirthDate = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 4 && r.RegisterationFormParentID == registrationFormParentID);
+                RegisterationFormSubmittion submittionPassport = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 12 && r.RegisterationFormParentID == registrationFormParentID);
+                RegisterationFormSubmittion submittionReligion = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 6 && r.RegisterationFormParentID == registrationFormParentID);
+                 
+                
                 AcademicYear academicYear = Unit_Of_Work.academicYear_Repository
                     .First_Or_Default(a => a.ID == AccademicYearId && a.IsDeleted != true);
                 if (academicYear == null)
@@ -563,15 +574,18 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
                  
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerationFormParent.StudentName);
+
                 Student student = new Student
                 {
                     en_name = submittionEName.TextAnswer,
                     ar_name = submittionAName.TextAnswer,
                     User_Name = registerationFormParent.StudentName,
                     Nationality = NationaltyId,
-                    Parent_Id = parentId,
+                    Parent_Id = parentId != 0 ? parentId : null,
                     GenderId = GenderId,
                     Password= hashedPassword,
+                    DateOfBirth= submittionBirthDate.TextAnswer,
+                    PassportNo= submittionPassport.TextAnswer,
                     InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
                     InsertedByOctaId = userTypeClaim == "octa" ? userId : null,
                     InsertedByUserId = userTypeClaim == "employee" ? userId : null

@@ -27,7 +27,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Classroom_Employee_DeletedByUserId",
-                table: "Classroom",
+                table: "Classroom",     
                 column: "DeletedByUserId",
                 principalTable: "Employee",
                 principalColumn: "ID",

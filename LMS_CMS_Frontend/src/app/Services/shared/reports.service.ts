@@ -89,14 +89,10 @@ export class ReportsService {
   }
 
   async generateExcelReport(options: {
-    reportHeaderOneEn: string;
-    reportHeaderOneAr: string;
-    reportHeaderTwoEn: string;
-    reportHeaderTwoAr: string;
-    reportImage?: string; // can be URL or base64
-    classInfo?: string;
-    studentCount?: number;
-    date?: string;
+    mainHeader: { en: string; ar: string };
+    subHeaders?: { en: string; ar: string }[];
+    infoRows?: { key: string; value: string | number | boolean }[]; // 👈 NEW
+    reportImage?: string;
     tables: {
       title: string;
       headers: string[];
@@ -106,70 +102,99 @@ export class ReportsService {
   }) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Report");
-
-    // Optional image
+  
+    function getExcelColumnLetter(colIndex: number): string {
+      let temp = '';
+      while (colIndex > 0) {
+        let remainder = (colIndex - 1) % 26;
+        temp = String.fromCharCode(65 + remainder) + temp;
+        colIndex = Math.floor((colIndex - 1) / 26);
+      }
+      return temp;
+    }
+  
     let base64Image = '';
     if (options.reportImage?.startsWith('http')) {
       base64Image = await this.getBase64ImageFromUrl(options.reportImage);
     } else if (options.reportImage) {
       base64Image = options.reportImage;
     }
-
-    // Headers
-    worksheet.mergeCells('A1:E1');
-    worksheet.getCell('A1').value = options.reportHeaderOneEn;
-    worksheet.getCell('A1').font = { bold: true, size: 14 };
+  
+    const colCount = options.tables?.[0]?.headers.length || 5;
+    const enEnd = getExcelColumnLetter(colCount);
+    const arStart = getExcelColumnLetter(colCount + 1);
+    const arEnd = getExcelColumnLetter(colCount * 2);
+  
+    // Main header
+    worksheet.mergeCells(`A1:${enEnd}1`);
+    worksheet.getCell('A1').value = options.mainHeader.en;
+    worksheet.getCell('A1').font = { bold: true, size: 16 };
     worksheet.getCell('A1').alignment = { horizontal: 'left' };
-
-    worksheet.mergeCells('F1:J1');
-    worksheet.getCell('F1').value = options.reportHeaderOneAr;
-    worksheet.getCell('F1').font = { bold: true, size: 14 };
-    worksheet.getCell('F1').alignment = { horizontal: 'right' };
-
-    worksheet.mergeCells('A2:E2');
-    worksheet.getCell('A2').value = options.reportHeaderTwoEn;
-    worksheet.getCell('A2').font = { size: 12 };
-    worksheet.getCell('A2').alignment = { horizontal: 'left' };
-
-    worksheet.mergeCells('F2:J2');
-    worksheet.getCell('F2').value = options.reportHeaderTwoAr;
-    worksheet.getCell('F2').font = { size: 12 };
-    worksheet.getCell('F2').alignment = { horizontal: 'right' };
-
-    // Add image if available
+  
+    worksheet.mergeCells(`${arStart}1:${arEnd}1`);
+    worksheet.getCell(`${arStart}1`).value = options.mainHeader.ar;
+    worksheet.getCell(`${arStart}1`).font = { bold: true, size: 16 };
+    worksheet.getCell(`${arStart}1`).alignment = { horizontal: 'right' };
+  
+    // Sub headers
+    options.subHeaders?.forEach((header, i) => {
+      const row = i + 2;
+      worksheet.mergeCells(`A${row}:${enEnd}${row}`);
+      worksheet.getCell(`A${row}`).value = header.en;
+      worksheet.getCell(`A${row}`).font = { size: 12 };
+      worksheet.getCell(`A${row}`).alignment = { horizontal: 'left' };
+  
+      worksheet.mergeCells(`${arStart}${row}:${arEnd}${row}`);
+      worksheet.getCell(`${arStart}${row}`).value = header.ar;
+      worksheet.getCell(`${arStart}${row}`).font = { size: 12 };
+      worksheet.getCell(`${arStart}${row}`).alignment = { horizontal: 'right' };
+    });
+  
+    const headerOffset = (options.subHeaders?.length || 0) + 2;
+  
     if (base64Image) {
       const imageId = workbook.addImage({
         base64: base64Image.split(',')[1],
         extension: 'png',
       });
-
+  
       worksheet.addImage(imageId, {
         tl: { col: 4, row: 0 },
         ext: { width: 100, height: 50 },
       });
     }
-
+  
     worksheet.addRow([]);
-    if (options.classInfo) worksheet.addRow([`Class: ${options.classInfo}`]).font = { bold: true, size: 12 };
-    if (options.studentCount != null) worksheet.addRow([`Number of Students: ${options.studentCount}`]).font = { bold: true, size: 12 };
-    if (options.date) worksheet.addRow([`Date: ${options.date}`]).font = { bold: true, size: 12 };
+  
+    // Info rows (dynamic)
+    options.infoRows?.forEach(({ key, value }) => {
+      worksheet.addRow([`${key}: ${value}`]).font = { bold: true, size: 12 };
+    });
+  
     worksheet.addRow([]);
+  
+    // Tables
     for (const table of options.tables) {
       worksheet.addRow([table.title]).font = { bold: true, size: 13 };
+  
       const headerRow = worksheet.addRow(table.headers);
       headerRow.font = { bold: true, color: { argb: 'FFFFFF' } };
       headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4F81BD' } };
       headerRow.eachCell((cell) => {
         cell.border = { bottom: { style: 'thin' } };
       });
+  
       table.data.forEach((row) => {
         worksheet.addRow(row);
       });
-      worksheet.addRow([]); // Space between tables
+  
+      worksheet.addRow([]);
     }
-    worksheet.columns.forEach((column) => {
-      column.width = 20;
+  
+    worksheet.columns.forEach((col) => {
+      col.width = 20;
     });
+  
     const buffer = await workbook.xlsx.writeBuffer();
     FileSaver.saveAs(new Blob([buffer]), options.filename || 'Report.xlsx');
   }

@@ -53,6 +53,18 @@ namespace LMS_CMS_BL.DTO.LMS
         public string? MotherProfession { get; set; }
         public string? MotherMobile { get; set; }
         public string? MotherEmail { get; set; }
-        public string? GuardianRelation { get; set; } 
+        public string? GuardianRelation { get; set; }
+        public long? InsertedByUserId { get; set; }
+        public DateTime? InsertedAt { get; set; }
+
+        public string GuardianName { get; set; }
+        public string GuardianPassportNo { get; set; }
+        public string? GuardianPassportExpireDate { get; set; }
+        public string GuardianNationalID { get; set; }
+        public string? GuardianNationalIDExpiredDate { get; set; }
+        public string GuardianQualification { get; set; }
+        public string GuardianWorkPlace { get; set; }
+        public string GuardianEmail { get; set; }
+        public string GuardianProfession { get; set; }
     }
 }

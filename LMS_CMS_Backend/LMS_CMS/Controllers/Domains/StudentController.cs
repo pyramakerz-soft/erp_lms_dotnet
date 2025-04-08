@@ -195,8 +195,7 @@ namespace LMS_CMS_PL.Controllers.Domains
                 .Select_All_With_IncludesById<StudentAcademicYear>(
                     s => s.IsDeleted != true && s.ClassID == classId && s.GradeID == gradeId && s.SchoolID == schoolId,
                     query => query.Include(stu => stu.Student)
-                      .ThenInclude(stu => stu.Gender) 
-                      .Include(stu => stu.Student.AccountNumber)
+                      .ThenInclude(stu => stu.Gender)
                 );
 
 
@@ -239,6 +238,249 @@ namespace LMS_CMS_PL.Controllers.Domains
                 StudentsCount = studentDTOs.Count,
                 School = schoolDTO,
                 Class = classsDTO,
+                Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+            });
+        }
+
+        /////
+      
+        [HttpGet("GetStudentByYearID")]
+        public async Task<IActionResult> GetStudentByYearID([FromQuery] long yearId, [FromQuery] long stuId, [FromQuery] long schoolId)
+        { 
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (yearId == null || yearId == 0)
+            {
+                return BadRequest("Year Id can't be null");
+            }
+            
+            if (stuId == null || stuId == 0)
+            {
+                return BadRequest("Student Id can't be null");
+            }
+
+            if (schoolId == null || schoolId == 0)
+            {
+                return BadRequest("School Id can't be null");
+            }
+
+            Student student = await Unit_Of_Work.student_Repository.FindByIncludesAsync(
+                 query => query.IsDeleted != true && query.ID == stuId,
+                 query => query.Include(stu => stu.Gender),
+                 query => query.Include(stu => stu.Parent));
+
+            if (student == null)
+            {
+                return NotFound("No Student with this Id");
+            }   
+             
+            AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(
+                d => d.IsDeleted != true && d.ID == yearId
+                );
+            if (academicYear == null)
+            {
+                return NotFound("No Academic Year with this Id");
+            }
+
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(
+                d => d.IsDeleted != true && d.ID == schoolId
+                );
+            if (school == null)
+            {
+                return NotFound("No School with this Id");
+            }
+             
+            List<Classroom> classrooms = Unit_Of_Work.classroom_Repository.FindBy(d => d.IsDeleted != true &&  d.AcademicYearID == yearId);
+
+            if (classrooms == null || classrooms.Count == 0)
+            {
+                return NotFound("No Classes found.");
+            }
+
+            long clsID = 0;
+            for (int i = 0; i < classrooms.Count; i++)
+            {
+                StudentAcademicYear stuAY = Unit_Of_Work.studentAcademicYear_Repository.First_Or_Default(d => d.IsDeleted != true && d.ClassID == classrooms[i].ID && d.StudentID == stuId);
+                if( stuAY != null)
+                {
+                    clsID = stuAY.ClassID;
+                }
+            }
+
+            Classroom cls = Unit_Of_Work.classroom_Repository.First_Or_Default(d => d.IsDeleted != true && d.ID == clsID);
+             
+            ClassroomGetDTO classDTO = mapper.Map<ClassroomGetDTO>(cls);
+
+            StudentGetDTO studentDTO = mapper.Map<StudentGetDTO>(student);
+            Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(studentDTO.Nationality);
+
+            if (nationality != null)
+            {
+                studentDTO.NationalityName = nationality.Name;
+            } 
+
+            School_GetDTO schoolDTO = mapper.Map<School_GetDTO>(school);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            if (!string.IsNullOrEmpty(schoolDTO.ReportImage))
+            {
+                schoolDTO.ReportImage = $"{serverUrl}{schoolDTO.ReportImage.Replace("\\", "/")}";
+            }
+
+            string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "Egypt Standard Time"
+                : "Africa/Cairo";
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+            return Ok(new
+            {
+                Student = studentDTO, 
+                School = schoolDTO,
+                Class = classDTO,
+                Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+            });
+        }
+        
+        /////
+      
+        [HttpGet("GetStudentIdentificationLetter")]
+        public async Task<IActionResult> GetStudentIdentificationLetter([FromQuery] long yearId, [FromQuery] long stuId, [FromQuery] long schoolId)
+        { 
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (yearId == null || yearId == 0)
+            {
+                return BadRequest("Year Id can't be null");
+            }
+            
+            if (stuId == null || stuId == 0)
+            {
+                return BadRequest("Student Id can't be null");
+            }
+
+            if (schoolId == null || schoolId == 0)
+            {
+                return BadRequest("School Id can't be null");
+            }
+
+            Student student = Unit_Of_Work.student_Repository.First_Or_Default(
+                 query => query.IsDeleted != true && query.ID == stuId);
+
+            if (student == null)
+            {
+                return NotFound("No Student with this Id");
+            }   
+             
+            AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(
+                d => d.IsDeleted != true && d.ID == yearId
+                );
+            if (academicYear == null)
+            {
+                return NotFound("No Academic Year with this Id");
+            }
+
+            School school = Unit_Of_Work.school_Repository.First_Or_Default(
+                d => d.IsDeleted != true && d.ID == schoolId
+                );
+            if (school == null)
+            {
+                return NotFound("No School with this Id");
+            }
+
+            List<Classroom> classroomsTo = Unit_Of_Work.classroom_Repository.FindBy(d => d.IsDeleted != true &&  d.AcademicYearID == yearId);
+
+            if (classroomsTo == null || classroomsTo.Count == 0)
+            {
+                return NotFound("No Classes found.");
+            }
+
+            long clsToID = 0;
+            for (int i = 0; i < classroomsTo.Count; i++)
+            {
+                StudentAcademicYear stuAY = Unit_Of_Work.studentAcademicYear_Repository.First_Or_Default(d => d.IsDeleted != true && d.ClassID == classroomsTo[i].ID && d.StudentID == stuId);
+                if (stuAY != null)
+                {
+                    clsToID = stuAY.ClassID;
+                }
+            }
+
+            Classroom clsTo = Unit_Of_Work.classroom_Repository.First_Or_Default(d => d.IsDeleted != true && d.ID == clsToID);
+
+            ClassroomGetDTO classToDTO = mapper.Map<ClassroomGetDTO>(clsTo);
+
+            List<Classroom> classroomsFrom = await Unit_Of_Work.classroom_Repository.Select_All_With_IncludesById<Classroom>(
+                query => query.IsDeleted != true,
+                query => query.Include(d => d.AcademicYear),
+                query => query.Include(d => d.Grade));
+
+            if (classroomsFrom == null || classroomsFrom.Count == 0)
+            {
+                return NotFound("No Classes found.");
+            }
+
+            classroomsFrom = classroomsFrom.OrderBy(c => c.AcademicYear.DateFrom).ToList();
+
+            List<Classroom> classroomsFilteredFrom = new List<Classroom>();
+            for (int i = 0; i < classroomsFrom.Count; i++)
+            {
+                StudentAcademicYear stuAY = Unit_Of_Work.studentAcademicYear_Repository.First_Or_Default(d => d.IsDeleted != true && d.ClassID == classroomsTo[i].ID && d.StudentID == stuId);
+                if (stuAY != null)
+                {
+                    classroomsFilteredFrom.Append(classroomsFrom[i]);
+                }
+            }
+             
+            List<ClassroomGetDTO> classFromDTOs = mapper.Map<List<ClassroomGetDTO>>(classroomsFilteredFrom);
+
+            StudentGetDTO studentDTO = mapper.Map<StudentGetDTO>(student);
+            Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(studentDTO.Nationality);
+
+            if (nationality != null)
+            {
+                studentDTO.NationalityName = nationality.Name;
+            } 
+
+            School_GetDTO schoolDTO = mapper.Map<School_GetDTO>(school);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            if (!string.IsNullOrEmpty(schoolDTO.ReportImage))
+            {
+                schoolDTO.ReportImage = $"{serverUrl}{schoolDTO.ReportImage.Replace("\\", "/")}";
+            }
+
+            string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "Egypt Standard Time"
+                : "Africa/Cairo";
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+            return Ok(new
+            {
+                Student = studentDTO, 
+                School = schoolDTO,
+                ClassFrom = classFromDTOs[0],
+                ClassTo = classToDTO,
                 Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
             });
         }

@@ -244,6 +244,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<Role, RolesGetDTO>();
             CreateMap<RolesGetDTO, Role>();
 
+            CreateMap<Grade, GradeWithStudentClassCountDTO>();
+
             CreateMap<Grade , GradeAddDTO>()
                 .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Section.ID));
             CreateMap<GradeAddDTO, Grade>();

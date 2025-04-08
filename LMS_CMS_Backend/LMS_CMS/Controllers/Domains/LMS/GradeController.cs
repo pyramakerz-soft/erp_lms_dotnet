@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Unicode;
+using LMS_CMS_DAL.Models.Octa;
+using System.Runtime.InteropServices;
 
 namespace LMS_CMS_PL.Controllers.Domains.LMS
 {
@@ -22,12 +24,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly CheckPageAccessService _checkPageAccessService;
+        private readonly SchoolHeaderService _schoolHeaderService;
 
-        public GradeController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
+        public GradeController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService, SchoolHeaderService schoolHeaderService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _checkPageAccessService = checkPageAccessService;
+            _schoolHeaderService = schoolHeaderService;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -377,6 +381,59 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             Unit_Of_Work.grade_Repository.Update(grade);
             Unit_Of_Work.SaveChanges();
             return Ok();
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetGradeAndStudentCountByYearID")]
+        public async Task<IActionResult> GetGradeAndStudentCountByYearID([FromQuery] long schoolId, [FromQuery] long yearId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (schoolId == null || schoolId == 0)
+            {
+                return BadRequest("School Id can't be null");
+            }
+
+            if (yearId == null || yearId == 0)
+            {
+                return BadRequest("Academic Year Id can't be null");
+            }  
+
+            AcademicYear year = Unit_Of_Work.academicYear_Repository.First_Or_Default(
+                d => d.IsDeleted != true && d.ID == yearId
+                );
+            if (year == null)
+            {
+                return NotFound("No Academic Year with this Id");
+            }
+
+            //List<Grade> Grades
+            
+            string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "Egypt Standard Time"
+                : "Africa/Cairo";
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+            School_GetDTO schoolDTO = _schoolHeaderService.GetSchoolHeader(Unit_Of_Work, schoolId, Request);
+
+            return Ok(new
+            {
+                //Grades = gradeDTOs, 
+                School = schoolDTO, 
+                Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+            });
         }
     }
 }

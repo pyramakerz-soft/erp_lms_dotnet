@@ -113,27 +113,30 @@
         </tbody>
     </table>
 </div>
-
-<app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
-  {
-    keyEn: 'Class',
-    valueEn: this.class.name,
-    keyAr: 'الصف',
-    valueAr: 'الاول'
-  },
-  {
-    keyEn: 'Number of Students',
-    valueEn: this.studentsCount.toString(),
-    keyAr: 'عدد الطلاب',
-    valueAr: this.studentsCount.toString()
-  },
-  {
-    keyEn: 'Date',
-    valueEn: this.date,
-    keyAr: 'التاريخ',
-    valueAr: 555
-  }
-]" [tableHeaders]="['ID', 'Name', 'Mobile', 'Nationality', 'Gender']" [tableData]="StudentData"></app-pdf-print>
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+    <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
+      {
+        keyEn: 'Class',
+        valueEn: this.class.name,
+        keyAr: 'الصف',
+        valueAr: 'الاول'
+      },
+      {
+        keyEn: 'Number of Students',
+        valueEn: this.studentsCount.toString(),
+        keyAr: 'عدد الطلاب',
+        valueAr: this.studentsCount.toString()
+      },
+      {
+        keyEn: 'Date',
+        valueEn: this.date,
+        keyAr: 'التاريخ',
+        valueAr: 555
+      }
+    ]" [tableHeaders]="['ID', 'Name', 'Mobile', 'Nationality', 'Gender']" [tableData]="StudentData"></app-pdf-print>
+    </div>
+</div>
 
 <!-- <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">

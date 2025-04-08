@@ -108,3 +108,18 @@
         </tbody>
     </table>
 </div>
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
+        {
+          keyEn: 'School',
+          valueEn: this.school.name
+        },
+        {
+          keyEn: 'Student',
+          valueEn: this.SelectedStudent.user_Name
+        }
+      ]" [tableDataWithHeader]="DataToPrint"></app-pdf-print>
+    </div>
+</div>

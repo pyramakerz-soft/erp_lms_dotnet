@@ -15,13 +15,14 @@ export class PdfPrintComponent {
   @Input() school: any;
   @Input() tableHeaders: string[] | null = null;
   @Input() tableData: any[] | null = null;
+  @Input() tableDataWithHeader: any[] | null = null;
   @Input() fileName: string = 'report';
   @Input() infoRows: {
     keyEn: string;
-    valueEn: string | number;
-    keyAr: string;
-    valueAr: string | number;
-  }[] = []
+    valueEn: string | number | null;
+    keyAr?: string;
+    valueAr?: string | number | null;
+  }[] = [];
   @ViewChild('printContainer') printContainer!: ElementRef;
 
   ngAfterViewInit(): void {

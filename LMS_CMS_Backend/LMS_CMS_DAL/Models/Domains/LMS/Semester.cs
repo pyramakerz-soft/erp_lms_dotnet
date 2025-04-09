@@ -19,8 +19,9 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string Name { get; set; }
         public string DateFrom { get; set; }
         public string DateTo { get; set; }
-        [ForeignKey("AcademicYear")]
+        public bool? IsCurrent { get; set; }
 
+        [ForeignKey("AcademicYear")]
         public long? AcademicYearID { get; set; }
         public AcademicYear? AcademicYear { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();

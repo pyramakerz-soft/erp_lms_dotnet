@@ -418,8 +418,34 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return NotFound("No Academic Year with this Id");
             }
 
-            //List<Grade> Grades
-            
+
+            // Get All Classes Where Academic Year 
+            List<Classroom> classrooms = await Unit_Of_Work.classroom_Repository.Select_All_With_IncludesById<Classroom>(
+                query => query.IsDeleted != true && query.AcademicYearID == yearId,
+                query => query.Include(d => d.AcademicYear), 
+                query => query.Include(d => d.Grade).ThenInclude(d => d.Section));
+
+        //public class GradeWithStudentClassCountDTO
+        //{
+        //    public long ID { get; set; }
+        //    public string Name { get; set; }
+        //    public int ClassCount { get; set; }
+        //    public int SaudiCount { get; set; }
+        //    public int NonSaudiCount { get; set; }
+        //    public int StudentCount { get; set; }
+        //    public int StudentsAssignedToNoorCount { get; set; }
+        //}
+            var result = classrooms
+                .GroupBy(c => new { c.Grade, c.Grade.Section })  // Group by Grade and Section
+                .Select(g => new
+                {
+                    Grade = g.Key.Grade,
+                    Section = g.Key.Section,
+                    ClassCount = g.Count()  // Count of classrooms for this grade-section combination
+                })
+                .ToList();
+             
+
             string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? "Egypt Standard Time"
                 : "Africa/Cairo";

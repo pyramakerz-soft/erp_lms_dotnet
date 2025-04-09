@@ -54,6 +54,8 @@ export class StudentInformationComponent {
   filteredStudents: Student[] = [];
 
   DataToPrint: any = null
+  CurrentDate : any =new Date()
+  direction: string = "";
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -75,7 +77,7 @@ export class StudentInformationComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
     });
-
+    this.direction = document.dir || 'ltr';
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
       if (settingsPage) {
@@ -119,6 +121,7 @@ export class StudentInformationComponent {
 
   searchStudents() {
     if (this.searchQuery) {
+      // this.SelectedStudent=this.Students
       this.filteredStudents = this.Students.filter(student =>
         student.user_Name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
@@ -164,6 +167,12 @@ export class StudentInformationComponent {
     setTimeout(() => this.showPDF = false, 1);
   }
 
+  formatDate(dateString: string, dir: string): string {
+    const date = new Date(dateString);
+    const locale = dir === 'rtl' ? 'ar-EG' : 'en-US';
+    return date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
   async DownloadAsExcel() {
     // Transform DataToPrint into Excel tables
     const tables = this.DataToPrint.map((section: { header: any; data: any[]; }) => ({
@@ -183,6 +192,11 @@ export class StudentInformationComponent {
           ar: this.school.reportHeaderTwoAr
         }
       ],
+      infoRows: [
+        { key: 'Date', value: this.CurrentDate },
+        { key: 'Student', value: this.SelectedStudent.user_Name },
+        { key: 'School', value:  this.school.name }
+      ],
       reportImage: this.school.reportImage,
       filename: "Student Information Report.xlsx",
       tables: tables // ✅ dynamic table sections from your actual data
@@ -197,7 +211,9 @@ export class StudentInformationComponent {
           next: (d) => {
             this.DataToPrint = []; // Clear existing data
             this.school = d.school;
-
+            console.log(d)
+            this.CurrentDate=d.date
+            this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             const generalInfo = {
               header: "General Information",
               data: [
@@ -229,16 +245,16 @@ export class StudentInformationComponent {
             const GuardianInformation = {
               header: "Guardian Information",
               data: [
-                { key: "Guardian's Name", value: d.guardian?.name || 'N/A' },
-                { key: "Relationship", value: d.guardian?.relationship || 'N/A' },
-                { key: "Passport", value: d.guardian?.passportNo || 'N/A' },
-                { key: "Identity", value: d.guardian?.identityNo || 'N/A' },
-                { key: "Qualification", value: d.guardian?.qualification || 'N/A' },
-                { key: "Profession", value: d.guardian?.profession || 'N/A' },
-                { key: "WorkPlace", value: d.guardian?.workplace || 'N/A' },
-                { key: "E-mail Address", value: d.guardian?.email || 'N/A' },
-                { key: "Identity Expiration", value: d.guardian?.identityExpiry || 'N/A' },
-                { key: "Passport Expiration", value: d.guardian?.passportExpiry || 'N/A' },
+                { key: "Guardian's Name", value: d.student?.guardianName || 'N/A' },
+                { key: "Relationship", value: d.student?.guardianRelation || 'N/A' },
+                { key: "Passport", value: d.student?.guardianPassportNo || 'N/A' },
+                { key: "Identity", value: d.student?.guardianNationalID || 'N/A' },
+                { key: "Qualification", value: d.student?.guardianQualification || 'N/A' },
+                { key: "Profession", value: d.student?.guardianProfession || 'N/A' },
+                { key: "WorkPlace", value: d.student?.guardianWorkPlace || 'N/A' },
+                { key: "E-mail Address", value: d.student?.guardianEmail || 'N/A' },
+                { key: "Identity Expiration", value: d.student?.guardianNationalIDExpiredDate || 'N/A' },
+                { key: "Passport Expiration", value: d.student?.guardianPassportExpireDate || 'N/A' },
               ]
             };
             this.DataToPrint.push(GuardianInformation);
@@ -246,7 +262,15 @@ export class StudentInformationComponent {
             const MotherInformation = {
               header: "Mother Information",
               data: [
-                { key: "Class", value: d.class?.name || 'N/A' }
+                { key: "Mother's Name", value: d.student?.motherName || 'N/A' },
+                { key: "Passport", value: d.student?.motherPassportNo || 'N/A' },
+                { key: "Identity", value: d.student?.motherNationalID || 'N/A' },
+                { key: "Passport Expiration", value: d.student?.motherPassportExpireDate || 'N/A' },
+                { key: "Qualification", value: d.student?.motherQualification || 'N/A' },
+                { key: "Profession", value: d.student?.motherProfession || 'N/A' },
+                { key: "WorkPlace", value: d.student?.motherWorkPlace || 'N/A' },
+                { key: "E-mail Address", value: d.student?.motherEmail || 'N/A' },
+                { key: "Experiences", value: d.student?.motherExperiences || 'N/A' },
               ]
             };
             this.DataToPrint.push(MotherInformation);
@@ -254,7 +278,9 @@ export class StudentInformationComponent {
             const EmergencyContactPerson = {
               header: "Emergency Contact Person",
               data: [
-                { key: "Class", value: d.class?.name || 'N/A' }
+                { key: "Name", value: d.student?.emergencyContactName || 'N/A' },
+                { key: "RelationShip", value: d.student?.emergencyContactRelation || 'N/A' },
+                { key: "Mobile", value: d.student?.emergencyContactMobile || 'N/A' },
               ]
             };
             this.DataToPrint.push(EmergencyContactPerson);
@@ -262,7 +288,7 @@ export class StudentInformationComponent {
             const AddressInformation = {
               header: "Address Information",
               data: [
-                { key: "Class", value: d.class?.name || 'N/A' }
+                { key: "Address", value: d.student?.address || 'N/A' },
               ]
             };
             this.DataToPrint.push(AddressInformation);
@@ -270,11 +296,12 @@ export class StudentInformationComponent {
             const PersonResponsibleToPickUpAndReceiveTheStudent = {
               header: "Person Responsible To Pick Up And Receive The Student",
               data: [
-                { key: "Class", value: d.class?.name || 'N/A' }
+                { key: "Pick_name", value: d.student?.pickUpContactName || 'N/A' },
+                { key: "Pick_Relation", value: d.student?.pickUpContactRelation || 'N/A' },
+                { key: "Pick_mobile", value: d.student?.pickUpContactMobile || 'N/A' },
               ]
             };
             this.DataToPrint.push(PersonResponsibleToPickUpAndReceiveTheStudent);
-
             resolve();
           },
           error: (err) => {

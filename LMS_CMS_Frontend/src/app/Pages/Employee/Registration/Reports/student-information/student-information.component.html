@@ -44,12 +44,12 @@
         </ng-container>
     </div>
 
-    <div
+    <!-- <div
         class="w-[58px] h-[45px] gap-[8px] border-t border-r border-b border-l-0 border-solid border-gray-300 rounded-tr-[8px] rounded-br-[8px] pt-[12px] pr-[16px] pb-[12px] pl-[16px] mt-7">
         <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500"
             style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="toggleSearchMode()">
         </i>
-    </div>
+    </div> -->
 
 
     <div class="mt-7 ml-2">
@@ -119,6 +119,10 @@
         {
           keyEn: 'Student',
           valueEn: this.SelectedStudent.user_Name
+        },
+        {
+          keyEn: 'Date',
+          valueEn: this.CurrentDate
         }
       ]" [tableDataWithHeader]="DataToPrint"></app-pdf-print>
     </div>

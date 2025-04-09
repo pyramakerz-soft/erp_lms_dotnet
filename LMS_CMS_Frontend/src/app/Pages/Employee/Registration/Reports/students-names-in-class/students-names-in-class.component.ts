@@ -267,4 +267,5 @@ export class StudentsNamesInClassComponent {
       ]
     });
   }
+  
 }

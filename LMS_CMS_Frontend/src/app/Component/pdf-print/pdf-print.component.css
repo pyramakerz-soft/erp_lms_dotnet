@@ -1,0 +1,17 @@
+.page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+  
+  table {
+    border-collapse: collapse;
+  }
+  
+  th,
+  td {
+    padding: 6px;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    word-break: break-word;
+  }
+  

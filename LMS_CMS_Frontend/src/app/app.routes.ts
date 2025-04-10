@@ -109,6 +109,7 @@ import { OrderHistoryComponent } from './Pages/Employee/E-Commerce/order-history
 import { StockingComponent } from './Pages/Employee/Inventory/stocking/stocking.component';
 import { StockingDetailsComponent } from './Pages/Employee/Inventory/stocking-details/stocking-details.component';
 import { StudentsNamesInClassComponent } from './Pages/Employee/Registration/Reports/students-names-in-class/students-names-in-class.component';
+import { StudentInformationComponent } from './Pages/Employee/Registration/Reports/student-information/student-information.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -259,6 +260,8 @@ export const routes: Routes = [
             { path: "Stocking Details", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Stocking Details/Edit/:id", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "StudentsNamesInClass", component: StudentsNamesInClassComponent, title: "Students' Names In Class", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "StudentInformation", component: StudentInformationComponent, title: "StudentInformation", canActivate:[noNavigateWithoutLoginGuard ] },
+
         ]
     },
     { 

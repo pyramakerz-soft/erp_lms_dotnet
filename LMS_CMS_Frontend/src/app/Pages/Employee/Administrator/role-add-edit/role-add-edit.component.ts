@@ -277,12 +277,12 @@ export class RoleAddEditComponent {
   }
 
   Save() {
-    this.isLoading=true
     const resultItems = this.ResultArray.filter(item => item.IsSave === true);
     this.DataToSave.id = this.RoleId;
     this.DataToSave.name = this.RoleName
     this.DataToSave.pages = resultItems;
     if (this.isFormValid()) {
+      this.isLoading=true
       if (this.DataToSave.pages.length == 0) {
         Swal.fire({
           icon: 'error',

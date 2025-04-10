@@ -37,9 +37,11 @@
     </div>
 
     <div class="flex flex-col w-[40%] mb-4">
-        <label class="mb-2" for="Class" [ngClass]="{ 'text-gray-400': !GradeId || !AcademicYearId, 'primaryTxt': GradeId && AcademicYearId }">Class</label>
+        <label class="mb-2" for="Class"
+            [ngClass]="{ 'text-gray-400': !GradeId || !AcademicYearId, 'primaryTxt': GradeId && AcademicYearId }">Class</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Class"
-            [disabled]="!GradeId || !AcademicYearId" [ngClass]="{ 'bg-[#EBEBEB]': !GradeId || !AcademicYearId }" [(ngModel)]="ClassId">
+            [disabled]="!GradeId || !AcademicYearId" [ngClass]="{ 'bg-[#EBEBEB]': !GradeId || !AcademicYearId }"
+            [(ngModel)]="ClassId">
             <option [value]="0" disabled selected hidden>Choose Class</option>
             <option *ngFor="let g of Classrooms" [value]="g.id">{{ g.name }}</option>
             <option *ngIf="Classrooms.length === 0" disabled selected>No Data Found</option>
@@ -48,8 +50,9 @@
 
     <div>
         <button class="p-4  font-medium text-xl rounded-lg" (click)="ViewReport()"
-        [disabled]="!SchoolId || !GradeId || !AcademicYearId || !ClassId"
-        [ngClass]="{ 'bg-gray-100 text-gray-300': !SchoolId || !GradeId || !AcademicYearId || !ClassId, 'secondaryBg text-white': SchoolId && GradeId && AcademicYearId && ClassId }">View Report</button>
+            [disabled]="!SchoolId || !GradeId || !AcademicYearId || !ClassId"
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !SchoolId || !GradeId || !AcademicYearId || !ClassId, 'secondaryBg text-white': SchoolId && GradeId && AcademicYearId && ClassId }">View
+            Report</button>
     </div>
 </div>
 
@@ -82,7 +85,8 @@
         </thead>
         <tbody>
             <tr *ngIf="StudentData.length === 0">
-                <td colspan="5" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                <td colspan="5"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                     No Data Found
                 </td>
             </tr>
@@ -104,13 +108,25 @@
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     {{ row.genderName }}
-                </td> 
+                </td>
             </tr>
         </tbody>
     </table>
 </div>
- 
 <div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+    <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
+    { keyEn: 'Class',valueEn: this.class.name},
+    { keyEn: 'Number of Students',valueEn: this.studentsCount.toString()},
+    { keyEn: 'Date',valueEn: this.date },
+    { keyEn: 'School', valueEn:  this.school.name },
+    { keyEn: 'Year', valueEn: this.AcademicYearName },
+    { keyEn: 'Grade', valueEn:  'this.GradeName' }
+    ]" [tableHeaders]="['ID', 'Name', 'Mobile', 'Nationality', 'Gender']"[tableData]="StudentData"></app-pdf-print>
+    </div>
+</div>
+
+<!-- <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">
         <div class="flex justify-between items-center">
             <div class="w-[40%]"> 
@@ -183,4 +199,160 @@
             </table>
         </div>
     </div>
-</div>
+</div> -->
+
+
+<!-- <div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <div class="flex justify-between items-center">
+            <div class="w-[40%]"> 
+                <p class="text-base font-semibold mb-1">{{school.reportHeaderOneEn}}</p>
+                <p class="text-sm font-normal">{{school.reportHeaderTwoEn}}</p>
+            </div>
+            <div class="flex justify-center w-[15%]">
+                <img [src]="school.reportImage" class="w-full">
+            </div>
+            <div class="rtl text-end w-[40%]">
+                <p class="text-base font-semibold mb-1">{{school.reportHeaderOneAr}}</p>
+                <p class="text-sm font-normal">{{school.reportHeaderTwoAr}}</p>
+            </div>
+        </div> 
+    
+        <div class="overflow-x-auto mt-5 rounded-2xl border border-[#BDBDBD]">
+            <table class="w-full table inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F] rounded-2xl">
+                <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                    <tr>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Grade
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            New Enrollment 
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Re-enrollment 
+                        </th>
+                        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Total Students
+                        </th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="StudentData.length === 0">
+                        <td colspan="4" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                            No Data Found
+                        </td>
+                    </tr>
+        
+                    <tr *ngFor="let section of sections; let sectionIndex = index">
+                        <tr *ngFor="let row of section.grade; let i = index" 
+                            [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                            class="border-t border-gray-300 text-xs md:text-sm bg-white">
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                {{ row.name }}
+                            </td> 
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                {{ row.newEnrollment }}
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                                {{ row.reEnrollment }}
+                            </td>
+                            <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 bg-[#e3efd9]">
+                                {{ row.newEnrollment + row.reEnrollment }} 
+                            </td> 
+                        </tr>
+                        <tr class="bg-[#aeaaa9]">
+                            <th>Total {{ section.name }}</th>
+                            <th>
+                            {{ section.grade.reduce((sum, row) => sum + row.newEnrollment, 0) }}
+                            </th>
+                            <th>
+                            {{ section.grade.reduce((sum, row) => sum + row.reEnrollment, 0) }}
+                            </th>
+                            <th>
+                            {{ section.grade.reduce((sum, row) => sum + (row.newEnrollment + row.reEnrollment), 0) }}
+                            </th> 
+                        </tr>
+                    </tr>
+
+                    <tr class="bg-[#ffe49f]">
+                        <th>Total</th>
+                        <th>{{totalEnollment}}</th> 
+                        <th>{{totalReEnollment}}</th> 
+                        <th>{{totalStudents}}</th> 
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- TS -->
+<!-- today = new Date();
+stu:Student = new Student() -->
+<!-- <div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <div class="flex justify-between items-center">
+            <div class="w-[40%]"> 
+                <p class="text-base font-semibold mb-1">{{school.reportHeaderOneEn}}</p>
+                <p class="text-sm font-normal">{{school.reportHeaderTwoEn}}</p>
+            </div>
+            <div class="flex justify-center w-[15%]">
+                <img [src]="school.reportImage" class="w-full">
+            </div>
+            <div class="rtl text-end w-[40%]">
+                <p class="text-base font-semibold mb-1">{{school.reportHeaderOneAr}}</p>
+                <p class="text-sm font-normal">{{school.reportHeaderTwoAr}}</p>
+            </div>    
+        </div>  
+        
+        <div class="w-full text-center my-20">
+            <p class="font-extrabold text-2xl">Identification Letter</p>
+            <p class="font-extrabold text-2xl">افادة</p>
+        </div>
+        
+        <div class="flex space-x-36 justify-between text-xl leading-7">
+            <div class="w-1/2">
+                <p>Date: {{ today | date:'dd/MM/yyyy' }}</p>
+                <p>Dear Sirs,</p>
+                <div>
+                    This is to certify that Student / {{stu.en_name}} {{stu.nationalityName}} Nationality and Identity No. {{stu.nationality}} 
+                    is registered for this school from {{stu.en_name}} {{stu.en_name}}
+                    until this Year {{stu.en_name}} in {{stu.en_name}}
+                    and he was given this certificate to presented to whom it may concern, without paring of school.
+                </div> 
+            </div>
+            <div class="rtl text-end w-1/2">
+                <p>التاريخ: {{ today | date:'dd/MM/yyyy' }}</p>
+                <p>السادة / المحترمين ..</p>
+                <p>تحية طيبة و بعد .</p>
+                <div>
+                    نفيدكم بأن الطالب/ة {{stu.ar_name}} 
+                    تحمل الجنسية / {{stu.nationalityName}}
+                    و تحمل هوية مقيم رقم / {{stu.nationality}}
+                    مقيد لدينا من {{stu.nationality}} عام {{stu.nationality}}
+                    و حتى العام الحالي {{stu.nationality}} ب {{stu.nationality}}
+                    و قد اعطيت هذه الافادة لتقديمها لمن يهمه الأمر دون أدنى مسؤولية على المدرسة.
+                </div> 
+            </div> 
+        </div>
+        
+        <div class="flex space-x-11 justify-between mt-10 text-xl">
+            <div class="w-1/2"> 
+                <p>Best regards,</p>
+                <div class="mt-24">
+                    <p>Administration</p>
+                </div>
+            </div>
+            <div class="rtl text-end w-1/2"> 
+                <p>و تقبلوا فائق التحية و الاحترام..</p>
+                <div class="mt-24">
+                    <p>ادارة المدرسة</p>
+                </div>
+            </div> 
+        </div> 
+        <div>
+            .....
+        </div>
+    </div>
+</div> -->

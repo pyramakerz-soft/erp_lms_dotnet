@@ -24,12 +24,16 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly CheckPageAccessService _checkPageAccessService;
+        private readonly CreateStudentService _createStudentService;
+        private readonly RemoveAllRegistrationFormParentService _removeAllRegistrationFormParentService;
 
-        public ClassroomController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
+        public ClassroomController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService, CreateStudentService createStudentService, RemoveAllRegistrationFormParentService removeAllRegistrationFormParentService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _checkPageAccessService = checkPageAccessService;
+            _createStudentService = createStudentService;
+            _removeAllRegistrationFormParentService = removeAllRegistrationFormParentService;
         }
 
         [HttpGet]
@@ -519,20 +523,6 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
-                var submittionAName = Unit_Of_Work.registerationFormSubmittion_Repository
-                    .First_Or_Default(c => c.RegisterationFormParentID == registrationFormParentID && c.IsDeleted != true && c.CategoryFieldID == 2);
-                if (submittionAName == null)
-                {
-                    return NotFound("Arabic name submission not found.");
-                }
-
-                var submittionEName = Unit_Of_Work.registerationFormSubmittion_Repository
-                    .First_Or_Default(c => c.RegisterationFormParentID == registrationFormParentID && c.IsDeleted != true && c.CategoryFieldID == 1);
-                if (submittionEName == null)
-                {
-                    return NotFound("English name submission not found.");
-                }
-
                 var registerationFormParent = Unit_Of_Work.registerationFormParent_Repository
                     .First_Or_Default(r => r.ID == registrationFormParentID && r.IsDeleted != true);
                 if (registerationFormParent == null)
@@ -540,20 +530,16 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     return NotFound("Registration form parent not found.");
                 }
 
-                if (registerationFormParent.ParentID == null ||
-                    registerationFormParent.AcademicYearID == null ||
+
+                if (registerationFormParent.AcademicYearID == null ||
                     registerationFormParent.GradeID == null)
                 {
                     return StatusCode(400, "Missing required fields in registration form parent.");
                 }
 
-                long parentId = Convert.ToInt64(registerationFormParent.ParentID);
                 long AccademicYearId = Convert.ToInt64(registerationFormParent.AcademicYearID);
                 long GradeId = Convert.ToInt64(registerationFormParent.GradeID);
-                RegisterationFormSubmittion registerationFormSubmittion = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 3 && r.RegisterationFormParentID == registrationFormParentID);
-                long GenderId = Convert.ToInt64(registerationFormSubmittion.TextAnswer);
-                RegisterationFormSubmittion registerationFormSubmittion2 = Unit_Of_Work.registerationFormSubmittion_Repository.First_Or_Default(r => r.CategoryFieldID == 5 && r.RegisterationFormParentID == registrationFormParentID);
-                long NationaltyId = Convert.ToInt64(registerationFormSubmittion2.TextAnswer);
+                
                 AcademicYear academicYear = Unit_Of_Work.academicYear_Repository
                     .First_Or_Default(a => a.ID == AccademicYearId && a.IsDeleted != true);
                 if (academicYear == null)
@@ -561,24 +547,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     return NotFound("Academic year not found.");
                 }
 
+                StudentGetDTO studentDto = await _createStudentService.CreateStudentDtoObj(Unit_Of_Work, registrationFormParentID);
+                Student student = await _createStudentService.CreateNewStudent(Unit_Of_Work, studentDto, userTypeClaim, userId);
                  
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(registerationFormParent.StudentName);
-                Student student = new Student
-                {
-                    en_name = submittionEName.TextAnswer,
-                    ar_name = submittionAName.TextAnswer,
-                    User_Name = registerationFormParent.StudentName,
-                    Nationality = NationaltyId,
-                    Parent_Id = parentId,
-                    GenderId = GenderId,
-                    Password= hashedPassword,
-                    InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
-                    InsertedByOctaId = userTypeClaim == "octa" ? userId : null,
-                    InsertedByUserId = userTypeClaim == "employee" ? userId : null
-                };
-
-                Unit_Of_Work.student_Repository.Add(student);
-                await Unit_Of_Work.SaveChangesAsync();
                 StudentAcademicYear studentAcademicYear = new StudentAcademicYear
                 {
                     StudentID = student.ID,
@@ -595,131 +566,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
 
                 //////////////////////////////////// remove all registration form parent ////////////////////////////////////////
-
-                List<RegisterationFormSubmittion> forms = Unit_Of_Work.registerationFormSubmittion_Repository.FindBy(s => s.RegisterationFormParentID == registrationFormParentID);
-                foreach (var item in forms)
-                {
-                    item.IsDeleted = true;
-                    item.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                    if (userTypeClaim == "octa")
-                    {
-                        item.UpdatedByOctaId = userId;
-                        if (item.UpdatedByUserId != null)
-                        {
-                            item.UpdatedByUserId = null;
-                        }
-                    }
-                    else if (userTypeClaim == "employee")
-                    {
-                        item.UpdatedByUserId = userId;
-                        if (item.UpdatedByOctaId != null)
-                        {
-                            item.UpdatedByOctaId = null;
-                        }
-                    }
-                    Unit_Of_Work.registerationFormSubmittion_Repository.Update(item);
-                    Unit_Of_Work.SaveChanges();
-                }
-
-
-                List<RegisterationFormTest> tests = Unit_Of_Work.registerationFormTest_Repository.FindBy(s => s.RegisterationFormParentID == registrationFormParentID);
-                foreach (var item in tests)
-                {
-                    item.IsDeleted = true;
-                    item.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                    if (userTypeClaim == "octa")
-                    {
-                        item.UpdatedByOctaId = userId;
-                        if (item.UpdatedByUserId != null)
-                        {
-                            item.UpdatedByUserId = null;
-                        }
-                    }
-                    else if (userTypeClaim == "employee")
-                    {
-                        item.UpdatedByUserId = userId;
-                        if (item.UpdatedByOctaId != null)
-                        {
-                            item.UpdatedByOctaId = null;
-                        }
-                    }
-                    Unit_Of_Work.registerationFormTest_Repository.Update(item);
-                    Unit_Of_Work.SaveChanges();
-                }
-
-
-                List<RegisterationFormTestAnswer> answers = Unit_Of_Work.registerationFormTestAnswer_Repository.FindBy(s => s.RegisterationFormParentID == registrationFormParentID);
-                foreach (var item in answers)
-                {
-                    item.IsDeleted = true;
-                    item.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                    if (userTypeClaim == "octa")
-                    {
-                        item.UpdatedByOctaId = userId;
-                        if (item.UpdatedByUserId != null)
-                        {
-                            item.UpdatedByUserId = null;
-                        }
-                    }
-                    else if (userTypeClaim == "employee")
-                    {
-                        item.UpdatedByUserId = userId;
-                        if (item.UpdatedByOctaId != null)
-                        {
-                            item.UpdatedByOctaId = null;
-                        }
-                    }
-                    Unit_Of_Work.registerationFormTestAnswer_Repository.Update(item);
-                    Unit_Of_Work.SaveChanges();
-                }
-
-
-                List<RegisterationFormInterview> interviews = Unit_Of_Work.registerationFormInterview_Repository.FindBy(s => s.RegisterationFormParentID == registrationFormParentID);
-                foreach (var item in interviews)
-                {
-                    item.IsDeleted = true;
-                    item.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                    if (userTypeClaim == "octa")
-                    {
-                        item.UpdatedByOctaId = userId;
-                        if (item.UpdatedByUserId != null)
-                        {
-                            item.UpdatedByUserId = null;
-                        }
-                    }
-                    else if (userTypeClaim == "employee")
-                    {
-                        item.UpdatedByUserId = userId;
-                        if (item.UpdatedByOctaId != null)
-                        {
-                            item.UpdatedByOctaId = null;
-                        }
-                    }
-                    Unit_Of_Work.registerationFormInterview_Repository.Update(item);
-                    Unit_Of_Work.SaveChanges();
-                }
-
-                RegisterationFormParent r = Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(s => s.ID == registrationFormParentID);
-                r.IsDeleted = true;
-                r.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                if (userTypeClaim == "octa")
-                {
-                    r.UpdatedByOctaId = userId;
-                    if (r.UpdatedByUserId != null)
-                    {
-                        r.UpdatedByUserId = null;
-                    }
-                }
-                else if (userTypeClaim == "employee")
-                {
-                    r.UpdatedByUserId = userId;
-                    if (r.UpdatedByOctaId != null)
-                    {
-                        r.UpdatedByOctaId = null;
-                    }
-                }
-                Unit_Of_Work.registerationFormParent_Repository.Update(r);
-                Unit_Of_Work.SaveChanges();
+                _removeAllRegistrationFormParentService.RemoveAllRegistrationFormParent(Unit_Of_Work, registrationFormParentID, userTypeClaim, userId); 
 
                 return Ok();
             }

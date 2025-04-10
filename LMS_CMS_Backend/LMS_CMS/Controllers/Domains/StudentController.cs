@@ -62,7 +62,8 @@ namespace LMS_CMS_PL.Controllers.Domains
                 Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(item.Nationality);
                 if (nationality != null)
                 {
-                        item.NationalityName = nationality.Name;
+                        item.NationalityEnName = nationality.Name;
+                        item.NationalityArName = nationality.ArName;
                 }
             }
             return Ok(StudentDTO);
@@ -87,7 +88,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(StudentDTO.Nationality);
             if (nationality != null)
             {
-                StudentDTO.NationalityName = nationality.Name;
+                StudentDTO.NationalityEnName = nationality.Name;
+                StudentDTO.NationalityArName = nationality.ArName;
             }
 
 
@@ -207,7 +209,8 @@ namespace LMS_CMS_PL.Controllers.Domains
                 Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(studentDTOs[i].Nationality);
                 if (nationality != null)
                 {
-                    studentDTOs[i].NationalityName = nationality.Name;
+                    studentDTOs[i].NationalityEnName = nationality.Name;
+                    studentDTOs[i].NationalityArName = nationality.ArName;
                 }
             }
               
@@ -307,7 +310,8 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             if (nationality != null)
             {
-                studentDTO.NationalityName = nationality.Name;
+                studentDTO.NationalityEnName = nationality.Name;
+                studentDTO.NationalityArName = nationality.ArName;
             }  
 
             string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
@@ -428,7 +432,8 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             if (nationality != null)
             {
-                studentDTO.NationalityName = nationality.Name;
+                studentDTO.NationalityEnName = nationality.Name;
+                studentDTO.NationalityArName = nationality.ArName;
             }  
 
             string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
@@ -526,7 +531,8 @@ namespace LMS_CMS_PL.Controllers.Domains
 
             if (nationality != null)
             {
-                studentDTO.NationalityName = nationality.Name;
+                studentDTO.NationalityEnName = nationality.Name;
+                studentDTO.NationalityArName = nationality.ArName;
             }   
 
             string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
@@ -603,7 +609,8 @@ namespace LMS_CMS_PL.Controllers.Domains
                 Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(studentDTOs[i].Nationality);
                 if (nationality != null)
                 {
-                    studentDTOs[i].NationalityName = nationality.Name;
+                    studentDTOs[i].NationalityEnName = nationality.Name;
+                    studentDTOs[i].NationalityArName = nationality.ArName;
                 }
 
                 List<BusStudent> busStudents = await Unit_Of_Work.busStudent_Repository.Select_All_With_IncludesById<BusStudent>(
@@ -641,95 +648,98 @@ namespace LMS_CMS_PL.Controllers.Domains
 
         /////
 
-        //[HttpGet("GetStudentByYearID")]
-        //public async Task<IActionResult> GetStudentBySchoolID([FromQuery] long stuId, [FromQuery] long schoolId)
-        //{
-        //    UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+        [HttpGet("AcademicSequentialReport")]
+        public async Task<IActionResult> AcademicSequentialReport([FromQuery] long stuId, [FromQuery] long schoolId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-        //    var userClaims = HttpContext.User.Claims;
-        //    var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-        //    long.TryParse(userIdClaim, out long userId);
-        //    var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
 
-        //    if (userIdClaim == null || userTypeClaim == null)
-        //    {
-        //        return Unauthorized("User ID or Type claim not found.");
-        //    }
-             
-        //    if (stuId == null || stuId == 0)
-        //    {
-        //        return BadRequest("Student Id can't be null");
-        //    }
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
 
-        //    if (schoolId == null || schoolId == 0)
-        //    {
-        //        return BadRequest("School Id can't be null");
-        //    }
+            if (stuId == null || stuId == 0)
+            {
+                return BadRequest("Student Id can't be null");
+            }
 
-        //    Student student = await Unit_Of_Work.student_Repository.FindByIncludesAsync(
-        //         query => query.IsDeleted != true && query.ID == stuId,
-        //         query => query.Include(stu => stu.Gender),
-        //         query => query.Include(stu => stu.Parent));
+            if (schoolId == null || schoolId == 0)
+            {
+                return BadRequest("School Id can't be null");
+            }
 
-        //    if (student == null)
-        //    {
-        //        return NotFound("No Student with this Id");
-        //    }
+            Student student = await Unit_Of_Work.student_Repository.FindByIncludesAsync(
+                 query => query.IsDeleted != true && query.ID == stuId,
+                 query => query.Include(stu => stu.Gender),
+                 query => query.Include(stu => stu.Parent));
 
-        //    AcademicYear academicYear = Unit_Of_Work.academicYear_Repository.First_Or_Default(
-        //        d => d.IsDeleted != true && d.ID == yearId
-        //        );
-        //    if (academicYear == null)
-        //    {
-        //        return NotFound("No Academic Year with this Id");
-        //    }
+            if (student == null)
+            {
+                return NotFound("No Student with this Id");
+            }
 
-        //    List<Classroom> classrooms = Unit_Of_Work.classroom_Repository.FindBy(d => d.IsDeleted != true && d.AcademicYearID == yearId);
+            List<StudentAcademicYear> StudentAcademicYear = await Unit_Of_Work.studentAcademicYear_Repository.Select_All_With_IncludesById<StudentAcademicYear>(
+                 query => query.IsDeleted != true && query.ID == stuId && query.SchoolID == schoolId,
+                 query => query.Include(stu => stu.Grade),
+                 query => query.Include(stu => stu.Classroom).ThenInclude(d => d.AcademicYear));
 
-        //    if (classrooms == null || classrooms.Count == 0)
-        //    {
-        //        return NotFound("No Classes found.");
-        //    }
+            if(StudentAcademicYear == null)
+            {
+                return NotFound("No Student Academic Year With This Student ID");
+            }
 
-        //    long clsID = 0;
-        //    for (int i = 0; i < classrooms.Count; i++)
-        //    {
-        //        StudentAcademicYear stuAY = Unit_Of_Work.studentAcademicYear_Repository.First_Or_Default(d => d.IsDeleted != true && d.ClassID == classrooms[i].ID && d.StudentID == stuId);
-        //        if (stuAY != null)
-        //        {
-        //            clsID = stuAY.ClassID;
-        //        }
-        //    }
+            List<GradeWithAcademicYearGetDTO> gradeWithAcYears = new List<GradeWithAcademicYearGetDTO>();
+            
+            string currentGradeName = "";
+            
+            for(int i = 0; i < StudentAcademicYear.Count; i++)
+            {
+                GradeWithAcademicYearGetDTO data = new GradeWithAcademicYearGetDTO();
+                data.GradeID = StudentAcademicYear[i].GradeID;
+                data.GradeName = StudentAcademicYear[i].Grade.Name;
+                data.AcademicYearID = StudentAcademicYear[i].Classroom.AcademicYearID;
+                data.AcademicYearName = StudentAcademicYear[i].Classroom.AcademicYear.Name;
+                gradeWithAcYears.Add(data);
 
-        //    Classroom cls = Unit_Of_Work.classroom_Repository.First_Or_Default(d => d.IsDeleted != true && d.ID == clsID);
+                if (StudentAcademicYear[i].Classroom.AcademicYear.IsActive == true)
+                {
+                    currentGradeName = StudentAcademicYear[i].Grade.Name;
+                }
+            }
 
-        //    ClassroomGetDTO classDTO = mapper.Map<ClassroomGetDTO>(cls);
+            StudentGetDTO studentDTO = mapper.Map<StudentGetDTO>(student);
+            studentDTO.CurrentGradeName = currentGradeName;             
 
-        //    StudentGetDTO studentDTO = mapper.Map<StudentGetDTO>(student);
-        //    Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(studentDTO.Nationality);
+            Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(studentDTO.Nationality);
 
-        //    if (nationality != null)
-        //    {
-        //        studentDTO.NationalityName = nationality.Name;
-        //    }
+            if (nationality != null)
+            {
+                studentDTO.NationalityEnName = nationality.Name;
+                studentDTO.NationalityArName = nationality.ArName;
+            }
 
-        //    string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-        //        ? "Egypt Standard Time"
-        //        : "Africa/Cairo";
+            string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "Egypt Standard Time"
+                : "Africa/Cairo";
 
-        //    TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
 
-        //    School_GetDTO schoolDTO = _schoolHeaderService.GetSchoolHeader(Unit_Of_Work, schoolId, Request);
+            School_GetDTO schoolDTO = _schoolHeaderService.GetSchoolHeader(Unit_Of_Work, schoolId, Request);
 
-        //    return Ok(new
-        //    {
-        //        Student = studentDTO,
-        //        School = schoolDTO,
-        //        Class = classDTO,
-        //        Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
-        //    });
-        //}
-
+            return Ok(new
+            {
+                Student = studentDTO,
+                School = schoolDTO,
+                Grades = gradeWithAcYears,
+                Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+            });
+        }
+         
         //////
 
         [HttpPut("StudentAccounting")]
@@ -844,7 +854,8 @@ namespace LMS_CMS_PL.Controllers.Domains
             Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(StudentDTO.Nationality);
             if (nationality != null)
             {
-                StudentDTO.NationalityName = nationality.Name;
+                StudentDTO.NationalityEnName = nationality.Name;
+                StudentDTO.NationalityArName = nationality.ArName;
             }
 
 

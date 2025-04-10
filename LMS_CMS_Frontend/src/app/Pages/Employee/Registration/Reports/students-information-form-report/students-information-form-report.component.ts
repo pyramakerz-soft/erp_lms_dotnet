@@ -15,15 +15,19 @@ import { DeleteEditPermissionService } from '../../../../../Services/shared/dele
 import { MenuService } from '../../../../../Services/shared/menu.service';
 import { ReportsService } from '../../../../../Services/shared/reports.service';
 import { StudentService } from '../../../../../Services/student.service';
+import { GradeService } from '../../../../../Services/Employee/LMS/grade.service';
+import { ClassroomService } from '../../../../../Services/Employee/LMS/classroom.service';
+import { Grade } from '../../../../../Models/LMS/grade';
+import { Classroom } from '../../../../../Models/LMS/classroom';
 
 @Component({
-  selector: 'app-proof-registration-and-success-form-report',
+  selector: 'app-students-information-form-report',
   standalone: true,
   imports: [CommonModule, FormsModule, PdfPrintComponent],
-  templateUrl: './proof-registration-and-success-form-report.component.html',
-  styleUrl: './proof-registration-and-success-form-report.component.css'
+  templateUrl: './students-information-form-report.component.html',
+  styleUrl: './students-information-form-report.component.css'
 })
-export class ProofRegistrationAndSuccessFormReportComponent {
+export class StudentsInformationFormReportComponent {
 
   User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
@@ -37,26 +41,28 @@ export class ProofRegistrationAndSuccessFormReportComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
   schools: School[] = []
+  students: Student[] = []
   academicYears: AcademicYear[] = []
-  Students: Student[] = []
+  Grades: Grade[] = []
+  class: Classroom[] = []
   isLoading: boolean = false
 
   SelectedSchoolId: number = 0;
-  SelectedStudentId: number = 0;
   SelectedYearId: number = 0;
+  SelectedGradeId: number = 0;
+  SelectedClassId: number = 0;
   showPDF: boolean = false
 
   school: School = new School()
   showTable: boolean = false
-  SelectedStudent: Student = new Student()
   searchQuery: string = '';
   isSearching: boolean = false; // Track search mode
-  filteredStudents: Student[] = [];
 
   DataToPrint: any = null
   CurrentDate : any =new Date()
   ArabicCurrentDate : any =new Date()
   direction: string = "";
+  tableData: any[]=[];
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -68,7 +74,9 @@ export class ProofRegistrationAndSuccessFormReportComponent {
     private SchoolServ: SchoolService,
     private academicYearServ: AcadimicYearService,
     private studentServ: StudentService,
-    public reportsService: ReportsService
+    private GradeServ: GradeService,
+    private ClassroomServ: ClassroomService,
+    public reportsService: ReportsService 
   ) { }
 
   ngOnInit() {
@@ -89,7 +97,6 @@ export class ProofRegistrationAndSuccessFormReportComponent {
       }
     });
     this.getAllSchools()
-    this.getAllStudents()
     this.getAllYears()
   }
 
@@ -105,44 +112,21 @@ export class ProofRegistrationAndSuccessFormReportComponent {
     })
   }
 
-  toggleSearchMode() {
-    this.isSearching = !this.isSearching;
-    if (!this.isSearching) {
-      // Reset to the full list when exiting search mode
-      this.filteredStudents = this.Students;
-    }
+  getAllGrades() {
+    this.GradeServ.GetBySchoolId(this.SelectedSchoolId, this.DomainName).subscribe((d) => {
+      this.Grades = d
+    })
   }
 
-  getAllStudents() {
-    this.studentServ.GetAll(this.DomainName).subscribe((d) => {
-      this.Students = d;
-      console.log(d ,this.Students)
-      this.filteredStudents = d; 
-    });
-  }
-
-  searchStudents() {
-    if (this.searchQuery) {
-      // this.SelectedStudent=this.Students
-      this.filteredStudents = this.Students.filter(student =>
-        student.user_Name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    } else {
-      this.filteredStudents = this.Students;
-    }
-  }
-
-  GetStudentById() {
-    this.studentServ.GetByID(this.SelectedStudentId, this.DomainName).subscribe((d) => {
-      this.SelectedStudent = d
-      console.log(d)
+  getAllClass() {
+    this.ClassroomServ.GetByGradeAndAcYearId(this.SelectedGradeId,this.SelectedYearId, this.DomainName).subscribe((d) => {
+      this.class = d
     })
   }
 
   async ViewReport() {
     await this.GetData()
     this.showTable = true
-    this.GetStudentById()
   }
 
   Print() {
@@ -196,7 +180,6 @@ export class ProofRegistrationAndSuccessFormReportComponent {
       ],
       infoRows: [
         { key: 'Date', value: this.CurrentDate },
-        { key: 'Student', value: this.SelectedStudent.user_Name },
         { key: 'School', value:  this.school.name }
       ],
       reportImage: this.school.reportImage,
@@ -208,11 +191,34 @@ export class ProofRegistrationAndSuccessFormReportComponent {
 
   GetData(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.studentServ.GetProofRegistrationAndSuccessForm(this.SelectedYearId, this.SelectedStudentId, this.SelectedSchoolId, this.DomainName)
+      this.studentServ.GetByClassIDReport( this.SelectedSchoolId,this.SelectedClassId, this.DomainName)
         .subscribe({
           next: (d) => {
             this.DataToPrint = d; 
             this.school = d.school;
+            this.students=d.students
+            this.tableData = this.students.map((student: any, index: number) => {
+              return {
+                id: index + 1, // No
+                en_name: student.en_name || '',
+                ar_name: student.ar_name || '',
+                mobile1: student.mobile || '',
+                mobile2: student.phone || '',
+                passportNo: student.passportNo || '',
+                nationalityName: student.nationalityEnName || '',
+                note: student.note || '',
+                dateOfBirth: student.dateOfBirth || '',
+                placeOfBirth: student.placeOfBirth || '',
+                passportExpiredDate: student.passportExpiredDate || '',
+                nationalIDExpiredDate: student.nationalIDExpiredDate || '',
+                admissionDate: student.admissionDate || '',
+                guardianNationalID: student.guardianNationalID || '',
+                email: student.email || '',
+                bus: student.isRegisteredToBus ? 'Yes' : 'No',
+                religion: student.religion || '',
+                previousSchool: student.previousSchool || ''
+              };
+            });
             console.log("data",d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);

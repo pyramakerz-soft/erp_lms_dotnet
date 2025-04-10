@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { OnChanges ,Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import html2pdf from 'html2pdf.js';
 
@@ -29,9 +29,37 @@ export class PdfPrintComponent {
     ArNote?: string| number | null;
   }[] = [];
   @ViewChild('printContainer') printContainer!: ElementRef;
+  tableChunks: { headers: string[], data: any[] }[] = [];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tableHeaders'] || changes['tableData']) {
+      this.splitTableGenerically();
+    }
+  }
 
   ngAfterViewInit(): void {
     setTimeout(() => this.printPDF(), 100);
+  }
+  splitTableGenerically(maxColsPerTable: number = 8) {
+    this.tableChunks = [];
+  
+    if (!this.tableHeaders || !this.tableData) return;
+  
+    for (let i = 0; i < this.tableHeaders.length; i += maxColsPerTable) {
+      const headersSlice = this.tableHeaders.slice(i, i + maxColsPerTable);
+  
+      const dataChunk = this.tableData.map(row => {
+        const newRow: any = {};
+        headersSlice.forEach(header => {
+          newRow[header] = row[header];
+        });
+        return newRow;
+      });
+      
+      this.tableChunks.push({ headers: headersSlice, data: dataChunk });
+    }
+    console.log(this.tableChunks)
+    console.log(this.tableData)
   }
 
   printPDF() {

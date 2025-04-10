@@ -17,13 +17,13 @@ import { ReportsService } from '../../../../../Services/shared/reports.service';
 import { StudentService } from '../../../../../Services/student.service';
 
 @Component({
-  selector: 'app-proof-registration-and-success-form-report',
+  selector: 'app-proof-registration-report',
   standalone: true,
   imports: [CommonModule, FormsModule, PdfPrintComponent],
-  templateUrl: './proof-registration-and-success-form-report.component.html',
-  styleUrl: './proof-registration-and-success-form-report.component.css'
+  templateUrl: './proof-registration-report.component.html',
+  styleUrl: './proof-registration-report.component.css'
 })
-export class ProofRegistrationAndSuccessFormReportComponent {
+export class ProofRegistrationReportComponent {
 
   User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
@@ -208,7 +208,7 @@ export class ProofRegistrationAndSuccessFormReportComponent {
 
   GetData(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.studentServ.GetProofRegistrationAndSuccessForm(this.SelectedYearId, this.SelectedStudentId, this.SelectedSchoolId, this.DomainName)
+      this.studentServ.GetStudentProofRegistration(this.SelectedYearId, this.SelectedStudentId, this.SelectedSchoolId, this.DomainName)
         .subscribe({
           next: (d) => {
             this.DataToPrint = d; 

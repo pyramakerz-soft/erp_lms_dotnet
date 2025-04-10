@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div *ngIf="tableData">
+    <!-- <div *ngIf="tableData">
         <div class="mt-10 overflow-x-auto rounded-xl border border-[#BDBDBD]">
             <table class="w-full inset-0 rounded-xl text-left text-[#6F6F6F]">
                 <thead>
@@ -50,9 +50,27 @@
                         <td class="p-2 border">{{ row.genderName }}</td>
                     </tr>
                 </tbody>
-            </table>
+            </table> 
         </div>
-    </div>
+    </div> -->
+
+    <div *ngFor="let chunk of tableChunks" class="mt-10 overflow-x-auto rounded-xl border border-[#BDBDBD]">
+        <table class="w-full inset-0 rounded-xl text-left text-[#6F6F6F]">
+          <thead>
+            <tr class="bg-gray-200 text-sm">
+              <th *ngFor="let header of chunk.headers" class="p-2">{{ header }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="chunk.data.length === 0">
+              <td [attr.colspan]="chunk.headers.length" class="text-center p-4">No Data Found</td>
+            </tr>
+            <tr *ngFor="let row of chunk.data; let i = index" [ngClass]="{ 'bg-gray-100': i % 2 === 1 }">
+              <td *ngFor="let header of chunk.headers" class="p-2 border">{{ row[header] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     <div *ngIf="tableDataWithHeader">
         <div *ngFor="let section of tableDataWithHeader" class="mb-4">

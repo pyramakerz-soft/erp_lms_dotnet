@@ -168,7 +168,6 @@ export class ViolationTypesComponent {
     this.isModalVisible = false;
   }
   CreateOREdit() {
-    this.isLoading=true
     if (this.violation.violationName == '') {
       Swal.fire({
         title: 'Error',
@@ -177,6 +176,7 @@ export class ViolationTypesComponent {
         confirmButtonText: 'OK',
       });
     } else {
+      this.isLoading=true
       if (this.mode == 'Create') {
         this.empTypeVioletionServ
           .Add(this.violation, this.DomainName)

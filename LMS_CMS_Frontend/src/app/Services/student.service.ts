@@ -40,7 +40,20 @@ export class StudentService {
     .set('domain-name', this.header)
     .set('Content-Type', 'application/json');
 
-    return this.http.get(`${this.baseUrl}/Student/${id}`, { headers })
+    return this.http.get<Student>(`${this.baseUrl}/Student/${id}`, { headers })
+  }
+
+  GetByYear(Yearid:number,StudentId:number,SchoolId:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetStudentByYearID?yearId=${Yearid}&stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
   }
 
 GetByClassID(id: number, DomainName: string): Observable<Student[]> {

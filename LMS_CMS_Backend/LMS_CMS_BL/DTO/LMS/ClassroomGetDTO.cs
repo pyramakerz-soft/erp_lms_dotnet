@@ -18,5 +18,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public long AcademicYearID { get; set; }
         public string AcademicYearName { get; set; }
         public long? InsertedByUserId { get; set; }
+        public long HomeroomTeacherID { get; set; }
     }
 }

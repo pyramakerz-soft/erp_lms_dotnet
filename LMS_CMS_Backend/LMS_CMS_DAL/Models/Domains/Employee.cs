@@ -98,7 +98,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public long? AcademicDegreeID { get; set; }
         public AcademicDegree AcademicDegree { get; set; }
 
-
         public ICollection<Bus> DrivenBuses { get; set; } = new HashSet<Bus>();
         public ICollection<Bus> DriverAssistant { get; set; } = new HashSet<Bus>();
         public ICollection<EmployeeAttachment> EmployeeAttachments { get; set; } = new HashSet<EmployeeAttachment>();
@@ -106,6 +105,6 @@ namespace LMS_CMS_DAL.Models.Domains
         public ICollection<EmployeeDays> EmployeeDays { get; set; } = new HashSet<EmployeeDays>();
         public ICollection<EmployeeStudent> EmployeeStudents { get; set; } = new HashSet<EmployeeStudent>();
         public ICollection<InstallmentDeductionMaster> InstallmentDeductionMasters { get; set; } = new HashSet<InstallmentDeductionMaster>();
-
+        public ICollection<Classroom> HomeroomTeacherClassrooms { get; set; } = new HashSet<Classroom>();
     }
 }

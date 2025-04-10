@@ -19,7 +19,8 @@ export class EmployeeGet {
         public employeeTypeName: string = '',
         public files :File []=[],
         public insertedByUserId :number =0,
-
+        public canReceiveRequest: boolean = false,
+        public canReceiveMessage: boolean = false,
     ) {}
 }
 

@@ -34,6 +34,13 @@ namespace LMS_CMS_DAL.Models.Domains
         public string Email { get; set; }
 
         public string? ConfirmationCode { get; set; }
+        public string? PassportNo { get; set; }
+        public string? PassportNoExpiredDate { get; set; }
+        public string? NationalID { get; set; }
+        public string? NationalIDExpiredDate { get; set; }
+        public string? Qualification { get; set; } 
+        public string? Profession { get; set; }
+        public string? WorkPlace { get; set; }
 
         public ICollection<Student> Students { get; set; } = new HashSet<Student>();
         public ICollection<RegisterationFormParent> RegisterationFormParents { get; set; } = new HashSet<RegisterationFormParent>();

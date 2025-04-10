@@ -97,6 +97,11 @@ export class StockingDetailsComponent {
   isLoading = false;
   showPrintMenu = false;
   IsActualStockHiddenForBlankPrint: boolean = false
+  StoreAndDateSpanWhenPrint: boolean = false
+
+  SelectedCategoryIds: number[] = [];
+  SelectedSubCategoryIds: number[] = [];
+  SelectedSopItems: ShopItem[] = [];
 
   constructor(
     private router: Router,
@@ -195,66 +200,46 @@ export class StockingDetailsComponent {
   }
 
   selectCategory(categoryId: number) {
-    this.SelectedCategoryId = categoryId;
-    this.GetSubCategories();
-    this.GetAllShopItems();
-  }
-
-  GetAllShopItems() {
-    if (this.SelectedCategoryId) {
-      this.StockingDetailsServ.GetCurrentStockForAllItems(
-        this.Data.storeID,
-        this.SelectedCategoryId,
-        this.Data.date,
-        this.DomainName
-      ).subscribe((d) => {
-        this.ShopItems = d;
-        this.FilteredShopItems = d;
-        this.MultiDetails = this.FilteredShopItems.map((item) => ({
-          id: Date.now() + Math.floor(Math.random() * 1000), // it is random for edit and delete only
-          insertedAt: '',
-          insertedByUserId: 0,
-          currentStock: item.currentStock,
-          actualStock: 0,
-          theDifference: 0,
-          shopItemID: item.id,
-          stockingId: this.MasterId,
-          shopItemName: item.enName,
-          barCode: item.barCode,
-          ItemPrice: item.purchasePrice ?? 0,
-        }));
-        if (this.AllItems == true) {
-          this.FilteredDetails = this.MultiDetails;
-        }
-        if (this.HasBallance == true && this.AllItems == true) {
-          this.FilteredDetails = this.MultiDetails.filter(
-            (f) => f.currentStock != 0
-          );
-        }
-      });
+    const index = this.SelectedCategoryIds.indexOf(categoryId);
+    if (index > -1) {
+      this.SelectedCategoryIds.splice(index, 1);
+      this.UnSelectCategory(categoryId)
+    } else {
+      this.SelectedCategoryIds.push(categoryId);
+      this.GetSubCategories(categoryId);
+      this.GetAllShopItems(categoryId);  // Load items for each
+      console.log("addFilteredShopItems", this.FilteredShopItems)
     }
   }
 
-  GetSubCategories() {
-    if (this.SelectedCategoryId)
-      this.SubCategoriesServ.GetByCategoryId(
-        this.SelectedCategoryId,
-        this.DomainName
-      ).subscribe((d) => {
-        this.subCategories = d;
-        this.SelectedSubCategoryId = null;
-      });
+  UnSelectCategory(CategoryId: number) {
+    this.subCategories = this.subCategories.filter(s => s.inventoryCategoriesID != CategoryId);
+
+    const remainingSubCategoryIds = this.subCategories.map(sc => sc.id);
+    this.FilteredShopItems = this.FilteredShopItems.filter(item =>
+      remainingSubCategoryIds.includes(item.inventorySubCategoriesID)
+    );
+    this.SelectedSopItems = this.FilteredShopItems
+    const remainingFilteredDetailsIds = this.FilteredShopItems.map(sc => sc.id);
+    this.FilteredDetails = this.FilteredDetails.filter(item =>
+      remainingFilteredDetailsIds.includes(item.shopItemID)
+    );
+    console.log("FilteredShopItems", this.FilteredShopItems)
   }
 
-  selectSubCategory(subCategoryId: number) {
-    this.FilteredDetails = []
-    this.SelectedSubCategoryId = subCategoryId;
-    this.FilteredShopItems = this.ShopItems.filter(
-      (s) => s.inventorySubCategoriesID == subCategoryId
-    );
-    this.SelectedSopItem = null;
-    if (this.AllItems) {
-      this.FilteredDetails = this.FilteredShopItems.map((item) => ({
+  GetAllShopItems(categoryId: number) {
+    this.StockingDetailsServ.GetCurrentStockForAllItems(
+      this.Data.storeID,
+      categoryId,
+      this.Data.date,
+      this.DomainName
+    ).subscribe((d) => {
+      console.log(d)
+      const newItems = d.filter(item => !this.ShopItems.some(existing => existing.id === item.id));
+      this.ShopItems = [...this.ShopItems, ...newItems];
+      this.SelectedSopItems = this.ShopItems
+      this.FilteredShopItems = this.ShopItems;
+      const newDetails = newItems.map((item) => ({
         id: Date.now() + Math.floor(Math.random() * 1000),
         insertedAt: '',
         insertedByUserId: 0,
@@ -267,23 +252,72 @@ export class StockingDetailsComponent {
         barCode: item.barCode,
         ItemPrice: item.purchasePrice ?? 0,
       }));
-    }
+      const uniqueDetails = newDetails.filter(detail =>
+        !this.MultiDetails.some(existing => existing.shopItemID === detail.shopItemID)
+      );
+      this.MultiDetails = [...this.MultiDetails, ...uniqueDetails];
+      this.FilteredDetails = this.MultiDetails
+      if (this.HasBallance) {
+        this.FilteredDetails = this.MultiDetails.filter((f) => f.currentStock != 0);
+      }
+    });
+  }
 
-    if (this.HasBallance == true && this.AllItems == true) {
-      this.FilteredDetails = this.FilteredDetails.filter(
-        (f) => f.currentStock != 0
-      );
-      this.FilteredShopItems = this.FilteredShopItems.filter(
-        (f) => f.currentStock != 0
-      );
+  GetSubCategories(categoryId: number) {
+    this.SubCategoriesServ.GetByCategoryId(categoryId, this.DomainName).subscribe((d) => {
+      const newSubCats = d.filter(cat => !this.subCategories.some(existing => existing.id === cat.id));
+      this.subCategories = [...this.subCategories, ...newSubCats];
+      this.SelectedSubCategoryIds = this.subCategories.map(s => s.id)
+      console.log(d)
+    });
+  }
+
+  selectSubCategory(subCategoryId: number) {
+    const index = this.SelectedSubCategoryIds.indexOf(subCategoryId);
+    if (index > -1) {
+      this.SelectedSubCategoryIds.splice(index, 1);
+
+    } else {
+      this.SelectedSubCategoryIds.push(subCategoryId);
+    }
+    this.SelectedSopItems = this.ShopItems.filter(
+      (s) => this.SelectedSubCategoryIds.includes(s.inventorySubCategoriesID)
+    );
+    this.FilteredDetails = this.SelectedSopItems.map((item) => ({
+      id: Date.now() + Math.floor(Math.random() * 1000),
+      insertedAt: '',
+      insertedByUserId: 0,
+      currentStock: item.currentStock,
+      actualStock: 0,
+      theDifference: 0,
+      shopItemID: item.id,
+      stockingId: this.MasterId,
+      shopItemName: item.enName,
+      barCode: item.barCode,
+      ItemPrice: item.purchasePrice ?? 0,
+    }));
+    if (this.HasBallance) {
+      this.FilteredDetails = this.FilteredDetails.filter((f) => f.currentStock != 0);
     }
   }
 
   selectShopItem(item: ShopItem) {
+    const exists = this.SelectedSopItems.find((i) => i.id === item.id);
+    if (exists) {
+      this.SelectedSopItems = this.SelectedSopItems.filter((i) => i.id !== item.id);
+      this.SelectedSubCategoryIds.filter(s => s != item.inventorySubCategoriesID)
+    } else {
+      this.SelectedSopItems.push(item);
+      if (!this.SelectedSubCategoryIds.includes(item.inventorySubCategoriesID)) {
+        this.SelectedSubCategoryIds.push(item.inventorySubCategoriesID)
+      }
+    }
     this.FilteredDetails = this.MultiDetails.filter(
-      (s) => s.shopItemID == item.id
+      (s) => this.SelectedSopItems.some((i) => i.id === s.shopItemID)
     );
-    this.SelectedSopItem = item;
+    if (this.HasBallance) {
+      this.FilteredDetails = this.FilteredDetails.filter((f) => f.currentStock != 0);
+    }
   }
 
   SearchToggle() {
@@ -354,46 +388,10 @@ export class StockingDetailsComponent {
       this.FilteredDetails = this.FilteredDetails.filter(
         (f) => f.currentStock != 0
       );
-      this.FilteredShopItems = this.FilteredShopItems.filter(
-        (s) => s.currentStock != 0
-      );
-    } else if (this.SelectedSopItem != null) {
+    } else if (this.HasBallance == false) {
       this.FilteredDetails = this.MultiDetails.filter(
-        (d) => d.shopItemID == this.SelectedSopItem!.id
+        (s) => this.SelectedSopItems.some((i) => i.id === s.shopItemID)
       );
-    } else if (this.SelectedSubCategoryId != null) {
-      this.FilteredShopItems = this.ShopItems.filter(
-        (s) => s.inventorySubCategoriesID == this.SelectedSubCategoryId
-      );
-      this.FilteredDetails = this.FilteredShopItems.map((item) => ({
-        id: Date.now() + Math.floor(Math.random() * 1000),
-        insertedAt: '',
-        insertedByUserId: 0,
-        currentStock: item.currentStock,
-        actualStock: 0,
-        theDifference: 0,
-        shopItemID: item.id,
-        stockingId: this.MasterId,
-        shopItemName: item.enName,
-        barCode: item.barCode,
-        ItemPrice: item.purchasePrice ?? 0,
-      }));
-    } else if (this.SelectedCategoryId != null) {
-      this.FilteredDetails = this.ShopItems.map((item) => ({
-        id: Date.now() + Math.floor(Math.random() * 1000), // it is random for edit and delete only
-        insertedAt: '',
-        insertedByUserId: 0,
-        currentStock: item.currentStock,
-        actualStock: 0,
-        theDifference: 0,
-        shopItemID: item.id,
-        stockingId: this.MasterId,
-        shopItemName: item.enName,
-        barCode: item.barCode,
-        ItemPrice: item.purchasePrice ?? 0,
-      }));
-    } else {
-      this.FilteredDetails = [];
     }
   }
 
@@ -420,16 +418,34 @@ export class StockingDetailsComponent {
 
   Save() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
         this.StockingServ.Add(this.Data, this.DomainName).subscribe((d) => {
           this.MasterId = d;
           this.router.navigateByUrl(`Employee/Stocking`);
+        }, (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         });
       }
       if (this.mode == 'Edit') {
-
         this.StockingServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/Stocking`);
+        }, (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         });
       }
     }
@@ -720,54 +736,72 @@ export class StockingDetailsComponent {
     this.showPrintMenu = !this.showPrintMenu;
   }
 
-  selectPrintOption(type: string) {
+  async selectPrintOption(type: string) {
     this.showPrintMenu = false;
-    console.log('Selected Print Type:', type);
-    // Call different print logic based on type
+    this.StoreAndDateSpanWhenPrint = true;
+    console.log(this.Data.stockingDetails)
+    if (this.mode === 'Create') {
+      this.TableData = this.Data.stockingDetails;
+      const addedData = await this.StockingServ.Add(this.Data, this.DomainName).toPromise();
+      this.Data.id = addedData;
+      this.MasterId = addedData;
+      const result = await this.StockingServ.GetById(this.Data.id, this.DomainName).toPromise();
+      if (result) this.Data = result;
+    } 
     switch (type) {
       case 'Blank':
-        this.Blank();
+        await this.Blank();
         break;
       case 'Differences':
-        this.Differences();
+        await this.Differences();
         break;
       case 'Print':
-        this.Print();
+        await this.Print();
         break;
     }
+    this.StoreAndDateSpanWhenPrint = false; // Now it's truly after printing
   }
 
-  Blank() {
-    this.IsActualStockHiddenForBlankPrint = true
+  async Blank() {
+    this.IsActualStockHiddenForBlankPrint = true;
     this.cdr.detectChanges();
-    setTimeout(async () => {
-      await this.Print();
-      this.IsActualStockHiddenForBlankPrint = false
-      this.cdr.detectChanges(); // Update view again
-    }, 300);
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        await this.GeneralPrint();
+        this.IsActualStockHiddenForBlankPrint = false;
+        this.cdr.detectChanges();
+        resolve();
+      }, 300);
+    });
   }
 
   async Differences() {
     const backupFilteredDetails = [...this.FilteredDetails];
     const backupTableData = [...this.TableData];
-    if (this.mode === "Create") {
-      this.FilteredDetails = this.FilteredDetails.filter(f => f.theDifference != 0);
-    } else if (this.mode === "Edit") {
-      this.TableData = this.TableData.filter(f => f.theDifference != 0);
-    }
+    this.TableData = this.TableData.filter(f => f.theDifference != 0);
     this.cdr.detectChanges();
-    setTimeout(async () => {
-      await this.Print();
-      this.FilteredDetails = backupFilteredDetails;
-      if (this.mode === "Create") {
-      } else if (this.mode === "Edit") {
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        await this.GeneralPrint();
         this.TableData = backupTableData;
-      }
-      this.cdr.detectChanges(); // Update view again
-    }, 300);
+        this.cdr.detectChanges();
+        resolve();
+      }, 300);
+    });
   }
 
   Print() {
+    this.cdr.detectChanges();
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        await this.GeneralPrint();
+        this.cdr.detectChanges();
+        resolve();
+      }, 300);
+    });
+  }
+
+  GeneralPrint() {
     const sections = document.querySelectorAll('.print-section');
     if (!sections.length) {
       console.error('No print sections found!');

@@ -67,6 +67,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public string GuardianWorkPlace { get; set; }
         public string GuardianEmail { get; set; }
         public string GuardianProfession { get; set; }
+        public string? AdmissionDate { get; set; }
 
         public string IsRegisteredToBus { get; set;}
 

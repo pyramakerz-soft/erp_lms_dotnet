@@ -84,6 +84,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? MotherProfession { get; set; }
         public string? MotherMobile { get; set; }
         public string? GuardianRelation { get; set; }
+        public string? AdmissionDate { get; set; }
 
         public AccountingTreeChart AccountNumber { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();

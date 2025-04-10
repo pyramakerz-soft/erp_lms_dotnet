@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    [Migration("20250407142154_StudentDataMigration")]
+    [Migration("20250409132252_StudentDataMigration")]
     partial class StudentDataMigration
     {
         /// <inheritdoc />

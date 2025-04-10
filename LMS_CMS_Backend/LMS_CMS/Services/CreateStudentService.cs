@@ -96,6 +96,7 @@ namespace LMS_CMS_PL.Services
                 MotherMobile = studentDto.MotherMobile,
                 PreviousSchool = studentDto.PreviousSchool,
                 RegistrationFormParentID = studentDto.RegistrationFormParentID,
+                AdmissionDate = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone).ToString("yyyy-MM-dd"),
                 InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
                 InsertedByOctaId = userTypeClaim == "octa" ? userId : null,
                 InsertedByUserId = userTypeClaim == "employee" ? userId : null

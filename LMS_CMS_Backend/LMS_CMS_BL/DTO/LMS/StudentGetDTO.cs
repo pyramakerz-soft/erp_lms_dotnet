@@ -20,7 +20,8 @@ namespace LMS_CMS_BL.DTO.LMS
         public string? Address { get; set; }
         public string? Note { get; set; }
         public long? Nationality { get; set; }
-        public string? NationalityName { get; set; }
+        public string? NationalityEnName { get; set; }
+        public string? NationalityArName { get; set; }
         public string? NationalIDExpiredDate { get; set; }
         public long? AccountNumberID { get; set; }
         public string? AccountNumberName { get; set; }
@@ -66,5 +67,10 @@ namespace LMS_CMS_BL.DTO.LMS
         public string GuardianWorkPlace { get; set; }
         public string GuardianEmail { get; set; }
         public string GuardianProfession { get; set; }
+        public string? AdmissionDate { get; set; }
+
+        public string IsRegisteredToBus { get; set;}
+
+        public string CurrentGradeName { get; set;}
     }
 }

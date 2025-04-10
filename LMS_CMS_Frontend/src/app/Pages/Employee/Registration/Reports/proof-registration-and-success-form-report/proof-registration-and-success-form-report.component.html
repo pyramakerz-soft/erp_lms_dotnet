@@ -111,16 +111,59 @@
 
 <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">
-        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
-        {
-          keyEn: 'School :' + this.school.name,
-        },
-        {
-          keyEn: 'Student : ' + this.SelectedStudent.user_Name,
-        },
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [Title]="'Identifier Latter'"
+        [infoRows]="[
         {
           keyEn: 'Date : ' + this.CurrentDate,
+          keyAr: 'التاريخ: ' + this.ArabicCurrentDate
+        },
+        {
+          keyEn: 'Dear Sirs ,',
+          keyAr: 'تحية طيبة وبعد'
+        },
+        {
+          keyEn: 'This to certify that Student / ' + this.DataToPrint.student.en_name,
+          keyAr: 'نفيدكم بأن الطالبة / ' + this.DataToPrint.student.en_name
+        },
+        {
+          keyEn: this.DataToPrint.student.nationalityName + ' Nationality',
+          keyAr: 'تحمل الجنسية / ' + this.DataToPrint.student.nationalityName
+        },
+        {
+            keyEn: ' and identity no ' + this.DataToPrint.student.nationalIDExpiredDate,
+            keyAr: 'وتحمل هوية مقيم / ' + this.DataToPrint.student.nationalIDExpiredDate
+          },
+  
+        {
+          keyEn: 'Is registered in this school from ' +
+                 this.DataToPrint.classFrom.gradeName + ' Year ' +
+                 this.DataToPrint.classFrom.academicYearName + ' to ' +
+                 this.DataToPrint.classTo.gradeName,
+          keyAr: 'مقيدة لدينا من الصف ' +
+                 this.DataToPrint.classFrom.gradeName + ' عام ' +
+                 this.DataToPrint.classFrom.academicYearName +
+                 ' إلى الصف ' + this.DataToPrint.classTo.gradeName
+        },
+        {
+          keyEn: 'Until This Year ' + this.DataToPrint.classTo.academicYearName,
+          keyAr: 'وحتى عام ' + this.DataToPrint.classTo.academicYearName
+        },
+        {
+          keyEn: 'And he was given this certificate to be presented to whom it may concern, without bearing any responsibility on the part of the school.',
+          keyAr: 'وقد أعطيت له هذه الإفادة لتقديمها لمن يهمه الأمر دون أدنى مسؤولية على المدرسة.'
         }
-      ]" [tableDataWithHeader]="DataToPrint"></app-pdf-print>
+      ]
+      " 
+      [PsNotes]="[
+        {
+            EnNote: 'Best Regards ,',
+            ArNote: 'وتقبلوا فائق التحيةوالاحترام '
+        },
+        {
+            EnNote: 'Administration ',
+            ArNote: 'ادارة المدرسة'
+        }
+      ]
+      "></app-pdf-print>
     </div>
 </div>

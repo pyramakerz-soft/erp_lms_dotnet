@@ -1,12 +1,20 @@
 export class MedicalHistory {
-  [key: string]: any;  // Fix for TS7053 error
+  [key: string]: any;
 
   constructor(
     public id: number,
     public schoolId: number,
+        public school: string = "",
+
     public gradeId: number,
+         public grade: string ="",
+
     public classRoomID: number,
+        public classRoom: string  = "",
+
     public studentId: number,
+        public student: string  = "",
+
     public details: string,
     public permanentDrug: string,
     public insertedAt: string,

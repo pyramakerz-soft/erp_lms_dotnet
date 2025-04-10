@@ -26,7 +26,7 @@ export class MedicalHistoryModalComponent implements OnInit, OnChanges {
   @Output() onSave = new EventEmitter<void>();
 
   editMode = false;
-  medicalHistory: MedicalHistory = new MedicalHistory(0, 0, 0, 0, 0, '', '', new Date().toISOString(), null, null);
+  medicalHistory: MedicalHistory = new MedicalHistory(0, 0,'', 0,'', 0,'', 0,'', '', '', new Date().toISOString(), null, null);
   firstReportPreview: File | null = null;
   secReportPreview: File | null = null;
   validationErrors: { [key: string]: string } = {};
@@ -65,7 +65,7 @@ export class MedicalHistoryModalComponent implements OnInit, OnChanges {
         this.secReportPreview = this.medicalHistory.secReport;
       } else {
         this.editMode = false;
-        this.medicalHistory = new MedicalHistory(0, 0, 0, 0, 0, '', '', new Date().toISOString(), null, null);
+        this.medicalHistory = new MedicalHistory(0, 0,'', 0,'', 0,'', 0,'', '', '', new Date().toISOString(), null, null);
         this.firstReportPreview = null;
         this.secReportPreview = null;
       }

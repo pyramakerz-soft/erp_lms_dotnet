@@ -219,7 +219,7 @@
 
 <div *ngIf="selectedTab === 'MH By Parent'">
     <app-table [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']" [data]="mhByParentData"
-        [keys]="['date', 'description', 'insertDate', 'lastModified']" [showViewAction]="true" (view)="onView($event)"
+        [keys]="['date', 'description', 'insertDate', 'lastModified']" [showViewAction]="true" [showEditAction]="false" (view)="onView($event)"
         (delete)="deleteMH($event)"></app-table>
 </div>
 
@@ -228,7 +228,7 @@
     <!-- MH By Doctor Table -->
 <app-table [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']"
     [data]="filteredMHByDoctorData" [keys]="['date', 'description', 'insertDate', 'lastModified']"
-    [showViewAction]="true" (view)="onView($event)" (delete)="deleteMH($event)" (edit)="openEditModal($event)">
+    [showViewAction]="true" [showEditAction]="false" (view)="onView($event)" (delete)="deleteMH($event)" (edit)="openEditModal($event)">
 </app-table>
     
     <!-- Modal Overlay -->
@@ -258,7 +258,7 @@
                 [headers]="['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation', 'Actions']"
                 [data]="filteredFollowUps"
                 [keys]="['id', 'schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation']"
-                (delete)="deleteFollowUp($event)">
+                (delete)="deleteFollowUp($event) " [showEditAction]="false">
             </app-table>
         </div>
     </div>

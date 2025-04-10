@@ -52,7 +52,7 @@ export class HygieneFormComponent implements OnInit {
       try {
           const domainName = this.apiService.GetHeader();
           const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
-
+console.log(data)
           
           this.originalHygieneForms = data.map((item) => ({
               ...item,

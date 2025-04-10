@@ -25,13 +25,18 @@ import { MedicalHistoryModalComponent } from "../../medical-history/medical-hist
   selector: 'app-medical-report',
   templateUrl: './medical-report.component.html',
   styleUrls: ['./medical-report.component.css'],
-  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, SearchComponent, MedicalHistoryModalComponent],
+  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, MedicalHistoryModalComponent],
   standalone: true
 })
 export class MedicalReportComponent implements OnInit {
   
-onView($event: any) {
-throw new Error('Method not implemented.');
+onView(row: any) {
+    if (this.selectedTab === 'MH By Parent') {
+        this.router.navigate(['/Employee/mh by parent/', row.id]);
+    }
+    if (this.selectedTab === 'MH By Doctor') {
+        this.router.navigate(['/Employee/mh by doctor/', row.id]);
+    }
 }
   
   tabs = ['MH By Parent', 'MH By Doctor', 'Hygiene Form', 'Follow Up'];
@@ -69,6 +74,7 @@ throw new Error('Method not implemented.');
   filteredHygieneForms: any[] = [];
 
   constructor(
+        private router: Router,
     
     private hygieneFormService: HygieneFormService,
     private medicalHistoryService: MedicalHistoryService,
@@ -224,7 +230,7 @@ openEditModal(row: any) {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
-      
+      console.log(data)
       this.mhByParentData = data.map((item) => ({
         id: item.id,
         date: new Date(item.insertedAt).toLocaleDateString(),
@@ -242,7 +248,7 @@ openEditModal(row: any) {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalHistoryService.GetByDoctor(domainName));
-      console.log(data)
+      // console.log(data)
       this.mhByDoctorData = data.map((item: any) => ({
         id: item.id,
         date: new Date(item.insertedAt).toLocaleDateString(),

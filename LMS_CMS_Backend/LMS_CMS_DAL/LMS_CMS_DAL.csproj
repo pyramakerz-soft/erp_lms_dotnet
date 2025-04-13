@@ -22,8 +22,4 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\Octa\" />
-  </ItemGroup>
-
 </Project>

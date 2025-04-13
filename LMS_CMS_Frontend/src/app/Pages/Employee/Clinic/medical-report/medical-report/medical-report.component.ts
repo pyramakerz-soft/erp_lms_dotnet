@@ -25,7 +25,7 @@ import { MedicalHistoryModalComponent } from "../../medical-history/medical-hist
   selector: 'app-medical-report',
   templateUrl: './medical-report.component.html',
   styleUrls: ['./medical-report.component.css'],
-  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, MedicalHistoryModalComponent],
+  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, MedicalHistoryModalComponent, SearchComponent],
   standalone: true
 })
 export class MedicalReportComponent implements OnInit {
@@ -41,21 +41,18 @@ onView(row: any) {
   
   tabs = ['MH By Parent', 'MH By Doctor', 'Hygiene Form', 'Follow Up'];
   selectedTab = this.tabs[0]; 
-
   
   mhByParentData: any[] = [];
   mhByDoctorData: any[] = [];
   filteredMHByDoctorData: any[] = [];
   hygieneForms: any[] = [];
+    filteredHygieneForms: any[] = [];
   followUps: any[] = [];
   filteredFollowUps: any[] = [];
   
-
-  
   searchKey: string = 'id';
   searchValue: any = '';
-  searchKeysArray: string[] = ['id', 'school', 'grade', 'class', 'student', 'date'];
-
+  searchKeysArray: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
   
   schools: any[] = [];
   grades: any[] = [];
@@ -71,7 +68,6 @@ onView(row: any) {
   selectedDate: string = '';
 
   studentSearchTerm: string = '';
-  filteredHygieneForms: any[] = [];
 
   constructor(
         private router: Router,
@@ -97,42 +93,58 @@ onView(row: any) {
   }
 
   
-  onSearchEvent(event: { key: string, value: any }) {
+  async onSearchEvent(event: { key: string, value: any }) {
     this.searchKey = event.key;
     this.searchValue = event.value;
 
     switch (this.selectedTab) {
-      case 'MH By Parent':
-        this.mhByParentData = this.applySearchFilter(this.mhByParentData);
-        break;
-      case 'MH By Doctor':
-        this.filteredMHByDoctorData = this.applySearchFilter(this.mhByDoctorData);
-        break;
-      case 'Hygiene Form':
-        this.students = this.applySearchFilter(this.students);
-        break;
-      case 'Follow Up':
-        this.filteredFollowUps = this.applySearchFilter(this.followUps);
-        break;
+case 'MH By Parent':
+  this.searchKey = event.key;
+  this.searchValue = event.value;
+  await this.loadMHByParentData();
+  
+  if (this.searchValue) {
+    this.mhByParentData = this.mhByParentData.filter(mh => {
+      const fieldValue = mh[this.searchKey as keyof typeof mh]?.toString().toLowerCase() || '';
+      return fieldValue.includes(this.searchValue.toString().toLowerCase());
+    });
+  }
+  break;
+case 'MH By Doctor':
+  this.searchKey = event.key;
+  this.searchValue = event.value;
+  await this.loadMHByDoctorData();
+  
+  if (this.searchValue) {
+    this.mhByDoctorData = this.mhByDoctorData.filter(mh => {
+      const fieldValue = mh[this.searchKey as keyof typeof mh]?.toString().toLowerCase() || '';
+      return fieldValue.includes(this.searchValue.toString().toLowerCase());
+    });
+  }
+  this.filteredMHByDoctorData = this.mhByDoctorData;
+  break;
+
+    case 'Hygiene Form':
+      this.filterHygieneForms();
+      break;
+    case 'Follow Up':
+      this.filterFollowUps();
+      break;
     }
   }
 
-  applySearchFilter(data: any[]): any[] {
-    if (!this.searchValue) return data;
+applySearchFilter(data: any[]): any[] {
+  if (!this.searchValue) return data;
 
-    const numericValue = isNaN(Number(this.searchValue)) ? this.searchValue : parseInt(this.searchValue, 10);
-
-    return data.filter((item) => {
-      const fieldValue = item[this.searchKey as keyof typeof item];
-      if (typeof fieldValue === 'string') {
-        return fieldValue.toLowerCase().includes(this.searchValue.toLowerCase());
-      }
-      if (typeof fieldValue === 'number') {
-        return fieldValue === numericValue;
-      }
-      return false;
-    });
-  }
+  return data.filter((item) => {
+    const fieldValue = item[this.searchKey as keyof typeof item]?.toString().toLowerCase() || '';
+    
+    if (this.searchKey === 'id') {
+      return fieldValue.includes(this.searchValue.toString().toLowerCase());
+    }
+    return fieldValue.includes(this.searchValue.toString().toLowerCase());
+  });
+}
 
   
   async loadSchools() {
@@ -169,7 +181,6 @@ onView(row: any) {
     }
   }
 
-
 async loadStudents() {
     if (this.selectedClass) {
         try {
@@ -185,34 +196,35 @@ async loadStudents() {
     }
 }
 
-  onSchoolChange() {
-    this.selectedGrade = null;
-    this.selectedClass = null;
-    this.selectedStudent = null;
-    this.grades = [];
-    this.classes = [];
-    
-    this.loadGrades();
-  }
-
-  onGradeChange() {
-    this.selectedClass = null;
-    this.selectedStudent = null;
-    this.classes = [];
-    
-    this.loadClasses();
-  }
-
-onClassChange() {
-    this.selectedStudent = null;
-    this.loadStudents();
+onSchoolChange() {
+  this.selectedGrade = null;
+  this.selectedClass = null;
+  this.selectedStudent = null;
+  this.grades = [];
+  this.classes = [];
+  this.loadGrades();
+  this.filterHygieneForms();
+    // this.filterMHByDoctor();
+  this.filterFollowUps();
 }
 
+onGradeChange() {
+  this.selectedClass = null;
+  this.selectedStudent = null;
+  this.classes = [];
+  this.loadClasses();
+  this.filterHygieneForms();
+    // this.filterMHByDoctor();
+  this.filterFollowUps();
+}
 
-  // onStudentChange() {
-  //   this.filteredMHByDoctorData = this.mhByDoctorData;
-  //   this.filteredFollowUps = this.followUps;
-  // }
+onClassChange() {
+  this.selectedStudent = null;
+  this.loadStudents();
+  this.filterHygieneForms();
+  // this.filterMHByDoctor();
+  this.filterFollowUps();
+}
 
   isEditModalVisible = false;
 
@@ -223,14 +235,11 @@ openEditModal(row: any) {
     this.isEditModalVisible = true;
 }
 
-
-
   
   async loadMHByParentData() {
     try {
       const domainName = this.apiService.GetHeader();
       const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
-      console.log(data)
       this.mhByParentData = data.map((item) => ({
         id: item.id,
         date: new Date(item.insertedAt).toLocaleDateString(),
@@ -244,28 +253,40 @@ openEditModal(row: any) {
     }
   }
 
-  async loadMHByDoctorData() {
-    try {
-      const domainName = this.apiService.GetHeader();
-      const data = await firstValueFrom(this.medicalHistoryService.GetByDoctor(domainName));
-      // console.log(data)
-      this.mhByDoctorData = data.map((item: any) => ({
-        id: item.id,
-        date: new Date(item.insertedAt).toLocaleDateString(),
-        description: item.details || 'No details',
-        insertDate: new Date(item.insertedAt).toLocaleDateString(),
-        lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified',
-        schoolId: item.schoolId,
-        gradeId: item.gradeId,
-        classRoomID: item.classRoomID,
-        studentId: item.studentId,
-        actions: { delete: true, edit: true, view: true }
-      }));
-      this.filteredMHByDoctorData = this.mhByDoctorData;
-    } catch (error) {
-      console.error('Error fetching MH By Doctor data:', error);
+async loadMHByDoctorData() {
+  try {
+    const domainName = this.apiService.GetHeader();
+    const data = await firstValueFrom(this.medicalHistoryService.GetByDoctor(domainName));
+    console.log(data)
+    this.mhByDoctorData = data.map((item: any) => ({
+      id: item.id,
+      date: new Date(item.insertedAt).toLocaleDateString(),
+      description: item.details || 'No details',
+      insertDate: new Date(item.insertedAt).toLocaleDateString(),
+      lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified',
+      schoolId: item.schoolId,
+      schoolName: item.school || '',
+      gradeId: item.gradeId,
+      gradeName: item.grade || '',
+      classRoomID: item.classRoomID,
+      className: item.classRoom || '',
+      studentId: item.studentId,
+      studentName: item.student || '',
+      actions: { delete: true, edit: true, view: true }
+    }));
+
+    if (this.searchValue) {
+      this.mhByDoctorData = this.mhByDoctorData.filter(mh => {
+        const fieldValue = mh[this.searchKey as keyof typeof mh]?.toString().toLowerCase() || '';
+        return fieldValue.includes(this.searchValue.toString().toLowerCase());
+      });
     }
+    
+    this.filteredMHByDoctorData = this.mhByDoctorData;
+  } catch (error) {
+    console.error('Error fetching MH By Doctor data:', error);
   }
+}
 
 async loadAllHygieneForms() {
   try {
@@ -315,7 +336,7 @@ async loadFollowUps() {
             gradeName: item.grade || 'N/A',
             classRoomID: item.classroomId,
             className: item.classroom || 'N/A',
-            studentId: item.studentId, // Make sure this is included
+            studentId: item.studentId, 
             studentName: item.student || 'N/A',
             complaints: item.complains || "No Complaints",
             diagnosisName: item.diagnosis || 'N/A',
@@ -328,95 +349,119 @@ async loadFollowUps() {
     }
 }
 
-  
-  filterMHByDoctor() {
-    let filteredData = this.mhByDoctorData;
+filterMHByDoctor() {
+  let filteredData = [...this.mhByDoctorData];
 
-    if (this.selectedSchool) {
-      filteredData = filteredData.filter(item => item.schoolId == this.selectedSchool);
-    }
-
-    if (this.selectedGrade) {
-      filteredData = filteredData.filter(item => item.gradeId == this.selectedGrade);
-    }
-
-    if (this.selectedClass) {
-      filteredData = filteredData.filter(item => item.classRoomID == this.selectedClass);
-    }
-
-    if (this.selectedStudent) {
-      filteredData = filteredData.filter(item => item.studentId == this.selectedStudent);
-    }
-
-    console.log('Filtered MH By Doctor Data:', filteredData);
-    this.filteredMHByDoctorData = filteredData;
-  }
-
-filterHygieneForms() {
-  
-  if (this.allHygieneForms.length === 0) return;
-
-  
-  let filteredForms = [...this.allHygieneForms];
-
-  
+  // Apply dropdown filters
   if (this.selectedSchool) {
-    filteredForms = filteredForms.filter(
-      form => form.schoolId == this.selectedSchool
-    );
+    filteredData = filteredData.filter(item => item.schoolId == this.selectedSchool);
   }
-
-  
   if (this.selectedGrade) {
-    filteredForms = filteredForms.filter(
-      form => form.gradeId == this.selectedGrade
-    );
+    filteredData = filteredData.filter(item => item.gradeId == this.selectedGrade);
   }
-
-  
   if (this.selectedClass) {
-    filteredForms = filteredForms.filter(
-      form => form.classRoomID == this.selectedClass
-    );
+    filteredData = filteredData.filter(item => item.classRoomID == this.selectedClass);
+  }
+  if (this.selectedStudent) {
+    filteredData = filteredData.filter(item => item.studentId == this.selectedStudent);
   }
 
-  
-  if (this.selectedStudent) {
-    filteredForms = filteredForms.filter(form => {
-      return form.studentHygieneTypes.some((student: any) => 
-        student.studentId == this.selectedStudent
-      );
+  // Apply search filter
+  if (this.searchValue) {
+    filteredData = filteredData.filter(item => {
+      const fieldValue = item[this.searchKey]?.toString().toLowerCase() || '';
+      return fieldValue.includes(this.searchValue.toString().toLowerCase());
     });
   }
 
+  this.filteredMHByDoctorData = filteredData;
+}
+
+// async onSearchEvent(event: { key: string; value: any }) {
+//     this.key = event.key;
+//     this.value = event.value;
+//     await this.GetTableData();
+//     if (this.value != '') {
+//       const numericValue = isNaN(Number(this.value))
+//         ? this.value
+//         : parseInt(this.value, 10);
+
+//       this.TableData = this.TableData.filter((t) => {
+//         const fieldValue = t[this.key as keyof typeof t];
+//         if (typeof fieldValue === 'string') {
+//           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+//         }
+//         if (typeof fieldValue === 'number') {
+//           return fieldValue === numericValue;
+//         }
+//         return fieldValue == this.value;
+//       });
+//     }
+//   }
+
+filterHygieneForms() {
+  let filteredForms = [...this.allHygieneForms];
   
+  if (this.selectedSchool) {
+    filteredForms = filteredForms.filter(form => form.schoolId == this.selectedSchool);
+  }
+  if (this.selectedGrade) {
+    filteredForms = filteredForms.filter(form => form.gradeId == this.selectedGrade);
+  }
+  if (this.selectedClass) {
+    filteredForms = filteredForms.filter(form => form.classRoomID == this.selectedClass);
+  }
+
+  if (this.searchValue) {
+    filteredForms = filteredForms.filter(form => {
+      const searchField = this.getSearchFieldValue(form);
+      return searchField?.toString().toLowerCase().includes(this.searchValue.toLowerCase());
+    });
+  }
+
   this.filteredHygieneForms = filteredForms;
   this.prepareStudentsData();
 }
 
-filterFollowUps() {
-    let filteredFollowUps = this.followUps;
-
-    if (this.selectedSchool) {
-        filteredFollowUps = filteredFollowUps.filter(followUp => followUp.schoolId == this.selectedSchool);
-    }
-
-    if (this.selectedGrade) {
-        filteredFollowUps = filteredFollowUps.filter(followUp => followUp.gradeId == this.selectedGrade);
-    }
-
-    if (this.selectedClass) {
-        filteredFollowUps = filteredFollowUps.filter(followUp => followUp.classRoomID == this.selectedClass);
-    }
-
-    if (this.selectedStudent) {
-        filteredFollowUps = filteredFollowUps.filter(followUp => followUp.studentId == this.selectedStudent);
-    }
-
-    console.log('Filtered Follow Ups:', filteredFollowUps);
-    this.filteredFollowUps = filteredFollowUps;
+private getSearchFieldValue(form: any): string {
+  switch(this.searchKey) {
+    case 'id':
+      return form.id?.toString();
+    case 'schoolName':
+      return form.school;
+    case 'gradeName':
+      return form.grade;
+    case 'className':
+      return form.classRoom;
+    case 'formDate':
+      return new Date(form.date).toLocaleDateString();
+    default:
+      return '';
+  }
 }
 
+filterFollowUps() {
+  let filteredFollowUps = [...this.followUps];
+  
+  if (this.selectedSchool) {
+    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.schoolId == this.selectedSchool);
+  }
+  if (this.selectedGrade) {
+    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.gradeId == this.selectedGrade);
+  }
+  if (this.selectedClass) {
+    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.classRoomID == this.selectedClass);
+  }
+  if (this.selectedStudent) {
+    filteredFollowUps = filteredFollowUps.filter(followUp => followUp.studentId == this.selectedStudent);
+  }
+
+  if (this.searchValue) {
+    filteredFollowUps = this.applySearchFilter(filteredFollowUps);
+  }
+
+  this.filteredFollowUps = filteredFollowUps;
+}
 
 prepareStudentsData() {
   this.students = this.filteredHygieneForms.flatMap(form => 
@@ -456,7 +501,6 @@ prepareStudentsData() {
             console.log('Delete response:', response);
             this.loadMHByParentData();
             this.loadMHByDoctorData();
-            Swal.fire('Deleted!', 'The medical history has been deleted.', 'success');
           },
           error: (error) => {
             console.error('Error deleting medical history:', error);
@@ -493,37 +537,34 @@ prepareStudentsData() {
     });
   }
 
-  
-selectTab(tab: string) {
+  async selectTab(tab: string) {
     this.selectedTab = tab;
-    
-    // Reset all filters
     this.selectedSchool = null;
     this.selectedGrade = null;
     this.selectedClass = null;
     this.selectedStudent = null;
     this.studentSearchTerm = '';
-    
-    // Reset dropdowns
+    this.searchValue = '';
     this.grades = [];
     this.classes = [];
     this.students = [];
     
-    // Reset filtered data to show all
     switch(tab) {
-        case 'MH By Doctor':
-            this.filteredMHByDoctorData = [...this.mhByDoctorData];
-            break;
+case 'MH By Doctor':
+  this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
+  await this.loadMHByDoctorData();
+  break;
         case 'Hygiene Form':
+            this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'formDate'];
             this.filteredHygieneForms = [...this.allHygieneForms];
             this.prepareStudentsData();
             break;
         case 'Follow Up':
+            this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
             this.filteredFollowUps = [...this.followUps];
             break;
     }
     
-    // Load fresh data if needed
     if (tab === 'Hygiene Form') {
         this.loadAllHygieneForms();
     } else if (tab === 'MH By Doctor') {
@@ -570,7 +611,6 @@ selectTab(tab: string) {
     XLSX.writeFile(wb, fileName);
   }
 
-
 exportToPDF() {
   let data: any[] = [];
   let headers: string[] = [];
@@ -607,29 +647,22 @@ exportToPDF() {
     return;
   }
 
-  
   const doc = new jsPDF();
-
-  
   const tableData = data.map((item) => {
     return headers.map((header) => {
-      
       const key = header.toLowerCase().replace(/ /g, '_');
-      return item[key] || ''; 
+      return item[key] || '';
     });
   });
 
-  
   autoTable(doc, {
-    head: [headers], 
-    body: tableData, 
+    head: [headers],
+    body: tableData,
   });
 
-  
   doc.save(fileName);
 }
 
-  
   printTable() {
     let data: any[] = [];
     let headers: string[] = [];
@@ -698,4 +731,4 @@ exportToPDF() {
       Swal.fire('Error', 'Unable to open print window.', 'error');
     }
   }
-    }
+}

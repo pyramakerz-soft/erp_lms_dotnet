@@ -95,30 +95,34 @@ export class MedicalHistoryComponent implements OnInit {
     this.isModalVisible = false;
   }
 
-  deleteMedicalHistory(row: any) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this medical history!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#FF7519',
-      cancelButtonColor: '#2E3646',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const domainName = this.apiService.GetHeader();
-        this.medicalHistoryService.Delete(row.id, domainName).subscribe({
-          next: () => {
-            this.loadMedicalHistories();
-            Swal.fire('Deleted!', 'The medical history has been deleted.', 'success');
-          },
-          error: (error) => {
-            console.error('Error deleting medical history:', error);
-            Swal.fire('Error', 'Failed to delete medical history. Please try again later.', 'error');
-          },
-        });
-      }
-    });
-  }
+deleteMedicalHistory(row: any) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You will not be able to recover this medical history!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#FF7519',
+    cancelButtonColor: '#2E3646',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, keep it',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const domainName = this.apiService.GetHeader();
+      this.medicalHistoryService.Delete(row.id, domainName).subscribe({
+        next: () => {
+          // Check if this was the last item
+          if (this.medicalHistories.length === 1) {
+            this.medicalHistories = []; // Clear the array immediately
+          }
+          this.loadMedicalHistories(); // Refresh the data from server
+          Swal.fire('Deleted!', 'The medical history has been deleted.', 'success');
+        },
+        error: (error) => {
+          console.error('Error deleting medical history:', error);
+          Swal.fire('Error', 'Failed to delete medical history. Please try again later.', 'error');
+        },
+      });
+    }
+  });
+}
 }

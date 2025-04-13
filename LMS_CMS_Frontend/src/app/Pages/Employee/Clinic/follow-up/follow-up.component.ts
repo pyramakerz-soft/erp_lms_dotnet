@@ -181,7 +181,7 @@ keysArray: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentNam
       });
     } catch (error) {
       console.error('Error fetching follow-ups:', error);
-      Swal.fire('Error', 'Failed to load follow-ups.', 'error');
+      // Swal.fire('Error', 'Failed to load follow-ups.', 'error');
     }
   }
 
@@ -198,7 +198,7 @@ keysArray: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentNam
       this.students = studentsData.map(student => ({ id: student.id, name: student.en_name }));
     } catch (error) {
       console.error('Error loading dropdown options:', error);
-      Swal.fire('Error', 'Failed to load dropdown options.', 'error');
+      // Swal.fire('Error', 'Failed to load dropdown options.', 'error');
     }
   }
 
@@ -395,29 +395,34 @@ keysArray: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentNam
     this.followUp.followUpDrugs.splice(index, 1);
   }
 
-  deleteFollowUp(row: any) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'You will not be able to recover this follow-up!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#FF7519',
-      cancelButtonColor: '#2E3646',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const domainName = this.apiService.GetHeader();
-        this.followUpService.Delete(row.id, domainName).subscribe({
-          next: () => {
-            this.loadFollowUps();
-          },
-          error: (error) => {
-            console.error('Error deleting follow-up:', error);
-            Swal.fire('Error', 'Failed to delete follow-up. Please try again later.', 'error');
-          },
-        });
-      }
-    });
-  }
+deleteFollowUp(row: any) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You will not be able to recover this follow-up!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#FF7519',
+    cancelButtonColor: '#2E3646',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, keep it'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const domainName = this.apiService.GetHeader();
+      this.followUpService.Delete(row.id, domainName).subscribe({
+        next: () => {
+          // Check if this was the last item
+          if (this.followUps.length === 1) {
+            this.followUps = []; // Clear the array immediately
+          }
+          this.loadFollowUps(); // Refresh the data from server
+          Swal.fire('Deleted!', 'The follow-up has been deleted.', 'success');
+        },
+        error: (error) => {
+          console.error('Error deleting follow-up:', error);
+          Swal.fire('Error', 'Failed to delete follow-up. Please try again later.', 'error');
+        },
+      });
+    }
+  });
+}
 }

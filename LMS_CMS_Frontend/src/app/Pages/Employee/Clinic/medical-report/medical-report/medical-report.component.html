@@ -1,8 +1,12 @@
 <div class="px-5 py-3">
-    <!-- Header -->
-    <h1 class="primaryTxt font-semibold text-2xl leading-9 mb-6">Medical Report</h1>
-    <!-- <app-search [keysArray]="searchKeysArray" (searchEvent)="onSearchEvent($event)"></app-search> -->
-
+    <!-- Header with Search -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Medical Report</h1>
+        <div class="flex items-center space-x-4">
+            <app-search [keysArray]="searchKeysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        </div>
+    </div>
+    
     <!-- MH By Doctor Tab -->
     <div *ngIf="selectedTab === 'MH By Doctor'" class="space-y-4">
         <!-- Filtration System -->

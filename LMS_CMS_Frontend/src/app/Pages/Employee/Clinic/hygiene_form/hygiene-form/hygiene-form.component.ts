@@ -52,7 +52,7 @@ export class HygieneFormComponent implements OnInit {
       try {
           const domainName = this.apiService.GetHeader();
           const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
-console.log(data)
+          console.log(data)
           
           this.originalHygieneForms = data.map((item) => ({
               ...item,
@@ -70,27 +70,20 @@ console.log(data)
       }
   }
 
-  async onSearchEvent(event: { key: string, value: any }) {
-      this.key = event.key;
-      this.value = event.value;
-      
-      
-      this.hygieneForms = [...this.originalHygieneForms];
-      
-      if (this.value !== '') {
-          this.hygieneForms = this.hygieneForms.filter(t => {
-              const fieldValue = t[this.key as keyof typeof t];
-              
-              
-              if (typeof fieldValue === 'string') {
-                  return fieldValue.toLowerCase().includes(this.value.toString().toLowerCase());
-              } else if (typeof fieldValue === 'number') {
-                  return fieldValue.toString().includes(this.value.toString());
-              }
-              return false;
-          });
-      }
-  }
+async onSearchEvent(event: { key: string, value: any }) {
+    this.key = event.key;
+    this.value = event.value;
+    
+    // Always start with original data
+    this.hygieneForms = [...this.originalHygieneForms];
+    
+    if (this.value) {
+        this.hygieneForms = this.hygieneForms.filter(form => {
+            const fieldValue = form[this.key as keyof typeof form]?.toString().toLowerCase() || '';
+            return fieldValue.includes(this.value.toString().toLowerCase());
+        });
+    }
+}
 
   
   // applySearchFilter() {
@@ -158,7 +151,12 @@ deleteHygieneForm(row: any) {
       this.hygieneFormService.Delete(row.id, this.DomainName).subscribe({
         next: (response) => {
           console.log('Delete response:', response);
-          this.loadHygieneForms(); 
+          // Check if this was the last item
+          if (this.hygieneForms.length === 1) {
+            this.hygieneForms = []; // Clear the array immediately
+          }
+          this.loadHygieneForms(); // Refresh the data
+          Swal.fire('Deleted!', 'The hygiene form has been deleted.', 'success');
         },
         error: (error) => {
           console.error('Error deleting hygiene form:', error);

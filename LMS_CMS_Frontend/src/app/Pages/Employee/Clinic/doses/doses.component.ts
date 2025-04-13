@@ -113,7 +113,7 @@ export class DosesComponent implements OnInit {
         this.doseService.Delete(row.id, this.DomainName).subscribe({
           next: () => {
             this.getDoses();
-            Swal.fire('Deleted!', 'The dose has been deleted.', 'success');
+            // Swal.fire('Deleted!', 'The dose has been deleted.', 'success');
           },
           error: (error) => {
             this.handleError('Error deleting dose:', error);
@@ -155,6 +155,6 @@ export class DosesComponent implements OnInit {
 
   private handleError(message: string, error: any) {
     console.error(message, error);
-    Swal.fire('Error!', 'An error occurred. Please try again.', 'error');
+    // Swal.fire('Error!', 'An error occurred. Please try again.', 'error');
   }
 }

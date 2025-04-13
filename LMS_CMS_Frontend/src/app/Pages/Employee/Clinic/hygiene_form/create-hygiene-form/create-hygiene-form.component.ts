@@ -67,7 +67,7 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
       this.hygieneTypes = data;
     } catch (error) {
       console.error('Error loading hygiene types:', error);
-      this.errorMessage = 'Failed to load hygiene types.';
+      // this.errorMessage = 'Failed to load hygiene types.';
     }
   }
 
@@ -87,6 +87,7 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
       try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.gradeService.GetBySchoolId(this.selectedSchool, domainName));
+        console.log(data)
         this.grades = data;
       } catch (error) {
         console.error('Error loading grades:', error);
@@ -100,6 +101,7 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
       try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.classroomService.GetByGradeId(this.selectedGrade, domainName));
+        console.log(data)
         this.classes = data;
       } catch (error) {
         console.error('Error loading classes:', error);

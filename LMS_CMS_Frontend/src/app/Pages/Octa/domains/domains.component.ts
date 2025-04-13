@@ -32,7 +32,7 @@ export class DomainsComponent {
 
   constructor(public domainService:DomainService, public roleDetailsService:RoleDetailsService){}
 
-  ngOnInit(){
+  ngOnInit(){ 
     this.getDomainData()
   }
 
@@ -226,6 +226,9 @@ export class DomainsComponent {
   }
 
   SaveDomain(){
+    const hostname = window.location.hostname;  
+    var Header = hostname.split('.')[0] 
+
     if(this.isFormValid()){
       this.isSaved = true
       if(this.editDomain == false){
@@ -233,11 +236,12 @@ export class DomainsComponent {
           (result: any) => {
             Swal.fire({
               title: 'Domain Created Successfully',
-              icon: 'success',
+              icon: 'success', 
               html: `
                 <div class='grid justify-items-start'>
                   <p><strong>Admin Name:</strong> ${result.userName}</p>
-                  <p><strong>Password:</strong> ${result.password}p>
+                  <p><strong>Password:</strong> ${result.password}</p>
+                  <p><strong>Link:</strong> ${result.userName}.${Header}</p>
                 </div>
               `,
               showCancelButton: false,

@@ -108,6 +108,11 @@ import { OrderItemsComponent } from './Pages/Student/Ecommerce/order-items/order
 import { OrderHistoryComponent } from './Pages/Employee/E-Commerce/order-history/order-history.component';
 import { StockingComponent } from './Pages/Employee/Inventory/stocking/stocking.component';
 import { StockingDetailsComponent } from './Pages/Employee/Inventory/stocking-details/stocking-details.component';
+import { StudentsNamesInClassComponent } from './Pages/Employee/Registration/Reports/students-names-in-class/students-names-in-class.component';
+import { StudentInformationComponent } from './Pages/Employee/Registration/Reports/student-information/student-information.component';
+import { ProofRegistrationAndSuccessFormReportComponent } from './Pages/Employee/Registration/Reports/proof-registration-and-success-form-report/proof-registration-and-success-form-report.component';
+import { ProofRegistrationReportComponent } from './Pages/Employee/Registration/Reports/proof-registration-report/proof-registration-report.component';
+import { StudentsInformationFormReportComponent } from './Pages/Employee/Registration/Reports/students-information-form-report/students-information-form-report.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -257,7 +262,11 @@ export const routes: Routes = [
             { path: "Stocking", component: StockingComponent, title: "Stocking", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Stocking Details", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Stocking Details/Edit/:id", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
-
+            { path: "StudentsNamesInClass", component: StudentsNamesInClassComponent, title: "Students' Names In Class", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "StudentInformation", component: StudentInformationComponent, title: "StudentInformation", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "ProofRegistrationAndSuccessForm", component: ProofRegistrationAndSuccessFormReportComponent, title: "ProofRegistrationAndSuccessForm", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "ProofRegistration", component: ProofRegistrationReportComponent, title: "ProofRegistration", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "StudentsInformationFormReport", component: StudentsInformationFormReportComponent, title: "StudentsInformationFormReport", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

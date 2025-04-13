@@ -5,20 +5,17 @@ import { Injectable } from '@angular/core';
 })
 export class ApiService {
   // BaseUrl="https://localhost:7205/api/with-domain" 
-  // BaseUrlOcta="https://localhost:7205/api" 
-
-  // BaseUrl="https://3.214.27.32/"
-  // BaseUrl="http://localhost:5094/api/with-domain" 
-  // BaseUrlOcta="http://localhost:5094/api" 
+  // BaseUrlOcta="https://localhost:7205/api"  
 
   BaseUrl="http://44.210.155.226:5000/api/with-domain"
   BaseUrlOcta="http://44.210.155.226:5000/api"
-  constructor() { }
+
+  constructor() { } 
 
   GetHeader(){    
     const hostname = window.location.hostname;  
     var Header = hostname.split('.')[0] 
-    // var Header = "Domain_Two"      
+    // var Header = "Domain_Two"       
     return Header;
   }
 }

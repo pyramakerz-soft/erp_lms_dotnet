@@ -232,7 +232,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                     Nationality nationality = Unit_Of_Work.nationality_Repository.Select_By_Id_Octa(item.Nationality);
                     if (nationality != null)
                     {
-                        item.NationalityName = nationality.Name;
+                        item.NationalityEnName = nationality.Name;
+                        item.NationalityArName = nationality.ArName;
                     }
                 }
                 return Ok(StudentDTO);

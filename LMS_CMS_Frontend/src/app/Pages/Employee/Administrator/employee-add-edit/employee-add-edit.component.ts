@@ -194,6 +194,7 @@ export class EmployeeAddEditComponent {
 
   async Save() {
     if (this.isFormValid()) {
+      console.log(this.Data)
       this.isLoading = true;
       if (this.mode == "Create") {
         return this.EmpServ.Add(this.Data, this.DomainName).toPromise().then(

@@ -3735,7 +3735,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("bigint");
 
                     b.Property<string>("InvoiceHead")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("InvoiceNumber")
@@ -4193,6 +4192,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
+                    b.Property<long?>("AdditionId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Date")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -4206,6 +4208,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("DeletedByUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("DisbursementId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -4214,9 +4219,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<long?>("InsertedByUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<int>("InvoiceNumber")
-                        .HasColumnType("int");
 
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
@@ -4582,6 +4584,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("GradeID")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("HomeroomTeacherID")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
 
@@ -4620,6 +4625,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("FloorID");
 
                     b.HasIndex("GradeID");
+
+                    b.HasIndex("HomeroomTeacherID");
 
                     b.HasIndex("InsertedByUserId");
 
@@ -4950,6 +4957,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("InsertedByUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<bool?>("IsCurrent")
+                        .HasColumnType("bit");
+
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -4994,6 +5004,12 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AdmissionDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DateOfBirth")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -5006,8 +5022,20 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("EmergencyContactMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmergencyContactName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmergencyContactRelation")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<long>("GenderId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("GuardianRelation")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("InsertedAt")
                         .HasColumnType("datetime2");
@@ -5021,10 +5049,49 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("IsRegisteredInNoor")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Mobile")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("MotherEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherExperiences")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherNationalID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherNationalIDExpiredDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherPassportExpireDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherPassportNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherProfession")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherQualification")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherWorkPlace")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NationalID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalIDExpiredDate")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("Nationality")
@@ -5033,8 +5100,14 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Parent_Id")
+                    b.Property<long?>("Parent_Id")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("PassportExpiredDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassportNo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -5042,6 +5115,27 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickUpContactMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickUpContactName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickUpContactRelation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlaceOfBirth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreviousSchool")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("RegistrationFormParentID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Religion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -5082,6 +5176,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("Parent_Id");
+
+                    b.HasIndex("RegistrationFormParentID");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -5373,10 +5469,28 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("NationalID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalIDExpiredDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassportNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassportNoExpiredDate")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Profession")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Qualification")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -5391,6 +5505,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("WorkPlace")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ar_name")
                         .IsRequired()
@@ -8892,7 +9009,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
                         .WithMany()
-                        .HasForeignKey("DeletedByUserId");
+                        .HasForeignKey("DeletedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Floor", "Floor")
                         .WithMany("Classrooms")
@@ -8905,6 +9023,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("GradeID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "HomeroomTeacher")
+                        .WithMany("HomeroomTeacherClassrooms")
+                        .HasForeignKey("HomeroomTeacherID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
                         .WithMany()
@@ -8921,6 +9044,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("Floor");
 
                     b.Navigation("Grade");
+
+                    b.Navigation("HomeroomTeacher");
 
                     b.Navigation("InsertedByEmployee");
 
@@ -9104,8 +9229,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Parent", "Parent")
                         .WithMany("Students")
                         .HasForeignKey("Parent_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.RegisterationModule.RegisterationFormParent", "RegistrationFormParent")
+                        .WithMany()
+                        .HasForeignKey("RegistrationFormParentID");
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
@@ -9120,6 +9248,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("InsertedByEmployee");
 
                     b.Navigation("Parent");
+
+                    b.Navigation("RegistrationFormParent");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -10112,6 +10242,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("EmployeeStudents");
 
                     b.Navigation("Floors");
+
+                    b.Navigation("HomeroomTeacherClassrooms");
 
                     b.Navigation("InstallmentDeductionMasters");
                 });

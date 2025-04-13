@@ -133,7 +133,17 @@ namespace LMS_CMS_BL.Config
             CreateMap<ParentGetDTO, Parent>();
 
             CreateMap<Student, StudentGetDTO>()
-              .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name));
+              .ForMember(dest => dest.AccountNumberName, opt => opt.MapFrom(src => src.AccountNumber.Name))
+              .ForMember(dest => dest.GuardianName, opt => opt.MapFrom(src => src.Parent.en_name))
+              .ForMember(dest => dest.GuardianPassportNo, opt => opt.MapFrom(src => src.Parent.PassportNo))
+              .ForMember(dest => dest.GuardianPassportExpireDate, opt => opt.MapFrom(src => src.Parent.PassportNoExpiredDate))
+              .ForMember(dest => dest.GuardianNationalID, opt => opt.MapFrom(src => src.Parent.NationalID))
+              .ForMember(dest => dest.GuardianNationalIDExpiredDate, opt => opt.MapFrom(src => src.Parent.NationalIDExpiredDate))
+              .ForMember(dest => dest.GuardianQualification, opt => opt.MapFrom(src => src.Parent.Qualification))
+              .ForMember(dest => dest.GuardianWorkPlace, opt => opt.MapFrom(src => src.Parent.WorkPlace))
+              .ForMember(dest => dest.GuardianEmail, opt => opt.MapFrom(src => src.Parent.Email))
+              .ForMember(dest => dest.GuardianProfession, opt => opt.MapFrom(src => src.Parent.Profession))
+              .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.Gender.Name));
             CreateMap<StudentGetDTO, Student>();
 
 
@@ -232,7 +242,7 @@ namespace LMS_CMS_BL.Config
 
 
             CreateMap<Role, RolesGetDTO>();
-            CreateMap<RolesGetDTO, Role>();
+            CreateMap<RolesGetDTO, Role>(); 
 
             CreateMap<Grade , GradeAddDTO>()
                 .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Section.ID));

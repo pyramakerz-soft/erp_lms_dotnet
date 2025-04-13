@@ -47,7 +47,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             // Get total record count
-            int totalRecords = await Unit_Of_Work.inventoryMaster_Repository
+            int totalRecords = await Unit_Of_Work.stocking_Repository
                 .CountAsync(f => f.IsDeleted != true);
 
             List<Stocking> Data = await Unit_Of_Work.stocking_Repository.Select_All_With_IncludesById_Pagination<Stocking>(
@@ -165,7 +165,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             allowEdit: 1,
              pages: new[] { "Inventory" }
         )]
-        public async Task<IActionResult> EditAsync([FromForm] StockingGetDto newData)
+        public async Task<IActionResult> EditAsync( StockingGetDto newData)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

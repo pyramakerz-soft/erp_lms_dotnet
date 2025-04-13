@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Student } from '../Models/student';
@@ -28,6 +28,7 @@ export class StudentService {
 
     return this.http.get<Student[]>(`${this.baseUrl}/Student`, { headers })
   }
+
   GetByID(id:number,DomainName?:string){
     if(DomainName!=null) {
       this.header=DomainName 
@@ -38,7 +39,20 @@ export class StudentService {
     .set('domain-name', this.header)
     .set('Content-Type', 'application/json');
 
-    return this.http.get(`${this.baseUrl}/Student/${id}`, { headers })
+    return this.http.get<Student>(`${this.baseUrl}/Student/${id}`, { headers })
+  }
+
+  GetByYear(Yearid:number,StudentId:number,SchoolId:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetStudentByYearID?yearId=${Yearid}&stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
   }
 
   GetByClassID(id:number,DomainName:string){
@@ -74,4 +88,63 @@ export class StudentService {
 
     return this.http.get<Student>(`${this.baseUrl}/Student/SearchByNationality/${NationalID}`, { headers })
   }
+  
+  GetBySchoolGradeClassID(schoolId: number, gradeId: number, classId: number, DomainName: string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    let params = new HttpParams();
+    params = params.set('schoolId', schoolId.toString()); 
+    params = params.set('gradeId', gradeId.toString());
+    params = params.set('classId', classId.toString());
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetBySchoolGradeClassID`, { headers, params });
+  }
+
+  GetProofRegistrationAndSuccessForm(Yearid:number,StudentId:number,SchoolId:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetStudentProofRegistrationAndSuccessForm?yearId=${Yearid}&stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
+  }
+
+  GetStudentProofRegistration(Yearid:number,StudentId:number,SchoolId:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetStudentProofRegistration?yearId=${Yearid}&stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
+  }
+
+  GetByClassIDReport(SchoolId:number,ClassId:number , DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetByClassIDReport?schoolId=${SchoolId}&classId=${ClassId}`, { headers })
+  }
+
+
 }

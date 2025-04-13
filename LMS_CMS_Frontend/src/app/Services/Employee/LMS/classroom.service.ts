@@ -40,6 +40,18 @@ baseUrl = ""
     return this.http.get<Classroom[]>(`${this.baseUrl}/Classroom/ByGradeID/${GradeId}`, { headers })
   }
 
+  GetByGradeAndAcYearId(GradeId:number, AcYearId:number,DomainName:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<Classroom[]>(`${this.baseUrl}/Classroom/ByGradeAndAcademicYearID/${GradeId}/${AcYearId}`, { headers })
+  }
+
   Add(Classroom: Classroom,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
@@ -127,7 +139,7 @@ baseUrl = ""
         .set('Authorization', `Bearer ${token}`)
         .set('Content-Type', 'application/json');
   
-      return this.http.get(`${this.baseUrl}/Classroom/AddStudentToClassroom/${RegistrationParentId}/${ClassId}`, { headers })
+      return this.http.post(`${this.baseUrl}/Classroom/AddStudentToClassroom/${RegistrationParentId}/${ClassId}`, {}, { headers })
     }
 
 }

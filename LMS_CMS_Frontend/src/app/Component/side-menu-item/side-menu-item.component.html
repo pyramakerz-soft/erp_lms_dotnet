@@ -4,7 +4,7 @@
     class="flex justify-between px-9 py-3 lg:py-4 items-center space-x-3 rtl:space-x-reverse hover:bg-[rgba(255,255,255,0.1)] ltr:hover:rounded-r-lg rtl:hover:rounded-l-lg ltr:hover:border-l-2 rtl:hover:border-r-2 cursor-pointer"
     (click)="navigateToRoute(item.en_name)">
     <div class="flex items-center space-x-3 rtl:space-x-reverse">
-      <img class="w-3 lg:w-fit" src="Icons/Dashboard.png" />
+      <img *ngIf="item.children && item.children.length > 0" class="w-3 lg:w-fit" [src]="'Icons/SideMenuIcons/' + item.en_name.replace(' ',  '_')  + '.png'" />
       <p>{{ isRtl ? item.ar_name : item.en_name }}</p>
     </div>
     <img *ngIf="item.children && item.children.length > 0" class="w-3 lg:w-fit" src="Icons/Drop-Down.png" />

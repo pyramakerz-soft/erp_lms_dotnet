@@ -2,14 +2,14 @@
     <h1 class="primaryTxt font-semibold text-2xl leading-9">Classrooms</h1>
     <div class="flex justify-between items-center space-x-4">
         <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
-        
+
         <button (click)="openCopyModal()"
-        class="grayBorder border text-[#6F6F6F] rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            class="grayBorder border text-[#6F6F6F] rounded-lg px-4 py-3 flex items-center justify-center gap-2">
             Copy From
         </button>
-        
+
         <button (click)="openModal()"
-        class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
             Create Classroom
         </button>
     </div>
@@ -35,7 +35,7 @@
                     Floor
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Academic Year 
+                    Academic Year
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                     Actions
@@ -45,7 +45,8 @@
         <tbody>
             <!-- No Data Row -->
             <tr *ngIf="classroomData.length === 0">
-                <td colspan="7" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                <td colspan="7"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                     No Data Found
                 </td>
             </tr>
@@ -71,7 +72,7 @@
                             <i class="fa-solid fa-pencil"></i>
                         </button>
                     </div>
-                </td> 
+                </td>
             </tr>
         </tbody>
     </table>
@@ -84,97 +85,127 @@
         <div class="flex justify-between items-center">
             <h1 *ngIf="!editClassroom" class="font-semibold text-2xl leading-9">Create Classroom</h1>
             <h1 *ngIf="editClassroom" class="font-semibold text-2xl leading-9">Edit Classroom</h1>
-            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+            <button (click)="closeModal()" type="button"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
-        
+
         <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
             <div class="flex flex-col mb-4 w-[49%]">
                 <label class="mb-2 primaryTxt" for="name">Classroom Name</label>
-                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Classroom Name"
-                [(ngModel)]="classroom.name" 
-                (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"/>
-                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
+                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                    placeholder="Enter Classroom Name" [(ngModel)]="classroom.name"
+                    (ngModelChange)="onInputValueChange({ field: 'name', value: $event })" />
+                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name']
+                    }}</span>
             </div>
             <div class="flex flex-col mb-4 w-[49%]">
                 <label class="mb-2 primaryTxt" for="number">Classroom Number</label>
-                <input id="number" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Classroom Number"
-                [(ngModel)]="classroom.number" 
-                (ngModelChange)="onInputValueChange({ field: 'number', value: $event })" (input)="validateNumber($event, 'number')"/>
-                <span *ngIf="validationErrors['number']" class="text-red-500 ml-3 font-normal">{{ validationErrors['number'] }}</span>
+                <input id="number" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                    placeholder="Enter Classroom Number" [(ngModel)]="classroom.number"
+                    (ngModelChange)="onInputValueChange({ field: 'number', value: $event })"
+                    (input)="validateNumber($event, 'number')" />
+                <span *ngIf="validationErrors['number']" class="text-red-500 ml-3 font-normal">{{
+                    validationErrors['number'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" for="school" [ngClass]="{ 'text-gray-400': editClassroom, 'primaryTxt': !editClassroom}">Choose School</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange($event)"
-                [disabled]="editClassroom" [ngClass]="{ 'bg-[#EBEBEB]': editClassroom}">
+                <label class="mb-2" for="school"
+                    [ngClass]="{ 'text-gray-400': editClassroom, 'primaryTxt': !editClassroom}">Choose School</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school"
+                    [(ngModel)]="selectedSchool" (change)="onSchoolChange($event)" [disabled]="editClassroom"
+                    [ngClass]="{ 'bg-[#EBEBEB]': editClassroom}">
                     <option [value]="null" disabled selected hidden>Choose School</option>
                     <option *ngFor="let school of Schools" [value]="school.id">{{ school.name }}</option>
                     <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" for="ac" [ngClass]="{ 'text-gray-400': !selectedSchool || editClassroom, 'primaryTxt': selectedSchool && !editClassroom }">Choose Academic Year</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="ac" [(ngModel)]="classroom.academicYearID"
-                [disabled]="!selectedSchool || editClassroom" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editClassroom }">
+                <label class="mb-2" for="ac"
+                    [ngClass]="{ 'text-gray-400': !selectedSchool || editClassroom, 'primaryTxt': selectedSchool && !editClassroom }">Choose
+                    Academic Year</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="ac"
+                    [(ngModel)]="classroom.academicYearID" [disabled]="!selectedSchool || editClassroom"
+                    [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editClassroom }"
+                    (ngModelChange)="onInputValueChange({ field: 'academicYearID', value: $event })">
                     <option [value]="0" disabled selected hidden>Choose Academic Year</option>
-                    <option *ngFor="let academicYear of AcademicYears" [value]="academicYear.id">{{ academicYear.name }}</option>
+                    <option *ngFor="let academicYear of AcademicYears" [value]="academicYear.id">{{ academicYear.name }}
+                    </option>
                     <option *ngIf="AcademicYears.length === 0" disabled selected>No Data Found</option>
                 </select>
-                <span *ngIf="validationErrors['academicYearID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['academicYearID'] }}</span>
+                <span *ngIf="validationErrors['academicYearID']" class="text-red-500 ml-3 font-normal">{{
+                    validationErrors['academicYearID'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" for="section" [ngClass]="{ 'text-gray-400': !selectedSchool || editClassroom, 'primaryTxt': selectedSchool && !editClassroom }">Choose Section</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="section" [(ngModel)]="selectedSection" (change)="onSectionChange($event)"
-                [disabled]="!selectedSchool || editClassroom" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editClassroom }">
+                <label class="mb-2" for="section"
+                    [ngClass]="{ 'text-gray-400': !selectedSchool || editClassroom, 'primaryTxt': selectedSchool && !editClassroom }">Choose
+                    Section</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="section"
+                    [(ngModel)]="selectedSection" (change)="onSectionChange($event)"
+                    [disabled]="!selectedSchool || editClassroom"
+                    [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editClassroom }">
                     <option [value]="null" disabled selected hidden>Choose Section</option>
                     <option *ngFor="let section of Sections" [value]="section.id">{{ section.name }}</option>
                     <option *ngIf="Sections.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" for="grade" [ngClass]="{ 'text-gray-400': !selectedSection || editClassroom, 'primaryTxt': selectedSection && !editClassroom }">Choose Grade</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade" [(ngModel)]="classroom.gradeID"
-                [disabled]="!selectedSection || editClassroom" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSection || editClassroom }">
+                <label class="mb-2" for="grade"
+                    [ngClass]="{ 'text-gray-400': !selectedSection || editClassroom, 'primaryTxt': selectedSection && !editClassroom }">Choose
+                    Grade</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="grade"
+                    [(ngModel)]="classroom.gradeID" [disabled]="!selectedSection || editClassroom"
+                    [ngClass]="{ 'bg-[#EBEBEB]': !selectedSection || editClassroom }"
+                    (ngModelChange)="onInputValueChange({ field: 'gradeID', value: $event })">
                     <option [value]="0" disabled selected hidden>Choose Grade</option>
                     <option *ngFor="let grade of Grades" [value]="grade.id">{{ grade.name }}</option>
                     <option *ngIf="Grades.length === 0" disabled selected>No Data Found</option>
                 </select>
-                <span *ngIf="validationErrors['gradeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['gradeID'] }}</span>
+                <span *ngIf="validationErrors['gradeID']" class="text-red-500 ml-3 font-normal">{{
+                    validationErrors['gradeID'] }}</span>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" for="building" [ngClass]="{ 'text-gray-400': !selectedSchool || editClassroom, 'primaryTxt': selectedSchool && !editClassroom }">Choose Building</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="building" [(ngModel)]="selectedBuilding" (change)="onBuildingChange($event)"
-                [disabled]="!selectedSchool || editClassroom" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editClassroom }">
+                <label class="mb-2" for="building"
+                    [ngClass]="{ 'text-gray-400': !selectedSchool || editClassroom, 'primaryTxt': selectedSchool && !editClassroom }">Choose
+                    Building</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="building"
+                    [(ngModel)]="selectedBuilding" (change)="onBuildingChange($event)"
+                    [disabled]="!selectedSchool || editClassroom"
+                    [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool || editClassroom }">
                     <option [value]="null" disabled selected hidden>Choose Building</option>
                     <option *ngFor="let building of Buildings" [value]="building.id">{{ building.name }}</option>
                     <option *ngIf="Buildings.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col w-[49%] mb-4">
-                <label class="mb-2" for="Floor" [ngClass]="{ 'text-gray-400': !selectedBuilding || editClassroom, 'primaryTxt': selectedBuilding && !editClassroom }">Choose Floor</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Floor" [(ngModel)]="classroom.floorID"
-                [disabled]="!selectedBuilding || editClassroom" [ngClass]="{ 'bg-[#EBEBEB]': !selectedBuilding || editClassroom }">
+                <label class="mb-2" for="Floor"
+                    [ngClass]="{ 'text-gray-400': !selectedBuilding || editClassroom, 'primaryTxt': selectedBuilding && !editClassroom }">Choose
+                    Floor</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Floor"
+                    [(ngModel)]="classroom.floorID" [disabled]="!selectedBuilding || editClassroom"
+                    [ngClass]="{ 'bg-[#EBEBEB]': !selectedBuilding || editClassroom }"
+                    (ngModelChange)="onInputValueChange({ field: 'floorID', value: $event })">
                     <option [value]="0" disabled selected hidden>Choose Floor</option>
                     <option *ngFor="let floor of Floors" [value]="floor.id">{{ floor.name }}</option>
                     <option *ngIf="Floors.length === 0" disabled selected>No Data Found</option>
                 </select>
-                <span *ngIf="validationErrors['floorID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['floorID'] }}</span>
+                <span *ngIf="validationErrors['floorID']" class="text-red-500 ml-3 font-normal">{{
+                    validationErrors['floorID'] }}</span>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="Employees">Homeroom Teacher</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Employees"
+                    [(ngModel)]="classroom.homeroomTeacherID">
+                    <option [value]=0 disabled selected hidden>Choose Teacher</option>
+                    <option *ngFor="let emp of Employees" [value]="emp.id">{{ emp.user_Name }}</option>
+                    <option *ngIf="Employees.length === 0" disabled selected>No Data Found</option>
+                </select>
             </div>
         </div>
-
         <div class="flex justify-end">
-            <button
-            [disabled]="isLoadingSaveClassroom"
-            class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
-            (click)="SaveClassroom()">
-            <span *ngIf="!isLoadingSaveClassroom">Save</span>
-            <i *ngIf="isLoadingSaveClassroom" class="fas fa-spinner fa-spin"></i>
-          </button>
+            <button [disabled]="isLoadingSaveClassroom" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+                (click)="SaveClassroom()">
+                <span *ngIf="!isLoadingSaveClassroom">Save</span>
+                <i *ngIf="isLoadingSaveClassroom" class="fas fa-spinner fa-spin"></i>
+            </button>
         </div>
     </div>
 </div>
@@ -185,50 +216,56 @@
     <div class="bg-white rounded-2xl p-12 w-[669px] max-h-[95%] overflow-y-auto">
         <div class="flex justify-between items-center">
             <h1 class="font-semibold text-2xl leading-9">Copy From</h1>
-            <button (click)="closeCopyModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+            <button (click)="closeCopyModal()" type="button"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
-        
+
         <div class="mt-6 mb-4 rounded-3xl p-[16px_24px] bg-[#F7F7F7] ">
             <div class="flex flex-col mb-4">
-                <label class="mb-2" for="school" [ngClass]="{ 'text-gray-400': editClassroom, 'primaryTxt': !editClassroom}">Choose School</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange($event)"
-                [disabled]="editClassroom" [ngClass]="{ 'bg-[#EBEBEB]': editClassroom}">
+                <label class="mb-2" for="school"
+                    [ngClass]="{ 'text-gray-400': editClassroom, 'primaryTxt': !editClassroom}">Choose School</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school"
+                    [(ngModel)]="selectedSchool" (change)="onSchoolChange($event)" [disabled]="editClassroom"
+                    [ngClass]="{ 'bg-[#EBEBEB]': editClassroom}">
                     <option [value]="null" disabled selected hidden>Choose School</option>
                     <option *ngFor="let school of Schools" [value]="school.id">{{ school.name }}</option>
                     <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col mb-4">
-                <label class="mb-2" for="ac" [ngClass]="{ 'text-gray-400': !selectedSchool, 'primaryTxt': selectedSchool }">From Academic Year</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="ac" [(ngModel)]="copyClassroom.fromAcademicYearID"
-                [disabled]="!selectedSchool" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool }">
+                <label class="mb-2" for="ac"
+                    [ngClass]="{ 'text-gray-400': !selectedSchool, 'primaryTxt': selectedSchool }">From Academic
+                    Year</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="ac"
+                    [(ngModel)]="copyClassroom.fromAcademicYearID" [disabled]="!selectedSchool"
+                    [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool }">
                     <option [value]="null" disabled selected hidden>Choose Academic Year</option>
-                    <option *ngFor="let academicYear of AcademicYears" [value]="academicYear.id">{{ academicYear.name }}</option>
+                    <option *ngFor="let academicYear of AcademicYears" [value]="academicYear.id">{{ academicYear.name }}
+                    </option>
                     <option *ngIf="AcademicYears.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
             <div class="flex flex-col mb-4">
-                <label class="mb-2" for="ac" [ngClass]="{ 'text-gray-400': !selectedSchool, 'primaryTxt': selectedSchool }">To Academic Year</label>
-                <select
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="ac" [(ngModel)]="copyClassroom.toAcademicYearID"
-                [disabled]="!selectedSchool" [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool }">
+                <label class="mb-2" for="ac"
+                    [ngClass]="{ 'text-gray-400': !selectedSchool, 'primaryTxt': selectedSchool }">To Academic
+                    Year</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="ac"
+                    [(ngModel)]="copyClassroom.toAcademicYearID" [disabled]="!selectedSchool"
+                    [ngClass]="{ 'bg-[#EBEBEB]': !selectedSchool }">
                     <option [value]="null" disabled selected hidden>Choose Academic Year</option>
-                    <option *ngFor="let academicYear of AcademicYears" [value]="academicYear.id">{{ academicYear.name }}</option>
+                    <option *ngFor="let academicYear of AcademicYears" [value]="academicYear.id">{{ academicYear.name }}
+                    </option>
                     <option *ngIf="AcademicYears.length === 0" disabled selected>No Data Found</option>
                 </select>
             </div>
         </div>
 
         <div class="flex justify-end">
-            <button
-            [disabled]="isLoading"
-            class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
-            (click)="SaveCopy()">
-            <span *ngIf="!isLoading">Save</span>
-            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
-          </button>
+            <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+                (click)="SaveCopy()">
+                <span *ngIf="!isLoading">Save</span>
+                <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+            </button>
         </div>
     </div>
 </div>

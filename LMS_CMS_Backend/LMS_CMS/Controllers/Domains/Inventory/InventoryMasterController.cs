@@ -140,9 +140,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Inventory" }
-        )]
+      allowedTypes: new[] { "octa", "employee" },
+      pages: new[] { "Inventory" }
+  )]
         public async Task<IActionResult> Add([FromForm] InventoryMasterAddDTO newData)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -150,6 +150,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            decimal vat = 0;
 
             if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(userTypeClaim))
             {
@@ -161,7 +162,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return BadRequest("Master cannot be null.");
             }
 
-            Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreID && b.IsDeleted!= true);
+            Store store = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreID && b.IsDeleted != true);
             if (store == null)
             {
                 return NotFound("Store not found.");
@@ -172,6 +173,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 if (student == null)
                 {
                     return NotFound("Student not found.");
+                }
+
+                if (student.Nationality != 148)
+                {
+                    vat = 15;
                 }
             }
             else
@@ -219,7 +225,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
             else
             {
-                newData.BankID =null;
+                newData.BankID = null;
             }
 
             if (newData.SaveID != 0 && newData.SaveID != null)
@@ -241,11 +247,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             /// Validations
-            
-            if(newData.IsVisa == false)
+
+            if (newData.IsVisa == false)
             {
                 newData.VisaAmount = 0;
-                newData.BankID=null;
+                newData.BankID = null;
             }
             if (newData.IsCash == false)
             {
@@ -253,7 +259,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 newData.SaveID = null;
             }
 
-            if (newData.IsVisa == true && newData.BankID==0 || newData.IsVisa == true && newData.BankID == null)
+            if (newData.IsVisa == true && newData.BankID == 0 || newData.IsVisa == true && newData.BankID == null)
             {
                 return BadRequest("Bank IsRequired");
 
@@ -271,15 +277,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             }
 
-            if (newData.FlagId==8 || newData.FlagId == 9 || newData.FlagId == 10 || newData.FlagId == 11 || newData.FlagId == 12)
+            if (newData.FlagId == 8 || newData.FlagId == 9 || newData.FlagId == 10 || newData.FlagId == 11 || newData.FlagId == 12)
             {
                 double expectedRemaining = (newData.Total) - ((newData.CashAmount ?? 0) + (newData.VisaAmount ?? 0));
-                if(expectedRemaining != newData.Remaining)
+                if (expectedRemaining != newData.Remaining)
                 {
                     return BadRequest("Total should be sum up all the totalPrice values in InventoryDetails");
                 }
 
-                
+
             }
 
             newData.InventoryDetails.RemoveAll(item =>
@@ -291,7 +297,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             /// Create
             InventoryMaster Master = mapper.Map<InventoryMaster>(newData);
             LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
-            Master.InvoiceNumber = await _InVoiceNumberCreate.GetNextInvoiceNumber(db ,newData.StoreID, newData.FlagId);
+            Master.InvoiceNumber = await _InVoiceNumberCreate.GetNextInvoiceNumber(db, newData.StoreID, newData.FlagId);
             if (Master == null)
             {
                 return BadRequest("Failed to map sale object.");
@@ -308,10 +314,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 Master.InsertedByUserId = userId;
             }
-
-            if (Master.Student.Nationality != 148)
+            if (newData.StudentID != 0 && newData.StudentID != null)
             {
-                Master.Vat = 15;
+                Master.Vat = vat;
             }
 
             Unit_Of_Work.inventoryMaster_Repository.Add(Master);
@@ -353,105 +358,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
-            XDocument xmlDoc = new XDocument(
-                new XElement("Invoice",
-                    new XElement("cac:AccountingSupplierParty",
-                        new XElement("cac:Party",
-                            new XElement("cac:PartyLegalEntity",
-                                new XElement("cbc:RegistrationName", 
-                                    Master.Student.StudentAcademicYears.FirstOrDefault().School.Name)
-                            ),
-                            new XElement("cac:PartyTaxScheme",
-                                new XElement("cbc:CompanyID", 
-                                    Master.Student.StudentAcademicYears.FirstOrDefault().School.VatNumber)
-                            )
-                        )
-                    ),
-                    new XElement("cbc:IssueDateTime",
-                        DateTime.Parse(Master.Date).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                    ),
-                    new XElement("cac:LegalMonetaryTotal",
-                        new XElement("cbc:TaxInclusiveAmount", Master.TotalWithVat)
-                    ),
-                    new XElement("cac:TaxTotal",
-                        new XElement("cbc:TaxAmount", Master.VatAmount)
-                    ),
-                    new XElement("ext:UBLExtensions",
-                        new XElement("ext:UBLExtension",
-                            new XElement("ext:ExtensionContent",
-                                new XElement("sig:UBLDocumentSignatures",
-                                    new XElement("sac:SignatureInformation",
-                                        new XElement("ds:Signature",
-                                            new XElement("ds:SignedInfo",
-                                                new XElement("ds:Reference",
-                                                    new XElement("ds:DigestValue", Master.DigestValue)
-                                                )
-                                            ),
-                                            new XElement("ds:SignatureValue", Master.SignatureValue),
-                                            new XElement("ds:KeyInfo",
-                                                new XElement("ds:X509Data",
-                                                    new XElement("ds:X509Certificate", Master.PublicKeyCertificate)
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        ),
-                        new XElement("ext:UBLExtension",
-                            new XElement("ext:ExtensionContent",
-                                new XElement("UBLDocumentSignatures",
-                                    new XElement("SignatureInformation",
-                                        new XElement("Signature",
-                                            new XElement("KeyInfo",
-                                                new XElement("X509Data",
-                                                    new XElement("X509Certificate", "")
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            
-            );
-
-            var xmlFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Invoices");
-            var invoiceFolder = Path.Combine(xmlFolder, Master.ID.ToString());
-
-            if (!Directory.Exists(invoiceFolder))
-            {
-                Directory.CreateDirectory(invoiceFolder);
-            }
-
-            var xmlUrl = $"{Request.Scheme}://{Request.Host}/Uploads/Invoices/{Master.ID}/{xmlDoc.GetHashCode}";
-
-            XmlDocument invoiceXml = new XmlDocument();
-            using (var xmlReader = xmlDoc.CreateReader())
-            {
-                invoiceXml.Load(xmlReader);
-            }
-
-            //HashResult hash = _eInvoiceHashGenerator.GenerateEInvoiceHashing(invoiceXml);
-
-            //CsrGenerationDto csrGenerationDto = new CsrGenerationDto(
-            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
-            //        Master.InvoiceNumber.ToString(),                    
-            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.ID.ToString(),
-            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Address,
-            //        Master.Student.StudentAcademicYears.FirstOrDefault().School.Name,
-            //        "KSA",
-            //        "Simplified",
-            //        "Makka",
-            //        "test"
-            //    );
-
-            //CsrResult csr = _csrGenerator.GenerateCsr(csrGenerationDto, EnvironmentType.NonProduction, true);
-
-            //csr.SaveCsrToFile(Path.Combine(invoiceFolder, "csr.pem"));
-            //csr.SavePrivateKeyToFile(Path.Combine(invoiceFolder, "private.pem"));
 
             return Ok(Master.ID);
         }

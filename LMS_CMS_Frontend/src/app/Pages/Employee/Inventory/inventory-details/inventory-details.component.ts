@@ -90,6 +90,8 @@ export class InventoryDetailsComponent {
 
   IsOpenToAdd: boolean = false
 
+  isLoading = false
+
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -128,8 +130,8 @@ export class InventoryDetailsComponent {
       this.IsRemainingCashVisa = true
     }
 
-    if (this.FlagId == 9 && this.mode == 'Create' || this.FlagId==13 && this.mode == 'Create') { //CanEditPrice
-        this.IsPriceEditable = true
+    if (this.FlagId == 9 && this.mode == 'Create' || this.FlagId == 13 && this.mode == 'Create') { //CanEditPrice
+      this.IsPriceEditable = true
     }
 
     if (this.FlagId == 8) {
@@ -304,15 +306,35 @@ export class InventoryDetailsComponent {
   }
   Save() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == "Create") {
+        console.log(this.Data)
         this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
           this.MasterId = d
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
+        }, (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         })
       }
       if (this.mode == "Edit") {
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
+        }, (error) => {
+          this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         })
       }
     }
@@ -405,9 +427,9 @@ export class InventoryDetailsComponent {
         this.Data.inventoryDetails = [];
       }
       this.Data.inventoryDetails.push(this.Item);
-      if(this.FlagId==9 || this.FlagId==13){
+      if (this.FlagId == 9 || this.FlagId == 13) {
         console.log(this.ShopItem)
-        this.shopitemServ.Edit(this.ShopItem,this.DomainName).subscribe((d)=>{
+        this.shopitemServ.Edit(this.ShopItem, this.DomainName).subscribe((d) => {
 
         })
       }
@@ -450,7 +472,7 @@ export class InventoryDetailsComponent {
 
   ConvertToPurcase() {
     this.Data.flagId = 9
-    this.Data.isEditInvoiceNumber=true
+    this.Data.isEditInvoiceNumber = true
     this.Data.date = new Date().toISOString().split('T')[0];
     this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
       this.router.navigateByUrl(`Employee/Purchases`)

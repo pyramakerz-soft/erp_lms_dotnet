@@ -42,7 +42,7 @@ export class SideMenuItemComponent {
     this.subscription = this.languageService.language$.subscribe(direction => {
       this.isRtl = direction === 'rtl';
     });
-    this.isRtl = document.documentElement.dir === 'rtl';
+    this.isRtl = document.documentElement.dir === 'rtl'; 
   }
 
   ngOnDestroy(): void {

@@ -90,19 +90,11 @@ export class AcademicSequentialReportComponent {
       }
     });
     this.getAllSchools()
-    this.getAllStudents()
-    this.getAllYears()
   }
 
   getAllSchools() {
     this.SchoolServ.Get(this.DomainName).subscribe((d) => {
       this.schools = d
-    })
-  }
-
-  getAllYears() {
-    this.academicYearServ.GetBySchoolId(this.SelectedSchoolId, this.DomainName).subscribe((d) => {
-      this.academicYears = d
     })
   }
 
@@ -115,7 +107,7 @@ export class AcademicSequentialReportComponent {
   }
 
   getAllStudents() {
-    this.studentServ.GetAll(this.DomainName).subscribe((d) => {
+    this.studentServ.GetByStudentID(this.SelectedSchoolId,this.DomainName).subscribe((d) => {
       this.Students = d;
       console.log(d ,this.Students)
       this.filteredStudents = d; 
@@ -248,8 +240,13 @@ export class AcademicSequentialReportComponent {
               month: 'long',
               day: 'numeric'
             });
-            console.log("this.CurrentDate",this.CurrentDate)
-            this.TableData=d.grades.map((row: { gradeName: any; academicYearName: any; }) => [row.gradeName, row.academicYearName])
+            this.TableData = d.grades.map((grade: any) => { 
+              return {
+                Grade: grade.gradeName || '',
+                Academic_Year: grade.academicYearName || '',
+              };
+            });
+            console.log("this.TableData",this.TableData)
             resolve();
           },
           error: (err) => {

@@ -89,7 +89,6 @@ export class ProofRegistrationAndSuccessFormReportComponent {
       }
     });
     this.getAllSchools()
-    this.getAllStudents()
     this.getAllYears()
   }
 
@@ -114,7 +113,7 @@ export class ProofRegistrationAndSuccessFormReportComponent {
   }
 
   getAllStudents() {
-    this.studentServ.GetAll(this.DomainName).subscribe((d) => {
+    this.studentServ.GetByAcademicYearID(this.SelectedYearId,this.DomainName).subscribe((d) => {
       this.Students = d;
       console.log(d ,this.Students)
       this.filteredStudents = d; 

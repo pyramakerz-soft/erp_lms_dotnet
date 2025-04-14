@@ -1,7 +1,7 @@
 ﻿<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
 <cbc:ProfileID>reporting:1.0</cbc:ProfileID>
 <cbc:ID>SME0001</cbc:ID>
-<cbc:UUID>673b27f7-fb92-43ff-b03a-4edb4f2b5477</cbc:UUID>
+<cbc:UUID>84ef5615-05b5-4b9d-99f6-be58008709ca</cbc:UUID>
 <cbc:IssueDate>2025-04-11</cbc:IssueDate>
 <cbc:IssueTime>05:02:07</cbc:IssueTime>
 <cbc:InvoiceTypeCode name="0200000">388</cbc:InvoiceTypeCode>

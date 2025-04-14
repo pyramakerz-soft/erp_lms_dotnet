@@ -38,7 +38,8 @@ export class PdfPrintComponent {
         this.preservedColumns = this.tableHeaders[0];
       this.splitTableGenerically();
     }
-    console.log(this.school)
+    console.log(this.tableData)
+    console.log(this.tableChunks)
   }
 
   ngAfterViewInit(): void {
@@ -79,7 +80,6 @@ export class PdfPrintComponent {
     });
   }
   
-
   estimateHeaderWidth(header: string): number {
     // Rough estimate: 10–12px per character
     return header.length * 10;
@@ -125,7 +125,6 @@ export class PdfPrintComponent {
     }
   }
   
-
   printPDF() {
     const opt = {
       margin: 0.5,

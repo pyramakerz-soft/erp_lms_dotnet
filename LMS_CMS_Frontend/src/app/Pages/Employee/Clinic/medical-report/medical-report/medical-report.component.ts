@@ -52,7 +52,7 @@ onView(row: any) {
   
   searchKey: string = 'id';
   searchValue: any = '';
-  searchKeysArray: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
+  searchKeysArray: string[] = ['id'];
   
   schools: any[] = [];
   grades: any[] = [];
@@ -93,45 +93,26 @@ onView(row: any) {
   }
 
   
-  async onSearchEvent(event: { key: string, value: any }) {
-    this.searchKey = event.key;
-    this.searchValue = event.value;
-
-    switch (this.selectedTab) {
-case 'MH By Parent':
+async onSearchEvent(event: { key: string, value: any }) {
   this.searchKey = event.key;
   this.searchValue = event.value;
-  await this.loadMHByParentData();
-  
-  if (this.searchValue) {
-    this.mhByParentData = this.mhByParentData.filter(mh => {
-      const fieldValue = mh[this.searchKey as keyof typeof mh]?.toString().toLowerCase() || '';
-      return fieldValue.includes(this.searchValue.toString().toLowerCase());
-    });
-  }
-  break;
-case 'MH By Doctor':
-  this.searchKey = event.key;
-  this.searchValue = event.value;
-  await this.loadMHByDoctorData();
-  
-  if (this.searchValue) {
-    this.mhByDoctorData = this.mhByDoctorData.filter(mh => {
-      const fieldValue = mh[this.searchKey as keyof typeof mh]?.toString().toLowerCase() || '';
-      return fieldValue.includes(this.searchValue.toString().toLowerCase());
-    });
-  }
-  this.filteredMHByDoctorData = this.mhByDoctorData;
-  break;
 
+  switch (this.selectedTab) {
+    case 'MH By Parent':
+      // this.searchKey = 'id';
+      await this.loadMHByParentData();
+      break;
+    case 'MH By Doctor':
+      this.filterMHByDoctor();
+      break;
     case 'Hygiene Form':
       this.filterHygieneForms();
       break;
     case 'Follow Up':
       this.filterFollowUps();
       break;
-    }
   }
+}
 
 applySearchFilter(data: any[]): any[] {
   if (!this.searchValue) return data;
@@ -203,9 +184,7 @@ onSchoolChange() {
   this.grades = [];
   this.classes = [];
   this.loadGrades();
-  this.filterHygieneForms();
-    // this.filterMHByDoctor();
-  this.filterFollowUps();
+  this.filterMHByDoctor(); // Add this line
 }
 
 onGradeChange() {
@@ -213,17 +192,13 @@ onGradeChange() {
   this.selectedStudent = null;
   this.classes = [];
   this.loadClasses();
-  this.filterHygieneForms();
-    // this.filterMHByDoctor();
-  this.filterFollowUps();
+  this.filterMHByDoctor(); // Add this line
 }
 
 onClassChange() {
   this.selectedStudent = null;
   this.loadStudents();
-  this.filterHygieneForms();
-  // this.filterMHByDoctor();
-  this.filterFollowUps();
+  this.filterMHByDoctor(); // Add this line
 }
 
   isEditModalVisible = false;
@@ -236,28 +211,34 @@ openEditModal(row: any) {
 }
 
   
-  async loadMHByParentData() {
-    try {
-      const domainName = this.apiService.GetHeader();
-      const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
-      this.mhByParentData = data.map((item) => ({
-        id: item.id,
-        date: new Date(item.insertedAt).toLocaleDateString(),
-        description: item.details || 'No details',
-        insertDate: new Date(item.insertedAt).toLocaleDateString(),
-        lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified',
-        actions: { delete: true, edit: true, view: true }
-      }));
-    } catch (error) {
-      console.error('Error fetching MH By Parent data:', error);
+async loadMHByParentData() {
+  try {
+    const domainName = this.apiService.GetHeader();
+    const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
+    
+    this.mhByParentData = data.map((item) => ({
+      id: item.id,
+      date: new Date(item.insertedAt).toLocaleDateString(),
+      description: item.details || 'No details',
+      insertDate: new Date(item.insertedAt).toLocaleDateString(),
+      lastModified: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'Not modified',
+      actions: { delete: true, edit: true, view: true }
+    }));
+
+    if (this.searchValue) {
+      this.mhByParentData = this.mhByParentData.filter(mh => 
+        mh.id.toString().includes(this.searchValue.toString())
+      );
     }
+  } catch (error) {
+    console.error('Error fetching MH By Parent data:', error);
   }
+}
 
 async loadMHByDoctorData() {
   try {
     const domainName = this.apiService.GetHeader();
     const data = await firstValueFrom(this.medicalHistoryService.GetByDoctor(domainName));
-    console.log(data)
     this.mhByDoctorData = data.map((item: any) => ({
       id: item.id,
       date: new Date(item.insertedAt).toLocaleDateString(),
@@ -366,10 +347,10 @@ filterMHByDoctor() {
     filteredData = filteredData.filter(item => item.studentId == this.selectedStudent);
   }
 
-  // Apply search filter
+  // Apply search filter if searchValue exists
   if (this.searchValue) {
     filteredData = filteredData.filter(item => {
-      const fieldValue = item[this.searchKey]?.toString().toLowerCase() || '';
+      const fieldValue = item[this.searchKey as keyof typeof item]?.toString().toLowerCase() || '';
       return fieldValue.includes(this.searchValue.toString().toLowerCase());
     });
   }
@@ -537,41 +518,41 @@ prepareStudentsData() {
     });
   }
 
-  async selectTab(tab: string) {
-    this.selectedTab = tab;
-    this.selectedSchool = null;
-    this.selectedGrade = null;
-    this.selectedClass = null;
-    this.selectedStudent = null;
-    this.studentSearchTerm = '';
-    this.searchValue = '';
-    this.grades = [];
-    this.classes = [];
-    this.students = [];
-    
-    switch(tab) {
-case 'MH By Doctor':
-  this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
-  await this.loadMHByDoctorData();
-  break;
-        case 'Hygiene Form':
-            this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'formDate'];
-            this.filteredHygieneForms = [...this.allHygieneForms];
-            this.prepareStudentsData();
-            break;
-        case 'Follow Up':
-            this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
-            this.filteredFollowUps = [...this.followUps];
-            break;
-    }
-    
-    if (tab === 'Hygiene Form') {
-        this.loadAllHygieneForms();
-    } else if (tab === 'MH By Doctor') {
-        this.loadMHByDoctorData();
-    } else if (tab === 'Follow Up') {
-        this.loadFollowUps();
-    }
+async selectTab(tab: string) {
+  // Reset all filter and search values
+  this.selectedTab = tab;
+  this.selectedSchool = null;
+  this.selectedGrade = null;
+  this.selectedClass = null;
+  this.selectedStudent = null;
+  this.studentSearchTerm = '';
+  this.searchValue = '';
+  this.searchKey = 'id';
+  this.grades = [];
+  this.classes = [];
+  this.students = [];
+  
+  switch(tab) {
+    case 'MH By Parent':
+      this.searchKeysArray = ['id'];
+      await this.loadMHByParentData();
+      break;
+    case 'MH By Doctor':
+      this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
+      await this.loadMHByDoctorData();
+      break;
+    case 'Hygiene Form':
+      this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'formDate'];
+      await this.loadAllHygieneForms(); // Reload data to ensure clean state
+      this.filteredHygieneForms = [...this.allHygieneForms];
+      this.prepareStudentsData();
+      break;
+    case 'Follow Up':
+      this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
+      await this.loadFollowUps(); // Reload data to ensure clean state
+      this.filteredFollowUps = [...this.followUps];
+      break;
+  }
 }
 
   exportToExcel() {

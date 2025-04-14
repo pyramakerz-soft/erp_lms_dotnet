@@ -5,7 +5,9 @@
             <p class="text-sm">{{ school?.reportHeaderTwoEn }}</p>
         </div>
         <div class="flex justify-center w-[15%]">
-            <img [src]="school?.reportImage" class="w-full max-w-[100px]">
+            <img *ngIf="school?.reportImage" [src]="school.reportImage" class="w-full">
+            <p *ngIf="!school?.reportImage" class="text-sm">No image </p>
+
         </div>
         <div class="rtl text-end w-[40%]">
             <p class="text-base font-semibold mb-1">{{ school?.reportHeaderOneAr }}</p>
@@ -21,56 +23,30 @@
         <div *ngFor="let info of infoRows" class="flex justify-between text-xl">
             <div class="w-1/2 text-left mb-1">
                 <span class="font-semibold mr-2">{{ info.keyEn }} </span>
-                <!-- <span class="font-light">{{ info.valueEn }}</span> -->
             </div>
             <div class="w-1/2 rtl text-right " *ngIf="info.keyAr ">
                 <span class="font-semibold ">{{ info.keyAr }} </span>
-                <!-- <span class="font-light">{{ info.valueAr }}</span> -->
             </div>
         </div>
     </div>
 
-    <!-- <div *ngIf="tableData">
-        <div class="mt-10 overflow-x-auto rounded-xl border border-[#BDBDBD]">
-            <table class="w-full inset-0 rounded-xl text-left text-[#6F6F6F]">
-                <thead>
-                    <tr class="bg-gray-200 text-sm">
-                        <th *ngFor="let header of tableHeaders" class="p-2 ">{{ header }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngIf="tableData?.length === 0">
-                        <td [attr.colspan]="tableHeaders?.length" class="text-center p-4">No Data Found</td>
-                    </tr>
-                    <tr *ngFor="let row of tableData; let i = index" [ngClass]="{ 'bg-gray-100': i % 2 === 1 }">
-                        <td class="p-2 border">{{ row.id }}</td>
-                        <td class="p-2 border">{{ row.en_name }}</td>
-                        <td class="p-2 border">{{ row.mobile }}</td>
-                        <td class="p-2 border">{{ row.nationalityName }}</td>
-                        <td class="p-2 border">{{ row.genderName }}</td>
-                    </tr>
-                </tbody>
-            </table> 
-        </div>
-    </div> -->
-
     <div *ngFor="let chunk of tableChunks" class="mt-10 overflow-x-auto rounded-xl border border-[#BDBDBD]">
         <table class="w-full inset-0 rounded-xl text-left text-[#6F6F6F]">
-          <thead>
-            <tr class="bg-gray-200 text-sm">
-              <th *ngFor="let header of chunk.headers" class="p-2">{{ header }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngIf="chunk.data.length === 0">
-              <td [attr.colspan]="chunk.headers.length" class="text-center p-4">No Data Found</td>
-            </tr>
-            <tr *ngFor="let row of chunk.data; let i = index" [ngClass]="{ 'bg-gray-100': i % 2 === 1 }">
-              <td *ngFor="let header of chunk.headers" class="p-2 border">{{ row[header] }}</td>
-            </tr>
-          </tbody>
+            <thead>
+                <tr class="bg-gray-200 text-sm">
+                    <th *ngFor="let header of chunk.headers" class="p-2">{{ header }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="chunk.data.length === 0">
+                    <td [attr.colspan]="chunk.headers.length" class="text-center p-4">No Data Found</td>
+                </tr>
+                <tr *ngFor="let row of chunk.data; let i = index" [ngClass]="{ 'bg-gray-100': i % 2 === 1 }">
+                    <td *ngFor="let header of chunk.headers" class="p-2 border">{{ row[header] }}</td>
+                </tr>
+            </tbody>
         </table>
-      </div>
+    </div>
 
     <div *ngIf="tableDataWithHeader">
         <div *ngFor="let section of tableDataWithHeader" class="mb-4">
@@ -94,11 +70,9 @@
         <div *ngFor="let info of PsNotes" class="flex justify-between text-xl">
             <div class="w-1/2 text-left mb-1">
                 <span class="font-semibold mr-2">{{ info.EnNote }} </span>
-                <!-- <span class="font-light">{{ info.valueEn }}</span> -->
             </div>
             <div class="w-1/2 rtl text-right ">
                 <span class="font-semibold ">{{ info.ArNote }} </span>
-                <!-- <span class="font-light">{{ info.valueAr }}</span> -->
             </div>
         </div>
     </div>

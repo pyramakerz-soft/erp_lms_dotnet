@@ -105,7 +105,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<GenerateJWTService>();
             builder.Services.AddScoped<FileImageValidationService>();
             builder.Services.AddScoped<CancelInterviewDayMessageService>();
-            builder.Services.AddScoped< EmailService>();
+            builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<GenerateBarCodeEan13>(); 
             builder.Services.AddScoped<CheckPageAccessService>(); 
             builder.Services.AddScoped<InVoiceNumberCreate>();
@@ -202,6 +202,13 @@ namespace LMS_CMS
             app.UseMiddleware<Endpoint_Authorization_Middleware>();
              
             app.UseAuthorization();
+
+            //app.Urls.Add("http://0.0.0.0:5000");
+            //app.UseCors(builder =>
+            //    builder.AllowAnyOrigin()
+            //   .AllowAnyMethod()
+            //   .AllowAnyHeader()
+            //); 
 
             app.MapControllers();
 

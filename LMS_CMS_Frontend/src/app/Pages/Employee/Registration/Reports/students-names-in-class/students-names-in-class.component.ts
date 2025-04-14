@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { School } from '../../../../../Models/school';
 import { AcademicYear } from '../../../../../Models/LMS/academic-year';
@@ -20,11 +20,12 @@ import * as XLSX from 'xlsx';
 import FileSaver, { saveAs } from 'file-saver';
 import * as ExcelJS from 'exceljs'
 import { PdfPrintComponent } from '../../../../../Component/pdf-print/pdf-print.component';
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-students-names-in-class',
   standalone: true,
-  imports: [FormsModule, CommonModule , PdfPrintComponent],
+  imports: [FormsModule, CommonModule, PdfPrintComponent],
   templateUrl: './students-names-in-class.component.html',
   styleUrl: './students-names-in-class.component.css'
 })
@@ -54,9 +55,9 @@ export class StudentsNamesInClassComponent {
   direction: string = "";
 
   showPDF = false;
-  AcademicYearName :string = ""
-  GradeName :string = ""
-
+  AcademicYearName: string = ""
+  GradeName: string = ""
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
 
   constructor(
     public account: AccountService,
@@ -126,7 +127,7 @@ export class StudentsNamesInClassComponent {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.GradeId = Number(selectedValue)
     if (this.GradeId) {
-      this.GradeName = this.Grades.find(s=>s.id==this.GradeId)?.name  ?? ""
+      this.GradeName = this.Grades.find(s => s.id == this.GradeId)?.name ?? ""
       this.GetClassData();
     }
   }
@@ -145,7 +146,7 @@ export class StudentsNamesInClassComponent {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.AcademicYearId = Number(selectedValue)
     if (this.AcademicYearId) {
-      this.AcademicYearName = this.AcademicYears.find(s=>s.id==this.AcademicYearId)?.name  ?? ""
+      this.AcademicYearName = this.AcademicYears.find(s => s.id == this.AcademicYearId)?.name ?? ""
       this.GetClassData();
     }
   }
@@ -193,23 +194,47 @@ export class StudentsNamesInClassComponent {
   }
 
   Print() {
-    let element = document.getElementById("Data");
+    const element = document.getElementById("Data");
     if (!element) {
       console.error("Element not found!");
       return;
     }
-
-    element.classList.remove("hidden");
-
+    this.showPDF = true;
     setTimeout(() => {
-      this.reportsService.PrintPDF("List of students' names in class")
-
+      element.classList.remove("hidden");
       setTimeout(() => {
-        element.classList.add("hidden");
-      }, 1000);
-    }, 200);
+        const printContents = element.innerHTML;
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        if (!printWindow) return;
+        printWindow.document.open();
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Print</title>
+              <style>
+                * { font-family: sans-serif; }
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                @media print {
+                  body { margin: 1cm; }
+                }
+              </style>
+            </head>
+            <body onload="window.print(); window.close();">
+              ${printContents}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        setTimeout(() => {
+          element.classList.add("hidden");
+          this.showPDF = false;
+        }, 1000);
+  
+      }, 200); // allow component to render
+    }, 100);
   }
-
+  
   // DownloadAsPDF() {
   //   let element = document.getElementById("Data");
   //   console.log("Element", element)
@@ -234,7 +259,9 @@ export class StudentsNamesInClassComponent {
 
   DownloadAsPDF() {
     this.showPDF = true;
-    setTimeout(() => this.showPDF = false, 1); 
+    setTimeout(() => {
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500); // give DOM time to render <app-pdf-print>
   }
 
   async DownloadAsExcel() {
@@ -251,9 +278,9 @@ export class StudentsNamesInClassComponent {
         { key: 'Number of Students', value: this.studentsCount },
         { key: 'Date', value: this.date },
         { key: 'Session', value: '2024/2025' },
-        { key: 'School', value:  this.school.name },
+        { key: 'School', value: this.school.name },
         { key: 'Year', value: this.AcademicYearName },
-        { key: 'Grade', value:  this.GradeName }
+        { key: 'Grade', value: this.GradeName }
 
       ],
       reportImage: this.school.reportImage,
@@ -261,11 +288,11 @@ export class StudentsNamesInClassComponent {
       tables: [
         {
           title: "Students List",
-          headers: ['ID', 'Name', 'Mobile', 'Nationality', 'Gender'],
+          headers: ['id', 'en_name', 'mobile', 'nationalityName', 'genderName'],
           data: this.StudentData.map((row) => [row.id, row.en_name, row.mobile, row.nationalityName, row.genderName])
         }
       ]
     });
   }
-  
+
 }

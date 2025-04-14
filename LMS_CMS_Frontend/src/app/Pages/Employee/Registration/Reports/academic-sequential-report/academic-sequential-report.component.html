@@ -14,23 +14,10 @@
         </select>
     </div>
     <div class="w-[49%]">
-        <label for="Year" class="block mb-2 text-sm font-medium text-gray-900">Year</label>
-        <select id="Year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedYearId" [disabled]="!SelectedSchoolId">
-            <option value=0 disabled selected hidden>Select a Year</option>
-            <option *ngFor="let ac of academicYears" [value]="ac.id">
-                {{ ac.name }}
-            </option>
-        </select>
-    </div>
-</div>
-
-<div class="flex justify-start items-center mt-2">
-    <div class="w-[80%]">
         <label for="Student" class="block mb-2 text-sm font-medium text-gray-900">Student</label>
         <ng-container *ngIf="!isSearching">
             <select id="Student" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-                [(ngModel)]="SelectedStudentId" [disabled]="!SelectedSchoolId || !SelectedYearId">
+                [(ngModel)]="SelectedStudentId" [disabled]="!SelectedSchoolId">
                 <option value="0" disabled selected hidden>Select a Student</option>
                 <option *ngFor="let ac of filteredStudents" [value]="ac.id">
                     {{ ac.user_Name }}
@@ -43,21 +30,16 @@
                 [(ngModel)]="searchQuery" (input)="searchStudents()" placeholder="Search by Name">
         </ng-container>
     </div>
-
-    <!-- <div
-        class="w-[58px] h-[45px] gap-[8px] border-t border-r border-b border-l-0 border-solid border-gray-300 rounded-tr-[8px] rounded-br-[8px] pt-[12px] pr-[16px] pb-[12px] pl-[16px] mt-7">
-        <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500"
-            style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="toggleSearchMode()">
-        </i>
-    </div> -->
-
-
     <div class="mt-7 ml-2">
         <button class="p-3 font-medium text-xl rounded-lg" (click)="ViewReport()"
             [disabled]="!SelectedSchoolId || !SelectedStudentId || !SelectedYearId"
             [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedStudentId || !SelectedYearId, 'secondaryBg text-white': SelectedSchoolId && SelectedStudentId && SelectedYearId }">View
             Report</button>
     </div>
+</div>
+
+<div class="flex justify-start items-center mt-2">
+   
 </div>
 
 <div *ngIf="showTable" class="mt-5 flex justify-end space-x-4">

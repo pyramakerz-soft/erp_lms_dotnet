@@ -130,27 +130,52 @@ export class StudentsInformationFormReportComponent {
   }
 
   Print() {
-    let element = document.getElementById("Data");
+    const element = document.getElementById("Data");
     if (!element) {
       console.error("Element not found!");
       return;
     }
-
-    element.classList.remove("hidden");
-
+    this.showPDF = true;
     setTimeout(() => {
-      this.reportsService.PrintPDF("List of students' names in class")
-
+      element.classList.remove("hidden");
       setTimeout(() => {
-        element.classList.add("hidden");
-      }, 1000);
-    }, 200);
+        const printContents = element.innerHTML;
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        if (!printWindow) return;
+        printWindow.document.open();
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Print</title>
+              <style>
+                * { font-family: sans-serif; }
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                @media print {
+                  body { margin: 1cm; }
+                }
+              </style>
+            </head>
+            <body onload="window.print(); window.close();">
+              ${printContents}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        setTimeout(() => {
+          element.classList.add("hidden");
+          this.showPDF = false;
+        }, 1000);
+  
+      }, 200); // allow component to render
+    }, 100);
   }
 
   DownloadAsPDF() {
-    
     this.showPDF = true;
-    setTimeout(() => this.showPDF = false, 1);
+    setTimeout(() => {
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500); // give DOM time to render <app-pdf-print>
   }
 
   formatDate(dateString: string, dir: string): string {
@@ -160,12 +185,11 @@ export class StudentsInformationFormReportComponent {
   }
 
   async DownloadAsExcel() {
-    // Transform DataToPrint into Excel tables
-    const tables = this.DataToPrint.map((section: { header: any; data: any[]; }) => ({
-      title: section.header,
-      headers: ['Field', 'Value'],
-      data: section.data.map((item: { key: any; value: any; }) => [item.key, item.value])
-    }));
+    const headers = ['No', 'Name', 'الاسم', 'Mobile_1', 'Mobile_2', 'Passport', 'Nationality', 'Note', 'Date_Of_Birth', 'Place_Of_Birth', 'Passport_Expired', 'identities_Expired', 'Admission_Date', 'Identity_of_Father', 'Email_Address', 'Bus', 'Religion', 'Pre_School'];
+  
+    const dataRows = this.tableData.map(row =>
+      headers.map(header => row[header] ?? '')
+    );
   
     await this.reportsService.generateExcelReport({
       mainHeader: {
@@ -180,11 +204,17 @@ export class StudentsInformationFormReportComponent {
       ],
       infoRows: [
         { key: 'Date', value: this.CurrentDate },
-        { key: 'School', value:  this.school.name }
+        { key: 'School', value: this.school.name }
       ],
       reportImage: this.school.reportImage,
       filename: "Student Information Report.xlsx",
-      tables: tables // ✅ dynamic table sections from your actual data
+      tables: [
+        {
+          title: "Students List",
+          headers,
+          data: dataRows
+        }
+      ]
     });
   }
   
@@ -199,24 +229,24 @@ export class StudentsInformationFormReportComponent {
             this.students=d.students
             this.tableData = this.students.map((student: any, index: number) => {
               return {
-                id: index + 1, // No
-                en_name: student.en_name || '',
-                ar_name: student.ar_name || '',
-                mobile1: student.mobile || '',
-                mobile2: student.phone || '',
-                passportNo: student.passportNo || '',
-                nationalityName: student.nationalityEnName || '',
-                note: student.note || '',
-                dateOfBirth: student.dateOfBirth || '',
-                placeOfBirth: student.placeOfBirth || '',
-                passportExpiredDate: student.passportExpiredDate || '',
-                nationalIDExpiredDate: student.nationalIDExpiredDate || '',
-                admissionDate: student.admissionDate || '',
-                guardianNationalID: student.guardianNationalID || '',
-                email: student.email || '',
-                bus: student.isRegisteredToBus ? 'Yes' : 'No',
-                religion: student.religion || '',
-                previousSchool: student.previousSchool || ''
+                No: index + 1, // No
+                Name: student.en_name || '',
+                الاسم: student.ar_name || '',
+                Mobile_1: student.mobile || '',
+                Mobile_2: student.phone || '',
+                Passport: student.passportNo || '',
+                Nationality: student.nationalityEnName || '',
+                Note: student.note || '',
+                Date_Of_Birth: student.dateOfBirth || '',
+                Place_Of_Birth: student.placeOfBirth || '',
+                Passport_Expired: student.passportExpiredDate || '',
+                identities_Expired: student.nationalIDExpiredDate || '',
+                Admission_Date: student.admissionDate || '',
+                Identity_of_Father: student.guardianNationalID || '',
+                Email_Address: student.email || '',
+                Bus: student.isRegisteredToBus ? 'Yes' : 'No',
+                Religion: student.religion || '',
+                Pre_School: student.previousSchool || ''
               };
             });
             console.log("data",d)

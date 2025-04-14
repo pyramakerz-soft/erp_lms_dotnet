@@ -61,7 +61,6 @@
 </div>
 
 <div *ngIf="showTable" class="mt-5 flex justify-end space-x-4">
-    <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="DownloadAsExcel()">
     <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()">
     <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()">
 </div>
@@ -123,11 +122,11 @@
         },
         {
           keyEn: 'This to certify that Student / ' + this.DataToPrint.student.en_name,
-          keyAr: 'نفيدكم بأن الطالبة / ' + this.DataToPrint.student.en_name
+          keyAr: 'نفيدكم بأن الطالبة / ' + this.DataToPrint.student.ar_name
         },
         {
-          keyEn: this.DataToPrint.student.nationalityName + ' Nationality',
-          keyAr: 'تحمل الجنسية / ' + this.DataToPrint.student.nationalityName
+          keyEn: this.DataToPrint.student.nationalityEnName + ' Nationality',
+          keyAr: 'تحمل الجنسية / ' + this.DataToPrint.student.nationalityArName
         },
         {
             keyEn: ' and identity no ' + this.DataToPrint.student.nationalIDExpiredDate,

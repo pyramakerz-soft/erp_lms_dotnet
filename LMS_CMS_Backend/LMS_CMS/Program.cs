@@ -16,9 +16,6 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Zatca.EInvoice.SDK.Contracts;
 using Zatca.EInvoice.SDK;
-//using Zatca.EInvoice.SDK.Contracts;
-//using Zatca.EInvoice.SDK;
-//using Zatca.EInvoice.SDK.Contracts.Models;
 
 namespace LMS_CMS
 {

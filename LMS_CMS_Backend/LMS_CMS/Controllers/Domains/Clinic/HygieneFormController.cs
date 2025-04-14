@@ -144,8 +144,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return BadRequest("Hygiene Form can not be null");
             }
 
-            HygieneTypeStudentHygieneTypes htsht = new();
-
             foreach (var hfd in hygieneFormDTO.StudentHygieneTypes)
             {
                 foreach (var ht in hfd.HygieneTypesIds)
@@ -156,11 +154,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     {
                         return NotFound($"Hygien Type ID: {ht} not found");
                     }
-                    
-                    htsht.HygieneTypesId = ht;
-                    htsht.StudentHygieneTypesId = hfd.StudentId;
-
-                    Unit_Of_Work.hygieneTypeStudentHygieneTypes_Repository.Add(htsht);
                 }
             }
 

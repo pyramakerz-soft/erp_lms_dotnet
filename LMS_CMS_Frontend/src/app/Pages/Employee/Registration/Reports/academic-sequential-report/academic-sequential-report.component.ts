@@ -54,6 +54,7 @@ export class AcademicSequentialReportComponent {
   filteredStudents: Student[] = [];
 
   DataToPrint: any = null
+  TableData : any[] = []
   CurrentDate : any =new Date()
   ArabicCurrentDate : any =new Date()
   direction: string = "";
@@ -248,7 +249,7 @@ export class AcademicSequentialReportComponent {
               day: 'numeric'
             });
             console.log("this.CurrentDate",this.CurrentDate)
-
+            this.TableData=d.grades.map((row: { gradeName: any; academicYearName: any; }) => [row.gradeName, row.academicYearName])
             resolve();
           },
           error: (err) => {

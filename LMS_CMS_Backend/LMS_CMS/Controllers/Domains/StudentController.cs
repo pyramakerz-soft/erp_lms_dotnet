@@ -747,7 +747,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             }
 
             List<StudentAcademicYear> StudentAcademicYear = await Unit_Of_Work.studentAcademicYear_Repository.Select_All_With_IncludesById<StudentAcademicYear>(
-                 query => query.IsDeleted != true && query.ID == stuId && query.SchoolID == schoolId,
+                 query => query.IsDeleted != true && query.StudentID == stuId && query.SchoolID == schoolId,
                  query => query.Include(stu => stu.Grade),
                  query => query.Include(stu => stu.Classroom).ThenInclude(d => d.AcademicYear));
 
@@ -760,9 +760,9 @@ namespace LMS_CMS_PL.Controllers.Domains
             
             string currentGradeName = "";
             
-            GradeWithAcademicYearGetDTO data = new GradeWithAcademicYearGetDTO();
             for(int i = 0; i < StudentAcademicYear.Count; i++)
             {
+                GradeWithAcademicYearGetDTO data = new GradeWithAcademicYearGetDTO();
                 data.GradeID = StudentAcademicYear[i].GradeID;
                 data.GradeName = StudentAcademicYear[i].Grade.Name;
                 data.AcademicYearID = StudentAcademicYear[i].Classroom.AcademicYearID;

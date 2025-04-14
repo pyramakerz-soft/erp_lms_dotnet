@@ -17,18 +17,12 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
     public class ZatcaController : ControllerBase
     {
         private readonly ICsrGenerator _csrGenerator;
-        private readonly IEInvoiceSigner _invoiceSigner;
-        private readonly IEInvoiceHashGenerator _hashGenerator;
-        private readonly IEInvoiceQRGenerator _qrGenerator;
         private readonly UOW _unit_Of_Work;
 
-        public ZatcaController(ICsrGenerator csrGenerator, IEInvoiceSigner invoiceSigner, IEInvoiceHashGenerator hashGenerator, UOW unit_of_work, IEInvoiceQRGenerator qrGenerator)
+        public ZatcaController(ICsrGenerator csrGenerator, UOW unit_of_work)
         {
             _csrGenerator = csrGenerator;
-            _invoiceSigner = invoiceSigner;
-            _hashGenerator = hashGenerator;
             _unit_Of_Work = unit_of_work;
-            _qrGenerator = qrGenerator;
         }
 
         //#region Generate Private Key
@@ -166,9 +160,9 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             //    return hash.ErrorMessage;
             //}
 
-            var hash = _hashGenerator.GenerateEInvoiceHashing(doc);
+            //var hash = _hashGenerator.GenerateEInvoiceHashing(doc);
 
-            return hash.Hash;
+            return "";
         }
         #endregion
 

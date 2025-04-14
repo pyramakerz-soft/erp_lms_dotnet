@@ -32,8 +32,8 @@
     </div>
     <div class="mt-7 ml-2">
         <button class="p-3 font-medium text-xl rounded-lg" (click)="ViewReport()"
-            [disabled]="!SelectedSchoolId || !SelectedStudentId || !SelectedYearId"
-            [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedStudentId || !SelectedYearId, 'secondaryBg text-white': SelectedSchoolId && SelectedStudentId && SelectedYearId }">View
+            [disabled]="!SelectedSchoolId || !SelectedStudentId "
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedStudentId , 'secondaryBg text-white': SelectedSchoolId && SelectedStudentId}">View
             Report</button>
     </div>
 </div>
@@ -92,35 +92,35 @@
 
 <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">
-        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [Title]="'Identifier Latter'"
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'School Leaving Certificate'" [Title]="'School Leaving Certificate'"
         [infoRows]="[
         {
-          keyEn: 'Date : ' + this.CurrentDate,
-          keyAr: 'التاريخ: ' + this.ArabicCurrentDate
+          keyEn: 'Students`s Name : ' + this.DataToPrint.student.en_name,
+          keyAr: 'اسم الطالب : ' + this.DataToPrint.student.ar_name
         },
         {
-          keyEn: 'Dear Sirs ,',
-          keyAr: 'تحية طيبة وبعد'
+          keyEn: 'Date Of Birth : ' + this.CurrentDate,
+          keyAr: ' تاريخ الميلاد : '  + this.ArabicCurrentDate
         },
         {
-          keyEn: 'This to certify that Student / ' + this.DataToPrint.student.en_name,
-          keyAr: 'نفيدكم بأن الطالبة / ' + this.DataToPrint.student.en_name
+          keyEn: 'Nationality :  ' + this.DataToPrint.student.nationalityEnName,
+          keyAr: ' الجنسية :' + this.DataToPrint.student.nationalityArName
         },
         {
-          keyEn: this.DataToPrint.student.nationalityName + ' Nationality',
-          keyAr: 'تحمل الجنسية / ' + this.DataToPrint.student.nationalityName
-        },
-        {
-            keyEn: ' and identity no ' + this.DataToPrint.student.nationalIDExpiredDate,
-            keyAr: 'وتحمل هوية مقيم / ' + this.DataToPrint.student.nationalIDExpiredDate
+            keyEn: ' Passport No : ' + this.DataToPrint.student.passportNo,
+            keyAr: 'رقم جواز السفر : ' + this.DataToPrint.student.passportNo
           },
         {
-          keyEn: 'Is registered in this school this year ' +this.DataToPrint.student.currentGradeName ,
-          keyAr: 'مقيدة لدينا من للعام الدراسي الحالى ' + this.DataToPrint.student.currentGradeName
+          keyEn: 'Date of Admission :  ' +this.DataToPrint.student.insertedAt ,
+          keyAr: ' تاريخ الالتحاق بالمدرسة  : ' + this.DataToPrint.student.insertedAt
         },
         {
-          keyEn: 'And he was given this certificate to be presented to whom it may concern, without bearing any responsibility on the part of the school.',
-          keyAr: 'وقد أعطيت له هذه الإفادة لتقديمها لمن يهمه الأمر دون أدنى مسؤولية على المدرسة.'
+            keyEn: 'Current Grade :  ' +this.DataToPrint.student.currentGradeName ,
+            keyAr: ' الصف الدراسي الحالى :  '     + this.DataToPrint.student.currentGradeName
+          },
+        {
+          keyEn: 'Learning Oasis international school Certificates that the student mentioned above has been a student of the school and has completed the grade/s as shown below.',
+          keyAr: 'نشهد مدارس واحة العلم العالمية ان الطالب المذكور اعلاه هو احد الطلاب المنتظمين في المدرسة وقد انهي الصفوف الدراسية علي النحة الموضح ادناه  '
         }
       ]
       " 

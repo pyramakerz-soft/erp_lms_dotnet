@@ -233,7 +233,7 @@ export class AcademicSequentialReportComponent {
 
   GetData(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.studentServ.GetStudentProofRegistration(this.SelectedYearId, this.SelectedStudentId, this.SelectedSchoolId, this.DomainName)
+      this.studentServ.GetAcademicSequential(this.SelectedStudentId, this.SelectedSchoolId, this.DomainName)
         .subscribe({
           next: (d) => {
             this.DataToPrint = d; 

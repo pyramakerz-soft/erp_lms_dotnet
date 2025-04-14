@@ -146,5 +146,17 @@ export class StudentService {
     return this.http.get<any>(`${this.baseUrl}/Student/GetByClassIDReport?schoolId=${SchoolId}&classId=${ClassId}`, { headers })
   }
 
+  GetAcademicSequential(StudentId:number,SchoolId:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/AcademicSequentialReport?stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
+  }
 
 }

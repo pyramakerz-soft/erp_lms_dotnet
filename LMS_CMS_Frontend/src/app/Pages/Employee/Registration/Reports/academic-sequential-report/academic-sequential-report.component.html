@@ -6,7 +6,7 @@
     <div class="w-[49%]">
         <label for="School1" class="block mb-2 text-sm font-medium text-gray-900">School</label>
         <select id="School1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedSchoolId" (change)="getAllYears()">
+            [(ngModel)]="SelectedSchoolId" (change)="getAllStudents()">
             <option value=0 disabled selected hidden>Select a School</option>
             <option *ngFor="let stu of schools" [value]="stu.id">
                 {{ stu.name }}
@@ -17,7 +17,7 @@
         <label for="Student" class="block mb-2 text-sm font-medium text-gray-900">Student</label>
         <ng-container *ngIf="!isSearching">
             <select id="Student" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-                [(ngModel)]="SelectedStudentId" [disabled]="!SelectedSchoolId">
+                [(ngModel)]="SelectedStudentId"  [disabled]="!SelectedSchoolId">
                 <option value="0" disabled selected hidden>Select a Student</option>
                 <option *ngFor="let ac of filteredStudents" [value]="ac.id">
                     {{ ac.user_Name }}
@@ -124,7 +124,7 @@
         }
       ]
       " 
-      [tableHeaders]="['Grade', 'Academic Year']"[tableData]="TableData"
+      [tableHeaders]="['Grade', 'Academic_Year']"[tableData]="TableData"
       [PsNotes]="[
         {
             EnNote: 'Best Regards ,',

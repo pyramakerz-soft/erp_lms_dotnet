@@ -88,7 +88,6 @@ export class StudentInformationComponent {
       }
     });
     this.getAllSchools()
-    this.getAllStudents()
     this.getAllYears()
   }
 
@@ -113,7 +112,7 @@ export class StudentInformationComponent {
   }
 
   getAllStudents() {
-    this.studentServ.GetAll(this.DomainName).subscribe((d) => {
+    this.studentServ.GetByAcademicYearID(this.SelectedYearId ,this.DomainName).subscribe((d) => {
       this.Students = d;
       this.filteredStudents = d; // Set filtered students to all initially
     });

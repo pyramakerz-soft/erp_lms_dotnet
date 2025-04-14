@@ -24,14 +24,12 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly CheckPageAccessService _checkPageAccessService;
-        private readonly SchoolHeaderService _schoolHeaderService;
 
-        public GradeController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService, SchoolHeaderService schoolHeaderService)
+        public GradeController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
-            _checkPageAccessService = checkPageAccessService;
-            _schoolHeaderService = schoolHeaderService;
+            _checkPageAccessService = checkPageAccessService; 
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -381,85 +379,6 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             Unit_Of_Work.grade_Repository.Update(grade);
             Unit_Of_Work.SaveChanges();
             return Ok();
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        [HttpGet("GetGradeAndStudentCountByYearID")]
-        public async Task<IActionResult> GetGradeAndStudentCountByYearID([FromQuery] long schoolId, [FromQuery] long yearId)
-        {
-            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-
-            var userClaims = HttpContext.User.Claims;
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            long.TryParse(userIdClaim, out long userId);
-            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-
-            if (userIdClaim == null || userTypeClaim == null)
-            {
-                return Unauthorized("User ID or Type claim not found.");
-            }
-
-            if (schoolId == null || schoolId == 0)
-            {
-                return BadRequest("School Id can't be null");
-            }
-
-            if (yearId == null || yearId == 0)
-            {
-                return BadRequest("Academic Year Id can't be null");
-            }  
-
-            AcademicYear year = Unit_Of_Work.academicYear_Repository.First_Or_Default(
-                d => d.IsDeleted != true && d.ID == yearId
-                );
-            if (year == null)
-            {
-                return NotFound("No Academic Year with this Id");
-            }
-
-
-            // Get All Classes Where Academic Year 
-            List<Classroom> classrooms = await Unit_Of_Work.classroom_Repository.Select_All_With_IncludesById<Classroom>(
-                query => query.IsDeleted != true && query.AcademicYearID == yearId,
-                query => query.Include(d => d.AcademicYear), 
-                query => query.Include(d => d.Grade).ThenInclude(d => d.Section));
-
-        //public class GradeWithStudentClassCountDTO
-        //{
-        //    public long ID { get; set; }
-        //    public string Name { get; set; }
-        //    public int ClassCount { get; set; }
-        //    public int SaudiCount { get; set; }
-        //    public int NonSaudiCount { get; set; }
-        //    public int StudentCount { get; set; }
-        //    public int StudentsAssignedToNoorCount { get; set; }
-        //}
-            var result = classrooms
-                .GroupBy(c => new { c.Grade, c.Grade.Section })  // Group by Grade and Section
-                .Select(g => new
-                {
-                    Grade = g.Key.Grade,
-                    Section = g.Key.Section,
-                    ClassCount = g.Count()  // Count of classrooms for this grade-section combination
-                })
-                .ToList();
-             
-
-            string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? "Egypt Standard Time"
-                : "Africa/Cairo";
-
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
-
-            School_GetDTO schoolDTO = _schoolHeaderService.GetSchoolHeader(Unit_Of_Work, schoolId, Request);
-
-            return Ok(new
-            {
-                //Grades = gradeDTOs, 
-                School = schoolDTO, 
-                Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
-            });
-        }
+        } 
     }
 }

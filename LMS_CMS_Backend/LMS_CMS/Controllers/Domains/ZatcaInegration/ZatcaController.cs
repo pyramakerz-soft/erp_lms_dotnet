@@ -108,11 +108,15 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
 
-            string csidPath = Path.Combine(invoices, "CSID.cer");
+            // Optional: Prettify the JSON for readability
+            dynamic parsedJson = JsonConvert.DeserializeObject(csid);
+            string formattedJson = JsonConvert.SerializeObject(parsedJson, Newtonsoft.Json.Formatting.Indented);
 
-            await System.IO.File.WriteAllTextAsync(csidPath, csid);
+            // Save as .json instead of .cer
+            string csidPath = Path.Combine(invoices, "CSID.json");
+            await System.IO.File.WriteAllTextAsync(csidPath, formattedJson);
 
-            return Ok(csid);
+            return Ok(formattedJson);  // Return the pretty JSON as response too
         }
         #endregion
 

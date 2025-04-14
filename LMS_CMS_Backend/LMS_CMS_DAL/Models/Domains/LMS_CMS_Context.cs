@@ -118,6 +118,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Drug> Drugs { get; set; }
         public DbSet<HygieneForm> HygieneForms { get; set; }
         public DbSet<StudentHygieneTypes> StudentHygieneTypes { get; set; }
+        public DbSet<HygieneTypeStudentHygieneTypes> HygieneTypeStudentHygieneTypes { get; set; }
         public DbSet<Dose> Dose { get; set; }
         public DbSet<FollowUp> FollowUps { get; set; }
         public DbSet<FollowUpDrug> FollowUpDrugs { get; set; }

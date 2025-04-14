@@ -49,7 +49,23 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     query => query.Include(h => h.School),
                     query => query.Include(h => h.Grade),
                     query => query.Include(h => h.StudentHygieneTypes)
-                );
+            );
+
+            foreach (var ff in hygieneForms)
+            {
+                foreach (var dd in ff.StudentHygieneTypes)
+                {
+                    dd.Student = Unit_Of_Work.student_Repository.First_Or_Default(d => d.ID == dd.StudentId && d.IsDeleted != true);
+                    //if (ff.StudentHygieneTypes != null)
+                    //{
+                    //    foreach (var tt in dd.HygieneTypes)
+                    //    {
+                    //        tt.HygieneType = Unit_Of_Work.hygieneType_Repository.First_Or_Default(d => d.Id == tt.HygieneTypeId && d.IsDeleted != true);
+                    //    }
+                    //}
+
+                }
+            }
 
             if (hygieneForms == null || hygieneForms.Count == 0)
             {
@@ -128,6 +144,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 return BadRequest("Hygiene Form can not be null");
             }
 
+            HygieneTypeStudentHygieneTypes htsht = new();
+
             foreach (var hfd in hygieneFormDTO.StudentHygieneTypes)
             {
                 foreach (var ht in hfd.HygieneTypesIds)
@@ -138,6 +156,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     {
                         return NotFound($"Hygien Type ID: {ht} not found");
                     }
+                    
+                    htsht.HygieneTypesId = ht;
+                    htsht.StudentHygieneTypesId = hfd.StudentId;
+
+                    Unit_Of_Work.hygieneTypeStudentHygieneTypes_Repository.Add(htsht);
                 }
             }
 

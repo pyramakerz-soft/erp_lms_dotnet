@@ -14,6 +14,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Zatca.EInvoice.SDK.Contracts;
+using Zatca.EInvoice.SDK;
 //using Zatca.EInvoice.SDK.Contracts;
 //using Zatca.EInvoice.SDK;
 //using Zatca.EInvoice.SDK.Contracts.Models;
@@ -112,7 +114,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<RemoveAllRegistrationFormParentService>();
             builder.Services.AddScoped<SchoolHeaderService>();
             //builder.Services.AddScoped<IEInvoiceHashGenerator, EInvoiceHashGenerator>();
-            //builder.Services.AddScoped<ICsrGenerator, CsrGenerator>();
+            builder.Services.AddScoped<ICsrGenerator, CsrGenerator>();
             //builder.Services.AddScoped<RequestResult>();
 
 

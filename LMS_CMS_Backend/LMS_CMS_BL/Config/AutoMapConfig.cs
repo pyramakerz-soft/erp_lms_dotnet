@@ -143,6 +143,7 @@ namespace LMS_CMS_BL.Config
               .ForMember(dest => dest.GuardianWorkPlace, opt => opt.MapFrom(src => src.Parent.WorkPlace))
               .ForMember(dest => dest.GuardianEmail, opt => opt.MapFrom(src => src.Parent.Email))
               .ForMember(dest => dest.GuardianProfession, opt => opt.MapFrom(src => src.Parent.Profession))
+              .ForMember(dest => dest.StartAcademicYearName, opt => opt.MapFrom(src => src.StartAcademicYear.Name))
               .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.Gender.Name));
             CreateMap<StudentGetDTO, Student>();
 

@@ -58,6 +58,10 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("RegistrationFormParent")]
         public long? RegistrationFormParentID { get; set; }
         public RegisterationFormParent RegistrationFormParent { get; set; }
+        
+        [ForeignKey("StartAcademicYear")]
+        public long? StartAcademicYearID { get; set; }
+        public AcademicYear StartAcademicYear { get; set; }
 
         public string? DateOfBirth {  get; set; }
         public string? PlaceOfBirth { get; set; }

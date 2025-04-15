@@ -12,7 +12,6 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './search.component.css'
 })
 export class SearchComponent {
-
   @Input() key: string = "id" ;
   value: any = "";
   IsSearchOpen: boolean = false;
@@ -33,4 +32,10 @@ export class SearchComponent {
   formatKey(key: string): string {
     return key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
   }
+
+  onInputValueChange() {
+    this.value=""
+    this.SearchByKeyValue()
+  }
+  
 }

@@ -54,7 +54,7 @@ export class BankComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name', "iban", "bankName", "bankAccountName", "accountClosingDate", "accountOpeningDate", "accountNumberName"];
+  keysArray: string[] = ['id', 'name', "iban", "bankName", "bankAccountNumber", "accountClosingDate", "accountOpeningDate", "accountNumberName"];
 
   bank: Bank = new Bank();
 
@@ -99,8 +99,7 @@ export class BankComponent {
   GetAllData() {
     this.TableData = []
     this.BankServ.Get(this.DomainName).subscribe((d) => {
-      this.TableData = d;
-      console.log(this.TableData)
+      this.TableData = d; 
     })
   }
 
@@ -290,7 +289,7 @@ export class BankComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

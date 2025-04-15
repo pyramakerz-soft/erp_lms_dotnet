@@ -162,7 +162,7 @@ namespace LMS_CMS_PL.Services.Invoice
             string cerPath = Path.Combine(csr, "CSID.json");
 
             XmlDocument exampleDoc = new XmlDocument();
-            exampleDoc.PreserveWhitespace = false;
+            exampleDoc.PreserveWhitespace = true;
             exampleDoc.Load(exampleXmlPath);
             
             XmlNamespaceManager nsMgr = RegisterAllNamespaces(exampleDoc);
@@ -174,45 +174,71 @@ namespace LMS_CMS_PL.Services.Invoice
             AddValue(exampleDoc, "//cbc:UUID", uuid, nsMgr);
             AddValue(exampleDoc, "//cbc:IssueDate", date, nsMgr); // edit in master
             AddValue(exampleDoc, "//cbc:IssueTime", time, nsMgr); // edit in master
+            AddValue(exampleDoc, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
 
-            SaveFormatted(exampleDoc, exampleXmlPath, false);
+            SaveFormatted(exampleDoc, exampleXmlPath);
 
             File.Copy(exampleXmlPath, newInvoicePath, true);
             File.Copy(exampleXmlPath, tempXmlPath, true);
 
             XmlDocument doc = new XmlDocument();
-            doc.PreserveWhitespace = false;
+            doc.PreserveWhitespace = true;
             doc.Load(newInvoicePath);
 
             XmlDocument tempDoc = new XmlDocument();
-            doc.PreserveWhitespace = false;
+            doc.PreserveWhitespace = true;
             tempDoc.Load(tempXmlPath);
 
+            // Step 0000000001
             RemoveUnneededTags(tempDoc, nsMgr);
+            byte[] canonicalizedXml = CanonicalizeInvoice(tempDoc);
+            byte[] sha256Hash = SHA256.HashData(canonicalizedXml);
+            string sha256HashString = BitConverter.ToString(sha256Hash).Replace("-", "").ToLowerInvariant();
+            string invoiceHash64 = Convert.ToBase64String(sha256Hash);
 
-            string canonicalizedXml = CanonicalizeInvoice(tempDoc);
-            string sha256Hash = SHA256Hash(canonicalizedXml);
-            //string xmlHashBytes = HashInvoice(doc);
-            string invoiceHash64 = Convert.ToBase64String(Convert.FromHexString(sha256Hash));
+            // Step 0000000002
+            string digitalSignature = GenerateDigitalSignature(sha256Hash, privateKeyPath);
 
-            string digitalSignature = GenerateDigitalSignature(Convert.FromBase64String(sha256Hash), privateKeyPath);
+            // Step 0000000003
+            string jsonContent = File.ReadAllText(cerPath);
+            dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
+            string base64Cert = jsonObject.binarySecurityToken;
 
-            byte[] binaryData = GenerateCertificateHash(cerPath);
-            string hashBytes = SHA256Hash(binaryData);
-            string certHashBase64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(hashBytes));
-            X509Certificate2 cert = new X509Certificate2(binaryData);
+            byte[] certificateSha256Hash = SHA256.HashData(Convert.FromBase64String(base64Cert));
+            string certificateBase64Hash = BitConverter.ToString(certificateSha256Hash).Replace("-", "").ToLower();
+            string certHashBase64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(certificateBase64Hash));
 
+            X509Certificate2 cert = new X509Certificate2(Convert.FromBase64String(base64Cert));
+
+            // Step 0000000004
+            AddValue(doc, "//xades:CertDigest/ds:DigestValue", certHashBase64, nsMgr);
+            AddValue(doc, "//xades:SignedSignatureProperties/xades:SigningTime", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"), nsMgr);
+            AddValue(doc, "//xades:IssuerSerial/ds:X509IssuerName", cert.IssuerName.Name, nsMgr);
+            AddValue(doc, "//xades:IssuerSerial/ds:X509SerialNumber", BigInteger.Parse("00" + cert.SerialNumber, NumberStyles.HexNumber).ToString(), nsMgr);
+
+            // Step 0000000005
+            XmlNode propertiesNode = doc.SelectSingleNode("//xades:QualifyingProperties/xades:SignedProperties", nsMgr);
+
+            byte[] canonicalizedProps = CanonicalizeNode(propertiesNode);
+            byte[] PropsSha256 = SHA256.HashData(canonicalizedProps);
+            string PropsSha256HashString = BitConverter.ToString(PropsSha256).Replace("-", "").ToLowerInvariant();
+            string propsHash64 = Convert.ToBase64String(PropsSha256);
+
+            // Step 0000000006
             string csrContent = File.ReadAllText(csrPath);
             csrContent = csrContent.Replace("-----BEGIN CERTIFICATE REQUEST-----", "")
                 .Replace("-----END CERTIFICATE REQUEST-----", "")
                 .Replace("\r", "").Replace("\n", "").Trim();
 
+            AddValue(doc, "//ds:SignatureValue", digitalSignature, nsMgr);
+            AddValue(doc, "//ds:X509Certificate", csrContent, nsMgr);
+            AddValue(doc, "//ds:Reference[@URI='#xadesSignedProperties']/ds:DigestValue", propsHash64, nsMgr);
+            AddValue(doc, "//ds:Reference[@Id='invoiceSignedData']/ds:DigestValue", invoiceHash64, nsMgr);
+
+            
+
             XmlElement root = doc.DocumentElement;
 
-            AddValue(doc, "//xades:CertDigest/ds:DigestValue", certHashBase64, nsMgr);
-            AddValue(doc, "//xades:SignedSignatureProperties/xades:SigningTime", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"), nsMgr);
-            AddValue(doc, "//xades:IssuerSerial/ds:X509IssuerName", cert.Subject, nsMgr);
-            AddValue(doc, "//xades:IssuerSerial/ds:X509SerialNumber", BigInteger.Parse("00" + cert.SerialNumber, NumberStyles.HexNumber).ToString(), nsMgr);
             //AddValue(doc, "//cbc:ID[text()='SME00010']", "INV + master.ID.ToString()", nsMgr);
             //AddValue(doc, "//cbc:UUID", Guid.NewGuid().ToString(), nsMgr);
             //AddValue(doc, "//cac:AdditionalDocumentReference/cbc:UUID", "master.ID.ToString()", nsMgr);
@@ -289,20 +315,14 @@ namespace LMS_CMS_PL.Services.Invoice
             //    // Finally, append the completed InvoiceLine
             //    root.AppendChild(invoiceLine);
             //}
-            //SaveFormatted(tempDoc, tempXml, true);
-            SaveFormatted(doc, newInvoicePath, true);
+            //SaveFormatted(tempDoc, tempXml);
+            SaveFormatted(doc, newInvoicePath);
 
-            XmlNode propertiesNode = doc.SelectSingleNode("//xades:QualifyingProperties/xades:SignedProperties", nsMgr);
+            
 
-            string signedPropsSha256 = CanonicalizeNode(propertiesNode);
-            string signedPropsBase64 = HexToBase64(signedPropsSha256);
+            
 
-            AddValue(doc, "//ds:Reference[@Id='invoiceSignedData']/ds:DigestValue", invoiceHash64, nsMgr);
-            AddValue(doc, "//ds:X509Certificate", csrContent, nsMgr);
-            AddValue(doc, "//ds:SignatureValue", digitalSignature, nsMgr);
-            AddValue(doc, "//ds:Reference[@URI='#xadesSignedProperties']/ds:DigestValue", signedPropsBase64, nsMgr);
-
-            SaveFormatted(doc, newInvoicePath, true);
+            //SaveFormatted(doc, newInvoicePath);
 
             string sellerNameValue = doc.SelectSingleNode("//cac:PartyLegalEntity/cbc:RegistrationName", nsMgr).InnerText;
             string vatNumberValue = doc.SelectSingleNode("//cac:PartyTaxScheme/cbc:CompanyID", nsMgr).InnerText;
@@ -334,13 +354,13 @@ namespace LMS_CMS_PL.Services.Invoice
 
             AddValue(doc, "//cac:AdditionalDocumentReference[cbc:ID='QR']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", qrCodeBase64, nsMgr);
             AddValue(doc, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
-            SaveFormatted(doc, newInvoicePath, true);
+            SaveFormatted(doc, newInvoicePath);
 
             string invoicEncoded = await File.ReadAllTextAsync(newInvoicePath);
 
             //string test = await InvoiceCompliance(cerPath, ConvertToBase64(Encoding.UTF8.GetBytes(invoicEncoded)), invoiceHash64, uuid, "V2");
 
-            SaveFormatted(doc, newInvoicePath, true);
+            SaveFormatted(doc, newInvoicePath);
         }
 
         private static string HashInvoice(XmlDocument doc)
@@ -352,14 +372,18 @@ namespace LMS_CMS_PL.Services.Invoice
             return "";
         }
 
-        private static string CanonicalizeInvoice(XmlDocument doc)
+        private static byte[] CanonicalizeInvoice(XmlDocument doc)
         {
+            doc.PreserveWhitespace = true;
             XmlDsigC14NTransform transform = new XmlDsigC14NTransform();
             transform.LoadInput(doc);
 
             using var stream = (Stream)transform.GetOutput(typeof(Stream));
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                return ms.ToArray(); // Canonicalized XML as bytes
+            }
         }
 
         private static string SHA256Hash(string input)
@@ -409,33 +433,24 @@ namespace LMS_CMS_PL.Services.Invoice
             return binaryData;
         }
 
-        private static string CanonicalizeNode(XmlNode node)
+        private static byte[] CanonicalizeNode(XmlNode node)
         {
             var transform = new XmlDsigC14NTransform();
 
-            // Import the node into a new XmlDocument
-            XmlDocument doc = new XmlDocument();
-            XmlNode imported = doc.ImportNode(node, true);
-            doc.AppendChild(imported);
+            // Create an XmlDocument and import the node
+            XmlDocument tempDoc = new XmlDocument();
+            tempDoc.PreserveWhitespace = true;
+            XmlNode imported = tempDoc.ImportNode(node, true);
+            tempDoc.AppendChild(imported);
 
-            // Select all elements under the root node
-            XmlNodeList nodeList = doc.SelectNodes("//*");
+            // Load the document into the transform
+            transform.LoadInput(tempDoc);
 
-            // Load into the canonicalization transform
-            transform.LoadInput(nodeList);
+            using var stream = (Stream)transform.GetOutput(typeof(Stream));
+            using var ms = new MemoryStream();
+            stream.CopyTo(ms);
 
-            // Canonicalize and hash
-            using Stream canonicalStream = (Stream)transform.GetOutput(typeof(Stream));
-            using SHA256 sha256 = SHA256.Create();
-
-            byte[] hash = sha256.ComputeHash(canonicalStream);
-
-            // Convert to lowercase hexadecimal string
-            StringBuilder hex = new StringBuilder(hash.Length * 2);
-            foreach (byte b in hash)
-                hex.AppendFormat("{0:x2}", b);
-
-            return hex.ToString();
+            return ms.ToArray(); // return canonicalized XML as byte[]
         }
 
         private static string HexToBase64(string hex)

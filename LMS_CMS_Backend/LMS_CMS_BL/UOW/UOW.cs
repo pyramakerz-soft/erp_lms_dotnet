@@ -131,7 +131,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Dose> Dose_Repository;
         GenericRepo<HygieneForm> HygieneForm_Repository;
         GenericRepo<StudentHygieneTypes> StudentHygieneTypes_Repository;
-        GenericRepo<StudentHygiens> StudentHygiens_Repository;
+        GenericRepo<StudentHygienes> StudentHygiens_Repository;
         GenericRepo<FollowUp> FollowUp_Repository;
         GenericRepo<FollowUpDrug> FollowUpDrug_Repository;
         GenericRepo<MedicalHistory> MedicalHistory_Repository;
@@ -1458,13 +1458,13 @@ namespace LMS_CMS_BL.UOW
             }
         }
 
-        public GenericRepo<StudentHygiens> studentHygiens_Repository
+        public GenericRepo<StudentHygienes> studentHygiens_Repository
         {
             get
             {
                 if (StudentHygiens_Repository == null)
                 {
-                    StudentHygiens_Repository = new GenericRepo<StudentHygiens>(db);
+                    StudentHygiens_Repository = new GenericRepo<StudentHygienes>(db);
                 }
                 return StudentHygiens_Repository;
             }

@@ -71,7 +71,7 @@ namespace LMS_CMS_PL.Services
             return submittion;
         }
 
-        public async Task<Student> CreateNewStudent(UOW Unit_Of_Work, StudentGetDTO studentDto, string userTypeClaim, long userId)
+        public async Task<Student> CreateNewStudent(UOW Unit_Of_Work, StudentGetDTO studentDto, string userTypeClaim, long userId, long startAcademicYearID)
         {
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
 
@@ -96,6 +96,7 @@ namespace LMS_CMS_PL.Services
                 MotherMobile = studentDto.MotherMobile,
                 PreviousSchool = studentDto.PreviousSchool,
                 RegistrationFormParentID = studentDto.RegistrationFormParentID,
+                StartAcademicYearID = startAcademicYearID,
                 AdmissionDate = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone).ToString("yyyy-MM-dd"),
                 InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone),
                 InsertedByOctaId = userTypeClaim == "octa" ? userId : null,

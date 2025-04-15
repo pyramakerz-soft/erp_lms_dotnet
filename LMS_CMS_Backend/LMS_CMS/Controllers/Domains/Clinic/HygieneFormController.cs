@@ -57,7 +57,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                 {
                     dd.Student = Unit_Of_Work.student_Repository.First_Or_Default(d => d.ID == dd.StudentId && d.IsDeleted != true);
 
-                    StudentHygiens studentHygiene = Unit_Of_Work.studentHygiens_Repository.First_Or_Default(x => x.StudentId == dd.StudentId);
+                    StudentHygienes studentHygiene = Unit_Of_Work.studentHygiens_Repository.First_Or_Default(x => x.StudentId == dd.StudentId);
 
                     HygieneType hygieneType = Unit_Of_Work.hygieneType_Repository.First_Or_Default(h => h.Id == studentHygiene.ID);
 
@@ -152,13 +152,15 @@ namespace LMS_CMS_PL.Controllers.Domains.Clinic
                     {
                         return NotFound($"Hygien Type ID: {ht} not found");
                     }
-                    StudentHygiens studentHygiene = new();
-                    studentHygiene.StudentId = hfd.StudentId;
-                    studentHygiene.HygieneTypeId = ht;
 
-                    if (hfd.StudentId != studentHygiene.StudentId && ht != studentHygiene.HygieneTypeId)
+                    StudentHygienes studentHygiene = Unit_Of_Work.studentHygiens_Repository.First_Or_Default(sh => sh.StudentId == hfd.StudentId && sh.HygieneTypeId == ht);
+
+                    if (studentHygiene == null)
                     {
-                        Unit_Of_Work.studentHygiens_Repository.Add(studentHygiene);
+                        StudentHygienes studentHygieneObject = new();
+                        studentHygieneObject.StudentId = hfd.StudentId;
+                        studentHygieneObject.HygieneTypeId = ht;
+                        Unit_Of_Work.studentHygiens_Repository.Add(studentHygieneObject);
                     }
                 }
             }

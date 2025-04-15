@@ -99,6 +99,7 @@ export class BuildingComponent {
 
   getSchoolData() {
     this.schoolService.Get(this.DomainName).subscribe((data) => {
+      console.log(data)
       this.Schools = data;
     });
   }

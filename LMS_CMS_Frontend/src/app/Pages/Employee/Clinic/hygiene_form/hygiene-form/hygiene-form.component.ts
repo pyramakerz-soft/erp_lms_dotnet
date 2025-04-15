@@ -3,15 +3,12 @@ import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../../../../Component/search/search.component';
-
 import Swal from 'sweetalert2';
 import { TableComponent } from "../../../../../Component/reuse-table/reuse-table.component";
 import { Router } from '@angular/router';
 import { HygieneFormService } from '../../../../../Services/Employee/Clinic/hygiene-form.service';
 import { ApiService } from '../../../../../Services/api.service';
 import { HygieneForm } from '../../../../../Models/Clinic/HygieneForm';
-
-
 
 @Component({
   selector: 'app-hygiene-form',
@@ -21,18 +18,16 @@ import { HygieneForm } from '../../../../../Models/Clinic/HygieneForm';
   styleUrls: ['./hygiene-form.component.css']
 })
 export class HygieneFormComponent implements OnInit {
-  hygieneForms: HygieneForm[] = []; 
-  originalHygieneForms: HygieneForm[] = []; 
   @Input() students: any[] = [];
   @Input() hygieneTypes: any[] = [];
-
+  
+  hygieneForms: HygieneForm[] = []; 
+  originalHygieneForms: HygieneForm[] = []; 
   hygieneForm: any = { id: null, grade: '', classes: '' };
   editHygieneForm = false;
   validationErrors: { [key: string]: string } = {};
   isModalVisible = false;
   DomainName: string = '';
-
-  
   key: string = 'id'; 
   value: any = ''; 
   keysArray: string[] = ['id', 'school', 'grade', 'classRoom', 'date']; 
@@ -51,9 +46,7 @@ export class HygieneFormComponent implements OnInit {
   async loadHygieneForms() {
       try {
           const domainName = this.apiService.GetHeader();
-          const data = await firstValueFrom(this.hygieneFormService.Get(domainName));
-          console.log(data)
-          
+          const data = await firstValueFrom(this.hygieneFormService.Get(domainName));          
           this.originalHygieneForms = data.map((item) => ({
               ...item,
               school: item.school,

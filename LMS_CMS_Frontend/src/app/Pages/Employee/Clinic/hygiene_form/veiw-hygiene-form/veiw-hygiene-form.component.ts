@@ -1,4 +1,4 @@
-// view-hygiene-form.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HygieneFormService } from '../../../../../Services/Employee/Clinic/hygiene-form.service';
@@ -10,7 +10,7 @@ import { Student } from '../../../../../Models/student';
 import { HygieneTypes } from '../../../../../Models/Clinic/hygiene-types';
 import { HygieneFormTableComponent } from "../hygiene-form-table/hygiene-form-table.component";
 import { ApiService } from '../../../../../Services/api.service';
-import { DatePipe } from '@angular/common'; // Import DatePipe
+import { DatePipe } from '@angular/common'; 
 
 @Component({
   selector: 'app-view-hygiene-form',
@@ -53,7 +53,7 @@ async loadHygieneForm(id: number) {
     this.hygieneFormService.GetById(id, domainName).subscribe({
       next: (hygieneForm) => {
         this.hygieneForm = hygieneForm;
-        this.students = hygieneForm.studentHygieneTypes ?? []; // Fallback to an empty array if undefined
+        this.students = hygieneForm.studentHygieneTypes ?? []; 
         console.log(this.students)
       },
       error: (error) => {

@@ -17,8 +17,8 @@
     <!-- Modal Overlay -->
     <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isModalVisible}"
         class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
-<app-medical-history-modal [isVisible]="isModalVisible" (isVisibleChange)="isModalVisible = $event"
-    (onSave)="loadMedicalHistories()" [medicalHistoryData]="selectedMedicalHistory">
-</app-medical-history-modal>
+        <app-medical-history-modal [isVisible]="isModalVisible" (isVisibleChange)="isModalVisible = $event"
+            (onSave)="loadMedicalHistories()" [medicalHistoryData]="selectedMedicalHistory">
+        </app-medical-history-modal>
     </div>
 </div>

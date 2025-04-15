@@ -5,8 +5,6 @@
     </div>
 </div>
 
-
-
     <!-- School, Grade, and Class Information -->
     <div class="flex flex-wrap justify-between mt-5 mb-5">
         <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
@@ -24,12 +22,12 @@
         <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
             <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Date</p>
             <p class="font-medium text-base text-[#1E1E1E]">
-              {{ hygieneForm?.insertedAt | date: 'd, MMM y' }} <!-- Format the date -->
+              {{ hygieneForm?.insertedAt | date: 'd, MMM y' }}
             </p>
         </div>
     </div>
 
     <!-- Table Section -->
     <app-hygiene-form-table [students]="students" [hygieneTypes]="hygieneTypes"
-               [isViewOnly]="true" [showSelectAll]="false"> <!-- Set showSelectAll to false -->
+               [isViewOnly]="true" [showSelectAll]="false">
     </app-hygiene-form-table>

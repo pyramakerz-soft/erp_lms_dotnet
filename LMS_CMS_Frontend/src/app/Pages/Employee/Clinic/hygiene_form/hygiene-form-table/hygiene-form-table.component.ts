@@ -13,20 +13,46 @@ import { Student } from '../../../../../Models/student';
 export class HygieneFormTableComponent {
   @Input() students: any[] = [];
   @Input() hygieneTypes: any[] = [];
-  @Input() isViewOnly: boolean = false; // Add this input
-  @Input() showSelectAll: boolean = true; // New input property to control visibility of "Select All" column
+  @Input() isViewOnly: boolean = false;
+  @Input() showSelectAll: boolean = true;
 
+  
+  private previousAttendanceStates: { [key: number]: boolean | null } = {};
 
+  ngOnChanges() {
+    this.students.forEach(student => {
+      this.previousAttendanceStates[student.id] = student['attendance'];
+    });
+  }
 
-  // Set Hygiene Type for a Specific Student
+  onAttendanceChange(student: Student) {
+    if (this.previousAttendanceStates[student.id] === true && student['attendance'] === false) {
+      this.resetHygieneTypes(student);
+    }
+    this.previousAttendanceStates[student.id] = student['attendance'];
+  }
+
+  private resetHygieneTypes(student: Student) {
+    this.hygieneTypes.forEach(hygieneType => {
+      student[`hygieneType_${hygieneType.id}`] = null;
+    });
+    student['hygieneTypeSelectAll'] = null;
+  }
+
   setHygieneType(student: Student, hygieneTypeId: number, value: boolean) {
+    if (this.isViewOnly || student['attendance'] !== true) {
+      return;
+    }
     student[`hygieneType_${hygieneTypeId}`] = value;
   }
 
-  // Set All Hygiene Types for a Specific Student
   setAllHygieneTypesForStudent(student: Student, value: boolean) {
+    if (this.isViewOnly || student['attendance'] !== true) {
+      return;
+    }
     this.hygieneTypes.forEach(hygieneType => {
       student[`hygieneType_${hygieneType.id}`] = value;
     });
+    student['hygieneTypeSelectAll'] = value;
   }
 }

@@ -63,7 +63,7 @@ export class MedicalHistoryByDoctorComponent implements OnInit {
       if (this.medicalHistory) {
         this.medicalHistory[fileType] = null;
       }
-      // TODO: Add API call to actually delete the file from the server
+      
     }
   }
 

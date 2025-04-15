@@ -26,10 +26,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./create-hygiene-form.component.css'],
 })
 export class CreateHygieneFormComponent implements OnInit {
-moveToHygieneForm() {
-this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
-}
-  schools: School[] = [];
+    schools: School[] = [];
   grades: Grade[] = [];
   classes: Classroom[] = [];
   students: Student[] = [];
@@ -40,9 +37,9 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
   selectedGrade: number | null = null;
   selectedClass: number | null = null;
   selectedDate: string = '';
-
-  // Validation errors
   validationErrors: { [key: string]: string } = {};
+
+
 
   constructor(
     private http: HttpClient,
@@ -59,6 +56,10 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
     this.loadHygieneTypes();
     this.loadSchools();
   }
+   
+  moveToHygieneForm() {
+  this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
+  }
 
   async loadHygieneTypes() {
     try {
@@ -67,7 +68,7 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
       this.hygieneTypes = data;
     } catch (error) {
       console.error('Error loading hygiene types:', error);
-      // this.errorMessage = 'Failed to load hygiene types.';
+      
     }
   }
 
@@ -87,7 +88,6 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
       try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.gradeService.GetBySchoolId(this.selectedSchool, domainName));
-        console.log(data)
         this.grades = data;
       } catch (error) {
         console.error('Error loading grades:', error);
@@ -101,7 +101,6 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
       try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.classroomService.GetByGradeId(this.selectedGrade, domainName));
-        console.log(data)
         this.classes = data;
       } catch (error) {
         console.error('Error loading classes:', error);
@@ -115,7 +114,6 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
       try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.studentService.GetByClassID(this.selectedClass, domainName));
-        console.log(data);
         if (data.length === 0) {
           this.errorMessage = 'No students found for the selected class.';
           this.students = [];
@@ -155,10 +153,9 @@ this.router.navigateByUrl('Employee/Hygiene Form Medical Report');
     this.loadStudents();
   }
 
-  // Validate the form
   validateForm(): boolean {
     let isValid = true;
-    this.validationErrors = {}; // Reset validation errors
+    this.validationErrors = {};
 
     if (!this.selectedSchool) {
       this.validationErrors['school'] = '*School is required';
@@ -194,14 +191,12 @@ saveHygieneForm() {
       const hygieneTypesIds = this.hygieneTypes
         .filter((ht) => student[`hygieneType_${ht.id}`] === true)
         .map((ht) => ht.id);
-
-      // Ensure attendance is set to false if it is null or undefined
       const attendance = student['attendance'] === true ? true : false;
 
       return {
         studentId: student.id,
         hygieneTypesIds: hygieneTypesIds,
-        attendance: attendance, // Ensure attendance is always a boolean
+        attendance: attendance, 
         comment: student['comment'],
         actionTaken: student['actionTaken'],
       };
@@ -227,12 +222,10 @@ saveHygieneForm() {
       },
     });
   } else {
-    // Display error messages for missing fields
     this.errorMessage = 'Please fill out all required fields.';
   }
 }
 
-  // Handle view action
   onView(row: any) {
     this.router.navigate(['/view hygiene form', row.id]);
   }

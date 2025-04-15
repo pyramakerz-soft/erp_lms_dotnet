@@ -44,10 +44,10 @@
                 <!-- Attendance -->
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" [(ngModel)]="student['attendance']" class="sr-only peer"
-                            [disabled]="isViewOnly">
+                        <input type="checkbox" [(ngModel)]="student['attendance']" (ngModelChange)="onAttendanceChange(student)"
+                            class="sr-only peer" [disabled]="isViewOnly">
                         <div
-                            class="relative w-11 h-6 bg-[#EAECF0] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#FF7519]/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5  after:transition-all peer-checked:bg-[#FF7519]">
+                            class="relative w-11 h-6 bg-[#EAECF0] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#FF7519]/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF7519]">
                         </div>
                     </label>
                 </td>
@@ -57,12 +57,12 @@
                     <div class="flex gap-2">
                         <!-- Select All True -->
                         <button (click)="setAllHygieneTypesForStudent(student, true)" [disabled]="isViewOnly"
-                            class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white hover:bg-green-500">
+                            class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white">
                             <i class="fas fa-check"></i>
                         </button>
                         <!-- Select All False -->
                         <button (click)="setAllHygieneTypesForStudent(student, false)" [disabled]="isViewOnly"
-                            class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white hover:bg-red-500">
+                            class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>

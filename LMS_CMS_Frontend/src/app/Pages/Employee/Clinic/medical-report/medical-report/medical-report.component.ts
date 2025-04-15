@@ -99,7 +99,7 @@ async onSearchEvent(event: { key: string, value: any }) {
 
   switch (this.selectedTab) {
     case 'MH By Parent':
-      // this.searchKey = 'id';
+      
       await this.loadMHByParentData();
       break;
     case 'MH By Doctor':
@@ -184,7 +184,7 @@ onSchoolChange() {
   this.grades = [];
   this.classes = [];
   this.loadGrades();
-  this.filterMHByDoctor(); // Add this line
+  this.filterMHByDoctor(); 
 }
 
 onGradeChange() {
@@ -192,13 +192,13 @@ onGradeChange() {
   this.selectedStudent = null;
   this.classes = [];
   this.loadClasses();
-  this.filterMHByDoctor(); // Add this line
+  this.filterMHByDoctor(); 
 }
 
 onClassChange() {
   this.selectedStudent = null;
   this.loadStudents();
-  this.filterMHByDoctor(); // Add this line
+  this.filterMHByDoctor(); 
 }
 
   isEditModalVisible = false;
@@ -333,7 +333,7 @@ async loadFollowUps() {
 filterMHByDoctor() {
   let filteredData = [...this.mhByDoctorData];
 
-  // Apply dropdown filters
+  
   if (this.selectedSchool) {
     filteredData = filteredData.filter(item => item.schoolId == this.selectedSchool);
   }
@@ -347,7 +347,7 @@ filterMHByDoctor() {
     filteredData = filteredData.filter(item => item.studentId == this.selectedStudent);
   }
 
-  // Apply search filter if searchValue exists
+  
   if (this.searchValue) {
     filteredData = filteredData.filter(item => {
       const fieldValue = item[this.searchKey as keyof typeof item]?.toString().toLowerCase() || '';
@@ -519,7 +519,7 @@ prepareStudentsData() {
   }
 
 async selectTab(tab: string) {
-  // Reset all filter and search values
+  
   this.selectedTab = tab;
   this.selectedSchool = null;
   this.selectedGrade = null;
@@ -543,13 +543,13 @@ async selectTab(tab: string) {
       break;
     case 'Hygiene Form':
       this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'formDate'];
-      await this.loadAllHygieneForms(); // Reload data to ensure clean state
+      await this.loadAllHygieneForms(); 
       this.filteredHygieneForms = [...this.allHygieneForms];
       this.prepareStudentsData();
       break;
     case 'Follow Up':
       this.searchKeysArray = ['id', 'schoolName', 'gradeName', 'className', 'studentName'];
-      await this.loadFollowUps(); // Reload data to ensure clean state
+      await this.loadFollowUps(); 
       this.filteredFollowUps = [...this.followUps];
       break;
   }

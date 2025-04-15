@@ -181,7 +181,7 @@ keysArray: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentNam
       });
     } catch (error) {
       console.error('Error fetching follow-ups:', error);
-      // Swal.fire('Error', 'Failed to load follow-ups.', 'error');
+      
     }
   }
 
@@ -198,7 +198,7 @@ keysArray: string[] = ['id', 'schoolName', 'gradeName', 'className', 'studentNam
       this.students = studentsData.map(student => ({ id: student.id, name: student.en_name }));
     } catch (error) {
       console.error('Error loading dropdown options:', error);
-      // Swal.fire('Error', 'Failed to load dropdown options.', 'error');
+      
     }
   }
 
@@ -410,11 +410,11 @@ deleteFollowUp(row: any) {
       const domainName = this.apiService.GetHeader();
       this.followUpService.Delete(row.id, domainName).subscribe({
         next: () => {
-          // Check if this was the last item
+          
           if (this.followUps.length === 1) {
-            this.followUps = []; // Clear the array immediately
+            this.followUps = []; 
           }
-          this.loadFollowUps(); // Refresh the data from server
+          this.loadFollowUps(); 
           Swal.fire('Deleted!', 'The follow-up has been deleted.', 'success');
         },
         error: (error) => {

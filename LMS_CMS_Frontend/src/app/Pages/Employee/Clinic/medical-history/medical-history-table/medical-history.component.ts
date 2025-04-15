@@ -110,11 +110,11 @@ deleteMedicalHistory(row: any) {
       const domainName = this.apiService.GetHeader();
       this.medicalHistoryService.Delete(row.id, domainName).subscribe({
         next: () => {
-          // Check if this was the last item
+          
           if (this.medicalHistories.length === 1) {
-            this.medicalHistories = []; // Clear the array immediately
+            this.medicalHistories = []; 
           }
-          this.loadMedicalHistories(); // Refresh the data from server
+          this.loadMedicalHistories(); 
           Swal.fire('Deleted!', 'The medical history has been deleted.', 'success');
         },
         error: (error) => {

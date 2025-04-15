@@ -382,23 +382,69 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 section.ID = group.Key.ID;
                 section.Name = group.Key.Name;
                 section.GradeWithStudentClassCount = new List<GradeWithStudentClassCountDTO>();
+                GradeWithStudentClassCountDTO TotalCounts = new GradeWithStudentClassCountDTO();
 
                 foreach (var grade in group)
                 {
                     GradeWithStudentClassCountDTO gradeWithStudentClassCountDTO = new GradeWithStudentClassCountDTO();
+                    int StudentCountPerGrade = 0;
+                    int StudentSaudiCountPerGrade = 0;
+                    int StudentNoonCountPerGrade = 0;
+
                     gradeWithStudentClassCountDTO.ID = grade.ID;
                     gradeWithStudentClassCountDTO.Name = grade.Name;
 
                     List<Classroom> classes = Unit_Of_Work.classroom_Repository.FindBy(d => d.IsDeleted != true && d.AcademicYearID == yearId && d.GradeID == grade.ID);
                     gradeWithStudentClassCountDTO.ClassCount = classes.Count;
-                    gradeWithStudentClassCountDTO.SaudiCount = classes.Count;
-                    gradeWithStudentClassCountDTO.NonSaudiCount = classes.Count;
-                    gradeWithStudentClassCountDTO.StudentCount = classes.Count;
-                    gradeWithStudentClassCountDTO.StudentsAssignedToNoorCount = classes.Count;
+                    TotalCounts.ClassCount = TotalCounts.ClassCount + gradeWithStudentClassCountDTO.ClassCount;
+
+                    for (int i = 0; i < classes.Count; i++)
+                    {
+                        List<StudentAcademicYear> studentAcademicYears = await Unit_Of_Work.studentAcademicYear_Repository.Select_All_With_IncludesById<StudentAcademicYear>(
+                            d => d.IsDeleted != true && d.ClassID == classes[i].ID && d.SchoolID == schoolId && d.GradeID == grade.ID,
+                            query => query.Include(d => d.Student)
+                            );
+
+                        var studentCountPerClass = studentAcademicYears
+                            .Select(d => d.StudentID) 
+                            .Distinct()
+                            .Count();
+
+                        var studentSaudiCountPerClass = studentAcademicYears
+                            .Where(d => d.Student.Nationality == 148)  
+                            .Select(d => d.StudentID)                 
+                            .Distinct()                               
+                            .Count();
+                        
+                        var studentNoonCountPerClass = studentAcademicYears
+                            .Where(d => d.Student.IsRegisteredInNoor == true)  
+                            .Select(d => d.StudentID)                 
+                            .Distinct()                               
+                            .Count();
+
+                        StudentCountPerGrade = StudentCountPerGrade + studentCountPerClass;
+                        StudentSaudiCountPerGrade = StudentSaudiCountPerGrade + studentSaudiCountPerClass;
+                        StudentNoonCountPerGrade = StudentNoonCountPerGrade + studentNoonCountPerClass;
+
+                        gradeWithStudentClassCountDTO.StudentCount = gradeWithStudentClassCountDTO.StudentCount + studentCountPerClass;
+                    }
+
+                    gradeWithStudentClassCountDTO.StudentCount = StudentCountPerGrade;
+                    TotalCounts.StudentCount = TotalCounts.StudentCount + gradeWithStudentClassCountDTO.StudentCount;
+
+                    gradeWithStudentClassCountDTO.SaudiCount = StudentSaudiCountPerGrade;
+                    TotalCounts.SaudiCount = TotalCounts.SaudiCount + gradeWithStudentClassCountDTO.SaudiCount;
+
+                    gradeWithStudentClassCountDTO.NonSaudiCount = StudentCountPerGrade - StudentSaudiCountPerGrade;
+                    TotalCounts.NonSaudiCount = TotalCounts.NonSaudiCount + gradeWithStudentClassCountDTO.NonSaudiCount;
+
+                    gradeWithStudentClassCountDTO.StudentsAssignedToNoorCount = StudentNoonCountPerGrade;
+                    TotalCounts.StudentsAssignedToNoorCount = TotalCounts.StudentsAssignedToNoorCount + gradeWithStudentClassCountDTO.StudentsAssignedToNoorCount;
 
                     section.GradeWithStudentClassCount.Add(gradeWithStudentClassCountDTO); 
                 }
 
+                section.TotalCounts = TotalCounts;
                 sectionWithGradeAndCounts.Add(section);
             }
 

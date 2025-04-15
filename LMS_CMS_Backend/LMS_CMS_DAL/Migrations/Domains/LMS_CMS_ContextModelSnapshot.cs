@@ -5004,6 +5004,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AdmissionDate")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DateOfBirth")
                         .HasColumnType("nvarchar(max)");
 

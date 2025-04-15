@@ -16,7 +16,7 @@
     <div class="w-[49%]">
         <label for="Year" class="block mb-2 text-sm font-medium text-gray-900">Year</label>
         <select id="Year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedYearId" [disabled]="!SelectedSchoolId">
+            [(ngModel)]="SelectedYearId"  (change)="getAllStudents()" [disabled]="!SelectedSchoolId">
             <option value=0 disabled selected hidden>Select a Year</option>
             <option *ngFor="let ac of academicYears" [value]="ac.id">
                 {{ ac.name }}
@@ -113,16 +113,13 @@
     <div id="Data" class="hidden">
         <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
         {
-          keyEn: 'School',
-          valueEn: this.school.name
+          keyEn: 'School :' + this.school.name,
         },
         {
-          keyEn: 'Student',
-          valueEn: this.SelectedStudent.user_Name
+          keyEn: 'Student : ' + this.SelectedStudent.user_Name,
         },
         {
-          keyEn: 'Date',
-          valueEn: this.CurrentDate
+          keyEn: 'Date : ' + this.CurrentDate,
         }
       ]" [tableDataWithHeader]="DataToPrint"></app-pdf-print>
     </div>

@@ -14,9 +14,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-//using Zatca.EInvoice.SDK.Contracts;
-//using Zatca.EInvoice.SDK;
-//using Zatca.EInvoice.SDK.Contracts.Models;
+using Zatca.EInvoice.SDK.Contracts;
+using Zatca.EInvoice.SDK;
 
 namespace LMS_CMS
 {
@@ -103,7 +102,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<GenerateJWTService>();
             builder.Services.AddScoped<FileImageValidationService>();
             builder.Services.AddScoped<CancelInterviewDayMessageService>();
-            builder.Services.AddScoped< EmailService>();
+            builder.Services.AddScoped<EmailService>();
             builder.Services.AddScoped<GenerateBarCodeEan13>(); 
             builder.Services.AddScoped<CheckPageAccessService>(); 
             builder.Services.AddScoped<InVoiceNumberCreate>();
@@ -112,7 +111,7 @@ namespace LMS_CMS
             builder.Services.AddScoped<RemoveAllRegistrationFormParentService>();
             builder.Services.AddScoped<SchoolHeaderService>();
             //builder.Services.AddScoped<IEInvoiceHashGenerator, EInvoiceHashGenerator>();
-            //builder.Services.AddScoped<ICsrGenerator, CsrGenerator>();
+            builder.Services.AddScoped<ICsrGenerator, CsrGenerator>();
             //builder.Services.AddScoped<RequestResult>();
 
 
@@ -200,6 +199,13 @@ namespace LMS_CMS
             app.UseMiddleware<Endpoint_Authorization_Middleware>();
              
             app.UseAuthorization();
+
+            //app.Urls.Add("http://0.0.0.0:5000");
+            //app.UseCors(builder =>
+            //    builder.AllowAnyOrigin()
+            //   .AllowAnyMethod()
+            //   .AllowAnyHeader()
+            //); 
 
             app.MapControllers();
 

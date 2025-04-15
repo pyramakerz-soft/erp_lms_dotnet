@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { OnChanges, Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import html2pdf from 'html2pdf.js';
 
@@ -17,107 +17,121 @@ export class PdfPrintComponent {
   @Input() tableData: any[] | null = null;
   @Input() tableDataWithHeader: any[] | null = null;
   @Input() fileName: string = 'report';
+  @Input() Title: string = '';
   @Input() infoRows: {
-    keyEn: string;
-    valueEn: string | number | null;
+    keyEn?: string;
+    valueEn?: string | number | null;
     keyAr?: string;
     valueAr?: string | number | null;
   }[] = [];
+  @Input() PsNotes: {
+    EnNote?: string | number | null;
+    ArNote?: string | number | null;
+  }[] = [];
   @ViewChild('printContainer') printContainer!: ElementRef;
-  readonly maxPrintableColumns = 6;
+  tableChunks: { headers: string[], data: any[] }[] = [];
+  preservedColumns: string = "";
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tableHeaders'] || changes['tableData']) {
+      if (this.tableHeaders)
+        this.preservedColumns = this.tableHeaders[0];
+      this.splitTableGenerically();
+    }
+    console.log(this.tableData)
+    console.log(this.tableChunks)
+  }
 
   ngAfterViewInit(): void {
-    if (this.tableData && this.tableHeaders) {
-      this.smartSplitTableData(); // dynamically handles based on width
+    if (this.school?.reportImage?.startsWith('http')) {
+      this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
+        this.school.reportImage = base64Img;
+        setTimeout(() => this.printPDF(), 100);
+      });
+    } else {
+      setTimeout(() => this.printPDF(), 100);
     }
-    if (this.tableDataWithHeader) {
-      this.reSplitWideChunksIfNeeded(); // optional: split further if any section too wide
-    }
-    setTimeout(() => this.printPDF(), 100);
   }
   
-  private estimateColumnsPerPage(): number {
-    const printableWidthPx = 960; // A4 in landscape ≈ 11in * 96dpi
-    const averageColumnWidthPx = 120;
-    return Math.floor(printableWidthPx / averageColumnWidthPx); // ~8 columns
+  convertImgToBase64URL(url: string): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // Important for CORS
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve('');
+        ctx.drawImage(img, 0, 0);
+        try {
+          const dataURL = canvas.toDataURL('image/png');
+          resolve(dataURL);
+        } catch (e) {
+          console.error('toDataURL failed:', e);
+          resolve('');
+        }
+      };
+      img.onerror = (e) => {
+        console.error('Failed to load image', e);
+        resolve('');
+      };
+      img.src = url;
+    });
+  }
+  
+  estimateHeaderWidth(header: string): number {
+    // Rough estimate: 10–12px per character
+    return header.length * 10;
   }
 
-  private normalizeKey(header: string): string {
-    return header.trim().toLowerCase().replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
-  }
+  splitTableGenerically(maxTotalWidth: number = 600) {
+    this.tableChunks = [];
   
-  private smartSplitTableData(): void {
     if (!this.tableHeaders || !this.tableData) return;
   
-    const colsPerPage = this.estimateColumnsPerPage();
-    const sections = [];
+    const preserved = this.preservedColumns;
+    const headers = [...this.tableHeaders];
+    let i = 0;
   
-    for (let i = 0; i < this.tableHeaders.length; i += colsPerPage) {
-      const headersSlice = this.tableHeaders.slice(i, i + colsPerPage);
+    while (i < headers.length) {
+      let widthSum = 0;
+      let headersSlice: string[] = [];
   
-      const dataSlice = this.tableData.map(row => {
-        const rowSlice: Record<string, any> = {};
-        headersSlice.forEach(header => {
-          const key = this.normalizeKey(header);
-          rowSlice[header] = row[key] ?? 'N/A';
-        });
-        return rowSlice;
-      });
+      while (i < headers.length) {
+        const currentHeader = headers[i];
+        const headerWidth = this.estimateHeaderWidth(currentHeader);
   
-      sections.push({
-        header: `Columns ${i + 1} - ${Math.min(i + colsPerPage, this.tableHeaders.length)}`,
-        headers: headersSlice,
-        data: dataSlice
-      });
-    }
+        if (widthSum + headerWidth > maxTotalWidth) break;
   
-    this.tableDataWithHeader = sections;
-    this.tableData = null; // Don't print raw wide table
-  }
-
-  private reSplitWideChunksIfNeeded(): void {
-    if (!this.tableDataWithHeader) return;
-  
-    const colsPerPage = this.estimateColumnsPerPage();
-    const reSplitSections: any[] = [];
-  
-    for (const section of this.tableDataWithHeader) {
-      const { headers, data, header } = section;
-  
-      if (headers.length <= colsPerPage) {
-        // No need to split — add as-is
-        reSplitSections.push(section);
-      } else {
-        // Re-split this section
-        for (let i = 0; i < headers.length; i += colsPerPage) {
-          const headersSlice = headers.slice(i, i + colsPerPage);
-          const dataSlice = data.map((row: any) => {
-            const rowSlice: Record<string, any> = {};
-            headersSlice.forEach((header: string | number) => {
-              rowSlice[header] = row[header] ?? 'N/A';
-            });
-            return rowSlice;
-          });
-  
-          reSplitSections.push({
-            header: `${header} (Cols ${i + 1}–${Math.min(i + colsPerPage, headers.length)})`,
-            headers: headersSlice,
-            data: dataSlice
-          });
-        }
+        headersSlice.push(currentHeader);
+        widthSum += headerWidth;
+        i++;
       }
-    }
+      // Add preserved column to every chunk (if not already included)
+      const finalHeaders = headersSlice.includes(preserved)
+        ? headersSlice
+        : [preserved, ...headersSlice];
   
-    this.tableDataWithHeader = reSplitSections;
+      const dataChunk = this.tableData.map(row => {
+        const newRow: any = {};
+        finalHeaders.forEach(header => {
+          newRow[header] = row[header] ?? '-';
+        });
+        return newRow;
+      });
+  
+      this.tableChunks.push({ headers: finalHeaders, data: dataChunk });
+    }
   }
   
   printPDF() {
     const opt = {
-      margin: 0.2,
+      margin: 0.5,
       filename: `${this.fileName}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 1 }, // You can try 1.5 if too large
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } // 👈 Landscape mode
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(this.printContainer.nativeElement).set(opt).save();
   }

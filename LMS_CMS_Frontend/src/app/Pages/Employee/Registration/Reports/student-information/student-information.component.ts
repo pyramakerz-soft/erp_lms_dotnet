@@ -88,7 +88,6 @@ export class StudentInformationComponent {
       }
     });
     this.getAllSchools()
-    this.getAllStudents()
     this.getAllYears()
   }
 
@@ -113,7 +112,7 @@ export class StudentInformationComponent {
   }
 
   getAllStudents() {
-    this.studentServ.GetAll(this.DomainName).subscribe((d) => {
+    this.studentServ.GetByAcademicYearID(this.SelectedYearId ,this.DomainName).subscribe((d) => {
       this.Students = d;
       this.filteredStudents = d; // Set filtered students to all initially
     });
@@ -144,28 +143,54 @@ export class StudentInformationComponent {
   }
 
   Print() {
-    let element = document.getElementById("Data");
+    const element = document.getElementById("Data");
     if (!element) {
       console.error("Element not found!");
       return;
     }
-
-    element.classList.remove("hidden");
-
+    this.showPDF = true;
     setTimeout(() => {
-      this.reportsService.PrintPDF("List of students' names in class")
-
+      element.classList.remove("hidden");
       setTimeout(() => {
-        element.classList.add("hidden");
-      }, 1000);
-    }, 200);
+        const printContents = element.innerHTML;
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        if (!printWindow) return;
+        printWindow.document.open();
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Print</title>
+              <style>
+                * { font-family: sans-serif; }
+                table { border-collapse: collapse; width: 100%; }
+                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                @media print {
+                  body { margin: 1cm; }
+                }
+              </style>
+            </head>
+            <body onload="window.print(); window.close();">
+              ${printContents}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        setTimeout(() => {
+          element.classList.add("hidden");
+          this.showPDF = false;
+        }, 1000);
+  
+      }, 200); // allow component to render
+    }, 100);
   }
 
   DownloadAsPDF() {
-    
     this.showPDF = true;
-    setTimeout(() => this.showPDF = false, 1);
+    setTimeout(() => {
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500); // give DOM time to render <app-pdf-print>
   }
+
 
   formatDate(dateString: string, dir: string): string {
     const date = new Date(dateString);

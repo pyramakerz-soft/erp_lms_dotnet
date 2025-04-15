@@ -116,13 +116,13 @@
 <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">
     <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
-    { keyEn: 'Class',valueEn: this.class.name},
-    { keyEn: 'Number of Students',valueEn: this.studentsCount.toString()},
-    { keyEn: 'Date',valueEn: this.date },
-    { keyEn: 'School', valueEn:  this.school.name },
-    { keyEn: 'Year', valueEn: this.AcademicYearName },
-    { keyEn: 'Grade', valueEn:  'this.GradeName' }
-    ]" [tableHeaders]="['ID', 'Name', 'Mobile', 'Nationality', 'Gender']"[tableData]="StudentData"></app-pdf-print>
+    { keyEn: 'Class : ' + this.class.name},
+    { keyEn: 'Number of Students : ' + this.studentsCount.toString()},
+    { keyEn: 'Date : ' + this.date },
+    { keyEn: 'School : ' +  this.school.name },
+    { keyEn: 'Year : ' +this.AcademicYearName },
+    { keyEn: 'Grade : ' +this.GradeName }
+    ]" [tableHeaders]="['id', 'en_name', 'mobile', 'nationalityName', 'genderName']"[tableData]="StudentData"></app-pdf-print>
     </div>
 </div>
 

@@ -43,6 +43,19 @@ export class StudentService {
     return this.http.get<Student>(`${this.baseUrl}/Student/${id}`, { headers })
   }
 
+  GetByAcademicYearID(id:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<Student[]>(`${this.baseUrl}/Student/GetByAcademicYearID/${id}`, { headers })
+  }
+
   GetByYear(Yearid:number,StudentId:number,SchoolId:number,DomainName?:string){
     if(DomainName!=null) {
       this.header=DomainName 
@@ -64,6 +77,17 @@ GetByClassID(id: number, DomainName: string): Observable<Student[]> {
 
   return this.http.get<Student[]>(`${this.baseUrl}/Student/Get_By_ClassID/${id}`, { headers });
 }
+
+  GetByStudentID(id:number,DomainName:string){
+    this.header=DomainName 
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<Student[]>(`${this.baseUrl}/Student/Get_By_SchoolID/${id}`, { headers })
+  }
 
   EditAccountingEmployee(student:Student,DomainName?:string){
     if(DomainName!=null) {
@@ -105,4 +129,57 @@ GetByClassID(id: number, DomainName: string): Observable<Student[]> {
 
     return this.http.get<any>(`${this.baseUrl}/Student/GetBySchoolGradeClassID`, { headers, params });
   }
+
+  GetProofRegistrationAndSuccessForm(Yearid:number,StudentId:number,SchoolId:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetStudentProofRegistrationAndSuccessForm?yearId=${Yearid}&stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
+  }
+
+  GetStudentProofRegistration(Yearid:number,StudentId:number,SchoolId:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetStudentProofRegistration?yearId=${Yearid}&stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
+  }
+
+  GetByClassIDReport(SchoolId:number,ClassId:number , DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/GetByClassIDReport?schoolId=${SchoolId}&classId=${ClassId}`, { headers })
+  }
+
+  GetAcademicSequential(StudentId:number,SchoolId:number,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Student/AcademicSequentialReport?stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
+  }
+
 }

@@ -122,6 +122,11 @@ import { StudentsNamesInClassComponent } from './Pages/Employee/Registration/Rep
 import { StudentInformationComponent } from './Pages/Employee/Registration/Reports/student-information/student-information.component';
 import { MedicalHistoryByDoctorComponent } from './Pages/Employee/Clinic/medical-report/medical-history-by-doctor/medical-history-by-doctor.component';
 import { MedicalHistoryByParentComponent } from './Pages/Employee/Clinic/medical-report/medical-history-by-parent/medical-history-by-parent.component';
+import { ProofRegistrationAndSuccessFormReportComponent } from './Pages/Employee/Registration/Reports/proof-registration-and-success-form-report/proof-registration-and-success-form-report.component';
+import { ProofRegistrationReportComponent } from './Pages/Employee/Registration/Reports/proof-registration-report/proof-registration-report.component';
+import { StudentsInformationFormReportComponent } from './Pages/Employee/Registration/Reports/students-information-form-report/students-information-form-report.component';
+import { PdfPrintComponent } from './Component/pdf-print/pdf-print.component';
+import { AcademicSequentialReportComponent } from './Pages/Employee/Registration/Reports/academic-sequential-report/academic-sequential-report.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -285,7 +290,10 @@ export const routes: Routes = [
             { path: "Stocking Details/Edit/:id", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "StudentsNamesInClass", component: StudentsNamesInClassComponent, title: "Students' Names In Class", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "StudentInformation", component: StudentInformationComponent, title: "StudentInformation", canActivate:[noNavigateWithoutLoginGuard ] },
-
+            { path: "ProofRegistrationAndSuccessForm", component: ProofRegistrationAndSuccessFormReportComponent, title: "ProofRegistrationAndSuccessForm", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "ProofRegistration", component: ProofRegistrationReportComponent, title: "ProofRegistration", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "StudentsInformationFormReport", component: StudentsInformationFormReportComponent, title: "StudentsInformationFormReport", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

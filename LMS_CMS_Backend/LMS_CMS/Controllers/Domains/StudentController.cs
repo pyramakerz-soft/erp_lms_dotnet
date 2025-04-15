@@ -846,7 +846,94 @@ namespace LMS_CMS_PL.Controllers.Domains
                 Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
             });
         }
-         
+
+        //////
+
+        [HttpGet("TransferedFromKindergartenReport")]
+        public async Task<IActionResult> TransferedFromKindergartenReport([FromQuery] long stuId, [FromQuery] long schoolId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (stuId == null || stuId == 0)
+            {
+                return BadRequest("Student Id can't be null");
+            }
+
+            if (schoolId == null || schoolId == 0)
+            {
+                return BadRequest("School Id can't be null");
+            }
+
+            Student student = await Unit_Of_Work.student_Repository.FindByIncludesAsync(
+                 query => query.IsDeleted != true && query.ID == stuId,
+                 query => query.Include(stu => stu.Gender),
+                 query => query.Include(stu => stu.Parent));
+
+            if (student == null)
+            {
+                return NotFound("No Student with this Id");
+            }
+
+            List<StudentAcademicYear> StudentAcademicYear = await Unit_Of_Work.studentAcademicYear_Repository.Select_All_With_IncludesById<StudentAcademicYear>(
+                 query => query.IsDeleted != true && query.StudentID == stuId && query.SchoolID == schoolId,
+                 query => query.Include(stu => stu.Grade),
+                 query => query.Include(stu => stu.Classroom).ThenInclude(d => d.AcademicYear));
+
+            if (StudentAcademicYear == null)
+            {
+                return NotFound("No Student Academic Year With This Student ID");
+            } 
+
+            string currentGradeName = "";
+            string CurrentAcademicYear = "";
+
+            for (int i = 0; i < StudentAcademicYear.Count; i++)
+            { 
+                if (StudentAcademicYear[i].Classroom.AcademicYear.IsActive == true)
+                {
+                    currentGradeName = StudentAcademicYear[i].Grade.Name;
+                    CurrentAcademicYear = StudentAcademicYear[i].Classroom.AcademicYear.Name;
+                }
+            }
+
+            StudentGetDTO studentDTO = mapper.Map<StudentGetDTO>(student);
+            studentDTO.CurrentGradeName = currentGradeName;
+            studentDTO.CurrentAcademicYear = CurrentAcademicYear;
+
+            Nationality nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(studentDTO.Nationality);
+
+            if (nationality != null)
+            {
+                studentDTO.NationalityEnName = nationality.Name;
+                studentDTO.NationalityArName = nationality.ArName;
+            }
+
+            string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "Egypt Standard Time"
+                : "Africa/Cairo";
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+            School_GetDTO schoolDTO = _schoolHeaderService.GetSchoolHeader(Unit_Of_Work, schoolId, Request);
+
+            return Ok(new
+            {
+                Student = studentDTO,
+                School = schoolDTO, 
+                Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+            });
+        }
+
         //////
 
         [HttpPut("StudentAccounting")]

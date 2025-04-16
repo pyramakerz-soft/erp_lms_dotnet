@@ -34,6 +34,7 @@ import { Supplier } from '../../../../Models/Accounting/supplier';
 import { SupplierService } from '../../../../Services/Employee/Accounting/supplier.service';
 import { InventoryFlagService } from '../../../../Services/Employee/Inventory/inventory-flag.service';
 import { InventoryFlag } from '../../../../Models/Inventory/inventory-flag';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-inventory-details',
@@ -82,6 +83,7 @@ export class InventoryDetailsComponent {
   SelectedSopItem: ShopItem | null = null;
 
   TableData: InventoryDetails[] = []
+  NewDetailsWhenEdit: InventoryDetails[] = []
   Item: InventoryDetails = new InventoryDetails()
   ShopItem: ShopItem = new ShopItem()
   MasterId: number = 0;
@@ -213,10 +215,12 @@ export class InventoryDetailsComponent {
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d
+      this.GetCategories()
     })
   }
 
   GetCategories() {
+    this.Categories=[]
     this.CategoriesServ.GetByStoreId(this.DomainName, this.Data.storeID).subscribe((d) => {
       this.Categories = d
     })
@@ -257,25 +261,28 @@ export class InventoryDetailsComponent {
         });
   }
 
-  selectShopItem(item: ShopItem) {
+  async selectShopItem(item: ShopItem) {
     this.SelectedSopItem = item;
-    this.ShopItem = item
-    this.Item.id = Date.now();  // it is random for edit and delete only 
-    if (this.FlagId == 11 || this.FlagId == 12) {
-      this.Item.price = this.ShopItem.salesPrice ?? 0
+    this.ShopItem = item;
+    this.Item.id = Date.now();
+    if (this.FlagId === 11 || this.FlagId === 12) {
+      this.Item.price = item.salesPrice ?? 0;
+    } else {
+      this.Item.price = item.purchasePrice ?? 0;
     }
-    else {
-      this.Item.price = this.ShopItem.purchasePrice ?? 0
-    }
-    this.Item.shopItemID = this.ShopItem.id
-    this.Item.shopItemName = this.ShopItem.enName
-    this.Item.barCode = this.ShopItem.barCode
+    this.Item.shopItemID = item.id;
+    this.Item.shopItemName = item.enName;
+    this.Item.barCode = item.barCode;
+    this.Item.quantity=1
+    this.Item.totalPrice=this.Item.price 
+    await this.SaveRow(); 
   }
 
   async GetTableDataByID(): Promise<void> {
     return new Promise((resolve) => {
       this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
         this.TableData = d;
+        this.Data.inventoryDetails=d
         resolve();
       },
         (error) => {
@@ -304,11 +311,11 @@ export class InventoryDetailsComponent {
       });
     }
   }
-  Save() {
+  async Save() {
     if (this.isFormValid()) {
       this.isLoading = true
+      await this.SaveRow()
       if (this.mode == "Create") {
-        console.log(this.Data)
         this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
           this.MasterId = d
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
@@ -324,6 +331,12 @@ export class InventoryDetailsComponent {
         })
       }
       if (this.mode == "Edit") {
+        this.Data.inventoryDetails=this.TableData
+        this.salesItemServ.Edit(this.Data.inventoryDetails , this.DomainName).subscribe((d)=>{})
+        this.salesItemServ.Add(this.NewDetailsWhenEdit,this.DomainName).subscribe((d=>{ }), (error) => {
+          console.log(error)
+        })
+        console.log()
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
         }, (error) => {
@@ -378,10 +391,18 @@ export class InventoryDetailsComponent {
         cancelButtonText: 'Cancel',
       }).then((result) => {
         if (result.isConfirmed) {
-          this.salesItemServ.Delete(row.id, this.DomainName).subscribe((D) => {
-            this.GetTableDataByID();
-            this.TotalandRemainingCalculate()
-          })
+          if(!this.NewDetailsWhenEdit.find(s=>s.id==row.id)){
+            console.log(row)
+            this.salesItemServ.Delete(row.id, this.DomainName).subscribe(async (D) => {
+              await this.GetTableDataByID();
+              console.log(this.TableData)
+            })
+          }
+          else{
+            this.NewDetailsWhenEdit= this.NewDetailsWhenEdit.filter(s=>s.id!=row.id)
+            this.TableData=this.TableData.filter(s=>s.id!=row.id)
+          }
+          this.TotalandRemainingCalculate()
         }
       });
     }
@@ -419,31 +440,28 @@ export class InventoryDetailsComponent {
     this.Data.attachments = this.Data.attachments.filter(i => i != img)
   }
 
-
   async SaveRow() {
-    this.Item.shopItemID = this.ShopItem.id;
-    if (this.mode == 'Create') {
+    // this.Item.shopItemID = this.ShopItem.id;
+    if (this.mode === 'Create') {
+      if (this.FlagId === 9 || this.FlagId === 13) {
+        await firstValueFrom(this.shopitemServ.Edit(this.ShopItem, this.DomainName));
+      }
       if (!this.Data.inventoryDetails) {
         this.Data.inventoryDetails = [];
       }
       this.Data.inventoryDetails.push(this.Item);
-      if (this.FlagId == 9 || this.FlagId == 13) {
-        console.log(this.ShopItem)
-        this.shopitemServ.Edit(this.ShopItem, this.DomainName).subscribe((d) => {
-
-        })
-      }
-      this.TotalandRemainingCalculate();
     }
-    if (this.mode == 'Edit') {
+    if (this.mode === 'Edit') {
       this.Item.inventoryMasterId = this.MasterId;
-      this.salesItemServ.Add(this.Item, this.DomainName).subscribe(async (d) => {
-        await this.GetTableDataByID();
-        await this.TotalandRemainingCalculate();
-        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => { });
-      });
+      if (!this.NewDetailsWhenEdit) {
+        this.NewDetailsWhenEdit = [];
+      }
+      this.NewDetailsWhenEdit.push(this.Item)
+      this.TableData.push(this.Item)
+      await this.GetMasterInfo();
+      await firstValueFrom(this.salesServ.Edit(this.Data, this.DomainName));
     }
-    this.IsOpenToAdd = false;
+    this.TotalandRemainingCalculate();
     this.Item = new InventoryDetails();
     this.editingRowId = null;
     this.ShopItem = new ShopItem();
@@ -454,21 +472,21 @@ export class InventoryDetailsComponent {
     this.TotalandRemainingCalculate()
   }
 
-  SaveEdit(row: InventoryDetails) {
-    this.editingRowId = null;
-    row.totalPrice = row.quantity * row.price
-    this.Item.shopItemID = this.ShopItem.id
-    if (this.mode == 'Create') {
-      this.TotalandRemainingCalculate()
-    } else if (this.mode == 'Edit') {
-      this.salesItemServ.Edit(row, this.DomainName).subscribe(async (d) => {
-        await this.GetTableDataByID();
-        await this.TotalandRemainingCalculate()
-        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-        })
-      })
-    }
-  }
+  // SaveEdit(row: InventoryDetails) {
+  //   this.editingRowId = null;
+  //   row.totalPrice = row.quantity * row.price
+  //   this.Item.shopItemID = this.ShopItem.id
+  //   if (this.mode == 'Create') {
+  //     this.TotalandRemainingCalculate()
+  //   } else if (this.mode == 'Edit') {
+  //     // this.salesItemServ.Edit(row, this.DomainName).subscribe(async (d) => {
+  //     //   await this.GetTableDataByID();
+  //     //   await this.TotalandRemainingCalculate()
+  //     //   this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
+  //     //   })
+  //     // })
+  //   }
+  // }
 
   ConvertToPurcase() {
     this.Data.flagId = 9
@@ -494,7 +512,7 @@ export class InventoryDetailsComponent {
     }
   }
 
-  openFile(file: any) {  // open image if it file or url 
+  openFile(file: any) {  
     if (typeof file === 'string') {
       window.open(file, '_blank');
     } else if (file instanceof File) {
@@ -545,6 +563,7 @@ export class InventoryDetailsComponent {
         this.Data.visaAmount = this.Data.visaAmount || 0;
         this.Data.total = this.TableData.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
         this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
+        console.log(this.Data)
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
         })
       }

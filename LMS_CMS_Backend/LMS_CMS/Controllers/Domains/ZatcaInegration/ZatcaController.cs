@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
+using System.Text;
 using System.Text.Json;
 using System.Xml;
 using Zatca.EInvoice.SDK.Contracts;
@@ -71,7 +72,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         public IActionResult GenerateCSRandPrivateKey(CsrGenerationDto csrGeneration)
         //public async Task<IActionResult>GenerateCSR()
         {
-            CsrResult csr = _csrGenerator.GenerateCsr(csrGeneration, EnvironmentType.NonProduction, true);
+            CsrResult csr = _csrGenerator.GenerateCsr(csrGeneration, EnvironmentType.Production, true);
 
             string certificates = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
             string config = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
@@ -115,6 +116,46 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             // Save as .json instead of .cer
             string csidPath = Path.Combine(invoices, "CSID.json");
             await System.IO.File.WriteAllTextAsync(csidPath, formattedJson);
+
+            return Ok(formattedJson);  // Return the pretty JSON as response too
+        }
+        #endregion
+
+        #region Generate PCSID
+        [HttpPost("GeneratePCSID")]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "" }
+        //)]
+        public async Task<IActionResult> GeneratePCSID(string version)
+        {
+            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
+            string csidPath = Path.Combine(invoices, "CSID.json");
+
+            if (!System.IO.File.Exists(csidPath))
+                throw new FileNotFoundException();
+
+            string jsonContent = System.IO.File.ReadAllText(csidPath);
+            dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
+
+            string user = jsonObject.binarySecurityToken;
+            string secret = jsonObject.secret;
+
+            string token = $"{user}:{secret}";
+            byte[] tokenBytes = Encoding.UTF8.GetBytes(token);
+            string tokenBase64 = Convert.ToBase64String(tokenBytes);
+
+            string requestId = jsonObject.requestID;
+
+            string pcsid = await InvoicingServices.GeneratePCSID(tokenBase64, version, requestId);
+
+            // Optional: Prettify the JSON for readability
+            string formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(pcsid), Newtonsoft.Json.Formatting.Indented);
+
+
+            // Save as .json instead of .cer
+            string pcsidPath = Path.Combine(invoices, "PCSID.json");
+            await System.IO.File.WriteAllTextAsync(pcsidPath, formattedJson);
 
             return Ok(formattedJson);  // Return the pretty JSON as response too
         }

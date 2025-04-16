@@ -1,5 +1,5 @@
 <div class="flex justify-between mb-3">
-    <h1 class="font-semibold text-2xl leading-9">Student Information</h1>
+    <h1 class="font-semibold text-2xl leading-9">Academic Sequential Report</h1>
 </div>
 
 <div class="flex justify-start items-center space-x-4">
@@ -80,7 +80,7 @@
                     {{ SelectedStudent.mobile }}
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    {{ SelectedStudent.nationalityName }}
+                    {{ this.DataToPrint.student.nationalityEnName }}
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     {{ SelectedStudent.genderName }}

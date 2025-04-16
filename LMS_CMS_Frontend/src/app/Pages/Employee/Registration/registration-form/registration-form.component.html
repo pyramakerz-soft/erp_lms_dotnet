@@ -19,7 +19,7 @@
     
                 <div class="flex flex-wrap justify-between">
                     <div *ngFor="let field of cat.fields" class="w-[49%] flex flex-col mb-4">
-                        <label class="mb-2 primaryTxt" for={{field.enName}}>{{ isRtl ? field.arName : field.enName}}</label>
+                        <label class="mb-2 primaryTxt" for={{field.enName}}>{{ isRtl ? field.arName : field.enName}}<span class="text-red-500 text-sm" *ngIf="field.isMandatory == true">*</span></label>
     
                         <ng-container [ngSwitch]="field.fieldTypeID">
                             <input *ngIf="field.fieldTypeID == 1 && (field.id == 11 || field.id == 12 || field.id == 16 || field.id == 17 || field.id == 20 || field.id == 23 || field.id == 24 || field.id == 27)" 

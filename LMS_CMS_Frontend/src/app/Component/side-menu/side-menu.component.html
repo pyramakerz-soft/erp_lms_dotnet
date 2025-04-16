@@ -32,7 +32,7 @@
             [ngClass]="{'bg-[#FFFFFF1A] rounded-br-lg rounded-tr-lg border-l mb-3': details.open && item.subItems}">
                 <summary 
                 [routerLink]="item.route"  
-                class="px-9 py-3 lg:py-4 flex space-x-3 rtl:space-x-reverse items-center justify-between hover:bg-[rgba(255,255,255,0.1)] ltr:hover:rounded-r-lg rtl:hover:rounded-l-lg ltr:hover:border-l-2 rtl:hover:border-r-2 cursor-pointer">
+                class="w-full px-9 py-3 lg:py-4 flex space-x-3 rtl:space-x-reverse items-center justify-between hover:bg-[rgba(255,255,255,0.1)] ltr:hover:rounded-r-lg rtl:hover:rounded-l-lg ltr:hover:border-l-2 rtl:hover:border-r-2 cursor-pointer">
                     <div class="flex items-center space-x-3 rtl:space-x-reverse w-max">
                         <img *ngIf="item.icon" class="w-3 lg:w-fit" [src]="'Icons/SideMenuIcons/' + item.icon.replace(' ',  '_') + '.png'">
                         <p>{{ item.label }}</p>

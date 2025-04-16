@@ -77,8 +77,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 TestName = test.Title,
                 Totalmark = test.TotalMark,
                 mark = registerationFormTest.Mark,
+                isVisibleToParent = registerationFormTest.VisibleToParent,
                 State=registerationFormTest.StateID,
-               QuestionWithAnswer = groupedByQuestionType
+                QuestionWithAnswer = groupedByQuestionType
             };
 
             return Ok(response);

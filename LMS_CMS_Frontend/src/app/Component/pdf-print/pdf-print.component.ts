@@ -31,6 +31,7 @@ export class PdfPrintComponent {
   @ViewChild('printContainer') printContainer!: ElementRef;
   tableChunks: { headers: string[], data: any[] }[] = [];
   preservedColumns: string = "";
+  @Input() autoDownload: boolean = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tableHeaders'] || changes['tableData']) {
@@ -42,14 +43,23 @@ export class PdfPrintComponent {
     console.log(this.tableChunks)
   }
 
+  // ngAfterViewInit(): void {
+  //   if (this.school?.reportImage?.startsWith('http')) {
+  //     this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
+  //       this.school.reportImage = base64Img;
+  //       setTimeout(() => this.printPDF(), 100);
+  //     });
+  //   } else {
+  //     setTimeout(() => this.printPDF(), 100);
+  //   }
+  // }
+
   ngAfterViewInit(): void {
-    if (this.school?.reportImage?.startsWith('http')) {
+    if (this.autoDownload) {
       this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
         this.school.reportImage = base64Img;
         setTimeout(() => this.printPDF(), 100);
       });
-    } else {
-      setTimeout(() => this.printPDF(), 100);
     }
   }
   

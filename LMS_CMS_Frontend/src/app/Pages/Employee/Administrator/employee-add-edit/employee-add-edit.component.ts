@@ -193,8 +193,7 @@ export class EmployeeAddEditComponent {
   }
 
   async Save() {
-    if (this.isFormValid()) {
-      console.log(this.Data)
+    if (this.isFormValid()) { 
       this.isLoading = true;
       if (this.mode == "Create") {
         return this.EmpServ.Add(this.Data, this.DomainName).toPromise().then(
@@ -203,14 +202,23 @@ export class EmployeeAddEditComponent {
             this.isLoading = false;
             return true;
           },
-          (error) => {
+          (error) => { 
+            if(error.error.errors.Password){
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error.errors.Password[0] || 'An unexpected error occurred',
+                confirmButtonColor: '#FF7519',
+              });
+            }else{
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error.errors || 'An unexpected error occurred',
+                confirmButtonColor: '#FF7519',
+              });
+            }
             this.isLoading = false;
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: error.error || 'An unexpected error occurred',
-              confirmButtonColor: '#FF7519',
-            });
             return false;
           }
         );

@@ -1,8 +1,8 @@
 <div class="flex justify-between items-center ">
-    <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500" style="width: 22.51px; height: 22.51px; font-size: 22.51px;"
+    <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500 cursor-pointer" style="width: 22.51px; height: 22.51px; font-size: 22.51px;"
         *ngIf="!IsSearchOpen" (click)="SearchToggle()"></i>
     <div class="ltr:mr-1 rtl:ml-1" *ngIf="IsSearchOpen">
-        <select [(ngModel)]="key"
+        <select [(ngModel)]="key" (ngModelChange)="onInputValueChange()"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <option *ngFor="let key of keysArray" [value]="key">{{ formatKey(key) }}</option>
         </select>

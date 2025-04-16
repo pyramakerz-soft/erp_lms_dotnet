@@ -110,25 +110,36 @@
                     <div class="flex flex-col mb-1">
                         <label class="mb-3" for="ac">Categories</label>
                         <div class="relative">
-                            <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer"
+                            <div 
+                                class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer flex justify-between items-center"
                                 (click)="toggleDropdown()" tabindex="0">
-                                <div *ngIf="CategoriesSelected.length > 0; else placeholder">
-                                    <div class="flex flex-wrap">
-                                        <span
-                                            class="mr-2 mb-1 bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center"
-                                            *ngFor="let selected of CategoriesSelected">
-                                            {{ selected.name }}
-                                            <span class="ml-2 cursor-pointer text-red-500"
-                                                (click)="removeSelected(selected.id)">
-                                                &times;
+                                
+                                <div class="w-full">
+                                    <div *ngIf="CategoriesSelected.length > 0; else placeholder">
+                                        <div class="flex flex-wrap">
+                                            <span
+                                                class="mr-2 mb-1 bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center"
+                                                *ngFor="let selected of CategoriesSelected">
+                                                {{ selected.name }}
+                                                <span class="ml-2 cursor-pointer text-red-500"
+                                                    (click)="removeSelected(selected.id)">
+                                                    &times;
+                                                </span>
                                             </span>
-                                        </span>
+                                        </div>
                                     </div>
+                                    <ng-template #placeholder>
+                                        <span class="text-gray-500">Choose Category</span>
+                                    </ng-template>
                                 </div>
-                                <ng-template #placeholder>
-                                    <span>Choose Category</span>
-                                </ng-template>
+            
+                                <!-- Dropdown Icon (SVG) -->
+                                <svg class="w-5 h-5 text-gray-500 ml-2 shrink-0" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                                </svg>
                             </div>
+            
                             <div class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full shadow-md z-10"
                                 *ngIf="dropdownOpen">
                                 <ul>

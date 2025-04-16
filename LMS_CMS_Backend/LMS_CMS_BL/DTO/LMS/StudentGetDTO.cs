@@ -42,7 +42,9 @@ namespace LMS_CMS_BL.DTO.LMS
         public string MotherQualification { get; set; }
         public string MotherWorkPlace { get; set; }
         public string PreviousSchool { get; set; }
-        public long? RegistrationFormParentID { get; set; }  
+        public long? RegistrationFormParentID { get; set; }
+        public long? StartAcademicYearID { get; set; }
+        public string? StartAcademicYearName { get; set; }
         public string? EmergencyContactName { get; set; }
         public string? EmergencyContactRelation { get; set; }
         public string? EmergencyContactMobile { get; set; }
@@ -72,5 +74,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public string IsRegisteredToBus { get; set;}
 
         public string CurrentGradeName { get; set;}
+        public string CurrentAcademicYear { get; set;}
     }
 }

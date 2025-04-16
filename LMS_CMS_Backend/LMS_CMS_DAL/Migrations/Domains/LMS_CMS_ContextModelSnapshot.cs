@@ -5138,6 +5138,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Religion")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long?>("StartAcademicYearID")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -5178,6 +5181,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("Parent_Id");
 
                     b.HasIndex("RegistrationFormParentID");
+
+                    b.HasIndex("StartAcademicYearID");
 
                     b.HasIndex("UpdatedByUserId");
 
@@ -9235,6 +9240,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("RegistrationFormParentID");
 
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.AcademicYear", "StartAcademicYear")
+                        .WithMany()
+                        .HasForeignKey("StartAcademicYearID");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
@@ -9250,6 +9259,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("Parent");
 
                     b.Navigation("RegistrationFormParent");
+
+                    b.Navigation("StartAcademicYear");
 
                     b.Navigation("UpdatedByEmployee");
                 });

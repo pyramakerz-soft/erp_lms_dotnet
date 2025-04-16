@@ -167,7 +167,7 @@ export class DomainsComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });
@@ -277,6 +277,7 @@ export class DomainsComponent {
                 this.domainData = data;
               }
             );
+            this.isSaved = false
           },
           error => {
             this.isSaved = false

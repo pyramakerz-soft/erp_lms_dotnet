@@ -56,7 +56,7 @@ export class BusDetailsComponent {
 
   key: string= "id";
   value: any = "";
-  keysArray: string[] = ['id', 'name','capacity','backPrice','twoWaysPrice','morningPrice','busTypeName','busDistrictsName','busStatusName','driverName','driverAssistantName','busCompanyName'];
+  keysArray: string[] = ['id', 'name','capacity','backPrice','twoWaysPrice','morningPrice','busTypeName','busDistrictName','busStatusName','driverName','driverAssistantName','busCompanyName'];
 
   path:string = ""
   isLoading = false;
@@ -277,17 +277,17 @@ export class BusDetailsComponent {
   }
 
   SaveBus(){
-    this.isLoading = true;
     if (this.isFormValid()) {
+      this.isLoading = true;
       if(this.editBus == false){
         this.busService.Add(this.bus,this.DomainName).subscribe(
           (result: any) => {
             this.closeModal()
-            this.isLoading = false; // Hide spinner
             this.busData=[]
             this.busService.Get(this.DomainName).subscribe(
               (data: any) => {
                 this.busData = data;
+                this.isLoading = false; // Hide spinner
               }
             );
           },
@@ -299,11 +299,11 @@ export class BusDetailsComponent {
         this.busService.Edit(this.bus,this.DomainName).subscribe(
           (result: any) => {
             this.closeModal()
-            this.isLoading = false; // Hide spinner
             this.busData=[]
             this.busService.Get(this.DomainName).subscribe(
               (data: any) => {
                 this.busData = data;
+                this.isLoading = false; // Hide spinner
               }
             );
           },
@@ -347,7 +347,7 @@ export class BusDetailsComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

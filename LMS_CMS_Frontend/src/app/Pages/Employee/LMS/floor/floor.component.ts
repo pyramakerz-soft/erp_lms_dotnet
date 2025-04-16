@@ -174,7 +174,7 @@ export class FloorComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });
@@ -223,7 +223,7 @@ export class FloorComponent {
 
   onInputValueChange(event: { field: keyof Floor; value: any }) {
     const { field, value } = event;
-    (this.building as any)[field] = value;
+    (this.floor as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }

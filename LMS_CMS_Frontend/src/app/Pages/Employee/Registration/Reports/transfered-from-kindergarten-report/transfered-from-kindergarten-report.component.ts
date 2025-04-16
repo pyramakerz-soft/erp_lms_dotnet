@@ -17,15 +17,15 @@ import { ReportsService } from '../../../../../Services/shared/reports.service';
 import { StudentService } from '../../../../../Services/student.service';
 
 @Component({
-  selector: 'app-academic-sequential-report',
+  selector: 'app-transfered-from-kindergarten-report',
   standalone: true,
   imports: [CommonModule, FormsModule, PdfPrintComponent],
-  templateUrl: './academic-sequential-report.component.html',
-  styleUrl: './academic-sequential-report.component.css'
+  templateUrl: './transfered-from-kindergarten-report.component.html',
+  styleUrl: './transfered-from-kindergarten-report.component.css'
 })
-export class AcademicSequentialReportComponent {
+export class TransferedFromKindergartenReportComponent {
 
-  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
+ User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   File: any;
   DomainName: string = '';
@@ -54,7 +54,6 @@ export class AcademicSequentialReportComponent {
   filteredStudents: Student[] = [];
 
   DataToPrint: any = null
-  TableData : any[] = []
   CurrentDate : any =new Date()
   ArabicCurrentDate : any =new Date()
   direction: string = "";
@@ -90,11 +89,18 @@ export class AcademicSequentialReportComponent {
       }
     });
     this.getAllSchools()
+    this.getAllYears()
   }
 
   getAllSchools() {
     this.SchoolServ.Get(this.DomainName).subscribe((d) => {
       this.schools = d
+    })
+  }
+
+  getAllYears() {
+    this.academicYearServ.GetBySchoolId(this.SelectedSchoolId, this.DomainName).subscribe((d) => {
+      this.academicYears = d
     })
   }
 
@@ -107,7 +113,7 @@ export class AcademicSequentialReportComponent {
   }
 
   getAllStudents() {
-    this.studentServ.GetByStudentID(this.SelectedSchoolId,this.DomainName).subscribe((d) => {
+    this.studentServ.GetByAcademicYearID(this.SelectedYearId ,this.DomainName).subscribe((d) => {
       this.Students = d;
       console.log(d ,this.Students)
       this.filteredStudents = d; 
@@ -144,26 +150,22 @@ export class AcademicSequentialReportComponent {
       console.error("Element not found!");
       return;
     }
-  
     this.showPDF = true;
     setTimeout(() => {
       element.classList.remove("hidden");
-  
       setTimeout(() => {
         const printContents = element.innerHTML;
         const printWindow = window.open('', '_blank', 'width=800,height=600');
         if (!printWindow) return;
-  
         printWindow.document.open();
         printWindow.document.write(`
           <html>
             <head>
               <title>Print</title>
               <style>
-                * { font-family: sans-serif; box-sizing: border-box; }
+                * { font-family: sans-serif; }
                 table { border-collapse: collapse; width: 100%; }
                 th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-                img { max-width: 100px; max-height: 100px; width: auto; height: auto; }
                 @media print {
                   body { margin: 1cm; }
                 }
@@ -175,12 +177,12 @@ export class AcademicSequentialReportComponent {
           </html>
         `);
         printWindow.document.close();
-  
         setTimeout(() => {
           element.classList.add("hidden");
           this.showPDF = false;
         }, 1000);
-      }, 300); // Allow DOM to update fully
+  
+      }, 200); // allow component to render
     }, 100);
   }
 
@@ -197,40 +199,9 @@ export class AcademicSequentialReportComponent {
     return date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  async DownloadAsExcel() {
-    // Transform DataToPrint into Excel tables
-    const tables = this.DataToPrint.map((section: { header: any; data: any[]; }) => ({
-      title: section.header,
-      headers: ['Field', 'Value'],
-      data: section.data.map((item: { key: any; value: any; }) => [item.key, item.value])
-    }));
-  
-    await this.reportsService.generateExcelReport({
-      mainHeader: {
-        en: this.school.reportHeaderOneEn,
-        ar: this.school.reportHeaderOneAr
-      },
-      subHeaders: [
-        {
-          en: this.school.reportHeaderTwoEn,
-          ar: this.school.reportHeaderTwoAr
-        }
-      ],
-      infoRows: [
-        { key: 'Date', value: this.CurrentDate },
-        { key: 'Student', value: this.SelectedStudent.user_Name },
-        { key: 'School', value:  this.school.name }
-      ],
-      reportImage: this.school.reportImage,
-      filename: "Student Information Report.xlsx",
-      tables: tables // ✅ dynamic table sections from your actual data
-    });
-  }
-  
-
   GetData(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.studentServ.GetAcademicSequential(this.SelectedStudentId, this.SelectedSchoolId, this.DomainName)
+      this.studentServ.GetStudentProofRegistration(this.SelectedYearId, this.SelectedStudentId, this.SelectedSchoolId, this.DomainName)
         .subscribe({
           next: (d) => {
             this.DataToPrint = d; 
@@ -244,13 +215,8 @@ export class AcademicSequentialReportComponent {
               month: 'long',
               day: 'numeric'
             });
-            this.TableData = d.grades.map((grade: any) => { 
-              return {
-                Grade: grade.gradeName || '',
-                Academic_Year: grade.academicYearName || '',
-              };
-            });
-            console.log("this.TableData",this.TableData)
+            console.log("this.CurrentDate",this.CurrentDate)
+
             resolve();
           },
           error: (err) => {
@@ -260,4 +226,3 @@ export class AcademicSequentialReportComponent {
     });
   }
 }
-

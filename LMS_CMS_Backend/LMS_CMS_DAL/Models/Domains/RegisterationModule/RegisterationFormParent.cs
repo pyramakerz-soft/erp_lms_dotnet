@@ -13,8 +13,10 @@ namespace LMS_CMS_DAL.Models.Domains.RegisterationModule
     {
         [Key]
         public long ID { get; set; }
-        // Those 5 fields are only to make it easy for us when retrieving the data
+        // Those fields are only to make it easy for us when retrieving the data
         public string StudentName { get; set; }
+        public string? StudentEnName { get; set; }
+        public string? StudentArName { get; set; }
         public string Phone { get; set; }
         public string GradeID { get; set; }
         public string AcademicYearID { get; set; }

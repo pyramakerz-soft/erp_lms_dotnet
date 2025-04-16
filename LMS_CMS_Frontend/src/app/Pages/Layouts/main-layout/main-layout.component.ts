@@ -60,10 +60,10 @@ export class MainLayoutComponent {
         {
           label: 'Registrations', subItems: [
             {
-              label: 'Admission Test', route: 'Admission Test'
+              label: 'Registration Form', route: 'Registration Form'
             },
             {
-              label: 'Registration Form', route: 'Registration Form'
+              label: 'Admission Test', route: 'Admission Test'
             },
             {
               label: 'Interview Registration', route: 'Interview Registration'

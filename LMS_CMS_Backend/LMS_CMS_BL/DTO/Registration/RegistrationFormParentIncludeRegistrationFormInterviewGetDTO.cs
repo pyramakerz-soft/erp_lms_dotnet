@@ -10,6 +10,8 @@ namespace LMS_CMS_BL.DTO.Registration
     {
         public long ID { get; set; }
         public string StudentName { get; set; }
+        public string StudentEnName { get; set; }
+        public string StudentArName { get; set; }
         public string Phone { get; set; }
         public string GradeID { get; set; }
         public string GradeName { get; set; }

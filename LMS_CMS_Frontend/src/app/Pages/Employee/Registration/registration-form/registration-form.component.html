@@ -32,15 +32,27 @@
                                 [class.error-border]="isFieldInvalid(field)" 
                                 />
     
-                            <input 
-                                *ngIf="field.fieldTypeID == 1 && field.id != 11 && field.id != 12 && field.id != 16 && field.id != 17 && field.id != 20 && field.id != 23 && field.id != 24 && field.id != 27" 
+                            @if(field.fieldTypeID == 1 && field.id == 21 && User_Data_After_Login.type == 'parent'){
+                                <input  
                                 id="{{cat.enName}}_{{field.enName}}" 
                                 type="text" 
                                 class="rounded-lg border border-solid border-gray-300 px-4 py-3" 
-                                placeholder="{{ 'Enter' | translate }} {{ isRtl ? field.arName : field.enName }}"
-                                (change)="FillData($event, field.id, field.fieldTypeID)" 
+                                disabled
+                                [value]="parent.email"
+                                placeholder="{{ 'Enter' | translate }} {{ isRtl ? field.arName : field.enName }}" 
                                 [class.error-border]="isFieldInvalid(field)"
                                 />
+                            } @else{
+                                <input 
+                                    *ngIf="field.fieldTypeID == 1 && field.id != 11 && field.id != 12 && field.id != 16 && field.id != 17 && field.id != 20 && field.id != 23 && field.id != 24 && field.id != 27" 
+                                    id="{{cat.enName}}_{{field.enName}}" 
+                                    type="text" 
+                                    class="rounded-lg border border-solid border-gray-300 px-4 py-3" 
+                                    placeholder="{{ 'Enter' | translate }} {{ isRtl ? field.arName : field.enName }}"
+                                    (change)="FillData($event, field.id, field.fieldTypeID)" 
+                                    [class.error-border]="isFieldInvalid(field)"
+                                    />
+                            }
         
                             <textarea *ngSwitchCase="2" id="{{cat.enName}}_{{field.enName}}"
                                       class="rounded-lg border border-solid border-gray-300 px-4 py-3" 

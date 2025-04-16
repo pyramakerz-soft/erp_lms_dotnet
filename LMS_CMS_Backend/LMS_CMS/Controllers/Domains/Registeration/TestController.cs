@@ -138,6 +138,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             var response = new
             {
                 StudentName = registerationFormParent.StudentName,
+                StudentEnName = registerationFormParent.StudentEnName,
+                StudentArName = registerationFormParent.StudentArName,
                 Tests = testDTO
             };
             return Ok(response);

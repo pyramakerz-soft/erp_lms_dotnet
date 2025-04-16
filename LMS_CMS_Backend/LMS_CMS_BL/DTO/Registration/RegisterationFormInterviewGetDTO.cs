@@ -17,6 +17,8 @@ namespace LMS_CMS_BL.DTO.Registration
         public string InterviewTimeDate { get; set; }
         public long RegisterationFormParentID { get; set; }
         public string StudentName { get; set; }
+        public string StudentEnName { get; set; }
+        public string StudentArName { get; set; }
         public string Phone { get; set; }
         public string GradeID { get; set; }
         public string GradeName { get; set; }

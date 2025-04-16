@@ -14,7 +14,10 @@
                     {{ 'ID' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    {{ 'Student Name' | translate }}
+                    {{ 'Student English Name' | translate }}
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ 'Student Arabic Name' | translate }}
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
                     {{ 'Phone' | translate }}
@@ -47,7 +50,8 @@
                 class="border-t border-gray-300 text-xs md:text-sm">
 
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentEnName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentArName }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.phone }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.gradeName }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.email }}</td>
@@ -88,9 +92,14 @@
 
 
 <div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
-    <div class="bg-white rounded-2xl p-12 w-[669px]">
-        <div class="flex justify-between items-center">
-            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+    <div class="bg-white rounded-2xl p-12 w-[669px]"> 
+        <div class="flex justify-between">
+            <h1 class="font-semibold text-2xl leading-9">Interview State</h1>
+            <!-- Close Icon -->
+            <button (click)="closeModal()"
+                class="text-gray-400 hover:text-gray-900 transition duration-200">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
         </div>
         
         <div class="p-[16px_24px] mt-6 mb-4 bg-[#F7F7F7] rounded-3xl">

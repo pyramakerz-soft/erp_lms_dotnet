@@ -72,7 +72,7 @@ export class ClassroomsAccommodationComponent {
 
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'studentName', 'gradeName'];
+  keysArray: string[] = ['id', 'studentEnName', 'studentArName', 'gradeName'];
   isLoading = false;
 
   constructor(

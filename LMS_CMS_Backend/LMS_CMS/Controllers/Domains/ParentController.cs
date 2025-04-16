@@ -66,23 +66,17 @@ namespace LMS_CMS_PL.Controllers.Domains
             {
                 return BadRequest("Password Can't be null");
             }
-
-            Parent parent =Unit_Of_Work.parent_Repository.First_Or_Default(p=>p.User_Name==UserInfo.ar_name);
-            if (parent !=null) 
-            {
-                return BadRequest("This vv Already Token");
-            }
-
+             
             Parent parent1 = Unit_Of_Work.parent_Repository.First_Or_Default(p => p.Email == UserInfo.Email);
             if (parent1 != null)
             {
-                return BadRequest("This Email Already Token");
+                return BadRequest("This Email Already Taken");
             }
 
-            Parent parent2 = Unit_Of_Work.parent_Repository.First_Or_Default(p => p.User_Name == UserInfo.ar_name);
-            if (parent != null)
+            Parent parent2 = Unit_Of_Work.parent_Repository.First_Or_Default(p => p.User_Name == UserInfo.User_Name);
+            if (parent2 != null)
             {
-                return BadRequest("This UserName Already Token");
+                return BadRequest("This UserName Already Taken");
             }
 
             //Validation

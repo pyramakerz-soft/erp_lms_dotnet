@@ -29,5 +29,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long? BankID { get; set; }
         public bool? IsEditInvoiceNumber { get; set; }
         public long? StoreToTransformId { get; set; }
+
+
     }
 }

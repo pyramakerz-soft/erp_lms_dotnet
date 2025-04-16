@@ -41,7 +41,7 @@ export class InventoryDetailsService {
     return this.http.get<InventoryDetails>(`${this.baseUrl}/InventoryDetails/${id}`, { headers })
   }
 
-  Add(Detail: InventoryDetails, DomainName: string): Observable<any> {
+  Add(Detail: InventoryDetails[], DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -51,22 +51,30 @@ export class InventoryDetailsService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
 
-    return this.http.post<any>(`${this.baseUrl}/InventoryDetails`, Detail, {
-      headers: headers,
-      responseType: 'text' as 'json'
-    });
+      const cleanedDetails = Detail.map(item => {
+        const { id, ...rest } = item;
+        return rest;
+      });
+      console.log("cleanedDetails",cleanedDetails)
+      
+      return this.http.post<any>(`${this.baseUrl}/InventoryDetails`, cleanedDetails, {
+        headers: headers,
+        responseType: 'text' as 'json'
+      }); 
   }
 
-  Edit(Detail: InventoryDetails, DomainName: string): Observable<Store> {
+  Edit(Detail: InventoryDetails[], DomainName: string): Observable<InventoryDetails[]> {
+    console.log(Detail); 
     if (DomainName != null) {
-      this.header = DomainName
+      this.header = DomainName;
     }
     const token = localStorage.getItem("current_token");
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.put<Store>(`${this.baseUrl}/InventoryDetails`, Detail, { headers });
+  
+    return this.http.put<InventoryDetails[]>(`${this.baseUrl}/InventoryDetails`, Detail, { headers });
   }
 
   Delete(id: number, DomainName: string) {

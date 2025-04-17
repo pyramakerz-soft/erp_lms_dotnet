@@ -109,7 +109,6 @@ export class AcademicSequentialReportComponent {
   getAllStudents() {
     this.studentServ.GetByStudentID(this.SelectedSchoolId,this.DomainName).subscribe((d) => {
       this.Students = d;
-      console.log(d ,this.Students)
       this.filteredStudents = d; 
     });
   }
@@ -128,7 +127,6 @@ export class AcademicSequentialReportComponent {
   GetStudentById() {
     this.studentServ.GetByID(this.SelectedStudentId, this.DomainName).subscribe((d) => {
       this.SelectedStudent = d
-      console.log(d)
     })
   }
 
@@ -235,7 +233,6 @@ export class AcademicSequentialReportComponent {
           next: (d) => {
             this.DataToPrint = d; 
             this.school = d.school;
-            console.log("data",d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             this.ArabicCurrentDate = new Date(this.CurrentDate).toLocaleDateString('ar-EG', {
@@ -250,7 +247,6 @@ export class AcademicSequentialReportComponent {
                 Academic_Year: grade.academicYearName || '',
               };
             });
-            console.log("this.TableData",this.TableData)
             resolve();
           },
           error: (err) => {

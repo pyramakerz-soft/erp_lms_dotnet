@@ -249,7 +249,6 @@ export class StudentsInformationFormReportComponent {
                 Pre_School: student.previousSchool || ''
               };
             });
-            console.log("data",d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             this.ArabicCurrentDate = new Date(this.CurrentDate).toLocaleDateString('ar-EG', {
@@ -258,8 +257,6 @@ export class StudentsInformationFormReportComponent {
               month: 'long',
               day: 'numeric'
             });
-            console.log("this.CurrentDate",this.CurrentDate)
-
             resolve();
           },
           error: (err) => {

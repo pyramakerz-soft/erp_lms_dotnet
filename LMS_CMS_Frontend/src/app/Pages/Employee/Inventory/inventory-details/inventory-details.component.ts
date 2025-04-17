@@ -94,6 +94,8 @@ export class InventoryDetailsComponent {
 
   isLoading = false
 
+  EditedShopItems: ShopItem[] = []
+
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -127,6 +129,21 @@ export class InventoryDetailsComponent {
     this.MasterId = Number(this.activeRoute.snapshot.paramMap.get('id'))
     this.FlagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
     this.Data.flagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
+    if (!this.MasterId) {
+      this.mode = "Create"
+      this.Data.date = new Date().toISOString().split('T')[0];
+    } else {
+      this.mode = "Edit"
+      this.GetTableDataByID();
+      this.GetMasterInfo();
+      if (this.Data.saveID == null) {
+        this.Data.saveID = 0
+      }
+      if (this.Data.bankID == null) {
+        this.Data.bankID = 0
+      }
+
+    }
 
     if (this.FlagId == 8 || this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 11 || this.FlagId == 12 || this.FlagId == 13) {
       this.IsRemainingCashVisa = true
@@ -149,21 +166,6 @@ export class InventoryDetailsComponent {
     await this.GetAllBanks()
     this.GetInventoryFlagInfo()
 
-    if (!this.MasterId) {
-      this.mode = "Create"
-      this.Data.date = new Date().toISOString().split('T')[0];
-    } else {
-      this.mode = "Edit"
-      this.GetTableDataByID();
-      this.GetMasterInfo();
-      if (this.Data.saveID == null) {
-        this.Data.saveID = 0
-      }
-      if (this.Data.bankID == null) {
-        this.Data.bankID = 0
-      }
-
-    }
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
@@ -318,6 +320,19 @@ export class InventoryDetailsComponent {
       if (this.mode == "Create") {
         this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
           this.MasterId = d
+          if (this.EditedShopItems.length > 0) {
+            this.EditedShopItems.forEach(element => {
+              if (element.id !== 0) {
+                this.shopitemServ.Edit(element, this.DomainName).subscribe({
+                  next: (res) => {
+                  },
+                  error: (err) => {
+                    console.error("Error updating item:", err);
+                  }
+                });
+              }
+            });
+          }
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
         }, (error) => {
           this.isLoading = false;
@@ -334,9 +349,7 @@ export class InventoryDetailsComponent {
         this.Data.inventoryDetails = this.TableData
         this.salesItemServ.Edit(this.Data.inventoryDetails, this.DomainName).subscribe((d) => { })
         this.salesItemServ.Add(this.NewDetailsWhenEdit, this.DomainName).subscribe((d => { }), (error) => {
-          console.log(error)
         })
-        console.log()
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
         }, (error) => {
@@ -357,8 +370,13 @@ export class InventoryDetailsComponent {
     this.editingRowId = row.id;
   }
 
-  EditPrice() {
-    this.Item.price = this.ShopItem.purchasePrice ?? 0
+  EditPrice(row:InventoryDetails) {
+    row.totalPrice=row.quantity * row.price
+    this.shopitemServ.GetById(row.shopItemID,this.DomainName).subscribe((d)=>{
+      this.ShopItem=d
+      this.ShopItem.purchasePrice=row.price
+      this.EditedShopItems.push(this.ShopItem)
+    })
     this.CalculateTotalPrice()
     this.IsPriceChanged = true;
   }
@@ -392,10 +410,8 @@ export class InventoryDetailsComponent {
       }).then((result) => {
         if (result.isConfirmed) {
           if (!this.NewDetailsWhenEdit.find(s => s.id == row.id)) {
-            console.log(row)
             this.salesItemServ.Delete(row.id, this.DomainName).subscribe(async (D) => {
               await this.GetTableDataByID();
-              console.log(this.TableData)
             })
           }
           else {
@@ -563,7 +579,6 @@ export class InventoryDetailsComponent {
         this.Data.visaAmount = this.Data.visaAmount || 0;
         this.Data.total = this.TableData.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
         this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
-        console.log(this.Data)
         this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
         })
       }

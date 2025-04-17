@@ -187,7 +187,6 @@ export class SubCategoryComponent {
           })
       }
       if (this.mode == 'Edit') {
-        console.log(this.SubCategory)
         this.InventorySubCategoryServ.Edit(this.SubCategory, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();

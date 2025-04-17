@@ -115,7 +115,6 @@ export class TransferedFromKindergartenReportComponent {
   getAllStudents() {
     this.studentServ.GetByAcademicYearID(this.SelectedYearId ,this.DomainName).subscribe((d) => {
       this.Students = d;
-      console.log(d ,this.Students)
       this.filteredStudents = d; 
     });
   }
@@ -134,7 +133,6 @@ export class TransferedFromKindergartenReportComponent {
   GetStudentById() {
     this.studentServ.GetByID(this.SelectedStudentId, this.DomainName).subscribe((d) => {
       this.SelectedStudent = d
-      console.log(d)
     })
   }
 
@@ -206,7 +204,6 @@ export class TransferedFromKindergartenReportComponent {
           next: (d) => {
             this.DataToPrint = d; 
             this.school = d.school;
-            console.log("data",d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             this.ArabicCurrentDate = new Date(this.CurrentDate).toLocaleDateString('ar-EG', {
@@ -215,8 +212,6 @@ export class TransferedFromKindergartenReportComponent {
               month: 'long',
               day: 'numeric'
             });
-            console.log("this.CurrentDate",this.CurrentDate)
-
             resolve();
           },
           error: (err) => {

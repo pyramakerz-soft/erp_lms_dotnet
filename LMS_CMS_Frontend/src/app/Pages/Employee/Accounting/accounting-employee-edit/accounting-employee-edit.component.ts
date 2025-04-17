@@ -145,7 +145,6 @@ export class AccountingEmployeeEditComponent {
       }
     });
     this.EmployeeId = Number(this.activeRoute.snapshot.paramMap.get('id'))
-    console.log(this.EmployeeId)
     this.GetAllData();
     this.GetAllAccount();
     this.GetAllNationalitys();
@@ -248,7 +247,6 @@ export class AccountingEmployeeEditComponent {
   }
 
   onIsActiveChange(event: Event) {
-    console.log("EndDate")
     const isChecked = (event.target as HTMLInputElement).checked;
     this.EndDate = isChecked
   }

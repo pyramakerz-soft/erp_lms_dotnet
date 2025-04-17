@@ -226,7 +226,6 @@ export class StatisticsOnTheNumberOfStudentsIntheSchoolComponent {
         next: (d) => {
           this.tableData = []; // Clear existing data
           this.school = d.school;
-          console.log(d);
           this.CurrentDate = this.formatDate(d.date, this.direction);
 
           d.sections.forEach((section: any) => {
@@ -249,7 +248,6 @@ export class StatisticsOnTheNumberOfStudentsIntheSchoolComponent {
               Students_Assigned_To_Noor_Count: section.studentsAssignedToNoorCount,
             });
           });
-          console.log(this.tableData); // ✅ Result
           resolve();
         },
         error: (err) => {

@@ -99,6 +99,7 @@ export class StockingDetailsComponent {
   IsActualStockHiddenForBlankPrint: boolean = false
   StoreAndDateSpanWhenPrint: boolean = false
   NewDetailsWhenEdit: StockingDetails[] = [];
+  DetailsToDeleted: StockingDetails[] = [];
 
   constructor(
     private router: Router,
@@ -229,7 +230,6 @@ export class StockingDetailsComponent {
         ItemPrice: item.purchasePrice ?? 0,
       }));
       this.OriginDetails = [...this.OriginDetails, ...this.FilteredDetails];
-      console.log(1,this.OriginDetails)
       if (this.mode == 'Create') {
         if (!this.Data.stockingDetails) {
           this.Data.stockingDetails = [];
@@ -246,7 +246,6 @@ export class StockingDetailsComponent {
         this.TableData = this.TableData.concat(this.FilteredDetails);
         this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.concat(this.FilteredDetails);
         if (this.HasBallance) {
-          console.log(this.OriginDetails, this.TableData)
           this.TableData = this.TableData.filter(d => d.currentStock !== 0);
         }
       }
@@ -280,7 +279,6 @@ export class StockingDetailsComponent {
           }));
           this.OriginDetails = this.OriginDetails.concat(this.FilteredDetails);
           if (this.mode == 'Create') {
-            console.log(this.FilteredDetails, this.Data.stockingDetails)
             this.Data.stockingDetails = this.Data.stockingDetails.concat(this.FilteredDetails);
             if (this.HasBallance) {
               this.Data.stockingDetails = this.OriginDetails.filter(d => d.currentStock != 0);
@@ -446,11 +444,16 @@ export class StockingDetailsComponent {
         });
       }
       if (this.mode == 'Edit') {
+        this.DetailsToDeleted = this.OriginDetails.filter(originItem =>
+          this.HasBallance==true && originItem.currentStock==0
+        );
+        console.log(this.DetailsToDeleted)
+        this.DetailsToDeleted.forEach(element => {
+          this.StockingDetailsServ.Delete(element.id,this.DomainName).subscribe((d)=>{})
+        });
         this.Data.stockingDetails = this.TableData
-        console.log("ds",this.TableData)
         this.StockingDetailsServ.Edit(this.Data.stockingDetails, this.DomainName).subscribe((d) => { })
         this.StockingDetailsServ.Add(this.NewDetailsWhenEdit, this.DomainName).subscribe((d => { }), (error) => {
-          console.log(error)
         })
         this.StockingServ.Edit(this.Data, this.DomainName).subscribe((d) => {
           this.router.navigateByUrl(`Employee/Stocking`);
@@ -487,7 +490,6 @@ export class StockingDetailsComponent {
           if (!this.NewDetailsWhenEdit.find(s => s.id == row.id)) {
             this.StockingDetailsServ.Delete(row.id, this.DomainName).subscribe(async (D) => {
               await this.GetTableDataByID();
-              console.log(this.TableData)
             })
           }
           else {
@@ -685,7 +687,6 @@ export class StockingDetailsComponent {
   async selectPrintOption(type: string) {
     this.showPrintMenu = false;
     this.StoreAndDateSpanWhenPrint = true;
-    console.log(this.Data.stockingDetails)
     if (this.mode === 'Create') {
       this.TableData = this.Data.stockingDetails;
       const addedData = await this.StockingServ.Add(this.Data, this.DomainName).toPromise();

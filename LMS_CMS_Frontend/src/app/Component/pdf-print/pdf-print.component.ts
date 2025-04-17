@@ -39,8 +39,6 @@ export class PdfPrintComponent {
         this.preservedColumns = this.tableHeaders[0];
       this.splitTableGenerically();
     }
-    console.log(this.tableData)
-    console.log(this.tableChunks)
   }
 
   ngAfterViewInit(): void {

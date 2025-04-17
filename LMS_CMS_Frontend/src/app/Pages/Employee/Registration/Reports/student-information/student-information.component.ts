@@ -132,7 +132,6 @@ export class StudentInformationComponent {
   GetStudentById() {
     this.studentServ.GetByID(this.SelectedStudentId, this.DomainName).subscribe((d) => {
       this.SelectedStudent = d
-      console.log(d)
     })
   }
 
@@ -236,7 +235,6 @@ export class StudentInformationComponent {
           next: (d) => {
             this.DataToPrint = []; // Clear existing data
             this.school = d.school;
-            console.log(d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             const generalInfo = {

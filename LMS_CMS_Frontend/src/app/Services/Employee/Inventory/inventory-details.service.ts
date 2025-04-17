@@ -55,8 +55,6 @@ export class InventoryDetailsService {
         const { id, ...rest } = item;
         return rest;
       });
-      console.log("cleanedDetails",cleanedDetails)
-      
       return this.http.post<any>(`${this.baseUrl}/InventoryDetails`, cleanedDetails, {
         headers: headers,
         responseType: 'text' as 'json'
@@ -64,7 +62,6 @@ export class InventoryDetailsService {
   }
 
   Edit(Detail: InventoryDetails[], DomainName: string): Observable<InventoryDetails[]> {
-    console.log(Detail); 
     if (DomainName != null) {
       this.header = DomainName;
     }

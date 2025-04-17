@@ -15,6 +15,7 @@ using Org.BouncyCastle.OpenSsl;
 using System.Globalization;
 using System.Numerics;
 using System.IO;
+using Org.BouncyCastle.Utilities.Encoders;
 
 namespace LMS_CMS_PL.Services.Invoice
 {
@@ -229,39 +230,40 @@ namespace LMS_CMS_PL.Services.Invoice
             string digitalSignature = GenerateDigitalSignature(sha256Hash, privateKeyPath);
 
             // Step 0000000003
-            string jsonContent = File.ReadAllText(pcsidPath);
+            string jsonContent = File.ReadAllText(cerPath);
             dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
             string base64Cert = jsonObject.binarySecurityToken;
 
-            byte[] certificateSha256Hash = SHA256.HashData(Convert.FromBase64String(base64Cert));
+            byte[] certBytes = Convert.FromBase64String(base64Cert);
+            byte[] certificateSha256Hash = SHA256.HashData(certBytes);
             string certificateBase64Hash = BitConverter.ToString(certificateSha256Hash).Replace("-", "").ToLower();
             string certHashBase64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(certificateBase64Hash));
 
-            X509Certificate2 cert = new X509Certificate2(Convert.FromBase64String(base64Cert));
+            X509Certificate2 cert = new X509Certificate2(certBytes);
 
             // Step 0000000004
             AddValue(doc, "//xades:CertDigest/ds:DigestValue", certHashBase64, nsMgr);
             AddValue(doc, "//xades:SignedSignatureProperties/xades:SigningTime", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"), nsMgr);
-            AddValue(doc, "//xades:IssuerSerial/ds:X509IssuerName", cert.Issuer, nsMgr);
-            AddValue(doc, "//xades:IssuerSerial/ds:X509SerialNumber", BigInteger.Parse("00" + cert.SerialNumber, NumberStyles.HexNumber).ToString(), nsMgr);
+            AddValue(doc, "//xades:IssuerSerial/ds:X509IssuerName", cert.Subject, nsMgr);
+            AddValue(doc, "//xades:IssuerSerial/ds:X509SerialNumber", BigInteger.Parse("00" + cert.SerialNumber, System.Globalization.NumberStyles.HexNumber).ToString(), nsMgr);
 
             SaveFormatted(doc, newInvoicePath);
             // Step 0000000005
             XmlNode propertiesNode = doc.SelectSingleNode("//xades:QualifyingProperties/xades:SignedProperties", nsMgr);
 
-            byte[] canonicalizedProps = CanonicalizeNode(propertiesNode);
+            byte[] canonicalizedProps = LinearizeXml(propertiesNode);
             byte[] PropsSha256 = SHA256.HashData(canonicalizedProps);
             string PropsSha256HashString = BitConverter.ToString(PropsSha256).Replace("-", "").ToLowerInvariant();
             string propsHash64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(PropsSha256HashString));
 
             // Step 0000000006
-            doc.Load(newInvoicePath);
+            //doc.Load(newInvoicePath);
             //string csrContent = File.ReadAllText(csrPath);
             //csrContent = csrContent.Replace("-----BEGIN CERTIFICATE REQUEST-----", "")
             //    .Replace("-----END CERTIFICATE REQUEST-----", "")
             //    .Replace("\r", "").Replace("\n", "").Trim();
 
-            byte[] certBytes = Convert.FromBase64String(base64Cert);
+            //byte[] certBytes = Convert.FromBase64String(base64Cert);
             string decodedCert = Encoding.UTF8.GetString(certBytes);
 
             AddValue(doc, "//ds:SignatureValue", digitalSignature, nsMgr);
@@ -352,43 +354,43 @@ namespace LMS_CMS_PL.Services.Invoice
             //SaveFormatted(tempDoc, tempXml);
             //SaveFormatted(doc, newInvoicePath);
 
-            
 
-            
+
+
 
             //SaveFormatted(doc, newInvoicePath);
 
-            //string sellerNameValue = doc.SelectSingleNode("//cac:PartyLegalEntity/cbc:RegistrationName", nsMgr).InnerText;
-            //string vatNumberValue = doc.SelectSingleNode("//cac:PartyTaxScheme/cbc:CompanyID", nsMgr).InnerText;
-            //string invoiceDateValue = doc.SelectSingleNode("//cbc:IssueDate", nsMgr).InnerText;
-            //string invoiceTimeValue = doc.SelectSingleNode("//cbc:IssueTime", nsMgr).InnerText;
-            //string invoiceTotalValue = doc.SelectSingleNode("//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", nsMgr).InnerText;
-            //string invoiceVatValue = doc.SelectSingleNode("//cac:TaxTotal/cbc:TaxAmount", nsMgr).InnerText;
-            //string invoiceXmlHash = doc.SelectSingleNode("//ds:Reference/ds:DigestValue", nsMgr).InnerText;
-            //string signatureValue = doc.SelectSingleNode("//sac:SignatureInformation/ds:Signature /ds:SignatureValue", nsMgr).InnerText;
-            //string PublicKeyValue = doc.SelectSingleNode("//ds:KeyInfo /ds:X509Data/ds:X509Certificate", nsMgr).InnerText;
-            //string certificateValue = doc.SelectSingleNode("//xades:CertDigest/ds:DigestValue", nsMgr).InnerText; ;
+            string sellerNameValue = doc.SelectSingleNode("//cac:PartyLegalEntity/cbc:RegistrationName", nsMgr).InnerText;
+            string vatNumberValue = doc.SelectSingleNode("//cac:PartyTaxScheme/cbc:CompanyID", nsMgr).InnerText;
+            string invoiceDateValue = doc.SelectSingleNode("//cbc:IssueDate", nsMgr).InnerText;
+            string invoiceTimeValue = doc.SelectSingleNode("//cbc:IssueTime", nsMgr).InnerText;
+            string invoiceTotalValue = doc.SelectSingleNode("//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", nsMgr).InnerText;
+            string invoiceVatValue = doc.SelectSingleNode("//cac:TaxTotal/cbc:TaxAmount", nsMgr).InnerText;
+            string invoiceXmlHash = doc.SelectSingleNode("//ds:Reference/ds:DigestValue", nsMgr).InnerText;
+            string signatureValue = doc.SelectSingleNode("//sac:SignatureInformation/ds:Signature /ds:SignatureValue", nsMgr).InnerText;
+            string PublicKeyValue = doc.SelectSingleNode("//ds:KeyInfo /ds:X509Data/ds:X509Certificate", nsMgr).InnerText;
+            string certificateValue = doc.SelectSingleNode("//xades:CertDigest/ds:DigestValue", nsMgr).InnerText; ;
 
 
-            //var sellerName = GetTLVForValue(1, sellerNameValue);
-            //var vatNumber = GetTLVForValue(2, vatNumberValue);
-            //var invoiceTimestamp = GetTLVForValue(3, invoiceDateValue + "T" + invoiceTimeValue);
-            //var invoiceTotal = GetTLVForValue(4, invoiceTotalValue);
-            //var invoiceVat = GetTLVForValue(5, invoiceVatValue);
-            //var invoiceXml = GetTLVForValue(6, invoiceXmlHash);
-            //var ecdsaSignature = GetTLVForValue(7, signatureValue);
-            //var ecdsaPublicKey = GetTLVForValue(8, PublicKeyValue);
-            //var certificate = GetTLVForValue(9, certificateValue);
+            var sellerName = GetTLVForValue(1, sellerNameValue);
+            var vatNumber = GetTLVForValue(2, vatNumberValue);
+            var invoiceTimestamp = GetTLVForValue(3, invoiceDateValue + "T" + invoiceTimeValue);
+            var invoiceTotal = GetTLVForValue(4, invoiceTotalValue);
+            var invoiceVat = GetTLVForValue(5, invoiceVatValue);
+            var invoiceXml = GetTLVForValue(6, invoiceXmlHash);
+            var ecdsaSignature = GetTLVForValue(7, signatureValue);
+            var ecdsaPublicKey = GetTLVForValue(8, PublicKeyValue);
+            var certificate = GetTLVForValue(9, certificateValue);
 
-            //byte[][] tagsBytesArray = [sellerName, vatNumber, invoiceTimestamp, invoiceTotal, invoiceVat, invoiceXml, ecdsaSignature, ecdsaPublicKey, certificate];
+            byte[][] tagsBytesArray = [sellerName, vatNumber, invoiceTimestamp, invoiceTotal, invoiceVat, invoiceXml, ecdsaSignature, ecdsaPublicKey, certificate];
 
-            //byte[] qrCodeBytes = tagsBytesArray.SelectMany(b => b).ToArray();
+            byte[] qrCodeBytes = tagsBytesArray.SelectMany(b => b).ToArray();
 
-            //string qrCodeBase64 = Convert.ToBase64String(qrCodeBytes);
+            string qrCodeBase64 = Convert.ToBase64String(qrCodeBytes);
 
-            //AddValue(doc, "//cac:AdditionalDocumentReference[cbc:ID='QR']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", qrCodeBase64, nsMgr);
-            //AddValue(doc, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
-            //SaveFormatted(doc, newInvoicePath);
+            AddValue(doc, "//cac:AdditionalDocumentReference[cbc:ID='QR']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", qrCodeBase64, nsMgr);
+            AddValue(doc, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
+            SaveFormatted(doc, newInvoicePath);
 
             //string invoicEncoded = await File.ReadAllTextAsync(newInvoicePath);
 
@@ -505,19 +507,27 @@ namespace LMS_CMS_PL.Services.Invoice
             return Convert.ToBase64String(bytes);
         }
 
-        private static string LinearizeXml(XmlNode node)
+        private static byte[] LinearizeXml(XmlNode node)
         {
+            //string xmlContent = node.InnerXml;
+
+            //StringBuilder linearizedXml = new StringBuilder();
+            //foreach (char c in xmlContent)
+            //{
+            //    if (!Char.IsWhiteSpace(c))
+            //    {
+            //        linearizedXml.Append(c);
+            //    }
+            //}
+            //return linearizedXml.ToString();
+            // Get the XML string of the node (including tags)
             string xmlContent = node.InnerXml;
 
-            StringBuilder linearizedXml = new StringBuilder();
-            foreach (char c in xmlContent)
-            {
-                if (!Char.IsWhiteSpace(c))
-                {
-                    linearizedXml.Append(c);
-                }
-            }
-            return linearizedXml.ToString();
+            // Remove all whitespace characters (including spaces, tabs, newlines)
+            string linearizedXml = new string(xmlContent.Where(c => !char.IsWhiteSpace(c)).ToArray());
+
+            // Convert the cleaned-up XML string to a byte array (UTF-8 encoding)
+            return Encoding.UTF8.GetBytes(linearizedXml);
         }
 
         private static byte[] GetTLVForValue(byte tagNum, string tagValue)

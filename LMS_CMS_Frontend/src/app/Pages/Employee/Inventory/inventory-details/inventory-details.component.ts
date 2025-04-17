@@ -220,7 +220,7 @@ export class InventoryDetailsComponent {
   }
 
   GetCategories() {
-    this.Categories=[]
+    this.Categories = []
     this.CategoriesServ.GetByStoreId(this.DomainName, this.Data.storeID).subscribe((d) => {
       this.Categories = d
     })
@@ -273,16 +273,16 @@ export class InventoryDetailsComponent {
     this.Item.shopItemID = item.id;
     this.Item.shopItemName = item.enName;
     this.Item.barCode = item.barCode;
-    this.Item.quantity=1
-    this.Item.totalPrice=this.Item.price 
-    await this.SaveRow(); 
+    this.Item.quantity = 1
+    this.Item.totalPrice = this.Item.price
+    await this.SaveRow();
   }
 
   async GetTableDataByID(): Promise<void> {
     return new Promise((resolve) => {
       this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
         this.TableData = d;
-        this.Data.inventoryDetails=d
+        this.Data.inventoryDetails = d
         resolve();
       },
         (error) => {
@@ -331,9 +331,9 @@ export class InventoryDetailsComponent {
         })
       }
       if (this.mode == "Edit") {
-        this.Data.inventoryDetails=this.TableData
-        this.salesItemServ.Edit(this.Data.inventoryDetails , this.DomainName).subscribe((d)=>{})
-        this.salesItemServ.Add(this.NewDetailsWhenEdit,this.DomainName).subscribe((d=>{ }), (error) => {
+        this.Data.inventoryDetails = this.TableData
+        this.salesItemServ.Edit(this.Data.inventoryDetails, this.DomainName).subscribe((d) => { })
+        this.salesItemServ.Add(this.NewDetailsWhenEdit, this.DomainName).subscribe((d => { }), (error) => {
           console.log(error)
         })
         console.log()
@@ -391,16 +391,16 @@ export class InventoryDetailsComponent {
         cancelButtonText: 'Cancel',
       }).then((result) => {
         if (result.isConfirmed) {
-          if(!this.NewDetailsWhenEdit.find(s=>s.id==row.id)){
+          if (!this.NewDetailsWhenEdit.find(s => s.id == row.id)) {
             console.log(row)
             this.salesItemServ.Delete(row.id, this.DomainName).subscribe(async (D) => {
               await this.GetTableDataByID();
               console.log(this.TableData)
             })
           }
-          else{
-            this.NewDetailsWhenEdit= this.NewDetailsWhenEdit.filter(s=>s.id!=row.id)
-            this.TableData=this.TableData.filter(s=>s.id!=row.id)
+          else {
+            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.filter(s => s.id != row.id)
+            this.TableData = this.TableData.filter(s => s.id != row.id)
           }
           this.TotalandRemainingCalculate()
         }
@@ -512,7 +512,7 @@ export class InventoryDetailsComponent {
     }
   }
 
-  openFile(file: any) {  
+  openFile(file: any) {
     if (typeof file === 'string') {
       window.open(file, '_blank');
     } else if (file instanceof File) {

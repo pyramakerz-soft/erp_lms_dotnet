@@ -79,7 +79,7 @@ export class TestService {
     return this.http.get<Test>(`${this.baseUrl}/Test/${id}`, { headers })
   }
 
-  GetByRegistrationFormParentIDAndGrade(RPID:number,DomainName:string) {
+  GetByRegistrationFormParentIDFromEmployee(RPID:number,DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
     }
@@ -88,7 +88,19 @@ export class TestService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<TestWithRegistrationForm[]>(`${this.baseUrl}/Test/byRegistrationFormParentID/${RPID}`, { headers })
+    return this.http.get<TestWithRegistrationForm[]>(`${this.baseUrl}/Test/byRegistrationFormParentIDFromEmployee/${RPID}`, { headers })
+  }
+
+  GetByRegistrationFormParentIDFromParent(RPID:number,DomainName:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<TestWithRegistrationForm[]>(`${this.baseUrl}/Test/byRegistrationFormParentIDFromParent/${RPID}`, { headers })
   }
 
 }

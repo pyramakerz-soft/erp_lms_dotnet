@@ -98,8 +98,7 @@ export class BuildingComponent {
   }
 
   getSchoolData() {
-    this.schoolService.Get(this.DomainName).subscribe((data) => {
-      console.log(data)
+    this.schoolService.Get(this.DomainName).subscribe((data) => { 
       this.Schools = data;
     });
   }

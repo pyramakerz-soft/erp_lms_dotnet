@@ -48,9 +48,10 @@
                     <h3 class="font-semibold text-gray-700">Account Options</h3>
                     <ul class="mt-2">
                         <li *ngFor="let token of allTokens">
-                            <button (click)="ChangeAccount(token.id)"
-                                class="text-start w-full hover:bg-gray-100 p-2 rounded-md">
-                                {{ token.key }}
+                            <button (click)="ChangeAccount(token.id)" [ngClass]="{'border bg-gray-100':token.key == userName}"
+                                class="text-start w-full hover:bg-gray-100 p-2 rounded-md"> 
+                                <p class="primaryTxt">{{ token.key }}</p>
+                                <p class="text-gray-500 text-xs">{{ token.UserType }}</p>
                             </button>
                         </li>
                     </ul>

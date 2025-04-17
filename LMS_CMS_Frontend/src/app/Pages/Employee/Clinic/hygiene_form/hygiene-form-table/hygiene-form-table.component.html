@@ -52,21 +52,27 @@
                     </label>
                 </td>
 
-                <!-- Select All for Row (Conditionally Rendered) -->
-                <td *ngIf="showSelectAll" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div class="flex gap-2">
-                        <!-- Select All True -->
-                        <button (click)="setAllHygieneTypesForStudent(student, true)" [disabled]="isViewOnly"
-                            class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white">
-                            <i class="fas fa-check"></i>
-                        </button>
-                        <!-- Select All False -->
-                        <button (click)="setAllHygieneTypesForStudent(student, false)" [disabled]="isViewOnly"
-                            class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </td>
+<!-- Select All for Row (Conditionally Rendered) -->
+<td *ngIf="showSelectAll" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+    <div class="flex gap-2">
+        <!-- Select All True -->
+        <button (click)="setAllHygieneTypesForStudent(student, true)"
+            [disabled]="isViewOnly || student['attendance'] !== true"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-white bg-gray-300" [ngClass]="{
+                    'bg-green-500': !isViewOnly && student['attendance'] === true && student['hygieneTypeSelectAll'] === true,
+                }">
+            <i class="fas fa-check"></i>
+        </button>
+        <!-- Select All False -->
+        <button (click)="setAllHygieneTypesForStudent(student, false)"
+            [disabled]="isViewOnly || student['attendance'] !== true"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-white bg-gray-300" [ngClass]="{
+                    'bg-red-500': !isViewOnly && student['attendance'] === true && student['hygieneTypeSelectAll'] === false,
+                }">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</td>
 
                 <!-- Hygiene Types -->
                 <td *ngFor="let hygieneType of hygieneTypes"
@@ -74,7 +80,8 @@
                     <div class="flex gap-2">
                         <!-- True Button -->
                         <button (click)="setHygieneType(student, hygieneType.id, true)" [disabled]="isViewOnly"
-                            [ngClass]="{'bg-green-500': student['hygieneType_' + hygieneType.id] === true, 'bg-gray-300': student['hygieneType_' + hygieneType.id] !== true}"
+                            [ngClass]="{'bg-green-500': student['hygieneType_' + hygieneType.id] === true,
+                             'bg-gray-300': student['hygieneType_' + hygieneType.id] !== true}"
                             class="w-8 h-8 rounded-full flex items-center justify-center text-white">
                             <i class="fas fa-check"></i>
                         </button>

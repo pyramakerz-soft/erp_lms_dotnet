@@ -16,12 +16,13 @@ export class HygieneFormTableComponent {
   @Input() isViewOnly: boolean = false;
   @Input() showSelectAll: boolean = true;
 
-  
   private previousAttendanceStates: { [key: number]: boolean | null } = {};
 
   ngOnChanges() {
     this.students.forEach(student => {
       this.previousAttendanceStates[student.id] = student['attendance'];
+      // Initialize hygieneTypeSelectAll to null
+      student['hygieneTypeSelectAll'] = null;
     });
   }
 
@@ -44,6 +45,7 @@ export class HygieneFormTableComponent {
       return;
     }
     student[`hygieneType_${hygieneTypeId}`] = value;
+    this.updateSelectAllState(student);
   }
 
   setAllHygieneTypesForStudent(student: Student, value: boolean) {
@@ -54,5 +56,20 @@ export class HygieneFormTableComponent {
       student[`hygieneType_${hygieneType.id}`] = value;
     });
     student['hygieneTypeSelectAll'] = value;
+  }
+
+  private updateSelectAllState(student: Student) {
+    if (!this.hygieneTypes.length) return;
+    
+    const allTrue = this.hygieneTypes.every(ht => student[`hygieneType_${ht.id}`] === true);
+    const allFalse = this.hygieneTypes.every(ht => student[`hygieneType_${ht.id}`] === false);
+    
+    if (allTrue) {
+      student['hygieneTypeSelectAll'] = true;
+    } else if (allFalse) {
+      student['hygieneTypeSelectAll'] = false;
+    } else {
+      student['hygieneTypeSelectAll'] = null;
+    }
   }
 }

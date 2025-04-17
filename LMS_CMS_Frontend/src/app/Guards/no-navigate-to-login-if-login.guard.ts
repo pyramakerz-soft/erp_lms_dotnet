@@ -26,8 +26,6 @@ export const noNavigateToLoginIfLoginGuard: CanActivateFn = (route, state) => {
     return false;
 
   }
-  
-
-
+   
   return true;
 };

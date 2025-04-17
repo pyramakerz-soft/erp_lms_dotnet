@@ -85,6 +85,15 @@ namespace LMS_CMS_BL.Repository
             db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
+        public void UpdateRange(IEnumerable<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
+        }
+
+
         public void Delete(long id)
         {
             TEntity obj = db.Set<TEntity>().Find(id);

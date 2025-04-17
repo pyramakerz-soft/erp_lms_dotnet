@@ -2,6 +2,8 @@ export class RegisterationFormParent {
         constructor(
             public id: number = 0,
             public studentName: string = '',
+            public studentEnName: string = '',
+            public studentArName: string = '',
             public phone: string = '',
             public gradeID: number = 0,
             public gradeName: string = '',

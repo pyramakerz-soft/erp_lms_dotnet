@@ -187,6 +187,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
 
             string StudentName = registerationFormParentAddDTO.RegisterationFormSubmittions
                 .FirstOrDefault(s => s.CategoryFieldID == 1)?.TextAnswer ?? string.Empty;
+             
+            string StudentArName = registerationFormParentAddDTO.RegisterationFormSubmittions
+                .FirstOrDefault(s => s.CategoryFieldID == 2)?.TextAnswer ?? string.Empty;
 
             string Phone = registerationFormParentAddDTO.RegisterationFormSubmittions
                 .FirstOrDefault(s => s.CategoryFieldID == 20)?.TextAnswer ?? string.Empty;
@@ -320,6 +323,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
             RegisterationFormParent registerationFormParent = new RegisterationFormParent
             {
                 StudentName = StudentName,
+                StudentEnName = StudentName,
+                StudentArName = StudentArName,
                 Phone = Phone,
                 GradeID = GradeID,
                 Email = ParentEmail,

@@ -144,22 +144,26 @@ export class AcademicSequentialReportComponent {
       console.error("Element not found!");
       return;
     }
+  
     this.showPDF = true;
     setTimeout(() => {
       element.classList.remove("hidden");
+  
       setTimeout(() => {
         const printContents = element.innerHTML;
         const printWindow = window.open('', '_blank', 'width=800,height=600');
         if (!printWindow) return;
+  
         printWindow.document.open();
         printWindow.document.write(`
           <html>
             <head>
               <title>Print</title>
               <style>
-                * { font-family: sans-serif; }
+                * { font-family: sans-serif; box-sizing: border-box; }
                 table { border-collapse: collapse; width: 100%; }
                 th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                img { max-width: 100px; max-height: 100px; width: auto; height: auto; }
                 @media print {
                   body { margin: 1cm; }
                 }
@@ -171,12 +175,12 @@ export class AcademicSequentialReportComponent {
           </html>
         `);
         printWindow.document.close();
+  
         setTimeout(() => {
           element.classList.add("hidden");
           this.showPDF = false;
         }, 1000);
-  
-      }, 200); // allow component to render
+      }, 300); // Allow DOM to update fully
     }, 100);
   }
 

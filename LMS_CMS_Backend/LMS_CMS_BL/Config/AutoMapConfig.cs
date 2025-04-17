@@ -357,6 +357,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<RegisterationFormInterview, RegisterationFormInterviewGetDTO>()
                .ForMember(dest => dest.InterviewStateName, opt => opt.MapFrom(src => src.InterviewState.Name))
                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
+               .ForMember(dest => dest.StudentEnName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentEnName))
+               .ForMember(dest => dest.StudentArName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentArName))
                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.RegisterationFormParent.Phone))
                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.RegisterationFormParent.Email))
                .ForMember(dest => dest.GradeID, opt => opt.MapFrom(src => src.RegisterationFormParent.GradeID))

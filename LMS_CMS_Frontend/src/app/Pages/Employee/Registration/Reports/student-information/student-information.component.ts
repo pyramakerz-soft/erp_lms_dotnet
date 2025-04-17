@@ -249,7 +249,7 @@ export class StudentInformationComponent {
                 { key: "Alternative Mobile", value: d.student?.phone || 'N/A' },
                 { key: "Date of Birth", value: d.student?.dateOfBirth || 'N/A' },
                 { key: "Gender", value: d.student?.genderName || 'N/A' },
-                { key: "Nationality", value: d.student?.nationalityName || 'N/A' },
+                { key: "Nationality", value: d.student?.nationalityEnName || 'N/A' },
                 { key: "Student' Passport Number", value: d.student?.passportNo || 'N/A' },
                 { key: "Student's Id Number", value: d.student?.idNumber || 'N/A' },
                 { key: "Religion", value: d.student?.religion || 'N/A' },

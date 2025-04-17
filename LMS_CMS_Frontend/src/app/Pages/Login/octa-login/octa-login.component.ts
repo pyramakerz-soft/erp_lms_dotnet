@@ -33,6 +33,23 @@ export class OctaLoginComponent {
 
   constructor(private router: Router, public accountService: AccountService) { }
 
+  ngOnInit() {
+    window.addEventListener('popstate', this.checkLocalStorageOnNavigate); 
+  }
+  
+  ngOnDestroy(): void { 
+    window.removeEventListener('popstate', this.checkLocalStorageOnNavigate);
+  }
+
+  checkLocalStorageOnNavigate(): void { 
+    const current_tokenValue = localStorage.getItem('current_token'); 
+    if (current_tokenValue) {
+      localStorage.setItem("GoToLogin", "false");
+    } else {
+      localStorage.setItem("GoToLogin", "true");
+    }
+  }
+
   getAllTokens(): void {
     let count = 0;
     this.allTokens=[];
@@ -82,8 +99,7 @@ export class OctaLoginComponent {
     this.userInfo.type = "octa";
     if (this.isFormValid()) {
       this.accountService.LoginOcta(this.userInfo).subscribe(
-        (d: any) => {
-  
+        (d: any) => { 
           localStorage.removeItem("GoToLogin");
           localStorage.setItem("GoToLogin", "false");
           localStorage.removeItem("current_token");

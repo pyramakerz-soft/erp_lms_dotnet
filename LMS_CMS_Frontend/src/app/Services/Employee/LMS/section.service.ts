@@ -4,57 +4,60 @@ import { ApiService } from '../../api.service';
 import { Section } from '../../../Models/LMS/section';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SectionService {
-  baseUrl = ""
-  header = ""
+  baseUrl = '';
+  header = '';
 
   constructor(public http: HttpClient, public ApiServ: ApiService) {
-    this.baseUrl = ApiServ.BaseUrl
+    this.baseUrl = ApiServ.BaseUrl;
   }
 
-  Get(DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
+  Get(DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName;
     }
-    const token = localStorage.getItem("current_token");
+    const token = localStorage.getItem('current_token');
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<Section[]>(`${this.baseUrl}/Section`, { headers })
+    return this.http.get<Section[]>(`${this.baseUrl}/Section`, { headers });
   }
 
-  GetBySchoolId(SchoolId:number ,DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
+  GetBySchoolId(SchoolId: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName;
     }
-    const token = localStorage.getItem("current_token");
+    const token = localStorage.getItem('current_token');
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<Section[]>(`${this.baseUrl}/Section/BySchoolID/${SchoolId}`, { headers })
+    return this.http.get<Section[]>(
+      `${this.baseUrl}/Section/BySchoolID/${SchoolId}`,
+      { headers }
+    );
   }
 
-  GetByID(id: number,DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
+  GetByID(id: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName;
     }
-    const token = localStorage.getItem("current_token");
+    const token = localStorage.getItem('current_token');
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<Section>(`${this.baseUrl}/Section/${id}`, { headers })
+    return this.http.get<Section>(`${this.baseUrl}/Section/${id}`, { headers });
   }
 
-  Add(Section: Section,DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
+  Add(Section: Section, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName;
     }
-    const token = localStorage.getItem("current_token");
+    const token = localStorage.getItem('current_token');
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
@@ -62,15 +65,15 @@ export class SectionService {
 
     return this.http.post(`${this.baseUrl}/Section`, Section, {
       headers: headers,
-      responseType: 'text' as 'json'
+      responseType: 'text' as 'json',
     });
   }
 
-  Edit(Section: Section,DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
+  Edit(Section: Section, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName;
     }
-    const token = localStorage.getItem("current_token");
+    const token = localStorage.getItem('current_token');
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
@@ -78,15 +81,34 @@ export class SectionService {
     return this.http.put(`${this.baseUrl}/Section`, Section, { headers });
   }
 
-  Delete(id: number,DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
+  Delete(id: number, DomainName: string) {
+    if (DomainName != null) {
+      this.header = DomainName;
     }
-    const token = localStorage.getItem("current_token");
+    const token = localStorage.getItem('current_token');
     const headers = new HttpHeaders()
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.delete(`${this.baseUrl}/Section/${id}`, { headers })
+    return this.http.delete(`${this.baseUrl}/Section/${id}`, { headers });
+  }
+
+  GetClassAndStudentCountsInGradesGroupedBySectionByYearID(
+    SchoolId: number,
+    YearId: number,
+    DomainName: string
+  ) {
+    if (DomainName != null) {
+      this.header = DomainName;
+    }
+    const token = localStorage.getItem('current_token');
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<any>(
+      `${this.baseUrl}/Section/GetClassAndStudentCountsInGradesGroupedBySectionByYearID?schoolId=${SchoolId}&yearId=${YearId}`,
+      { headers }
+    );
   }
 }

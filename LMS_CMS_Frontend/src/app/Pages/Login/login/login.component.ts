@@ -37,14 +37,25 @@ export class LoginComponent {
 
   allTokens: { id: number, key: string; KeyInLocal: string; value: string; UserType:string}[] = [];
   User_Data_After_Login2 = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-
-
-
-
+ 
   constructor(private router: Router, public accountService: AccountService) { }
 
   ngOnInit() {
+    window.addEventListener('popstate', this.checkLocalStorageOnNavigate);
     this.selectType("student")
+  }
+  
+  ngOnDestroy(): void { 
+    window.removeEventListener('popstate', this.checkLocalStorageOnNavigate);
+  }
+
+  checkLocalStorageOnNavigate(): void { 
+    const current_tokenValue = localStorage.getItem('current_token'); 
+    if (current_tokenValue) {
+      localStorage.setItem("GoToLogin", "false");
+    } else {
+      localStorage.setItem("GoToLogin", "true");
+    }
   }
 
   onUserNameChange() {

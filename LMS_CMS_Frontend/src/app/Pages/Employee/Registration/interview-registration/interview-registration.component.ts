@@ -49,7 +49,7 @@ export class InterviewRegistrationComponent {
   getRegistrationFormInterviewData(){
     this.registrationFormInterviewData = []
     this.registrationFormInterviewService.GetRegistrationFormInterviewByInterviewID(this.interviewTimeID, this.DomainName).subscribe(
-      (data) => {
+      (data) => { 
         this.registrationFormInterviewData = data
       }
     )

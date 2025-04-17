@@ -456,7 +456,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                         query => query.Include(emp => emp.RegistrationForm),
                         query => query.Include(emp => emp.Parent));
 
-                registerationFormParents.Add(registerationFormParents_WithID);
+                if(registerationFormParents_WithID != null)
+                {
+                    registerationFormParents.Add(registerationFormParents_WithID);
+                }
+
             }
 
             if (registerationFormParents == null || registerationFormParents.Count == 0)
@@ -533,7 +537,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                         query => query.Include(emp => emp.RegistrationForm),
                         query => query.Include(emp => emp.Parent));
 
-                registerationFormParents.Add(registerationFormParents_WithID);
+                if (registerationFormParents_WithID != null)
+                {
+                    registerationFormParents.Add(registerationFormParents_WithID);
+                } 
             }
 
             if (registerationFormParents == null || registerationFormParents.Count == 0)

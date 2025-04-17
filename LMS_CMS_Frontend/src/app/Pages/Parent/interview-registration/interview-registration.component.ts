@@ -32,6 +32,7 @@ export class InterviewRegistrationComponent {
   registrationFormInterviewID = 0
   academicYearIdID = 0
   selectedDate = ""
+  selectedTime = ""
 
   interviewTimeTable:InterviewTimeTable[] = []
   ToChooseFromInterviewTimeTable:InterviewTimeTable[] = []
@@ -55,7 +56,7 @@ export class InterviewRegistrationComponent {
 
   getRegistrationFormParentIncludeRegistrationFormInterviewData(){
     this.registerationFormParentService.GetByParentIDIncludeRegistrationFormInterview(this.UserID, this.DomainName).subscribe(
-      (data) => {
+      (data) => { 
         this.registrationFormParentIncludeRegistrationFormInterview = data
       }
     )
@@ -95,6 +96,7 @@ export class InterviewRegistrationComponent {
     this.academicYearIdID = 0
     this.registrationFormInterviewID = 0
     this.selectedDate = ""
+    this.selectedTime = ""
 
     this.interviewTimeTable = []
 
@@ -284,7 +286,9 @@ export class InterviewRegistrationComponent {
   ChooseInterviewTime(interview:InterviewTimeTable) {
     if(interview.capacity != interview.reserved){
       this.closeModalcalender()
+      console.log(interview)
       this.selectedDate = interview.date
+      this.selectedTime = `From ${interview.fromTime} To ${interview.toTime}`
       this.InterviewTimeID = interview.id
     }
   }

@@ -52,7 +52,10 @@
           {{ 'ID' | translate }}
         </th>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-          {{ 'Student Name' | translate }}
+          {{ 'Student English Name' | translate }}
+        </th>
+        <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+          {{ 'Student Arabic Name' | translate }}
         </th>
         <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
           {{ 'Grade' | translate }}
@@ -74,7 +77,7 @@
     <tbody>
       <!-- No Data Row -->
       <tr *ngIf="Data.length === 0">
-        <td colspan="17" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+        <td colspan="8" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
           {{ 'No Data Found' | translate }}
         </td>
       </tr>
@@ -86,7 +89,10 @@
           {{ row.id }}
         </td>
         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-          {{ row.studentName }}
+          {{ row.studentEnName }}
+        </td>
+        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+          {{ row.studentArName }}
         </td>
         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
           {{ row.gradeName }}

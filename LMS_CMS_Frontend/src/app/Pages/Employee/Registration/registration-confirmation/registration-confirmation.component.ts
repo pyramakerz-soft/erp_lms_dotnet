@@ -27,7 +27,7 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './registration-confirmation.component.css'
 })
 export class RegistrationConfirmationComponent {
-  keysArray: string[] = ['id', 'studentName','phone','gradeName','academicYearName','schoolName','email'];
+  keysArray: string[] = ['id', 'studentEnName', 'studentArName','phone','gradeName','academicYearName','schoolName','email'];
   key: string= "id";
   value: any = "";
 
@@ -105,7 +105,7 @@ export class RegistrationConfirmationComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });
@@ -127,6 +127,7 @@ export class RegistrationConfirmationComponent {
     return new Promise((resolve, reject) => {
       this.registerationFormParentServicea.Get(this.DomainName).subscribe(
         (data) => {
+          console.log(data)
           this.registerationFormParentData = data;
           resolve();  // Resolve the promise when data is received
         },

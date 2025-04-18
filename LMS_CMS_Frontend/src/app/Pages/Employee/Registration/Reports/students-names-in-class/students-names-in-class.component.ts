@@ -193,47 +193,14 @@ export class StudentsNamesInClassComponent {
     return date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  Print() {
-    const element = document.getElementById("Data");
-    if (!element) {
-      console.error("Element not found!");
-      return;
+Print() {
+  this.showPDF = true;
+  setTimeout(() => {
+    if (this.pdfComponentRef) {
+      this.pdfComponentRef.print();
     }
-    this.showPDF = true;
-    setTimeout(() => {
-      element.classList.remove("hidden");
-      setTimeout(() => {
-        const printContents = element.innerHTML;
-        const printWindow = window.open('', '_blank', 'width=800,height=600');
-        if (!printWindow) return;
-        printWindow.document.open();
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>Print</title>
-              <style>
-                * { font-family: sans-serif; }
-                table { border-collapse: collapse; width: 100%; }
-                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-                @media print {
-                  body { margin: 1cm; }
-                }
-              </style>
-            </head>
-            <body onload="window.print(); window.close();">
-              ${printContents}
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        setTimeout(() => {
-          element.classList.add("hidden");
-          this.showPDF = false;
-        }, 1000);
-  
-      }, 200); // allow component to render
-    }, 100);
-  }
+  }, 500);
+}
   
   // DownloadAsPDF() {
   //   let element = document.getElementById("Data");

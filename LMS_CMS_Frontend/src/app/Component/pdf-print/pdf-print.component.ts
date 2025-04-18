@@ -41,16 +41,16 @@ export class PdfPrintComponent {
     }
   }
 
-  ngAfterViewInit(): void {
-    if (this.school?.reportImage?.startsWith('http')) {
-      this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
-        this.school.reportImage = base64Img;
-        setTimeout(() => this.printPDF(), 100);
-      });
-    } else {
-      setTimeout(() => this.printPDF(), 100);
-    }
-  }
+  // ngAfterViewInit(): void {
+  //   if (this.school?.reportImage?.startsWith('http')) {
+  //     this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
+  //       this.school.reportImage = base64Img;
+  //       setTimeout(() => this.printPDF(), 100);
+  //     });
+  //   } else {
+  //     setTimeout(() => this.printPDF(), 100);
+  //   }
+  // }
 
   // ngAfterViewInit(): void {
   //   if (this.autoDownload) {
@@ -60,6 +60,19 @@ export class PdfPrintComponent {
   //     });
   //   }
   // }
+
+  downloadPDF() {
+    if (this.school?.reportImage?.startsWith('http')) {
+      this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
+        this.school.reportImage = base64Img;
+        console.log("gf",this.school.reportImage)
+        setTimeout(() => this.printPDF(), 100);
+      });
+    } else {
+      setTimeout(() => this.printPDF(), 100);
+      console.log("gf",this.school.reportImage)
+    }
+  }
   
   convertImgToBase64URL(url: string): Promise<string> {
     return new Promise((resolve) => {

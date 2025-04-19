@@ -17,6 +17,12 @@ namespace LMS_CMS_BL.DTO.LMS
         public string GradeName { get; set; }
         public long AcademicYearID { get; set; }
         public string AcademicYearName { get; set; }
+        public long SchoolID { get; set; }
+        public string SchoolName { get; set; }
+        public long SectionID { get; set; }
+        public string SectionName { get; set; }
+        public long BuildingID { get; set; }
+        public string BuildingName { get; set; }
         public long? InsertedByUserId { get; set; }
         public long HomeroomTeacherID { get; set; }
     }

@@ -64,8 +64,8 @@ export class ClassroomComponent {
   Floors:Floor[] = []
   Employees:Employee[] = []
   Buildings:Building[] = []
-  selectedSection = null
-  selectedBuilding = null
+  selectedSection: number | null = null
+  selectedBuilding: number | null = null
 
   isLoading=false
   isLoadingSaveClassroom=false
@@ -197,6 +197,17 @@ export class ClassroomComponent {
     this.classroomService.GetByID(id, this.DomainName).subscribe(
       (data) => {
         this.classroom = data;
+        this.selectedSchool = this.classroom.schoolID
+        if (this.selectedSchool) {
+          this.getAcademicYears(); 
+          this.getSections(); 
+          this.getBuildings(); 
+        }
+        this.selectedSection = this.classroom.sectionID
+        this.selectedBuilding = this.classroom.buildingID 
+
+        this.getFloor()
+        this.getGrade()
       }
     )
   }
@@ -355,6 +366,10 @@ export class ClassroomComponent {
     this.Floors = []
     this.classroom.floorID = 0
 
+    this.getFloor()
+  }
+
+  getFloor(){
     this.floorService.GetByBuildingId(Number(this.selectedBuilding), this.DomainName).subscribe(
       (data) => {
         this.Floors = data
@@ -366,6 +381,10 @@ export class ClassroomComponent {
     this.Grades = []
     this.classroom.gradeID = 0
 
+    this.getGrade()
+  }
+
+  getGrade(){
     this.gradeService.Get(this.DomainName).subscribe(
       (data) => {
         this.Grades = data.filter((grade) => this.checkSection(grade))

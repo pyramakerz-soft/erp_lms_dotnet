@@ -25,6 +25,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { InventoryMaster } from '../../../../Models/Inventory/InventoryMaster';
 import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
 import html2pdf from 'html2pdf.js';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-stocking-details',
@@ -117,7 +118,8 @@ export class StockingDetailsComponent {
     public StockingServ: StockingService,
     public StockingDetailsServ: StockingDetailsService,
     public InventoryMastrServ: InventoryMasterService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef ,
+    public printservice : ReportsService
   ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -687,14 +689,6 @@ export class StockingDetailsComponent {
   async selectPrintOption(type: string) {
     this.showPrintMenu = false;
     this.StoreAndDateSpanWhenPrint = true;
-    if (this.mode === 'Create') {
-      this.TableData = this.Data.stockingDetails;
-      const addedData = await this.StockingServ.Add(this.Data, this.DomainName).toPromise();
-      this.Data.id = addedData;
-      this.MasterId = addedData;
-      const result = await this.StockingServ.GetById(this.Data.id, this.DomainName).toPromise();
-      if (result) this.Data = result;
-    }
     switch (type) {
       case 'Blank':
         await this.Blank();
@@ -749,41 +743,113 @@ export class StockingDetailsComponent {
   }
 
   GeneralPrint() {
-    const sections = document.querySelectorAll('.print-section');
-    if (!sections.length) {
-      console.error('No print sections found!');
-      return;
+    const elements = document.querySelectorAll('.print-section');
+    const printContent = Array.from(elements).map(el => el.outerHTML).join('');
+  
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+  
+    const doc = iframe.contentWindow?.document;
+    if (doc) {
+      doc.open();
+      doc.write(`
+        <html>
+          <head>
+            <title>Print</title>
+            <link rel="stylesheet" href="styles.css"> <!-- optional -->
+            <style>
+              /* Copy any critical styles from your app here */
+              body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+              }
+            </style>
+          </head>
+          <body>
+            ${printContent}
+          </body>
+        </html>
+      `);
+      doc.close();
+  
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+  
+      // Remove iframe after printing
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
     }
-    let combinedHTML = '';
-    sections.forEach(el => {
-      combinedHTML += el.outerHTML;
-    });
-    const tempContainer = document.createElement('div');
-    tempContainer.innerHTML = combinedHTML;
-    tempContainer.style.padding = '20px';
-    tempContainer.classList.add('pdf-scale');
-    document.body.appendChild(tempContainer);
-    setTimeout(() => {
-      html2pdf()
-        .from(tempContainer)
-        .set({
-          margin: 5,
-          filename: 'Stocking.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
-        })
-        .save()
-        .then(() => {
-          document.body.removeChild(tempContainer);
-        });
-    }, 500);
   }
 
   getStoreNameById(id: number): string {
     const store = this.Stores?.find(s => s.id === id);
     return store ? store.name : '—';
   }
+
+   //////////////////////////// Print ////////////////////////////////
+  
+    DownloadAsPDF() {
+      this.StoreAndDateSpanWhenPrint=true
+      this.cdr.detectChanges();
+      return new Promise<void>((resolve) => {
+        setTimeout(async () => {
+          await this.GeneralPrint();
+          this.cdr.detectChanges();
+          this.StoreAndDateSpanWhenPrint=false
+          resolve();
+        }, 300);
+      });
+    }
+  
+    async DownloadAsExcel() {
+      const tableHeaders = [
+        'Bar Code',
+        'Item ID',
+        'Item Name',
+        'Current Stock',
+        'Actual Stock',
+        'The Difference'
+      ];
+    
+      const tableData = (this.mode === 'Create' ? this.Data.stockingDetails : this.TableData || []).map(row => {
+        return [
+          row.barCode || '',
+          row.shopItemID || '',
+          row.shopItemName || '',
+          row.currentStock ?? 0,
+          this.IsActualStockHiddenForBlankPrint ? '' : row.actualStock ?? '',
+          this.IsActualStockHiddenForBlankPrint ? '' : row.theDifference ?? ''
+        ];
+      });
+    
+      const tables = [{
+        title: 'Inventory Details',
+        headers: tableHeaders,
+        data: tableData
+      }];
+    
+      await this.printservice.generateExcelReport({
+        filename: "Inventory.xlsx",
+        mainHeader: {
+          en: 'Inventory Report',
+          ar: 'تقرير المخزون'
+        },
+        subHeaders: [
+          {
+            en: 'Generated on: ' + new Date().toLocaleString(),
+            ar: 'تاريخ الإنشاء: ' + new Date().toLocaleString()
+          }
+        ],
+        tables: tables
+      });
+    }
 }
 
 

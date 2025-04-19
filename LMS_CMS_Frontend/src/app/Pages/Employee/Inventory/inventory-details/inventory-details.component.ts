@@ -124,6 +124,8 @@ export class InventoryDetailsComponent {
   filteredSuppliers: any[] = [];
   showSupplierDropdown: boolean = false;
 
+  IsPrint : boolean = false
+
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -778,11 +780,17 @@ export class InventoryDetailsComponent {
   //////////////////////////// Print ////////////////////////////////
 
   Print() {
+    this.IsPrint=true
     const elements = document.querySelectorAll('.print-area');
-    const printContent = Array.from(elements)
-      .map((el) => el.outerHTML)
-      .join('');
-
+  
+    // Create printable HTML content
+    const clonedContent = Array.from(elements).map(el => {
+      const clone = el.cloneNode(true) as HTMLElement;
+      this.inlineAllStyles(el as HTMLElement, clone);
+      return clone.outerHTML;
+    }).join('');
+  
+    // Create hidden iframe
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
     iframe.style.right = '0';
@@ -791,17 +799,16 @@ export class InventoryDetailsComponent {
     iframe.style.height = '0';
     iframe.style.border = '0';
     document.body.appendChild(iframe);
-
+  
     const doc = iframe.contentWindow?.document;
+  
     if (doc) {
       doc.open();
       doc.write(`
         <html>
           <head>
             <title>Print</title>
-            <link rel="stylesheet" href="styles.css"> <!-- optional -->
             <style>
-              /* Copy any critical styles from your app here */
               body {
                 font-family: Arial, sans-serif;
                 padding: 20px;
@@ -809,19 +816,34 @@ export class InventoryDetailsComponent {
             </style>
           </head>
           <body>
-            ${printContent}
+            ${clonedContent}
           </body>
         </html>
       `);
       doc.close();
-
+  
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
-
-      // Remove iframe after printing
+  
       setTimeout(() => {
         document.body.removeChild(iframe);
       }, 1000);
+    }
+    this.IsPrint=false
+  }
+
+  inlineAllStyles(source: HTMLElement, target: HTMLElement) {
+    const sourceStyles = window.getComputedStyle(source);
+    const cssText = Array.from(sourceStyles)
+      .map(key => `${key}: ${sourceStyles.getPropertyValue(key)};`)
+      .join(' ');
+    target.setAttribute('style', cssText);
+  
+    const children = Array.from(source.children) as HTMLElement[];
+    const targetChildren = Array.from(target.children) as HTMLElement[];
+  
+    for (let i = 0; i < children.length; i++) {
+      this.inlineAllStyles(children[i], targetChildren[i]);
     }
   }
 
@@ -941,5 +963,13 @@ export class InventoryDetailsComponent {
         });
       }
     );
+  }
+
+  getStoreNameById(id: number | string): string {
+    console.log('Looking for storeID:', id);
+    console.log('Available stores:', this.Stores);
+    const store = this.Stores.find((s) => s.id === +id);
+    console.log('Found store:', store);
+    return store ? store.name : '—';
   }
 }

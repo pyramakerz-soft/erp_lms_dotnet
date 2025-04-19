@@ -80,7 +80,7 @@ export class StockingDetailsComponent {
 
   // IsOpenToAdd: boolean = false;
   IsSearchOpen: boolean = false;
-  BarCode: string = "";
+  BarCode: string = '';
   HasBallance: boolean = false;
   AllItems: boolean = true;
   ShopItems: ShopItem[] = [];
@@ -97,8 +97,8 @@ export class StockingDetailsComponent {
   AllShopItems: ShopItem[] = [];
   isLoading = false;
   showPrintMenu = false;
-  IsActualStockHiddenForBlankPrint: boolean = false
-  StoreAndDateSpanWhenPrint: boolean = false
+  IsActualStockHiddenForBlankPrint: boolean = false;
+  StoreAndDateSpanWhenPrint: boolean = false;
   NewDetailsWhenEdit: StockingDetails[] = [];
   DetailsToDeleted: StockingDetails[] = [];
 
@@ -118,9 +118,9 @@ export class StockingDetailsComponent {
     public StockingServ: StockingService,
     public StockingDetailsServ: StockingDetailsService,
     public InventoryMastrServ: InventoryMasterService,
-    private cdr: ChangeDetectorRef ,
-    public printservice : ReportsService
-  ) { }
+    private cdr: ChangeDetectorRef,
+    public printservice: ReportsService
+  ) {}
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -171,20 +171,20 @@ export class StockingDetailsComponent {
   GetMasterInfo() {
     this.StockingServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d;
-      this.GetCategories()
+      this.GetCategories();
     });
   }
 
   onStoreChange(storeID: number) {
     this.onInputValueChange({ field: 'storeID', value: storeID });
     if (storeID) {
-      this.SelectedCategoryId = null
+      this.SelectedCategoryId = null;
       this.GetCategories();
     }
   }
 
   GetCategories() {
-    this.Categories = []
+    this.Categories = [];
     this.CategoriesServ.GetByStoreId(
       this.DomainName,
       this.Data.storeID
@@ -236,36 +236,49 @@ export class StockingDetailsComponent {
         if (!this.Data.stockingDetails) {
           this.Data.stockingDetails = [];
         }
-        this.Data.stockingDetails = this.Data.stockingDetails.concat(this.FilteredDetails);
+        this.Data.stockingDetails = this.Data.stockingDetails.concat(
+          this.FilteredDetails
+        );
         if (this.HasBallance) {
-          this.Data.stockingDetails = this.OriginDetails.filter(d => d.currentStock != 0);
+          this.Data.stockingDetails = this.OriginDetails.filter(
+            (d) => d.currentStock != 0
+          );
         }
-      }
-      else if (this.mode == 'Edit') {
+      } else if (this.mode == 'Edit') {
         if (!this.TableData) {
           this.TableData = [];
         }
         this.TableData = this.TableData.concat(this.FilteredDetails);
-        this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.concat(this.FilteredDetails);
+        this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.concat(
+          this.FilteredDetails
+        );
         if (this.HasBallance) {
-          this.TableData = this.TableData.filter(d => d.currentStock !== 0);
+          this.TableData = this.TableData.filter((d) => d.currentStock !== 0);
         }
       }
     });
   }
 
   GetSubCategories(categoryId: number) {
-    this.subCategories = []
-    this.SubCategoriesServ.GetByCategoryId(categoryId, this.DomainName).subscribe((d) => {
+    this.subCategories = [];
+    this.SubCategoriesServ.GetByCategoryId(
+      categoryId,
+      this.DomainName
+    ).subscribe((d) => {
       this.subCategories = d;
     });
   }
 
   GetItems() {
     if (this.SelectedSubCategoryId)
-      this.StockingDetailsServ.GetCurrentStockForAllItemsBySub(this.Data.storeID, this.SelectedSubCategoryId, this.Data.date, this.DomainName).subscribe(d => {
+      this.StockingDetailsServ.GetCurrentStockForAllItemsBySub(
+        this.Data.storeID,
+        this.SelectedSubCategoryId,
+        this.Data.date,
+        this.DomainName
+      ).subscribe((d) => {
         this.ShopItems = d;
-        if (this, this.AllItems) {
+        if ((this, this.AllItems)) {
           this.FilteredDetails = this.ShopItems.map((item) => ({
             id: Date.now() + Math.floor(Math.random() * 1000),
             insertedAt: '',
@@ -281,16 +294,23 @@ export class StockingDetailsComponent {
           }));
           this.OriginDetails = this.OriginDetails.concat(this.FilteredDetails);
           if (this.mode == 'Create') {
-            this.Data.stockingDetails = this.Data.stockingDetails.concat(this.FilteredDetails);
+            this.Data.stockingDetails = this.Data.stockingDetails.concat(
+              this.FilteredDetails
+            );
             if (this.HasBallance) {
-              this.Data.stockingDetails = this.OriginDetails.filter(d => d.currentStock != 0);
+              this.Data.stockingDetails = this.OriginDetails.filter(
+                (d) => d.currentStock != 0
+              );
             }
-          }
-          else if (this.mode == 'Edit') {
+          } else if (this.mode == 'Edit') {
             this.TableData = this.TableData.concat(this.FilteredDetails);
-            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.concat(this.FilteredDetails);
+            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.concat(
+              this.FilteredDetails
+            );
             if (this.HasBallance) {
-              this.TableData = this.OriginDetails.filter(d => d.currentStock != 0);
+              this.TableData = this.OriginDetails.filter(
+                (d) => d.currentStock != 0
+              );
             }
           }
         }
@@ -299,8 +319,8 @@ export class StockingDetailsComponent {
 
   selectSubCategory(subCategoryId: number) {
     this.SelectedSubCategoryId = subCategoryId;
-    this.ShopItems = []
-    this.GetItems()
+    this.ShopItems = [];
+    this.GetItems();
   }
 
   selectShopItem(item: ShopItem) {
@@ -321,13 +341,15 @@ export class StockingDetailsComponent {
     if (this.mode === 'Create') {
       this.Data.stockingDetails.push(newItem);
       if (this.HasBallance) {
-        this.Data.stockingDetails = this.OriginDetails.filter(d => d.currentStock != 0);
+        this.Data.stockingDetails = this.OriginDetails.filter(
+          (d) => d.currentStock != 0
+        );
       }
     } else if (this.mode === 'Edit') {
       this.TableData.push(newItem);
-      this.NewDetailsWhenEdit.push(newItem)
+      this.NewDetailsWhenEdit.push(newItem);
       if (this.HasBallance) {
-        this.TableData = this.OriginDetails.filter(d => d.currentStock != 0);
+        this.TableData = this.OriginDetails.filter((d) => d.currentStock != 0);
       }
     }
   }
@@ -335,7 +357,9 @@ export class StockingDetailsComponent {
   SearchToggle() {
     this.IsSearchOpen = true;
     setTimeout(() => {
-      const input = document.querySelector('input[type="number"]') as HTMLInputElement;
+      const input = document.querySelector(
+        'input[type="number"]'
+      ) as HTMLInputElement;
       if (input) input.focus();
     }, 100);
   }
@@ -347,43 +371,49 @@ export class StockingDetailsComponent {
 
   SearchOnBarCode() {
     if (!this.BarCode) return;
-    this.shopitemServ.GetByBarcode(this.BarCode, this.DomainName).subscribe(d => {
-      const detail: StockingDetails = {
-        id: Date.now() + Math.floor(Math.random() * 1000),
-        insertedAt: '',
-        insertedByUserId: 0,
-        currentStock: d.currentStock,
-        actualStock: 0,
-        theDifference: 0,
-        shopItemID: d.id,
-        stockingId: this.MasterId,
-        shopItemName: d.arName,
-        barCode: d.barCode,
-        ItemPrice: d.purchasePrice ?? 0,
-      };
-      this.OriginDetails.push(detail)
-      if (this.mode == 'Create') {
-        this.Data.stockingDetails.push(detail)
-        if (this.HasBallance) {
-          this.Data.stockingDetails = this.OriginDetails.filter(d => d.currentStock != 0);
+    this.shopitemServ.GetByBarcode(this.BarCode, this.DomainName).subscribe(
+      (d) => {
+        const detail: StockingDetails = {
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          insertedAt: '',
+          insertedByUserId: 0,
+          currentStock: d.currentStock,
+          actualStock: 0,
+          theDifference: 0,
+          shopItemID: d.id,
+          stockingId: this.MasterId,
+          shopItemName: d.arName,
+          barCode: d.barCode,
+          ItemPrice: d.purchasePrice ?? 0,
+        };
+        this.OriginDetails.push(detail);
+        if (this.mode == 'Create') {
+          this.Data.stockingDetails.push(detail);
+          if (this.HasBallance) {
+            this.Data.stockingDetails = this.OriginDetails.filter(
+              (d) => d.currentStock != 0
+            );
+          }
+        } else if (this.mode == 'Edit') {
+          this.TableData.push(detail);
+          this.NewDetailsWhenEdit.push(detail);
+          if (this.HasBallance) {
+            this.TableData = this.OriginDetails.filter(
+              (d) => d.currentStock != 0
+            );
+          }
         }
+        this.BarCode = ''; // Clear input after search
+      },
+      (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'This Item Not Exist',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
       }
-      else if (this.mode == 'Edit') {
-        this.TableData.push(detail)
-        this.NewDetailsWhenEdit.push(detail)
-        if (this.HasBallance) {
-          this.TableData = this.OriginDetails.filter(d => d.currentStock != 0);
-        }
-      }
-      this.BarCode = ''; // Clear input after search
-    }, (error) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'This Item Not Exist',
-        confirmButtonText: 'Okay',
-        customClass: { confirmButton: 'secondaryBg' },
-      });
-    });
+    );
   }
 
   async GetTableDataByID(): Promise<void> {
@@ -398,7 +428,7 @@ export class StockingDetailsComponent {
             ...row,
             stockingId: this.MasterId,
           }));
-          this.OriginDetails = this.TableData
+          this.OriginDetails = this.TableData;
           resolve();
         },
         (error) => {
@@ -410,18 +440,18 @@ export class StockingDetailsComponent {
 
   toggleHasBalance() {
     if (this.HasBallance == true) {
-      if(this.mode=='Create'){
-        this.Data.stockingDetails=this.OriginDetails.filter(s=>s.currentStock!=0)
-      }
-      else if(this.mode=='Edit'){
-        this.TableData=this.OriginDetails.filter(s=>s.currentStock!=0)
+      if (this.mode == 'Create') {
+        this.Data.stockingDetails = this.OriginDetails.filter(
+          (s) => s.currentStock != 0
+        );
+      } else if (this.mode == 'Edit') {
+        this.TableData = this.OriginDetails.filter((s) => s.currentStock != 0);
       }
     } else if (this.HasBallance == false) {
-      if(this.mode=='Create'){
-        this.Data.stockingDetails=this.OriginDetails
-      }
-      else if(this.mode=='Edit'){
-        this.TableData=this.OriginDetails
+      if (this.mode == 'Create') {
+        this.Data.stockingDetails = this.OriginDetails;
+      } else if (this.mode == 'Edit') {
+        this.TableData = this.OriginDetails;
       }
     }
   }
@@ -429,46 +459,64 @@ export class StockingDetailsComponent {
 
   Save() {
     if (this.isFormValid()) {
-      this.isLoading = true
+      this.isLoading = true;
       if (this.mode == 'Create') {
-        this.StockingServ.Add(this.Data, this.DomainName).subscribe((d) => {
-          this.MasterId = d;
-          this.router.navigateByUrl(`Employee/Stocking`);
-        }, (error) => {
-          this.isLoading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Try Again Later!',
-            confirmButtonText: 'Okay',
-            customClass: { confirmButton: 'secondaryBg' },
-          });
-        });
+        this.StockingServ.Add(this.Data, this.DomainName).subscribe(
+          (d) => {
+            this.MasterId = d;
+            this.router.navigateByUrl(`Employee/Stocking`);
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
       if (this.mode == 'Edit') {
-        this.DetailsToDeleted = this.OriginDetails.filter(originItem =>
-          this.HasBallance==true && originItem.currentStock==0
+        this.DetailsToDeleted = this.OriginDetails.filter(
+          (originItem) =>
+            this.HasBallance == true && originItem.currentStock == 0
         );
-        console.log(this.DetailsToDeleted)
-        this.DetailsToDeleted.forEach(element => {
-          this.StockingDetailsServ.Delete(element.id,this.DomainName).subscribe((d)=>{})
+        console.log(this.DetailsToDeleted);
+        this.DetailsToDeleted.forEach((element) => {
+          this.StockingDetailsServ.Delete(
+            element.id,
+            this.DomainName
+          ).subscribe((d) => {});
         });
-        this.Data.stockingDetails = this.TableData
-        this.StockingDetailsServ.Edit(this.Data.stockingDetails, this.DomainName).subscribe((d) => { })
-        this.StockingDetailsServ.Add(this.NewDetailsWhenEdit, this.DomainName).subscribe((d => { }), (error) => {
-        })
-        this.StockingServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-          this.router.navigateByUrl(`Employee/Stocking`);
-        }, (error) => {
-          this.isLoading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Try Again Later!',
-            confirmButtonText: 'Okay',
-            customClass: { confirmButton: 'secondaryBg' },
-          });
-        });
+        this.Data.stockingDetails = this.TableData;
+        this.StockingDetailsServ.Edit(
+          this.Data.stockingDetails,
+          this.DomainName
+        ).subscribe((d) => {});
+        this.StockingDetailsServ.Add(
+          this.NewDetailsWhenEdit,
+          this.DomainName
+        ).subscribe(
+          (d) => {},
+          (error) => {}
+        );
+        this.StockingServ.Edit(this.Data, this.DomainName).subscribe(
+          (d) => {
+            this.router.navigateByUrl(`Employee/Stocking`);
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
     }
   }
@@ -489,14 +537,17 @@ export class StockingDetailsComponent {
         cancelButtonText: 'Cancel',
       }).then((result) => {
         if (result.isConfirmed) {
-          if (!this.NewDetailsWhenEdit.find(s => s.id == row.id)) {
-            this.StockingDetailsServ.Delete(row.id, this.DomainName).subscribe(async (D) => {
-              await this.GetTableDataByID();
-            })
-          }
-          else {
-            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.filter(s => s.id != row.id)
-            this.TableData = this.TableData.filter(s => s.id != row.id)
+          if (!this.NewDetailsWhenEdit.find((s) => s.id == row.id)) {
+            this.StockingDetailsServ.Delete(row.id, this.DomainName).subscribe(
+              async (D) => {
+                await this.GetTableDataByID();
+              }
+            );
+          } else {
+            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.filter(
+              (s) => s.id != row.id
+            );
+            this.TableData = this.TableData.filter((s) => s.id != row.id);
           }
         }
       });
@@ -606,31 +657,55 @@ export class StockingDetailsComponent {
     try {
       if (this.mode === 'Create') {
         this.TableData = this.Data.stockingDetails;
-        const addedData = await this.StockingServ.Add(this.Data, this.DomainName).toPromise();
+        const addedData = await this.StockingServ.Add(
+          this.Data,
+          this.DomainName
+        ).toPromise();
         this.Data.id = addedData;
         this.MasterId = addedData;
-        const result = await this.StockingServ.GetById(this.Data.id, this.DomainName).toPromise();
+        const result = await this.StockingServ.GetById(
+          this.Data.id,
+          this.DomainName
+        ).toPromise();
         if (result) this.Data = result;
-        this.Data.additionId = await this.prepareAdjustment(2, (s) => s.theDifference > 0);
-        this.Data.disbursementId = await this.prepareAdjustment(4, (s) => s.theDifference < 0);
+        this.Data.additionId = await this.prepareAdjustment(
+          2,
+          (s) => s.theDifference > 0
+        );
+        this.Data.disbursementId = await this.prepareAdjustment(
+          4,
+          (s) => s.theDifference < 0
+        );
       }
       if (this.mode === 'Edit') {
         if (this.Data.additionId != 0) {
           try {
-            await this.InventoryMastrServ.Delete(this.Data.additionId, this.DomainName).toPromise();
+            await this.InventoryMastrServ.Delete(
+              this.Data.additionId,
+              this.DomainName
+            ).toPromise();
           } catch (error) {
-            console.error("Error deleting additionId:", error);
+            console.error('Error deleting additionId:', error);
           }
         }
         if (this.Data.disbursementId != 0) {
           try {
-            await this.InventoryMastrServ.Delete(this.Data.disbursementId, this.DomainName).toPromise();
+            await this.InventoryMastrServ.Delete(
+              this.Data.disbursementId,
+              this.DomainName
+            ).toPromise();
           } catch (error) {
-            console.error("Error deleting disbursementId:", error);
+            console.error('Error deleting disbursementId:', error);
           }
         }
-        this.Data.additionId = await this.prepareAdjustment(2, (s) => s.theDifference > 0);
-        this.Data.disbursementId = await this.prepareAdjustment(4, (s) => s.theDifference < 0);
+        this.Data.additionId = await this.prepareAdjustment(
+          2,
+          (s) => s.theDifference > 0
+        );
+        this.Data.disbursementId = await this.prepareAdjustment(
+          4,
+          (s) => s.theDifference < 0
+        );
       }
       await this.StockingServ.Edit(this.Data, this.DomainName).toPromise();
       this.router.navigateByUrl(`Employee/Stocking`);
@@ -641,15 +716,17 @@ export class StockingDetailsComponent {
     }
   }
 
-  private async prepareAdjustment(flagId: number, filterCondition: (item: any) => boolean) {
-
+  private async prepareAdjustment(
+    flagId: number,
+    filterCondition: (item: any) => boolean
+  ) {
     this.adiustmentDisbursement.date = this.Data.date;
     this.adiustmentDisbursement.storeID = this.Data.storeID;
     this.adiustmentDisbursement.flagId = flagId;
-    this.adiustmentDisbursement.inventoryDetails = this.TableData.filter(filterCondition).map((item) => {
-      const foundItem = this.AllShopItems.find(
-        (s) => s.id == item.shopItemID
-      );
+    this.adiustmentDisbursement.inventoryDetails = this.TableData.filter(
+      filterCondition
+    ).map((item) => {
+      const foundItem = this.AllShopItems.find((s) => s.id == item.shopItemID);
       const price = foundItem?.purchasePrice ?? 0;
       const quantity = item.theDifference ?? 0;
       return {
@@ -674,10 +751,12 @@ export class StockingDetailsComponent {
         0
       );
     if (this.adiustmentDisbursement.inventoryDetails.length > 0) {
-      const response = await this.InventoryMastrServ.Add(this.adiustmentDisbursement, this.DomainName).toPromise();
+      const response = await this.InventoryMastrServ.Add(
+        this.adiustmentDisbursement,
+        this.DomainName
+      ).toPromise();
       return response;
-    }
-    else return
+    } else return;
   }
 
   //////// print
@@ -699,8 +778,78 @@ export class StockingDetailsComponent {
       case 'Print':
         await this.Print();
         break;
+      case 'Receipt':
+        await this.Receipt();
+        break;
     }
     this.StoreAndDateSpanWhenPrint = false; // Now it's truly after printing
+  }
+
+  Receipt() {
+    const elements = document.querySelectorAll('.print-section');
+  
+    const clonedContent = Array.from(elements).map(el => {
+      const clone = el.cloneNode(true) as HTMLElement;
+      this.inlineAllStyles(el as HTMLElement, clone);
+      return clone.outerHTML;
+    }).join('');
+  
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+  
+    const doc = iframe.contentWindow?.document;
+  
+    if (doc) {
+      doc.open();
+      doc.write(`
+        <html>
+          <head>
+            <title>Receipt Print</title>
+            <style>
+              @media print {
+                @page {
+                  size: 80mm auto; /* adjust to 58mm if needed */
+                  margin: 10mm;
+                }
+                body {
+                  width: 80mm;
+                  font-family: Arial, sans-serif;
+                }
+              }
+  
+              body {
+                width: 80mm;
+                margin: 0 auto;
+                padding: 10px;
+                font-family: Arial, sans-serif;
+                background: white;
+              }
+  
+              .print-section {
+                width: 100%;
+              }
+            </style>
+          </head>
+          <body>
+            ${clonedContent}
+          </body>
+        </html>
+      `);
+      doc.close();
+  
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+  
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    }
   }
 
   async Blank() {
@@ -719,7 +868,7 @@ export class StockingDetailsComponent {
   async Differences() {
     const backupFilteredDetails = [...this.FilteredDetails];
     const backupTableData = [...this.TableData];
-    this.TableData = this.TableData.filter(f => f.theDifference != 0);
+    this.TableData = this.TableData.filter((f) => f.theDifference != 0);
     this.cdr.detectChanges();
     return new Promise<void>((resolve) => {
       setTimeout(async () => {
@@ -744,8 +893,17 @@ export class StockingDetailsComponent {
 
   GeneralPrint() {
     const elements = document.querySelectorAll('.print-section');
-    const printContent = Array.from(elements).map(el => el.outerHTML).join('');
-  
+
+    // Create printable HTML content
+    const clonedContent = Array.from(elements)
+      .map((el) => {
+        const clone = el.cloneNode(true) as HTMLElement;
+        this.inlineAllStyles(el as HTMLElement, clone);
+        return clone.outerHTML;
+      })
+      .join('');
+
+    // Create hidden iframe
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
     iframe.style.right = '0';
@@ -754,17 +912,16 @@ export class StockingDetailsComponent {
     iframe.style.height = '0';
     iframe.style.border = '0';
     document.body.appendChild(iframe);
-  
+
     const doc = iframe.contentWindow?.document;
+
     if (doc) {
       doc.open();
       doc.write(`
         <html>
           <head>
             <title>Print</title>
-            <link rel="stylesheet" href="styles.css"> <!-- optional -->
             <style>
-              /* Copy any critical styles from your app here */
               body {
                 font-family: Arial, sans-serif;
                 padding: 20px;
@@ -772,85 +929,103 @@ export class StockingDetailsComponent {
             </style>
           </head>
           <body>
-            ${printContent}
+            ${clonedContent}
           </body>
         </html>
       `);
       doc.close();
-  
+
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
-  
-      // Remove iframe after printing
+
       setTimeout(() => {
         document.body.removeChild(iframe);
       }, 1000);
     }
   }
 
-  getStoreNameById(id: number): string {
-    const store = this.Stores?.find(s => s.id === id);
+  inlineAllStyles(source: HTMLElement, target: HTMLElement) {
+    const sourceStyles = window.getComputedStyle(source);
+    const cssText = Array.from(sourceStyles)
+      .map((key) => `${key}: ${sourceStyles.getPropertyValue(key)};`)
+      .join(' ');
+    target.setAttribute('style', cssText);
+
+    const children = Array.from(source.children) as HTMLElement[];
+    const targetChildren = Array.from(target.children) as HTMLElement[];
+
+    for (let i = 0; i < children.length; i++) {
+      this.inlineAllStyles(children[i], targetChildren[i]);
+    }
+  }
+
+  getStoreNameById(id: number | string): string {
+    console.log('Looking for storeID:', id);
+    console.log('Available stores:', this.Stores);
+    const store = this.Stores.find((s) => s.id === +id);
+    console.log('Found store:', store);
     return store ? store.name : '—';
   }
 
-   //////////////////////////// Print ////////////////////////////////
-  
-    DownloadAsPDF() {
-      this.StoreAndDateSpanWhenPrint=true
-      this.cdr.detectChanges();
-      return new Promise<void>((resolve) => {
-        setTimeout(async () => {
-          await this.GeneralPrint();
-          this.cdr.detectChanges();
-          this.StoreAndDateSpanWhenPrint=false
-          resolve();
-        }, 300);
-      });
-    }
-  
-    async DownloadAsExcel() {
-      const tableHeaders = [
-        'Bar Code',
-        'Item ID',
-        'Item Name',
-        'Current Stock',
-        'Actual Stock',
-        'The Difference'
+  //////////////////////////// Print ////////////////////////////////
+
+  DownloadAsPDF() {
+    this.StoreAndDateSpanWhenPrint = true;
+    this.cdr.detectChanges();
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        await this.GeneralPrint();
+        this.cdr.detectChanges();
+        this.StoreAndDateSpanWhenPrint = false;
+        resolve();
+      }, 300);
+    });
+  }
+
+  async DownloadAsExcel() {
+    const tableHeaders = [
+      'Bar Code',
+      'Item ID',
+      'Item Name',
+      'Current Stock',
+      'Actual Stock',
+      'The Difference',
+    ];
+
+    const tableData = (
+      this.mode === 'Create' ? this.Data.stockingDetails : this.TableData || []
+    ).map((row) => {
+      return [
+        row.barCode || '',
+        row.shopItemID || '',
+        row.shopItemName || '',
+        row.currentStock ?? 0,
+        this.IsActualStockHiddenForBlankPrint ? '' : row.actualStock ?? '',
+        this.IsActualStockHiddenForBlankPrint ? '' : row.theDifference ?? '',
       ];
-    
-      const tableData = (this.mode === 'Create' ? this.Data.stockingDetails : this.TableData || []).map(row => {
-        return [
-          row.barCode || '',
-          row.shopItemID || '',
-          row.shopItemName || '',
-          row.currentStock ?? 0,
-          this.IsActualStockHiddenForBlankPrint ? '' : row.actualStock ?? '',
-          this.IsActualStockHiddenForBlankPrint ? '' : row.theDifference ?? ''
-        ];
-      });
-    
-      const tables = [{
+    });
+
+    const tables = [
+      {
         title: 'Inventory Details',
         headers: tableHeaders,
-        data: tableData
-      }];
-    
-      await this.printservice.generateExcelReport({
-        filename: "Inventory.xlsx",
-        mainHeader: {
-          en: 'Inventory Report',
-          ar: 'تقرير المخزون'
+        data: tableData,
+      },
+    ];
+
+    await this.printservice.generateExcelReport({
+      filename: 'Inventory.xlsx',
+      mainHeader: {
+        en: 'Inventory Report',
+        ar: 'تقرير المخزون',
+      },
+      subHeaders: [
+        {
+          en: 'Generated on: ' + new Date().toLocaleString(),
+          ar: 'تاريخ الإنشاء: ' + new Date().toLocaleString(),
         },
-        subHeaders: [
-          {
-            en: 'Generated on: ' + new Date().toLocaleString(),
-            ar: 'تاريخ الإنشاء: ' + new Date().toLocaleString()
-          }
-        ],
-        tables: tables
-      });
-    }
+      ],
+      tables: tables,
+    });
+  }
 }
-
-
-

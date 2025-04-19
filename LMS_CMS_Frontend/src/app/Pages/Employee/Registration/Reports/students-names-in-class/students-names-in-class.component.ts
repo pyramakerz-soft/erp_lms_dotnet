@@ -242,28 +242,6 @@ export class StudentsNamesInClassComponent {
       }, 100);
     }, 500);
   }
-  
-  // DownloadAsPDF() {
-  //   let element = document.getElementById("Data");
-  //   console.log("Element", element)
-  //   if (!element) {
-  //     console.error("Element not found!");
-  //     return;
-  //   }
-
-  //   element.style.display = 'block';
-  //   element.style.top = '0px';
-  //   element.style.left = '0px';
-  //   element.style.zIndex = '-5';
-
-  //   setTimeout(() => {
-  //     this.reportsService.DownloadAsPDF("List of students' names in class")
-
-  //     setTimeout(() => {
-  //       element.style.display = 'none';
-  //     }, 1000);
-  //   }, 200);
-  // }
 
   DownloadAsPDF() {
     this.showPDF = true;
@@ -273,13 +251,6 @@ export class StudentsNamesInClassComponent {
       setTimeout(() => this.showPDF = false, 2000);
     }, 500);
   }
-
-  // DownloadAsPDF() {
-  //   this.showPDF = true;
-  //   setTimeout(() => {
-  //     setTimeout(() => this.showPDF = false, 2000);
-  //   }, 500); // give DOM time to render <app-pdf-print>
-  // }
 
   async DownloadAsExcel() {
     await this.reportsService.generateExcelReport({

@@ -78,9 +78,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             Classroom classroom = await Unit_Of_Work.classroom_Repository.FindByIncludesAsync(
                 t => t.IsDeleted != true && t.ID == id,
-                query => query.Include(e => e.Floor),
-                query => query.Include(emp => emp.AcademicYear),
-                query => query.Include(emp => emp.Grade)
+                query => query.Include(e => e.Floor).ThenInclude(d => d.building),
+                query => query.Include(emp => emp.AcademicYear).ThenInclude(d => d.School),
+                query => query.Include(emp => emp.Grade).ThenInclude(d => d.Section)
                 );
 
 

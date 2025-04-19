@@ -10,6 +10,12 @@ export class Classroom {
         public floorID: number = 0,
         public academicYearName: string = '',
         public academicYearID: number = 0,
+        public sectionName: string = '',
+        public sectionID: number = 0,
+        public schoolName: string = '',
+        public schoolID: number = 0,
+        public buildingName: string = '',
+        public buildingID: number = 0,
         public homeroomTeacherID: number = 0,
     ) { }
 }

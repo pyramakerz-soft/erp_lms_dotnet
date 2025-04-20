@@ -93,7 +93,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             Job job = await Unit_Of_Work.job_Repository.FindByIncludesAsync(
-                    b => b.IsDeleted != true,
+                    b => b.IsDeleted != true && b.ID == id,
                     query => query.Include(emp => emp.JobCategory)
                     );
 

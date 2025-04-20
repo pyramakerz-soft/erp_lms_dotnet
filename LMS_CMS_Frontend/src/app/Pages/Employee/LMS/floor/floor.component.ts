@@ -194,8 +194,8 @@ export class FloorComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    for (const key in this.building) {
-      if (this.building.hasOwnProperty(key)) {
+    for (const key in this.floor) { 
+      if (this.floor.hasOwnProperty(key)) {
         const field = key as keyof Floor;
         if (!this.floor[field]) {
           if (field == 'name' || field == 'floorMonitorID') {
@@ -206,7 +206,7 @@ export class FloorComponent {
           }
         } else {
           if (field == 'name') {
-            if (this.building.name.length > 100) {
+            if (this.floor.name.length > 100) {
               this.validationErrors[field] = `*${this.capitalizeField(
                 field
               )} cannot be longer than 100 characters`;
@@ -217,7 +217,7 @@ export class FloorComponent {
           }
         }
       }
-    }
+    } 
     return isValid;
   }
 
@@ -247,7 +247,7 @@ export class FloorComponent {
     return IsAllow;
   }
 
-  SaveFloor() {
+  SaveFloor() { 
     if (this.isFormValid()) {
       this.isLoading = true;
       this.floor.buildingID = this.buildingId;

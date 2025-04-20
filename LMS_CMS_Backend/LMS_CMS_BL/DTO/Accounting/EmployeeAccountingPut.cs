@@ -17,6 +17,7 @@ namespace LMS_CMS_BL.DTO.Accounting
         public string? Mobile { get; set; }
         public string? Phone { get; set; }
         public string? NationalID { get; set; }
+        public string? Address { get; set; }
         public string? PassportNumber { get; set; }
         public string? ResidenceNumber { get; set; }
         public string? BirthdayDate { get; set; }

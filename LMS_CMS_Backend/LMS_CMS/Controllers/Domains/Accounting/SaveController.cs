@@ -31,7 +31,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Save" , "Inventory" }
+            pages: new[] { "Safe" , "Inventory" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -54,7 +54,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Save" }
+            pages: new[] { "Safe" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -82,7 +82,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [HttpPost]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "Save" }
+           pages: new[] { "Safe" }
         )]
         public IActionResult Add(SaveAddDTO NewSave)
         {
@@ -148,7 +148,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" },
            allowEdit: 1,
-           pages: new[] { "Save" }
+           pages: new[] { "Safe" }
        )]
         public IActionResult Edit(SavePutDTO EditedSave)
         {
@@ -202,7 +202,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
              
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Save", roleId, userId, SaveExists);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Safe", roleId, userId, SaveExists);
                 if (accessCheck != null)
                 {
                     return accessCheck;
@@ -238,7 +238,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Save" }
+            pages: new[] { "Safe" }
         )]
         public IActionResult Delete(long id)
         {
@@ -270,7 +270,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Save", roleId, userId, save);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Safe", roleId, userId, save);
                 if (accessCheck != null)
                 {
                     return accessCheck;

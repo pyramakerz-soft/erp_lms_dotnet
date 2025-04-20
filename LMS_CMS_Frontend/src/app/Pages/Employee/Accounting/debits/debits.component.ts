@@ -120,7 +120,7 @@ export class DebitsComponent {
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Debit?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -203,6 +203,7 @@ export class DebitsComponent {
 
   closeModal() {
     this.isModalVisible = false;
+    this.isLoading = false
     this.GetAllData();
   }
 

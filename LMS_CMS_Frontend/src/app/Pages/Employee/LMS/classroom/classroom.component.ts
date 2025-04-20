@@ -56,21 +56,26 @@ export class ClassroomComponent {
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
 
   Schools: School[] = []
+  SchoolsForFilteration: School[] = []
   selectedSchool: number | null = null;
+  SelectedSchoolIdForFilteration: number = 0;
 
   AcademicYears:AcademicYear[] = []
+  AcademicYearsForFilteration:AcademicYear[] = []
   Sections: Section[] = []
   Grades:Grade[] = []
   Floors:Floor[] = []
   Employees:Employee[] = []
   Buildings:Building[] = []
-  selectedSection = null
-  selectedBuilding = null
+  selectedSection: number | null = null
+  selectedBuilding: number | null = null
 
   isLoading=false
   isLoadingSaveClassroom=false
 
   copyClassroom:CopyClassroom = new CopyClassroom()
+
+  activeAcademicYearID = 0
 
   constructor(public account: AccountService, public buildingService: BuildingService, public ApiServ: ApiService, public EditDeleteServ: DeleteEditPermissionService, 
       private menuService: MenuService, public activeRoute: ActivatedRoute, public schoolService: SchoolService, public classroomService: ClassroomService, public employeeServ : EmployeeService ,
@@ -86,8 +91,9 @@ export class ClassroomComponent {
       this.path = url[0].path
     });
 
-    this.getClassroomData()
+    this.getClassroomData() 
     this.getEmployeeData()
+    this.getSchoolData()
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
@@ -98,7 +104,7 @@ export class ClassroomComponent {
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others
       }
     });
-  }
+  } 
 
   openModal(classroomId?: number) {
     if (classroomId) {
@@ -186,9 +192,34 @@ export class ClassroomComponent {
 
   getClassroomData(){
     this.classroomData=[]
-    this.classroomService.Get(this.DomainName).subscribe(
+    this.classroomService.GetByActiveAcYear(this.DomainName).subscribe(
       (data) => {
         this.classroomData = data;
+        if(this.classroomData.length != 0){
+          this.activeAcademicYearID = this.classroomData[0].academicYearID
+          this.getSchoolIDForActiveAcademicYear()
+        }
+      }
+    )
+  }
+  
+  getClassroomDataByYearID(){
+    this.classroomData=[]
+    this.classroomService.GetByAcYearId(this.activeAcademicYearID, this.DomainName).subscribe(
+      (data) => {
+        this.classroomData = data;
+        if(this.classroomData.length != 0){
+          this.activeAcademicYearID = this.classroomData[0].academicYearID
+        }
+      }
+    )
+  }
+  
+  getSchoolIDForActiveAcademicYear(){ 
+    this.acadimicYearService.GetByID(this.activeAcademicYearID, this.DomainName).subscribe(
+      (data) => {
+        this.SelectedSchoolIdForFilteration = data.schoolID; 
+        this.getAllYearsForFilteration()
       }
     )
   }
@@ -197,6 +228,17 @@ export class ClassroomComponent {
     this.classroomService.GetByID(id, this.DomainName).subscribe(
       (data) => {
         this.classroom = data;
+        this.selectedSchool = this.classroom.schoolID
+        if (this.selectedSchool) {
+          this.getAcademicYears(); 
+          this.getSections(); 
+          this.getBuildings(); 
+        }
+        this.selectedSection = this.classroom.sectionID
+        this.selectedBuilding = this.classroom.buildingID 
+
+        this.getFloor()
+        this.getGrade()
       }
     )
   }
@@ -205,8 +247,15 @@ export class ClassroomComponent {
     this.schoolService.Get(this.DomainName).subscribe(
       (data) => {
         this.Schools = data;
+        this.SchoolsForFilteration = data;
       }
     )
+  }
+
+  getAllYearsForFilteration() {
+    this.acadimicYearService.GetBySchoolId(this.SelectedSchoolIdForFilteration, this.DomainName).subscribe((d) => {
+      this.AcademicYearsForFilteration = d
+    })
   }
 
   getEmployeeData(){
@@ -355,6 +404,10 @@ export class ClassroomComponent {
     this.Floors = []
     this.classroom.floorID = 0
 
+    this.getFloor()
+  }
+
+  getFloor(){
     this.floorService.GetByBuildingId(Number(this.selectedBuilding), this.DomainName).subscribe(
       (data) => {
         this.Floors = data
@@ -366,6 +419,10 @@ export class ClassroomComponent {
     this.Grades = []
     this.classroom.gradeID = 0
 
+    this.getGrade()
+  }
+
+  getGrade(){
     this.gradeService.Get(this.DomainName).subscribe(
       (data) => {
         this.Grades = data.filter((grade) => this.checkSection(grade))

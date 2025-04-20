@@ -64,7 +64,7 @@
                 <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row.id)">
                   <i class="fa-regular fa-trash-can"></i>
                 </button>
-                <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="Edit(row)">
+                <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="Edit(row.id)">
                   <i class="fa-solid fa-pencil"></i>
                 </button>
               </div>

@@ -25,6 +25,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { InventoryMaster } from '../../../../Models/Inventory/InventoryMaster';
 import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
 import html2pdf from 'html2pdf.js';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-stocking-details',
@@ -77,15 +78,15 @@ export class StockingDetailsComponent {
   editingRowId: any = null;
   validationErrors: { [key in keyof Stocking]?: string } = {};
 
-  IsOpenToAdd: boolean = false;
+  // IsOpenToAdd: boolean = false;
   IsSearchOpen: boolean = false;
-  BarCode: string = "";
+  BarCode: string = '';
   HasBallance: boolean = false;
   AllItems: boolean = true;
   ShopItems: ShopItem[] = [];
-  FilteredShopItems: ShopItem[] = [];
-  MultiDetails: StockingDetails[] = [];
+  // MultiDetails: StockingDetails[] = [];
   FilteredDetails: StockingDetails[] = [];
+  OriginDetails: StockingDetails[] = [];
   AddittionData: InventoryMaster = new InventoryMaster();
   DisbursementData: InventoryMaster = new InventoryMaster();
 
@@ -96,12 +97,10 @@ export class StockingDetailsComponent {
   AllShopItems: ShopItem[] = [];
   isLoading = false;
   showPrintMenu = false;
-  IsActualStockHiddenForBlankPrint: boolean = false
-  StoreAndDateSpanWhenPrint: boolean = false
-
-  SelectedCategoryIds: number[] = [];
-  SelectedSubCategoryIds: number[] = [];
-  SelectedSopItems: ShopItem[] = [];
+  IsActualStockHiddenForBlankPrint: boolean = false;
+  StoreAndDateSpanWhenPrint: boolean = false;
+  NewDetailsWhenEdit: StockingDetails[] = [];
+  DetailsToDeleted: StockingDetails[] = [];
 
   constructor(
     private router: Router,
@@ -119,8 +118,9 @@ export class StockingDetailsComponent {
     public StockingServ: StockingService,
     public StockingDetailsServ: StockingDetailsService,
     public InventoryMastrServ: InventoryMasterService,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+    public printservice: ReportsService
+  ) {}
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -171,17 +171,20 @@ export class StockingDetailsComponent {
   GetMasterInfo() {
     this.StockingServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d;
+      this.GetCategories();
     });
   }
 
   onStoreChange(storeID: number) {
     this.onInputValueChange({ field: 'storeID', value: storeID });
     if (storeID) {
+      this.SelectedCategoryId = null;
       this.GetCategories();
     }
   }
 
   GetCategories() {
+    this.Categories = [];
     this.CategoriesServ.GetByStoreId(
       this.DomainName,
       this.Data.storeID
@@ -200,31 +203,11 @@ export class StockingDetailsComponent {
   }
 
   selectCategory(categoryId: number) {
-    const index = this.SelectedCategoryIds.indexOf(categoryId);
-    if (index > -1) {
-      this.SelectedCategoryIds.splice(index, 1);
-      this.UnSelectCategory(categoryId)
-    } else {
-      this.SelectedCategoryIds.push(categoryId);
-      this.GetSubCategories(categoryId);
-      this.GetAllShopItems(categoryId);  // Load items for each
-      console.log("addFilteredShopItems", this.FilteredShopItems)
+    this.GetSubCategories(categoryId);
+    this.SelectedCategoryId = categoryId;
+    if (this.AllItems) {
+      this.GetAllShopItems(categoryId);
     }
-  }
-
-  UnSelectCategory(CategoryId: number) {
-    this.subCategories = this.subCategories.filter(s => s.inventoryCategoriesID != CategoryId);
-
-    const remainingSubCategoryIds = this.subCategories.map(sc => sc.id);
-    this.FilteredShopItems = this.FilteredShopItems.filter(item =>
-      remainingSubCategoryIds.includes(item.inventorySubCategoriesID)
-    );
-    this.SelectedSopItems = this.FilteredShopItems
-    const remainingFilteredDetailsIds = this.FilteredShopItems.map(sc => sc.id);
-    this.FilteredDetails = this.FilteredDetails.filter(item =>
-      remainingFilteredDetailsIds.includes(item.shopItemID)
-    );
-    console.log("FilteredShopItems", this.FilteredShopItems)
   }
 
   GetAllShopItems(categoryId: number) {
@@ -234,12 +217,8 @@ export class StockingDetailsComponent {
       this.Data.date,
       this.DomainName
     ).subscribe((d) => {
-      console.log(d)
-      const newItems = d.filter(item => !this.ShopItems.some(existing => existing.id === item.id));
-      this.ShopItems = [...this.ShopItems, ...newItems];
-      this.SelectedSopItems = this.ShopItems
-      this.FilteredShopItems = this.ShopItems;
-      const newDetails = newItems.map((item) => ({
+      this.ShopItems = d;
+      this.FilteredDetails = this.ShopItems.map((item) => ({
         id: Date.now() + Math.floor(Math.random() * 1000),
         insertedAt: '',
         insertedByUserId: 0,
@@ -252,38 +231,100 @@ export class StockingDetailsComponent {
         barCode: item.barCode,
         ItemPrice: item.purchasePrice ?? 0,
       }));
-      const uniqueDetails = newDetails.filter(detail =>
-        !this.MultiDetails.some(existing => existing.shopItemID === detail.shopItemID)
-      );
-      this.MultiDetails = [...this.MultiDetails, ...uniqueDetails];
-      this.FilteredDetails = this.MultiDetails
-      if (this.HasBallance) {
-        this.FilteredDetails = this.MultiDetails.filter((f) => f.currentStock != 0);
+      this.OriginDetails = [...this.OriginDetails, ...this.FilteredDetails];
+      if (this.mode == 'Create') {
+        if (!this.Data.stockingDetails) {
+          this.Data.stockingDetails = [];
+        }
+        this.Data.stockingDetails = this.Data.stockingDetails.concat(
+          this.FilteredDetails
+        );
+        if (this.HasBallance) {
+          this.Data.stockingDetails = this.OriginDetails.filter(
+            (d) => d.currentStock != 0
+          );
+        }
+      } else if (this.mode == 'Edit') {
+        if (!this.TableData) {
+          this.TableData = [];
+        }
+        this.TableData = this.TableData.concat(this.FilteredDetails);
+        this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.concat(
+          this.FilteredDetails
+        );
+        if (this.HasBallance) {
+          this.TableData = this.TableData.filter((d) => d.currentStock !== 0);
+        }
       }
     });
   }
 
   GetSubCategories(categoryId: number) {
-    this.SubCategoriesServ.GetByCategoryId(categoryId, this.DomainName).subscribe((d) => {
-      const newSubCats = d.filter(cat => !this.subCategories.some(existing => existing.id === cat.id));
-      this.subCategories = [...this.subCategories, ...newSubCats];
-      this.SelectedSubCategoryIds = this.subCategories.map(s => s.id)
-      console.log(d)
+    this.subCategories = [];
+    this.SubCategoriesServ.GetByCategoryId(
+      categoryId,
+      this.DomainName
+    ).subscribe((d) => {
+      this.subCategories = d;
     });
   }
 
-  selectSubCategory(subCategoryId: number) {
-    const index = this.SelectedSubCategoryIds.indexOf(subCategoryId);
-    if (index > -1) {
-      this.SelectedSubCategoryIds.splice(index, 1);
+  GetItems() {
+    if (this.SelectedSubCategoryId)
+      this.StockingDetailsServ.GetCurrentStockForAllItemsBySub(
+        this.Data.storeID,
+        this.SelectedSubCategoryId,
+        this.Data.date,
+        this.DomainName
+      ).subscribe((d) => {
+        this.ShopItems = d;
+        if ((this, this.AllItems)) {
+          this.FilteredDetails = this.ShopItems.map((item) => ({
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            insertedAt: '',
+            insertedByUserId: 0,
+            currentStock: item.currentStock,
+            actualStock: 0,
+            theDifference: 0,
+            shopItemID: item.id,
+            stockingId: this.MasterId,
+            shopItemName: item.enName,
+            barCode: item.barCode,
+            ItemPrice: item.purchasePrice ?? 0,
+          }));
+          this.OriginDetails = this.OriginDetails.concat(this.FilteredDetails);
+          if (this.mode == 'Create') {
+            this.Data.stockingDetails = this.Data.stockingDetails.concat(
+              this.FilteredDetails
+            );
+            if (this.HasBallance) {
+              this.Data.stockingDetails = this.OriginDetails.filter(
+                (d) => d.currentStock != 0
+              );
+            }
+          } else if (this.mode == 'Edit') {
+            this.TableData = this.TableData.concat(this.FilteredDetails);
+            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.concat(
+              this.FilteredDetails
+            );
+            if (this.HasBallance) {
+              this.TableData = this.OriginDetails.filter(
+                (d) => d.currentStock != 0
+              );
+            }
+          }
+        }
+      });
+  }
 
-    } else {
-      this.SelectedSubCategoryIds.push(subCategoryId);
-    }
-    this.SelectedSopItems = this.ShopItems.filter(
-      (s) => this.SelectedSubCategoryIds.includes(s.inventorySubCategoriesID)
-    );
-    this.FilteredDetails = this.SelectedSopItems.map((item) => ({
+  selectSubCategory(subCategoryId: number) {
+    this.SelectedSubCategoryId = subCategoryId;
+    this.ShopItems = [];
+    this.GetItems();
+  }
+
+  selectShopItem(item: ShopItem) {
+    const newItem = {
       id: Date.now() + Math.floor(Math.random() * 1000),
       insertedAt: '',
       insertedByUserId: 0,
@@ -295,35 +336,30 @@ export class StockingDetailsComponent {
       shopItemName: item.enName,
       barCode: item.barCode,
       ItemPrice: item.purchasePrice ?? 0,
-    }));
-    if (this.HasBallance) {
-      this.FilteredDetails = this.FilteredDetails.filter((f) => f.currentStock != 0);
-    }
-  }
-
-  selectShopItem(item: ShopItem) {
-    const exists = this.SelectedSopItems.find((i) => i.id === item.id);
-    if (exists) {
-      this.SelectedSopItems = this.SelectedSopItems.filter((i) => i.id !== item.id);
-      this.SelectedSubCategoryIds.filter(s => s != item.inventorySubCategoriesID)
-    } else {
-      this.SelectedSopItems.push(item);
-      if (!this.SelectedSubCategoryIds.includes(item.inventorySubCategoriesID)) {
-        this.SelectedSubCategoryIds.push(item.inventorySubCategoriesID)
+    };
+    this.OriginDetails.push(newItem);
+    if (this.mode === 'Create') {
+      this.Data.stockingDetails.push(newItem);
+      if (this.HasBallance) {
+        this.Data.stockingDetails = this.OriginDetails.filter(
+          (d) => d.currentStock != 0
+        );
       }
-    }
-    this.FilteredDetails = this.MultiDetails.filter(
-      (s) => this.SelectedSopItems.some((i) => i.id === s.shopItemID)
-    );
-    if (this.HasBallance) {
-      this.FilteredDetails = this.FilteredDetails.filter((f) => f.currentStock != 0);
+    } else if (this.mode === 'Edit') {
+      this.TableData.push(newItem);
+      this.NewDetailsWhenEdit.push(newItem);
+      if (this.HasBallance) {
+        this.TableData = this.OriginDetails.filter((d) => d.currentStock != 0);
+      }
     }
   }
 
   SearchToggle() {
     this.IsSearchOpen = true;
     setTimeout(() => {
-      const input = document.querySelector('input[type="number"]') as HTMLInputElement;
+      const input = document.querySelector(
+        'input[type="number"]'
+      ) as HTMLInputElement;
       if (input) input.focus();
     }, 100);
   }
@@ -335,31 +371,49 @@ export class StockingDetailsComponent {
 
   SearchOnBarCode() {
     if (!this.BarCode) return;
-    this.shopitemServ.GetByBarcode(this.BarCode, this.DomainName).subscribe(d => {
-      const detail: StockingDetails = {
-        id: Date.now() + Math.floor(Math.random() * 1000),
-        insertedAt: '',
-        insertedByUserId: 0,
-        currentStock: d.currentStock,
-        actualStock: 0,
-        theDifference: 0,
-        shopItemID: d.id,
-        stockingId: this.MasterId,
-        shopItemName: d.arName,
-        barCode: d.barCode,
-        ItemPrice: d.purchasePrice ?? 0,
-      };
-      const exists = this.FilteredDetails.some(x => x.shopItemID === d.id);
-      if (!exists) this.FilteredDetails.push(detail);
-      this.BarCode = ''; // Clear input after search
-    }, (error) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'This Item Not Exist',
-        confirmButtonText: 'Okay',
-        customClass: { confirmButton: 'secondaryBg' },
-      });
-    });
+    this.shopitemServ.GetByBarcode(this.BarCode, this.DomainName).subscribe(
+      (d) => {
+        const detail: StockingDetails = {
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          insertedAt: '',
+          insertedByUserId: 0,
+          currentStock: d.currentStock,
+          actualStock: 0,
+          theDifference: 0,
+          shopItemID: d.id,
+          stockingId: this.MasterId,
+          shopItemName: d.arName,
+          barCode: d.barCode,
+          ItemPrice: d.purchasePrice ?? 0,
+        };
+        this.OriginDetails.push(detail);
+        if (this.mode == 'Create') {
+          this.Data.stockingDetails.push(detail);
+          if (this.HasBallance) {
+            this.Data.stockingDetails = this.OriginDetails.filter(
+              (d) => d.currentStock != 0
+            );
+          }
+        } else if (this.mode == 'Edit') {
+          this.TableData.push(detail);
+          this.NewDetailsWhenEdit.push(detail);
+          if (this.HasBallance) {
+            this.TableData = this.OriginDetails.filter(
+              (d) => d.currentStock != 0
+            );
+          }
+        }
+        this.BarCode = ''; // Clear input after search
+      },
+      (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'This Item Not Exist',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
+      }
+    );
   }
 
   async GetTableDataByID(): Promise<void> {
@@ -374,6 +428,7 @@ export class StockingDetailsComponent {
             ...row,
             stockingId: this.MasterId,
           }));
+          this.OriginDetails = this.TableData;
           resolve();
         },
         (error) => {
@@ -385,68 +440,83 @@ export class StockingDetailsComponent {
 
   toggleHasBalance() {
     if (this.HasBallance == true) {
-      this.FilteredDetails = this.FilteredDetails.filter(
-        (f) => f.currentStock != 0
-      );
+      if (this.mode == 'Create') {
+        this.Data.stockingDetails = this.OriginDetails.filter(
+          (s) => s.currentStock != 0
+        );
+      } else if (this.mode == 'Edit') {
+        this.TableData = this.OriginDetails.filter((s) => s.currentStock != 0);
+      }
     } else if (this.HasBallance == false) {
-      this.FilteredDetails = this.MultiDetails.filter(
-        (s) => this.SelectedSopItems.some((i) => i.id === s.shopItemID)
-      );
+      if (this.mode == 'Create') {
+        this.Data.stockingDetails = this.OriginDetails;
+      } else if (this.mode == 'Edit') {
+        this.TableData = this.OriginDetails;
+      }
     }
   }
-
   /////////////////////////////////////////////////////// CRUD
-
-  AddDetail() {
-    if (this.Data.storeID != 0) {
-      this.SelectedCategoryId = null;
-      this.SelectedSubCategoryId = null;
-      this.SelectedSopItem = null;
-      this.IsOpenToAdd = true;
-      this.Item = new StockingDetails();
-      // this.ShopItem = new ShopItem()
-      this.GetCategories();
-    } else {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Warning!',
-        text: 'You Should Choose Store First',
-        confirmButtonColor: '#FF7519',
-      });
-    }
-  }
 
   Save() {
     if (this.isFormValid()) {
-      this.isLoading = true
+      this.isLoading = true;
       if (this.mode == 'Create') {
-        this.StockingServ.Add(this.Data, this.DomainName).subscribe((d) => {
-          this.MasterId = d;
-          this.router.navigateByUrl(`Employee/Stocking`);
-        }, (error) => {
-          this.isLoading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Try Again Later!',
-            confirmButtonText: 'Okay',
-            customClass: { confirmButton: 'secondaryBg' },
-          });
-        });
+        this.StockingServ.Add(this.Data, this.DomainName).subscribe(
+          (d) => {
+            this.MasterId = d;
+            this.router.navigateByUrl(`Employee/Stocking`);
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
       if (this.mode == 'Edit') {
-        this.StockingServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-          this.router.navigateByUrl(`Employee/Stocking`);
-        }, (error) => {
-          this.isLoading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Try Again Later!',
-            confirmButtonText: 'Okay',
-            customClass: { confirmButton: 'secondaryBg' },
-          });
+        this.DetailsToDeleted = this.OriginDetails.filter(
+          (originItem) =>
+            this.HasBallance == true && originItem.currentStock == 0
+        );
+        console.log(this.DetailsToDeleted);
+        this.DetailsToDeleted.forEach((element) => {
+          this.StockingDetailsServ.Delete(
+            element.id,
+            this.DomainName
+          ).subscribe((d) => {});
         });
+        this.Data.stockingDetails = this.TableData;
+        this.StockingDetailsServ.Edit(
+          this.Data.stockingDetails,
+          this.DomainName
+        ).subscribe((d) => {});
+        this.StockingDetailsServ.Add(
+          this.NewDetailsWhenEdit,
+          this.DomainName
+        ).subscribe(
+          (d) => {},
+          (error) => {}
+        );
+        this.StockingServ.Edit(this.Data, this.DomainName).subscribe(
+          (d) => {
+            this.router.navigateByUrl(`Employee/Stocking`);
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
     }
   }
@@ -467,11 +537,18 @@ export class StockingDetailsComponent {
         cancelButtonText: 'Cancel',
       }).then((result) => {
         if (result.isConfirmed) {
-          this.StockingDetailsServ.Delete(row.id, this.DomainName).subscribe(
-            (D) => {
-              this.GetTableDataByID();
-            }
-          );
+          if (!this.NewDetailsWhenEdit.find((s) => s.id == row.id)) {
+            this.StockingDetailsServ.Delete(row.id, this.DomainName).subscribe(
+              async (D) => {
+                await this.GetTableDataByID();
+              }
+            );
+          } else {
+            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.filter(
+              (s) => s.id != row.id
+            );
+            this.TableData = this.TableData.filter((s) => s.id != row.id);
+          }
         }
       });
     } else if (this.mode == 'Create') {
@@ -493,88 +570,12 @@ export class StockingDetailsComponent {
     }
   }
 
-  async SaveRow() {
-    // this.Item.shopItemID = this.ShopItem.id;
-    if (this.mode == 'Create') {
-      if (!this.Data.stockingDetails) {
-        this.Data.stockingDetails = [];
-      }
-      this.Data.stockingDetails.push(this.Item);
-    }
-    if (this.mode == 'Edit') {
-      this.Item.stockingId = this.MasterId;
-      this.StockingDetailsServ.Add(this.Item, this.DomainName).subscribe(
-        async (d) => {
-          await this.GetTableDataByID();
-        }
-      );
-    }
-    this.IsOpenToAdd = false;
-    this.Item = new StockingDetails();
-    this.editingRowId = null;
-    // this.ShopItem = new ShopItem();
-  }
-
-  CancelAdd() {
-    this.IsOpenToAdd = false;
-  }
-
-  SaveEdit(row: StockingDetails) {
-    this.editingRowId = null;
-    // this.Item.shopItemID = this.ShopItem.id
-    if (this.mode == 'Create') {
-    } else if (this.mode == 'Edit') {
-      this.StockingDetailsServ.Edit(row, this.DomainName).subscribe(
-        async (d) => {
-          await this.GetTableDataByID();
-          this.StockingServ.Edit(this.Data, this.DomainName).subscribe(
-            (d) => { }
-          );
-        }
-      );
-    }
-  }
-
   onStockChangeWhenEditRow(row: StockingDetails): void {
     row.theDifference = row.actualStock - row.currentStock;
   }
 
   onStockChangeWhenAddRow(row: StockingDetails): void {
     row.theDifference = row.actualStock - row.currentStock;
-  }
-
-  CancelNewRow(index: number) {
-    this.FilteredDetails.splice(index, 1);
-    if (this.FilteredDetails.length === 0) {
-      this.IsOpenToAdd = false;
-    }
-  }
-
-  SaveNewRow(index: number) {
-    if (this.mode == 'Create') {
-      const removedRow = this.FilteredDetails.splice(index, 1)[0]; // Get the first element from the spliced array
-      if (removedRow) {
-        this.Data.stockingDetails.push(removedRow);
-      }
-    } else if (this.mode == 'Edit') {
-      const removedRow = this.FilteredDetails.splice(index, 1)[0];
-      if (removedRow) {
-        this.TableData.push(removedRow);
-        this.StockingDetailsServ.Add(removedRow, this.DomainName).subscribe(
-          async (d) => {
-            await this.GetTableDataByID();
-          }
-        );
-      }
-    }
-    if (this.FilteredDetails.length === 0) {
-      this.IsOpenToAdd = false;
-    }
-    // this.IsOpenToAdd = false;
-    this.editingRowId = null;
-    // this.SelectedCategoryId= null
-    // this.SelectedSubCategoryId= null
-    // this.FilteredDetails=[]
   }
 
   ///////////////////////////////////// validation fOR Master
@@ -656,31 +657,55 @@ export class StockingDetailsComponent {
     try {
       if (this.mode === 'Create') {
         this.TableData = this.Data.stockingDetails;
-        const addedData = await this.StockingServ.Add(this.Data, this.DomainName).toPromise();
+        const addedData = await this.StockingServ.Add(
+          this.Data,
+          this.DomainName
+        ).toPromise();
         this.Data.id = addedData;
         this.MasterId = addedData;
-        const result = await this.StockingServ.GetById(this.Data.id, this.DomainName).toPromise();
+        const result = await this.StockingServ.GetById(
+          this.Data.id,
+          this.DomainName
+        ).toPromise();
         if (result) this.Data = result;
-        this.Data.additionId = await this.prepareAdjustment(2, (s) => s.theDifference > 0);
-        this.Data.disbursementId = await this.prepareAdjustment(4, (s) => s.theDifference < 0);
+        this.Data.additionId = await this.prepareAdjustment(
+          2,
+          (s) => s.theDifference > 0
+        );
+        this.Data.disbursementId = await this.prepareAdjustment(
+          4,
+          (s) => s.theDifference < 0
+        );
       }
       if (this.mode === 'Edit') {
         if (this.Data.additionId != 0) {
           try {
-            await this.InventoryMastrServ.Delete(this.Data.additionId, this.DomainName).toPromise();
+            await this.InventoryMastrServ.Delete(
+              this.Data.additionId,
+              this.DomainName
+            ).toPromise();
           } catch (error) {
-            console.error("Error deleting additionId:", error);
+            console.error('Error deleting additionId:', error);
           }
         }
         if (this.Data.disbursementId != 0) {
           try {
-            await this.InventoryMastrServ.Delete(this.Data.disbursementId, this.DomainName).toPromise();
+            await this.InventoryMastrServ.Delete(
+              this.Data.disbursementId,
+              this.DomainName
+            ).toPromise();
           } catch (error) {
-            console.error("Error deleting disbursementId:", error);
+            console.error('Error deleting disbursementId:', error);
           }
         }
-        this.Data.additionId = await this.prepareAdjustment(2, (s) => s.theDifference > 0);
-        this.Data.disbursementId = await this.prepareAdjustment(4, (s) => s.theDifference < 0);
+        this.Data.additionId = await this.prepareAdjustment(
+          2,
+          (s) => s.theDifference > 0
+        );
+        this.Data.disbursementId = await this.prepareAdjustment(
+          4,
+          (s) => s.theDifference < 0
+        );
       }
       await this.StockingServ.Edit(this.Data, this.DomainName).toPromise();
       this.router.navigateByUrl(`Employee/Stocking`);
@@ -691,15 +716,17 @@ export class StockingDetailsComponent {
     }
   }
 
-  private async prepareAdjustment(flagId: number, filterCondition: (item: any) => boolean) {
-
+  private async prepareAdjustment(
+    flagId: number,
+    filterCondition: (item: any) => boolean
+  ) {
     this.adiustmentDisbursement.date = this.Data.date;
     this.adiustmentDisbursement.storeID = this.Data.storeID;
     this.adiustmentDisbursement.flagId = flagId;
-    this.adiustmentDisbursement.inventoryDetails = this.TableData.filter(filterCondition).map((item) => {
-      const foundItem = this.AllShopItems.find(
-        (s) => s.id == item.shopItemID
-      );
+    this.adiustmentDisbursement.inventoryDetails = this.TableData.filter(
+      filterCondition
+    ).map((item) => {
+      const foundItem = this.AllShopItems.find((s) => s.id == item.shopItemID);
       const price = foundItem?.purchasePrice ?? 0;
       const quantity = item.theDifference ?? 0;
       return {
@@ -724,10 +751,12 @@ export class StockingDetailsComponent {
         0
       );
     if (this.adiustmentDisbursement.inventoryDetails.length > 0) {
-      const response = await this.InventoryMastrServ.Add(this.adiustmentDisbursement, this.DomainName).toPromise();
+      const response = await this.InventoryMastrServ.Add(
+        this.adiustmentDisbursement,
+        this.DomainName
+      ).toPromise();
       return response;
-    }
-    else return
+    } else return;
   }
 
   //////// print
@@ -739,15 +768,6 @@ export class StockingDetailsComponent {
   async selectPrintOption(type: string) {
     this.showPrintMenu = false;
     this.StoreAndDateSpanWhenPrint = true;
-    console.log(this.Data.stockingDetails)
-    if (this.mode === 'Create') {
-      this.TableData = this.Data.stockingDetails;
-      const addedData = await this.StockingServ.Add(this.Data, this.DomainName).toPromise();
-      this.Data.id = addedData;
-      this.MasterId = addedData;
-      const result = await this.StockingServ.GetById(this.Data.id, this.DomainName).toPromise();
-      if (result) this.Data = result;
-    } 
     switch (type) {
       case 'Blank':
         await this.Blank();
@@ -758,8 +778,78 @@ export class StockingDetailsComponent {
       case 'Print':
         await this.Print();
         break;
+      case 'Receipt':
+        await this.Receipt();
+        break;
     }
     this.StoreAndDateSpanWhenPrint = false; // Now it's truly after printing
+  }
+
+  Receipt() {
+    const elements = document.querySelectorAll('.print-section');
+  
+    const clonedContent = Array.from(elements).map(el => {
+      const clone = el.cloneNode(true) as HTMLElement;
+      this.inlineAllStyles(el as HTMLElement, clone);
+      return clone.outerHTML;
+    }).join('');
+  
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+  
+    const doc = iframe.contentWindow?.document;
+  
+    if (doc) {
+      doc.open();
+      doc.write(`
+        <html>
+          <head>
+            <title>Receipt Print</title>
+            <style>
+              @media print {
+                @page {
+                  size: 80mm auto; /* adjust to 58mm if needed */
+                  margin: 10mm;
+                }
+                body {
+                  width: 80mm;
+                  font-family: Arial, sans-serif;
+                }
+              }
+  
+              body {
+                width: 80mm;
+                margin: 0 auto;
+                padding: 10px;
+                font-family: Arial, sans-serif;
+                background: white;
+              }
+  
+              .print-section {
+                width: 100%;
+              }
+            </style>
+          </head>
+          <body>
+            ${clonedContent}
+          </body>
+        </html>
+      `);
+      doc.close();
+  
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+  
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    }
   }
 
   async Blank() {
@@ -778,7 +868,7 @@ export class StockingDetailsComponent {
   async Differences() {
     const backupFilteredDetails = [...this.FilteredDetails];
     const backupTableData = [...this.TableData];
-    this.TableData = this.TableData.filter(f => f.theDifference != 0);
+    this.TableData = this.TableData.filter((f) => f.theDifference != 0);
     this.cdr.detectChanges();
     return new Promise<void>((resolve) => {
       setTimeout(async () => {
@@ -802,42 +892,140 @@ export class StockingDetailsComponent {
   }
 
   GeneralPrint() {
-    const sections = document.querySelectorAll('.print-section');
-    if (!sections.length) {
-      console.error('No print sections found!');
-      return;
+    const elements = document.querySelectorAll('.print-section');
+
+    // Create printable HTML content
+    const clonedContent = Array.from(elements)
+      .map((el) => {
+        const clone = el.cloneNode(true) as HTMLElement;
+        this.inlineAllStyles(el as HTMLElement, clone);
+        return clone.outerHTML;
+      })
+      .join('');
+
+    // Create hidden iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+
+    if (doc) {
+      doc.open();
+      doc.write(`
+        <html>
+          <head>
+            <title>Print</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+              }
+            </style>
+          </head>
+          <body>
+            ${clonedContent}
+          </body>
+        </html>
+      `);
+      doc.close();
+
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
     }
-    let combinedHTML = '';
-    sections.forEach(el => {
-      combinedHTML += el.outerHTML;
-    });
-    const tempContainer = document.createElement('div');
-    tempContainer.innerHTML = combinedHTML;
-    tempContainer.style.padding = '20px';
-    tempContainer.classList.add('pdf-scale');
-    document.body.appendChild(tempContainer);
-    setTimeout(() => {
-      html2pdf()
-        .from(tempContainer)
-        .set({
-          margin: 5,
-          filename: 'Stocking.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
-        })
-        .save()
-        .then(() => {
-          document.body.removeChild(tempContainer);
-        });
-    }, 500);
   }
 
-  getStoreNameById(id: number): string {
-    const store = this.Stores?.find(s => s.id === id);
+  inlineAllStyles(source: HTMLElement, target: HTMLElement) {
+    const sourceStyles = window.getComputedStyle(source);
+    const cssText = Array.from(sourceStyles)
+      .map((key) => `${key}: ${sourceStyles.getPropertyValue(key)};`)
+      .join(' ');
+    target.setAttribute('style', cssText);
+
+    const children = Array.from(source.children) as HTMLElement[];
+    const targetChildren = Array.from(target.children) as HTMLElement[];
+
+    for (let i = 0; i < children.length; i++) {
+      this.inlineAllStyles(children[i], targetChildren[i]);
+    }
+  }
+
+  getStoreNameById(id: number | string): string {
+    console.log('Looking for storeID:', id);
+    console.log('Available stores:', this.Stores);
+    const store = this.Stores.find((s) => s.id === +id);
+    console.log('Found store:', store);
     return store ? store.name : '—';
   }
+
+  //////////////////////////// Print ////////////////////////////////
+
+  DownloadAsPDF() {
+    this.StoreAndDateSpanWhenPrint = true;
+    this.cdr.detectChanges();
+    return new Promise<void>((resolve) => {
+      setTimeout(async () => {
+        await this.GeneralPrint();
+        this.cdr.detectChanges();
+        this.StoreAndDateSpanWhenPrint = false;
+        resolve();
+      }, 300);
+    });
+  }
+
+  async DownloadAsExcel() {
+    const tableHeaders = [
+      'Bar Code',
+      'Item ID',
+      'Item Name',
+      'Current Stock',
+      'Actual Stock',
+      'The Difference',
+    ];
+
+    const tableData = (
+      this.mode === 'Create' ? this.Data.stockingDetails : this.TableData || []
+    ).map((row) => {
+      return [
+        row.barCode || '',
+        row.shopItemID || '',
+        row.shopItemName || '',
+        row.currentStock ?? 0,
+        this.IsActualStockHiddenForBlankPrint ? '' : row.actualStock ?? '',
+        this.IsActualStockHiddenForBlankPrint ? '' : row.theDifference ?? '',
+      ];
+    });
+
+    const tables = [
+      {
+        title: 'Inventory Details',
+        headers: tableHeaders,
+        data: tableData,
+      },
+    ];
+
+    await this.printservice.generateExcelReport({
+      filename: 'Inventory.xlsx',
+      mainHeader: {
+        en: 'Inventory Report',
+        ar: 'تقرير المخزون',
+      },
+      subHeaders: [
+        {
+          en: 'Generated on: ' + new Date().toLocaleString(),
+          ar: 'تاريخ الإنشاء: ' + new Date().toLocaleString(),
+        },
+      ],
+      tables: tables,
+    });
+  }
 }
-
-
-

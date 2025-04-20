@@ -104,7 +104,7 @@ export class AdmissionTestParentComponent {
   GetAllData() {
     let CurrentStudent =this.Students.find(s=>s.id==this.RegesterFormParentID)
     if(CurrentStudent)
-    this.testServ.GetByRegistrationFormParentIDAndGrade(this.RegesterFormParentID, this.DomainName).subscribe((d:any) => {
+    this.testServ.GetByRegistrationFormParentIDFromParent(this.RegesterFormParentID, this.DomainName).subscribe((d:any) => {  
       this.Data = d.tests;
     })
   }

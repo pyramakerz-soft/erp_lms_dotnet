@@ -41,7 +41,7 @@ export class InstallmentDeductionMasterComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name' ,'accountNumberName'];
+  keysArray: string[] = ['id', 'docNumber' ,'employeeName' ,'studentName'];
 
   CurrentPage:number = 1
   PageSize:number = 10
@@ -126,33 +126,33 @@ export class InstallmentDeductionMasterComponent {
   }
 
   async onSearchEvent(event: { key: string; value: any }) {
-    // this.key = event.key;
-    // this.value = event.value;
-    // try {
-    //   const data: InstallmentDeductionMaster[] = await firstValueFrom(
-    //     this.InstallmentDeductionServ.Get(this.DomainName, this.CurrentPage, this.PageSize)
-    //   );
-    //   this.TableData = data || [];
+    this.key = event.key;
+    this.value = event.value;
+    try {
+      const data: any = await firstValueFrom(
+        this.InstallmentDeductionServ.Get(this.DomainName, this.CurrentPage, this.PageSize)
+      );
+      this.TableData = data.data || [];
 
-    //   if (this.value !== '') {
-    //     const numericValue = isNaN(Number(this.value))
-    //       ? this.value
-    //       : parseInt(this.value, 10);
+      if (this.value !== '') {
+        const numericValue = isNaN(Number(this.value))
+          ? this.value
+          : parseInt(this.value, 10);
 
-    //     this.TableData = this.TableData.filter((t) => {
-    //       const fieldValue = t[this.key as keyof typeof t];
-    //       if (typeof fieldValue === 'string') {
-    //         return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-    //       }
-    //       if (typeof fieldValue === 'number') {
-    //         return fieldValue === numericValue;
-    //       }
-    //       return fieldValue == this.value;
-    //     });
-    //   }
-    // } catch (error) {
-    //   this.TableData = [];
-    // }
+        this.TableData = this.TableData.filter((t) => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue === numericValue;
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 
   GetAllData(pageNumber:number, pageSize:number){

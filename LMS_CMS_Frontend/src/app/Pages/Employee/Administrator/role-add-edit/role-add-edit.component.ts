@@ -262,7 +262,6 @@ export class RoleAddEditComponent {
     // Update the selected page
     if (parentId == null) parentId = 0
     const selectedPage = this.ResultArray.find(item => item.Rowkey === parentId && item.pageId === id);
-    console.log(selectedPage, newState)
     if (selectedPage) {
       selectedPage.IsSave = newState;
       selectedPage.allow_Delete = newState;

@@ -8,6 +8,7 @@
             <img *ngIf="school?.reportImage" [src]="school.reportImage"
                 style="max-width: 120px; max-height: 120px; width: auto; height: auto;" />
             <p *ngIf="!school?.reportImage" class="text-sm">No image </p>
+            <img src="https://via.placeholder.com/120" class="w-[120px] h-auto" />
         </div>
         <div class="rtl text-end w-[40%]">
             <p class="text-base font-semibold mb-1">{{ school?.reportHeaderOneAr }}</p>

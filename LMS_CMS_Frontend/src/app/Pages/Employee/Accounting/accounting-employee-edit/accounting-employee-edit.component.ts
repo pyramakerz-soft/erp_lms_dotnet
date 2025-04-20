@@ -97,13 +97,15 @@ export class AccountingEmployeeEditComponent {
   attendanceTime = {
     hours: '',
     minutes: '',
-    period: 'AM'
+    periods: 'AM'
   };
   departureTime = {
     hour: '',
     minute: '',
-    periods: 'AM'
+    period: 'AM'
   };
+
+  validationErrors: { [key in keyof AccountingEmployee]?: string } = {};
 
   constructor(
     private router: Router,
@@ -145,26 +147,29 @@ export class AccountingEmployeeEditComponent {
       }
     });
     this.EmployeeId = Number(this.activeRoute.snapshot.paramMap.get('id'))
-    console.log(this.EmployeeId)
+    this.GetAllDays();
     this.GetAllData();
     this.GetAllAccount();
     this.GetAllNationalitys();
     this.GetAllReasons();
     this.GetAllDepartment();
     this.GetAllAcademicDegrees();
-    this.GetAllDays();
     this.GetAllJobCategories();
   }
 
   GetAllData() {
     this.employeeServ.GetAcountingEmployee(this.EmployeeId, this.DomainName).subscribe((d: any) => {
       this.Data = d;
+      console.log(this.Data)
       this.JobCategoryId = this.Data.jobCategoryId;
       this.GetAllJobs()
       this.selectedDays = this.days
       this.selectedDays = this.days.filter(day => this.Data.days.includes(day.id));
       this.parseDepartureTime(this.Data.departureTime);
       this.parseAttendanceTime(this.Data.attendanceTime);
+      if(this.Data.dateOfLeavingWork!=""){
+        this.EndDate=true
+      }
 
     })
     this.EmplyeeStudentServ.Get(this.EmployeeId, this.DomainName).subscribe((d) => {
@@ -228,27 +233,29 @@ export class AccountingEmployeeEditComponent {
   }
 
   Save() {
-    this.getFormattedTime()
-    this.isLoading = true
-    this.employeeServ.EditAccountingEmployee(this.Data, this.DomainName).subscribe((d) => {
-      this.GetAllData();
-      this.router.navigateByUrl(`Employee/Employee Accounting`)
-      this.isLoading = false
-    },
-      err => {
+    if(this.isFormValid()){
+      console.log("s",this.Data)
+      this.getFormattedTime()
+      this.isLoading = true
+      this.employeeServ.EditAccountingEmployee(this.Data, this.DomainName).subscribe((d) => {
+        this.GetAllData();
+        this.router.navigateByUrl(`Employee/Employee Accounting`)
         this.isLoading = false
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Try Again Later!',
-          confirmButtonText: 'Okay',
-          customClass: { confirmButton: 'secondaryBg' },
-        });
-      })
+      },
+        err => {
+          this.isLoading = false
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
+        })
+    }
   }
 
   onIsActiveChange(event: Event) {
-    console.log("EndDate")
     const isChecked = (event.target as HTMLInputElement).checked;
     this.EndDate = isChecked
   }
@@ -261,10 +268,15 @@ export class AccountingEmployeeEditComponent {
   selectDay(day: { id: number; name: string }) {
     if (!this.selectedDays.some((selected) => selected.id === day.id)) {
       this.selectedDays.push(day);
+  
+      if (!Array.isArray(this.Data.days)) {
+        this.Data.days = [];
+      }
+  
       this.Data.days.push(day.id);
     }
   }
-
+  
   removeDay(dayId: number) {
     this.selectedDays = this.selectedDays.filter((day) => day.id !== dayId);
     this.Data.days = this.Data.days.filter((id) => id !== dayId);
@@ -275,16 +287,18 @@ export class AccountingEmployeeEditComponent {
   }
 
   getFormattedTime() {
-    const { hours, minutes, period } = this.attendanceTime;
-    if (hours && minutes && period) {
-      this.Data.attendanceTime = `${hours}:${minutes} ${period}`;
+  console.log(this.attendanceTime ,this.departureTime)
+
+    const { hours, minutes, periods } = this.attendanceTime;
+    if (hours && minutes && periods) {
+      this.Data.attendanceTime = `${hours}:${minutes} ${periods}`;
     }
 
-    const { hour, minute, periods } = this.departureTime;
-    if (hour && minute && periods) {
-      this.Data.departureTime = `${hours}:${minutes} ${period}`;
+    const { hour, minute, period } = this.departureTime;
+    if (hour && minute && period) {
+      this.Data.departureTime = `${hour}:${minute} ${period}`;
     }
-
+  console.log(this.Data.attendanceTime ,this.Data.departureTime)
   }
 
   parseDepartureTime(departureTimeString: string) {
@@ -294,7 +308,7 @@ export class AccountingEmployeeEditComponent {
     this.departureTime = {
       hour: hour || '',
       minute: minute || '',
-      periods: period || 'AM'
+      period: period || 'AM'
     };
   }
 
@@ -304,7 +318,7 @@ export class AccountingEmployeeEditComponent {
     this.attendanceTime = {
       hours: hour || '',
       minutes: minute || '',
-      period: period || 'AM'
+      periods: period || 'AM'
     };
   }
 
@@ -375,5 +389,73 @@ export class AccountingEmployeeEditComponent {
       }
     }
   }
+  capitalizeField(field: keyof AccountingEmployee): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+  onInputValueChange(event: { field: keyof AccountingEmployee; value: any }) {
+    const { field, value } = event;
+    (this.Data as any)[field] = value;
+    if (value) {
+      this.validationErrors[field] = '';
+    }
+  }
+
+  isFormValid(): boolean {
+    let isValid = true;
+    for (const key in this.Data) {
+      if (this.Data.hasOwnProperty(key)) {
+        const field = key as keyof AccountingEmployee;
+        if (!this.Data[field]) {
+          if (
+            field == 'user_Name' || 
+            field == 'departureTime' 
+          ) {
+            this.validationErrors[field] = `*${this.capitalizeField(
+              field
+            )} is required`;
+            isValid = false;
+          }
+        }
+        const attendanceMins = this.convertToMinutes(
+          this.attendanceTime.hours,
+          this.attendanceTime.minutes,
+          this.attendanceTime.periods
+        );
+        
+        const departureMins = this.convertToMinutes(
+          this.departureTime.hour,
+          this.departureTime.minute,
+          this.departureTime.period
+        );
+        
+        if (attendanceMins === departureMins) {
+          this.validationErrors['departureTime'] = 'Attendance Time and Departure Time cannot be the same.';
+          isValid = false;
+        }
+        
+        console.log("aa",this.attendanceTime,this.departureTime)
+        if (departureMins < attendanceMins) {
+          this.validationErrors['departureTime'] = 'Departure Time cannot be before Attendance Time.';
+          isValid = false;
+        }
+        
+      }
+    }
+    return isValid;
+  }
+
+  convertToMinutes(hour: number | string, minute: number | string, period: string): number {
+    let h = parseInt(hour as string, 10);
+    let m = parseInt(minute as string, 10);
+  
+    if (period === 'PM' && h < 12) {
+      h += 12;
+    } else if (period === 'AM' && h === 12) {
+      h = 0;
+    }
+  
+    return h * 60 + m;
+  }
+  
 }
 

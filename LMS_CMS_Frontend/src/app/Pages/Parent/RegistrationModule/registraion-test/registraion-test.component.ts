@@ -178,7 +178,7 @@ export class RegistraionTestComponent {
     return answer ? answer.answerID === optionId : false;
   }
 
-  Save() {
+  Save() { 
     this.registerServ
       .Add(
         this.Answers,

@@ -108,7 +108,7 @@ export class RegistrationFormFieldComponent {
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Ctegory?',
+      title: 'Are you sure you want to delete this Form Field Category?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PdfPrintComponent } from '../../../../../Component/pdf-print/pdf-print.component';
@@ -69,6 +69,7 @@ export class StatisticsOnTheNumberOfStudentsIntheSchoolComponent {
   CurrentDate: any = new Date();
   direction: string = '';
   tableData: any[] = [];
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -124,52 +125,66 @@ export class StatisticsOnTheNumberOfStudentsIntheSchoolComponent {
   }
 
   Print() {
-    const element = document.getElementById('Data');
-    if (!element) {
-      console.error('Element not found!');
-      return;
-    }
     this.showPDF = true;
     setTimeout(() => {
-      element.classList.remove('hidden');
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+  
+      // Create a print-specific stylesheet
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { 
+            margin: 0; 
+          }
+  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+  
+      // Create a container for printing
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+  
+      // Add to body and print
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      // Clean up
       setTimeout(() => {
-        const printContents = element.innerHTML;
-        const printWindow = window.open('', '_blank', 'width=800,height=600');
-        if (!printWindow) return;
-        printWindow.document.open();
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>Print</title>
-              <style>
-                * { font-family: sans-serif; }
-                table { border-collapse: collapse; width: 100%; }
-                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-                @media print {
-                  body { margin: 1cm; }
-                }
-              </style>
-            </head>
-            <body onload="window.print(); window.close();">
-              ${printContents}
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        setTimeout(() => {
-          element.classList.add('hidden');
-          this.showPDF = false;
-        }, 1000);
-      }, 200); // allow component to render
-    }, 100);
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
   }
 
   DownloadAsPDF() {
     this.showPDF = true;
     setTimeout(() => {
-      setTimeout(() => (this.showPDF = false), 2000);
-    }, 500); // give DOM time to render <app-pdf-print>
+      this.pdfComponentRef.downloadPDF(); // Call manual download
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500);
   }
+
 
   formatDate(dateString: string, dir: string): string {
     const date = new Date(dateString);
@@ -226,7 +241,6 @@ export class StatisticsOnTheNumberOfStudentsIntheSchoolComponent {
         next: (d) => {
           this.tableData = []; // Clear existing data
           this.school = d.school;
-          console.log(d);
           this.CurrentDate = this.formatDate(d.date, this.direction);
 
           d.sections.forEach((section: any) => {
@@ -249,7 +263,6 @@ export class StatisticsOnTheNumberOfStudentsIntheSchoolComponent {
               Students_Assigned_To_Noor_Count: section.studentsAssignedToNoorCount,
             });
           });
-          console.log(this.tableData); // ✅ Result
           resolve();
         },
         error: (err) => {

@@ -276,6 +276,12 @@ export class ReceivableDetailsComponent {
           (data) => {
             this.GetReceivableByID()
             this.isLoading = false
+            Swal.fire({
+              icon: 'success',
+              title: 'Done!',
+              text: 'The Receivable has been edited successfully.',
+              confirmButtonColor: '#FF7519',
+            });
           },
           err => {
             this.isLoading = false
@@ -396,30 +402,30 @@ export class ReceivableDetailsComponent {
     });
   }
 
-  DownloadData() { 
+  DownloadData() {
     let orderElement = document.getElementById('DataToDownload');
 
     if (!orderElement) {
-        console.error("Page body not found!");
-        return;
+      console.error("Page body not found!");
+      return;
     }
 
     document.querySelectorAll('.no-print').forEach(el => {
-        (el as HTMLElement).style.display = 'none';
+      (el as HTMLElement).style.display = 'none';
     });
 
     setTimeout(() => {
-        html2pdf().from(orderElement).set({
-            margin: 10,
-            filename: `Receivable_${this.ReceivableID}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
-            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-        }).save().then(() => {
-            document.querySelectorAll('.no-print').forEach(el => {
-                (el as HTMLElement).style.display = '';
-            });
+      html2pdf().from(orderElement).set({
+        margin: 10,
+        filename: `Receivable_${this.ReceivableID}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+      }).save().then(() => {
+        document.querySelectorAll('.no-print').forEach(el => {
+          (el as HTMLElement).style.display = '';
         });
+      });
     }, 500);
-  } 
+  }
 }

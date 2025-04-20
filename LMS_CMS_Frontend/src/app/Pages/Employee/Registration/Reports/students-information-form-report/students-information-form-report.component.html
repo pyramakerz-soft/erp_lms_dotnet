@@ -113,6 +113,6 @@
     <div id="Data" class="hidden">
         <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'"
             [tableHeaders]="['No', 'Name', 'الاسم', 'Mobile_1', 'Mobile_2' , 'Passport' , 'Nationality' , 'Note' , 'Date_Of_Birth' , 'Place_Of_Birth' , 'Passport_Expired' , 'identities_Expired' , 'Admission_Date' , 'Identity_of_Father' , 'Email_Address' ,'Bus' , 'Religion' , 'Pre_School']"
-            [tableData]="tableData"></app-pdf-print>
+            [tableData]="tableData" #pdfComponentRef></app-pdf-print>
     </div>
 </div> 

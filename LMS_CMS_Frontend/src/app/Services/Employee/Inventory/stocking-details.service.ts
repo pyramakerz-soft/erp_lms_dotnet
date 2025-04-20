@@ -42,7 +42,7 @@ export class StockingDetailsService {
     return this.http.get<StockingDetails>(`${this.baseUrl}/StockingDetails/${id}`, { headers })
   }
 
-  Add(Detail: StockingDetails, DomainName: string): Observable<any> {
+  Add(Detail: StockingDetails[], DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -58,7 +58,7 @@ export class StockingDetailsService {
     });
   }
 
-  Edit(Detail: StockingDetails, DomainName: string): Observable<Store> {
+  Edit(Detail: StockingDetails[], DomainName: string): Observable<Store> {
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -104,6 +104,18 @@ export class StockingDetailsService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
     return this.http.get<ShopItem[]>(`${this.baseUrl}/StockingDetails/CurrentStockByCategoryId/${StoreId}/${CategoryId}/${date}`, { headers })
+  }
+
+  GetCurrentStockForAllItemsBySub(StoreId: number,SubCategoryId:number ,date :string , DomainName: string) {
+    if (DomainName != null) {  
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<ShopItem[]>(`${this.baseUrl}/StockingDetails/CurrentStockBySubCategoryId/${StoreId}/${SubCategoryId}/${date}`, { headers })
   }
 
 }

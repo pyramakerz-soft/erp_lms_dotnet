@@ -84,12 +84,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
         }
 
         //////////////////////////////////////////////////////////////////////////////
-        [HttpGet("byRegistrationFormParentID/{id}")]
+        
+        [HttpGet("byRegistrationFormParentIDFromEmployee/{id}")]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" ,"parent"},
          pages: new[] { "Admission Test" }
          )]
-        public async Task<IActionResult> GetbyRegistrationFormParentIDAsync(long id)
+        public async Task<IActionResult> GetbyRegistrationFormParentIDAsyncFromEmployee(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -135,6 +136,74 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 }
 
             }
+            var response = new
+            {
+                StudentName = registerationFormParent.StudentName,
+                StudentEnName = registerationFormParent.StudentEnName,
+                StudentArName = registerationFormParent.StudentArName,
+                Tests = testDTO
+            };
+            return Ok(response);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("byRegistrationFormParentIDFromParent/{id}")]
+        [Authorize_Endpoint_(
+         allowedTypes: new[] { "octa", "employee", "parent" },
+         pages: new[] { "Admission Test" }
+         )]
+        public async Task<IActionResult> GetbyRegistrationFormParentIDAsyncFromParent(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            RegisterationFormParent registerationFormParent = Unit_Of_Work.registerationFormParent_Repository.First_Or_Default(r => r.ID == id);
+            long GradeId = Convert.ToInt64(registerationFormParent.GradeID);
+
+            List<Test> tests = await Unit_Of_Work.test_Repository.Select_All_With_IncludesById<Test>(
+                    b => b.IsDeleted != true && b.GradeID == GradeId,
+                    query => query.Include(emp => emp.academicYear),
+                    query => query.Include(emp => emp.subject),
+                    query => query.Include(emp => emp.Grade),
+                    query => query.Include(emp => emp.academicYear.School)
+                    );
+
+            if (tests == null || tests.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<TestGetDTO> testDTO = mapper.Map<List<TestGetDTO>>(tests);
+            foreach (var item in testDTO)
+            {
+                RegisterationFormTest registerationFormTest = await Unit_Of_Work.registerationFormTest_Repository.FindByIncludesAsync(r => r.RegisterationFormParentID == id && r.TestID == item.ID,
+                    query => query.Include(emp => emp.TestState));
+
+                if (registerationFormTest != null)
+                {
+                    item.RegistrationTestMark = registerationFormTest.Mark;
+                    item.RegistrationTestState = registerationFormTest.TestState.Name;
+                    item.RegistrationTestVisibleToParent = registerationFormTest.VisibleToParent;
+                    item.RegistrationTestID = registerationFormTest.ID;
+                    item.RegistrationTestStateId = registerationFormTest.StateID;
+
+                }
+                else
+                {
+                    item.RegistrationTestMark = null;
+                    item.RegistrationTestState = null;
+                    item.RegistrationTestVisibleToParent = null;
+                    item.RegistrationTestID = null;
+                    item.RegistrationTestStateId = null;
+
+                }
+
+            }
+
+            testDTO = testDTO
+             .Where(t => (t.RegistrationTestVisibleToParent == true) || (t.RegistrationTestStateId == 1 || t.RegistrationTestStateId == null))
+             .ToList();
+
             var response = new
             {
                 StudentName = registerationFormParent.StudentName,

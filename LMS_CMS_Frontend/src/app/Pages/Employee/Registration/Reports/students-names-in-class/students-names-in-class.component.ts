@@ -16,11 +16,7 @@ import { ClassroomService } from '../../../../../Services/Employee/LMS/classroom
 import { Student } from '../../../../../Models/student';
 import { StudentService } from '../../../../../Services/student.service';
 import { ReportsService } from '../../../../../Services/shared/reports.service';
-import * as XLSX from 'xlsx';
-import FileSaver, { saveAs } from 'file-saver';
-import * as ExcelJS from 'exceljs'
 import { PdfPrintComponent } from '../../../../../Component/pdf-print/pdf-print.component';
-import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-students-names-in-class',
@@ -68,7 +64,7 @@ export class StudentsNamesInClassComponent {
     public classroomService: ClassroomService,
     public acadimicYearService: AcadimicYearService,
     public studentService: StudentService,
-    public reportsService: ReportsService
+    public reportsService: ReportsService,
   ) { }
 
   ngOnInit() {
@@ -180,6 +176,7 @@ export class StudentsNamesInClassComponent {
         this.StudentData = d.students
         this.class = d.class
         this.school = d.school
+        console.log("fdfd",this.school)
         this.studentsCount = d.studentsCount
         this.date = d.date
         this.date = this.formatDate(this.date, this.direction);
@@ -193,42 +190,67 @@ export class StudentsNamesInClassComponent {
     return date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-Print() {
-  this.showPDF = true;
-  setTimeout(() => {
-    if (this.pdfComponentRef) {
-      this.pdfComponentRef.print();
-    }
-  }, 500);
-}
+
+  Print() {
+    this.showPDF = true;
+    setTimeout(() => {
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
   
-  // DownloadAsPDF() {
-  //   let element = document.getElementById("Data");
-  //   console.log("Element", element)
-  //   if (!element) {
-  //     console.error("Element not found!");
-  //     return;
-  //   }
-
-  //   element.style.display = 'block';
-  //   element.style.top = '0px';
-  //   element.style.left = '0px';
-  //   element.style.zIndex = '-5';
-
-  //   setTimeout(() => {
-  //     this.reportsService.DownloadAsPDF("List of students' names in class")
-
-  //     setTimeout(() => {
-  //       element.style.display = 'none';
-  //     }, 1000);
-  //   }, 200);
-  // }
+      // Create a print-specific stylesheet
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { 
+            margin: 0; 
+          }
+  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+  
+      // Create a container for printing
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+  
+      // Add to body and print
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
+  }
 
   DownloadAsPDF() {
     this.showPDF = true;
+    console.log(this.school)
     setTimeout(() => {
+      this.pdfComponentRef.downloadPDF(); // Call manual download
       setTimeout(() => this.showPDF = false, 2000);
-    }, 500); // give DOM time to render <app-pdf-print>
+    }, 500);
   }
 
   async DownloadAsExcel() {

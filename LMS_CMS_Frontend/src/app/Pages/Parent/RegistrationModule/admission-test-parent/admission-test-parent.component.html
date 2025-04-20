@@ -4,7 +4,7 @@
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
         <option value="" disabled selected hidden>Select a Student</option>
         <option *ngFor="let s of Students" [value]="s.id">
-            {{ s.studentName }}
+            {{ s.studentEnName }}
         </option>
     </select>
 </div>

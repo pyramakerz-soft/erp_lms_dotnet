@@ -42,8 +42,6 @@ export class PdfPrintComponent {
         this.preservedColumns = this.tableHeaders[0];
       this.splitTableGenerically();
     }
-    console.log(this.tableData)
-    console.log(this.tableChunks)
   }
 
   ngAfterViewInit(): void {
@@ -115,6 +113,7 @@ export class PdfPrintComponent {
     }, 100);
   }
 
+
   // ngAfterViewInit(): void {
   //   if (this.autoDownload) {
   //     this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
@@ -123,6 +122,19 @@ export class PdfPrintComponent {
   //     });
   //   }
   // }
+
+  downloadPDF() {
+    if (this.school?.reportImage?.startsWith('http')) {
+      this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
+        this.school.reportImage = base64Img;
+        console.log("gf",this.school.reportImage)
+        setTimeout(() => this.printPDF(), 100);
+      });
+    } else {
+      setTimeout(() => this.printPDF(), 100);
+      console.log("gf",this.school.reportImage)
+    }
+  }
   
   convertImgToBase64URL(url: string): Promise<string> {
     return new Promise((resolve) => {

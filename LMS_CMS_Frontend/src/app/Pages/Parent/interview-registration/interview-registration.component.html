@@ -112,7 +112,7 @@
                             <i class="fa-regular fa-trash-can"></i>
                         </button>
                         <button
-                            (click)="openModal(row.id, row.academicYearID, row.registrationFormInterviewID, row.interviewTimeID, row.interviewTimeDate)">
+                            (click)="openModal(row.id, row.academicYearID, row.registrationFormInterviewID, row.interviewTimeID, row.interviewTimeDate, row.interviewTimeFromTime, row.interviewTimeToTime)">
                             <i class="fa-solid fa-pencil"></i>
                         </button>
                     </div>
@@ -174,10 +174,12 @@
                             <div class="grid grid-cols-7 gap-2">
                                 <div *ngFor="let day of getDaysInMonth(month.month, month.year)">
                                     <div (click)="showTime(day)" *ngIf="isGreen(day) && (day.interviews.length != 0)"
-                                        class="text-center py-1 px-[5px] rounded-lg bg-[#96C68D] cursor-pointer">
+                                    [ngClass]="getDayClass(day)" 
+                                    class="text-center py-1 px-[5px] rounded-lg bg-[#96C68D] cursor-pointer">
                                         {{ day.day }}
                                     </div>
                                     <div (click)="showTime()" *ngIf="!isGreen(day) && (day.interviews.length != 0)"
+                                    [ngClass]="getDayClass(day)" 
                                         class="text-center py-1 px-[5px] rounded-lg bg-[#EA3A3D80]">
                                         {{ day.day }}
                                     </div>

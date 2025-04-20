@@ -64,7 +64,7 @@ export class InterviewRegistrationComponent {
 
   getInterviewByYearID(){
     this.interviewTimeTableService.GetByYearId(this.academicYearIdID, this.DomainName).subscribe(
-      (data) => {
+      (data) => { 
         this.interviewTimeTable = data
         this.filterFutureDates()
         this.generateCalendar()
@@ -72,11 +72,12 @@ export class InterviewRegistrationComponent {
     )
   }
 
-  openModal(id: number, academicYearId: number, registrationFormInterviewID?:number, interviewID?:number, date?:string) {
+  openModal(id: number, academicYearId: number, registrationFormInterviewID?:number, interviewID?:number, date?:string , fromTime?:string, toTime?:string) {
     if(registrationFormInterviewID && interviewID && date){
       this.registrationFormInterviewID = registrationFormInterviewID
       this.InterviewTimeID = interviewID
       this.selectedDate = date
+      this.selectedTime = `From ${fromTime} To ${toTime}`
     }
     this.registrationFormParentID = id
     this.academicYearIdID = academicYearId
@@ -146,18 +147,7 @@ export class InterviewRegistrationComponent {
           }
     });
   }
-
-  ViewDate(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const selectedId = +target.value;
-    
-    const selectedState = this.interviewTimeTable.find(state => state.id === selectedId);
-
-    if (selectedState) {
-      this.selectedDate = selectedState.date
-    }
-  }
-
+ 
   Register() {
     if(!this.registrationFormInterviewID){
       this.registrationFormInterview.Add(this.registrationFormParentID, this.InterviewTimeID, this.DomainName).subscribe(
@@ -277,16 +267,35 @@ export class InterviewRegistrationComponent {
     document.getElementById("timePart")?.classList.remove("flex");
     document.getElementById("timePart")?.classList.add("hidden");
     if(day){
-      this.ToChooseFromInterviewTimeTable = day.interviews
+      this.ToChooseFromInterviewTimeTable = day.interviews 
       document.getElementById("timePart")?.classList.remove("hidden");
       document.getElementById("timePart")?.classList.add("flex");
     } 
   }
+
+  arraysAreEqual(arr1: any[], arr2: any[]): boolean { 
+    if (!arr1 || !arr2) return false;
+    if (arr1.length !== arr2.length) return false; 
+    return arr1.every((val, index) => val === arr2[index]);
+  }
+  
+  checkIfInterviewInEditSelected(day: DayWithInterviews): boolean {
+    return day.interviews.some(interview => interview.id === this.InterviewTimeID);
+  }
+
+  getDayClass(day: DayWithInterviews): string {
+    if (this.checkIfInterviewInEditSelected(day)) {
+      return 'border-2 bg-gray-300 shadow-2xl ';
+    }
+    if (this.arraysAreEqual(day.interviews, this.ToChooseFromInterviewTimeTable)) {
+      return 'border-2 border-gray-700 shadow-2xl';
+    }
+    return ''; 
+  }
     
   ChooseInterviewTime(interview:InterviewTimeTable) {
-    if(interview.capacity != interview.reserved){
-      this.closeModalcalender()
-      console.log(interview)
+    if(interview.capacity != interview.reserved){ 
+      this.closeModalcalender()  
       this.selectedDate = interview.date
       this.selectedTime = `From ${interview.fromTime} To ${interview.toTime}`
       this.InterviewTimeID = interview.id

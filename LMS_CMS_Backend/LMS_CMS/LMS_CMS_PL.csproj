@@ -29,7 +29,6 @@
 
   <ItemGroup>
     <Folder Include="Invoices\CSR\" />
-    <Folder Include="Invoices\Data\" />
     <Folder Include="Uploads\Attachments\" />
     <Folder Include="Uploads\Questions\" />
   </ItemGroup>

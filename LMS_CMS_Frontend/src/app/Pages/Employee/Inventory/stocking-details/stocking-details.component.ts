@@ -922,9 +922,72 @@ export class StockingDetailsComponent {
           <head>
             <title>Print</title>
             <style>
+              @page {
+                size: landscape;
+                margin: 1cm;
+              }
+      
+              * {
+                box-sizing: border-box;
+              }
+      
               body {
                 font-family: Arial, sans-serif;
                 padding: 20px;
+                margin: 0;
+              }
+      
+              .print-section {
+                width: 100% !important;
+                overflow: visible !important;
+              }
+      
+              table {
+                width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse;
+                word-wrap: break-word;
+              }
+      
+              th, td {
+                padding: 8px;
+                font-size: 12px;
+                text-align: left;
+                border: 1px solid #ccc;
+                word-break: break-word;
+                white-space: normal;
+              }
+      
+              th {
+                background-color: #f3f3f3;
+              }
+      
+              input, select, textarea {
+                border: none;
+                font-size: 12px;
+                width: 100%;
+                box-sizing: border-box;
+              }
+      
+              button, .fa-trash-can, input[type="file"] {
+                display: none !important;
+              }
+      
+              @media print {
+                html, body {
+                  width: 100%;
+                  height: auto;
+                  margin: 0;
+                  padding: 0;
+                }
+      
+                thead {
+                  display: table-header-group;
+                }
+      
+                tr, td, th {
+                  page-break-inside: avoid;
+                }
               }
             </style>
           </head>

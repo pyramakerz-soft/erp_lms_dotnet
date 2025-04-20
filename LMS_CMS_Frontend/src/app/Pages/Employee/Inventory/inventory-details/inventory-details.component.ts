@@ -407,6 +407,7 @@ export class InventoryDetailsComponent {
           (d) => {
             this.MasterId = d;
             if (this.EditedShopItems.length > 0) {
+              console.log(this.EditedShopItems)
               this.EditedShopItems.forEach((element) => {
                 if (element.id !== 0) {
                   this.shopitemServ.Edit(element, this.DomainName).subscribe({
@@ -811,7 +812,7 @@ export class InventoryDetailsComponent {
             <style>
               body {
                 font-family: Arial, sans-serif;
-                padding: 20px;
+                padding: 1px;
               }
             </style>
           </head>

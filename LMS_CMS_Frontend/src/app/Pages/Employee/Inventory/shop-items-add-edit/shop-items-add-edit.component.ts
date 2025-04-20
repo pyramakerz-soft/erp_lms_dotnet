@@ -161,7 +161,7 @@ export class ShopItemsAddEditComponent {
   }
 
   moveToBack() {
-    this.router.navigateByUrl(`Employee/Shop`)
+    this.router.navigateByUrl(`Employee/Items`)
   }
 
   onCategoryChange(event: Event) {
@@ -213,7 +213,7 @@ export class ShopItemsAddEditComponent {
       if (this.mode == 'Create') {
         this.shopItemService.Add(this.ShopItem, this.DomainName).subscribe(
           data => {
-            this.router.navigateByUrl(`Employee/Shop`)
+            this.router.navigateByUrl(`Employee/Items`)
             this.isLoading=false
             Swal.fire({
               title: "Added Successfully!",
@@ -235,7 +235,7 @@ export class ShopItemsAddEditComponent {
       if (this.mode == 'Edit') {
         this.shopItemService.Edit(this.ShopItem, this.DomainName).subscribe(
           data => {
-            this.router.navigateByUrl(`Employee/Shop`) 
+            this.router.navigateByUrl(`Employee/Items`) 
             this.isLoading=false
             Swal.fire({
               title: "Edited Successfully!",

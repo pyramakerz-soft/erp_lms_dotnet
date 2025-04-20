@@ -416,13 +416,46 @@ export class AccountingEmployeeEditComponent {
             isValid = false;
           }
         }
-        if(this.Data.departureTime==this.Data.attendanceTime){
+        const attendanceMins = this.convertToMinutes(
+          this.attendanceTime.hours,
+          this.attendanceTime.minutes,
+          this.attendanceTime.periods
+        );
+        
+        const departureMins = this.convertToMinutes(
+          this.departureTime.hour,
+          this.departureTime.minute,
+          this.departureTime.period
+        );
+        
+        if (attendanceMins === departureMins) {
           this.validationErrors['departureTime'] = 'Attendance Time and Departure Time cannot be the same.';
           isValid = false;
         }
+        
+        console.log("aa",this.attendanceTime,this.departureTime)
+        if (departureMins < attendanceMins) {
+          this.validationErrors['departureTime'] = 'Departure Time cannot be before Attendance Time.';
+          isValid = false;
+        }
+        
       }
     }
     return isValid;
   }
+
+  convertToMinutes(hour: number | string, minute: number | string, period: string): number {
+    let h = parseInt(hour as string, 10);
+    let m = parseInt(minute as string, 10);
+  
+    if (period === 'PM' && h < 12) {
+      h += 12;
+    } else if (period === 'AM' && h === 12) {
+      h = 0;
+    }
+  
+    return h * 60 + m;
+  }
+  
 }
 

@@ -139,9 +139,9 @@ export class JobComponent {
     });
   }
 
-  Edit(row: Job) {
+  Edit(rowId:number) {
     this.mode = 'Edit';
-    this.jobServ.GetById(row.id, this.DomainName).subscribe((d) => {
+    this.jobServ.GetById(rowId, this.DomainName).subscribe((d) => {
       this.job = d;
     });
     this.validationErrors = {};

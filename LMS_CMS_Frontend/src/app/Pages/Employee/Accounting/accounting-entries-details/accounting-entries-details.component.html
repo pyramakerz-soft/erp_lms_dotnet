@@ -13,6 +13,7 @@
             <div class="flex flex-col w-[30%]">
                 <label class="mb-2 primaryTxt font-medium" for="accountingEntriesDocTypeID">Doc Type</label>
                 <select (ngModelChange)="onInputValueChange({ field: 'accountingEntriesDocTypeID', value: $event })"
+                [disabled]="isView"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="accountingEntriesDocTypeID" [(ngModel)]="accountingEntries.accountingEntriesDocTypeID">
                     <option [value]="0" disabled selected hidden>Choose Doc Type</option>
                     <option *ngFor="let dataType of dataTypesData" [value]="dataType.id">{{ dataType.name }}</option>
@@ -23,12 +24,14 @@
             <div class="flex flex-col w-[30%]">
                 <label class="mb-2 primaryTxt font-medium" for="DocType">Doc Number</label>
                 <input id="DocType" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                [disabled]="isView"
                     (input)="validateNumber($event, 'docNumber')" 
-                    placeholder="Enter Doc Type" [(ngModel)]="accountingEntries.docNumber" />
+                    placeholder="Enter Doc Number" [(ngModel)]="accountingEntries.docNumber" />
             </div> 
             <div class="flex flex-col w-[30%]">
                 <label class="mb-2 primaryTxt font-medium" for="date">Date</label>
                 <input id="date" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" [(ngModel)]="accountingEntries.date"
+                [disabled]="isView"
                 (ngModelChange)="onInputValueChange({ field: 'date', value: $event })" />
                 <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{ validationErrors['date'] }}</span>
             </div>
@@ -52,6 +55,7 @@
         <div class="mt-5 flex flex-col">
             <label class="mb-2 primaryTxt font-medium" for="notes">Notes</label>
             <textarea id="notes" class="w-full rounded-lg border border-solid border-gray-300 px-4 py-3" 
+            [disabled]="isView"
                 placeholder="Add Notes" [(ngModel)]="accountingEntries.notes">
             </textarea>
         </div>
@@ -59,12 +63,12 @@
     
     <div class="flex justify-end mt-5 space-x-4 items-center">
         <i class="fa-solid fa-print text-lg" *ngIf="!isCreate"></i>
-        <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()"> Save </button>
+        <button *ngIf="!isView" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()"> Save </button>
     </div>
 </div>
 
 <div class="mt-6" *ngIf="!isCreate">
-    <div class="flex justify-end">
+    <div class="flex justify-end" *ngIf="!isView">
         <button class="secondaryTxt secondaryBorder px-4 py-2 rounded-lg flex items-center space-x-2" (click)="AddAccountingEntriesDetails()"> 
             <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
             <p>Add Row</p> 
@@ -213,7 +217,7 @@
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subAccountingName }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.note }}</td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            <div class="flex space-x-4">
+                            <div class="flex space-x-4" *ngIf="!isView">
                                 <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
                                     (click)="DeleteDetail(row.id)">
                                     <i class="fa-regular fa-trash-can"></i>

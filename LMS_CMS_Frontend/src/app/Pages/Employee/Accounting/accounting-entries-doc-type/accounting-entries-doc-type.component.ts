@@ -106,7 +106,7 @@ User_Data_After_Login: TokenData = new TokenData(
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Doc Type?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',

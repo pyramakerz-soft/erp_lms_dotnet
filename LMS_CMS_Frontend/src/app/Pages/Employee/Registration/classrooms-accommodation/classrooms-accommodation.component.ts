@@ -184,11 +184,12 @@ export class ClassroomsAccommodationComponent {
     this.Data = []
     this.Data = this.OriginalData.filter((item: any) => {
       const schoolMatch = this.SelectedSchoolId == 0 || item.schoolID == this.SelectedSchoolId;
-      const yearMatch = this.SelectedYearId == 0 || item.yearID == this.SelectedYearId;
+      const yearMatch = this.SelectedYearId == 0 || item.academicYearID == this.SelectedYearId;
       const gradeMatch = this.SelectedGradeId == 0 || item.gradeID == this.SelectedGradeId;
       return schoolMatch && yearMatch && gradeMatch;
     });
 
+    console.log(this.OriginalData)
   }
 
   ResetFilter() {

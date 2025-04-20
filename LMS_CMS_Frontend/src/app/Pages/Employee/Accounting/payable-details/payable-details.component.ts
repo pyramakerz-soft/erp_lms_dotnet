@@ -271,9 +271,10 @@ export class PayableDetailsComponent {
         )
       }
     }
-  }
-
-  GetPayableDetails() {
+  } 
+  
+  GetPayableDetails(){
+    this.payableDetailsData = [] 
     this.payableDetailsService.Get(this.DomainName, this.PayableID).subscribe(
       (data) => {
         this.payableDetailsData = data

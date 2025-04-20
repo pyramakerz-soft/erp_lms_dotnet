@@ -274,6 +274,7 @@ export class AccountingEntriesDetailsComponent {
   }
 
   GetAccountingEntriesDetails(){
+    this.accountingEntriesDetailsData = []
     this.accountingEntriesDetailsService.Get(this.DomainName, this.AccountingEntriesID).subscribe(
       (data) => {
         this.accountingEntriesDetailsData = data

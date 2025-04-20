@@ -42,7 +42,6 @@ export class InventoryMasterService {
    }
  
    Add(master: InventoryMaster, DomainName: string): Observable<any> {
-    console.log(master)
      if (DomainName != null) {
        this.header = DomainName
      }
@@ -79,7 +78,6 @@ export class InventoryMasterService {
  
      if (master.inventoryDetails && master.inventoryDetails.length > 0) {
        master.inventoryDetails.forEach((item, index) => {
-        console.log(item)
          formData.append(`inventoryDetails[${index}][price]`, item.price.toString());
          formData.append(`inventoryDetails[${index}][totalPrice]`, item.totalPrice.toString());
          formData.append(`inventoryDetails[${index}][quantity]`, item.quantity.toString());

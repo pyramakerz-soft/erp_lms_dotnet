@@ -97,8 +97,8 @@ export class BuildingComponent {
     });
   }
 
-  getSchoolData() {
-    this.schoolService.Get(this.DomainName).subscribe((data) => { 
+  getSchoolData() { 
+    this.schoolService.Get(this.DomainName).subscribe((data) => {  
       this.Schools = data;
     });
   }

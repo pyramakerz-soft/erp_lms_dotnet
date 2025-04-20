@@ -275,6 +275,12 @@ namespace LMS_CMS_BL.Config
             CreateMap<Classroom, ClassroomGetDTO>()
                 .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name))
                 .ForMember(dest => dest.AcademicYearName, opt => opt.MapFrom(src => src.AcademicYear.Name))
+                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.AcademicYear.SchoolID))
+                .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.AcademicYear.School.Name))
+                .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Grade.SectionID))
+                .ForMember(dest => dest.SectionName, opt => opt.MapFrom(src => src.Grade.Section.Name))
+                .ForMember(dest => dest.BuildingID, opt => opt.MapFrom(src => src.Floor.buildingID))
+                .ForMember(dest => dest.BuildingName, opt => opt.MapFrom(src => src.Floor.building.Name))
                 .ForMember(dest => dest.FloorName, opt => opt.MapFrom(src => src.Floor.Name));
             CreateMap<ClassroomAddDTO, Classroom>();
             CreateMap<Classroom, ClassroomAddDTO>();

@@ -12,23 +12,29 @@ export class ReportsService {
 
   constructor() { }
  
-  DownloadAsPDF(name:string) {
-    let Element = document.getElementById('Data');
-  
-    if (!Element) {
-      console.error("Element not found!");
+  DownloadAsPDF(name: string) {
+    const elements = document.querySelectorAll('.print-area');
+    
+    if (!elements || elements.length === 0) {
+      console.error("No elements found!");
       return;
-    } 
-
-    html2pdf().from(Element).set({
+    }
+  
+    const container = document.createElement('div');
+  
+    elements.forEach(el => {
+      container.appendChild(el.cloneNode(true));
+    });
+  
+    html2pdf().from(container).set({
       margin: 10,
       filename: `${name}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 3, useCORS: true, allowTaint: true },
       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
     }).save();
-  } 
-
+  }
+  
   PrintPDF(name:string) {
     let Element = document.getElementById('Data');
 
@@ -89,7 +95,7 @@ export class ReportsService {
   }
 
   async generateExcelReport(options: {
-    mainHeader: { en: string; ar: string };
+    mainHeader?: { en: string; ar: string };
     subHeaders?: { en: string; ar: string }[];
     infoRows?: { key: string; value: string | number | boolean }[]; // 👈 NEW
     reportImage?: string;
@@ -127,12 +133,12 @@ export class ReportsService {
   
     // Main header
     worksheet.mergeCells(`A1:${enEnd}1`);
-    worksheet.getCell('A1').value = options.mainHeader.en;
+    worksheet.getCell('A1').value = options.mainHeader?.en;
     worksheet.getCell('A1').font = { bold: true, size: 16 };
     worksheet.getCell('A1').alignment = { horizontal: 'left' };
   
     worksheet.mergeCells(`${arStart}1:${arEnd}1`);
-    worksheet.getCell(`${arStart}1`).value = options.mainHeader.ar;
+    worksheet.getCell(`${arStart}1`).value = options.mainHeader?.ar;
     worksheet.getCell(`${arStart}1`).font = { bold: true, size: 16 };
     worksheet.getCell(`${arStart}1`).alignment = { horizontal: 'right' };
   

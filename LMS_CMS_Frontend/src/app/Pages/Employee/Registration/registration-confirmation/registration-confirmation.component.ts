@@ -126,7 +126,7 @@ export class RegistrationConfirmationComponent {
   getRegisterationFormParentData(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.registerationFormParentServicea.Get(this.DomainName).subscribe(
-        (data) => { 
+        (data) => {  
           this.registerationFormParentData = data;
           resolve();  // Resolve the promise when data is received
         },

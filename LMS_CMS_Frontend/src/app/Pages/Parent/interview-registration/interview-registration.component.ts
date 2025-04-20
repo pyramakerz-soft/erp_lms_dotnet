@@ -294,8 +294,8 @@ export class InterviewRegistrationComponent {
   }
     
   ChooseInterviewTime(interview:InterviewTimeTable) {
-    if(interview.capacity != interview.reserved){
-      this.closeModalcalender() 
+    if(interview.capacity != interview.reserved){ 
+      this.closeModalcalender()  
       this.selectedDate = interview.date
       this.selectedTime = `From ${interview.fromTime} To ${interview.toTime}`
       this.InterviewTimeID = interview.id

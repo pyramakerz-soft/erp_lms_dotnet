@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PdfPrintComponent } from '../../../../../Component/pdf-print/pdf-print.component';
@@ -57,6 +57,7 @@ export class TransferedFromKindergartenReportComponent {
   CurrentDate : any =new Date()
   ArabicCurrentDate : any =new Date()
   direction: string = "";
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -115,7 +116,6 @@ export class TransferedFromKindergartenReportComponent {
   getAllStudents() {
     this.studentServ.GetByAcademicYearID(this.SelectedYearId ,this.DomainName).subscribe((d) => {
       this.Students = d;
-      console.log(d ,this.Students)
       this.filteredStudents = d; 
     });
   }
@@ -134,7 +134,6 @@ export class TransferedFromKindergartenReportComponent {
   GetStudentById() {
     this.studentServ.GetByID(this.SelectedStudentId, this.DomainName).subscribe((d) => {
       this.SelectedStudent = d
-      console.log(d)
     })
   }
 
@@ -145,52 +144,65 @@ export class TransferedFromKindergartenReportComponent {
   }
 
   Print() {
-    const element = document.getElementById("Data");
-    if (!element) {
-      console.error("Element not found!");
-      return;
-    }
     this.showPDF = true;
     setTimeout(() => {
-      element.classList.remove("hidden");
-      setTimeout(() => {
-        const printContents = element.innerHTML;
-        const printWindow = window.open('', '_blank', 'width=800,height=600');
-        if (!printWindow) return;
-        printWindow.document.open();
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>Print</title>
-              <style>
-                * { font-family: sans-serif; }
-                table { border-collapse: collapse; width: 100%; }
-                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-                @media print {
-                  body { margin: 1cm; }
-                }
-              </style>
-            </head>
-            <body onload="window.print(); window.close();">
-              ${printContents}
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        setTimeout(() => {
-          element.classList.add("hidden");
-          this.showPDF = false;
-        }, 1000);
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
   
-      }, 200); // allow component to render
-    }, 100);
+      // Create a print-specific stylesheet
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { 
+            margin: 0; 
+          }
+  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+  
+      // Create a container for printing
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+  
+      // Add to body and print
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
   }
 
   DownloadAsPDF() {
     this.showPDF = true;
+    console.log(this.school)
     setTimeout(() => {
+      this.pdfComponentRef.downloadPDF(); // Call manual download
       setTimeout(() => this.showPDF = false, 2000);
-    }, 500); // give DOM time to render <app-pdf-print>
+    }, 500);
   }
 
   formatDate(dateString: string, dir: string): string {
@@ -206,7 +218,6 @@ export class TransferedFromKindergartenReportComponent {
           next: (d) => {
             this.DataToPrint = d; 
             this.school = d.school;
-            console.log("data",d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             this.ArabicCurrentDate = new Date(this.CurrentDate).toLocaleDateString('ar-EG', {
@@ -215,8 +226,6 @@ export class TransferedFromKindergartenReportComponent {
               month: 'long',
               day: 'numeric'
             });
-            console.log("this.CurrentDate",this.CurrentDate)
-
             resolve();
           },
           error: (err) => {
@@ -226,3 +235,5 @@ export class TransferedFromKindergartenReportComponent {
     });
   }
 }
+
+

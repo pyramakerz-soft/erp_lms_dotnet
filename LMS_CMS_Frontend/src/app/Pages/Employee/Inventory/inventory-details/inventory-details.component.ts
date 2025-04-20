@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -35,17 +35,29 @@ import { SupplierService } from '../../../../Services/Employee/Accounting/suppli
 import { InventoryFlagService } from '../../../../Services/Employee/Inventory/inventory-flag.service';
 import { InventoryFlag } from '../../../../Models/Inventory/inventory-flag';
 import { firstValueFrom } from 'rxjs';
+import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.component';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-inventory-details',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, PdfPrintComponent],
   templateUrl: './inventory-details.component.html',
-  styleUrl: './inventory-details.component.css'
+  styleUrl: './inventory-details.component.css',
 })
 export class InventoryDetailsComponent {
-
-  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
+  User_Data_After_Login: TokenData = new TokenData(
+    '',
+    0,
+    0,
+    0,
+    0,
+    '',
+    '',
+    '',
+    '',
+    ''
+  );
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
@@ -53,7 +65,7 @@ export class InventoryDetailsComponent {
   AllowDeleteForOthers: boolean = false;
 
   Data: InventoryMaster = new InventoryMaster();
-  FlagId: number = 0
+  FlagId: number = 0;
   IsPriceEditable: boolean = false;
   IsRemainingCashVisa: boolean = false;
   IsPriceChanged: boolean = false;
@@ -65,34 +77,54 @@ export class InventoryDetailsComponent {
   key: string = 'id';
   value: any = '';
   keysArray: string[] = ['id', 'name', 'accountNumberName'];
-  mode: string = "Create"
+  mode: string = 'Create';
 
-  students: Student[] = []
-  Suppliers: Supplier[] = []
-  StoresForTitle: Store[] = []
-  Stores: Store[] = []
-  Saves: Saves[] = []
-  Banks: Bank[] = []
-  Categories: Category[] = []
-  subCategories: SubCategory[] = []
-  ShopItems: ShopItem[] = []
-  InventoryFlag: InventoryFlag = new InventoryFlag()
+  students: Student[] = [];
+  Suppliers: Supplier[] = [];
+  OriginsSuppliers: Supplier[] = [];
+  StoresForTitle: Store[] = [];
+  Stores: Store[] = [];
+  Saves: Saves[] = [];
+  Banks: Bank[] = [];
+  Categories: Category[] = [];
+  subCategories: SubCategory[] = [];
+  ShopItems: ShopItem[] = [];
+  InventoryFlag: InventoryFlag = new InventoryFlag();
 
   SelectedCategoryId: number | null = null;
   SelectedSubCategoryId: number | null = null;
   SelectedSopItem: ShopItem | null = null;
 
-  TableData: InventoryDetails[] = []
-  NewDetailsWhenEdit: InventoryDetails[] = []
-  Item: InventoryDetails = new InventoryDetails()
-  ShopItem: ShopItem = new ShopItem()
+  TableData: InventoryDetails[] = [];
+  NewDetailsWhenEdit: InventoryDetails[] = [];
+  Item: InventoryDetails = new InventoryDetails();
+  ShopItem: ShopItem = new ShopItem();
   MasterId: number = 0;
   editingRowId: any = 0;
   validationErrors: { [key in keyof InventoryMaster]?: string } = {};
 
-  IsOpenToAdd: boolean = false
+  IsOpenToAdd: boolean = false;
 
-  isLoading = false
+  isLoading = false;
+
+  EditedShopItems: ShopItem[] = [];
+  showPDF: boolean = false;
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
+  showTable: boolean = false;
+
+  // IsOpenToAdd: boolean = false;
+  IsSearchOpen: boolean = false;
+  BarCode: string = '';
+
+  studentSearch: string = '';
+  filteredStudents: any[] = [];
+  showStudentDropdown: boolean = false;
+
+  supplierSearch: string = '';
+  filteredSuppliers: any[] = [];
+  showSupplierDropdown: boolean = false;
+
+  IsPrint : boolean = false
 
   constructor(
     private router: Router,
@@ -114,8 +146,9 @@ export class InventoryDetailsComponent {
     public SubCategoriesServ: InventorySubCategoriesService,
     public shopitemServ: ShopItemService,
     public SupplierServ: SupplierService,
-    public InventoryFlagServ: InventoryFlagService
-  ) { }
+    public InventoryFlagServ: InventoryFlagService,
+    public printservice: ReportsService
+  ) {}
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -124,46 +157,54 @@ export class InventoryDetailsComponent {
       this.path = url[0].path;
     });
 
-    this.MasterId = Number(this.activeRoute.snapshot.paramMap.get('id'))
-    this.FlagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
-    this.Data.flagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'))
-
-    if (this.FlagId == 8 || this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 11 || this.FlagId == 12 || this.FlagId == 13) {
-      this.IsRemainingCashVisa = true
-    }
-
-    if (this.FlagId == 9 && this.mode == 'Create' || this.FlagId == 13 && this.mode == 'Create') { //CanEditPrice
-      this.IsPriceEditable = true
-    }
-
-    if (this.FlagId == 8) {
-
-    } else if (this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 13) {
-      this.GetAllSuppliers()
-    } else if (this.FlagId == 11 || this.FlagId == 12) {
-      await this.GetAllStudents()
-    }
-
-    await this.GetAllStores()
-    await this.GetAllSaves()
-    await this.GetAllBanks()
-    this.GetInventoryFlagInfo()
-
+    this.MasterId = Number(this.activeRoute.snapshot.paramMap.get('id'));
+    this.FlagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'));
+    this.Data.flagId = Number(this.activeRoute.snapshot.paramMap.get('FlagId'));
     if (!this.MasterId) {
-      this.mode = "Create"
+      this.mode = 'Create';
       this.Data.date = new Date().toISOString().split('T')[0];
     } else {
-      this.mode = "Edit"
+      this.mode = 'Edit';
       this.GetTableDataByID();
       this.GetMasterInfo();
       if (this.Data.saveID == null) {
-        this.Data.saveID = 0
+        this.Data.saveID = 0;
       }
       if (this.Data.bankID == null) {
-        this.Data.bankID = 0
+        this.Data.bankID = 0;
       }
-
     }
+
+    if (
+      this.FlagId == 8 ||
+      this.FlagId == 9 ||
+      this.FlagId == 10 ||
+      this.FlagId == 11 ||
+      this.FlagId == 12 ||
+      this.FlagId == 13
+    ) {
+      this.IsRemainingCashVisa = true;
+    }
+
+    if (
+      (this.FlagId == 9 && this.mode == 'Create') ||
+      (this.FlagId == 13 && this.mode == 'Create')
+    ) {
+      //CanEditPrice
+      this.IsPriceEditable = true;
+    }
+
+    if (this.FlagId == 8) {
+    } else if (this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 13) {
+      this.GetAllSuppliers();
+    } else if (this.FlagId == 11 || this.FlagId == 12) {
+      await this.GetAllStudents();
+    }
+
+    await this.GetAllStores();
+    await this.GetAllSaves();
+    await this.GetAllBanks();
+    this.GetInventoryFlagInfo();
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
@@ -177,59 +218,101 @@ export class InventoryDetailsComponent {
   }
 
   moveToMaster() {
-    this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
+    this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`);
   }
 
   ////////////////////////////////////////////////////// Get Data
   GetAllSaves() {
     this.SaveServ.Get(this.DomainName).subscribe((d) => {
-      this.Saves = d
-    })
+      this.Saves = d;
+    });
   }
 
   GetAllBanks() {
     this.bankServ.Get(this.DomainName).subscribe((d) => {
-      this.Banks = d
-    })
+      this.Banks = d;
+    });
   }
 
   GetAllStudents() {
     this.StudentServ.GetAll(this.DomainName).subscribe((d) => {
-      this.students = d
-    })
+      this.students = d;
+      this.filteredStudents=this.students
+    });
   }
 
   GetAllStores() {
     this.storeServ.Get(this.DomainName).subscribe((d) => {
-      this.Stores = d
-      this.StoresForTitle = d
-    })
+      this.Stores = d;
+      this.StoresForTitle = d;
+    });
+  }
+
+  filterStudents() {
+    const search = this.studentSearch.toLowerCase();
+    this.filteredStudents = this.students.filter((stu: any) =>
+      stu.user_Name.toLowerCase().includes(search)
+    );
+  }
+
+  selectStudent(stu: any) {
+    this.Data.studentID = stu.id;
+    this.studentSearch = stu.user_Name;
+    this.onInputValueChange({ field: 'studentID', value: stu.id });
+    this.showStudentDropdown = false;
+  }
+
+  hideDropdown() {
+    setTimeout(() => {
+      this.showStudentDropdown = false;
+      this.showSupplierDropdown = false;
+    }, 200);
+  }
+
+  filterSuppliers() {
+    const searchValue = this.supplierSearch.toLowerCase();
+    this.filteredSuppliers = this.Suppliers.filter(s =>
+      s.name.toLowerCase().includes(searchValue)
+    );
+  }
+  
+  selectSupplier(supplier: any) {
+    this.Data.supplierId = supplier.id;
+    this.supplierSearch = supplier.name;
+    this.showSupplierDropdown = false;
+    this.onInputValueChange({ field: 'supplierId', value: supplier.id });
   }
 
   GetAllSuppliers() {
     this.SupplierServ.Get(this.DomainName).subscribe((d) => {
-      this.Suppliers = d
-    })
+      this.Suppliers = d;
+      this.filteredSuppliers = this.Suppliers;
+    });
   }
 
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
-      this.Data = d
-      this.GetCategories()
-    })
+      this.Data = d;
+      this.GetCategories();
+    });
   }
 
   GetCategories() {
-    this.Categories = []
-    this.CategoriesServ.GetByStoreId(this.DomainName, this.Data.storeID).subscribe((d) => {
-      this.Categories = d
-    })
+    this.Categories = [];
+    this.CategoriesServ.GetByStoreId(
+      this.DomainName,
+      this.Data.storeID
+    ).subscribe((d) => {
+      this.Categories = d;
+    });
   }
 
   GetInventoryFlagInfo() {
-    this.InventoryFlagServ.GetById(this.FlagId, this.DomainName).subscribe((d) => {
-      this.InventoryFlag = d
-    })
+    this.InventoryFlagServ.GetById(this.FlagId, this.DomainName).subscribe(
+      (d) => {
+        this.InventoryFlag = d;
+      }
+    );
   }
 
   selectCategory(categoryId: number) {
@@ -239,24 +322,27 @@ export class InventoryDetailsComponent {
 
   GetSubCategories() {
     if (this.SelectedCategoryId)
-      this.SubCategoriesServ.GetByCategoryId(this.SelectedCategoryId, this.DomainName)
-        .subscribe(d => {
-          this.subCategories = d;
-          this.ShopItems = []; // Clear items when category changes
-          this.SelectedSubCategoryId = null;
-        });
+      this.SubCategoriesServ.GetByCategoryId(
+        this.SelectedCategoryId,
+        this.DomainName
+      ).subscribe((d) => {
+        this.subCategories = d;
+        this.ShopItems = []; // Clear items when category changes
+        this.SelectedSubCategoryId = null;
+      });
   }
 
   selectSubCategory(subCategoryId: number) {
     this.SelectedSubCategoryId = subCategoryId;
-    this.ShopItems = []
+    this.ShopItems = [];
     this.GetItems();
   }
 
   GetItems() {
     if (this.SelectedSubCategoryId)
-      this.shopitemServ.GetBySubCategory(this.SelectedSubCategoryId, this.DomainName)
-        .subscribe(d => {
+      this.shopitemServ
+        .GetBySubCategory(this.SelectedSubCategoryId, this.DomainName)
+        .subscribe((d) => {
           this.ShopItems = d;
         });
   }
@@ -273,21 +359,23 @@ export class InventoryDetailsComponent {
     this.Item.shopItemID = item.id;
     this.Item.shopItemName = item.enName;
     this.Item.barCode = item.barCode;
-    this.Item.quantity = 1
-    this.Item.totalPrice = this.Item.price
+    this.Item.quantity = 1;
+    this.Item.totalPrice = this.Item.price;
     await this.SaveRow();
   }
 
   async GetTableDataByID(): Promise<void> {
     return new Promise((resolve) => {
-      this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe((d) => {
-        this.TableData = d;
-        this.Data.inventoryDetails = d
-        resolve();
-      },
+      this.salesItemServ.GetBySalesId(this.MasterId, this.DomainName).subscribe(
+        (d) => {
+          this.TableData = d;
+          this.Data.inventoryDetails = d;
+          resolve();
+        },
         (error) => {
-          this.TableData = []
-        });
+          this.TableData = [];
+        }
+      );
     });
   }
 
@@ -298,11 +386,10 @@ export class InventoryDetailsComponent {
       this.SelectedSubCategoryId = null;
       this.SelectedSopItem = null;
       this.IsOpenToAdd = true;
-      this.Item = new InventoryDetails()
-      this.ShopItem = new ShopItem()
-      this.GetCategories()
-    }
-    else {
+      this.Item = new InventoryDetails();
+      this.ShopItem = new ShopItem();
+      this.GetCategories();
+    } else {
       Swal.fire({
         icon: 'warning',
         title: 'Warning!',
@@ -313,42 +400,64 @@ export class InventoryDetailsComponent {
   }
   async Save() {
     if (this.isFormValid()) {
-      this.isLoading = true
-      await this.SaveRow()
-      if (this.mode == "Create") {
-        this.salesServ.Add(this.Data, this.DomainName).subscribe((d) => {
-          this.MasterId = d
-          this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
-        }, (error) => {
-          this.isLoading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Try Again Later!',
-            confirmButtonText: 'Okay',
-            customClass: { confirmButton: 'secondaryBg' },
-          });
-        })
+      this.isLoading = true;
+      await this.SaveRow();
+      if (this.mode == 'Create') {
+        this.salesServ.Add(this.Data, this.DomainName).subscribe(
+          (d) => {
+            this.MasterId = d;
+            if (this.EditedShopItems.length > 0) {
+              this.EditedShopItems.forEach((element) => {
+                if (element.id !== 0) {
+                  this.shopitemServ.Edit(element, this.DomainName).subscribe({
+                    next: (res) => {},
+                    error: (err) => {
+                      console.error('Error updating item:', err);
+                    },
+                  });
+                }
+              });
+            }
+            this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`);
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
-      if (this.mode == "Edit") {
-        this.Data.inventoryDetails = this.TableData
-        this.salesItemServ.Edit(this.Data.inventoryDetails, this.DomainName).subscribe((d) => { })
-        this.salesItemServ.Add(this.NewDetailsWhenEdit, this.DomainName).subscribe((d => { }), (error) => {
-          console.log(error)
-        })
-        console.log()
-        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-          this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`)
-        }, (error) => {
-          this.isLoading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Try Again Later!',
-            confirmButtonText: 'Okay',
-            customClass: { confirmButton: 'secondaryBg' },
-          });
-        })
+      if (this.mode == 'Edit') {
+        this.Data.inventoryDetails = this.TableData;
+        this.salesItemServ
+          .Edit(this.Data.inventoryDetails, this.DomainName)
+          .subscribe((d) => {});
+        this.salesItemServ
+          .Add(this.NewDetailsWhenEdit, this.DomainName)
+          .subscribe(
+            (d) => {},
+            (error) => {}
+          );
+        this.salesServ.Edit(this.Data, this.DomainName).subscribe(
+          (d) => {
+            this.router.navigateByUrl(`Employee/${this.InventoryFlag.enName}`);
+          },
+          (error) => {
+            this.isLoading = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Try Again Later!',
+              confirmButtonText: 'Okay',
+              customClass: { confirmButton: 'secondaryBg' },
+            });
+          }
+        );
       }
     }
   }
@@ -357,9 +466,16 @@ export class InventoryDetailsComponent {
     this.editingRowId = row.id;
   }
 
-  EditPrice() {
-    this.Item.price = this.ShopItem.purchasePrice ?? 0
-    this.CalculateTotalPrice()
+  EditPrice(row: InventoryDetails) {
+    row.totalPrice = row.quantity * row.price;
+    this.shopitemServ
+      .GetById(row.shopItemID, this.DomainName)
+      .subscribe((d) => {
+        this.ShopItem = d;
+        this.ShopItem.purchasePrice = row.price;
+        this.EditedShopItems.push(this.ShopItem);
+      });
+    this.CalculateTotalPrice();
     this.IsPriceChanged = true;
   }
 
@@ -391,22 +507,22 @@ export class InventoryDetailsComponent {
         cancelButtonText: 'Cancel',
       }).then((result) => {
         if (result.isConfirmed) {
-          if (!this.NewDetailsWhenEdit.find(s => s.id == row.id)) {
-            console.log(row)
-            this.salesItemServ.Delete(row.id, this.DomainName).subscribe(async (D) => {
-              await this.GetTableDataByID();
-              console.log(this.TableData)
-            })
+          if (!this.NewDetailsWhenEdit.find((s) => s.id == row.id)) {
+            this.salesItemServ
+              .Delete(row.id, this.DomainName)
+              .subscribe(async (D) => {
+                await this.GetTableDataByID();
+              });
+          } else {
+            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.filter(
+              (s) => s.id != row.id
+            );
+            this.TableData = this.TableData.filter((s) => s.id != row.id);
           }
-          else {
-            this.NewDetailsWhenEdit = this.NewDetailsWhenEdit.filter(s => s.id != row.id)
-            this.TableData = this.TableData.filter(s => s.id != row.id)
-          }
-          this.TotalandRemainingCalculate()
+          this.TotalandRemainingCalculate();
         }
       });
-    }
-    else if (this.mode == 'Create') {
+    } else if (this.mode == 'Create') {
       Swal.fire({
         title: 'Are you sure you want to delete this Sales Item?',
         icon: 'warning',
@@ -417,34 +533,38 @@ export class InventoryDetailsComponent {
         cancelButtonText: 'Cancel',
       }).then((result) => {
         if (result.isConfirmed) {
-          this.Data.inventoryDetails = this.Data.inventoryDetails.filter(item => item.id !== row.id);
-          this.TotalandRemainingCalculate()
+          this.Data.inventoryDetails = this.Data.inventoryDetails.filter(
+            (item) => item.id !== row.id
+          );
+          this.TotalandRemainingCalculate();
         }
       });
     }
   }
 
   DeleteWhenCreate(img: File) {
-    this.Data.attachment = this.Data.attachment.filter(i => i != img)
+    this.Data.attachment = this.Data.attachment.filter((i) => i != img);
   }
 
   DeleteWhenEdit(img: File) {
-    this.Data.NewAttachments = this.Data.NewAttachments.filter(i => i != img)
+    this.Data.NewAttachments = this.Data.NewAttachments.filter((i) => i != img);
   }
 
   DeleteExistedImg(img: string) {
     if (!this.Data.DeletedAttachments) {
       this.Data.DeletedAttachments = [];
     }
-    this.Data.DeletedAttachments.push(img)
-    this.Data.attachments = this.Data.attachments.filter(i => i != img)
+    this.Data.DeletedAttachments.push(img);
+    this.Data.attachments = this.Data.attachments.filter((i) => i != img);
   }
 
   async SaveRow() {
     // this.Item.shopItemID = this.ShopItem.id;
     if (this.mode === 'Create') {
       if (this.FlagId === 9 || this.FlagId === 13) {
-        await firstValueFrom(this.shopitemServ.Edit(this.ShopItem, this.DomainName));
+        await firstValueFrom(
+          this.shopitemServ.Edit(this.ShopItem, this.DomainName)
+        );
       }
       if (!this.Data.inventoryDetails) {
         this.Data.inventoryDetails = [];
@@ -456,8 +576,8 @@ export class InventoryDetailsComponent {
       if (!this.NewDetailsWhenEdit) {
         this.NewDetailsWhenEdit = [];
       }
-      this.NewDetailsWhenEdit.push(this.Item)
-      this.TableData.push(this.Item)
+      this.NewDetailsWhenEdit.push(this.Item);
+      this.TableData.push(this.Item);
       await this.GetMasterInfo();
       await firstValueFrom(this.salesServ.Edit(this.Data, this.DomainName));
     }
@@ -468,47 +588,31 @@ export class InventoryDetailsComponent {
   }
 
   CancelAdd() {
-    this.IsOpenToAdd = false
-    this.TotalandRemainingCalculate()
+    this.IsOpenToAdd = false;
+    this.TotalandRemainingCalculate();
   }
 
-  // SaveEdit(row: InventoryDetails) {
-  //   this.editingRowId = null;
-  //   row.totalPrice = row.quantity * row.price
-  //   this.Item.shopItemID = this.ShopItem.id
-  //   if (this.mode == 'Create') {
-  //     this.TotalandRemainingCalculate()
-  //   } else if (this.mode == 'Edit') {
-  //     // this.salesItemServ.Edit(row, this.DomainName).subscribe(async (d) => {
-  //     //   await this.GetTableDataByID();
-  //     //   await this.TotalandRemainingCalculate()
-  //     //   this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-  //     //   })
-  //     // })
-  //   }
-  // }
-
   ConvertToPurcase() {
-    this.Data.flagId = 9
-    this.Data.isEditInvoiceNumber = true
+    this.Data.flagId = 9;
+    this.Data.isEditInvoiceNumber = true;
     this.Data.date = new Date().toISOString().split('T')[0];
     this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-      this.router.navigateByUrl(`Employee/Purchases`)
-    })
+      this.router.navigateByUrl(`Employee/Purchases`);
+    });
   }
 
   onImageFileSelected(event: any) {
     const files: FileList = event.target.files;
 
-    if (this.mode === "Create") {
+    if (this.mode === 'Create') {
       this.Data.attachment = this.Data.attachment || [];
-      Array.from(files).forEach(file => this.Data.attachment.push(file));
+      Array.from(files).forEach((file) => this.Data.attachment.push(file));
     }
-    if (this.mode === "Edit") {
+    if (this.mode === 'Edit') {
       if (!this.Data.NewAttachments) {
         this.Data.NewAttachments = [];
       }
-      Array.from(files).forEach(file => this.Data.NewAttachments.push(file));
+      Array.from(files).forEach((file) => this.Data.NewAttachments.push(file));
     }
   }
 
@@ -524,29 +628,28 @@ export class InventoryDetailsComponent {
     }
   }
 
-  ////////////////////// Calculate Total and Remaining 
+  ////////////////////// Calculate Total and Remaining
   async CalculateTotalPrice(row?: InventoryDetails) {
-    await this.TotalandRemainingCalculate()
+    await this.TotalandRemainingCalculate();
     if (this.mode == 'Create') {
       if (row == null) {
-        this.Item.totalPrice = +this.Item.quantity * this.Item.price
-        this.Data.total = +this.Data.total + +this.Item.totalPrice
-        this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount)
+        this.Item.totalPrice = +this.Item.quantity * this.Item.price;
+        this.Data.total = +this.Data.total + +this.Item.totalPrice;
+        this.Data.remaining =
+          +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
+      } else {
+        row.totalPrice = row.quantity * row.price;
+        this.TotalandRemainingCalculate();
       }
-      else {
-        row.totalPrice = row.quantity * row.price
-        this.TotalandRemainingCalculate()
-      }
-    }
-    else if (this.mode == 'Edit') {
+    } else if (this.mode == 'Edit') {
       if (row == null) {
-        this.Item.totalPrice = this.Item.quantity * this.Item.price
-        this.Data.total = +this.Data.total + +this.Item.totalPrice
-        this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount)
-      }
-      else {
-        row.totalPrice = row.quantity * row.price
-        this.TotalandRemainingCalculate()
+        this.Item.totalPrice = this.Item.quantity * this.Item.price;
+        this.Data.total = +this.Data.total + +this.Item.totalPrice;
+        this.Data.remaining =
+          +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
+      } else {
+        row.totalPrice = row.quantity * row.price;
+        this.TotalandRemainingCalculate();
       }
     }
   }
@@ -556,16 +659,22 @@ export class InventoryDetailsComponent {
       if (this.mode == 'Create') {
         this.Data.cashAmount = this.Data.cashAmount || 0;
         this.Data.visaAmount = this.Data.visaAmount || 0;
-        this.Data.total = this.Data.inventoryDetails.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
-        this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
+        this.Data.total = this.Data.inventoryDetails.reduce(
+          (sum, item) => sum + (item.totalPrice || 0),
+          0
+        );
+        this.Data.remaining =
+          +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
       } else if (this.mode == 'Edit') {
         this.Data.cashAmount = this.Data.cashAmount || 0;
         this.Data.visaAmount = this.Data.visaAmount || 0;
-        this.Data.total = this.TableData.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
-        this.Data.remaining = +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
-        console.log(this.Data)
-        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-        })
+        this.Data.total = this.TableData.reduce(
+          (sum, item) => sum + (item.totalPrice || 0),
+          0
+        );
+        this.Data.remaining =
+          +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
+        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {});
       }
       resolve();
     });
@@ -578,10 +687,7 @@ export class InventoryDetailsComponent {
       if (this.Data.hasOwnProperty(key)) {
         const field = key as keyof InventoryMaster;
         if (!this.Data[field]) {
-          if (
-            field == 'storeID' ||
-            field == 'date'
-          ) {
+          if (field == 'storeID' || field == 'date') {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
             )} is required`;
@@ -609,27 +715,33 @@ export class InventoryDetailsComponent {
       return false;
     }
     if (this.FlagId == 8 && this.Data.storeToTransformId == 0) {
-      this.validationErrors['storeToTransformId'] = 'Store Is Required'
+      this.validationErrors['storeToTransformId'] = 'Store Is Required';
       return false;
     }
     if (this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 13) {
       if (this.Data.supplierId == 0) {
-        this.validationErrors['supplierId'] = 'Supplier Is Required'
+        this.validationErrors['supplierId'] = 'Supplier Is Required';
         return false;
       }
     }
     if (this.FlagId == 11 || this.FlagId == 12) {
       if (this.Data.studentID == 0) {
-        this.validationErrors['studentID'] = 'Student Is Required'
+        this.validationErrors['studentID'] = 'Student Is Required';
         return false;
       }
     }
-    if (this.Data.isCash == true && this.Data.saveID == 0 || this.Data.isCash == true && this.Data.saveID == null) {
-      this.validationErrors['saveID'] = 'Safe Is Required'
+    if (
+      (this.Data.isCash == true && this.Data.saveID == 0) ||
+      (this.Data.isCash == true && this.Data.saveID == null)
+    ) {
+      this.validationErrors['saveID'] = 'Safe Is Required';
       return false;
     }
-    if (this.Data.isVisa == true && this.Data.bankID == 0 || this.Data.isVisa == true && this.Data.bankID == null) {
-      this.validationErrors['bankID'] = 'Bank Is Required'
+    if (
+      (this.Data.isVisa == true && this.Data.bankID == 0) ||
+      (this.Data.isVisa == true && this.Data.bankID == null)
+    ) {
+      this.validationErrors['bankID'] = 'Bank Is Required';
       return false;
     }
     return isValid;
@@ -663,5 +775,201 @@ export class InventoryDetailsComponent {
       this.AllowEditForOthers
     );
     return IsAllow;
+  }
+
+  //////////////////////////// Print ////////////////////////////////
+
+  Print() {
+    this.IsPrint=true
+    const elements = document.querySelectorAll('.print-area');
+  
+    // Create printable HTML content
+    const clonedContent = Array.from(elements).map(el => {
+      const clone = el.cloneNode(true) as HTMLElement;
+      this.inlineAllStyles(el as HTMLElement, clone);
+      return clone.outerHTML;
+    }).join('');
+  
+    // Create hidden iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+  
+    const doc = iframe.contentWindow?.document;
+  
+    if (doc) {
+      doc.open();
+      doc.write(`
+        <html>
+          <head>
+            <title>Print</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+              }
+            </style>
+          </head>
+          <body>
+            ${clonedContent}
+          </body>
+        </html>
+      `);
+      doc.close();
+  
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+  
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    }
+    this.IsPrint=false
+  }
+
+  inlineAllStyles(source: HTMLElement, target: HTMLElement) {
+    const sourceStyles = window.getComputedStyle(source);
+    const cssText = Array.from(sourceStyles)
+      .map(key => `${key}: ${sourceStyles.getPropertyValue(key)};`)
+      .join(' ');
+    target.setAttribute('style', cssText);
+  
+    const children = Array.from(source.children) as HTMLElement[];
+    const targetChildren = Array.from(target.children) as HTMLElement[];
+  
+    for (let i = 0; i < children.length; i++) {
+      this.inlineAllStyles(children[i], targetChildren[i]);
+    }
+  }
+
+  DownloadAsPDF() {
+    this.printservice.DownloadAsPDF('Inventory');
+  }
+
+  async DownloadAsExcel() {
+    const tableHeaders = [
+      'Bar Code',
+      'Item ID',
+      'Item Name',
+      'Quantity',
+      'Price',
+      'Total Price',
+      'Notes',
+    ];
+
+    const tableData = (
+      this.mode === 'Create' ? this.Data.inventoryDetails : this.TableData || []
+    ).map((row) => {
+      return [
+        row.barCode || '',
+        row.shopItemID || '',
+        row.shopItemName || '',
+        row.quantity || 0,
+        row.price || 0,
+        row.totalPrice || 0,
+        row.notes || '',
+      ];
+    });
+
+    const tables = [
+      {
+        title: 'Inventory Details',
+        headers: tableHeaders,
+        data: tableData,
+      },
+    ];
+
+    await this.printservice.generateExcelReport({
+      filename: 'Inventory.xlsx',
+      mainHeader: {
+        en: 'Inventory Report',
+        ar: 'تقرير المخزون',
+      },
+      subHeaders: [
+        {
+          en: 'Generated on: ' + new Date().toLocaleString(),
+          ar: 'تاريخ الإنشاء: ' + new Date().toLocaleString(),
+        },
+      ],
+      tables: tables,
+    });
+  }
+
+  ////////////////////////////// search
+  SearchToggle() {
+    this.IsSearchOpen = true;
+    setTimeout(() => {
+      const input = document.querySelector(
+        'input[type="number"]'
+      ) as HTMLInputElement;
+      if (input) input.focus();
+    }, 100);
+  }
+
+  CloseSearch() {
+    this.IsSearchOpen = false;
+    this.BarCode = '';
+  }
+
+  SearchOnBarCode() {
+    if (!this.BarCode) return;
+
+    this.shopitemServ.GetByBarcode(this.BarCode, this.DomainName).subscribe(
+      (d) => {
+        let price = 0;
+
+        if (this.FlagId === 11 || this.FlagId === 12) {
+          price = d.salesPrice ?? 0;
+        } else {
+          price = d.purchasePrice ?? 0;
+        }
+
+        const detail: InventoryDetails = {
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          insertedAt: '',
+          insertedByUserId: 0,
+          shopItemID: d.id,
+          shopItemName: d.arName,
+          barCode: d.barCode,
+          quantity: 1,
+          price: price,
+          totalPrice: price,
+          name: '',
+          inventoryMasterId: this.MasterId,
+          salesName: '',
+          notes: '',
+        };
+
+        if (this.mode == 'Create') {
+          this.Data.inventoryDetails.push(detail);
+        } else if (this.mode == 'Edit') {
+          this.TableData.push(detail);
+          this.NewDetailsWhenEdit.push(detail);
+        }
+        this.TotalandRemainingCalculate();
+        this.BarCode = ''; // Clear input after search
+      },
+      (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'This Item Not Exist',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
+      }
+    );
+  }
+
+  getStoreNameById(id: number | string): string {
+    console.log('Looking for storeID:', id);
+    console.log('Available stores:', this.Stores);
+    const store = this.Stores.find((s) => s.id === +id);
+    console.log('Found store:', store);
+    return store ? store.name : '—';
   }
 }

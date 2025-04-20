@@ -1,429 +1,701 @@
 <div class="flex justify-between items-center">
-    <div class="flex justify-between items-center space-x-5">
-        <i class="fa-solid fa-chevron-left" (click)="moveToMaster()"></i>
-        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">
-            Create
-        </h1>
-        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">
-            Edit
-        </h1>
-        <h1 *ngIf="mode=='View'" class="font-semibold text-2xl leading-9">
-            View
-        </h1>
-    </div>
+  <div class="flex justify-between items-center space-x-5">
+    <i class="fa-solid fa-chevron-left" (click)="moveToMaster()"></i>
+    <h1 *ngIf="mode == 'Create'" class="font-semibold text-2xl leading-9">
+      Create
+    </h1>
+    <h1 *ngIf="mode == 'Edit'" class="font-semibold text-2xl leading-9">
+      Edit
+    </h1>
+    <h1 *ngIf="mode == 'View'" class="font-semibold text-2xl leading-9">
+      View
+    </h1>
+  </div>
 
-    <div class="flex space-x-2">
-        <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg mt-2"
-            (click)="Save()">
-            <span *ngIf="!isLoading">Save</span>
-            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
-        </button>
-        
-        <button *ngIf="FlagId==13 && mode=='Edit'" class="secondaryBg text-white font-medium px-6 py-3 rounded-lg"
-            (click)="ConvertToPurcase()">
-            Convert To Purchase
-        </button>
-    </div>
-</div>
-
-
-<div class="mt-6 mb-4 rounded-3xl flex justify-start space-x-2 flex-wrap py-3">
-    <div class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2" for="store">Store</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Store" (change)="GetCategories()"
-            (ngModelChange)=" onInputValueChange({ field: 'storeID', value: $event })" [(ngModel)]="Data.storeID">
-            <option [value]=0 disabled selected hidden>Choose Store</option>
-            <option *ngFor="let s of Stores" [value]="s.id">{{ s.name }}</option>
-            <option *ngIf="Stores.length === 0" disabled selected>No Data Found</option>
-        </select>
-        <span *ngIf="validationErrors['storeID']" class="text-red-500 ml-3 font-normal">{{
-            validationErrors["storeID"]}}</span>
-    </div>
-    <div class="flex flex-col mb-4 w-[24%]">
-        <label class="mb-2 primaryTxt" for="name">Invoice Number</label>
-        <input id="name" type="text"
-            class="rounded-lg border border-solid px-4 py-3  border-gray-300 placeholder-gray-400 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-            placeholder="Enter Invoice Number" [(ngModel)]="Data.invoiceNumber" readonly disabled />
-    </div>
-
-    <div class="flex flex-col mb-4 w-[24%]">
-        <label class="mb-2 primaryTxt" for="name">Date</label>
-        <input id="name" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            (ngModelChange)=" onInputValueChange({ field: 'date', value: $event })" placeholder="Enter Date"
-            [(ngModel)]="Data.date" />
-        <span *ngIf="validationErrors['date']" class="text-red-500 ml-3 font-normal">{{validationErrors["date"]}}</span>
-    </div>
-
-
-    <div *ngIf="FlagId==8" class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2" for="storeToTransform">Store</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="storeToTransform"
-            (ngModelChange)=" onInputValueChange({ field: 'storeToTransformId', value: $event })"
-            [(ngModel)]="Data.storeToTransformId">
-            <option [value]=0 disabled selected hidden>Choose Store</option>
-            <option *ngFor="let stu of StoresForTitle" [value]="stu.id">{{ stu.name }}</option>
-            <option *ngIf="StoresForTitle.length === 0" disabled selected>No Data Found</option>
-        </select>
-        <span *ngIf="validationErrors['storeToTransformId']" class="text-red-500 ml-3 font-normal">{{
-            validationErrors["storeToTransformId"]}}</span>
-    </div>
-
-    <div *ngIf="FlagId==9||FlagId==10 || FlagId ==13 " class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2" for="supplier">Supplires</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="supplier"
-            (ngModelChange)=" onInputValueChange({ field: 'supplierId', value: $event })" [(ngModel)]="Data.supplierId">
-            <option [value]=0 disabled selected hidden>Choose Supplier</option>
-            <option *ngFor="let stu of Suppliers" [value]="stu.id">{{ stu.name }}</option>
-            <option *ngIf="Suppliers.length === 0" disabled selected>No Data Found</option>
-        </select>
-        <span *ngIf="validationErrors['supplierId']" class="text-red-500 ml-3 font-normal">{{
-            validationErrors["supplierId"]}}</span>
-    </div>
-
-    <div *ngIf="FlagId==11||FlagId==12" class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2" for="student">Students</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="student"
-            (ngModelChange)=" onInputValueChange({ field: 'studentID', value: $event })" [(ngModel)]="Data.studentID">
-            <option [value]=0 disabled selected hidden>Choose Student</option>
-            <option *ngFor="let stu of students" [value]="stu.id">{{ stu.user_Name }}</option>
-            <option *ngIf="students.length === 0" disabled selected>No Data Found</option>
-        </select>
-        <span *ngIf="validationErrors['studentID']" class="text-red-500 ml-3 font-normal">{{
-            validationErrors["studentID"]}}</span>
-    </div>
-    <div *ngIf="IsRemainingCashVisa" class="flex justify-start w-full mb-4 space-x-5">
-        <div class="flex w-[8%] space-x-5 items-center mb-4">
-            <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isCash"
-                (ngModelChange)="handleCashChange($event)">
-            <label for="exception" class="text-sm">Cash</label>
-        </div>
-        <div *ngIf="Data.isCash" class="flex flex-col mb-4 w-[15%]">
-            <input id="cashAmount" type="number" [(ngModel)]="Data.cashAmount"
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                (ngModelChange)="TotalandRemainingCalculate()" placeholder="Enter Amount" />
-        </div>
-        <div *ngIf="Data.isCash" class="flex flex-col w-[23%] mb-4">
-            <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="save"
-                [(ngModel)]="Data.saveID">
-                <option [value]=0 disabled selected hidden>Choose Safe</option>
-                <option *ngFor="let stu of Saves" [value]="stu.id">{{ stu.name }}</option>
-                <option *ngIf="Saves.length === 0" disabled selected>No Data Found</option>
-            </select>
-            <span *ngIf="validationErrors['saveID']" class="text-red-500 ml-3 font-normal">{{
-                validationErrors["saveID"]}}</span>
-        </div>
-
-        <div class="flex w-[8%] space-x-5 items-center mb-4">
-            <input type="checkbox" id="exception" class="w-5 h-5" [(ngModel)]="Data.isVisa"
-                (ngModelChange)="handleVisaChange($event)">
-            <label for="exception" class="text-sm">Visa</label>
-        </div>
-        <div *ngIf="Data.isVisa" class="flex flex-col mb-4 w-[15%]">
-            <input id="visaAmount" type="number" [(ngModel)]="Data.visaAmount"
-                class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                (ngModelChange)="TotalandRemainingCalculate()" placeholder="Enter Amount" />
-        </div>
-        <div *ngIf="Data.isVisa" class="flex flex-col w-[23%] mb-4">
-            <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bank"
-                [(ngModel)]="Data.bankID">
-                <option [value]=0 disabled selected hidden>Choose Bank</option>
-                <option *ngFor="let stu of Banks" [value]="stu.id">{{ stu.name }}</option>
-                <option *ngIf="Banks.length === 0" disabled selected>No Data Found</option>
-            </select>
-            <span *ngIf="validationErrors['bankID']" class="text-red-500 ml-3 font-normal">{{
-                validationErrors["bankID"]}}</span>
-        </div>
-    </div>
-
-    <div *ngIf="IsRemainingCashVisa" class="flex flex-col mb-4 w-[24%]">
-        <label class="mb-2 primaryTxt" for="remaining">Remaining</label>
-        <input id="remaining" type="remaining" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter remaining" [(ngModel)]="Data.remaining" readonly disabled />
-    </div>
-
-    <div class="flex flex-col mb-4 w-[24%]">
-        <label class="mb-2 primaryTxt" for="total">Total</label>
-        <input id="total" type="total" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter total" [(ngModel)]="Data.total" readonly disabled />
-    </div>
-
-    <div class="flex flex-col mb-4 w-full">
-        <h6 class="font-medium text-base leading-6 mb-1 mt-3">Note</h6>
-        <div class="flex justify-start gap-2 items-start">
-            <div class="flex flex-col w-full">
-                <textarea
-                    class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
-                    [(ngModel)]="Data.notes" placeholder="Enter Note"></textarea>
-            </div>
-        </div>
-    </div>
-
-    <div class="flex flex-col mb-4 w-[30%]">
-        <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed border-2">
-            <div class="flex justify-center w-full">
-                <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
-                    <img src="Images/FileAttached.png" class="w-1/4">
-                    <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to
-                            Upload </span>or drag and drop Icons</p>
-                    <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB)</p>
-                </label>
-                <input id="file-upload" type="file" class="hidden" (change)="onImageFileSelected($event)"
-                    accept="image/jpeg, image/png" multiple />
-            </div>
-        </div>
-    </div>
-
-    <div *ngFor="let img of Data.attachments; let i = index">
-        <div class="flex flex-col w-full">
-            <div class="border border-cacaca rounded-lg p-6">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
-                        <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
-                            {{ img.split('/').pop() }}
-                        </p>
-                    </div>
-                    <button (click)="DeleteExistedImg(img)">
-                        <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                </div>
-                <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
-                <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
-                    Click to View
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div *ngIf="mode=='Create'" class="flex flex-wrap gap-4">
-        <div *ngFor="let img of Data.attachment; let i = index">
-            <div class="border border-cacaca rounded-lg p-6">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
-                        <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
-                            {{ img.name }}
-                        </p>
-                    </div>
-                    <button (click)="DeleteWhenCreate(img)">
-                        <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                </div>
-                <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
-                <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
-                    Click to View
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div *ngIf="mode=='Edit'" class="flex flex-wrap gap-4">
-        <div *ngFor="let img of Data.NewAttachments; let i = index">
-            <div class="border border-cacaca rounded-lg p-6">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-file"></i>
-                        <!-- Extract just the filename -->
-                        <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
-                            {{ img.name }}
-                        </p>
-                    </div>
-                    <button (click)="DeleteWhenEdit(img)">
-                        <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                </div>
-                <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
-                <!-- Open the file when clicking "Click to View" -->
-                <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="openFile(img)">
-                    Click to View
-                </p>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-<!-- 
-<div class="flex justify-end">
-    <button class="secondaryTxt secondaryBorder px-1 py-2 rounded-lg flex items-center space-x-1" (click)="AddDetail()">
-        <div class="secondaryBorder rounded-full flex items-center p-1"><i class="fa-solid fa-plus"></i></div>
-        <p>Add</p>
+  <div class="flex space-x-2">
+    <button
+      [disabled]="isLoading"
+      class="secondaryBg text-white font-medium px-4 py-2 rounded-lg mt-2"
+      (click)="Save()"
+    >
+      <span *ngIf="!isLoading">Save</span>
+      <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
     </button>
-</div> -->
+
+    <button
+      *ngIf="FlagId == 13 && mode == 'Edit'"
+      class="secondaryBg text-white font-medium px-6 py-3 rounded-lg"
+      (click)="ConvertToPurcase()"
+    >
+      Convert To Purchase
+    </button>
+  </div>
+</div>
+
+<div
+  class="mt-6 mb-4 rounded-3xl flex justify-start space-x-2 flex-wrap py-3 print-area"
+>
+  <div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2" for="store">Store</label>
+    <select *ngIf="!IsPrint"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+      id="Store"
+      (change)="GetCategories()"
+      (ngModelChange)="onInputValueChange({ field: 'storeID', value: $event })"
+      [(ngModel)]="Data.storeID"
+    >
+      <option [value]="0" disabled selected hidden>Choose Store</option>
+      <option *ngFor="let s of Stores" [value]="s.id">{{ s.name }}</option>
+      <option *ngIf="Stores.length === 0" disabled selected>
+        No Data Found
+      </option>
+    </select>
+    <span *ngIf="validationErrors['storeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors["storeID"] }}</span >
+    <span *ngIf="IsPrint" class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block">
+      {{ getStoreNameById(Data.storeID) }}
+    </span>
+  </div>
+  <div class="flex flex-col mb-4 w-[24%]">
+    <label class="mb-2 primaryTxt" for="name">Invoice Number</label>
+    <input
+      id="name"
+      type="text"
+      class="rounded-lg border border-solid px-4 py-3 border-gray-300 placeholder-gray-400 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+      placeholder="Enter Invoice Number"
+      [(ngModel)]="Data.invoiceNumber"
+      readonly
+      disabled
+    />
+  </div>
+
+  <div class="flex flex-col mb-4 w-[24%]">
+    <label class="mb-2 primaryTxt" for="name">Date</label>
+    <input *ngIf="!IsPrint"
+      id="name"
+      type="date"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      (ngModelChange)="onInputValueChange({ field: 'date', value: $event })"
+      placeholder="Enter Date"
+      [(ngModel)]="Data.date"
+    />
+    <span
+      *ngIf="validationErrors['date']"
+      class="text-red-500 ml-3 font-normal"
+      >{{ validationErrors["date"] }}</span
+    >
+    <span *ngIf="IsPrint" class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block" >
+      {{ Data.date }}
+    </span>
+  </div>
+
+  <div *ngIf="FlagId == 8" class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2" for="storeToTransform">Store</label>
+    <select
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+      id="storeToTransform"
+      (ngModelChange)="
+        onInputValueChange({ field: 'storeToTransformId', value: $event })
+      "
+      [(ngModel)]="Data.storeToTransformId"
+    >
+      <option [value]="0" disabled selected hidden>Choose Store</option>
+      <option *ngFor="let stu of StoresForTitle" [value]="stu.id">
+        {{ stu.name }}
+      </option>
+      <option *ngIf="StoresForTitle.length === 0" disabled selected>
+        No Data Found
+      </option>
+    </select>
+    <span
+      *ngIf="validationErrors['storeToTransformId']"
+      class="text-red-500 ml-3 font-normal"
+      >{{ validationErrors["storeToTransformId"] }}</span
+    >
+  </div>
+
+  <div
+    *ngIf="FlagId == 9 || FlagId == 10 || FlagId == 13"
+    class="flex flex-col w-[24%] mb-4 relative"
+  >
+    <label class="mb-2" for="supplier">Suppliers</label>
+    <input
+      type="text"
+      id="supplier"
+      [(ngModel)]="supplierSearch"
+      (input)="filterSuppliers()"
+      (focus)="showSupplierDropdown = true"
+      (blur)="hideDropdown()"
+      class="rounded-lg border border-gray-300 px-4 py-3"
+      placeholder="Search Supplier"
+      autocomplete="off"
+    />
+    <ul
+      *ngIf="showSupplierDropdown"
+      class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full"
+    >
+      <li
+        *ngFor="let supplier of filteredSuppliers"
+        (click)="selectSupplier(supplier)"
+        class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+      >
+        {{ supplier.name }}
+      </li>
+      <li
+        *ngIf="filteredSuppliers.length === 0"
+        class="px-4 py-2 text-gray-500"
+      >
+        No suppliers found.
+      </li>
+    </ul>
+
+    <span
+      *ngIf="validationErrors['supplierId']"
+      class="text-red-500 ml-3 font-normal"
+      >{{ validationErrors["supplierId"] }}</span
+    >
+  </div>
+
+  <div
+    *ngIf="FlagId == 11 || FlagId == 12"
+    class="flex flex-col w-[24%] mb-4 relative"
+  >
+    <label class="mb-2" for="student">Students</label>
+    <input
+      id="student"
+      type="text"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Search Student"
+      [(ngModel)]="studentSearch"
+      (input)="filterStudents()"
+      (focus)="showStudentDropdown = true"
+      (blur)="hideDropdown()"
+      autocomplete="off"
+    />
+
+    <!-- Dropdown -->
+    <ul
+      *ngIf="showStudentDropdown && filteredStudents.length > 0"
+      class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full"
+    >
+      <li
+        *ngFor="let stu of filteredStudents"
+        (mousedown)="selectStudent(stu)"
+        class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+      >
+        {{ stu.user_Name }}
+      </li>
+    </ul>
+
+    <span
+      *ngIf="validationErrors['studentID']"
+      class="text-red-500 ml-3 font-normal"
+    >
+      {{ validationErrors["studentID"] }}
+    </span>
+  </div>
+
+  <div
+    *ngIf="IsRemainingCashVisa"
+    class="flex justify-start w-full mb-4 space-x-5"
+  >
+    <div class="flex w-[8%] space-x-5 items-center mb-4">
+      <input
+        type="checkbox"
+        id="exception"
+        class="w-5 h-5"
+        [(ngModel)]="Data.isCash"
+        (ngModelChange)="handleCashChange($event)"
+      />
+      <label for="exception" class="text-sm">Cash</label>
+    </div>
+    <div *ngIf="Data.isCash" class="flex flex-col mb-4 w-[15%]">
+      <input
+        id="cashAmount"
+        type="number"
+        [(ngModel)]="Data.cashAmount"
+        class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        (ngModelChange)="TotalandRemainingCalculate()"
+        placeholder="Enter Amount"
+      />
+    </div>
+    <div *ngIf="Data.isCash" class="flex flex-col w-[23%] mb-4">
+      <select
+        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+        id="save"
+        [(ngModel)]="Data.saveID"
+      >
+        <option [value]="0" disabled selected hidden>Choose Safe</option>
+        <option *ngFor="let stu of Saves" [value]="stu.id">
+          {{ stu.name }}
+        </option>
+        <option *ngIf="Saves.length === 0" disabled selected>
+          No Data Found
+        </option>
+      </select>
+      <span
+        *ngIf="validationErrors['saveID']"
+        class="text-red-500 ml-3 font-normal"
+        >{{ validationErrors["saveID"] }}</span
+      >
+    </div>
+
+    <div class="flex w-[8%] space-x-5 items-center mb-4">
+      <input
+        type="checkbox"
+        id="exception"
+        class="w-5 h-5"
+        [(ngModel)]="Data.isVisa"
+        (ngModelChange)="handleVisaChange($event)"
+      />
+      <label for="exception" class="text-sm">Visa</label>
+    </div>
+    <div *ngIf="Data.isVisa" class="flex flex-col mb-4 w-[15%]">
+      <input
+        id="visaAmount"
+        type="number"
+        [(ngModel)]="Data.visaAmount"
+        class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        (ngModelChange)="TotalandRemainingCalculate()"
+        placeholder="Enter Amount"
+      />
+    </div>
+    <div *ngIf="Data.isVisa" class="flex flex-col w-[23%] mb-4">
+      <select
+        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+        id="bank"
+        [(ngModel)]="Data.bankID"
+      >
+        <option [value]="0" disabled selected hidden>Choose Bank</option>
+        <option *ngFor="let stu of Banks" [value]="stu.id">
+          {{ stu.name }}
+        </option>
+        <option *ngIf="Banks.length === 0" disabled selected>
+          No Data Found
+        </option>
+      </select>
+      <span
+        *ngIf="validationErrors['bankID']"
+        class="text-red-500 ml-3 font-normal"
+        >{{ validationErrors["bankID"] }}</span
+      >
+    </div>
+  </div>
+
+  <div *ngIf="IsRemainingCashVisa" class="flex flex-col mb-4 w-[24%]">
+    <label class="mb-2 primaryTxt" for="remaining">Remaining</label>
+    <input
+      id="remaining"
+      type="remaining"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter remaining"
+      [(ngModel)]="Data.remaining"
+      readonly
+      disabled
+    />
+  </div>
+
+  <div class="flex flex-col mb-4 w-[24%]">
+    <label class="mb-2 primaryTxt" for="total">Total</label>
+    <input
+      id="total"
+      type="total"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter total"
+      [(ngModel)]="Data.total"
+      readonly
+      disabled
+    />
+  </div>
+
+  <div class="flex flex-col mb-4 w-full">
+    <h6 class="font-medium text-base leading-6 mb-1 mt-3">Note</h6>
+    <div class="flex justify-start gap-2 items-start">
+      <div class="flex flex-col w-full">
+        <textarea
+          class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+          [(ngModel)]="Data.notes"
+          placeholder="Enter Note"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col mb-4 w-[30%]">
+    <div
+      class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed border-2"
+    >
+      <div class="flex justify-center w-full">
+        <label
+          for="file-upload"
+          class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5"
+        >
+          <img src="Images/FileAttached.png" class="w-1/4" />
+          <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
+            <span class="secondaryTxt">Click to Upload </span>or drag and drop
+            Icons
+          </p>
+          <p class="font-normal text-xs md:text-sm text-[#8E8E93]">
+            (Max. File size: 25 MB)
+          </p>
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          class="hidden"
+          (change)="onImageFileSelected($event)"
+          accept="image/jpeg, image/png"
+          multiple
+        />
+      </div>
+    </div>
+  </div>
+
+  <div *ngFor="let img of Data.attachments; let i = index">
+    <div class="flex flex-col w-full">
+      <div class="border border-cacaca rounded-lg p-6">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-file"></i>
+            <!-- Extract just the filename -->
+            <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+              {{ img.split("/").pop() }}
+            </p>
+          </div>
+          <button (click)="DeleteExistedImg(img)">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+        <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
+        <!-- Open the file when clicking "Click to View" -->
+        <p
+          class="secondaryTxt cursor-pointer hover:underline mt-2"
+          (click)="openFile(img)"
+        >
+          Click to View
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="mode == 'Create'" class="flex flex-wrap gap-4">
+    <div *ngFor="let img of Data.attachment; let i = index">
+      <div class="border border-cacaca rounded-lg p-6">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-file"></i>
+            <!-- Extract just the filename -->
+            <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+              {{ img.name }}
+            </p>
+          </div>
+          <button (click)="DeleteWhenCreate(img)">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+        <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
+        <!-- Open the file when clicking "Click to View" -->
+        <p
+          class="secondaryTxt cursor-pointer hover:underline mt-2"
+          (click)="openFile(img)"
+        >
+          Click to View
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="mode == 'Edit'" class="flex flex-wrap gap-4">
+    <div *ngFor="let img of Data.NewAttachments; let i = index">
+      <div class="border border-cacaca rounded-lg p-6">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-file"></i>
+            <!-- Extract just the filename -->
+            <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+              {{ img.name }}
+            </p>
+          </div>
+          <button (click)="DeleteWhenEdit(img)">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+        <p class="text-sm font-medium text-gray-700 mb-4">bytes</p>
+        <!-- Open the file when clicking "Click to View" -->
+        <p
+          class="secondaryTxt cursor-pointer hover:underline mt-2"
+          (click)="openFile(img)"
+        >
+          Click to View
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mb-5 flex justify-end space-x-4">
+  <img
+    class="w-5 cursor-pointer"
+    src="Icons/Excel.png"
+    (click)="DownloadAsExcel()"
+  />
+  <img
+    class="w-5 cursor-pointer"
+    src="Icons/PDF.png"
+    (click)="DownloadAsPDF()"
+  />
+  <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()" />
+</div>
+
+<div class="flex justify-end items-center space-x-2 mb-3">
+  <div class="flex justify-between items-center">
+    <div
+      class="relative flex items-center w-full max-w-[432px] sm:max-w-[300px] xs:max-w-[200px] h-[45px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg py-3 ltr:mr-3"
+    >
+      <input
+        type="text"
+        [(ngModel)]="BarCode"
+        (keydown.enter)="SearchOnBarCode()"
+        placeholder="Search by Barcode"
+        class="outline-none border-none placeholder-[#667085] bg-transparent text-sm md:text-base w-full ltr:pl-1 rtl:pr-1"
+      />
+      <i
+        class="fas fa-times cursor-pointer text-gray-400 ml-2"
+        (click)="CloseSearch()"
+      ></i>
+    </div>
+    <i
+      class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500 cursor-pointer"
+      style="width: 22.51px; height: 22.51px; font-size: 22.51px"
+      (click)="SearchOnBarCode()"
+    >
+    </i>
+  </div>
+</div>
 
 <div class="flex justify-start space-x-5">
-    <div class="w-[30%] bg-[#F7F7F7] flex flex-col rounded-[16px] py-3">
-        <h1 class="font-semibold text-2xl leading-9 ml-3">Categories</h1>
-        <div
-            class="flex flex-wrap gap-2  mx-3 overflow-y-auto max-h-60 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <div *ngFor="let c of Categories; let i = index">
-                <p (click)="selectCategory(c.id)" [class.secondaryBg]="SelectedCategoryId === c.id"
-                    [class.text-white]="SelectedCategoryId === c.id"
-                    class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
-                    {{c.name}}
-                </p>
-            </div>
-        </div>
+  <div class="w-[30%] bg-[#F7F7F7] flex flex-col rounded-[16px] py-3">
+    <h1 class="font-semibold text-2xl leading-9 ml-3">Categories</h1>
+    <div
+      class="flex flex-wrap gap-2 mx-3 overflow-y-auto max-h-60 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
+    >
+      <div *ngFor="let c of Categories; let i = index">
+        <p
+          (click)="selectCategory(c.id)"
+          [class.secondaryBg]="SelectedCategoryId === c.id"
+          [class.text-white]="SelectedCategoryId === c.id"
+          class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit"
+        >
+          {{ c.name }}
+        </p>
+      </div>
     </div>
-    <div class="w-[30%] bg-[#F7F7F7] flex flex-col rounded-[16px] py-3">
-        <h1 class="font-semibold text-2xl leading-9 ml-2 mb-2">Sub_Categories</h1>
-        <div
-            class="flex flex-wrap gap-2 mx-3 overflow-y-auto max-h-60 px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <div *ngFor="let sc of subCategories; let i = index">
-                <p (click)="selectSubCategory(sc.id)" [class.secondaryBg]="SelectedSubCategoryId === sc.id"
-                    [class.text-white]="SelectedSubCategoryId === sc.id"
-                    class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
-                    {{sc.name}}
-                </p>
-            </div>
-        </div>
+  </div>
+  <div class="w-[30%] bg-[#F7F7F7] flex flex-col rounded-[16px] py-3">
+    <h1 class="font-semibold text-2xl leading-9 ml-2 mb-2">Sub_Categories</h1>
+    <div
+      class="flex flex-wrap gap-2 mx-3 overflow-y-auto max-h-60 px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
+    >
+      <div *ngFor="let sc of subCategories; let i = index">
+        <p
+          (click)="selectSubCategory(sc.id)"
+          [class.secondaryBg]="SelectedSubCategoryId === sc.id"
+          [class.text-white]="SelectedSubCategoryId === sc.id"
+          class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit"
+        >
+          {{ sc.name }}
+        </p>
+      </div>
     </div>
-    <div class="w-[30%] bg-[#F7F7F7] flex flex-col rounded-[16px] py-3">
-        <h1 class="font-semibold text-2xl leading-9 ml-2">Items</h1>
-        <div
-            class="flex flex-wrap gap-2 overflow-y-auto max-h-60 px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-            <div *ngFor="let item of ShopItems; let i = index">
-                <p (click)="selectShopItem(item)" [class.secondaryBg]="SelectedSopItem === item"
-                    [class.text-white]="SelectedSopItem === item"
-                    class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit">
-                    {{item.enName}}
-                </p>
-            </div>
-        </div>
+  </div>
+  <div class="w-[30%] bg-[#F7F7F7] flex flex-col rounded-[16px] py-3">
+    <h1 class="font-semibold text-2xl leading-9 ml-2">Items</h1>
+    <div
+      class="flex flex-wrap gap-2 overflow-y-auto max-h-60 px-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
+    >
+      <div *ngFor="let item of ShopItems; let i = index">
+        <p
+          (click)="selectShopItem(item)"
+          [class.secondaryBg]="SelectedSopItem === item"
+          [class.text-white]="SelectedSopItem === item"
+          class="bg-[#FFFFFF] p-2 rounded-[16px] cursor-pointer w-fit"
+        >
+          {{ item.enName }}
+        </p>
+      </div>
     </div>
+  </div>
 </div>
 
-<div>
-    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
-        <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
-            <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
-                <tr>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Bar Code
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Item ID
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Item Name
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Quantity
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Price
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Total Price
-                    </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Notes
-                    </th>
-                    <th *ngIf="mode=='Edit'"
-                        class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- No Data Row -->
-                <tr *ngIf="(Data.inventoryDetails?.length === 0) && !IsOpenToAdd && mode === 'Create' && SelectedSopItem ==null">
-                    <td colspan="11"
-                        class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                        No Data Found
-                    </td>
-                </tr>
+<div class="print-area">
+  <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+    <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+      <thead
+        class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0"
+      >
+        <tr>
+          <th
+            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            Bar Code
+          </th>
+          <th
+            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            Item ID
+          </th>
+          <th
+            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            Item Name
+          </th>
+          <th
+            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            Quantity
+          </th>
+          <th
+            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            Price
+          </th>
+          <th
+            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            Total Price
+          </th>
+          <th
+            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            Notes
+          </th>
+          <th
+            *ngIf="mode == 'Edit'"
+            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- No Data Row -->
+        <tr
+          *ngIf="
+            Data.inventoryDetails?.length === 0 &&
+            !IsOpenToAdd &&
+            mode === 'Create' &&
+            SelectedSopItem == null
+          "
+        >
+          <td
+            colspan="11"
+            class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm"
+          >
+            No Data Found
+          </td>
+        </tr>
 
-                <tr *ngIf="(TableData?.length === 0) && !IsOpenToAdd && mode === 'Edit'">
-                    <td colspan="11"
-                        class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                        No Data Found
-                    </td>
-                </tr>
+        <tr *ngIf="TableData?.length === 0 && !IsOpenToAdd && mode === 'Edit'">
+          <td
+            colspan="11"
+            class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm"
+          >
+            No Data Found
+          </td>
+        </tr>
 
-                <!-- Data Rows -->
-                <tr *ngFor="let row of (mode === 'Create' ? Data.inventoryDetails : TableData) || []; let i = index"
-                    [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
-                    class="border-t border-gray-300 text-xs md:text-sm">
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.barCode }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.shopItemID }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.shopItemName }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <!-- <ng-container *ngIf="editingRowId === row.id; else textModequantity"> -->
-                        <input [(ngModel)]="row.quantity" (ngModelChange)="CalculateTotalPrice(row)" type="number"
-                            class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                        <!-- </ng-container>
-                        <ng-template #textModequantity>{{ row.quantity }}</ng-template> -->
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        <!-- Data Rows -->
+        <tr
+          *ngFor="
+            let row of (mode === 'Create'
+              ? Data.inventoryDetails
+              : TableData) || [];
+            let i = index
+          "
+          [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+          class="border-t border-gray-300 text-xs md:text-sm"
+        >
+          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            {{ row.barCode }}
+          </td>
+          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            {{ row.shopItemID }}
+          </td>
+          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            {{ row.shopItemName }}
+          </td>
+          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            <input
+              [(ngModel)]="row.quantity"
+              (ngModelChange)="CalculateTotalPrice(row)"
+              type="number"
+              class="w-full border border-gray-300 px-2 py-1 rounded-md"
+            />
+          </td>
+          <!-- <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         {{ row.price }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.totalPrice }}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <!-- <ng-container *ngIf="editingRowId === row.id; else textModenotes"> -->
-                            <input [(ngModel)]="row.notes" type="notes"
-                                class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                        <!-- </ng-container> -->
-                        <!-- <ng-template #textModenotes>{{ row.notes }}</ng-template> -->
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <div class="flex space-x-4">
-                            <button (click)="Delete(row)">
-                                <i class="fa-regular fa-trash-can"></i>
-                            </button>
-                            <!-- <button *ngIf="editingRowId === row.id" (click)="SaveEdit(row)">
-                                <i class="far fa-check-circle secondaryTxt"></i>
-                            </button>
-                            <button *ngIf="editingRowId !== row.id" (click)="Edit(row)">
-                                <i class="fa-solid fa-pencil"></i>
-                            </button> -->
-                        </div>
-                    </td>
-                </tr>
-                <!-- Add Row -->
-                <!-- <tr *ngIf="SelectedSopItem !=null"
-                    class="border-t border-gray-300 text-xs md:text-sm bg-[#F7F7F7]">
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{Item.barCode}}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{Item.shopItemID}}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{Item.shopItemName}}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="Item.quantity" (ngModelChange)="CalculateTotalPrice()" type="number"
-                            class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                    </td>
-                    <td *ngIf="IsPriceEditable" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="SelectedSopItem.purchasePrice" (ngModelChange)="EditPrice()" type="number"
-                            class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                    </td>
-                    <td *ngIf="!IsPriceEditable" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{Item.price}}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{Item.totalPrice}}
-                    </td>
-                    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        <input [(ngModel)]="Item.notes" class="w-full border border-gray-300 px-2 py-1 rounded-md">
-                    </td>
-
-                </tr> -->
-            </tbody>
-        </table>
-    </div>
+                    </td> -->
+          <td
+            *ngIf="IsPriceEditable"
+            class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            <input
+              [(ngModel)]="row.price"
+              (ngModelChange)="EditPrice(row)"
+              type="number"
+              class="w-full border border-gray-300 px-2 py-1 rounded-md"
+            />
+          </td>
+          <td
+            *ngIf="!IsPriceEditable"
+            class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0"
+          >
+            {{ row.price }}
+          </td>
+          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            {{ row.totalPrice }}
+          </td>
+          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            <input
+              [(ngModel)]="row.notes"
+              type="notes"
+              class="w-full border border-gray-300 px-2 py-1 rounded-md"
+            />
+          </td>
+          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            <div class="flex space-x-4">
+              <button (click)="Delete(row)">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
+
+<!-- <div class="absolute -top-[9999px] -left-[9999px]">
+  <div id="Data" class="hidden">
+    <app-pdf-print
+      *ngIf="showPDF"
+      [fileName]="'Inventory'"
+      [infoRows]="[
+        {
+          keyEn: 'Store : ' + ,
+        },
+        {
+          keyEn: 'Date : ' + ,
+        },
+        {
+          keyEn: 'Invoice Number :  ' + ,
+        },
+        {
+            keyEn: 'Total : ' + ,
+        }
+      ]
+      "
+      [tableHeaders]="['Grade', 'Academic_Year']"
+      [tableData]="TableData"
+    ></app-pdf-print>
+  </div>
+</div> -->

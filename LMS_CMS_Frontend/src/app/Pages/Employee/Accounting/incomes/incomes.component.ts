@@ -205,6 +205,7 @@ export class IncomesComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

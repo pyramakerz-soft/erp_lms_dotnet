@@ -203,6 +203,7 @@ export class TuitionDiscountTypesComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

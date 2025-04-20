@@ -223,6 +223,7 @@ export class SuppliersComponent {
 
   closeModal() {
     this.isModalVisible = false;
+    this.validationErrors = {}
   }
 
   openModal() {

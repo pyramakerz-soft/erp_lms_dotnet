@@ -22,6 +22,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import Swal from 'sweetalert2';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-accounting-entries-details',
@@ -67,6 +68,8 @@ export class AccountingEntriesDetailsComponent {
 
   editingRowId: number | null = null;
   editedRowData:AccountingEntriesDetails = new AccountingEntriesDetails() 
+
+  isLoading = false;
 
   constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public accountingEntriesDocTypeService:AccountingEntriesDocTypeService,
@@ -145,7 +148,7 @@ export class AccountingEntriesDetailsComponent {
         (data) => { 
           if(data.linkFileID){
             this.dataAccordingToLinkFileService.Get(this.DomainName, data.linkFileID).subscribe(
-              (data) => {
+              (data) => { 
                 this.subAccountData = data
               }
             )
@@ -277,7 +280,7 @@ export class AccountingEntriesDetailsComponent {
     this.accountingEntriesDetailsData = []
     this.accountingEntriesDetailsService.Get(this.DomainName, this.AccountingEntriesID).subscribe(
       (data) => {
-        this.accountingEntriesDetailsData = data
+        this.accountingEntriesDetailsData = data 
         let totalCredit = 0
         let totalDebit = 0
         this.accountingEntriesDetailsData.forEach(element => {
@@ -339,8 +342,10 @@ export class AccountingEntriesDetailsComponent {
   }
 
   SaveEditedDetail() {
+    this.isLoading = true;
     this.accountingEntriesDetailsService.Edit(this.editedRowData, this.DomainName).subscribe(
       (data) =>{
+        this.isLoading = false;
         this.editingRowId = null; 
         this.editedRowData = new AccountingEntriesDetails(); 
         this.isDetailsValid = false
@@ -369,5 +374,32 @@ export class AccountingEntriesDetailsComponent {
         )
       }
     });
+  }
+
+  DownloadData() {
+    let orderElement = document.getElementById('DataToDownload');
+
+    if (!orderElement) {
+      console.error("Page body not found!");
+      return;
+    }
+
+    document.querySelectorAll('.no-print').forEach(el => {
+      (el as HTMLElement).style.display = 'none';
+    });
+
+    setTimeout(() => {
+      html2pdf().from(orderElement).set({
+        margin: 10,
+        filename: `AccountingEntries_${this.AccountingEntriesID}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+      }).save().then(() => {
+        document.querySelectorAll('.no-print').forEach(el => {
+          (el as HTMLElement).style.display = '';
+        });
+      });
+    }, 500);
   }
 }

@@ -212,6 +212,7 @@ export class BankComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

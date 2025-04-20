@@ -190,6 +190,7 @@ export class ReceivableDocTypeComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

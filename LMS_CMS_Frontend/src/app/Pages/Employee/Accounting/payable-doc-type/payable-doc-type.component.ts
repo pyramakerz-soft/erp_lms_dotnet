@@ -188,7 +188,8 @@ export class PayableDocTypeComponent {
   }
 
   closeModal() {
-    this.isModalVisible = false;
+    this.isModalVisible = false;    
+    this.validationErrors = {}
     this.isLoading = false
   }
 

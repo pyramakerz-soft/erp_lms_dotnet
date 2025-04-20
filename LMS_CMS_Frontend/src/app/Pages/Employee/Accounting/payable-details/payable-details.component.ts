@@ -268,6 +268,7 @@ export class PayableDetailsComponent {
   } 
 
   GetPayableDetails(){
+    this.payableDetailsData = []
     this.payableDetailsService.Get(this.DomainName, this.PayableID).subscribe(
       (data) => { 
         this.payableDetailsData = data

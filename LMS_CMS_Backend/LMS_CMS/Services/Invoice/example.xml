@@ -67,9 +67,9 @@
   </ext:UBLExtensions>
   <cbc:ProfileID>reporting:1.0</cbc:ProfileID>
   <cbc:ID>SME0001</cbc:ID>
-  <cbc:UUID>c37d0f97-3ffa-4e15-b6bd-be5efd3e5e2d</cbc:UUID>
-  <cbc:IssueDate>2025-04-17</cbc:IssueDate>
-  <cbc:IssueTime>15:02:01</cbc:IssueTime>
+  <cbc:UUID>381e2304-6c76-4379-a6e8-8dbab65bfacf</cbc:UUID>
+  <cbc:IssueDate>2025-04-20</cbc:IssueDate>
+  <cbc:IssueTime>12:07:39</cbc:IssueTime>
   <cbc:InvoiceTypeCode name="0200000">388</cbc:InvoiceTypeCode>
   <cbc:Note languageID="ar">ABC</cbc:Note>
   <cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>

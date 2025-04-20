@@ -19,11 +19,15 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
     {
         private readonly ICsrGenerator _csrGenerator;
         private readonly UOW _unit_Of_Work;
+        private readonly IEInvoiceQRGenerator _qRGenerator;
+        private readonly IEInvoiceSigner _signer;
 
-        public ZatcaController(ICsrGenerator csrGenerator, UOW unit_of_work)
+        public ZatcaController(ICsrGenerator csrGenerator, UOW unit_of_work, IEInvoiceQRGenerator qRGenerator, IEInvoiceSigner signer)
         {
             _csrGenerator = csrGenerator;
             _unit_Of_Work = unit_of_work;
+            _qRGenerator = qRGenerator;
+            this._signer = signer;
         }
 
         //#region Generate Private Key
@@ -59,7 +63,9 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             string publicKeyPath = Path.Combine(invoices, "PublicKey.pem");
             string privateKeyPath = Path.Combine(invoices, "PrivateKey.pem");
 
-            return await InvoicingServices.GeneratePublicKey(publicKeyPath, privateKeyPath);
+            InvoicingServices invoicingServices = new InvoicingServices();
+
+            return await invoicingServices.GeneratePublicKey(publicKeyPath, privateKeyPath);
         }
         #endregion
 
@@ -89,7 +95,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             csr.SaveCsrToFile(csrPath);
 
             return Ok("CSR an Private Key created successfully.");
-           // return Ok(await InvoicingServices.GenerateCSR(csrPath, privateKeyPath, configPath));
+            // return Ok(await InvoicingServices.GenerateCSR(csrPath, privateKeyPath, configPath));
         }
         #endregion
 
@@ -107,7 +113,9 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             if (!System.IO.File.Exists(csrPath))
                 throw new FileNotFoundException();
 
-            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
+            InvoicingServices invoicingServices = new InvoicingServices();
+
+            string csid = await invoicingServices.GenerateCSID(csrPath, otp, version);
 
             // Optional: Prettify the JSON for readability
             dynamic parsedJson = JsonConvert.DeserializeObject(csid);
@@ -147,7 +155,9 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string requestId = jsonObject.requestID;
 
-            string pcsid = await InvoicingServices.GeneratePCSID(tokenBase64, version, requestId);
+            InvoicingServices invoicingServices = new InvoicingServices();
+
+            string pcsid = await invoicingServices.GeneratePCSID(tokenBase64, version, requestId);
 
             // Optional: Prettify the JSON for readability
             string formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(pcsid), Newtonsoft.Json.Formatting.Indented);
@@ -261,156 +271,91 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
 
-            InvoicingServices.GenerateXML(master);
+            //InvoicingServices.GenerateXML(master);
 
             return Ok("Invoice XML created successfully.");
 
         }
         #endregion
 
-        //#region Generat Request
-        //[HttpPost("GenerateRequest")]
-        ////[Authorize_Endpoint_(
-        ////    allowedTypes: new[] { "octa", "employee" },
-        ////    pages: new[] { "" }
-        ////)]
-        //public string GenerateRequest()
-        //{
-        //    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/Data");
-        //    string xmlPath = Path.Combine(invoices, "INV001.xml");
-
-        //    if (!System.IO.File.Exists(xmlPath))
-        //        throw new FileNotFoundException();
-
-        //    XmlDocument xmlDoc = new XmlDocument();
-        //    xmlDoc.Load(xmlPath);
-
-        //    QRResult hash = _qrGenerator.GenerateEInvoiceQRCode(xmlDoc);
-
-        //    return hash.QR;
-        //}
-        //#endregion
-
-        #region Generate XML With UBL
-        [HttpPost("GenerateXMLWithUBL")]
+        #region Generate QR Code 
+        [HttpPost("GenerateQRCode")]
         //[Authorize_Endpoint_(
         //    allowedTypes: new[] { "octa", "employee" },
         //    pages: new[] { "" }
         //)]
-        public IActionResult GenerateXMLWithUBL(long id)
+        public async Task<IActionResult> GenerateQRCode()
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/Data");
-            string invoice = Path.Combine(invoices, "INV001.xml");
+            string xml = Path.Combine(invoices, "INV001.xml");
 
-            //string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR/TaxPayer.csr");
-            //string certificateContent = System.IO.File.ReadAllText(csr);
+            XmlDocument doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
+            doc.Load(xml);
 
-            //string privateKey = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR/PrivateKey.pem");
-            //string privateKeyContent = System.IO.File.ReadAllText(privateKey);
-            //privateKey.Replace("-----BEGIN EC PRIVATE KEY-----", "");
-            //privateKey.Replace("-----END EC PRIVATE KEY-----", "");
+            if (!System.IO.File.Exists(xml))
+                throw new FileNotFoundException();
 
-            //if (!Directory.Exists(invoices))
-            //{
-            //    Directory.CreateDirectory(invoices);
-            //}
+            var qr = _qRGenerator.GenerateEInvoiceQRCode(doc);
 
-            //InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
-            //    x => x.ID == id,
-            //    query => query.Include(m => m.InventoryDetails),
-            //    query => query.Include(m => m.Student));
 
-            //if (master == null)
-            //    return NotFound();
 
-            InventoryMaster master = new();
-
-            //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
-
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(invoice);
-
-            InvoicingServices.GenerateXMLWithUBL(xmlDoc, invoice);
-
-            //var result = _invoiceSigner.SignDocument(xmlDoc, certificateContent, privateKeyContent);
-
-            return Ok();
-
+            //return Ok(csid);
+            return Ok(qr.QR);
         }
         #endregion
 
-        //#region Sign XML
-        //[HttpPost("SignXML")]
+        #region Invoice Signing 
+        [HttpPost("InvoiceSigning")]
         //[Authorize_Endpoint_(
         //    allowedTypes: new[] { "octa", "employee" },
         //    pages: new[] { "" }
         //)]
-        //public IActionResult SignXML()
-        //{
-        //    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-        //    string csrPath = Path.Combine(invoices, "textbuyer.csr");
-        //    string privateKeyPath = Path.Combine(invoices, "privateKey.pem");
-        //    string xmlPath = "\"E:\\هيئة الزكاة والدخل\\zatca-einvoicing-sdk-DotNet-238-R3.3.9\\Data\\Samples\\Simplified\\Invoice\\Simplified_Invoice.xml\"";
+        public async Task<IActionResult> InvoiceSigning()
+        {
+            //string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
+            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/Data");
+            string xml = Path.Combine(invoices, "INV001.xml");
 
-        //    string certificateContent = System.IO.File.ReadAllText(csrPath);
-        //    string privateKeyContent = System.IO.File.ReadAllText(privateKeyPath);
+            string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
+            string cerPath = Path.Combine(csr, "CSID.json");
+            string csrPath = Path.Combine(csr, "CSR.csr");
+            string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
 
-        //    try
-        //    {
-        //        XmlDocument xml = new XmlDocument();
+            XmlDocument doc = new XmlDocument();
+            doc.Load(xml);
 
-        //        xml.Load(xmlPath);
+            if (!System.IO.File.Exists(xml))
+                throw new FileNotFoundException();
 
-        //        SignResult xx = _invoiceSigner.SignDocument(
-        //            xml,
-        //            certificateContent,
-        //            privateKeyContent);
+            string csrContent = await System.IO.File.ReadAllTextAsync(csrPath);
+            csrContent = csrContent
+                .Replace("-----BEGIN CERTIFICATE REQUEST-----", "")
+                .Replace("-----END CERTIFICATE REQUEST-----", "")
+                .Replace("\n", "")
+                .Replace("\r", "");
 
-        //        string jsonString = JsonConvert.SerializeXmlNode(xx.SignedEInvoice, Newtonsoft.Json.Formatting.Indented);
+            string jsonContent = System.IO.File.ReadAllText(cerPath);
+            dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
+            string base64Cert = jsonObject.binarySecurityToken;
 
-        //        return Ok(xx.IsValid ? jsonString : xx.ErrorMessage);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Ok(ex.Message);
-        //    }
-        //}
-        //#endregion
+            byte[] certBytes = Convert.FromBase64String(base64Cert);
+            string certDecoded = Encoding.UTF8.GetString(certBytes);
+
+            string privateKeyContent = System.IO.File.ReadAllText(privateKeyPath);
+            privateKeyContent = privateKeyContent
+                .Replace("-----BEGIN EC PRIVATE KEY-----", "")
+                .Replace("-----END EC PRIVATE KEY-----", "")
+                .Replace("\n", "")
+                .Replace("\r", "");
+            string cert = "MIIB9TCCAZugAwIBAgIGAZY95e+sMAoGCCqGSM49BAMCMBUxEzARBgNVBAMMCmVJbnZvaWNpbmcwHhcNMjUwNDE2MDkxOTU2WhcNMzAwNDE1MjEwMDAwWjBdMQswCQYDVQQGEwJTQTEUMBIGA1UECwwLQWJkZWxyYWhtYW4xFjAUBgNVBAoMDUFiZGVscmFobWFuIEMxIDAeBgNVBAMMF0FiZGVscmFobWFuIEFwcGxpY2F0aW9uMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEWkIQoB+6exGhWM3iVNzsYdXGWs4cc88ZMu8bSs38NIg34CzO/OuLS5p2nNnHBxHDC9PmkMwotFcjyTJUAjblmKOBkTCBjjAMBgNVHRMBAf8EAjAAMH4GA1UdEQR3MHWkczBxMSAwHgYDVQQEDBcxLURldmljZXwyLTU1NXwzLTk5OTk5OTEfMB0GCgmSJomT8ixkAQEMDzM3NjQ5MjEzNDI1Njc4MzENMAsGA1UEDAwEMDEwMDEOMAwGA1UEGgwFTWFra2ExDTALBgNVBA8MBFRlY2gwCgYIKoZIzj0EAwIDSAAwRQIgfvbpdWHYYfDb5j9ZVuWnMN9lZfQuk4v82mjXaPXptagCIQC+6g9taXZ+2BChZ+LtdLUQ3/yjHzs2ol7MvTci3c75Jw==";
+            var signed = _signer.SignDocument(doc, cert, privateKeyContent);
+            signed.SaveSignedEInvoice(xml);
+
+
+            //return Ok(csid);
+            return Ok(signed.IsValid);
+        }
+        #endregion
     }
 }
-
-//#region Generate Private Key
-//[HttpPost("GeneratePrivateKey")]
-////[Authorize_Endpoint_(
-////    allowedTypes: new[] { "octa", "employee" },
-////    pages: new[] { "" }
-////)]
-//public IActionResult GeneratePrivateKey()
-//{
-//    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-//    string privateKeyPath = Path.Combine(invoices, "PrivateKey.pem");
-
-//    return Ok(CSRServices.GeneratePrivateKey(privateKeyPath));
-//}
-//#endregion
-
-//#region Generate Public Key
-//[HttpPost("GeneratePublicKey")]
-////[Authorize_Endpoint_(
-////    allowedTypes: new[] { "octa", "employee" },
-////    pages: new[] { "" }
-////)]
-//public IActionResult GeneratePublicKey()
-//{
-//    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-//    string publicKeyPath = Path.Combine(invoices, "PublicKey.pem");
-//    string privateKeyPath = Path.Combine(invoices, "PrivateKey.pem");
-
-//    if (!Directory.Exists(invoices))
-//    {
-//        Directory.CreateDirectory(invoices);
-//    }
-
-//    return Ok(CSRServices.GeneratePublicKey(publicKeyPath, privateKeyPath));
-//}
-//#endregion

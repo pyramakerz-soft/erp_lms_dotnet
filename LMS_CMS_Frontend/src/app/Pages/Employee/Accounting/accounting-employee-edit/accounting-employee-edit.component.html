@@ -22,7 +22,7 @@
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">Address</label>
         <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.address" />
+            placeholder="Enter Address" [(ngModel)]="Data.address" />
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
@@ -40,7 +40,7 @@
     <div class="flex flex-col mb-4 w-[49%]">
         <label class="mb-2 primaryTxt" for="name">National Id</label>
         <input id="name"  (input)="validateNumber($event,'nationalID')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.nationalID" />
+            placeholder="Enter National Id" [(ngModel)]="Data.nationalID" />
     </div>
 
     <div class="flex flex-col mb-4 w-[49%]">
@@ -88,7 +88,7 @@
     
         <div *ngIf="EndDate==true" class="flex flex-col mb-4 w-[33%]">
             <label class="mb-2 primaryTxt" for="dateOfLeavingWork">Date of Leaving Work</label>
-            <input id="dateOfLeavingWork" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            <input id="dateOfLeavingWork" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 placeholder="Enter date Of Leaving Work" [(ngModel)]="Data.dateOfLeavingWork" />
         </div>
     
@@ -121,7 +121,7 @@
     <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt" for="attendanceTime">Attendance Time</label>
         <div class="flex items-center gap-2">
-          <input
+          <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
             id="attendanceHours"
              (input)="validateNumber($event)"
             class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
@@ -129,7 +129,7 @@
             [(ngModel)]="attendanceTime.hours"
             min="1"
             max="12" />
-          <input
+          <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
             id="attendanceMinutes"
              (input)="validateNumber($event)"
             class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
@@ -137,10 +137,10 @@
             [(ngModel)]="attendanceTime.minutes"
             min="0"
             max="59"/>
-          <select
+          <select (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
             id="attendancePeriod"
             class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
-            [(ngModel)]="attendanceTime.period">
+            [(ngModel)]="attendanceTime.periods">
             <option value="AM">AM</option>
             <option value="PM">PM</option>
           </select>
@@ -150,7 +150,7 @@
       <div class="flex flex-col mb-4 w-[33%]">
         <label class="mb-2 primaryTxt" for="departureTime">Departure Time</label>
         <div class="flex items-center gap-2">
-          <input
+          <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
             id="departureHours"
             (input)="validateNumber($event)"
             class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
@@ -158,7 +158,7 @@
             [(ngModel)]="departureTime.hour"
             min="1"
             max="12"/>
-          <input
+          <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
             id="departureMinutes"
             (input)="validateNumber($event)"
             class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
@@ -166,15 +166,18 @@
             [(ngModel)]="departureTime.minute"
             min="0"
             max="59"/>
-          <select
+          <select (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
             id="departurePeriod"
             class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
-            [(ngModel)]="departureTime.periods">
+            [(ngModel)]="departureTime.period">
             <option value="AM">AM</option>
             <option value="PM">PM</option>
           </select>
+          <span *ngIf="validationErrors['departureTime']" class="text-red-500 ml-3 font-normal">{{ validationErrors["departureTime"]
+          }}</span>
         </div>
       </div>
+
 
       
     <div class="flex flex-col mb-4 w-[33%]">

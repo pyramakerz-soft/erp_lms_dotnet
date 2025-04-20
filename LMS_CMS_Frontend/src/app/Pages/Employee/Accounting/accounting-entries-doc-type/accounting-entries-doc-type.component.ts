@@ -100,6 +100,7 @@ User_Data_After_Login: TokenData = new TokenData(
 
   Create() {
     this.mode = 'Create';
+    this.accountingEntriesDocType = new AccountingEntriesDocType()
     this.openModal();
   }
 

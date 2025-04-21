@@ -222,7 +222,7 @@
 <!-- Tab Content -->
 
 <div *ngIf="selectedTab === 'MH By Parent'">
-    <app-table [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']" [data]="mhByParentData"
+    <app-table class="print-area" [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']" [data]="mhByParentData"
         [keys]="['date', 'description', 'insertDate', 'lastModified']" [showViewAction]="true" [showEditAction]="false" (view)="onView($event)"
         (delete)="deleteMH($event)"></app-table>
 </div>
@@ -266,4 +266,21 @@
             </app-table>
         </div>
     </div>
+
+    <div class="absolute -top-[9999px] -left-[9999px]">
+        <div id="pdfPrintData" class="hidden">
+            <app-pdf-print *ngIf="showPDFView" [school]="pdfSchoolData" [fileName]="pdfFileName" [Title]="pdfTitle"
+                [infoRows]="pdfInfoRows" [tableHeaders]="pdfTableHeaders" [tableData]="pdfTableData"
+                [autoDownload]="autoDownloadPDF" #pdfComponentRef>
+            </app-pdf-print>
+        </div>
+    </div>
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="printData" class="hidden">
+        <app-pdf-print *ngIf="showPrintView" [school]="pdfSchoolData" [fileName]="pdfFileName" [Title]="pdfTitle"
+            [infoRows]="pdfInfoRows" [tableHeaders]="pdfTableHeaders" [tableData]="pdfTableData" #printComponentRef>
+        </app-pdf-print>
+    </div>
+</div>
 

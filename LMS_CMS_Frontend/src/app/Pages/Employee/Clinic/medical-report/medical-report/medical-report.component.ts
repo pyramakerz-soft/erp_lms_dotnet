@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HygieneFormService } from '../../../../../Services/Employee/Clinic/hygiene-form.service';
 import { FollowUpService } from '../../../../../Services/Employee/Clinic/follow-up.service';
 import { ApiService } from '../../../../../Services/api.service';
@@ -15,17 +15,16 @@ import { StudentService } from '../../../../../Services/student.service';
 import { MedicalReportService } from '../../../../../Services/Employee/Clinic/medical-report.service';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { MedicalHistoryService } from '../../../../../Services/Employee/Clinic/medical-history.service';
 import { SearchComponent } from "../../../../../Component/search/search.component";
 import { MedicalHistoryModalComponent } from "../../medical-history/medical-history-modal/medical-history-modal.component";
+import { PdfPrintComponent } from "../../../../../Component/pdf-print/pdf-print.component";
 
 @Component({
   selector: 'app-medical-report',
   templateUrl: './medical-report.component.html',
   styleUrls: ['./medical-report.component.css'],
-  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, MedicalHistoryModalComponent, SearchComponent],
+  imports: [TableComponent, CommonModule, FormsModule, HygieneFormTableComponent, MedicalHistoryModalComponent, SearchComponent, PdfPrintComponent],
   standalone: true
 })
 export class MedicalReportComponent implements OnInit {
@@ -68,6 +67,31 @@ onView(row: any) {
   selectedDate: string = '';
 
   studentSearchTerm: string = '';
+
+  // PDF Print properties
+showPDFView = false;
+pdfSchoolData: any = {
+    reportHeaderOneEn: 'Medical Report',
+    reportHeaderTwoEn: 'Detailed Medical Information',
+    reportHeaderOneAr: 'التقرير الطبي',
+    reportHeaderTwoAr: 'معلومات طبية مفصلة'
+};
+pdfFileName = 'Medical_Report';
+pdfTitle = '';
+pdfInfoRows: any[] = [];
+pdfTableHeaders: string[] = [];
+pdfTableData: any[] = [];
+autoDownloadPDF = false;
+@ViewChild('pdfComponentRef') pdfComponentRef?: PdfPrintComponent;
+
+
+showPrintView = false;
+printData: any[] = [];
+printHeaders: string[] = [];
+getPrintValue(item: any, header: string): string {
+  const key = header.toLowerCase().replace(/ /g, '');
+  return item[key] || '';
+}
 
   constructor(
         private router: Router,
@@ -215,7 +239,7 @@ async loadMHByParentData() {
   try {
     const domainName = this.apiService.GetHeader();
     const data = await firstValueFrom(this.medicalreportService.getAllMHByParent(domainName));
-    
+    console.log(data)
     this.mhByParentData = data.map((item) => ({
       id: item.id,
       date: new Date(item.insertedAt).toLocaleDateString(),
@@ -308,7 +332,7 @@ async loadFollowUps() {
     try {
         const domainName = this.apiService.GetHeader();
         const data = await firstValueFrom(this.followUpService.Get(domainName));
-        
+        console.log(data)
         this.followUps = data.map((item) => ({
             id: item.id,
             schoolId: item.schoolId,
@@ -593,123 +617,283 @@ async selectTab(tab: string) {
   }
 
 exportToPDF() {
-  let data: any[] = [];
-  let headers: string[] = [];
-  let fileName = '';
-
+  this.showPDFView = true;
+  this.autoDownloadPDF = true;
+  
+  // Set common PDF properties
+  this.pdfTitle = `${this.selectedTab} Report`;
+  this.pdfFileName = `${this.selectedTab.replace(/ /g, '_')}_Report.pdf`;
+  
+  // Set data based on selected tab
   switch (this.selectedTab) {
     case 'MH By Parent':
-      data = this.mhByParentData;
-      headers = ['Date', 'Description', 'Insert Date', 'Last Modified'];
-      fileName = 'MH_By_Parent.pdf';
+      this.pdfTableHeaders = ['Date', 'Description', 'Insert Date', 'Last Modified'];
+      this.pdfTableData = this.mhByParentData.map(item => ({
+        Date: item.date,
+        Description: item.description,
+        'Insert Date': item.insertDate,
+        'Last Modified': item.lastModified
+      }));
       break;
     case 'MH By Doctor':
-      data = this.filteredMHByDoctorData;
-      headers = ['Date', 'Description', 'Insert Date', 'Last Modified'];
-      fileName = 'MH_By_Doctor.pdf';
+      this.pdfTableHeaders = ['Date', 'Description', 'Insert Date', 'Last Modified', 'School', 'Grade', 'Class', 'Student'];
+      this.pdfTableData = this.filteredMHByDoctorData.map(item => ({
+        Date: item.date,
+        Description: item.description,
+        'Insert Date': item.insertDate,
+        'Last Modified': item.lastModified,
+        School: item.schoolName,
+        Grade: item.gradeName,
+        Class: item.className,
+        Student: item.studentName
+      }));
       break;
     case 'Hygiene Form':
-      data = this.students;
-      headers = ['Student', 'Attendance', 'Comment', 'Action Taken'];
-      fileName = 'Hygiene_Form.pdf';
+      this.pdfTableHeaders = ['Student', 'Attendance', 'Comment', 'Action Taken', 'Hygiene Type'];
+      this.pdfTableData = this.students.map(item => ({
+        Student: item.en_name,
+        Attendance: item.attendance,
+        Comment: item.comment,
+        'Action Taken': item.actionTaken,
+        'Hygiene Type': item.hygieneType_1 ? 'Type 1' : item.hygieneType_2 ? 'Type 2' : 'N/A'
+      }));
       break;
     case 'Follow Up':
-      data = this.filteredFollowUps;
-      headers = ['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation'];
-      fileName = 'Follow_Up.pdf';
+      this.pdfTableHeaders = ['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation'];
+      this.pdfTableData = this.filteredFollowUps.map(item => ({
+        ID: item.id,
+        School: item.schoolName,
+        Grade: item.gradeName,
+        Class: item.className,
+        Student: item.studentName,
+        Complaints: item.complaints,
+        Diagnosis: item.diagnosisName,
+        Recommendation: item.recommendation
+      }));
       break;
     default:
-      Swal.fire('Error', 'No data available for export.', 'error');
+      Swal.fire('Error', 'No data available for PDF export.', 'error');
+      this.showPDFView = false;
       return;
   }
 
-  if (data.length === 0) {
-    Swal.fire('Error', 'No data available for export.', 'error');
-    return;
+  // Set info rows based on filters
+  this.pdfInfoRows = [];
+  
+  if (this.selectedSchool) {
+    const school = this.schools.find(s => s.id === this.selectedSchool);
+    this.pdfInfoRows.push({ 
+      keyEn: 'School: ' + (school?.name || 'N/A'),
+      keyAr: 'المدرسة: ' + (school?.name || 'غير متوفر')
+    });
+  }
+  
+  if (this.selectedGrade) {
+    const grade = this.grades.find(g => g.id === this.selectedGrade);
+    this.pdfInfoRows.push({ 
+      keyEn: 'Grade: ' + (grade?.name || 'N/A'),
+      keyAr: 'الصف: ' + (grade?.name || 'غير متوفر')
+    });
+  }
+  
+  if (this.selectedClass) {
+    const classRoom = this.classes.find(c => c.id === this.selectedClass);
+    this.pdfInfoRows.push({ 
+      keyEn: 'Class: ' + (classRoom?.name || 'N/A'),
+      keyAr: 'الفصل: ' + (classRoom?.name || 'غير متوفر')
+    });
+  }
+  
+  if (this.selectedStudent) {
+    const student = this.students.find(s => s.id === this.selectedStudent);
+    this.pdfInfoRows.push({ 
+      keyEn: 'Student: ' + (student?.en_name || 'N/A'),
+      keyAr: 'الطالب: ' + (student?.en_name || 'غير متوفر')
+    });
   }
 
-  const doc = new jsPDF();
-  const tableData = data.map((item) => {
-    return headers.map((header) => {
-      const key = header.toLowerCase().replace(/ /g, '_');
-      return item[key] || '';
-    });
+  // Add date info
+  this.pdfInfoRows.push({
+    keyEn: 'Report Date: ' + new Date().toLocaleDateString(),
+    keyAr: 'تاريخ التقرير: ' + new Date().toLocaleDateString()
   });
 
-  autoTable(doc, {
-    head: [headers],
-    body: tableData,
-  });
-
-  doc.save(fileName);
+  // Trigger the PDF generation after a small delay to ensure the view is updated
+  setTimeout(() => {
+    if (this.pdfComponentRef) {
+      this.pdfComponentRef.downloadPDF();
+    }
+    this.showPDFView = false;
+  }, 100);
 }
 
-  printTable() {
-    let data: any[] = [];
-    let headers: string[] = [];
-
-    switch (this.selectedTab) {
-      case 'MH By Parent':
-        data = this.mhByParentData;
-        headers = ['Date', 'Description', 'Insert Date', 'Last Modified'];
-        break;
-      case 'MH By Doctor':
-        data = this.filteredMHByDoctorData;
-        headers = ['Date', 'Description', 'Insert Date', 'Last Modified'];
-        break;
-      case 'Hygiene Form':
-        data = this.students;
-        headers = ['Student', 'Attendance', 'Comment', 'Action Taken'];
-        break;
-      case 'Follow Up':
-        data = this.filteredFollowUps;
-        headers = ['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation'];
-        break;
-      default:
-        Swal.fire('Error', 'No data available for printing.', 'error');
-        return;
-    }
-
-    if (data.length === 0) {
+printTable() {
+  this.showPrintView = true;
+  this.autoDownloadPDF = false; // Ensure we don't auto-download
+  
+  // Set common PDF properties
+  this.pdfTitle = `${this.selectedTab} Report`;
+  this.pdfFileName = `${this.selectedTab.replace(/ /g, '_')}_Report.pdf`;
+  
+  // Set data based on selected tab
+  switch (this.selectedTab) {
+    case 'MH By Parent':
+      this.pdfTableHeaders = ['Date', 'Description', 'Insert Date', 'Last Modified'];
+      this.pdfTableData = this.mhByParentData.map(item => ({
+        Date: item.date,
+        Description: item.description,
+        'Insert Date': item.insertDate,
+        'Last Modified': item.lastModified
+      }));
+      break;
+    case 'MH By Doctor':
+      this.pdfTableHeaders = ['Date', 'Description', 'Insert Date', 'Last Modified', 'School', 'Grade', 'Class', 'Student'];
+      this.pdfTableData = this.filteredMHByDoctorData.map(item => ({
+        Date: item.date,
+        Description: item.description,
+        'Insert Date': item.insertDate,
+        'Last Modified': item.lastModified,
+        School: item.schoolName,
+        Grade: item.gradeName,
+        Class: item.className,
+        Student: item.studentName
+      }));
+      break;
+    case 'Hygiene Form':
+      this.pdfTableHeaders = ['Student', 'Attendance', 'Comment', 'Action Taken', 'Hygiene Type'];
+      this.pdfTableData = this.students.map(item => ({
+        Student: item.en_name,
+        Attendance: item.attendance,
+        Comment: item.comment,
+        'Action Taken': item.actionTaken,
+        'Hygiene Type': item.hygieneType_1 ? 'Type 1' : item.hygieneType_2 ? 'Type 2' : 'N/A'
+      }));
+      break;
+    case 'Follow Up':
+      this.pdfTableHeaders = ['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation'];
+      this.pdfTableData = this.filteredFollowUps.map(item => ({
+        ID: item.id,
+        School: item.schoolName,
+        Grade: item.gradeName,
+        Class: item.className,
+        Student: item.studentName,
+        Complaints: item.complaints,
+        Diagnosis: item.diagnosisName,
+        Recommendation: item.recommendation
+      }));
+      break;
+    default:
       Swal.fire('Error', 'No data available for printing.', 'error');
+      this.showPrintView = false;
+      return;
+  }
+
+  // Set info rows based on filters
+  this.pdfInfoRows = [];
+  
+  if (this.selectedSchool) {
+    const school = this.schools.find(s => s.id === this.selectedSchool);
+    this.pdfInfoRows.push({ 
+      keyEn: 'School: ' + (school?.name || 'N/A'),
+      keyAr: 'المدرسة: ' + (school?.name || 'غير متوفر')
+    });
+  }
+  
+  if (this.selectedGrade) {
+    const grade = this.grades.find(g => g.id === this.selectedGrade);
+    this.pdfInfoRows.push({ 
+      keyEn: 'Grade: ' + (grade?.name || 'N/A'),
+      keyAr: 'الصف: ' + (grade?.name || 'غير متوفر')
+    });
+  }
+  
+  if (this.selectedClass) {
+    const classRoom = this.classes.find(c => c.id === this.selectedClass);
+    this.pdfInfoRows.push({ 
+      keyEn: 'Class: ' + (classRoom?.name || 'N/A'),
+      keyAr: 'الفصل: ' + (classRoom?.name || 'غير متوفر')
+    });
+  }
+  
+  if (this.selectedStudent) {
+    const student = this.students.find(s => s.id === this.selectedStudent);
+    this.pdfInfoRows.push({ 
+      keyEn: 'Student: ' + (student?.en_name || 'N/A'),
+      keyAr: 'الطالب: ' + (student?.en_name || 'غير متوفر')
+    });
+  }
+
+  // Add date info
+  this.pdfInfoRows.push({
+    keyEn: 'Report Date: ' + new Date().toLocaleDateString(),
+    keyAr: 'تاريخ التقرير: ' + new Date().toLocaleDateString()
+  });
+
+  // Wait for the view to update
+  setTimeout(() => {
+    const printContents = document.getElementById("printData")?.innerHTML;
+    if (!printContents) {
+      console.error("Print element not found!");
+      this.showPrintView = false;
       return;
     }
 
-    const printWindow = window.open('', '', 'height=600,width=800');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Print Table</title>
-            <style>
-              table { width: 100%; border-collapse: collapse; }
-              th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-              th { background-color: #f2f2f2; }
-            </style>
-          </head>
-          <body>
-            <table>
-              <thead>
-                <tr>${headers.map((header) => `<th>${header}</th>`).join('')}</tr>
-              </thead>
-              <tbody>
-                ${data
-                  .map(
-                    (item) =>
-                      `<tr>${headers
-                        .map((header) => `<td>${item[header.toLowerCase().replace(/ /g, '')]}</td>`)
-                        .join('')}</tr>`
-                  )
-                  .join('')}
-              </tbody>
-            </table>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.print();
-    } else {
-      Swal.fire('Error', 'Unable to open print window.', 'error');
-    }
+    // Create a print-specific stylesheet
+    const printStyle = `
+      <style>
+        @page { size: auto; margin: 0mm; }
+        body { 
+          margin: 0; 
+        }
+
+        @media print {
+          body > *:not(#print-container) {
+            display: none !important;
+          }
+          #print-container {
+            display: block !important;
+            position: static !important;
+            top: auto !important;
+            left: auto !important;
+            width: 100% !important;
+            height: auto !important;
+            background: white !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+          }
+        }
+      </style>
+    `;
+
+    // Create a container for printing
+    const printContainer = document.createElement('div');
+    printContainer.id = 'print-container';
+    printContainer.innerHTML = printStyle + printContents;
+
+    // Add to body and print
+    document.body.appendChild(printContainer);
+    window.print();
+    
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(printContainer);
+      this.showPrintView = false;
+    }, 100);
+  }, 100);
+}
+
+inlineAllStyles(source: HTMLElement, target: HTMLElement) {
+  const sourceStyles = window.getComputedStyle(source);
+  const cssText = Array.from(sourceStyles)
+    .map(key => `${key}: ${sourceStyles.getPropertyValue(key)};`)
+    .join(' ');
+  target.setAttribute('style', cssText);
+  
+  const children = Array.from(source.children) as HTMLElement[];
+  const targetChildren = Array.from(target.children) as HTMLElement[];
+  for (let i = 0; i < children.length; i++) {
+    this.inlineAllStyles(children[i], targetChildren[i]);
   }
+}
+IsPrint = false;
 }

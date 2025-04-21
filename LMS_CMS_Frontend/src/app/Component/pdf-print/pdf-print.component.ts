@@ -33,9 +33,6 @@ export class PdfPrintComponent {
   preservedColumns: string = "";
   @Input() autoDownload: boolean = false;
 
-    @Input() autoPrint: boolean = false;
-
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['tableHeaders'] || changes['tableData']) {
       if (this.tableHeaders)
@@ -43,76 +40,68 @@ export class PdfPrintComponent {
       this.splitTableGenerically();
     }
   }
-
-  ngAfterViewInit(): void {
-    if (this.school?.reportImage?.startsWith('http')) {
-      this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
-        this.school.reportImage = base64Img;
-        setTimeout(() => this.printPDF(), 100);
-      });
-    } else {
-      setTimeout(() => this.printPDF(), 100);
-    }
-
-        if (this.autoPrint) {
-      setTimeout(() => this.print(), 100);
-    }
-  }
-
- print() {
-    const printContents = this.printContainer.nativeElement.innerHTML;
-    
-    // Create a print-specific stylesheet
-    const printStyle = `
-      <style>
-        @page { size: auto; margin: 0mm; }
-        body { margin: 0;
+  print() {
+  const printContents = this.printContainer.nativeElement.innerHTML;
+  
+  // Create a print-specific stylesheet
+  const printStyle = `
+    <style>
+      @page { size: auto; margin: 0mm; }
+      body { margin: 0;
+      }
+      .print-content {
+        padding: 20px;
+      }
+      @media print {
+        body * {
+        }
+        .print-overlay,
+        .print-overlay * {
+          visibility: visible;
+          position: static;
+          background: none;
         }
         .print-content {
-          padding: 20px;
-
         }
-        @media print {
-          body * {
-          }
-          .print-overlay,
-          .print-overlay * {
-            visibility: visible;
-            position: static;
-            background: none;
-          }
-          .print-content {
+      }
+    </style>
+  `;
 
-          }
-        }
-      </style>
-    `;
+  // Create print overlay
+  const printOverlay = document.createElement('div');
+  printOverlay.className = 'print-overlay';
+  printOverlay.innerHTML = `
+    <div class="print-content">
+      ${printContents}
+    </div>
+  `;
 
-    // Create print overlay
-    const printOverlay = document.createElement('div');
-    printOverlay.className = 'print-overlay';
-    printOverlay.innerHTML = `
-      <div class="print-content">
-        ${printContents}
-      </div>
-    `;
+  // Add to body
+  document.body.appendChild(printOverlay);
+  document.body.insertAdjacentHTML('beforeend', printStyle);
 
-    // Add to body
-    document.body.appendChild(printOverlay);
-    document.body.insertAdjacentHTML('beforeend', printStyle);
-
-    // Print and clean up
+  // Print and clean up
+  setTimeout(() => {
+    window.print();
+    
     setTimeout(() => {
-      window.print();
-      
-      setTimeout(() => {
-        document.body.removeChild(printOverlay);
-        const styles = document.querySelectorAll('style[data-print-style]');
-        styles.forEach(style => document.body.removeChild(style));
-      }, 100);
+      document.body.removeChild(printOverlay);
+      const styles = document.querySelectorAll('style[data-print-style]');
+      styles.forEach(style => document.body.removeChild(style));
     }, 100);
-  }
+  }, 100);
+}
 
+  // ngAfterViewInit(): void {
+  //   if (this.school?.reportImage?.startsWith('http')) {
+  //     this.convertImgToBase64URL(this.school.reportImage).then((base64Img) => {
+  //       this.school.reportImage = base64Img;
+  //       setTimeout(() => this.printPDF(), 100);
+  //     });
+  //   } else {
+  //     setTimeout(() => this.printPDF(), 100);
+  //   }
+  // }
 
   // ngAfterViewInit(): void {
   //   if (this.autoDownload) {

@@ -113,22 +113,24 @@
 <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isModalVisible}"
     class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
     <div class="relative bg-white rounded-2xl p-12 gap-4 shadow-md overflow-y-auto max-h-[90vh]">
-        <!-- Close Icon -->
-        <button (click)="closeModal()"
-            class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
-            <i class="fa-solid fa-xmark text-2xl"></i>
-        </button>
+        <div class="flex justify-between">
+            <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">{{ 'Create' | translate }} {{ 'Question' | translate }}</h1>
+            <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">{{ 'Edit' | translate }} {{ 'Question' | translate }}</h1>
 
-        <h1 *ngIf="mode=='Create'" class="font-semibold text-2xl leading-9">{{ 'Create' | translate }} {{ 'Question' | translate }}</h1>
-        <h1 *ngIf="mode=='Edit'" class="font-semibold text-2xl leading-9">{{ 'Edit' | translate }} {{ 'Question' | translate }}</h1>
+            <!-- Close Icon -->
+            <button (click)="closeModal()"
+                class="text-gray-400 hover:text-gray-900 transition duration-200">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+        </div>
 
         <div class="mt-4 bg-[#F7F7F7] rounded-[24px] p-[16px_24px] gap-[20px]">
 
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Description' | translate }}</h6>
             <div class="flex justify-start gap-2 items-start">
-                <div class="flex flex-col">
+                <div class="w-full flex flex-col">
                     <textarea
-                        class="w-[500px] h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+                        class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3"
                         [(ngModel)]="question.description" placeholder="{{ 'Enter' | translate }} {{ 'Description' | translate }}" 
                         (ngModelChange)="onInputValueChange({ field: 'description', value: $event })"
                         >
@@ -182,24 +184,24 @@
                 <span *ngIf="validationErrors['questionTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['questionTypeID'] }}</span>
             </div>
 
-            <div *ngIf="question.questionTypeID ==1||question.questionTypeID==2">
-
-                <h6 class="font-medium text-base leading-6 mb-2 mt-3">{{ 'Options' | translate }}</h6>
-                <div class="flex justify-start gap-2 items-center">
-                    <div class="flex flex-col">
-                        <input type="text"
-                            [(ngModel)]="NewOption"
-                            class="w-[450px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
-                            (ngModelChange)="onInputValueChange({ field: 'options', value: $event })"
-                            placeholder="{{ 'Enter' | translate }} {{ 'Options' | translate }}" />
-                            <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">{{ validationErrors['options'] }}</span>
+            <div *ngIf="question.questionTypeID ==1 ||question.questionTypeID==2">
+                <div *ngIf="question.questionTypeID==2">
+                    <h6 class="font-medium text-base leading-6 mb-2 mt-3">{{ 'Options' | translate }}</h6>
+                    <div class="flex justify-start gap-2 items-center">
+                        <div class="flex flex-col">
+                            <input type="text"
+                                [(ngModel)]="NewOption"
+                                class="w-[450px] h-[45px] rounded-lg border border-solid border-gray-300 px-2"
+                                (ngModelChange)="onInputValueChange({ field: 'options', value: $event })"
+                                placeholder="{{ 'Enter' | translate }} {{ 'Options' | translate }}" />
+                                <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">{{ validationErrors['options'] }}</span>
+                        </div>
+                        <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg" (click)="AddOption()">
+                            {{ 'Add' | translate }}
+                        </button>
                     </div>
-                    <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
-                    <button class="secondaryBg text-white font-medium px-5 py-2 rounded-lg" (click)="AddOption()">
-                        {{ 'Add' | translate }}
-                    </button>
                 </div>
-                <div class="w-[500px]">
+                <div class="w-full">
                     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
                         <table class="overflow-auto w-full bg-[#EBEBEB] ltr:text-left rtl:text-right text-[#6F6F6F]">
                             <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">

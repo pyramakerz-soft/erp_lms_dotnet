@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './account.component.css'
 })
 export class AccountComponent {
-  keysArray: string[] = ['id', 'user_Name','arabic_Name' ,'insertedAt'];
+  keysArray: string[] = ['id', 'user_Name','arabic_Name'  ];
   key: string= "id";
   value: any = "";
 
@@ -82,7 +82,7 @@ export class AccountComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

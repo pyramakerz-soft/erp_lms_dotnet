@@ -1,5 +1,5 @@
 <div class="flex justify-between mb-3">
-    <h1 class="font-semibold text-2xl leading-9">Student Information</h1>
+    <h1 class="font-semibold text-2xl leading-9">Proof Registration And Success Form Report</h1>
 </div>
 
 <div class="flex justify-start items-center space-x-4">
@@ -16,7 +16,7 @@
     <div class="w-[49%]">
         <label for="Year" class="block mb-2 text-sm font-medium text-gray-900">Year</label>
         <select id="Year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedYearId" [disabled]="!SelectedSchoolId">
+            [(ngModel)]="SelectedYearId"  (change)="getAllStudents()" [disabled]="!SelectedSchoolId">
             <option value=0 disabled selected hidden>Select a Year</option>
             <option *ngFor="let ac of academicYears" [value]="ac.id">
                 {{ ac.name }}
@@ -61,7 +61,6 @@
 </div>
 
 <div *ngIf="showTable" class="mt-5 flex justify-end space-x-4">
-    <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="DownloadAsExcel()">
     <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()">
     <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()">
 </div>
@@ -99,7 +98,7 @@
                     {{ SelectedStudent.mobile }}
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    {{ SelectedStudent.nationalityName }}
+                    {{ this.DataToPrint.student.nationalityEnName }}
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     {{ SelectedStudent.genderName }}
@@ -123,11 +122,11 @@
         },
         {
           keyEn: 'This to certify that Student / ' + this.DataToPrint.student.en_name,
-          keyAr: 'نفيدكم بأن الطالبة / ' + this.DataToPrint.student.en_name
+          keyAr: 'نفيدكم بأن الطالبة / ' + this.DataToPrint.student.ar_name
         },
         {
-          keyEn: this.DataToPrint.student.nationalityName + ' Nationality',
-          keyAr: 'تحمل الجنسية / ' + this.DataToPrint.student.nationalityName
+          keyEn: this.DataToPrint.student.nationalityEnName + ' Nationality',
+          keyAr: 'تحمل الجنسية / ' + this.DataToPrint.student.nationalityArName
         },
         {
             keyEn: ' and identity no ' + this.DataToPrint.student.nationalIDExpiredDate,
@@ -164,6 +163,6 @@
             ArNote: 'ادارة المدرسة'
         }
       ]
-      "></app-pdf-print>
+      " #pdfComponentRef></app-pdf-print>
     </div>
 </div>

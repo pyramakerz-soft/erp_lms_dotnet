@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './school-type.component.css'
 })
 export class SchoolTypeComponent {
-  keysArray: string[] = ['id', 'name','insertedAt'];
+  keysArray: string[] = ['id', 'name' ];
   key: string= "id";
   value: any = "";
 
@@ -84,7 +84,7 @@ export class SchoolTypeComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

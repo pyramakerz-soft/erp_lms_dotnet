@@ -97,8 +97,8 @@ export class BuildingComponent {
     });
   }
 
-  getSchoolData() {
-    this.schoolService.Get(this.DomainName).subscribe((data) => {
+  getSchoolData() { 
+    this.schoolService.Get(this.DomainName).subscribe((data) => {  
       this.Schools = data;
     });
   }
@@ -156,7 +156,7 @@ export class BuildingComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

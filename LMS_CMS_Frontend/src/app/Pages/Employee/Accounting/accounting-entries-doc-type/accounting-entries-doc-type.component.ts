@@ -100,12 +100,13 @@ User_Data_After_Login: TokenData = new TokenData(
 
   Create() {
     this.mode = 'Create';
+    this.accountingEntriesDocType = new AccountingEntriesDocType()
     this.openModal();
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Doc Type?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -189,6 +190,7 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

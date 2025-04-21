@@ -223,6 +223,7 @@ export class SuppliersComponent {
 
   closeModal() {
     this.isModalVisible = false;
+    this.validationErrors = {}
   }
 
   openModal() {
@@ -334,7 +335,7 @@ export class SuppliersComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

@@ -54,7 +54,7 @@ User_Data_After_Login: TokenData = new TokenData(
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'user_Name', 'en_name' ,'ar_name','mobile','phone','email','licenseNumber','expireDate','address','role_Name','busCompanyName','employeeTypeName'];
+  keysArray: string[] = ['id', 'user_Name', 'en_name' ,'ar_name','mobile','email','role_Name','employeeTypeName'];
   AccountNumbers:AccountingTreeChart[]=[];
   
 
@@ -100,7 +100,6 @@ User_Data_After_Login: TokenData = new TokenData(
 
 
   Edit(row: EmployeeGet) {
-    console.log(row)
     this.router.navigateByUrl(`Employee/Employee Edit Accounting/${row.id}`)
   }
 
@@ -124,7 +123,7 @@ User_Data_After_Login: TokenData = new TokenData(
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

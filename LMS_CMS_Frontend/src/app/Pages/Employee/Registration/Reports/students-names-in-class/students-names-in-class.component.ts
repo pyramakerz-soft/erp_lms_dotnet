@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { School } from '../../../../../Models/school';
 import { AcademicYear } from '../../../../../Models/LMS/academic-year';
@@ -16,15 +16,12 @@ import { ClassroomService } from '../../../../../Services/Employee/LMS/classroom
 import { Student } from '../../../../../Models/student';
 import { StudentService } from '../../../../../Services/student.service';
 import { ReportsService } from '../../../../../Services/shared/reports.service';
-import * as XLSX from 'xlsx';
-import FileSaver, { saveAs } from 'file-saver';
-import * as ExcelJS from 'exceljs'
 import { PdfPrintComponent } from '../../../../../Component/pdf-print/pdf-print.component';
 
 @Component({
   selector: 'app-students-names-in-class',
   standalone: true,
-  imports: [FormsModule, CommonModule , PdfPrintComponent],
+  imports: [FormsModule, CommonModule, PdfPrintComponent],
   templateUrl: './students-names-in-class.component.html',
   styleUrl: './students-names-in-class.component.css'
 })
@@ -54,9 +51,9 @@ export class StudentsNamesInClassComponent {
   direction: string = "";
 
   showPDF = false;
-  AcademicYearName :string = ""
-  GradeName :string = ""
-
+  AcademicYearName: string = ""
+  GradeName: string = ""
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
 
   constructor(
     public account: AccountService,
@@ -67,7 +64,7 @@ export class StudentsNamesInClassComponent {
     public classroomService: ClassroomService,
     public acadimicYearService: AcadimicYearService,
     public studentService: StudentService,
-    public reportsService: ReportsService
+    public reportsService: ReportsService,
   ) { }
 
   ngOnInit() {
@@ -126,7 +123,7 @@ export class StudentsNamesInClassComponent {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.GradeId = Number(selectedValue)
     if (this.GradeId) {
-      this.GradeName = this.Grades.find(s=>s.id==this.GradeId)?.name  ?? ""
+      this.GradeName = this.Grades.find(s => s.id == this.GradeId)?.name ?? ""
       this.GetClassData();
     }
   }
@@ -145,7 +142,7 @@ export class StudentsNamesInClassComponent {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.AcademicYearId = Number(selectedValue)
     if (this.AcademicYearId) {
-      this.AcademicYearName = this.AcademicYears.find(s=>s.id==this.AcademicYearId)?.name  ?? ""
+      this.AcademicYearName = this.AcademicYears.find(s => s.id == this.AcademicYearId)?.name ?? ""
       this.GetClassData();
     }
   }
@@ -179,6 +176,7 @@ export class StudentsNamesInClassComponent {
         this.StudentData = d.students
         this.class = d.class
         this.school = d.school
+        console.log("fdfd",this.school)
         this.studentsCount = d.studentsCount
         this.date = d.date
         this.date = this.formatDate(this.date, this.direction);
@@ -193,48 +191,65 @@ export class StudentsNamesInClassComponent {
   }
 
   Print() {
-    let element = document.getElementById("Data");
-    if (!element) {
-      console.error("Element not found!");
-      return;
-    }
-
-    element.classList.remove("hidden");
-
+    this.showPDF = true;
     setTimeout(() => {
-      this.reportsService.PrintPDF("List of students' names in class")
-
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+  
+      // Create a print-specific stylesheet
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { 
+            margin: 0; 
+          }
+  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+  
+      // Create a container for printing
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+  
+      // Add to body and print
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      // Clean up
       setTimeout(() => {
-        element.classList.add("hidden");
-      }, 1000);
-    }, 200);
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
   }
-
-  // DownloadAsPDF() {
-  //   let element = document.getElementById("Data");
-  //   console.log("Element", element)
-  //   if (!element) {
-  //     console.error("Element not found!");
-  //     return;
-  //   }
-
-  //   element.style.display = 'block';
-  //   element.style.top = '0px';
-  //   element.style.left = '0px';
-  //   element.style.zIndex = '-5';
-
-  //   setTimeout(() => {
-  //     this.reportsService.DownloadAsPDF("List of students' names in class")
-
-  //     setTimeout(() => {
-  //       element.style.display = 'none';
-  //     }, 1000);
-  //   }, 200);
-  // }
 
   DownloadAsPDF() {
     this.showPDF = true;
-    setTimeout(() => this.showPDF = false, 1); 
+    console.log(this.school)
+    setTimeout(() => {
+      this.pdfComponentRef.downloadPDF(); // Call manual download
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500);
   }
 
   async DownloadAsExcel() {
@@ -251,9 +266,9 @@ export class StudentsNamesInClassComponent {
         { key: 'Number of Students', value: this.studentsCount },
         { key: 'Date', value: this.date },
         { key: 'Session', value: '2024/2025' },
-        { key: 'School', value:  this.school.name },
+        { key: 'School', value: this.school.name },
         { key: 'Year', value: this.AcademicYearName },
-        { key: 'Grade', value:  this.GradeName }
+        { key: 'Grade', value: this.GradeName }
 
       ],
       reportImage: this.school.reportImage,
@@ -261,11 +276,11 @@ export class StudentsNamesInClassComponent {
       tables: [
         {
           title: "Students List",
-          headers: ['ID', 'Name', 'Mobile', 'Nationality', 'Gender'],
+          headers: ['id', 'en_name', 'mobile', 'nationalityName', 'genderName'],
           data: this.StudentData.map((row) => [row.id, row.en_name, row.mobile, row.nationalityName, row.genderName])
         }
       ]
     });
   }
-  
+
 }

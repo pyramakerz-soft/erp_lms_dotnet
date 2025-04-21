@@ -31,7 +31,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './subject.component.css'
 })
 export class SubjectComponent {
-  keysArray: string[] = ['id', 'en_name','ar_name','gradeName','orderInCertificate','creditHours','subjectCode','passByDegree','totalMark','subjectCategoryName','numberOfSessionPerWeek','insertedAt'];
+  keysArray: string[] = ['id', 'en_name','ar_name','gradeName','orderInCertificate','creditHours','subjectCode','passByDegree','totalMark','subjectCategoryName','numberOfSessionPerWeek' ];
   key: string= "id";
   value: any = "";
 
@@ -141,7 +141,7 @@ export class SubjectComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

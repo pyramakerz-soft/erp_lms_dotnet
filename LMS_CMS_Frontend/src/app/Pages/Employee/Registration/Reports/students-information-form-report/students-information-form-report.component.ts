@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PdfPrintComponent } from '../../../../../Component/pdf-print/pdf-print.component';
@@ -63,6 +63,7 @@ export class StudentsInformationFormReportComponent {
   ArabicCurrentDate : any =new Date()
   direction: string = "";
   tableData: any[]=[];
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -130,28 +131,67 @@ export class StudentsInformationFormReportComponent {
   }
 
   Print() {
-    let element = document.getElementById("Data");
-    if (!element) {
-      console.error("Element not found!");
-      return;
-    }
-
-    element.classList.remove("hidden");
-
+    this.showPDF = true;
     setTimeout(() => {
-      this.reportsService.PrintPDF("List of students' names in class")
-
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+  
+      // Create a print-specific stylesheet
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { 
+            margin: 0; 
+          }
+  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+  
+      // Create a container for printing
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+  
+      // Add to body and print
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      // Clean up
       setTimeout(() => {
-        element.classList.add("hidden");
-      }, 1000);
-    }, 200);
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
   }
 
   DownloadAsPDF() {
-    
     this.showPDF = true;
-    setTimeout(() => this.showPDF = false, 1);
+    console.log(this.school)
+    setTimeout(() => {
+      this.pdfComponentRef.downloadPDF(); // Call manual download
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500);
   }
+
 
   formatDate(dateString: string, dir: string): string {
     const date = new Date(dateString);
@@ -160,12 +200,11 @@ export class StudentsInformationFormReportComponent {
   }
 
   async DownloadAsExcel() {
-    // Transform DataToPrint into Excel tables
-    const tables = this.DataToPrint.map((section: { header: any; data: any[]; }) => ({
-      title: section.header,
-      headers: ['Field', 'Value'],
-      data: section.data.map((item: { key: any; value: any; }) => [item.key, item.value])
-    }));
+    const headers = ['No', 'Name', 'الاسم', 'Mobile_1', 'Mobile_2', 'Passport', 'Nationality', 'Note', 'Date_Of_Birth', 'Place_Of_Birth', 'Passport_Expired', 'identities_Expired', 'Admission_Date', 'Identity_of_Father', 'Email_Address', 'Bus', 'Religion', 'Pre_School'];
+  
+    const dataRows = this.tableData.map(row =>
+      headers.map(header => row[header] ?? '')
+    );
   
     await this.reportsService.generateExcelReport({
       mainHeader: {
@@ -180,11 +219,17 @@ export class StudentsInformationFormReportComponent {
       ],
       infoRows: [
         { key: 'Date', value: this.CurrentDate },
-        { key: 'School', value:  this.school.name }
+        { key: 'School', value: this.school.name }
       ],
       reportImage: this.school.reportImage,
       filename: "Student Information Report.xlsx",
-      tables: tables // ✅ dynamic table sections from your actual data
+      tables: [
+        {
+          title: "Students List",
+          headers,
+          data: dataRows
+        }
+      ]
     });
   }
   
@@ -199,27 +244,26 @@ export class StudentsInformationFormReportComponent {
             this.students=d.students
             this.tableData = this.students.map((student: any, index: number) => {
               return {
-                id: index + 1, // No
-                en_name: student.en_name || '',
-                ar_name: student.ar_name || '',
-                mobile1: student.mobile || '',
-                mobile2: student.phone || '',
-                passportNo: student.passportNo || '',
-                nationalityName: student.nationalityEnName || '',
-                note: student.note || '',
-                dateOfBirth: student.dateOfBirth || '',
-                placeOfBirth: student.placeOfBirth || '',
-                passportExpiredDate: student.passportExpiredDate || '',
-                nationalIDExpiredDate: student.nationalIDExpiredDate || '',
-                admissionDate: student.admissionDate || '',
-                guardianNationalID: student.guardianNationalID || '',
-                email: student.email || '',
-                bus: student.isRegisteredToBus ? 'Yes' : 'No',
-                religion: student.religion || '',
-                previousSchool: student.previousSchool || ''
+                No: index + 1, // No
+                Name: student.en_name || '',
+                الاسم: student.ar_name || '',
+                Mobile_1: student.mobile || '',
+                Mobile_2: student.phone || '',
+                Passport: student.passportNo || '',
+                Nationality: student.nationalityEnName || '',
+                Note: student.note || '',
+                Date_Of_Birth: student.dateOfBirth || '',
+                Place_Of_Birth: student.placeOfBirth || '',
+                Passport_Expired: student.passportExpiredDate || '',
+                identities_Expired: student.nationalIDExpiredDate || '',
+                Admission_Date: student.admissionDate || '',
+                Identity_of_Father: student.guardianNationalID || '',
+                Email_Address: student.email || '',
+                Bus: student.isRegisteredToBus ? 'Yes' : 'No',
+                Religion: student.religion || '',
+                Pre_School: student.previousSchool || ''
               };
             });
-            console.log("data",d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             this.ArabicCurrentDate = new Date(this.CurrentDate).toLocaleDateString('ar-EG', {
@@ -228,8 +272,6 @@ export class StudentsInformationFormReportComponent {
               month: 'long',
               day: 'numeric'
             });
-            console.log("this.CurrentDate",this.CurrentDate)
-
             resolve();
           },
           error: (err) => {

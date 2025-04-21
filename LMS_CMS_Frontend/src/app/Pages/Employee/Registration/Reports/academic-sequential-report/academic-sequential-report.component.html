@@ -1,0 +1,140 @@
+<div class="flex justify-between mb-3">
+    <h1 class="font-semibold text-2xl leading-9">Academic Sequential Report</h1>
+</div>
+
+<div class="flex justify-start items-center space-x-4">
+    <div class="w-[49%]">
+        <label for="School1" class="block mb-2 text-sm font-medium text-gray-900">School</label>
+        <select id="School1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+            [(ngModel)]="SelectedSchoolId" (change)="getAllStudents()">
+            <option value=0 disabled selected hidden>Select a School</option>
+            <option *ngFor="let stu of schools" [value]="stu.id">
+                {{ stu.name }}
+            </option>
+        </select>
+    </div>
+    <div class="w-[49%]">
+        <label for="Student" class="block mb-2 text-sm font-medium text-gray-900">Student</label>
+        <ng-container *ngIf="!isSearching">
+            <select id="Student" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                [(ngModel)]="SelectedStudentId"  [disabled]="!SelectedSchoolId">
+                <option value="0" disabled selected hidden>Select a Student</option>
+                <option *ngFor="let ac of filteredStudents" [value]="ac.id">
+                    {{ ac.user_Name }}
+                </option>
+            </select>
+        </ng-container>
+        <ng-container *ngIf="isSearching">
+            <input type="text" id="StudentSearch"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                [(ngModel)]="searchQuery" (input)="searchStudents()" placeholder="Search by Name">
+        </ng-container>
+    </div>
+    <div class="mt-7 ml-2">
+        <button class="p-3 font-medium text-xl rounded-lg" (click)="ViewReport()"
+            [disabled]="!SelectedSchoolId || !SelectedStudentId "
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedStudentId , 'secondaryBg text-white': SelectedSchoolId && SelectedStudentId}">View
+            Report</button>
+    </div>
+</div>
+
+<div class="flex justify-start items-center mt-2">
+   
+</div>
+
+<div *ngIf="showTable" class="mt-5 flex justify-end space-x-4">
+    <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()">
+    <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()">
+</div>
+
+<div *ngIf="showTable" class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+    <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Mobile
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Nationality
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Gender
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="border-t border-gray-300 text-xs md:text-sm bg-white">
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ SelectedStudent.id }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ SelectedStudent.en_name }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ SelectedStudent.mobile }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ this.DataToPrint.student.nationalityEnName }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ SelectedStudent.genderName }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'School Leaving Certificate'" [Title]="'School Leaving Certificate'"
+        [infoRows]="[
+        {
+          keyEn: 'Students`s Name : ' + this.DataToPrint.student.en_name,
+          keyAr: 'اسم الطالب : ' + this.DataToPrint.student.ar_name
+        },
+        {
+          keyEn: 'Date Of Birth : ' + this.CurrentDate,
+          keyAr: ' تاريخ الميلاد : '  + this.ArabicCurrentDate
+        },
+        {
+          keyEn: 'Nationality :  ' + this.DataToPrint.student.nationalityEnName,
+          keyAr: ' الجنسية :' + this.DataToPrint.student.nationalityArName
+        },
+        {
+            keyEn: ' Passport No : ' + this.DataToPrint.student.passportNo,
+            keyAr: 'رقم جواز السفر : ' + this.DataToPrint.student.passportNo
+          },
+        {
+          keyEn: 'Date of Admission :  ' +this.DataToPrint.student.insertedAt ,
+          keyAr: ' تاريخ الالتحاق بالمدرسة  : ' + this.DataToPrint.student.insertedAt
+        },
+        {
+            keyEn: 'Current Grade :  ' +this.DataToPrint.student.currentGradeName ,
+            keyAr: ' الصف الدراسي الحالى :  '     + this.DataToPrint.student.currentGradeName
+          },
+        {
+          keyEn: 'Learning Oasis international school Certificates that the student mentioned above has been a student of the school and has completed the grade/s as shown below.',
+          keyAr: 'نشهد مدارس واحة العلم العالمية ان الطالب المذكور اعلاه هو احد الطلاب المنتظمين في المدرسة وقد انهي الصفوف الدراسية علي النحة الموضح ادناه  '
+        }
+      ]
+      " 
+      [tableHeaders]="['Grade', 'Academic_Year']"[tableData]="TableData"
+      [PsNotes]="[
+        {
+            EnNote: 'Best Regards ,',
+            ArNote: 'وتقبلوا فائق التحيةوالاحترام '
+        },
+        {
+            EnNote: 'Administration ',
+            ArNote: 'ادارة المدرسة'
+        }
+      ]
+      " #pdfComponentRef></app-pdf-print>
+    </div>
+</div>

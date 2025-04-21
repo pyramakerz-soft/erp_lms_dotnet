@@ -152,6 +152,9 @@ export class RoleAddEditComponent {
 
   }
 
+  moveToRoles() {
+    this.router.navigateByUrl(`Employee/Role`)
+  }
 
   togglePageCollapse(rowIndex: number, pageIndex: number) {
     this.PagecollapseStates[rowIndex][pageIndex] = !this.PagecollapseStates[rowIndex][pageIndex];
@@ -262,7 +265,6 @@ export class RoleAddEditComponent {
     // Update the selected page
     if (parentId == null) parentId = 0
     const selectedPage = this.ResultArray.find(item => item.Rowkey === parentId && item.pageId === id);
-    console.log(selectedPage, newState)
     if (selectedPage) {
       selectedPage.IsSave = newState;
       selectedPage.allow_Delete = newState;
@@ -283,38 +285,38 @@ export class RoleAddEditComponent {
     this.DataToSave.pages = resultItems;
     if (this.isFormValid()) {
       this.isLoading=true
-      if (this.DataToSave.pages.length == 0) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          confirmButtonColor: '#FF7519',
-          text: "Pages list cannot be null or empty",
+      if (this.mode == "Create") {
+        this.RoleServ.AddRole(this.DataToSave, this.DomainName).subscribe({
+          next: (response) => {
+            this.router.navigateByUrl("Employee/Role")
+          },
+          error: (error) => {
+            console.log(error)
+            this.isLoading=false
+            const errorMessage = error?.error || 'An unexpected error occurred';
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              confirmButtonColor: '#FF7519',
+              text: errorMessage,
+            });
+          },
         });
       }
-      else {
-        if (this.mode == "Create") {
-          this.RoleServ.AddRole(this.DataToSave, this.DomainName).subscribe({
-            next: (response) => {
-              this.router.navigateByUrl("Employee/Role")
-            },
-            error: (error) => {
-              this.isLoading=false
-              const errorMessage = error?.error || 'An unexpected error occurred';
+      else if (this.mode == "Edit") {
+        this.RoleServ.EditRole(this.DataToSave, this.DomainName).subscribe({
+          next: (response) => {
+            this.router.navigateByUrl("Employee/Role")
+          },
+          error: (error) => { 
+            if(error.error.status == 401){
               Swal.fire({
                 icon: 'error',
                 title: 'Error',
                 confirmButtonColor: '#FF7519',
-                text: errorMessage,
+                text: "You Are Not Allowed To Edit This",
               });
-            },
-          });
-        }
-        else if (this.mode == "Edit") {
-          this.RoleServ.EditRole(this.DataToSave, this.DomainName).subscribe({
-            next: (response) => {
-              this.router.navigateByUrl("Employee/Role")
-            },
-            error: (error) => {
+            }else{
               const errorMessage = error?.error || 'An unexpected error occurred';
               this.isLoading=false
               Swal.fire({
@@ -323,9 +325,9 @@ export class RoleAddEditComponent {
                 confirmButtonColor: '#FF7519',
                 text: errorMessage,
               });
-            },
-          });
-        }
+            }
+          },
+        });
       }
     }
   }
@@ -353,6 +355,17 @@ export class RoleAddEditComponent {
         }
       }
     }
+
+    if (this.DataToSave.pages.length == 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        confirmButtonColor: '#FF7519',
+        text: "Pages list cannot be null or empty",
+      });
+      isValid = false;
+    } 
+
     return isValid;
   }
   capitalizeField(field: keyof RolePut): string {

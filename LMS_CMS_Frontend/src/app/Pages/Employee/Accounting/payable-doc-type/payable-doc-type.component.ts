@@ -58,6 +58,8 @@ export class PayableDocTypeComponent {
 
   validationErrors: { [key in keyof PayableDocType]?: string } = {};
 
+  isLoading = false
+
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -91,6 +93,7 @@ export class PayableDocTypeComponent {
   }
 
   GetAllData() {
+    this.TableData = []
     this.PayableDocTypeServ.Get(this.DomainName).subscribe((d) => {
       this.TableData = d
     })
@@ -148,23 +151,46 @@ export class PayableDocTypeComponent {
 
   CreateOREdit() {
     if (this.isFormValid()) {
+      this.isLoading = true
       if (this.mode == 'Create') {
         this.PayableDocTypeServ.Add(this.data, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal()
+        },
+        err => {
+          this.isLoading = false
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         })
       }
       if (this.mode == 'Edit') {
         this.PayableDocTypeServ.Edit(this.data, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal()
+        },
+        err => {
+          this.isLoading = false
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Try Again Later!',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
         })
       }
     }
   }
 
   closeModal() {
-    this.isModalVisible = false;
+    this.isModalVisible = false;    
+    this.validationErrors = {}
+    this.isLoading = false
   }
 
   openModal() {
@@ -221,7 +247,7 @@ export class PayableDocTypeComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

@@ -204,5 +204,7 @@ export class StockingComponent {
         this.PageSize = 0
      }
    }
+
+   
  }
  

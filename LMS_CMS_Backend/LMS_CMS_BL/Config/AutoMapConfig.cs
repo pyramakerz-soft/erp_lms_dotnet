@@ -143,6 +143,7 @@ namespace LMS_CMS_BL.Config
               .ForMember(dest => dest.GuardianWorkPlace, opt => opt.MapFrom(src => src.Parent.WorkPlace))
               .ForMember(dest => dest.GuardianEmail, opt => opt.MapFrom(src => src.Parent.Email))
               .ForMember(dest => dest.GuardianProfession, opt => opt.MapFrom(src => src.Parent.Profession))
+              .ForMember(dest => dest.StartAcademicYearName, opt => opt.MapFrom(src => src.StartAcademicYear.Name))
               .ForMember(dest => dest.GenderName, opt => opt.MapFrom(src => src.Gender.Name));
             CreateMap<StudentGetDTO, Student>();
 
@@ -274,6 +275,12 @@ namespace LMS_CMS_BL.Config
             CreateMap<Classroom, ClassroomGetDTO>()
                 .ForMember(dest => dest.GradeName, opt => opt.MapFrom(src => src.Grade.Name))
                 .ForMember(dest => dest.AcademicYearName, opt => opt.MapFrom(src => src.AcademicYear.Name))
+                .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.AcademicYear.SchoolID))
+                .ForMember(dest => dest.SchoolName, opt => opt.MapFrom(src => src.AcademicYear.School.Name))
+                .ForMember(dest => dest.SectionID, opt => opt.MapFrom(src => src.Grade.SectionID))
+                .ForMember(dest => dest.SectionName, opt => opt.MapFrom(src => src.Grade.Section.Name))
+                .ForMember(dest => dest.BuildingID, opt => opt.MapFrom(src => src.Floor.buildingID))
+                .ForMember(dest => dest.BuildingName, opt => opt.MapFrom(src => src.Floor.building.Name))
                 .ForMember(dest => dest.FloorName, opt => opt.MapFrom(src => src.Floor.Name));
             CreateMap<ClassroomAddDTO, Classroom>();
             CreateMap<Classroom, ClassroomAddDTO>();
@@ -356,6 +363,8 @@ namespace LMS_CMS_BL.Config
             CreateMap<RegisterationFormInterview, RegisterationFormInterviewGetDTO>()
                .ForMember(dest => dest.InterviewStateName, opt => opt.MapFrom(src => src.InterviewState.Name))
                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentName))
+               .ForMember(dest => dest.StudentEnName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentEnName))
+               .ForMember(dest => dest.StudentArName, opt => opt.MapFrom(src => src.RegisterationFormParent.StudentArName))
                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.RegisterationFormParent.Phone))
                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.RegisterationFormParent.Email))
                .ForMember(dest => dest.GradeID, opt => opt.MapFrom(src => src.RegisterationFormParent.GradeID))
@@ -672,9 +681,23 @@ namespace LMS_CMS_BL.Config
                 .ForMember(dest => dest.ClassRoom, opt => opt.MapFrom(src => src.Classroom.Name));
             CreateMap<HygieneFormPutDTO, HygieneForm>()
                 .ForMember(dest => dest.StudentHygieneTypes, opt => opt.Ignore());
-            
+
             CreateMap<StudentHygieneTypes, StudentHygieneTypesGetDTO>()
-                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name));
+                .ForMember(dest => dest.Student, opt => opt.MapFrom(src => src.Student.en_name))
+                .AfterMap(async (src, dest) =>
+                {
+                    if (src.HygieneTypes != null && _context != null)
+                    {
+                        foreach (var ht in src.HygieneTypes)
+                        {
+                            //var hygieneType = await _context.HygieneTypes.FirstOrDefaultAsync(h => h.Id == ht.Id);
+                            //if (hygieneType != null)
+                            //{
+                                dest.HygieneTypes.Add(ht);
+                            //}
+                        }
+                    }
+                });
             CreateMap<StudentHygieneTypesAddDTO, StudentHygieneTypes>()
                 .AfterMap(async (src, dest) =>
                 {

@@ -78,9 +78,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             Classroom classroom = await Unit_Of_Work.classroom_Repository.FindByIncludesAsync(
                 t => t.IsDeleted != true && t.ID == id,
-                query => query.Include(e => e.Floor),
-                query => query.Include(emp => emp.AcademicYear),
-                query => query.Include(emp => emp.Grade)
+                query => query.Include(e => e.Floor).ThenInclude(d => d.building),
+                query => query.Include(emp => emp.AcademicYear).ThenInclude(d => d.School),
+                query => query.Include(emp => emp.Grade).ThenInclude(d => d.Section)
                 );
 
 
@@ -190,6 +190,57 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             return Ok(classroomsDTO);
         }
 
+        [HttpGet("ByAcademicYearID/{AcYeaId}")]
+        [Authorize_Endpoint_(
+          allowedTypes: new[] { "octa", "employee" },
+          pages: new[] { "Classroom" }
+        )]
+        public async Task<IActionResult> GetByAcYearIdAsync(long AcYeaId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<Classroom> classrooms = await Unit_Of_Work.classroom_Repository.Select_All_With_IncludesById<Classroom>(
+                    f => f.IsDeleted != true && f.AcademicYearID == AcYeaId,
+                    query => query.Include(emp => emp.Grade),
+                    query => query.Include(emp => emp.AcademicYear),
+                    query => query.Include(emp => emp.Floor)
+                    );
+
+            if (classrooms == null || classrooms.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<ClassroomGetDTO> classroomsDTO = mapper.Map<List<ClassroomGetDTO>>(classrooms);
+
+            return Ok(classroomsDTO);
+        }
+
+        [HttpGet("ByActiveAcademicYearID")]
+        [Authorize_Endpoint_(
+          allowedTypes: new[] { "octa", "employee" },
+          pages: new[] { "Classroom" }
+        )]
+        public async Task<IActionResult> ByActiveAcademicYearID()
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<Classroom> classrooms = await Unit_Of_Work.classroom_Repository.Select_All_With_IncludesById<Classroom>(
+                    f => f.IsDeleted != true && f.AcademicYear.IsActive == true,
+                    query => query.Include(emp => emp.Grade),
+                    query => query.Include(emp => emp.AcademicYear),
+                    query => query.Include(emp => emp.Floor)
+                    );
+
+            if (classrooms == null || classrooms.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<ClassroomGetDTO> classroomsDTO = mapper.Map<List<ClassroomGetDTO>>(classrooms);
+
+            return Ok(classroomsDTO);
+        }
 
         [HttpPost]
         [Authorize_Endpoint_(
@@ -503,8 +554,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpPost("AddStudentToClassroom/{registrationFormParentID}/{classroomid}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Classroom" }
+            allowedTypes: new[] { "octa", "employee" }
         )]
         public async Task<IActionResult> AddStudent(long registrationFormParentID, long classroomid)
         {
@@ -548,7 +598,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
 
                 StudentGetDTO studentDto = await _createStudentService.CreateStudentDtoObj(Unit_Of_Work, registrationFormParentID);
-                Student student = await _createStudentService.CreateNewStudent(Unit_Of_Work, studentDto, userTypeClaim, userId);
+                Student student = await _createStudentService.CreateNewStudent(Unit_Of_Work, studentDto, userTypeClaim, userId, AccademicYearId);
                  
                 StudentAcademicYear studentAcademicYear = new StudentAcademicYear
                 {

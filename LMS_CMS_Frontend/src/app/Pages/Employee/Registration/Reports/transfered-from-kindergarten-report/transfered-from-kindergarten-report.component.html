@@ -1,0 +1,161 @@
+<div class="flex justify-between mb-3">
+    <h1 class="font-semibold text-2xl leading-9">Transfered From Kindergarten Report</h1>
+</div>
+
+<div class="flex justify-start items-center space-x-4">
+    <div class="w-[49%]">
+        <label for="School1" class="block mb-2 text-sm font-medium text-gray-900">School</label>
+        <select id="School1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+            [(ngModel)]="SelectedSchoolId" (change)="getAllYears()">
+            <option value=0 disabled selected hidden>Select a School</option>
+            <option *ngFor="let stu of schools" [value]="stu.id">
+                {{ stu.name }}
+            </option>
+        </select>
+    </div>
+    <div class="w-[49%]">
+        <label for="Year" class="block mb-2 text-sm font-medium text-gray-900">Year</label>
+        <select id="Year" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+            [(ngModel)]="SelectedYearId" (change)="getAllStudents()" [disabled]="!SelectedSchoolId">
+            <option value=0 disabled selected hidden>Select a Year</option>
+            <option *ngFor="let ac of academicYears" [value]="ac.id">
+                {{ ac.name }}
+            </option>
+        </select>
+    </div>
+</div>
+
+<div class="flex justify-start items-center mt-2">
+    <div class="w-[80%]">
+        <label for="Student" class="block mb-2 text-sm font-medium text-gray-900">Student</label>
+        <ng-container *ngIf="!isSearching">
+            <select id="Student" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                [(ngModel)]="SelectedStudentId" [disabled]="!SelectedSchoolId || !SelectedYearId">
+                <option value="0" disabled selected hidden>Select a Student</option>
+                <option *ngFor="let ac of filteredStudents" [value]="ac.id">
+                    {{ ac.user_Name }}
+                </option>
+            </select>
+        </ng-container>
+        <ng-container *ngIf="isSearching">
+            <input type="text" id="StudentSearch"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                [(ngModel)]="searchQuery" (input)="searchStudents()" placeholder="Search by Name">
+        </ng-container>
+    </div>
+
+    <!-- <div
+        class="w-[58px] h-[45px] gap-[8px] border-t border-r border-b border-l-0 border-solid border-gray-300 rounded-tr-[8px] rounded-br-[8px] pt-[12px] pr-[16px] pb-[12px] pl-[16px] mt-7">
+        <i class="fas fa-search ltr:mr-3 rtl:ml-3 text-gray-500"
+            style="width: 22.51px; height: 22.51px; font-size: 22.51px;" (click)="toggleSearchMode()">
+        </i>
+    </div> -->
+
+
+    <div class="mt-7 ml-2">
+        <button class="p-3 font-medium text-xl rounded-lg" (click)="ViewReport()"
+            [disabled]="!SelectedSchoolId || !SelectedStudentId || !SelectedYearId"
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedStudentId || !SelectedYearId, 'secondaryBg text-white': SelectedSchoolId && SelectedStudentId && SelectedYearId }">View
+            Report</button>
+    </div>
+</div>
+
+<div *ngIf="showTable" class="mt-5 flex justify-end space-x-4">
+    <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()">
+    <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()">
+</div>
+
+<div *ngIf="showTable" class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+    <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Mobile
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Nationality
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Gender
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="border-t border-gray-300 text-xs md:text-sm bg-white">
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ SelectedStudent.id }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ SelectedStudent.en_name }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ SelectedStudent.mobile }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ this.DataToPrint.student.nationalityEnName}}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ SelectedStudent.genderName }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'"
+            [Title]="'Report Of Success'" [infoRows]="[
+        {
+            keyEn: 'Student`s Name / ' + this.DataToPrint.student.en_name,
+            keyAr: ' اسم الطالب / الطالبة' + this.DataToPrint.student.ar_name
+        },
+        {
+          keyEn:' Nationality' + this.DataToPrint.student.nationalityEnName,
+          keyAr: ' الجنسية / ' + this.DataToPrint.student.nationalityArName
+        },
+        {
+            keyEn:' Place and date of birth ' + this.DataToPrint.student.dateOfBirth,
+            keyAr: 'مكان وتاريخ الميلاد / ' + this.DataToPrint.student.dateOfBirth
+        },  {
+            keyEn:' Passport No' + this.DataToPrint.student.passportNo,
+            keyAr: ' رقم جواز السفر / ' + this.DataToPrint.student.passportNo
+        },
+        {
+            keyEn: 'Id no ' + this.DataToPrint.student.nationalIDExpiredDate,
+            keyAr: 'السجل المدنى / ' + this.DataToPrint.student.nationalIDExpiredDate
+        },
+        {
+            keyEn: 'Admission Date' + this.DataToPrint.student.admissionDate,
+            keyAr: 'تاريخ الالتحاق بالمدرسة / ' + this.DataToPrint.student.admissionDate
+        },
+        {
+          keyEn: 'Previous School ' +this.DataToPrint.student.previousSchool ,
+          keyAr: 'اسم المدرسة السابقة ' + this.DataToPrint.student.previousSchool
+        }
+        ,
+        {
+          keyEn: 'Under the supervision of the ministry of education license (520-1567)
+           Kindergarten Section This is to certify that leaner ,
+          ' + this.DataToPrint.student.en_name + 'is registered in the School academic Year' + this.DataToPrint.student.currentAcademicYear + '
+          And Promoted to ' + this.DataToPrint.student.currentGradeName + 'in the School academic Year ' + this.DataToPrint.student.startAcademicYearName
+        }
+      ]
+      " [PsNotes]="[
+        {
+            EnNote: 'Best Regards ,',
+            ArNote: 'قائدة رياض الاطفال  '
+        },
+        {
+            ArNote: 'الاسم'
+        }
+      ]
+      " #pdfComponentRef></app-pdf-print>/app-pdf-print>
+    </div>
+</div>

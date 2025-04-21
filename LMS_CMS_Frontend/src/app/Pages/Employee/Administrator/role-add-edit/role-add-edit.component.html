@@ -4,7 +4,10 @@
 
 <div *ngIf="!loading">
     <div class="flex justify-between mb-2">
-        <h1 class="font-semibold text-2xl leading-9">Role</h1>
+        <div class="flex justify-between items-center space-x-5">
+            <i class="fa-solid fa-chevron-left" (click)="moveToRoles()"></i> 
+            <h1 class="font-semibold text-2xl leading-9">Role</h1>
+        </div>
         <div class="flex justify-between items-center">
             <button
             [disabled]="isLoading"

@@ -44,14 +44,13 @@ export class RegistrationFormTestAnswerComponent {
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
-  AllowDeleteForOthers: boolean = false;
-
-  mode: string = 'Create'
+  AllowDeleteForOthers: boolean = false; 
 
   isModalVisible: boolean = false;
   TestId: number = 0
   RegisterFormParentID: number = 0
   RegisterFormID: number = 0
+  RegisterFormState: number = 0
 
   TestName: string = ""
   MarkIsEmpty : boolean=false;
@@ -82,6 +81,10 @@ export class RegistrationFormTestAnswerComponent {
         this.RegisterFormParentID = Number(params.get('Pid')); 
         this.TestId = Number(params.get('Tid')); 
         this.RegisterFormID = Number(params.get('Rid')); 
+
+        this.RegesterForm.registerationFormParentID=this.RegisterFormParentID;
+        this.RegesterForm.testID=this.TestId;
+        this.RegesterForm.id=this.RegisterFormID;
       });
     });
 
@@ -101,6 +104,9 @@ export class RegistrationFormTestAnswerComponent {
   GetAllData() {
     this.Data=[]
     this.registerServ.GetByRegistrationParentId(this.RegisterFormParentID, this.TestId, this.DomainName).subscribe((d: any) => {
+      this.RegesterForm.mark=d.mark
+      this.RegesterForm.visibleToParent=d.isVisibleToParent
+      this.RegesterForm.stateID=d.State
       this.Data = d.questionWithAnswer;
       this.TestName = d.testName
     })
@@ -118,14 +124,11 @@ export class RegistrationFormTestAnswerComponent {
     this.isModalVisible = false;
   }
 
-  AddDegree() {
-    this.RegesterForm=new RegisterationFormTest()
-    this.openModal();
-  
+  AddDegree() {  
+    this.openModal(); 
   }
 
-  Save() {
-    this.RegesterForm.testID=this.TestId;
+  Save() { 
     this.RegesterForm.registerationFormParentID=this.RegisterFormParentID;
     this.RegesterForm.testID=this.TestId;
     this.RegesterForm.id=this.RegisterFormID;

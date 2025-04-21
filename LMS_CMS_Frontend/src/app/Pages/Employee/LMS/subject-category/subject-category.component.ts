@@ -21,7 +21,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './subject-category.component.css'
 })
 export class SubjectCategoryComponent {
-  keysArray: string[] = ['id', 'name','insertedAt'];
+  keysArray: string[] = ['id', 'name'];
   key: string= "id";
   value: any = "";
 
@@ -119,7 +119,7 @@ export class SubjectCategoryComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

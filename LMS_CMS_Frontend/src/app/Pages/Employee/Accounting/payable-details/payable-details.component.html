@@ -27,7 +27,7 @@
                     <input id="DocType" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 text-lg"
                     [disabled]="isView"
                         (input)="validateNumberPayable($event, 'docNumber')" 
-                        placeholder="Enter Doc Type" [(ngModel)]="payable.docNumber" />
+                        placeholder="Enter Doc Number" [(ngModel)]="payable.docNumber" />
                 </div>
                 <div class="flex flex-col w-[30%]"> 
                     <div class="mb-2 flex justify-evenly">
@@ -171,9 +171,10 @@
                             </textarea>
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            <div class="flex space-x-4">
-                                <button (click)="SaveNewDetails()" [disabled]="!isDetailsValid" [ngClass]="{'cursor-not-allowed opacity-50' : !isDetailsValid}">
-                                    <i class="fa-solid fa-check secondaryTxt secondaryBorder rounded-full p-1"></i>
+                            <div class="flex space-x-4">  
+                                <button [disabled]="!isDetailsValid || isLoading" [ngClass]="{'cursor-not-allowed opacity-50' : !isDetailsValid}">
+                                    <i (click)="SaveNewDetails()" *ngIf="!isLoading" class="fa-solid fa-check secondaryTxt secondaryBorder rounded-full p-1"></i>
+                                    <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
                                 </button> 
                             </div>
                         </td>

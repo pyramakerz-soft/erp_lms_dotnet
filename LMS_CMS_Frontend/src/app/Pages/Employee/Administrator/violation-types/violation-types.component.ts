@@ -228,10 +228,16 @@ export class ViolationTypesComponent {
   }
 
   selectEmployeeType(employeeType: EmployeeTypeGet): void {
+    console.log(employeeType)
+    console.log(this.empTypesSelected)
     if (!this.empTypesSelected.some((e) => e.id === employeeType.id)) {
       this.empTypesSelected.push(employeeType);
     }
-    this.violation.employeeTypeID.push(employeeType.id);
+
+    if (!this.violation.employeeTypeID.some((e) => e === employeeType.id)) {
+      this.violation.employeeTypeID.push(employeeType.id);
+    } 
+
     this.dropdownOpen = false; // Close dropdown after selection
   }
 
@@ -268,7 +274,7 @@ export class ViolationTypesComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

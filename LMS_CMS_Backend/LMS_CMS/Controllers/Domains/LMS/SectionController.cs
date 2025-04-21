@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
 
 namespace LMS_CMS_PL.Controllers.Domains.LMS
 {
@@ -21,12 +22,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly CheckPageAccessService _checkPageAccessService;
+        private readonly SchoolHeaderService _schoolHeaderService;
 
-        public SectionController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
+        public SectionController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService, SchoolHeaderService schoolHeaderService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _checkPageAccessService = checkPageAccessService;
+            _schoolHeaderService = schoolHeaderService;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -327,6 +330,138 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             Unit_Of_Work.section_Repository.Update(section);
             Unit_Of_Work.SaveChanges();
             return Ok();
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetClassAndStudentCountsInGradesGroupedBySectionByYearID")]
+        public async Task<IActionResult> GetClassAndStudentCountsInGradesGroupedBySectionByYearID([FromQuery] long schoolId, [FromQuery] long yearId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            if (schoolId == null || schoolId == 0)
+            {
+                return BadRequest("School Id can't be null");
+            }
+
+            if (yearId == null || yearId == 0)
+            {
+                return BadRequest("Academic Year Id can't be null");
+            }
+
+            AcademicYear year = Unit_Of_Work.academicYear_Repository.First_Or_Default(
+                d => d.IsDeleted != true && d.ID == yearId
+                );
+            if (year == null)
+            {
+                return NotFound("No Academic Year with this Id");
+            }
+
+            List<Grade> grades = await Unit_Of_Work.grade_Repository.Select_All_With_IncludesById<Grade>(
+                query => query.IsDeleted != true && query.Section.SchoolID == schoolId,
+                query => query.Include(d => d.Section));
+
+
+            var groupedGrades = grades.GroupBy(grade => grade.Section);
+
+            List<SectionWithGradeAndCountsDTO> sectionWithGradeAndCounts = new List<SectionWithGradeAndCountsDTO>();
+
+            foreach (var group in groupedGrades)
+            {
+                SectionWithGradeAndCountsDTO section = new SectionWithGradeAndCountsDTO();
+                section.ID = group.Key.ID;
+                section.Name = group.Key.Name;
+                section.GradeWithStudentClassCount = new List<GradeWithStudentClassCountDTO>();
+                GradeWithStudentClassCountDTO TotalCounts = new GradeWithStudentClassCountDTO();
+
+                foreach (var grade in group)
+                {
+                    GradeWithStudentClassCountDTO gradeWithStudentClassCountDTO = new GradeWithStudentClassCountDTO();
+                    int StudentCountPerGrade = 0;
+                    int StudentSaudiCountPerGrade = 0;
+                    int StudentNoonCountPerGrade = 0;
+
+                    gradeWithStudentClassCountDTO.ID = grade.ID;
+                    gradeWithStudentClassCountDTO.Name = grade.Name;
+
+                    List<Classroom> classes = Unit_Of_Work.classroom_Repository.FindBy(d => d.IsDeleted != true && d.AcademicYearID == yearId && d.GradeID == grade.ID);
+                    gradeWithStudentClassCountDTO.ClassCount = classes.Count;
+                    TotalCounts.ClassCount = TotalCounts.ClassCount + gradeWithStudentClassCountDTO.ClassCount;
+
+                    for (int i = 0; i < classes.Count; i++)
+                    {
+                        List<StudentAcademicYear> studentAcademicYears = await Unit_Of_Work.studentAcademicYear_Repository.Select_All_With_IncludesById<StudentAcademicYear>(
+                            d => d.IsDeleted != true && d.ClassID == classes[i].ID && d.SchoolID == schoolId && d.GradeID == grade.ID,
+                            query => query.Include(d => d.Student)
+                            );
+
+                        var studentCountPerClass = studentAcademicYears
+                            .Select(d => d.StudentID) 
+                            .Distinct()
+                            .Count();
+
+                        var studentSaudiCountPerClass = studentAcademicYears
+                            .Where(d => d.Student.Nationality == 148)  
+                            .Select(d => d.StudentID)                 
+                            .Distinct()                               
+                            .Count();
+                        
+                        var studentNoonCountPerClass = studentAcademicYears
+                            .Where(d => d.Student.IsRegisteredInNoor == true)  
+                            .Select(d => d.StudentID)                 
+                            .Distinct()                               
+                            .Count();
+
+                        StudentCountPerGrade = StudentCountPerGrade + studentCountPerClass;
+                        StudentSaudiCountPerGrade = StudentSaudiCountPerGrade + studentSaudiCountPerClass;
+                        StudentNoonCountPerGrade = StudentNoonCountPerGrade + studentNoonCountPerClass;
+
+                        gradeWithStudentClassCountDTO.StudentCount = gradeWithStudentClassCountDTO.StudentCount + studentCountPerClass;
+                    }
+
+                    gradeWithStudentClassCountDTO.StudentCount = StudentCountPerGrade;
+                    TotalCounts.StudentCount = TotalCounts.StudentCount + gradeWithStudentClassCountDTO.StudentCount;
+
+                    gradeWithStudentClassCountDTO.SaudiCount = StudentSaudiCountPerGrade;
+                    TotalCounts.SaudiCount = TotalCounts.SaudiCount + gradeWithStudentClassCountDTO.SaudiCount;
+
+                    gradeWithStudentClassCountDTO.NonSaudiCount = StudentCountPerGrade - StudentSaudiCountPerGrade;
+                    TotalCounts.NonSaudiCount = TotalCounts.NonSaudiCount + gradeWithStudentClassCountDTO.NonSaudiCount;
+
+                    gradeWithStudentClassCountDTO.StudentsAssignedToNoorCount = StudentNoonCountPerGrade;
+                    TotalCounts.StudentsAssignedToNoorCount = TotalCounts.StudentsAssignedToNoorCount + gradeWithStudentClassCountDTO.StudentsAssignedToNoorCount;
+
+                    section.GradeWithStudentClassCount.Add(gradeWithStudentClassCountDTO); 
+                }
+
+                section.TotalCounts = TotalCounts;
+                sectionWithGradeAndCounts.Add(section);
+            }
+
+            string timeZoneId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? "Egypt Standard Time"
+                : "Africa/Cairo";
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+
+            School_GetDTO schoolDTO = _schoolHeaderService.GetSchoolHeader(Unit_Of_Work, schoolId, Request);
+
+            return Ok(new
+            {
+                Sections = sectionWithGradeAndCounts,
+                School = schoolDTO,
+                Date = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone)
+            });
         }
     }
 }

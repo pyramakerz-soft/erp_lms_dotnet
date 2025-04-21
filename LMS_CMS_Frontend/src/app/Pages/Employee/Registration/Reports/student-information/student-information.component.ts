@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Student } from '../../../../../Models/student';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -57,6 +57,7 @@ export class StudentInformationComponent {
   CurrentDate : any =new Date()
   direction: string = "";
 
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
   constructor(
     public activeRoute: ActivatedRoute,
     public account: AccountService,
@@ -88,7 +89,6 @@ export class StudentInformationComponent {
       }
     });
     this.getAllSchools()
-    this.getAllStudents()
     this.getAllYears()
   }
 
@@ -113,7 +113,7 @@ export class StudentInformationComponent {
   }
 
   getAllStudents() {
-    this.studentServ.GetAll(this.DomainName).subscribe((d) => {
+    this.studentServ.GetByAcademicYearID(this.SelectedYearId ,this.DomainName).subscribe((d) => {
       this.Students = d;
       this.filteredStudents = d; // Set filtered students to all initially
     });
@@ -133,7 +133,6 @@ export class StudentInformationComponent {
   GetStudentById() {
     this.studentServ.GetByID(this.SelectedStudentId, this.DomainName).subscribe((d) => {
       this.SelectedStudent = d
-      console.log(d)
     })
   }
 
@@ -144,27 +143,64 @@ export class StudentInformationComponent {
   }
 
   Print() {
-    let element = document.getElementById("Data");
-    if (!element) {
-      console.error("Element not found!");
-      return;
-    }
-
-    element.classList.remove("hidden");
-
+    this.showPDF = true;
     setTimeout(() => {
-      this.reportsService.PrintPDF("List of students' names in class")
-
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+  
+      // Create a print-specific stylesheet
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { 
+            margin: 0; 
+          }
+  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+  
+      // Create a container for printing
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+  
+      // Add to body and print
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      // Clean up
       setTimeout(() => {
-        element.classList.add("hidden");
-      }, 1000);
-    }, 200);
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
   }
 
   DownloadAsPDF() {
-    
     this.showPDF = true;
-    setTimeout(() => this.showPDF = false, 1);
+    setTimeout(() => {
+      this.pdfComponentRef.downloadPDF(); // Call manual download
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500);
   }
 
   formatDate(dateString: string, dir: string): string {
@@ -211,7 +247,6 @@ export class StudentInformationComponent {
           next: (d) => {
             this.DataToPrint = []; // Clear existing data
             this.school = d.school;
-            console.log(d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             const generalInfo = {
@@ -224,7 +259,7 @@ export class StudentInformationComponent {
                 { key: "Alternative Mobile", value: d.student?.phone || 'N/A' },
                 { key: "Date of Birth", value: d.student?.dateOfBirth || 'N/A' },
                 { key: "Gender", value: d.student?.genderName || 'N/A' },
-                { key: "Nationality", value: d.student?.nationalityName || 'N/A' },
+                { key: "Nationality", value: d.student?.nationalityEnName || 'N/A' },
                 { key: "Student' Passport Number", value: d.student?.passportNo || 'N/A' },
                 { key: "Student's Id Number", value: d.student?.idNumber || 'N/A' },
                 { key: "Religion", value: d.student?.religion || 'N/A' },

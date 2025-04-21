@@ -154,6 +154,7 @@ export class CreditsComponent {
       this.isLoading = true
       if (this.mode == 'Create') {
         this.CreditServ.Add(this.credit, this.DomainName).subscribe((d) => {
+          this.GetAllData()
           this.closeModal()
           this.isLoading = false
         },
@@ -170,6 +171,7 @@ export class CreditsComponent {
       }
       if (this.mode == 'Edit') {
         this.CreditServ.Edit(this.credit, this.DomainName).subscribe((d) => {
+          this.GetAllData()
           this.closeModal()
           this.isLoading = false
         },
@@ -190,6 +192,7 @@ export class CreditsComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 
@@ -248,7 +251,7 @@ export class CreditsComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

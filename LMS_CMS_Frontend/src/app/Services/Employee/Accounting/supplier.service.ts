@@ -27,6 +27,19 @@ export class SupplierService {
     return this.http.get<Supplier[]>(`${this.baseUrl}/Supplier`, { headers });
   }
 
+  GetAllWithSearch(KeyWord:string,PageNumber:number =1 ,pageSize:number =10 ,DomainName?:string){
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+    .set('Authorization', `Bearer ${token}`)
+    .set('domain-name', this.header)
+    .set('Content-Type', 'application/json');
+
+    return this.http.get<any>(`${this.baseUrl}/Supplier/Search?keyword=${KeyWord}&pageNumber=${PageNumber}&pageSize=${pageSize}`, { headers })
+  }
+
   Add(supplier: Supplier, DomainName: string): Observable<any> {
     if (DomainName != null) {
       this.header = DomainName;

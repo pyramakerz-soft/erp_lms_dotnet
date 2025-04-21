@@ -17,7 +17,7 @@ import { RoleDetailsService } from '../../../Services/Employee/role-details.serv
   styleUrl: './domains.component.css'
 })
 export class DomainsComponent {
-  keysArray: string[] = ['id', 'name','insertedAt'];
+  keysArray: string[] = ['id', 'name' ];
   key: string= "id";
   value: any = "";
   
@@ -37,6 +37,7 @@ export class DomainsComponent {
   }
 
   getDomainData(){
+    this.domainData=[]
     this.domainService.Get().subscribe(
       (data) => {
         this.domainData = data;
@@ -86,6 +87,7 @@ export class DomainsComponent {
       this.editDomain = false
     }
     this.validationErrors = {}; 
+    this.isSaved = false
   }
   
   openViewModal(domainId: number) {
@@ -107,22 +109,6 @@ export class DomainsComponent {
   toggleDropdown(event: MouseEvent) {
     event.stopPropagation(); // Prevent the click event from bubbling up
     this.isDropdownOpen = !this.isDropdownOpen;
-  }
-
-  // Close dropdown if clicked outside
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const dropdown = document.querySelector('.dropdown-container') as HTMLElement;
-
-    if (dropdown && !dropdown.contains(target)) {
-      this.isDropdownOpen = false;
-    }
-  }
-
-  // Cleanup event listener
-  ngOnDestroy() {
-    document.removeEventListener('click', this.onDocumentClick);
   }
 
   removeFromModules(moduleID:number, event: MouseEvent){
@@ -167,7 +153,7 @@ export class DomainsComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });
@@ -277,6 +263,7 @@ export class DomainsComponent {
                 this.domainData = data;
               }
             );
+            this.isSaved = false
           },
           error => {
             this.isSaved = false
@@ -299,7 +286,6 @@ export class DomainsComponent {
       if (result.isConfirmed) {
         this.domainService.DeleteDomain(id).subscribe(
           (data: any) => {
-            this.domainData=[]
             this.getDomainData()
           }
         );

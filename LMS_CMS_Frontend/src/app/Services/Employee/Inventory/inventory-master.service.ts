@@ -117,7 +117,21 @@ export class InventoryMasterService {
      formData.append('bankID', master.bankID?.toString() || '0');
      formData.append('supplierId', master.supplierId?.toString()|| '0');
      formData.append('storeToTransformId', master.storeToTransformId?.toString()|| '0');
- 
+
+    //  if (master.inventoryDetails && master.inventoryDetails.length > 0) {
+    //   master.inventoryDetails.forEach((item, index) => {
+    //     formData.append(`inventoryDetails[${index}][id]`, item.id.toString());
+    //     formData.append(`inventoryDetails[${index}][id]`, item.id.toString());
+
+    //     formData.append(`inventoryDetails[${index}][price]`, item.price.toString());
+    //     formData.append(`inventoryDetails[${index}][totalPrice]`, item.totalPrice.toString());
+    //     formData.append(`inventoryDetails[${index}][quantity]`, item.quantity.toString());
+    //     formData.append(`inventoryDetails[${index}][notes]`, item.notes.toString());
+    //     formData.append(`inventoryDetails[${index}][shopItemID]`, item.shopItemID.toString());
+    //     formData.append(`inventoryDetails[${index}][inventoryMasterId]`, item.inventoryMasterId.toString());
+
+    //   });
+    // } 
      if (master.NewAttachments && master.NewAttachments.length > 0) {
        master.NewAttachments.forEach((file, index) => {
          formData.append('NewAttachments', file);

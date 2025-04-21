@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PdfPrintComponent } from '../../../../../Component/pdf-print/pdf-print.component';
@@ -57,6 +57,7 @@ export class ProofRegistrationReportComponent {
   CurrentDate : any =new Date()
   ArabicCurrentDate : any =new Date()
   direction: string = "";
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -89,7 +90,6 @@ export class ProofRegistrationReportComponent {
       }
     });
     this.getAllSchools()
-    this.getAllStudents()
     this.getAllYears()
   }
 
@@ -114,9 +114,8 @@ export class ProofRegistrationReportComponent {
   }
 
   getAllStudents() {
-    this.studentServ.GetAll(this.DomainName).subscribe((d) => {
+    this.studentServ.GetByAcademicYearID(this.SelectedYearId ,this.DomainName).subscribe((d) => {
       this.Students = d;
-      console.log(d ,this.Students)
       this.filteredStudents = d; 
     });
   }
@@ -135,7 +134,6 @@ export class ProofRegistrationReportComponent {
   GetStudentById() {
     this.studentServ.GetByID(this.SelectedStudentId, this.DomainName).subscribe((d) => {
       this.SelectedStudent = d
-      console.log(d)
     })
   }
 
@@ -146,27 +144,64 @@ export class ProofRegistrationReportComponent {
   }
 
   Print() {
-    let element = document.getElementById("Data");
-    if (!element) {
-      console.error("Element not found!");
-      return;
-    }
-
-    element.classList.remove("hidden");
-
+    this.showPDF = true;
     setTimeout(() => {
-      this.reportsService.PrintPDF("List of students' names in class")
-
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+  
+      // Create a print-specific stylesheet
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { 
+            margin: 0; 
+          }
+  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+  
+      // Create a container for printing
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+  
+      // Add to body and print
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      // Clean up
       setTimeout(() => {
-        element.classList.add("hidden");
-      }, 1000);
-    }, 200);
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
   }
 
   DownloadAsPDF() {
-    
     this.showPDF = true;
-    setTimeout(() => this.showPDF = false, 1);
+    setTimeout(() => {
+      this.pdfComponentRef.downloadPDF(); // Call manual download
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500);
   }
 
   formatDate(dateString: string, dir: string): string {
@@ -213,7 +248,6 @@ export class ProofRegistrationReportComponent {
           next: (d) => {
             this.DataToPrint = d; 
             this.school = d.school;
-            console.log("data",d)
             this.CurrentDate=d.date
             this.CurrentDate = this.formatDate(this.CurrentDate, this.direction);
             this.ArabicCurrentDate = new Date(this.CurrentDate).toLocaleDateString('ar-EG', {
@@ -222,7 +256,6 @@ export class ProofRegistrationReportComponent {
               month: 'long',
               day: 'numeric'
             });
-            console.log("this.CurrentDate",this.CurrentDate)
 
             resolve();
           },

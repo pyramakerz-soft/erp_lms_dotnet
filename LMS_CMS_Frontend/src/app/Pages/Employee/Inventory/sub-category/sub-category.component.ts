@@ -186,8 +186,8 @@ export class SubCategoryComponent {
             });
           })
       }
-      if (this.mode == 'Edit') {
-        console.log(this.SubCategory)
+      
+      if (this.mode == 'Edit') {  
         this.InventorySubCategoryServ.Edit(this.SubCategory, this.DomainName).subscribe((d) => {
           this.GetAllData();
           this.closeModal();
@@ -268,7 +268,7 @@ export class SubCategoryComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

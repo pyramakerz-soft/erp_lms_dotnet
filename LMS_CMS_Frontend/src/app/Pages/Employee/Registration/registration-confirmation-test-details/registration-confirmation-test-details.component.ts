@@ -52,6 +52,8 @@ export class RegistrationConfirmationTestDetailsComponent {
   isModalVisible: boolean = false;
 
   StudentName: string = ""
+  StudentEnName: string = ""
+  StudentArName: string = ""
 
   MarkIsEmpty : boolean=false;
   isLoading=false
@@ -101,10 +103,11 @@ export class RegistrationConfirmationTestDetailsComponent {
 
   GetAllData() {
     this.Data=[]
-    this.testServ.GetByRegistrationFormParentIDAndGrade(this.RegisterFormParentID, this.DomainName).subscribe((d:any) => {
+    this.testServ.GetByRegistrationFormParentIDFromEmployee(this.RegisterFormParentID, this.DomainName).subscribe((d:any) => {
       this.Data = d.tests;
       this.StudentName=d.studentName
-
+      this.StudentEnName=d.studentEnName
+      this.StudentArName=d.studentArName
     })
   }
 

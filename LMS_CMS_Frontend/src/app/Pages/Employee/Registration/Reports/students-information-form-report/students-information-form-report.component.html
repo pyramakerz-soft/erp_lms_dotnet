@@ -112,7 +112,7 @@
 <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">
         <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'"
-            [tableHeaders]="['No', 'Name', 'الاسم', 'Mobile 1', 'Mobile 2' , 'Passport' , 'Nationality' , 'Note' , 'Date Of Birth' , 'Place Of Birth' , 'Passport Expired' , 'identities Expired' , 'Admission Date' , 'Identity of Father' , 'E-mail Address' ,'Bus' , 'Religion' , 'Pre-School']"
-            [tableData]="tableData"></app-pdf-print>
+            [tableHeaders]="['No', 'Name', 'الاسم', 'Mobile_1', 'Mobile_2' , 'Passport' , 'Nationality' , 'Note' , 'Date_Of_Birth' , 'Place_Of_Birth' , 'Passport_Expired' , 'identities_Expired' , 'Admission_Date' , 'Identity_of_Father' , 'Email_Address' ,'Bus' , 'Religion' , 'Pre_School']"
+            [tableData]="tableData" #pdfComponentRef></app-pdf-print>
     </div>
-</div>
+</div> 

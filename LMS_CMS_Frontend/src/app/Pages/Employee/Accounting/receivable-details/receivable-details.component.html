@@ -27,7 +27,7 @@
                     <label class="mb-2 primaryTxt font-medium" for="DocType">Doc Number</label>
                     <input id="DocType" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 text-lg"
                         [disabled]="isView" (input)="validateNumberReceivable($event, 'docNumber')"
-                        placeholder="Enter Doc Type" [(ngModel)]="receivable.docNumber" />
+                        placeholder="Enter Doc Number" [(ngModel)]="receivable.docNumber" />
                 </div>
                 <div class="flex flex-col w-[30%]">
                     <div class="mb-2 flex justify-evenly">
@@ -87,9 +87,10 @@
             </div>
         </div>
     
-        <div class="no-print flex justify-end mt-5 space-x-4 items-center">
+        <div class="no-print flex justify-end mt-5 space-x-4 items-center"> 
             <i class="fa-solid fa-print text-lg cursor-pointer" *ngIf="!isCreate" (click)="DownloadData()"></i>
-            <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+                
+            <button *ngIf="!isView" [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
                 <span *ngIf="!isLoading">Save</span>
                 <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
             </button>
@@ -178,11 +179,11 @@
                             </textarea>
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            <div class="flex space-x-4">
-                                <button (click)="SaveNewDetails()" [disabled]="!isDetailsValid"
-                                    [ngClass]="{'cursor-not-allowed opacity-50' : !isDetailsValid}">
-                                    <i class="fa-solid fa-check secondaryTxt secondaryBorder rounded-full p-1"></i>
-                                </button>
+                            <div class="flex space-x-4"> 
+                                <button [disabled]="!isDetailsValid || isLoading" [ngClass]="{'cursor-not-allowed opacity-50' : !isDetailsValid}">
+                                    <i (click)="SaveNewDetails()" *ngIf="!isLoading" class="fa-solid fa-check secondaryTxt secondaryBorder rounded-full p-1"></i>
+                                    <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+                                </button> 
                             </div>
                         </td>
                     </tr>
@@ -268,4 +269,4 @@
             </table>
         </div>
     </div>
-</div>
+</div> 

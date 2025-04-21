@@ -120,7 +120,7 @@ export class DebitsComponent {
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Supplier?',
+      title: 'Are you sure you want to delete this Debit?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -203,6 +203,8 @@ export class DebitsComponent {
 
   closeModal() {
     this.isModalVisible = false;
+    this.validationErrors = {}
+    this.isLoading = false
     this.GetAllData();
   }
 
@@ -262,7 +264,7 @@ export class DebitsComponent {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
           if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

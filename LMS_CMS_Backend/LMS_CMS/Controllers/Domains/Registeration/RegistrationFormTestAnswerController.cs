@@ -77,8 +77,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                 TestName = test.Title,
                 Totalmark = test.TotalMark,
                 mark = registerationFormTest.Mark,
+                isVisibleToParent = registerationFormTest.VisibleToParent,
                 State=registerationFormTest.StateID,
-               QuestionWithAnswer = groupedByQuestionType
+                QuestionWithAnswer = groupedByQuestionType
             };
 
             return Ok(response);
@@ -145,9 +146,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     answer.InsertedByUserId = userId;
                 }
 
+                if(answer.AnswerID == 0 )
+                {
+                    answer.AnswerID = null;
+                }
+
                 addedAnswers.Add(answer);
-                Unit_Of_Work.registerationFormTestAnswer_Repository.Add(answer);
-                Unit_Of_Work.SaveChanges();
+                Unit_Of_Work.registerationFormTestAnswer_Repository.Add(answer); 
             }
 
             Unit_Of_Work.SaveChanges();

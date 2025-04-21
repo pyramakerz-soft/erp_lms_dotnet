@@ -78,7 +78,7 @@ export class RegistrationFormComponent {
 
   isSuccess:boolean = false
 
-  parent:any = null
+  parent:any = null 
   isRtl: boolean = false;
   subscription!: Subscription;
 
@@ -93,7 +93,7 @@ export class RegistrationFormComponent {
     this.DomainName = this.ApiServ.GetHeader();
     
     if(this.User_Data_After_Login.type == "parent"){
-      this.getParentByID()  
+      this.getParentByID()   
     }
 
     this.getRegistrationFormData()
@@ -117,7 +117,7 @@ export class RegistrationFormComponent {
   getParentByID(){
     this.parentService.GetByID(this.UserID, this.DomainName).subscribe(
       (data) => {
-        this.parent = data
+        this.parent = data 
       }
     )
   }
@@ -249,7 +249,7 @@ export class RegistrationFormComponent {
     } else if(fieldTypeId == 5 || fieldTypeId == 7){
       option = parseInt(selectedValue) 
       answer = null;
-    }
+    } 
     
     const existingElement = this.registrationForm.registerationFormSubmittions.find(
       (element) => element.categoryFieldID === fieldId
@@ -269,7 +269,8 @@ export class RegistrationFormComponent {
         selectedFieldOptionID: option,
         textAnswer: answer,
       });
-    } 
+    }
+    
   }
 
   MultiOptionDataPush(fieldId:number , fieldTypeId:number, optionAnswer:number){
@@ -431,6 +432,13 @@ export class RegistrationFormComponent {
   }
 
   Save(){
+    if(this.User_Data_After_Login.type == "parent"){
+      this.registrationForm.registerationFormSubmittions.push({
+        categoryFieldID: 21,
+        selectedFieldOptionID: null,
+        textAnswer: this.parent.email,
+      });
+    }
     this.isFormSubmitted = true;
     this.isGuardianEmailValid = true;
     this.isMotherEmailValid = true;

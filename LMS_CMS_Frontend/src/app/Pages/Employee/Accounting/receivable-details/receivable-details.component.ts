@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
@@ -276,6 +276,12 @@ export class ReceivableDetailsComponent {
           (data) => {
             this.GetReceivableByID()
             this.isLoading = false
+            Swal.fire({
+              icon: 'success',
+              title: 'Done!',
+              text: 'The Receivable has been edited successfully.',
+              confirmButtonColor: '#FF7519',
+            });
           },
           err => {
             this.isLoading = false
@@ -333,9 +339,11 @@ export class ReceivableDetailsComponent {
   }
 
   SaveNewDetails() {
+    this.isLoading = true
     this.newDetails.receivableMasterID = this.ReceivableID
     this.receivableDetailsService.Add(this.newDetails, this.DomainName).subscribe(
       (data) => {
+        this.isLoading = false
         this.isNewDetails = false
         this.newDetails = new ReceivableDetails()
         this.GetReceivableDetails()
@@ -396,30 +404,30 @@ export class ReceivableDetailsComponent {
     });
   }
 
-  DownloadData() { 
+  DownloadData() {
     let orderElement = document.getElementById('DataToDownload');
 
     if (!orderElement) {
-        console.error("Page body not found!");
-        return;
+      console.error("Page body not found!");
+      return;
     }
 
     document.querySelectorAll('.no-print').forEach(el => {
-        (el as HTMLElement).style.display = 'none';
+      (el as HTMLElement).style.display = 'none';
     });
 
     setTimeout(() => {
-        html2pdf().from(orderElement).set({
-            margin: 10,
-            filename: `Receivable_${this.ReceivableID}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
-            jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-        }).save().then(() => {
-            document.querySelectorAll('.no-print').forEach(el => {
-                (el as HTMLElement).style.display = '';
-            });
+      html2pdf().from(orderElement).set({
+        margin: 10,
+        filename: `Receivable_${this.ReceivableID}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+      }).save().then(() => {
+        document.querySelectorAll('.no-print').forEach(el => {
+          (el as HTMLElement).style.display = '';
         });
+      });
     }, 500);
-  } 
+  }  
 }

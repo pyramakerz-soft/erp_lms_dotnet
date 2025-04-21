@@ -5,6 +5,7 @@ using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
+using MailKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -90,7 +91,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
               allowedTypes: new[] { "octa", "employee" },
                 pages: new[] { "Inventory" }
           )]
-        public async Task<IActionResult> Add(StockingDetailsAddDto newItem)
+        public async Task<IActionResult> Add(List<StockingDetailsAddDto> newItems)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -103,40 +104,43 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            if (newItem == null)
+            foreach (var newItem in newItems)
             {
-                return BadRequest("Stocking Details cannot be null");
+                if (newItem == null)
+                {
+                    return BadRequest("Stocking Details cannot be null");
+                }
+
+                ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(s => s.ID == newItem.ShopItemID && s.IsDeleted != true);
+                if (shopItem == null)
+                {
+                    return NotFound();
+                }
+
+                Stocking stocking = Unit_Of_Work.stocking_Repository.First_Or_Default(s => s.ID == newItem.StockingId && s.IsDeleted != true);
+                if (stocking == null)
+                {
+                    return NotFound();
+                }
+
+                StockingDetails stockingDetails = mapper.Map<StockingDetails>(newItem);
+
+                TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+                stockingDetails.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+                if (userTypeClaim == "octa")
+                {
+                    stockingDetails.InsertedByOctaId = userId;
+                }
+                else if (userTypeClaim == "employee")
+                {
+                    stockingDetails.InsertedByUserId = userId;
+                }
+
+                Unit_Of_Work.stockingDetails_Repository.Add(stockingDetails);
             }
 
-            ShopItem shopItem = Unit_Of_Work.shopItem_Repository.First_Or_Default(s => s.ID == newItem.ShopItemID && s.IsDeleted != true);
-            if (shopItem == null)
-            {
-                return NotFound();
-            }
-
-            Stocking stocking = Unit_Of_Work.stocking_Repository.First_Or_Default(s => s.ID == newItem.StockingId && s.IsDeleted != true);
-            if (stocking == null)
-            {
-                return NotFound();
-            }
-
-            StockingDetails stockingDetails = mapper.Map<StockingDetails>(newItem);
-
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            stockingDetails.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            if (userTypeClaim == "octa")
-            {
-                stockingDetails.InsertedByOctaId = userId;
-            }
-            else if (userTypeClaim == "employee")
-            {
-                stockingDetails.InsertedByUserId = userId;
-            }
-
-            Unit_Of_Work.stockingDetails_Repository.Add(stockingDetails);
             await Unit_Of_Work.SaveChangesAsync();
-
-            return Ok(newItem);
+            return Ok();
         }
 
         ////
@@ -147,7 +151,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         allowEdit: 1,
          pages: new[] { "Inventory" }
     )]
-        public async Task<IActionResult> EditAsync(StockingDetailsGetDto newItem)
+        public async Task<IActionResult> EditAsync(List<StockingDetailsGetDto> newItems)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -162,6 +166,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return Unauthorized("User ID, Type claim not found.");
             }
 
+            foreach (var newItem in newItems)
+            {
+                
             if (newItem == null)
             {
                 return BadRequest("stockingDetails Item cannot be null");
@@ -215,8 +222,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
 
             Unit_Of_Work.stockingDetails_Repository.Update(stockingDetails);
-            Unit_Of_Work.SaveChanges();
-            return Ok(newItem);
+
+            }
+           await Unit_Of_Work.SaveChangesAsync();
+            return Ok();
+
         }
 
         ////
@@ -329,6 +339,42 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             List<ShopItem> shopItems = await Unit_Of_Work.shopItem_Repository
                 .Select_All_With_IncludesById<ShopItem>(
                     f => f.IsDeleted != true && subCategoryIds.Contains(f.InventorySubCategoriesID) );
+
+            List<ShopItemGetDTO> shopItemGetDTO = mapper.Map<List<ShopItemGetDTO>>(shopItems);
+
+            foreach (var item in shopItemGetDTO)
+            {
+                long FirstCurrentStock1 = await _calculateCurrentStock.GetCurrentStock(db, StoreId, item.ID, date);
+                long SecondCurrentStock1 = await _calculateCurrentStock.GetCurrentStockInTransformedStore(db, StoreId, item.ID, date);
+                item.CurrentStock = FirstCurrentStock1 + SecondCurrentStock1;
+            }
+
+            return Ok(shopItemGetDTO);
+        }
+
+        ////
+
+        [HttpGet("CurrentStockBySubCategoryId/{StoreId}/{SubCategoryId}/{date}")]
+        [Authorize_Endpoint_(
+                 allowedTypes: new[] { "octa", "employee" },
+                 pages: new[] { "Inventory" }
+             )]
+        public async Task<IActionResult> GetCurrentStockBySubCategoryId(long StoreId, long SubCategoryId, string date)
+        {
+
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
+
+            //List<InventorySubCategories> inventorySubCategories = await Unit_Of_Work.inventorySubCategories_Repository
+            //    .Select_All_With_IncludesById<InventorySubCategories>(
+            //        f => f. == CategoryId && f.IsDeleted != true
+            //    );
+
+            //List<long> subCategoryIds = inventorySubCategories.Select(s => s.ID).ToList();
+
+            List<ShopItem> shopItems = await Unit_Of_Work.shopItem_Repository
+                .Select_All_With_IncludesById<ShopItem>(
+                    f => f.IsDeleted != true && f.InventorySubCategoriesID==SubCategoryId);
 
             List<ShopItemGetDTO> shopItemGetDTO = mapper.Map<List<ShopItemGetDTO>>(shopItems);
 

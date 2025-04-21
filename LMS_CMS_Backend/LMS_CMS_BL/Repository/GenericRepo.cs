@@ -85,6 +85,15 @@ namespace LMS_CMS_BL.Repository
             db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
+        public void UpdateRange(IEnumerable<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                db.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            }
+        }
+
+
         public void Delete(long id)
         {
             TEntity obj = db.Set<TEntity>().Find(id);
@@ -122,6 +131,11 @@ namespace LMS_CMS_BL.Repository
         public List<TEntity> FindBy(Expression<Func<TEntity, bool>> predicate)
         {
             return db.Set<TEntity>().Where(predicate).ToList();
+        }
+
+        public IQueryable<T> SelectQuery<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            return db.Set<T>().Where(filter);
         }
 
         public async Task<List<TEntity>> Select_All_With_IncludesById<TProperty>(

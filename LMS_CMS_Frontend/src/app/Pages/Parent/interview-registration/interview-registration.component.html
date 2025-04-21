@@ -10,7 +10,10 @@
                     ID
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
-                    Student Name
+                    Student English Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Student Arabic Name
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
                     Email
@@ -44,7 +47,8 @@
         <tbody>
             <!-- No Data Row -->
             <tr *ngIf="registrationFormParentIncludeRegistrationFormInterview.length === 0">
-                <td colspan="11" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                <td colspan="12"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                     No Data Found
                 </td>
             </tr>
@@ -55,7 +59,8 @@
                 class="border-t border-gray-300 text-xs md:text-sm">
 
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
-                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentEnName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.studentArName }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.email }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.phone }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.gradeName }}</td>
@@ -65,27 +70,35 @@
                         {{ row.interviewTimeDate | date:'MMM d, yyyy' }}
                     </div>
                     <div *ngIf="!row.interviewTimeDate" (click)="openModal(row.id, row.academicYearID)">
-                        <p class="underline cursor-pointer">Select Date</p>
+                        <p
+                            class="secondaryBg text-white cursor-pointer flex space-x-2 items-center justify-center rounded-md shadow px-2 py-1">
+                            Select Date</p>
                     </div>
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.interviewTimeFromTime }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.interviewTimeToTime }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     <div class="flex justify-start">
-                        <div *ngIf="row.registrationFormInterviewStateID == 2" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
-                            <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: green; padding: 4px;"></span>
+                        <div *ngIf="row.registrationFormInterviewStateID == 2"
+                            class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                            <span class="w-[6px] h-[6px] p-1 rounded-full"
+                                style="background-color: green; padding: 4px;"></span>
                             <p>
                                 {{row.registrationFormInterviewStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registrationFormInterviewStateID == 3" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
-                            <span class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: red; padding: 4px;"></span>
+                        <div *ngIf="row.registrationFormInterviewStateID == 3"
+                            class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                            <span class="w-[6px] h-[6px] p-1 rounded-full"
+                                style="background-color: red; padding: 4px;"></span>
                             <p>
                                 {{row.registrationFormInterviewStateName}}
                             </p>
                         </div>
-                        <div *ngIf="row.registrationFormInterviewStateID == 1" class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
-                            <div class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: gray; padding: 4px;"></div>
+                        <div *ngIf="row.registrationFormInterviewStateID == 1"
+                            class="border flex space-x-2 items-center justify-between rounded-md shadow px-2 py-1 ">
+                            <div class="w-[6px] h-[6px] p-1 rounded-full" style="background-color: gray; padding: 4px;">
+                            </div>
                             <p>
                                 {{row.registrationFormInterviewStateName}}
                             </p>
@@ -93,11 +106,13 @@
                     </div>
                 </td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div *ngIf="row.registrationFormInterviewID && row.registrationFormInterviewStateID == 1" class="flex space-x-4">
+                    <div *ngIf="row.registrationFormInterviewID && row.registrationFormInterviewStateID == 1"
+                        class="flex space-x-4">
                         <button (click)="deleteInterview(row.registrationFormInterviewID)">
                             <i class="fa-regular fa-trash-can"></i>
                         </button>
-                        <button (click)="openModal(row.id, row.academicYearID, row.registrationFormInterviewID, row.interviewTimeID, row.interviewTimeDate)">
+                        <button
+                            (click)="openModal(row.id, row.academicYearID, row.registrationFormInterviewID, row.interviewTimeID, row.interviewTimeDate, row.interviewTimeFromTime, row.interviewTimeToTime)">
                             <i class="fa-solid fa-pencil"></i>
                         </button>
                     </div>
@@ -108,77 +123,112 @@
 </div>
 
 
-<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden overflow-auto">
+<div id="Add_Modal"
+    class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden overflow-auto">
     <div class="relative h-full w-full justify-center content-center">
         <div class="bg-white rounded-2xl p-12 w-[669px] m-auto">
             <div class="flex justify-between items-center">
                 <h1 class="font-semibold text-2xl leading-9">Choose Interview Date</h1>
-                <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+                <button (click)="closeModal()" type="button"
+                    class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
             </div>
-            
+
             <div class="p-[16px_24px] mt-6 mb-4 bg-[#F7F7F7] rounded-3xl">
                 <div class="flex flex-col mb-4">
                     <label class="mb-2 primaryTxt font-medium text-base" for="status">Date</label>
                     <div class="text-gray-900 text-sm rounded-lg p-2.5 bg-gray-50 border border-gray-300 w-full flex justify-between"
-                    (click)="openModalcalender()">
-                        <p>{{ InterviewTimeID ? (selectedDate | date:'MMM d, yyyy') : "Choose Date"}}</p>
+                        (click)="openModalcalender()">
+                        <p>{{ InterviewTimeID ? (selectedDate | date:'MMM d, yyyy') : "Choose Date"}} <span *ngIf="InterviewTimeID">{{selectedTime}}</span></p>
                         <i class="fa-regular fa-calendar flex justify-center items-center"></i>
                     </div>
                 </div>
-                
+
                 <div class="flex justify-end">
-                    <button [disabled]="!selectedDate"
-                    class="text-white font-medium px-4 py-2 rounded-lg" [ngClass]="{ 'bg-gray-500 opacity-15': !selectedDate, 'secondaryBg': selectedDate }"
-                    (click)="Register()">
-                        Register 
+                    <button [disabled]="!selectedDate" class="text-white font-medium px-4 py-2 rounded-lg"
+                        [ngClass]="{ 'bg-gray-500 opacity-15': !selectedDate, 'secondaryBg': selectedDate }"
+                        (click)="Register()">
+                        Register
                     </button>
                 </div>
             </div>
-    
+
         </div>
-        <div id="Calender_Modal" class="bg-white rounded-2xl p-4 hidden absolute top-[55%] left-[30%] shadow-lg flex-col  m-auto h-auto">
+        <div id="Calender_Modal"
+            class="bg-white rounded-2xl p-4 hidden absolute top-[55%] left-[30%] shadow-lg flex-col  m-auto h-auto">
             <div class="flex flex-col items-center">
                 <div>
                     <div *ngFor="let month of calendarMonths">
                         <div *ngIf="month.month == currentMonth">
                             <div class="flex justify-between">
                                 <h2 class="text-lg font-bold">
-                                {{ getMonthDate(month.month, month.year) | date: 'MMM' }} {{ month.year }}
+                                    {{ getMonthDate(month.month, month.year) | date: 'MMM' }} {{ month.year }}
                                 </h2>
                                 <div class="flex space-x-3 text-3xl">
-                                    <p *ngIf="currentMonth!=calendarMonths[0].month" (click)="lastMonth(); showTime()">&lt;</p>
-                                    <p *ngIf="currentMonth!=calendarMonths[calendarMonths.length-1].month" (click)="nextMonth(); showTime()">&gt;</p>
+                                    <p *ngIf="currentMonth!=calendarMonths[0].month" (click)="lastMonth(); showTime()">
+                                        &lt;</p>
+                                    <p *ngIf="currentMonth!=calendarMonths[calendarMonths.length-1].month"
+                                        (click)="nextMonth(); showTime()">&gt;</p>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-7 gap-2">
                                 <div *ngFor="let day of getDaysInMonth(month.month, month.year)">
-                                    <div (click)="showTime(day)"
-                                    *ngIf="isGreen(day) && (day.interviews.length != 0)" class="text-center py-1 px-[5px] rounded-lg bg-[#96C68D]">
-                                        {{ day.day }} 
+                                    <div (click)="showTime(day)" *ngIf="isGreen(day) && (day.interviews.length != 0)"
+                                    [ngClass]="getDayClass(day)" 
+                                    class="text-center py-1 px-[5px] rounded-lg bg-[#96C68D] cursor-pointer">
+                                        {{ day.day }}
                                     </div>
-                                    <div (click)="showTime()"
-                                    *ngIf="!isGreen(day) && (day.interviews.length != 0)" class="text-center py-1 px-[5px] rounded-lg bg-[#EA3A3D80]">
-                                        {{ day.day }} 
+                                    <div (click)="showTime()" *ngIf="!isGreen(day) && (day.interviews.length != 0)"
+                                    [ngClass]="getDayClass(day)" 
+                                        class="text-center py-1 px-[5px] rounded-lg bg-[#EA3A3D80]">
+                                        {{ day.day }}
                                     </div>
-                                    <div (click)="showTime()"
-                                    class="text-center py-1 px-[5px] rounded-lg"
+                                    <div (click)="showTime()" class="text-center py-1 px-[5px] rounded-lg"
                                         *ngIf="day.interviews.length == 0">
-                                        {{ day.day  }} 
+                                        {{ day.day }}
                                     </div>
                                 </div>
                             </div>
 
-                            <div id="timePart" class="w-full mt-3 flex" *ngFor="let interview of ToChooseFromInterviewTimeTable">
-                                <div  class="flex justify-between w-full">
-                                    <p class="font-semibold text-xl" (click)="ChooseInterviewTime(interview)">Time</p>
-                                    <div class="flex space-x-3">
-                                        <p *ngIf="interview.capacity != interview.reserved" class="py-1 px-2 bg-[#96C68D] rounded-md">{{interview.fromTime}}</p>
-                                        <p *ngIf="interview.capacity == interview.reserved" class="py-1 px-2 bg-[#EA3A3D80] rounded-md">{{interview.fromTime}}</p>
-                                        <p *ngIf="interview.capacity != interview.reserved" class="py-1 px-2 bg-[#96C68D] rounded-md">{{interview.toTime}}</p>
-                                        <p *ngIf="interview.capacity == interview.reserved" class="py-1 px-2 bg-[#EA3A3D80] rounded-md">{{interview.toTime}}</p>
-                                    </div>
-                                </div>
+                            <div id="timePart" class="w-full mt-3 hidden">
+                                <table class="w-full mt-3 table-auto">
+                                    <thead>
+                                        <tr>
+                                            <th class="px-2 py-1 font-semibold">From</th>
+                                            <th class="px-2 py-1 font-semibold">To</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let interview of ToChooseFromInterviewTimeTable">
+                                            <td class="px-4 py-2">
+                                                <p *ngIf="interview.capacity != interview.reserved"
+                                                    class="py-1 px-2 bg-[#96C68D] rounded-md">
+                                                    {{ interview.fromTime }}
+                                                </p>
+                                                <p *ngIf="interview.capacity == interview.reserved"
+                                                    class="py-1 px-2 bg-[#EA3A3D80] rounded-md">
+                                                    {{ interview.fromTime }}
+                                                </p>
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                <p *ngIf="interview.capacity != interview.reserved"
+                                                    class="py-1 px-2 bg-[#96C68D] rounded-md">
+                                                    {{ interview.toTime }}
+                                                </p>
+                                                <p *ngIf="interview.capacity == interview.reserved"
+                                                    class="py-1 px-2 bg-[#EA3A3D80] rounded-md">
+                                                    {{ interview.toTime }}
+                                                </p>
+                                            </td>
+                                            <td class="px-4 py-2"> 
+                                                <button (click)="ChooseInterviewTime(interview)" *ngIf="interview.capacity != interview.reserved">
+                                                    <i class="far fa-check-circle text-gray-500 text-xl cursor-pointer"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

@@ -114,7 +114,7 @@
                                 [value]="module.id" 
                                 (change)="onModuleChange(module.id, $event)"
                                 [checked]="domain.pages.includes(module.id)">
-                                <label for="module{{module.en_name}}" class="text-xs md:text-sm">{{ module.en_name }}</label>
+                                <label for="module{{module.en_name}}" class="text-xs md:text-sm w-full">{{ module.en_name }}</label>
                             </div>
                         }@else {
                             <div class="p-2">No Data Found</div>

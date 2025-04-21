@@ -4,22 +4,7 @@
       class="w-full md:w-3/4 lg:w-[528px] max-h-[90vh] py-7 px-8 bg-white border border-gray-200 rounded-3xl shadow mb-2 flex flex-col items-center justify-center ">
         <div class="mb-5 flex justify-center ">
           <img src="Images/OctaIcon.png" alt="Avatar">
-        </div>
-  
-        <div class="flex items-center justify-between space-x-2 mb-4">
-          <div>
-            <img [src]="isStudentHovered ? 'Images/Student_Hover.png' : studentImage" alt="student"
-              (click)="selectType('student')" class="cursor-pointer">
-          </div>
-          <div>
-            <img [src]="isParentHovered ? 'Images/parent_hover.png' : parentImage" alt="parent"
-              (click)="selectType('parent')" class="cursor-pointer">
-          </div>
-          <div>
-            <img [src]="isEmployeeHovered ? 'Images/employee_hover.png' : employeeImage" alt="Employee"
-              (click)="selectType('employee')" class="cursor-pointer">
-          </div>
-        </div>
+        </div> 
   
         <span *ngIf="somthingError" class="text-red-500 text-sm font-normal">{{ somthingError }}</span>
   
@@ -29,52 +14,53 @@
             <input class="w-full h-[56px] rounded-[8px] border px-2 mt-1" id="user_Name" type="text"
             (ngModelChange)="onInputValueChange({ field: 'user_Name', value: $event })"
               [(ngModel)]="parentInfo.user_Name" (input)="onUserNameChange()" />
+              <span *ngIf="validationErrors['user_Name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['user_Name'] }}</span>
           </div>
-          <span *ngIf="validationErrors['user_Name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['user_Name'] }}</span>
 
           <div class="mb-2 w-full py-2">
             <label for="email" class="py-6">Email:</label>
             <input class="w-full h-[56px] rounded-[8px] border px-2 mt-1" id="email" type="text"
             (ngModelChange)="onInputValueChange({ field: 'email', value: $event })"
               [(ngModel)]="parentInfo.email" (input)="onUserNameChange()" />
+              <span *ngIf="validationErrors['email']" class="text-red-500 ml-3 font-normal">{{ validationErrors['email'] }}</span>
           </div>
-          <span *ngIf="validationErrors['email']" class="text-red-500 ml-3 font-normal">{{ validationErrors['email'] }}</span>
           
           <div class="mb-2 w-full py-2">
             <label for="en_name" class="py-6">Name In English:</label>
             <input class="w-full h-[56px] rounded-[8px] border px-2 mt-1" id="en_name" type="text"
             (ngModelChange)="onInputValueChange({ field: 'en_name', value: $event })"
               [(ngModel)]="parentInfo.en_name" (input)="onUserNameChange()" />
+              <span *ngIf="validationErrors['en_name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['en_name'] }}</span>
           </div>
-          <span *ngIf="validationErrors['en_name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['en_name'] }}</span>
 
           <div class="mb-2 w-full py-2">
             <label for="ar_name" class="py-6">Name In Arabic:</label>
             <input class="w-full h-[56px] rounded-[8px] border px-2 mt-1" id="ar_name" type="text"
             (ngModelChange)="onInputValueChange({ field: 'ar_name', value: $event })"
               [(ngModel)]="parentInfo.ar_name" (input)="onUserNameChange()" />
+              <span *ngIf="validationErrors['ar_name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['ar_name'] }}</span>
           </div>
-          <span *ngIf="validationErrors['ar_name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['ar_name'] }}</span>
 
-          <div class="mb-2 w-full">
+          <div class="mb-2 w-full py-2">
             <label for="password" class="py-6">Password:</label>
             <input class="w-full h-[56px] rounded-[8px] border px-2" id="password" type="password"
             (ngModelChange)="onInputValueChange({ field: 'password', value: $event })"
               [(ngModel)]="parentInfo.password" (input)="onPasswordChange()" />
+              <span *ngIf="validationErrors['password']" class="text-red-500 ml-3 font-normal">{{ validationErrors['password'] }}</span>
           </div>
-          <span *ngIf="validationErrors['password']" class="text-red-500 ml-3 font-normal">{{ validationErrors['password'] }}</span>
 
-          <div class="mb-2 w-full">
-            <label for="ConfirmPassword" class="py-6">Congirm Password:</label>
+          <div class="mb-2 w-full py-2">
+            <label for="ConfirmPassword" class="py-6">Confirm Password:</label>
             <input class="w-full h-[56px] rounded-[8px] border px-2" id="ConfirmPassword" type="password"
               [(ngModel)]="ConfirmPassword" (input)="onConfirmPasswordChange()" />
+            <span *ngIf="IsConfimPassEmpty" class="text-red-500 ml-3 font-normal">Confirm Password required</span>
+            <span *ngIf="validationErrors['password'] && !IsConfimPassEmpty" class="text-red-500 ml-3 font-normal">{{ validationErrors['password'] }}</span>
           </div>
-          <span *ngIf="validationErrors['password']" class="text-red-500 ml-3 font-normal">{{ validationErrors['password'] }}</span>
-  
+          
           <button 
           (click)="SignUp()" 
           [disabled]="isLoading" 
-          class="mt-2 secondaryBg text-white p-2 rounded w-full flex items-center justify-center">
+          class="mb-2 secondaryBg text-white p-2 rounded w-full flex items-center justify-center">
           <span *ngIf="!isLoading">Sign Up</span>
           <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
         </button>

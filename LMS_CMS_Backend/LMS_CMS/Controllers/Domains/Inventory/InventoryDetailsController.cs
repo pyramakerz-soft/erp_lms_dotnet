@@ -114,7 +114,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         allowedTypes: new[] { "octa", "employee" },
           pages: new[] { "Inventory" }
     )]
-        public async Task<IActionResult> Add(InventoryDetailsAddDTO newItem)
+        public async Task<IActionResult> Add([FromBody] List<InventoryDetailsGetDTO> newItems)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -126,7 +126,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-
+            foreach (var newItem in newItems)
+            {
             if (newItem == null)
             {
                 return BadRequest("Sales Item cannot be null");
@@ -159,8 +160,9 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             Unit_Of_Work.inventoryDetails_Repository.Add(salesItem);
             await Unit_Of_Work.SaveChangesAsync();
-
-            return Ok(salesItem.ID);
+                
+            }
+            return Ok();
         }
 
         ////
@@ -171,7 +173,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         allowEdit: 1,
          pages: new[] { "Inventory" }
     )]
-        public async Task<IActionResult> EditAsync(InventoryDetailsGetDTO newSale)
+        public async Task<IActionResult> EditAsync([FromBody] List<InventoryDetailsGetDTO> newSales)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -186,11 +188,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return Unauthorized("User ID, Type claim not found.");
             }
 
+            foreach (var newSale in newSales)
+            {
             if (newSale == null)
             {
                 return BadRequest("Sales Item cannot be null");
             }
-
+                
             InventoryDetails salesItem = Unit_Of_Work.inventoryDetails_Repository.First_Or_Default(s => s.ID == newSale.ID && s.IsDeleted != true);
             if (salesItem == null)
             {
@@ -240,7 +244,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             Unit_Of_Work.inventoryDetails_Repository.Update(salesItem);
             Unit_Of_Work.SaveChanges();
-            return Ok(newSale);
+            }
+            return Ok(newSales);
         }
 
         ////

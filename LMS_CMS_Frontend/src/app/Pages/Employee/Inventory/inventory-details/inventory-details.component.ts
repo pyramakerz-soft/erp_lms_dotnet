@@ -37,11 +37,13 @@ import { InventoryFlag } from '../../../../Models/Inventory/inventory-flag';
 import { firstValueFrom } from 'rxjs';
 import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.component';
 import { ReportsService } from '../../../../Services/shared/reports.service';
+import { SearchDropdownComponent } from '../../../../Component/search-dropdown/search-dropdown.component';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-inventory-details',
   standalone: true,
-  imports: [FormsModule, CommonModule, PdfPrintComponent],
+  imports: [FormsModule, CommonModule, PdfPrintComponent , SearchDropdownComponent],
   templateUrl: './inventory-details.component.html',
   styleUrl: './inventory-details.component.css',
 })
@@ -237,12 +239,6 @@ export class InventoryDetailsComponent {
     });
   }
 
-  // GetAllStudents() {
-  //   this.StudentServ.GetAll(this.DomainName).subscribe((d) => {
-  //     this.students = d;
-  //     this.filteredStudents=this.students
-  //   });
-  // }
 
   GetAllStores() {
     this.storeServ.Get(this.DomainName).subscribe((d) => {
@@ -251,31 +247,6 @@ export class InventoryDetailsComponent {
     });
   }
 
-  SearchStudents(page: number = 1) {
-    this.searchTriggered = true;
-    this.filteredStudents = [];
-    this.currentPage = page;
-    this.StudentServ.GetAllWithSearch(this.studentSearch, page, 10, this.DomainName).subscribe((res) => {
-      this.filteredStudents = res.students 
-      this.totalPages = res.totalPages || 1; 
-      this.showStudentDropdown = true;
-      this.searchTriggered = false;
-    });
-  }
-
-  SearchSuppliers(page: number = 1) {
-    this.filteredSuppliers = [];
-    this.currentPage = page;
-    this.searchTriggered = true;
-    this.SupplierServ.GetAllWithSearch(this.supplierSearch, page, 10, this.DomainName).subscribe((res) => {
-      this.filteredSuppliers = res.suppliers 
-      console.log(res,this.filteredSuppliers)
-      this.totalPages = res.totalPages || 1; 
-      this.showSupplierDropdown = true;
-      this.searchTriggered = false;
-    });
-  }
-  
   hideDropdown() {
     setTimeout(() => {
       this.showStudentDropdown = false;
@@ -291,13 +262,6 @@ export class InventoryDetailsComponent {
     this.showStudentDropdown = false;
   }
 
-  // filterSuppliers() {
-  //   const searchValue = this.supplierSearch.toLowerCase();
-  //   this.filteredSuppliers = this.Suppliers.filter(s =>
-  //     s.name.toLowerCase().includes(searchValue)
-  //   );
-  // }
-  
   selectSupplier(supplier: any) {
     this.Data.supplierId = supplier.id;
     this.supplierSearch = supplier.name;
@@ -305,13 +269,18 @@ export class InventoryDetailsComponent {
     this.onInputValueChange({ field: 'supplierId', value: supplier.id });
   }
 
-  // GetAllSuppliers() {
-  //   this.SupplierServ.Get(this.DomainName).subscribe((d) => {
-  //     this.Suppliers = d;
-  //     this.filteredSuppliers = this.Suppliers;
-  //   });
-  // }
-
+  SearchStudents = (search: string, page: number) => {
+    return this.StudentServ.GetAllWithSearch(search, page, 10, this.DomainName).pipe(
+      map(res => ({ items: res.students, totalPages: res.totalPages }))
+    );
+  };
+  
+  SearchSuppliers = (search: string, page: number) => {
+    return this.SupplierServ.GetAllWithSearch(search, page, 10, this.DomainName).pipe(
+      map(res => ({ items: res.suppliers, totalPages: res.totalPages }))
+    );
+  };
+  
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d;

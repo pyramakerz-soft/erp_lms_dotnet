@@ -125,120 +125,40 @@
     >
   </div>
 
-  <div *ngIf="FlagId == 9 || FlagId == 10 || FlagId == 13" class="flex flex-col w-[24%] mb-4 relative" >
-    <label class="mb-2" for="supplier">Suppliers</label>
-    <div class="relative">
-    <input
-      type="text"
-      class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-full pr-10"
-      placeholder="Search Student"
-      [(ngModel)]="supplierSearch"
-      (blur)="hideDropdown()"
-      placeholder="Search Supplier"
-      autocomplete="off"/>
-      <button type="button" class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700" (click)="SearchSuppliers()">
-        <i class="fas fa-search"></i>
-      </button>
-    </div>
-    <ul *ngIf="showSupplierDropdown && filteredSuppliers.length > 0"
-      class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full mt-1">
-    <li *ngFor="let stu of filteredSuppliers"
-        (mousedown)="selectSupplier(stu)"
-        class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-      {{ stu.name }}
-    </li>
-    <!-- Pagination controls -->
-    <li class="flex justify-between items-center px-4 py-2 text-sm text-gray-600 border-t border-gray-200"
-      *ngIf="filteredSuppliers.length > 0" >
-      <button
-        class="hover:underline text-blue-600 disabled:text-gray-400"
-        [disabled]="currentPage === 1"
-        (click)="SearchSuppliers(currentPage - 1)" >
-        <
-      </button>
-      <span> {{ currentPage }} / {{ totalPages }}</span>
-      <button
-        class="hover:underline text-blue-600 disabled:text-gray-400"
-        [disabled]="currentPage === totalPages"
-        (click)="SearchSuppliers(currentPage + 1)" >
-        >
-      </button>
-    </li>
-  </ul>
-
-    <ul *ngIf="searchTriggered" class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full mt-1">
-        <li class="px-4 py-2 text-gray-500">
-          No Supplier With this name
-        </li>
-    </ul>
-
-    <span *ngIf="validationErrors['supplierId']" class="text-red-500 ml-3 font-normal">{{ validationErrors["supplierId"] }}</span >
+  <div (blur)="hideDropdown()"  tabindex="0" *ngIf="FlagId == 11 || FlagId == 12" class="flex flex-col w-[24%] mb-4 relative">
+    <app-search-dropdown
+      [(selectedValue)]="Data.studentID"
+      [placeholder]="'Search Student'"
+      [displayProperty]="'user_Name'"
+      [validationKey]="'studentID'"
+      [validationErrors]="validationErrors"
+      [serviceFunction]="SearchStudents">
+    </app-search-dropdown>
   </div>
 
-  <div *ngIf="FlagId == 11 || FlagId == 12" class="flex flex-col w-[24%] mb-4 relative">
-    <label class="mb-2" for="student">Students</label>
-
-    <div class="relative">
-      <input
-        id="student"
-        type="text"
-        class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-full pr-10"
-        placeholder="Search Student"
-        [(ngModel)]="studentSearch"
-        (blur)="hideDropdown()"
-        autocomplete="off" />
-      <button type="button" class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700" (click)="SearchStudents()">
-        <i class="fas fa-search"></i>
-      </button>
-    </div>
-
-      <ul *ngIf="showStudentDropdown && filteredStudents.length > 0"
-        class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full mt-1">
-      <li *ngFor="let stu of filteredStudents"
-          (mousedown)="selectStudent(stu)"
-          class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-        {{ stu.user_Name }}
-      </li>
-    
-      <!-- Pagination controls -->
-      <li class="flex justify-between items-center px-4 py-2 text-sm text-gray-600 border-t border-gray-200">
-        <button
-          class="hover:underline text-blue-600 disabled:text-gray-400"
-          [disabled]="currentPage === 1"
-          (click)="SearchStudents(currentPage - 1)">
-         <
-        </button>
-        <span> {{ currentPage }} / {{ totalPages }}</span>
-        <button
-          class="hover:underline text-blue-600 disabled:text-gray-400"
-          [disabled]="currentPage === totalPages"
-          (click)="SearchStudents(currentPage + 1)">
-          >
-        </button>
-      </li>
-    </ul>
-  
-  <!-- No results -->
-  <ul *ngIf="searchTriggered && filteredStudents.length === 0"
-      class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full mt-1">
-    <li class="px-4 py-2 text-gray-500">
-      No Students With this name
-    </li>
-  </ul>
-
-    <span *ngIf="validationErrors['studentID']" class="text-red-500 ml-3 font-normal">
-      {{ validationErrors["studentID"] }}
-    </span>
+  <div (blur)="hideDropdown()"  tabindex="0" *ngIf="FlagId == 9 || FlagId == 10 || FlagId == 13" class="flex flex-col w-[24%] mb-4 relative">
+    <app-search-dropdown
+      [(selectedValue)]="Data.supplierId"
+      [placeholder]="'Search Supplier'"
+      [displayProperty]="'name'"
+      [validationKey]="'supplierId'"
+      [validationErrors]="validationErrors"
+      [serviceFunction]="SearchSuppliers">
+    </app-search-dropdown>
   </div>
 
-  <div *ngIf="IsRemainingCashVisa" class="flex justify-start w-full mb-4 space-x-5">
+  <div
+    *ngIf="IsRemainingCashVisa"
+    class="flex justify-start w-full mb-4 space-x-5"
+  >
     <div class="flex w-[8%] space-x-5 items-center mb-4">
       <input
         type="checkbox"
         id="exception"
         class="w-5 h-5"
         [(ngModel)]="Data.isCash"
-        (ngModelChange)="handleCashChange($event)"/>
+        (ngModelChange)="handleCashChange($event)"
+      />
       <label for="exception" class="text-sm">Cash</label>
     </div>
     <div *ngIf="Data.isCash" class="flex flex-col mb-4 w-[15%]">
@@ -255,7 +175,8 @@
       <select
         class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
         id="save"
-        [(ngModel)]="Data.saveID">
+        [(ngModel)]="Data.saveID"
+      >
         <option [value]="0" disabled selected hidden>Choose Safe</option>
         <option *ngFor="let stu of Saves" [value]="stu.id">
           {{ stu.name }}
@@ -264,7 +185,11 @@
           No Data Found
         </option>
       </select>
-      <span *ngIf="validationErrors['saveID']"class="text-red-500 ml-3 font-normal">{{ validationErrors["saveID"] }}</span>
+      <span
+        *ngIf="validationErrors['saveID']"
+        class="text-red-500 ml-3 font-normal"
+        >{{ validationErrors["saveID"] }}</span
+      >
     </div>
 
     <div class="flex w-[8%] space-x-5 items-center mb-4">

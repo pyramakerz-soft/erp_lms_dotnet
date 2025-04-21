@@ -125,6 +125,9 @@ export class InventoryDetailsComponent {
   showSupplierDropdown: boolean = false;
 
   IsPrint : boolean = false
+  searchTriggered = false;
+  currentPage = 1;
+  totalPages = 1;
 
   constructor(
     private router: Router,
@@ -196,9 +199,9 @@ export class InventoryDetailsComponent {
 
     if (this.FlagId == 8) {
     } else if (this.FlagId == 9 || this.FlagId == 10 || this.FlagId == 13) {
-      this.GetAllSuppliers();
+      // this.GetAllSuppliers();
     } else if (this.FlagId == 11 || this.FlagId == 12) {
-      await this.GetAllStudents();
+      // await this.GetAllStudents();
     }
 
     await this.GetAllStores();
@@ -234,12 +237,12 @@ export class InventoryDetailsComponent {
     });
   }
 
-  GetAllStudents() {
-    this.StudentServ.GetAll(this.DomainName).subscribe((d) => {
-      this.students = d;
-      this.filteredStudents=this.students
-    });
-  }
+  // GetAllStudents() {
+  //   this.StudentServ.GetAll(this.DomainName).subscribe((d) => {
+  //     this.students = d;
+  //     this.filteredStudents=this.students
+  //   });
+  // }
 
   GetAllStores() {
     this.storeServ.Get(this.DomainName).subscribe((d) => {
@@ -248,11 +251,37 @@ export class InventoryDetailsComponent {
     });
   }
 
-  filterStudents() {
-    const search = this.studentSearch.toLowerCase();
-    this.filteredStudents = this.students.filter((stu: any) =>
-      stu.user_Name.toLowerCase().includes(search)
-    );
+  SearchStudents(page: number = 1) {
+    this.searchTriggered = true;
+    this.filteredStudents = [];
+    this.currentPage = page;
+    this.StudentServ.GetAllWithSearch(this.studentSearch, page, 10, this.DomainName).subscribe((res) => {
+      this.filteredStudents = res.students 
+      this.totalPages = res.totalPages || 1; 
+      this.showStudentDropdown = true;
+      this.searchTriggered = false;
+    });
+  }
+
+  SearchSuppliers(page: number = 1) {
+    this.filteredSuppliers = [];
+    this.currentPage = page;
+    this.searchTriggered = true;
+    this.SupplierServ.GetAllWithSearch(this.supplierSearch, page, 10, this.DomainName).subscribe((res) => {
+      this.filteredSuppliers = res.suppliers 
+      console.log(res,this.filteredSuppliers)
+      this.totalPages = res.totalPages || 1; 
+      this.showSupplierDropdown = true;
+      this.searchTriggered = false;
+    });
+  }
+  
+  hideDropdown() {
+    setTimeout(() => {
+      this.showStudentDropdown = false;
+      this.showSupplierDropdown = false;
+      this.searchTriggered = false; // optional: reset on blur if needed
+    }, 200);
   }
 
   selectStudent(stu: any) {
@@ -262,19 +291,12 @@ export class InventoryDetailsComponent {
     this.showStudentDropdown = false;
   }
 
-  hideDropdown() {
-    setTimeout(() => {
-      this.showStudentDropdown = false;
-      this.showSupplierDropdown = false;
-    }, 200);
-  }
-
-  filterSuppliers() {
-    const searchValue = this.supplierSearch.toLowerCase();
-    this.filteredSuppliers = this.Suppliers.filter(s =>
-      s.name.toLowerCase().includes(searchValue)
-    );
-  }
+  // filterSuppliers() {
+  //   const searchValue = this.supplierSearch.toLowerCase();
+  //   this.filteredSuppliers = this.Suppliers.filter(s =>
+  //     s.name.toLowerCase().includes(searchValue)
+  //   );
+  // }
   
   selectSupplier(supplier: any) {
     this.Data.supplierId = supplier.id;
@@ -283,12 +305,12 @@ export class InventoryDetailsComponent {
     this.onInputValueChange({ field: 'supplierId', value: supplier.id });
   }
 
-  GetAllSuppliers() {
-    this.SupplierServ.Get(this.DomainName).subscribe((d) => {
-      this.Suppliers = d;
-      this.filteredSuppliers = this.Suppliers;
-    });
-  }
+  // GetAllSuppliers() {
+  //   this.SupplierServ.Get(this.DomainName).subscribe((d) => {
+  //     this.Suppliers = d;
+  //     this.filteredSuppliers = this.Suppliers;
+  //   });
+  // }
 
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
@@ -777,6 +799,7 @@ export class InventoryDetailsComponent {
     );
     return IsAllow;
   }
+
 
   //////////////////////////// Print ////////////////////////////////
 

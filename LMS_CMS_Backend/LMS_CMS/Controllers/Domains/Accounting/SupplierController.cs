@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.Accounting;
+using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
+using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Octa;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -60,9 +62,47 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
 
             return Ok(DTOS);
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("Search")]
+        public async Task<IActionResult> SearchSupplier(string keyword, int pageNumber = 1, int pageSize = 10)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            // Build query with optional filter
+            var query = Unit_Of_Work.supplier_Repository
+                .SelectQuery<Supplier>(s => s.IsDeleted != true && s.Name.Contains(keyword))
+                .Include(s => s.AccountNumber)
+                .OrderBy(s => s.Name); 
+
+            int totalRecords = await query.CountAsync();
+
+            // Apply pagination
+            var pagedSuppliers = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            if (pagedSuppliers == null || pagedSuppliers.Count == 0)
+            {
+                return NotFound("No suppliers found");
+            }
+
+            // Map to DTO
+            var Dtos = mapper.Map<List<SupplierGetDTO>>(pagedSuppliers);
+
+            // Return with optional pagination info
+            return Ok(new
+            {
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Suppliers = Dtos
+            });
+        }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },

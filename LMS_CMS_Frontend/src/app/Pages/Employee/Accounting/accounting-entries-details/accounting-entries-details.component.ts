@@ -149,6 +149,7 @@ export class AccountingEntriesDetailsComponent {
           if(data.linkFileID){
             this.dataAccordingToLinkFileService.Get(this.DomainName, data.linkFileID).subscribe(
               (data) => { 
+                console.log(data)
                 this.subAccountData = data
               }
             )
@@ -303,9 +304,11 @@ export class AccountingEntriesDetailsComponent {
   }
 
   SaveNewDetails(){
+    this.isLoading = true;
     this.newDetails.accountingEntriesMasterID = this.AccountingEntriesID
     this.accountingEntriesDetailsService.Add(this.newDetails, this.DomainName).subscribe(
       (data) => {
+        this.isLoading = false;
         this.isNewDetails = false
         this.newDetails = new AccountingEntriesDetails()
         this.GetAccountingEntriesDetails()

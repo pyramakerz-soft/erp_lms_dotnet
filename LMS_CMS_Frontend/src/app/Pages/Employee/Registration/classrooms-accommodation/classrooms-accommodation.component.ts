@@ -21,6 +21,8 @@ import { SearchComponent } from '../../../../Component/search/search.component';
 import { firstValueFrom } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
+import { RegistrationFormStateService } from '../../../../Services/Employee/Registration/registration-form-state.service';
+import { RegistrationFormState } from '../../../../Models/Registration/registration-form-state';
 
 @Component({
   selector: 'app-classrooms-accommodation',
@@ -63,9 +65,11 @@ export class ClassroomsAccommodationComponent {
 
   Grades: Grade[] = [];
   Schools: School[] = [];
+  registrationFormStates: RegistrationFormState[] = [];
   Years: AcademicYear[] = [];
 
   SelectedSchoolId: number = 0;
+  SelectedRegistrationFormStateId: number = 0;
   SelectedYearId: number = 0;
   SelectedGradeId: number = 0;
   IsSearch: boolean = false;
@@ -86,6 +90,7 @@ export class ClassroomsAccommodationComponent {
     public classroomServ: ClassroomService,
     public SchoolServ: SchoolService,
     public GradeServ: GradeService,
+    public registrationFormStateService: RegistrationFormStateService,
     public YearServ: AcadimicYearService
   ) { }
 
@@ -108,6 +113,7 @@ export class ClassroomsAccommodationComponent {
 
     this.getAllGrades();
     this.getAllSchools();
+    this.getAllRegistrationFormStates();
     this.getAllYears();
     this.GetAllData();
   }
@@ -168,6 +174,11 @@ export class ClassroomsAccommodationComponent {
       this.Schools = data;
     });
   }
+  getAllRegistrationFormStates() {
+    this.registrationFormStateService.Get(this.DomainName).subscribe((data) => {
+      this.registrationFormStates = data;
+    });
+  }
   getAllGrades() {
     this.GradeServ.Get(this.DomainName).subscribe((data) => {
       this.Grades = data;
@@ -186,10 +197,9 @@ export class ClassroomsAccommodationComponent {
       const schoolMatch = this.SelectedSchoolId == 0 || item.schoolID == this.SelectedSchoolId;
       const yearMatch = this.SelectedYearId == 0 || item.academicYearID == this.SelectedYearId;
       const gradeMatch = this.SelectedGradeId == 0 || item.gradeID == this.SelectedGradeId;
-      return schoolMatch && yearMatch && gradeMatch;
-    });
-
-    console.log(this.OriginalData)
+      const stateMatch = this.SelectedRegistrationFormStateId == 0 || item.registerationFormStateID == this.SelectedRegistrationFormStateId;
+      return schoolMatch && yearMatch && gradeMatch && stateMatch;
+    }); 
   }
 
   ResetFilter() {

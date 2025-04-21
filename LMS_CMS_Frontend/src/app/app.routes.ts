@@ -213,7 +213,7 @@ export const routes: Routes = [
             { path: "Receivable Doc Type", component: ReceivableDocTypeComponent, title: "Receivable Doc Type" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Inventory Categories", component: CategoriesComponent, title: "Inventory categories" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Inventory Sub Categories/:id", component: SubCategoryComponent, title: "Sub_categories" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Items", component: ShopItemsComponent, title: "Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
+            { path: "Shop", component: ShopItemsComponent, title: "Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Shop Item/Create", component: ShopItemsAddEditComponent, title: "Create Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Shop Item/:id", component: ShopItemsAddEditComponent, title: "Edit Shop Items" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Stores", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard ]},

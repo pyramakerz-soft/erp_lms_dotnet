@@ -407,9 +407,7 @@ export class AccountingEmployeeEditComponent {
         const field = key as keyof AccountingEmployee;
         if (!this.Data[field]) {
           if (
-            field == 'user_Name' || 
-            field == 'departureTime' 
-          ) {
+            field == 'user_Name' ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
             )} is required`;
@@ -432,8 +430,7 @@ export class AccountingEmployeeEditComponent {
           this.validationErrors['departureTime'] = 'Attendance Time and Departure Time cannot be the same.';
           isValid = false;
         }
-        
-        console.log("aa",this.attendanceTime,this.departureTime)
+         
         if (departureMins < attendanceMins) {
           this.validationErrors['departureTime'] = 'Departure Time cannot be before Attendance Time.';
           isValid = false;

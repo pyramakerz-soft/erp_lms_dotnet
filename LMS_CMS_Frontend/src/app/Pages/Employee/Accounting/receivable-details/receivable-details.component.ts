@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
@@ -339,9 +339,11 @@ export class ReceivableDetailsComponent {
   }
 
   SaveNewDetails() {
+    this.isLoading = true
     this.newDetails.receivableMasterID = this.ReceivableID
     this.receivableDetailsService.Add(this.newDetails, this.DomainName).subscribe(
       (data) => {
+        this.isLoading = false
         this.isNewDetails = false
         this.newDetails = new ReceivableDetails()
         this.GetReceivableDetails()
@@ -427,5 +429,5 @@ export class ReceivableDetailsComponent {
         });
       });
     }, 500);
-  }
+  }  
 }

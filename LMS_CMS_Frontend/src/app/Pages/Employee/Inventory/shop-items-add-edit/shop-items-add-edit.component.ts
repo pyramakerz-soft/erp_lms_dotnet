@@ -161,7 +161,7 @@ export class ShopItemsAddEditComponent {
   }
 
   moveToBack() {
-    this.router.navigateByUrl(`Employee/Items`)
+    this.router.navigateByUrl(`Employee/Shop`)
   }
 
   onCategoryChange(event: Event) {
@@ -213,12 +213,12 @@ export class ShopItemsAddEditComponent {
       if (this.mode == 'Create') {
         this.shopItemService.Add(this.ShopItem, this.DomainName).subscribe(
           data => {
-            this.router.navigateByUrl(`Employee/Items`)
-            this.isLoading=false
             Swal.fire({
               title: "Added Successfully!",
               icon: "success"
             });
+            this.router.navigateByUrl(`Employee/Shop`)
+            this.isLoading=false
           }, 
           err => { 
             if(err.error == "BarCode Must Be unique"){
@@ -235,12 +235,12 @@ export class ShopItemsAddEditComponent {
       if (this.mode == 'Edit') {
         this.shopItemService.Edit(this.ShopItem, this.DomainName).subscribe(
           data => {
-            this.router.navigateByUrl(`Employee/Items`) 
-            this.isLoading=false
             Swal.fire({
               title: "Edited Successfully!",
               icon: "success"
             });
+            this.router.navigateByUrl(`Employee/Shop`) 
+            this.isLoading=false
           }, 
           err => {
             this.isLoading=false

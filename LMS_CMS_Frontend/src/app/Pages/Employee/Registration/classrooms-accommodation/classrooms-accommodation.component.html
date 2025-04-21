@@ -36,6 +36,16 @@
       </option>
       </select>
   </div>
+  <div class="w-1/3">
+      <label for="registrationFormStates" class="primaryTxt block mb-2 text-base font-medium text-[#2E3646]">{{ 'Admission Status' | translate }}</label>
+      <select id="registrationFormStates" [(ngModel)]="SelectedRegistrationFormStateId" (change)="Search()"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 w-full">
+          <option [value]=0 disabled selected hidden>{{ 'Choose' | translate }} {{ 'Admission Status' | translate }}</option>
+      <option *ngFor="let s of registrationFormStates" [value]="s.id">
+        {{ s.name }}
+      </option>
+      </select>
+  </div>
 
   <div *ngIf="IsSearch" class="flex space-x-4 items-center">
       <div class="rounded-full p-2 border-4" (click)="ResetFilter()">

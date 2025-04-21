@@ -42,7 +42,10 @@ export class LoginComponent {
 
   ngOnInit() {
     window.addEventListener('popstate', this.checkLocalStorageOnNavigate);
-    this.selectType("student")
+
+    const fromSignup = sessionStorage.getItem('fromSignup') === 'true'; 
+    this.selectType(fromSignup ? 'parent' : 'student'); 
+    sessionStorage.removeItem('fromSignup');
   }
   
   ngOnDestroy(): void { 

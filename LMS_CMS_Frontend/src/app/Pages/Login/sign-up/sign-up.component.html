@@ -4,22 +4,7 @@
       class="w-full md:w-3/4 lg:w-[528px] max-h-[90vh] py-7 px-8 bg-white border border-gray-200 rounded-3xl shadow mb-2 flex flex-col items-center justify-center ">
         <div class="mb-5 flex justify-center ">
           <img src="Images/OctaIcon.png" alt="Avatar">
-        </div>
-  
-        <div class="flex items-center justify-between space-x-2 mb-4">
-          <div>
-            <img [src]="isStudentHovered ? 'Images/Student_Hover.png' : studentImage" alt="student"
-              (click)="selectType('student')" class="cursor-pointer">
-          </div>
-          <div>
-            <img [src]="isParentHovered ? 'Images/parent_hover.png' : parentImage" alt="parent"
-              (click)="selectType('parent')" class="cursor-pointer">
-          </div>
-          <div>
-            <img [src]="isEmployeeHovered ? 'Images/employee_hover.png' : employeeImage" alt="Employee"
-              (click)="selectType('employee')" class="cursor-pointer">
-          </div>
-        </div>
+        </div> 
   
         <span *ngIf="somthingError" class="text-red-500 text-sm font-normal">{{ somthingError }}</span>
   

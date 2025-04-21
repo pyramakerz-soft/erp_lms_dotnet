@@ -134,7 +134,7 @@ export class EmployeeAddEditComponent {
       if (this.Data.hasOwnProperty(key)) {
         const field = key as keyof EmployeeGet;
         if (!this.Data[field]) {
-          if (field == 'user_Name' || field == 'en_name' || field == 'password' || field == 'role_ID' || field == 'employeeTypeID') {
+          if (field == 'user_Name' || field == 'en_name' || field == 'password' || field == 'role_ID' || field == 'employeeTypeID' || field == 'email') {
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`;
             isValid = false;
           }
@@ -234,7 +234,7 @@ export class EmployeeAddEditComponent {
             this.isLoading = false;
             return true;
           },
-          (error) => {
+          (error) => { 
             this.isLoading = false;
             Swal.fire({
               icon: 'error',

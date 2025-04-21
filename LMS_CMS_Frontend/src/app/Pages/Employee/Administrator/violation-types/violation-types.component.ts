@@ -228,10 +228,16 @@ export class ViolationTypesComponent {
   }
 
   selectEmployeeType(employeeType: EmployeeTypeGet): void {
+    console.log(employeeType)
+    console.log(this.empTypesSelected)
     if (!this.empTypesSelected.some((e) => e.id === employeeType.id)) {
       this.empTypesSelected.push(employeeType);
     }
-    this.violation.employeeTypeID.push(employeeType.id);
+
+    if (!this.violation.employeeTypeID.some((e) => e === employeeType.id)) {
+      this.violation.employeeTypeID.push(employeeType.id);
+    } 
+
     this.dropdownOpen = false; // Close dropdown after selection
   }
 

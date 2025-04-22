@@ -202,31 +202,7 @@ export class SemesterComponent {
     const IsAllow = this.EditDeleteServ.IsAllowEdit(InsertedByID, this.UserID, this.AllowEditForOthers);
     return IsAllow;
   }
-
-  // checkFromToDate(){
-  //   let valid = true
-
-  //   const fromDate: Date = new Date(this.semester.dateFrom); 
-  //   const toDate: Date = new Date(this.semester.dateTo); 
-  //   const diff: number = toDate.getTime() - fromDate.getTime();
-
-  //   if(diff < 0){
-  //     valid = false
-  //     Swal.fire({
-  //       title: 'From Date Must Be a Date Before To Date',
-  //       icon: 'warning',
-  //       confirmButtonColor: '#FF7519',
-  //       confirmButtonText: 'Ok',
-  //     });
-  //     this.isLoading = false;
-  //   }
-
-  //   console.log(this.academicYear)
-
-  //   return valid
-  // }
-
-
+  
   checkFromToDate() {
     let valid = true;
   

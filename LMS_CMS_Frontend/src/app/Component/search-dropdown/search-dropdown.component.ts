@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './search-dropdown.component.css'
 })
 export class SearchDropdownComponent {
+  constructor(private _eref: ElementRef) {}
 
   @Input() selectedValue: any;
   @Output() selectedValueChange = new EventEmitter<any>();
@@ -28,6 +29,14 @@ export class SearchDropdownComponent {
   currentPage: number = 1;
   totalPages: number = 1;
   searchTriggered = false;
+
+  // Detect clicks outside this component
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event): void {
+    if (!this._eref.nativeElement.contains(event.target)) {
+      this.hideDropdown();
+    }
+  }
 
   search(page: number = 1): void {
     if (!this.serviceFunction) return;
@@ -51,9 +60,8 @@ export class SearchDropdownComponent {
   }
 
   hideDropdown(): void {
-    setTimeout(() => {
-      this.showDropdown = false;
-      this.blur.emit(); 
-    }, 200);
+    this.showDropdown = false;
+    this.searchTriggered = false;
+    this.blur.emit();
   }
-}
+  }

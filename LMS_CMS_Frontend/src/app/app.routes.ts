@@ -128,6 +128,7 @@ import { StudentsInformationFormReportComponent } from './Pages/Employee/Registr
 import { PdfPrintComponent } from './Component/pdf-print/pdf-print.component';
 import { AcademicSequentialReportComponent } from './Pages/Employee/Registration/Reports/academic-sequential-report/academic-sequential-report.component';
 import { TransferedFromKindergartenReportComponent } from './Pages/Employee/Registration/Reports/transfered-from-kindergarten-report/transfered-from-kindergarten-report.component';
+import { InvoiceReportComponent } from './Pages/Employee/Inventory/Report/InventoryTransactionReport/invoice-report/invoice-report.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -237,7 +238,7 @@ export const routes: Routes = [
             { path: "Receivable Doc Type", component: ReceivableDocTypeComponent, title: "Receivable Doc Type" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Inventory Categories", component: CategoriesComponent, title: "Inventory categories" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Inventory Sub Categories/:id", component: SubCategoryComponent, title: "Sub_categories" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
-            { path: "Shop", component: ShopItemsComponent, title: "Shop Items" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
+            { path: "Items", component: ShopItemsComponent, title: "Shop Items" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Shop Item/Create", component: ShopItemsAddEditComponent, title: "Create Shop Items" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Shop Item/:id", component: ShopItemsAddEditComponent, title: "Edit Shop Items" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Stores", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
@@ -296,7 +297,11 @@ export const routes: Routes = [
             { path: "StudentsInformationFormReport", component: StudentsInformationFormReportComponent, title: "StudentsInformationFormReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "TransferedFromKindergartenReport", component: TransferedFromKindergartenReportComponent, title: "TransferedFromKindergartenReport", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "InventoryTransactionInvoiceReport", component: InvoiceReportComponent, title: "InventoryTransactionInvoiceReport", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "InventoryTransactionInvoiceReport", component: InvoiceReportComponent, title: "InventoryTransactionInvoiceReport", canActivate:[noNavigateWithoutLoginGuard ] },
+        
         ]
+
     },
     { 
         path: "Parent", 

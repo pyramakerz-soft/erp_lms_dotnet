@@ -3,6 +3,17 @@
 </div>
 
 <div class="my-5 flex flex-wrap justify-between items-center">
+
+        <div class="flex flex-col w-[32%] mb-4">
+            <label class="mb-2 font-medium" for="store">Store</label>
+            <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="store"
+                [(ngModel)]="selectedStoreId">
+                <option [value]="0" disabled selected hidden>Choose Store</option>
+                <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
+                <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
+        
     <div class="flex flex-col w-[32%] mb-4">
         <label class="mb-2 font-medium" for="dateFrom">Date From</label>
         <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateFrom"
@@ -15,17 +26,20 @@
             [(ngModel)]="dateTo">
     </div>
 
-    <div class="flex flex-col w-[32%] mb-4">
-        <label class="mb-2 font-medium" for="store">Store</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="store"
-            [(ngModel)]="selectedStoreId">
-            <option [value]="0" disabled selected hidden>Choose Store</option>
-            <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
-            <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
-        </select>
-    </div>
 
-    <div class="w-full flex justify-end">
+
+<div class="flex flex-col w-[32%] mb-4">
+    <label class="mb-2 font-medium" for="inventoryFlags">Inventory Flags</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="inventoryFlags">
+        <option [value]="0">Select All</option>
+        <option *ngFor="let flag of filteredInventoryFlags" [value]="flag.id">
+            {{ flag.enName }} ({{ flag.arName }})
+        </option>
+        <option *ngIf="filteredInventoryFlags.length === 0" disabled selected>No Data Found</option>
+    </select>
+</div>
+
+    <div class="w-[32%] flex justify-end">
         <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
             [disabled]="!dateFrom || !dateTo || !selectedStoreId"
             [ngClass]="{ 'bg-gray-100 text-gray-300': !dateFrom || !dateTo || !selectedStoreId, 'secondaryBg text-white': dateFrom && dateTo && selectedStoreId }">

@@ -1,1 +1,111 @@
-<p>invoice-report works!</p>
+<div class="flex justify-between">
+    <h1 class="primaryTxt font-bold text-2xl leading-9">Invoice Report</h1>
+</div>
+
+<div class="my-5 flex flex-wrap justify-between items-center">
+    <div class="flex flex-col w-[32%] mb-4">
+        <label class="mb-2 font-medium" for="dateFrom">Date From</label>
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateFrom"
+            [(ngModel)]="dateFrom">
+    </div>
+
+    <div class="flex flex-col w-[32%] mb-4">
+        <label class="mb-2 font-medium" for="dateTo">Date To</label>
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateTo"
+            [(ngModel)]="dateTo">
+    </div>
+
+    <div class="flex flex-col w-[32%] mb-4">
+        <label class="mb-2 font-medium" for="store">Store</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="store"
+            [(ngModel)]="selectedStoreId">
+            <option [value]="0" disabled selected hidden>Choose Store</option>
+            <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
+            <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="w-full flex justify-end">
+        <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
+            [disabled]="!dateFrom || !dateTo || !selectedStoreId"
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !dateFrom || !dateTo || !selectedStoreId, 'secondaryBg text-white': dateFrom && dateTo && selectedStoreId }">
+            View Report
+        </button>
+    </div>
+</div>
+
+<div *ngIf="showTable" class="mb-5 flex justify-end space-x-4">
+    <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="downloadAsExcel()">
+    <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="downloadAsPDF()">
+    <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="print()">
+</div>
+
+<div *ngIf="showTable" class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+    <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Invoice #
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Date
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Store
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Total Amount
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Status
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="invoices.length === 0">
+                <td colspan="5"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <tr *ngFor="let invoice of invoices; let i = index"
+                [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                class="border-t border-gray-300 text-xs md:text-sm">
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ invoice.invoiceNumber }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ invoice.date | date:'mediumDate' }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ invoice.storeName }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ invoice.totalAmount | currency }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <span [ngClass]="{
+                        'bg-green-100 text-green-800': invoice.status === 'Paid',
+                        'bg-yellow-100 text-yellow-800': invoice.status === 'Pending',
+                        'bg-red-100 text-red-800': invoice.status === 'Cancelled'
+                    }" class="px-2 py-1 rounded-full text-xs">
+                        {{ invoice.status }}
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [fileName]="'Invoice Report'" [infoRows]="[
+                { keyEn: 'Date From : ' + (dateFrom | date:'mediumDate') },
+                { keyEn: 'Date To : ' + (dateTo | date:'mediumDate') },
+                { keyEn: 'Store : ' + selectedStoreName }
+            ]" [tableHeaders]="['Invoice #', 'Date', 'Store', 'Total Amount', 'Status']" [tableData]="invoicesForPDF"
+            #pdfComponentRef>
+        </app-pdf-print>
+    </div>
+</div>

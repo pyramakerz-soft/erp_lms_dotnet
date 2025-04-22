@@ -118,7 +118,7 @@ export class TuitionDiscountTypesComponent {
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Types?',
+      title: 'Are you sure you want to delete this Type?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',

@@ -236,6 +236,7 @@ export class EmployeeAddEditComponent {
           },
           (error) => { 
             this.isLoading = false;
+            console.log(error)
             Swal.fire({
               icon: 'error',
               title: 'Error',

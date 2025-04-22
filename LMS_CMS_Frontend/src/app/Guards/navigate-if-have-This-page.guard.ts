@@ -4,6 +4,7 @@ import { AccountService } from '../Services/account.service';
 import { RoleDetailsService } from '../Services/Employee/role-details.service';
 import { MenuService } from '../Services/shared/menu.service';
 import { map, switchMap } from 'rxjs';
+import Swal from 'sweetalert2';
 
 export const navigateIfHaveSettingPageGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
@@ -22,9 +23,9 @@ export const navigateIfHaveSettingPageGuard: CanActivateFn = (route, state) => {
 
   if (userData.type==="octa") {
     return true;  
-  }
+  } 
 
-  if (!userData || !userData.role) {
+  if (!userData || !userData.role) { 
     router.navigateByUrl('');
     return false;
   }
@@ -38,9 +39,19 @@ export const navigateIfHaveSettingPageGuard: CanActivateFn = (route, state) => {
       const page = menuService.findByPageName(baseRoute, accessiblePages);
       if (page) {
         return [true];  
+      } else{
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'You Have No Access To This Page',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
+        router.navigateByUrl('');
+        return [false];  
       }
-      router.navigateByUrl('');
-      return [false];  
+      
+
     })
   );
 };

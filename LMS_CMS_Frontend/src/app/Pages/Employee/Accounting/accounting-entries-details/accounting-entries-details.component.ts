@@ -143,13 +143,12 @@ export class AccountingEntriesDetailsComponent {
     const target = event.target as HTMLSelectElement;
     const selectedValue = target ? target.value : null;
 
-    if (selectedValue) {
+    if (selectedValue) { 
       this.accountingTreeChartService.GetByID(+selectedValue, this.DomainName).subscribe(
-        (data) => { 
-          if(data.linkFileID){
-            this.dataAccordingToLinkFileService.Get(this.DomainName, data.linkFileID).subscribe(
-              (data) => { 
-                console.log(data)
+        (data) => {  
+          if(data.linkFileID && data.id){
+            this.dataAccordingToLinkFileService.GetTableDataAccordingToLinkFileAndSubAccount(this.DomainName, data.linkFileID, data.id).subscribe(
+              (data) => {  
                 this.subAccountData = data
               }
             )
@@ -329,8 +328,8 @@ export class AccountingEntriesDetailsComponent {
     if (this.editedRowData.accountingTreeChartID) {
       this.accountingTreeChartService.GetByID(+this.editedRowData.accountingTreeChartID, this.DomainName).subscribe(
         (data) => { 
-          if(data.linkFileID){
-            this.dataAccordingToLinkFileService.Get(this.DomainName, data.linkFileID).subscribe(
+          if(data.linkFileID && data.id){
+            this.dataAccordingToLinkFileService.GetTableDataAccordingToLinkFileAndSubAccount(this.DomainName, data.linkFileID, data.id).subscribe(
               (data) => {
                 this.subAccountData = data
               }

@@ -170,6 +170,7 @@ export const routes: Routes = [
             { path: "Interview Time Table", component: InterviewTimeTableComponent, title: "Interview Time Table"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
             { path: "Interview Registration/:Id", component: InterviewRegistrationComponentEmployee, title: "Interview Registration"  , canActivate:[noNavigateWithoutLoginGuard,navigateIfHaveSettingPageGuard]},  
             { path: "Classroom Accommodation", component: ClassroomsAccommodationComponent, title: "Classroom Accommodation" , canActivate:[noNavigateWithoutLoginGuard ,navigateIfHaveSettingPageGuard]} ,
+<<<<<<< HEAD
             { path: "Supplier", component: SuppliersComponent, title: "Suppliers" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]} ,
             { path: "Debit", component: DebitsComponent, title: "Debits" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]} ,
             { path: "Credit", component: CreditsComponent, title: "Credits" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]} ,

@@ -204,7 +204,7 @@ namespace LMS_CMS
             //    builder.AllowAnyOrigin()
             //   .AllowAnyMethod()
             //   .AllowAnyHeader()
-            //); 
+            //);
 
             app.MapControllers();
 

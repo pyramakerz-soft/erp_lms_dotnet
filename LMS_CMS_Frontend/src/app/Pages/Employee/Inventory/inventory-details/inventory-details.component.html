@@ -37,7 +37,8 @@
 >
   <div class="flex flex-col w-[24%] mb-4">
     <label class="mb-2" for="store">Store</label>
-    <select *ngIf="!IsPrint"
+    <select
+      *ngIf="!IsPrint"
       class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
       id="Store"
       (change)="GetCategories()"
@@ -50,8 +51,15 @@
         No Data Found
       </option>
     </select>
-    <span *ngIf="validationErrors['storeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors["storeID"] }}</span >
-    <span *ngIf="IsPrint" class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block">
+    <span
+      *ngIf="validationErrors['storeID']"
+      class="text-red-500 ml-3 font-normal"
+      >{{ validationErrors["storeID"] }}</span
+    >
+    <span
+      *ngIf="IsPrint"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block"
+    >
       {{ getStoreNameById(Data.storeID) }}
     </span>
   </div>
@@ -70,7 +78,8 @@
 
   <div class="flex flex-col mb-4 w-[24%]">
     <label class="mb-2 primaryTxt" for="name">Date</label>
-    <input *ngIf="!IsPrint"
+    <input
+      *ngIf="!IsPrint"
       id="name"
       type="date"
       class="rounded-lg border border-solid border-gray-300 px-4 py-3"
@@ -83,7 +92,10 @@
       class="text-red-500 ml-3 font-normal"
       >{{ validationErrors["date"] }}</span
     >
-    <span *ngIf="IsPrint" class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block" >
+    <span
+      *ngIf="IsPrint"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block"
+    >
       {{ Data.date }}
     </span>
   </div>
@@ -113,85 +125,26 @@
     >
   </div>
 
-  <div
-    *ngIf="FlagId == 9 || FlagId == 10 || FlagId == 13"
-    class="flex flex-col w-[24%] mb-4 relative"
-  >
-    <label class="mb-2" for="supplier">Suppliers</label>
-    <input
-      type="text"
-      id="supplier"
-      [(ngModel)]="supplierSearch"
-      (input)="filterSuppliers()"
-      (focus)="showSupplierDropdown = true"
-      (blur)="hideDropdown()"
-      class="rounded-lg border border-gray-300 px-4 py-3"
-      placeholder="Search Supplier"
-      autocomplete="off"
-    />
-    <ul
-      *ngIf="showSupplierDropdown"
-      class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full"
-    >
-      <li
-        *ngFor="let supplier of filteredSuppliers"
-        (click)="selectSupplier(supplier)"
-        class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-      >
-        {{ supplier.name }}
-      </li>
-      <li
-        *ngIf="filteredSuppliers.length === 0"
-        class="px-4 py-2 text-gray-500"
-      >
-        No suppliers found.
-      </li>
-    </ul>
-
-    <span
-      *ngIf="validationErrors['supplierId']"
-      class="text-red-500 ml-3 font-normal"
-      >{{ validationErrors["supplierId"] }}</span
-    >
+  <div (blur)="hideDropdown()"  tabindex="0" *ngIf="FlagId == 11 || FlagId == 12" class="flex flex-col w-[24%] mb-4 relative">
+    <app-search-dropdown
+      [(selectedValue)]="Data.studentID"
+      [placeholder]="'Search Student'"
+      [displayProperty]="'user_Name'"
+      [validationKey]="'studentID'"
+      [validationErrors]="validationErrors"
+      [serviceFunction]="SearchStudents">
+    </app-search-dropdown>
   </div>
 
-  <div
-    *ngIf="FlagId == 11 || FlagId == 12"
-    class="flex flex-col w-[24%] mb-4 relative"
-  >
-    <label class="mb-2" for="student">Students</label>
-    <input
-      id="student"
-      type="text"
-      class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-      placeholder="Search Student"
-      [(ngModel)]="studentSearch"
-      (input)="filterStudents()"
-      (focus)="showStudentDropdown = true"
-      (blur)="hideDropdown()"
-      autocomplete="off"
-    />
-
-    <!-- Dropdown -->
-    <ul
-      *ngIf="showStudentDropdown && filteredStudents.length > 0"
-      class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full"
-    >
-      <li
-        *ngFor="let stu of filteredStudents"
-        (mousedown)="selectStudent(stu)"
-        class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-      >
-        {{ stu.user_Name }}
-      </li>
-    </ul>
-
-    <span
-      *ngIf="validationErrors['studentID']"
-      class="text-red-500 ml-3 font-normal"
-    >
-      {{ validationErrors["studentID"] }}
-    </span>
+  <div (blur)="hideDropdown()"  tabindex="0" *ngIf="FlagId == 9 || FlagId == 10 || FlagId == 13" class="flex flex-col w-[24%] mb-4 relative">
+    <app-search-dropdown
+      [(selectedValue)]="Data.supplierId"
+      [placeholder]="'Search Supplier'"
+      [displayProperty]="'name'"
+      [validationKey]="'supplierId'"
+      [validationErrors]="validationErrors"
+      [serviceFunction]="SearchSuppliers">
+    </app-search-dropdown>
   </div>
 
   <div

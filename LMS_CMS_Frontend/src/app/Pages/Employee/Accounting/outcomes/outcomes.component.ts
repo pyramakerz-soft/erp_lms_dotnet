@@ -204,6 +204,7 @@ export class OutcomesComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

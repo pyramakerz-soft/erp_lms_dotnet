@@ -66,6 +66,8 @@ export class PayableDetailsComponent {
   editingRowId: number | null = null;
   editedRowData: PayableDetails = new PayableDetails()
 
+  isLoading = false;
+  
   constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public payableDocTypeService: PayableDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public payableService: PayableService,
@@ -297,7 +299,7 @@ export class PayableDetailsComponent {
 
   GetLinkFilesTypeData() {
     this.linkFileTypesData = []
-    this.dataAccordingToLinkFileService.Get(this.DomainName, +this.newDetails.linkFileID).subscribe(
+    this.dataAccordingToLinkFileService.GetTableDataAccordingToLinkFile(this.DomainName, +this.newDetails.linkFileID).subscribe(
       (data) => {
         this.linkFileTypesData = data
       }
@@ -313,9 +315,11 @@ export class PayableDetailsComponent {
   }
 
   SaveNewDetails() {
+    this.isLoading = true;
     this.newDetails.payableMasterID = this.PayableID
     this.payableDetailsService.Add(this.newDetails, this.DomainName).subscribe(
       (data) => {
+        this.isLoading = false;
         this.isNewDetails = false
         this.newDetails = new PayableDetails()
         this.GetPayableDetails()
@@ -334,7 +338,7 @@ export class PayableDetailsComponent {
     this.editingRowId = row.id
     this.editedRowData = { ...row }
     if (this.editedRowData.linkFileID) {
-      this.dataAccordingToLinkFileService.Get(this.DomainName, +this.editedRowData.linkFileID).subscribe(
+      this.dataAccordingToLinkFileService.GetTableDataAccordingToLinkFile(this.DomainName, +this.editedRowData.linkFileID).subscribe(
         (data) => {
           this.linkFileTypesData = data
         }

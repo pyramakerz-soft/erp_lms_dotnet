@@ -341,16 +341,18 @@ export class BusStudentComponent {
   }
 
   SaveBusStudent(){
-    this.isLoading = true;
     this.busStudent.busID = this.busId
-    this.busStudent.studentID = this.id
-
+    if(this.editBusStudent == true){
+      this.busStudent.studentID = this.id
+    }
+    
     if(this.busStudent.isException == false){
       this.busStudent.exceptionFromDate = null
       this.busStudent.exceptionToDate = null
     }
     
     if (this.isFormValid()) {
+      this.isLoading = true;
       if(this.editBusStudent == false){
         this.busStudentService.Add(this.busStudent, this.DomainName).subscribe((data) => {
           this.closeModal()

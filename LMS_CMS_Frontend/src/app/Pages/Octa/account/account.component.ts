@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './account.component.css'
 })
 export class AccountComponent {
-  keysArray: string[] = ['id', 'user_Name','arabic_Name' ,'insertedAt'];
+  keysArray: string[] = ['id', 'user_Name','arabic_Name'  ];
   key: string= "id";
   value: any = "";
 

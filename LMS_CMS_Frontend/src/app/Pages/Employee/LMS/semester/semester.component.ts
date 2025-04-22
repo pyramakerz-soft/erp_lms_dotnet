@@ -149,7 +149,7 @@ export class SemesterComponent {
   }
 
   moveToAcademicYear(){
-    this.router.navigateByUrl("Employee/Academic Year")
+    this.router.navigateByUrl("Employee/Academic Years")
   }
 
   MoveToSemesterView(id:number){
@@ -203,26 +203,70 @@ export class SemesterComponent {
     return IsAllow;
   }
 
-  checkFromToDate(){
-    let valid = true
+  // checkFromToDate(){
+  //   let valid = true
 
-    const fromDate: Date = new Date(this.semester.dateFrom); 
-    const toDate: Date = new Date(this.semester.dateTo); 
-    const diff: number = toDate.getTime() - fromDate.getTime();
+  //   const fromDate: Date = new Date(this.semester.dateFrom); 
+  //   const toDate: Date = new Date(this.semester.dateTo); 
+  //   const diff: number = toDate.getTime() - fromDate.getTime();
 
-    if(diff < 0){
-      valid = false
+  //   if(diff < 0){
+  //     valid = false
+  //     Swal.fire({
+  //       title: 'From Date Must Be a Date Before To Date',
+  //       icon: 'warning',
+  //       confirmButtonColor: '#FF7519',
+  //       confirmButtonText: 'Ok',
+  //     });
+  //     this.isLoading = false;
+  //   }
+
+  //   console.log(this.academicYear)
+
+  //   return valid
+  // }
+
+
+  checkFromToDate() {
+    let valid = true;
+  
+    const semesterFrom: Date = new Date(this.semester.dateFrom);
+    const semesterTo: Date = new Date(this.semester.dateTo);
+    const academicFrom: Date = new Date(this.academicYear.dateFrom);
+    const academicTo: Date = new Date(this.academicYear.dateTo);
+  
+    // Check that semesterFrom is before semesterTo
+    if (semesterTo.getTime() < semesterFrom.getTime()) {
+      valid = false;
       Swal.fire({
-        title: 'From Date Must Be a Date Before To Date',
+        title: 'From Date Must Be Before To Date',
         icon: 'warning',
         confirmButtonColor: '#FF7519',
         confirmButtonText: 'Ok',
       });
       this.isLoading = false;
+      return false;
     }
-
-    return valid
+  
+    // Check that semester dates are within the academic year dates
+    if (
+      semesterFrom.getTime() < academicFrom.getTime() ||
+      semesterTo.getTime() > academicTo.getTime()
+    ) {
+      valid = false;
+      Swal.fire({
+        title: 'Semester dates must be within the Academic yYear Range',
+        icon: 'warning',
+        confirmButtonColor: '#FF7519',
+        confirmButtonText: 'Ok',
+      });
+      this.isLoading = false;
+      return false;
+    }
+  
+    return valid;
   }
+  
 
   SaveSemester(){
     if(this.isFormValid()){

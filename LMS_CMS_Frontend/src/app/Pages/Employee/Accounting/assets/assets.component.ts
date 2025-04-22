@@ -201,6 +201,7 @@ export class AssetsComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

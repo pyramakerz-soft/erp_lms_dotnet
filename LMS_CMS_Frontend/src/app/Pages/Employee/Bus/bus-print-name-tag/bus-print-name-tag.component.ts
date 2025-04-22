@@ -31,7 +31,7 @@ export class BusPrintNameTagComponent {
 
   key: string = "id";
   value: any = "";
-  keysArray: string[] = ['id', 'schoolName', "studentName", "busCategoryName", "semseterName", "isException", "gradeName", "className", "isException"];
+  keysArray: string[] = ['id', 'schoolName', "studentName", "busCategoryName", "semseterName", "isException", "gradeName", "className"];
 
   AllowEdit: any;
   AllowDelete: any;

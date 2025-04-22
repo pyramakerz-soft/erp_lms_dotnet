@@ -36,7 +36,7 @@ export class EmployeeComponent {
 
   TableData: EmployeeGet[] = []
 
-  keysArray: string[] = ['id', 'user_Name','ar_name' ,'en_name' ,'mobile','phone','email','licenseNumber','expireDate','address','role_Name','employeeTypeName','busCompanyName'];
+  keysArray: string[] = ['id', 'user_Name','ar_name' ,'en_name' ,'mobile','phone','email','address','role_Name','employeeTypeName'];
   key: string= "id";
   value: any = "";
 

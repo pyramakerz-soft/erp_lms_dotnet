@@ -21,7 +21,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './subject-category.component.css'
 })
 export class SubjectCategoryComponent {
-  keysArray: string[] = ['id', 'name','insertedAt'];
+  keysArray: string[] = ['id', 'name'];
   key: string= "id";
   value: any = "";
 

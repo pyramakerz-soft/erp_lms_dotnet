@@ -18,18 +18,8 @@ import { jwtDecode } from 'jwt-decode';
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })
-export class SignUpComponent {
-
-  userInfo: Login = new Login("", "", "", "");
-  User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
-
-  employeeImage = 'Images/employee.png';
-  studentImage = 'Images/student.png';
-  parentImage = 'Images/parent.png';
-
-  isEmployeeHovered = false;
-  isStudentHovered = false;
-  isParentHovered = false;
+export class SignUpComponent { 
+  User_Data_After_Login = new TokenData("", 0, 0, 0, 0, "", "", "", "", "") 
 
   DomainName: string = '';
 
@@ -55,8 +45,7 @@ export class SignUpComponent {
 
   constructor(private router: Router, public accountService: AccountService, public ParentServ: ParentService , public ApiServ: ApiService) { }
   ngOnInit() {
-    this.DomainName = this.ApiServ.GetHeader();
-    this.selectType("parent")
+    this.DomainName = this.ApiServ.GetHeader(); 
   }
 
   onUserNameChange() {
@@ -185,23 +174,8 @@ export class SignUpComponent {
   }
 
   login() {
+    sessionStorage.setItem('fromSignup', 'true');
     this.router.navigateByUrl("")
-  }
-
-  selectType(type: string) {
-    this.userInfo.type = type;
-    if (this.userInfo.type == "employee") {
-      this.router.navigateByUrl("")
-    }
-    else if (this.userInfo.type == "student") {
-      this.router.navigateByUrl("")
-    }
-    else if (this.userInfo.type == "parent") {
-      this.isEmployeeHovered = false;
-      this.isStudentHovered = false;
-      this.isParentHovered = true;
-    }
-
   }
 
   isFormValid(): boolean {

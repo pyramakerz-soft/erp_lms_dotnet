@@ -1,8 +1,7 @@
 <div class="rounded-lg py-2 lg:py-3 px-3 lg:px-6 primaryBg">
     <div class="flex items-center justify-between">
         <div>
-            <!-- <img src="Images/OctaWhiteLogo.png"> -->
-            <img class="w-[57%]" src="Images/OctaIcon.png">
+            <img src="Images/OctaWhiteLogo.png">
         </div>
         <div>
             <input type="text"
@@ -48,7 +47,7 @@
                     <h3 class="font-semibold text-gray-700">Account Options</h3>
                     <ul class="mt-2">
                         <li *ngFor="let token of allTokens">
-                            <button (click)="ChangeAccount(token.id)" [ngClass]="{'border bg-gray-100':token.key == userName}"
+                            <button (click)="ChangeAccount(token.id)" [ngClass]="{'border bg-gray-100':token.key == userName && token.UserType == User_Type}"
                                 class="text-start w-full hover:bg-gray-100 p-2 rounded-md"> 
                                 <p class="primaryTxt">{{ token.key }}</p>
                                 <p class="text-gray-500 text-xs">{{ token.UserType }}</p>

@@ -21,6 +21,7 @@ import { LinkFile } from '../../../../Models/Accounting/link-file';
 import { MotionType } from '../../../../Models/Accounting/motion-type';
 import { SubType } from '../../../../Models/Accounting/sub-type';
 import { EndType } from '../../../../Models/Accounting/end-type';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-accounting-tree',
@@ -242,7 +243,7 @@ export class AccountingTreeComponent {
         const field = key as keyof AccountingTreeChart;
         if (!this.accountingTreeChart[field]) {
           if(field == "name" || field == "subTypeID" || field == "id" 
-            || (this.accountingTreeChart.subTypeID == 2 && field == "mainAccountNumberID")
+            || (this.accountingTreeChart.subTypeID == 2 && (field == "mainAccountNumberID" || field == "linkFileID"))
             || ((this.accountingTreeChart.mainAccountNumberID == 0 ) && (field == "motionTypeID" || field == "endTypeID"))){
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
@@ -271,6 +272,7 @@ export class AccountingTreeComponent {
     }
     if(field == "subTypeID"){
       this.validationErrors["mainAccountNumberID"] = ''
+      this.validationErrors["linkFileID"] = ''
     }
     if(field == "mainAccountNumberID"){
       this.validationErrors["motionTypeID"] = ''
@@ -278,8 +280,7 @@ export class AccountingTreeComponent {
     }
   }
 
-  Save(){
-    if(this.isFormValid()){}
+  Save(){ 
     if(this.isFormValid())
     {
       if(this.isEdit){
@@ -288,6 +289,11 @@ export class AccountingTreeComponent {
             this.GetAllData()
             this.validationErrors = {}; 
             this.accountingTreeChart = new AccountingTreeChart()
+            Swal.fire({
+              title: 'Edited Successfully',
+              icon: 'success', 
+              confirmButtonColor: '#FF7519'
+            })
           }, (error) => {
           }
         )
@@ -297,6 +303,11 @@ export class AccountingTreeComponent {
             this.GetAllData()
             this.validationErrors = {}; 
             this.accountingTreeChart = new AccountingTreeChart()
+            Swal.fire({
+              title: 'Added Successfully',
+              icon: 'success', 
+              confirmButtonColor: '#FF7519'
+            })
           }, (error) => {
           }
         )

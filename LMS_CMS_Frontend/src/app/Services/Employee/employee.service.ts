@@ -67,11 +67,11 @@ export class EmployeeService {
     formData.append('licenseNumber', employee.licenseNumber || '');
     formData.append('expireDate', employee.expireDate || '');
     formData.append('address', employee.address || '');
-    formData.append('role_ID', employee.role_ID.toString());
-    formData.append('busCompanyID', employee.busCompanyID.toString());
-    formData.append('employeeTypeID', employee.employeeTypeID.toString());
-    formData.append('canReceiveMessage', employee.canReceiveMessage.toString());
-    formData.append('canReceiveRequest', employee.canReceiveRequest.toString());
+    formData.append('role_ID', employee.role_ID?.toString() ?? '');
+    formData.append('busCompanyID', employee.busCompanyID?.toString() ?? '');
+    formData.append('employeeTypeID', employee.employeeTypeID?.toString() ?? '');
+    formData.append('canReceiveMessage', employee.canReceiveMessage?.toString() ?? 'false');
+    formData.append('canReceiveRequest', employee.canReceiveRequest?.toString() ?? 'false');
 
     if (employee.files && employee.files.length > 0) {
       employee.files.forEach((file, index) => {
@@ -94,7 +94,7 @@ export class EmployeeService {
       .set('domain-name', this.header);
 
     const formData = new FormData();
-    formData.append('id', employee.id.toString());
+    formData.append('id', employee.id?.toString() ?? '');
     formData.append('user_Name', employee.user_Name);
     formData.append('en_name', employee.en_name);
     formData.append('ar_name', employee.ar_name || ''); 
@@ -105,11 +105,11 @@ export class EmployeeService {
     formData.append('licenseNumber', employee.licenseNumber || '');
     formData.append('expireDate', employee.expireDate || '');
     formData.append('address', employee.address || '');
-    formData.append('role_ID', employee.role_ID.toString());
-    formData.append('busCompanyID', employee.busCompanyID.toString());
-    formData.append('employeeTypeID', employee.employeeTypeID.toString());
-    formData.append('canReceiveMessage', employee.canReceiveMessage.toString());
-    formData.append('canReceiveRequest', employee.canReceiveRequest.toString());
+    formData.append('role_ID', employee.role_ID?.toString() ?? '');
+    formData.append('busCompanyID', employee.busCompanyID?.toString() ?? '');
+    formData.append('employeeTypeID', employee.employeeTypeID?.toString() ?? '');
+    formData.append('canReceiveMessage', employee.canReceiveMessage?.toString() ?? 'false');
+    formData.append('canReceiveRequest', employee.canReceiveRequest?.toString() ?? 'false');
 
     if (employee.files && employee.files.length > 0) {
       employee.files.forEach((file, index) => {

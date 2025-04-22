@@ -207,6 +207,7 @@ export class SavesComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

@@ -15,7 +15,7 @@ export class DataAccordingToLinkFileService {
   }
 
 
-  Get(DomainName: string, id:number) {
+  GetTableDataAccordingToLinkFile(DomainName: string, linkFileId:number) {
     if (DomainName != null) {
       this.header = DomainName
     }
@@ -24,6 +24,18 @@ export class DataAccordingToLinkFileService {
       .set('domain-name', this.header)
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-    return this.http.get<any[]>(`${this.baseUrl}/GetTableDataAccordingToLinkFile/${id}`, { headers });
+    return this.http.get<any[]>(`${this.baseUrl}/GetTableDataAccordingToLinkFile/GetTableDataAccordingToLinkFile/${linkFileId}`, { headers });
+  }
+
+  GetTableDataAccordingToLinkFileAndSubAccount(DomainName: string, linkFileId:number, subAccountId:number) {
+    if (DomainName != null) {
+      this.header = DomainName
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<any[]>(`${this.baseUrl}/GetTableDataAccordingToLinkFile/GetTableDataAccordingToLinkFileAndSubAccount/${linkFileId}/${subAccountId}`, { headers });
   }
 }

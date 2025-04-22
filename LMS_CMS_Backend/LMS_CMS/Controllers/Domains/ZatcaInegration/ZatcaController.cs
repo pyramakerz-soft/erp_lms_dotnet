@@ -19,15 +19,13 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
     {
         private readonly ICsrGenerator _csrGenerator;
         private readonly UOW _unit_Of_Work;
-        private readonly IEInvoiceQRGenerator _qRGenerator;
         private readonly IEInvoiceSigner _signer;
 
-        public ZatcaController(ICsrGenerator csrGenerator, UOW unit_of_work, IEInvoiceQRGenerator qRGenerator, IEInvoiceSigner signer)
+        public ZatcaController(ICsrGenerator csrGenerator, UOW unit_of_work, IEInvoiceSigner signer)
         {
             _csrGenerator = csrGenerator;
             _unit_Of_Work = unit_of_work;
-            _qRGenerator = qRGenerator;
-            this._signer = signer;
+            _signer = signer;
         }
 
         //#region Generate Private Key
@@ -252,7 +250,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         //)]
         public IActionResult GenerateXML()
         {
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/Data");
+            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
 
             if (!Directory.Exists(invoices))
             {
@@ -271,37 +269,12 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
 
-            //InvoicingServices.GenerateXML(master);
+            InvoicingServices inv = new();
+
+            inv.GenerateXML(master);
 
             return Ok("Invoice XML created successfully.");
 
-        }
-        #endregion
-
-        #region Generate QR Code 
-        [HttpPost("GenerateQRCode")]
-        //[Authorize_Endpoint_(
-        //    allowedTypes: new[] { "octa", "employee" },
-        //    pages: new[] { "" }
-        //)]
-        public async Task<IActionResult> GenerateQRCode()
-        {
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/Data");
-            string xml = Path.Combine(invoices, "INV001.xml");
-
-            XmlDocument doc = new XmlDocument();
-            doc.PreserveWhitespace = true;
-            doc.Load(xml);
-
-            if (!System.IO.File.Exists(xml))
-                throw new FileNotFoundException();
-
-            var qr = _qRGenerator.GenerateEInvoiceQRCode(doc);
-
-
-
-            //return Ok(csid);
-            return Ok(qr.QR);
         }
         #endregion
 
@@ -314,15 +287,16 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         public async Task<IActionResult> InvoiceSigning()
         {
             //string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/Data");
+            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string xml = Path.Combine(invoices, "INV001.xml");
 
             string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-            string cerPath = Path.Combine(csr, "CSID.json");
+            string cerPath = Path.Combine(csr, "PCSID.json");
             string csrPath = Path.Combine(csr, "CSR.csr");
             string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
 
             XmlDocument doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
             doc.Load(xml);
 
             if (!System.IO.File.Exists(xml))
@@ -348,12 +322,18 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 .Replace("-----END EC PRIVATE KEY-----", "")
                 .Replace("\n", "")
                 .Replace("\r", "");
-            string cert = "MIIB9TCCAZugAwIBAgIGAZY95e+sMAoGCCqGSM49BAMCMBUxEzARBgNVBAMMCmVJbnZvaWNpbmcwHhcNMjUwNDE2MDkxOTU2WhcNMzAwNDE1MjEwMDAwWjBdMQswCQYDVQQGEwJTQTEUMBIGA1UECwwLQWJkZWxyYWhtYW4xFjAUBgNVBAoMDUFiZGVscmFobWFuIEMxIDAeBgNVBAMMF0FiZGVscmFobWFuIEFwcGxpY2F0aW9uMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEWkIQoB+6exGhWM3iVNzsYdXGWs4cc88ZMu8bSs38NIg34CzO/OuLS5p2nNnHBxHDC9PmkMwotFcjyTJUAjblmKOBkTCBjjAMBgNVHRMBAf8EAjAAMH4GA1UdEQR3MHWkczBxMSAwHgYDVQQEDBcxLURldmljZXwyLTU1NXwzLTk5OTk5OTEfMB0GCgmSJomT8ixkAQEMDzM3NjQ5MjEzNDI1Njc4MzENMAsGA1UEDAwEMDEwMDEOMAwGA1UEGgwFTWFra2ExDTALBgNVBA8MBFRlY2gwCgYIKoZIzj0EAwIDSAAwRQIgfvbpdWHYYfDb5j9ZVuWnMN9lZfQuk4v82mjXaPXptagCIQC+6g9taXZ+2BChZ+LtdLUQ3/yjHzs2ol7MvTci3c75Jw==";
-            var signed = _signer.SignDocument(doc, cert, privateKeyContent);
+
+            var signed = _signer.SignDocument(doc, certDecoded, privateKeyContent);
+            signed.SignedEInvoice.PreserveWhitespace = true;
             signed.SaveSignedEInvoice(xml);
 
+            XmlDocument newDoc = new XmlDocument();
+            newDoc.PreserveWhitespace = true;
+            newDoc.Load(xml);
 
-            //return Ok(csid);
+            InvoicingServices inv = new();
+            inv.FormatXml(xml);
+            inv.SaveFormatted(newDoc, xml, false);
             return Ok(signed.IsValid);
         }
         #endregion

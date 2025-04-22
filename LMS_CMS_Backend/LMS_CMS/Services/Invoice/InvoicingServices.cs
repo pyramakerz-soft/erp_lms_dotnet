@@ -184,7 +184,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
         public async Task GenerateXML(InventoryMaster master)
         {
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/Data");
+            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
             string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
 
@@ -194,18 +194,33 @@ namespace LMS_CMS_PL.Services.Invoice
             }
 
             string newXmlPath = Path.Combine(invoices, $"INV001.xml");
-            string exampleXmlPath = Path.Combine(examplePath, "example.xml");
             string tempXmlPath = Path.Combine(examplePath, "INV001.xml");
             string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
             //string csrPath = Path.Combine(csr, "CSR.csr");
             string cerPath = Path.Combine(csr, "CSID.json");
-            string pcsidPath = Path.Combine(csr, "PCSID.json");
 
             XmlDocument tempXml = new XmlDocument();
+            tempXml.PreserveWhitespace = true;
             tempXml.Load(tempXmlPath);
 
+            string uuid = Guid.NewGuid().ToString();
+            string date = DateTime.Now.ToString("yyyy-MM-dd");
+            string time = DateTime.Now.ToString("HH:mm:ss");
+
+            XmlNamespaceManager nsMgr = RegisterAllNamespaces(tempXml);
+
+            AddValue(tempXml, "//cbc:UUID", uuid, nsMgr);
+            AddValue(tempXml, "//cbc:IssueDate", date, nsMgr); // edit in master
+            AddValue(tempXml, "//cbc:IssueTime", time, nsMgr); // edit in master
+            AddValue(tempXml, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
+
+            File.Copy(tempXmlPath, newXmlPath, true);
+            //SaveFormatted(tempXml, newXmlPath);
+
             //XmlDocument newXml = new XmlDocument();
+            //newXml.PreserveWhitespace = true;
             //newXml.Load(newXmlPath);
+
 
             string jsonContent = File.ReadAllText(cerPath);
             dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
@@ -223,9 +238,9 @@ namespace LMS_CMS_PL.Services.Invoice
                 .Replace("\n", "")
                 .Replace("\r", "");
 
-            var signedInvoice = _signer.SignDocument(tempXml, certDecoded, privateKeyContent);
+            //var signedInvoice = _signer.SignDocument(tempXml, certDecoded, privateKeyContent);
 
-            signedInvoice.SaveSignedEInvoice(newXmlPath);
+            //signedInvoice.SaveSignedEInvoice(newXmlPath);
 
             //XmlDocument exampleDoc = new XmlDocument();
             //exampleDoc.PreserveWhitespace = true;
@@ -508,7 +523,7 @@ namespace LMS_CMS_PL.Services.Invoice
             return "";
         }
 
-        private  byte[] CanonicalizeInvoice(XmlDocument doc)
+        public byte[] CanonicalizeInvoice(XmlDocument doc)
         {
             doc.PreserveWhitespace = true;
             XmlDsigC14NTransform transform = new XmlDsigC14NTransform();
@@ -665,8 +680,9 @@ namespace LMS_CMS_PL.Services.Invoice
             return padded;
         }
 
-        private  void SaveFormatted(XmlDocument doc, string path, bool omitXmlDeclaration = true)
+        public void SaveFormatted(XmlDocument doc, string path, bool omitXmlDeclaration = true)
         {
+            doc.PreserveWhitespace = true;
             XmlWriterSettings settings = new XmlWriterSettings
             {
                 OmitXmlDeclaration = omitXmlDeclaration,
@@ -679,6 +695,27 @@ namespace LMS_CMS_PL.Services.Invoice
 
             using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             using (var writer = XmlWriter.Create(fs, settings))
+            {
+                doc.Save(writer);
+            }
+        }
+
+        public void FormatXml(string xml)
+        {
+            var doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
+            doc.Load(xml);
+
+            var stringBuilder = new StringBuilder();
+            var xmlWriterSettings = new XmlWriterSettings
+            {
+                Indent = true,
+                IndentChars = "  ", // Use 2 spaces
+                NewLineChars = "\n",
+                NewLineHandling = NewLineHandling.Replace
+            };
+
+            using (var writer = XmlWriter.Create(stringBuilder, xmlWriterSettings))
             {
                 doc.Save(writer);
             }

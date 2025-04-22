@@ -110,11 +110,8 @@ namespace LMS_CMS
             builder.Services.AddScoped<CreateStudentService>();
             builder.Services.AddScoped<RemoveAllRegistrationFormParentService>();
             builder.Services.AddScoped<SchoolHeaderService>();
-            //builder.Services.AddScoped<IEInvoiceHashGenerator, EInvoiceHashGenerator>();
             builder.Services.AddScoped<ICsrGenerator, CsrGenerator>();
-            builder.Services.AddScoped<IEInvoiceQRGenerator, EInvoiceQRGenerator>();
             builder.Services.AddScoped<IEInvoiceSigner, EInvoiceSigner>();
-            //builder.Services.AddScoped<RequestResult>();
 
 
             /// 2)

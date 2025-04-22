@@ -4,16 +4,19 @@ using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LMS_CMS_DAL.Migrations.Octa
+namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(Octa_DbContext))]
-    partial class Octa_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250422094231_RemoveCategoryFieldPageMigration")]
+    partial class RemoveCategoryFieldPageMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

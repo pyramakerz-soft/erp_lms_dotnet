@@ -47,7 +47,7 @@ import { map } from 'rxjs/operators';
   templateUrl: './inventory-details.component.html',
   styleUrl: './inventory-details.component.css',
 })
-export class InventoryDetailsComponent {
+export class   InventoryDetailsComponent {
   User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
@@ -394,11 +394,13 @@ export class InventoryDetailsComponent {
       this.isLoading = true;
       await this.SaveRow();
       if (this.mode == 'Create') {
+        console.log("0",this.EditedShopItems)
         this.salesServ.Add(this.Data, this.DomainName).subscribe(
           (d) => {
             this.MasterId = d;
+            console.log("1",this.EditedShopItems)
             if (this.EditedShopItems.length > 0) {
-              console.log(this.EditedShopItems)
+            console.log("2",this.EditedShopItems)
               this.EditedShopItems.forEach((element) => {
                 if (element.id !== 0) {
                   this.shopitemServ.Edit(element, this.DomainName).subscribe({
@@ -460,16 +462,24 @@ export class InventoryDetailsComponent {
 
   EditPrice(row: InventoryDetails) {
     row.totalPrice = row.quantity * row.price;
-    this.shopitemServ
-      .GetById(row.shopItemID, this.DomainName)
-      .subscribe((d) => {
+    if (this.mode === 'Create' && this.IsPriceEditable) {
+      this.shopitemServ.GetById(row.shopItemID, this.DomainName).subscribe((d) => {
         this.ShopItem = d;
         this.ShopItem.purchasePrice = row.price;
-        this.EditedShopItems.push(this.ShopItem);
+        const index = this.EditedShopItems.findIndex(
+          item => item.id === this.ShopItem.id
+        );
+        if (index !== -1) {
+          this.EditedShopItems[index].purchasePrice = row.price;
+        } else {
+          this.EditedShopItems.push(this.ShopItem);
+        }
+        this.IsPriceChanged = true;
       });
+    }
     this.CalculateTotalPrice();
-    this.IsPriceChanged = true;
   }
+  
 
   handleCashChange(isChecked: boolean): void {
     if (!isChecked) {
@@ -553,13 +563,13 @@ export class InventoryDetailsComponent {
   async SaveRow() {
     // this.Item.shopItemID = this.ShopItem.id;
     if (this.mode === 'Create') {
-      if (this.FlagId === 9 || this.FlagId === 13) {
-        await firstValueFrom(
-          this.shopitemServ.Edit(this.ShopItem, this.DomainName)
-        );
-      }
+      // if (this.FlagId === 9 || this.FlagId === 13) {
+      //   // await firstValueFrom(
+      //   //   this.shopitemServ.Edit(this.ShopItem, this.DomainName)
+      //   // );
+      // }
       if (!this.Data.inventoryDetails) {
-        this.Data.inventoryDetails = [];
+        this.Data.inventoryDetails = []; 
       }
       this.Data.inventoryDetails.push(this.Item);
     }
@@ -589,7 +599,7 @@ export class InventoryDetailsComponent {
     this.Data.isEditInvoiceNumber = true;
     this.Data.date = new Date().toISOString().split('T')[0];
     this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {
-      this.router.navigateByUrl(`Employee/Purchases`);
+      this.router.navigateByUrl(`Employee/Purchase`);
     });
   }
 

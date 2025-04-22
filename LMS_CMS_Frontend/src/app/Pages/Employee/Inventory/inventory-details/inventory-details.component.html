@@ -125,7 +125,7 @@
     >
   </div>
 
-  <div (blur)="hideDropdown()"  tabindex="0" *ngIf="FlagId == 11 || FlagId == 12" class="flex flex-col w-[24%] mb-4 relative">
+  <div  *ngIf="FlagId == 11 || FlagId == 12" class="flex flex-col w-[24%] mb-4 relative">
     <app-search-dropdown
       [(selectedValue)]="Data.studentID"
       [placeholder]="'Search Student'"
@@ -136,7 +136,7 @@
     </app-search-dropdown>
   </div>
 
-  <div (blur)="hideDropdown()"  tabindex="0" *ngIf="FlagId == 9 || FlagId == 10 || FlagId == 13" class="flex flex-col w-[24%] mb-4 relative">
+  <div  *ngIf="FlagId == 9 || FlagId == 10 || FlagId == 13" class="flex flex-col w-[24%] mb-4 relative">
     <app-search-dropdown
       [(selectedValue)]="Data.supplierId"
       [placeholder]="'Search Supplier'"
@@ -149,16 +149,14 @@
 
   <div
     *ngIf="IsRemainingCashVisa"
-    class="flex justify-start w-full mb-4 space-x-5"
-  >
+    class="flex justify-start w-full mb-4 space-x-5">
     <div class="flex w-[8%] space-x-5 items-center mb-4">
       <input
         type="checkbox"
         id="exception"
         class="w-5 h-5"
         [(ngModel)]="Data.isCash"
-        (ngModelChange)="handleCashChange($event)"
-      />
+        (ngModelChange)="handleCashChange($event)"/>
       <label for="exception" class="text-sm">Cash</label>
     </div>
     <div *ngIf="Data.isCash" class="flex flex-col mb-4 w-[15%]">
@@ -168,15 +166,11 @@
         [(ngModel)]="Data.cashAmount"
         class="rounded-lg border border-solid border-gray-300 px-4 py-3"
         (ngModelChange)="TotalandRemainingCalculate()"
-        placeholder="Enter Amount"
-      />
+        placeholder="Enter Amount" />
     </div>
     <div *ngIf="Data.isCash" class="flex flex-col w-[23%] mb-4">
       <select
-        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
-        id="save"
-        [(ngModel)]="Data.saveID"
-      >
+        class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="save" [(ngModel)]="Data.saveID">
         <option [value]="0" disabled selected hidden>Choose Safe</option>
         <option *ngFor="let stu of Saves" [value]="stu.id">
           {{ stu.name }}
@@ -185,11 +179,7 @@
           No Data Found
         </option>
       </select>
-      <span
-        *ngIf="validationErrors['saveID']"
-        class="text-red-500 ml-3 font-normal"
-        >{{ validationErrors["saveID"] }}</span
-      >
+      <span *ngIf="validationErrors['saveID']"class="text-red-500 ml-3 font-normal">{{ validationErrors["saveID"] }}</span>
     </div>
 
     <div class="flex w-[8%] space-x-5 items-center mb-4">
@@ -555,7 +545,6 @@
             No Data Found
           </td>
         </tr>
-
         <!-- Data Rows -->
         <tr
           *ngFor="
@@ -587,10 +576,7 @@
           <!-- <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                         {{ row.price }}
                     </td> -->
-          <td
-            *ngIf="IsPriceEditable"
-            class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0"
-          >
+          <td  class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
             <input
               [(ngModel)]="row.price"
               (ngModelChange)="EditPrice(row)"
@@ -598,12 +584,11 @@
               class="w-full border border-gray-300 px-2 py-1 rounded-md"
             />
           </td>
-          <td
-            *ngIf="!IsPriceEditable"
+          <!-- <td
             class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0"
           >
             {{ row.price }}
-          </td>
+          </td> -->
           <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
             {{ row.totalPrice }}
           </td>

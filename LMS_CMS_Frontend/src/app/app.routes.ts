@@ -226,7 +226,7 @@ export const routes: Routes = [
             { path: "Purchase Returns", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 10 } },
             { path: "Purchase Returns Item/:FlagId", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Purchase Returns Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard ]},
-            { path: "Purchase", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 9 } },
+            { path: "Purchases", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 9 } },
             { path: "Purchases Item/:FlagId", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Purchases Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard ]},
             { path: "Opening Balances", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard], data: { id: 1 } },

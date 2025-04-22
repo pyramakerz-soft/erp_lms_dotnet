@@ -15,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './school-type.component.css'
 })
 export class SchoolTypeComponent {
-  keysArray: string[] = ['id', 'name','insertedAt'];
+  keysArray: string[] = ['id', 'name' ];
   key: string= "id";
   value: any = "";
 

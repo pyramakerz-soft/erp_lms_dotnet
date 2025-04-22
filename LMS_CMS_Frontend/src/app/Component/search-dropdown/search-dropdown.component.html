@@ -1,0 +1,53 @@
+<div class="flex flex-col w-full relative mb-4">
+    <label class="mb-2">{{ placeholder }}</label>
+    <div class="relative">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        class="rounded-lg border border-gray-300 px-4 py-3 w-full pr-10"
+        [placeholder]="placeholder"
+        (blur)="hideDropdown()"
+        autocomplete="off" />
+      <button type="button"
+        class="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+        (click)="search()">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+  
+    <ul *ngIf="showDropdown && items.length > 0"
+        class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full mt-1">
+      <li *ngFor="let item of items"
+          (mousedown)="selectItem(item)"
+          class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+        {{ item[displayProperty] }}
+      </li>
+      <li class="flex justify-between items-center px-4 py-2 text-sm text-gray-600 border-t border-gray-200">
+        <button
+          class="hover:underline text-blue-600 disabled:text-gray-400"
+          [disabled]="currentPage === 1"
+          (click)="search(currentPage - 1)">
+          &lt;
+        </button>
+        <span>{{ currentPage }} / {{ totalPages }}</span>
+        <button
+          class="hover:underline text-blue-600 disabled:text-gray-400"
+          [disabled]="currentPage === totalPages"
+          (click)="search(currentPage + 1)">
+          &gt;
+        </button>
+      </li>
+    </ul>
+  
+    <ul *ngIf="searchTriggered "
+        class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto top-full mt-1">
+      <li class="px-4 py-2 text-gray-500">
+        No results found
+      </li>
+    </ul>
+  
+    <span *ngIf="validationErrors[validationKey]" class="text-red-500 ml-3 font-normal">
+      {{ validationErrors[validationKey] }}
+    </span>
+  </div>
+  

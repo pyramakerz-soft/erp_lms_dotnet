@@ -190,6 +190,7 @@ User_Data_After_Login: TokenData = new TokenData(
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

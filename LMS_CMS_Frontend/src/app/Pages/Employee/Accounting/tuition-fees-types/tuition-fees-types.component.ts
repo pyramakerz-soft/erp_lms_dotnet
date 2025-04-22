@@ -205,6 +205,7 @@ export class TuitionFeesTypesComponent {
   }
 
   closeModal() {
+    this.validationErrors = {}
     this.isModalVisible = false;
   }
 

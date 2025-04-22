@@ -1,75 +1,75 @@
-﻿<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
+<?xml version="1.0" encoding="utf-8"?><Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
   <ext:UBLExtensions>
     <ext:UBLExtension>
-      <ext:ExtensionURI>urn:oasis:names:specification:ubl:dsig:enveloped:xades</ext:ExtensionURI>
-      <ext:ExtensionContent>
-        <sig:UBLDocumentSignatures xmlns:sig="urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2" xmlns:sac="urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2" xmlns:sbc="urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2">
-          <sac:SignatureInformation>
-            <cbc:ID>urn:oasis:names:specification:ubl:signature:1</cbc:ID>
-            <sbc:ReferencedSignatureID>urn:oasis:names:specification:ubl:signature:Invoice</sbc:ReferencedSignatureID>
-            <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="signature">
-              <ds:SignedInfo>
-                <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2006/12/xml-c14n11" />
-                <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256" />
-                <ds:Reference Id="invoiceSignedData" URI="">
-                  <ds:Transforms>
-                    <ds:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
-                      <ds:XPath>not(//ancestor-or-self::ext:UBLExtensions)</ds:XPath>
-                    </ds:Transform>
-                    <ds:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
-                      <ds:XPath>not(//ancestor-or-self::cac:Signature)</ds:XPath>
-                    </ds:Transform>
-                    <ds:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
-                      <ds:XPath>not(//ancestor-or-self::cac:AdditionalDocumentReference[cbc:ID='QR'])</ds:XPath>
-                    </ds:Transform>
-                    <ds:Transform Algorithm="http://www.w3.org/2006/12/xml-c14n11" />
-                  </ds:Transforms>
-                  <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
-                  <ds:DigestValue>XTn32mT7Bl4twrk2ifgjYdXttMZHVBibYpCh/IFiLfY=</ds:DigestValue>
-                </ds:Reference>
-                <ds:Reference Type="http://www.w3.org/2000/09/xmldsig#SignatureProperties" URI="#xadesSignedProperties">
-                  <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
-                  <ds:DigestValue>MWU4N2NhZGVjODgxMGJmZGJiOWNmYzRhNmE3ODJiYTgyZTU5NDIzZmJkMDBlMGM4YmNhY2YxM2YzMTIyNWQ3ZQ==</ds:DigestValue>
-                </ds:Reference>
-              </ds:SignedInfo>
-              <ds:SignatureValue>MEUCIE97mC7UuL0pdqF7toRgjzNzWu9Vzz59jPTSmhmxuZU0AiEA69Zzt200HjyT1UL1QMpNZ5oyYjbx28Aq3nDy5GUn7/s=</ds:SignatureValue>
-              <ds:KeyInfo>
-                <ds:X509Data>
-                  <ds:X509Certificate>MIIB9TCCAZugAwIBAgIGAZY95e+sMAoGCCqGSM49BAMCMBUxEzARBgNVBAMMCmVJbnZvaWNpbmcwHhcNMjUwNDE2MDkxOTU2WhcNMzAwNDE1MjEwMDAwWjBdMQswCQYDVQQGEwJTQTEUMBIGA1UECwwLQWJkZWxyYWhtYW4xFjAUBgNVBAoMDUFiZGVscmFobWFuIEMxIDAeBgNVBAMMF0FiZGVscmFobWFuIEFwcGxpY2F0aW9uMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEWkIQoB+6exGhWM3iVNzsYdXGWs4cc88ZMu8bSs38NIg34CzO/OuLS5p2nNnHBxHDC9PmkMwotFcjyTJUAjblmKOBkTCBjjAMBgNVHRMBAf8EAjAAMH4GA1UdEQR3MHWkczBxMSAwHgYDVQQEDBcxLURldmljZXwyLTU1NXwzLTk5OTk5OTEfMB0GCgmSJomT8ixkAQEMDzM3NjQ5MjEzNDI1Njc4MzENMAsGA1UEDAwEMDEwMDEOMAwGA1UEGgwFTWFra2ExDTALBgNVBA8MBFRlY2gwCgYIKoZIzj0EAwIDSAAwRQIgfvbpdWHYYfDb5j9ZVuWnMN9lZfQuk4v82mjXaPXptagCIQC+6g9taXZ+2BChZ+LtdLUQ3/yjHzs2ol7MvTci3c75Jw==</ds:X509Certificate>
-                </ds:X509Data>
-              </ds:KeyInfo>
-              <ds:Object>
-                <xades:QualifyingProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" Target="signature">
-                  <xades:SignedProperties Id="xadesSignedProperties">
-                    <xades:SignedSignatureProperties>
-                      <xades:SigningTime>2025-04-17T15:02:06</xades:SigningTime>
-                      <xades:SigningCertificate>
-                        <xades:Cert>
-                          <xades:CertDigest>
-                            <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
-                            <ds:DigestValue>Nzc4NjkxMmE3MmI5ZTQxZGE0YzU3MzcwYjkzNzA1YjI1YjI3NWEyY2RmYTQzZmNjNWM1MTdlYjE0MzA0MDg0OA==</ds:DigestValue>
-                          </xades:CertDigest>
-                          <xades:IssuerSerial>
-                            <ds:X509IssuerName>CN=Abdelrahman Application, O=Abdelrahman C, OU=Abdelrahman, C=SA</ds:X509IssuerName>
-                            <ds:X509SerialNumber>1744795201452</ds:X509SerialNumber>
-                          </xades:IssuerSerial>
-                        </xades:Cert>
-                      </xades:SigningCertificate>
-                    </xades:SignedSignatureProperties>
-                  </xades:SignedProperties>
-                </xades:QualifyingProperties>
-              </ds:Object>
-            </ds:Signature>
-          </sac:SignatureInformation>
-        </sig:UBLDocumentSignatures>
-      </ext:ExtensionContent>
+        <ext:ExtensionURI>urn:oasis:names:specification:ubl:dsig:enveloped:xades</ext:ExtensionURI>
+        <ext:ExtensionContent>
+            <sig:UBLDocumentSignatures xmlns:sig="urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2" xmlns:sac="urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2" xmlns:sbc="urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2">
+                <sac:SignatureInformation>
+                    <cbc:ID>urn:oasis:names:specification:ubl:signature:1</cbc:ID>
+                    <sbc:ReferencedSignatureID>urn:oasis:names:specification:ubl:signature:Invoice</sbc:ReferencedSignatureID>
+                    <ds:Signature Id="signature" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                        <ds:SignedInfo>
+                            <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2006/12/xml-c14n11" />
+                            <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256" />
+                            <ds:Reference Id="invoiceSignedData" URI="">
+                                <ds:Transforms>
+                                    <ds:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
+                                        <ds:XPath>not(//ancestor-or-self::ext:UBLExtensions)</ds:XPath>
+                                    </ds:Transform>
+                                    <ds:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
+                                        <ds:XPath>not(//ancestor-or-self::cac:Signature)</ds:XPath>
+                                    </ds:Transform>
+                                    <ds:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
+                                        <ds:XPath>not(//ancestor-or-self::cac:AdditionalDocumentReference[cbc:ID='QR'])</ds:XPath>
+                                    </ds:Transform>
+                                    <ds:Transform Algorithm="http://www.w3.org/2006/12/xml-c14n11" />
+                                </ds:Transforms>
+                                <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                                <ds:DigestValue>vM4krUqVhdbmVuduifQsohwwQSVc7+VU8QJCOJrsKOE=</ds:DigestValue>
+                            </ds:Reference>
+                            <ds:Reference Type="http://www.w3.org/2000/09/xmldsig#SignatureProperties" URI="#xadesSignedProperties">
+                                <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                                <ds:DigestValue>YTk4NDk3OGQzYzkyN2Q2NjM0ZTU5YmI1MjU3ODMxZWQzZDliODIwZmQzZjJkOTgyNDkyZGIwZTM3MjM4MGY2MA==</ds:DigestValue>
+                            </ds:Reference>
+                        </ds:SignedInfo>
+                        <ds:SignatureValue>MEUCIDdl7FuRQRY9WqmAk6Nu31PxtK8oDpYKebgHVjqHdgUgAiEA3Uw0bjr4w6s5LoAxXbvjOfe4lO0PFxNN/9bUNC6oLNA=</ds:SignatureValue>
+                        <ds:KeyInfo>
+                            <ds:X509Data>
+                                <ds:X509Certificate>MIIB9TCCAZugAwIBAgIGAZY95e+sMAoGCCqGSM49BAMCMBUxEzARBgNVBAMMCmVJbnZvaWNpbmcwHhcNMjUwNDE2MDkxOTU2WhcNMzAwNDE1MjEwMDAwWjBdMQswCQYDVQQGEwJTQTEUMBIGA1UECwwLQWJkZWxyYWhtYW4xFjAUBgNVBAoMDUFiZGVscmFobWFuIEMxIDAeBgNVBAMMF0FiZGVscmFobWFuIEFwcGxpY2F0aW9uMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEWkIQoB+6exGhWM3iVNzsYdXGWs4cc88ZMu8bSs38NIg34CzO/OuLS5p2nNnHBxHDC9PmkMwotFcjyTJUAjblmKOBkTCBjjAMBgNVHRMBAf8EAjAAMH4GA1UdEQR3MHWkczBxMSAwHgYDVQQEDBcxLURldmljZXwyLTU1NXwzLTk5OTk5OTEfMB0GCgmSJomT8ixkAQEMDzM3NjQ5MjEzNDI1Njc4MzENMAsGA1UEDAwEMDEwMDEOMAwGA1UEGgwFTWFra2ExDTALBgNVBA8MBFRlY2gwCgYIKoZIzj0EAwIDSAAwRQIgfvbpdWHYYfDb5j9ZVuWnMN9lZfQuk4v82mjXaPXptagCIQC+6g9taXZ+2BChZ+LtdLUQ3/yjHzs2ol7MvTci3c75Jw==</ds:X509Certificate>
+                            </ds:X509Data>
+                        </ds:KeyInfo>
+                        <ds:Object>
+                            <xades:QualifyingProperties Target="signature" xmlns:xades="http://uri.etsi.org/01903/v1.3.2#">
+                                <xades:SignedProperties Id="xadesSignedProperties">
+                                    <xades:SignedSignatureProperties>
+                                        <xades:SigningTime>2025-04-20T15:12:13</xades:SigningTime>
+                                        <xades:SigningCertificate>
+                                            <xades:Cert>
+                                                <xades:CertDigest>
+                                                    <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                                                    <ds:DigestValue>Nzc4NjkxMmE3MmI5ZTQxZGE0YzU3MzcwYjkzNzA1YjI1YjI3NWEyY2RmYTQzZmNjNWM1MTdlYjE0MzA0MDg0OA==</ds:DigestValue>
+                                                </xades:CertDigest>
+                                                <xades:IssuerSerial>
+                                                    <ds:X509IssuerName>CN=eInvoicing</ds:X509IssuerName>
+                                                    <ds:X509SerialNumber>1744795201452</ds:X509SerialNumber>
+                                                </xades:IssuerSerial>
+                                            </xades:Cert>
+                                        </xades:SigningCertificate>
+                                    </xades:SignedSignatureProperties>
+                                </xades:SignedProperties>
+                            </xades:QualifyingProperties>
+                        </ds:Object>
+                    </ds:Signature>
+                </sac:SignatureInformation>
+            </sig:UBLDocumentSignatures>
+        </ext:ExtensionContent>
     </ext:UBLExtension>
-  </ext:UBLExtensions>
+</ext:UBLExtensions>
   <cbc:ProfileID>reporting:1.0</cbc:ProfileID>
   <cbc:ID>SME0001</cbc:ID>
-  <cbc:UUID>c37d0f97-3ffa-4e15-b6bd-be5efd3e5e2d</cbc:UUID>
-  <cbc:IssueDate>2025-04-17</cbc:IssueDate>
-  <cbc:IssueTime>15:02:01</cbc:IssueTime>
+  <cbc:UUID />
+  <cbc:IssueDate>2025-04-20</cbc:IssueDate>
+  <cbc:IssueTime>12:07:39</cbc:IssueTime>
   <cbc:InvoiceTypeCode name="0200000">388</cbc:InvoiceTypeCode>
   <cbc:Note languageID="ar">ABC</cbc:Note>
   <cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>
@@ -85,16 +85,14 @@
     </cac:Attachment>
   </cac:AdditionalDocumentReference>
   <cac:AdditionalDocumentReference>
-    <cbc:ID>QR</cbc:ID>
-    <cac:Attachment>
-      <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">AQ1BYmRlbHJhaG1hbiBDAg8zNzY0OTIxMzQyNTY3ODMDEzIwMjUtMDQtMTdUMTU6MDI6MDEEBjExMy44NQUFMTQuODUGLFhUbjMybVQ3Qmw0dHdyazJpZmdqWWRYdHRNWkhWQmliWXBDaC9JRmlMZlk9B2BNRVVDSUU5N21DN1V1TDBwZHFGN3RvUmdqek56V3U5Vnp6NTlqUFRTbWhteHVaVTBBaUVBNjlaenQyMDBIanlUMVVMMVFNcE5aNW95WWpieDI4QXEzbkR5NUdVbjcvcz0IpE1JSUI5VENDQVp1Z0F3SUJBZ0lHQVpZOTVlK3NNQW9HQ0NxR1NNNDlCQU1DTUJVeEV6QVJCZ05WQkFNTUNtVkpiblp2YVdOcGJtY3dIaGNOTWpVd05ERTJNRGt4T1RVMldoY05NekF3TkRFMU1qRXdNREF3V2pCZE1Rc3dDUVlEVlFRR0V3SlRRVEVVTUJJR0ExVUVDd3dMUVdKa1pXeHlZV2h0WVc0eEZqQVVCZ05WQkFvTURVRmlaR1ZzY21Gb2JXRnVJRU14SURBZUJnTlZCQU1NRjBGaVpHVnNjbUZvYldGdUlFRndjR3hwWTJGMGFXOXVNRll3RUFZSEtvWkl6ajBDQVFZRks0RUVBQW9EUWdBRVdrSVFvQis2ZXhHaFdNM2lWTnpzWWRYR1dzNGNjODhaTXU4YlNzMzhOSWczNEN6Ty9PdUxTNXAybk5uSEJ4SERDOVBta013b3RGY2p5VEpVQWpibG1LT0JrVENCampBTUJnTlZIUk1CQWY4RUFqQUFNSDRHQTFVZEVRUjNNSFdrY3pCeE1TQXdIZ1lEVlFRRURCY3hMVVJsZG1salpYd3lMVFUxTlh3ekxUazVPVGs1T1RFZk1CMEdDZ21TSm9tVDhpeGtBUUVNRHpNM05qUTVNakV6TkRJMU5qYzRNekVOTUFzR0ExVUVEQXdFTURFd01ERU9NQXdHQTFVRUdnd0ZUV0ZyYTJFeERUQUxCZ05WQkE4TUJGUmxZMmd3Q2dZSUtvWkl6ajBFQXdJRFNBQXdSUUlnZnZicGRXSFlZZkRiNWo5WlZ1V25NTjlsWmZRdWs0djgybWpYYVBYcHRhZ0NJUUMrNmc5dGFYWisyQkNoWitMdGRMVVEzL3lqSHpzMm9sN012VGNpM2M3NUp3PT0JWE56YzROamt4TW1FM01tSTVaVFF4WkdFMFl6VTNNemN3WWprek56QTFZakkxWWpJM05XRXlZMlJtWVRRelptTmpOV00xTVRkbFlqRTBNekEwTURnME9BPT0=</cbc:EmbeddedDocumentBinaryObject>
-    </cac:Attachment>
-  </cac:AdditionalDocumentReference>
-  <cac:Signature>
-    <cbc:ID>urn:oasis:names:specification:ubl:signature:Invoice</cbc:ID>
-    <cbc:SignatureMethod>urn:oasis:names:specification:ubl:dsig:enveloped:xades</cbc:SignatureMethod>
-  </cac:Signature>
-  <cac:AccountingSupplierParty>
+        <cbc:ID>QR</cbc:ID>
+        <cac:Attachment>
+            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">AQ1BYmRlbHJhaG1hbiBDAg8zNzY0OTIxMzQyNTY3ODMDEzIwMjUtMDQtMjBUMTI6MDc6MzkEBjExMy44NQUFMTQuODUGLHZNNGtyVXFWaGRibVZ1ZHVpZlFzb2h3d1FTVmM3K1ZVOFFKQ09KcnNLT0U9B2BNRVVDSURkbDdGdVJRUlk5V3FtQWs2TnUzMVB4dEs4b0RwWUtlYmdIVmpxSGRnVWdBaUVBM1V3MGJqcjR3NnM1TG9BeFhidmpPZmU0bE8wUEZ4Tk4vOWJVTkM2b0xOQT0IWDBWMBAGByqGSM49AgEGBSuBBAAKA0IABFpCEKAfunsRoVjN4lTc7GHVxlrOHHPPGTLvG0rN/DSIN+Aszvzri0uadpzZxwcRwwvT5pDMKLRXI8kyVAI25ZgJRzBFAiB+9ul1Ydhh8NvmP1lW5acw32Vl9C6Ti/zaaNdo9em1qAIhAL7qD21pdn7YEKFn4u10tRDf/KMfOzaiXsy9NyLdzvkn</cbc:EmbeddedDocumentBinaryObject>
+        </cac:Attachment>
+</cac:AdditionalDocumentReference><cac:Signature>
+      <cbc:ID>urn:oasis:names:specification:ubl:signature:Invoice</cbc:ID>
+      <cbc:SignatureMethod>urn:oasis:names:specification:ubl:dsig:enveloped:xades</cbc:SignatureMethod>
+</cac:Signature><cac:AccountingSupplierParty>
     <cac:Party>
       <cac:PartyIdentification>
         <cbc:ID schemeID="CRN">1010010000</cbc:ID>

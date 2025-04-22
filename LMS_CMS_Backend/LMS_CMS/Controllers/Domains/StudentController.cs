@@ -18,6 +18,7 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using LMS_CMS_DAL.Models.Domains.BusModule;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LMS_CMS_PL.Controllers.Domains
 {
@@ -69,6 +70,58 @@ namespace LMS_CMS_PL.Controllers.Domains
             }
             return Ok(StudentDTO);
         }
+
+        [HttpGet("Search")]
+        public async Task<IActionResult> SearchStudents(string keyword, int pageNumber = 1, int pageSize = 10)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            // Build query with optional filter
+            var query = Unit_Of_Work.student_Repository
+                .SelectQuery<Student>(s => s.IsDeleted!= true && s.User_Name.Contains(keyword))
+                .Include(s => s.AccountNumber)
+                .Include(s => s.Gender)
+                .OrderBy(s => s.en_name); // You can change to ar_name or Id if needed
+
+            // Get total count for pagination info (optional)
+            int totalRecords = await query.CountAsync();
+
+            // Apply pagination
+            var pagedStudents = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Check for results
+            if (pagedStudents == null || pagedStudents.Count == 0)
+            {
+                return NotFound("No students found");
+            }
+
+            // Map to DTO
+            var studentDTOs = mapper.Map<List<StudentGetDTO>>(pagedStudents);
+
+            // Add nationality info
+            foreach (var item in studentDTOs)
+            {
+                var nationality = _Unit_Of_Work_Octa.nationality_Repository.Select_By_Id_Octa(item.Nationality);
+                if (nationality != null)
+                {
+                    item.NationalityEnName = nationality.Name;
+                    item.NationalityArName = nationality.ArName;
+                }
+            }
+
+            // Return with optional pagination info
+            return Ok(new
+            {
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Students = studentDTOs
+            });
+        }
+
 
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetByIDAsync(long Id)

@@ -554,8 +554,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpPost("AddStudentToClassroom/{registrationFormParentID}/{classroomid}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Classroom" }
+            allowedTypes: new[] { "octa", "employee" }
         )]
         public async Task<IActionResult> AddStudent(long registrationFormParentID, long classroomid)
         {

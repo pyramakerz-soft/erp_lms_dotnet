@@ -133,6 +133,11 @@ namespace LMS_CMS_BL.Repository
             return db.Set<TEntity>().Where(predicate).ToList();
         }
 
+        public IQueryable<T> SelectQuery<T>(Expression<Func<T, bool>> filter) where T : class
+        {
+            return db.Set<T>().Where(filter);
+        }
+
         public async Task<List<TEntity>> Select_All_With_IncludesById<TProperty>(
             Expression<Func<TEntity, bool>> predicate,
             params Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>[] includes)

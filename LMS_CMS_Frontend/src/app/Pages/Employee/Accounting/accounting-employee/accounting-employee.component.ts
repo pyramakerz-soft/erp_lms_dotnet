@@ -54,7 +54,7 @@ User_Data_After_Login: TokenData = new TokenData(
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'user_Name', 'en_name' ,'ar_name','mobile','phone','email','licenseNumber','expireDate','address','role_Name','busCompanyName','employeeTypeName'];
+  keysArray: string[] = ['id', 'user_Name', 'en_name' ,'ar_name','mobile','email','role_Name','employeeTypeName'];
   AccountNumbers:AccountingTreeChart[]=[];
   
 

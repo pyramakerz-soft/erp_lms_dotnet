@@ -14,6 +14,7 @@ import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { ShopItemService } from '../../../../Services/Employee/Inventory/shop-item.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-shop-items',
@@ -52,7 +53,7 @@ User_Data_After_Login: TokenData = new TokenData(
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'enName', 'arName', 'purchasePrice', 'salesPrice', 'barCode', 'vatForForeign'];
 
   validationErrors: { [key in keyof ShopItem]?: string } = {};
 
@@ -146,30 +147,26 @@ User_Data_After_Login: TokenData = new TokenData(
   async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
     this.value = event.value;
-  //   try {
-  //     const data: Category[] = await firstValueFrom(
-        
-  //     );
-  //     this.TableData = data || [];
-
-  //     if (this.value !== '') {
-  //       const numericValue = isNaN(Number(this.value))
-  //         ? this.value
-  //         : parseInt(this.value, 10);
-
-  //       this.TableData = this.TableData.filter((t) => {
-  //         const fieldValue = t[this.key as keyof typeof t];
-  //         if (typeof fieldValue === 'string') {
-  //           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
-  //         }
-  //         if (typeof fieldValue === 'number') {
-  //           return fieldValue === numericValue;
-  //         }
-  //         return fieldValue == this.value;
-  //       });
-  //     }
-  //   } catch (error) {
-  //     this.TableData = [];
-  //   }
+    try {
+      const data: ShopItem[] = await firstValueFrom(this.shopItemService.Get(this.DomainName));  
+      this.TableData = data || [];
+  
+      if (this.value !== "") {
+        const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
+  
+        this.TableData = this.TableData.filter(t => {
+          const fieldValue = t[this.key as keyof typeof t];
+          if (typeof fieldValue === 'string') {
+            return fieldValue.toLowerCase().includes(this.value.toLowerCase());
+          }
+          if (typeof fieldValue === 'number') {
+            return fieldValue.toString().includes(numericValue.toString())
+          }
+          return fieldValue == this.value;
+        });
+      }
+    } catch (error) {
+      this.TableData = [];
+    }
   }
 }

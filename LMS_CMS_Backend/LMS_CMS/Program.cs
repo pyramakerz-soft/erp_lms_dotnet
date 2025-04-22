@@ -202,12 +202,12 @@ namespace LMS_CMS
              
             app.UseAuthorization();
 
-            //app.Urls.Add("http://0.0.0.0:5000");
-            //app.UseCors(builder =>
-            //    builder.AllowAnyOrigin()
-            //   .AllowAnyMethod()
-            //   .AllowAnyHeader()
-            //);
+            app.Urls.Add("http://0.0.0.0:5000");
+            app.UseCors(builder =>
+                builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+            );
 
             app.MapControllers();
 

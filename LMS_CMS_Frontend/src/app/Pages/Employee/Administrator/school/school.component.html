@@ -126,6 +126,18 @@
                     </div>
                 </div>
             </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="headerar2">{{ 'Maximum Period Count (Time Table)' | translate }}</label>
+                <textarea id="headerar2" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 min-h-28" placeholder="{{ 'Enter' | translate }} {{ 'Report Header 2 Arabic' | translate }}"
+                [(ngModel)]="school.reportHeaderTwoAr" 
+                (ngModelChange)="onInputValueChange({ field: 'reportHeaderTwoAr', value: $event })"></textarea>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="VatNumber">{{ 'Maximum Period Count (remedials)' | translate }}</label>
+                <input id="VatNumber" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="{{ 'Enter' | translate }} {{ 'VatNumber' | translate }}"
+                [(ngModel)]="school.vatNumber" 
+                (ngModelChange)="onInputValueChange({ field: 'vatNumber', value: $event })"/>
+            </div>
         </div>
 
         <div class="flex justify-end">

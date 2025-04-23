@@ -766,6 +766,9 @@ namespace LMS_CMS_BL.Config
             CreateMap<EvaluationTemplateEditDTO, EvaluationTemplate>();
 
             CreateMap<EvaluationTemplateGroup, EvaluationTemplateGroupDTO>();
+            CreateMap<EvaluationEmployeeStudentBookCorrectionAddDTO, EvaluationEmployeeStudentBookCorrection>();
+            CreateMap<EvaluationEmployeeQuestionAddDTO, EvaluationEmployeeQuestion>();
+            CreateMap<EvaluationEmployeeAddDTO, EvaluationEmployee>();
 
         }
     } 

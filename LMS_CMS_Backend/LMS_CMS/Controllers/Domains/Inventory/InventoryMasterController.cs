@@ -94,6 +94,54 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             return Ok(new { Data = DTO, Pagination = paginationMetadata , inventoryFlag=Flagdto });
         }
 
+        /////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("Search")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Inventory" }
+        )]
+        public async Task<IActionResult> GetSearch([FromQuery] InventoryMasterSearch obj)
+        {
+            var Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            // Input validation
+            if (obj.FlagIds == null || !obj.FlagIds.Any())
+                return BadRequest("FlagIds cannot be null or empty.");
+
+            if (!DateTime.TryParse(obj.DateFrom, out DateTime dateFrom))
+                return BadRequest("DateFrom is not a valid date.");
+
+            if (!DateTime.TryParse(obj.DateTo, out DateTime dateTo))
+                return BadRequest("DateTo is not a valid date.");
+
+            if (dateFrom > dateTo)
+                return BadRequest("DateFrom cannot be after DateTo.");
+
+            var data = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById<InventoryMaster>(
+                f => f.IsDeleted != true && obj.FlagIds.Contains(f.FlagId),
+                query => query.Include(x => x.Store)
+                              .Include(x => x.Student)
+                              .Include(x => x.InventoryFlags)
+                              .Include(x => x.InventoryDetails)
+                              .Include(x => x.Save)
+                              .Include(x => x.Bank)
+            );
+
+            var filteredData = data.Where(f =>
+                DateTime.TryParse(f.Date, out var parsedDate) &&     
+                parsedDate >= dateFrom &&
+                parsedDate <= dateTo
+            ).ToList();
+
+            if (!filteredData.Any())
+                return NotFound("No records found matching the search criteria.");
+
+            var dto = mapper.Map<List<InventoryMasterGetDTO>>(filteredData);
+
+            return Ok(dto);
+        }
+
 
         /////////////////////////////////////////////////////////////////////////////
 

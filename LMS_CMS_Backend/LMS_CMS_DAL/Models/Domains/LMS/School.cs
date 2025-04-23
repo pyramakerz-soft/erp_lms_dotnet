@@ -25,6 +25,8 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? ReportHeaderTwoAr { get; set; }
         public string? ReportImage { get; set; }
         public string? VatNumber { get; set; }
+        public int? MaximumPeriodCountTimeTable { get; set; }
+        public int? MaximumPeriodCountRemedials { get; set; } 
 
         public SchoolType SchoolType { get; set; }
         public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();

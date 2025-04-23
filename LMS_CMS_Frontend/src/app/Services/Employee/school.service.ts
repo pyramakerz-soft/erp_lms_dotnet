@@ -70,6 +70,9 @@ export class SchoolService {
     formData.append('reportHeaderTwoEn', school.reportHeaderTwoEn?.toString() ?? '');
     formData.append('reportHeaderTwoAr', school.reportHeaderTwoAr?.toString() ?? '');
     formData.append('vatNumber', school.vatNumber?.toString() ?? '');
+    formData.append('maximumPeriodCountRemedials', school.maximumPeriodCountRemedials?.toString() ?? '');
+    formData.append('maximumPeriodCountTimeTable', school.maximumPeriodCountTimeTable?.toString() ?? '');
+
   
     if (school.reportImageFile) {
       formData.append('reportImageFile', school.reportImageFile, school.reportImageFile.name);

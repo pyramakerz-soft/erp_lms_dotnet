@@ -20,5 +20,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public string? ReportImage { get; set; }
         public IFormFile? ReportImageFile { get; set; }
         public string? VatNumber { get; set; }
+        public int? MaximumPeriodCountTimeTable { get; set; }
+        public int? MaximumPeriodCountRemedials { get; set; }
     }
 }

@@ -214,7 +214,7 @@ export class DomainsComponent {
   SaveDomain(){
     const hostname = window.location.hostname;  
     var Header = hostname.split('.')[0] 
-
+ 
     if(this.isFormValid()){
       this.isSaved = true
       if(this.editDomain == false){

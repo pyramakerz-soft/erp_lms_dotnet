@@ -37,7 +37,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpGet("GetByBusId/{busId}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses" }
+            pages: new[] { "Buses" }
         )]
         public async Task<IActionResult> GetByBusID(long busId)
         {
@@ -107,7 +107,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpGet("{Id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses" }
+            pages: new[] { "Buses" }
         )]
         public async Task<IActionResult> GetByID(long Id)
         {
@@ -169,7 +169,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Busses" }
+            pages: new[] { "Buses" }
         )]
         public ActionResult Add(BusStudent_AddDTO busStudentAddDTO)
         {
@@ -242,7 +242,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowEdit: 1,
-            pages: new[] { "Busses" }
+            pages: new[] { "Buses" }
         )]
         public IActionResult Edit(BusStudent_PutDTO busStudentPutDTO)
         {
@@ -303,7 +303,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Busses", roleId, userId, busStudentExists);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Buses", roleId, userId, busStudentExists);
                 if (accessCheck != null)
                 {
                     return accessCheck;
@@ -339,7 +339,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             allowDelete: 1,
-            pages: new[] { "Busses" }
+            pages: new[] { "Buses" }
         )]
         public IActionResult Delete(long Id)
         {
@@ -371,7 +371,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Bus
             { 
                 if (userTypeClaim == "employee")
                 {
-                    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Busses", roleId, userId, busStudent);
+                    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Buses", roleId, userId, busStudent);
                     if (accessCheck != null)
                     {
                         return accessCheck;

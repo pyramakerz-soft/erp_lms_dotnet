@@ -20,5 +20,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public long SchoolTypeID { get; set; } 
         public string? VatNumber { get; set; }
         public long? InsertedByUserId { get; set; }
+        public int? MaximumPeriodCountTimeTable { get; set; }
+        public int? MaximumPeriodCountRemedials { get; set; }
     }
 }

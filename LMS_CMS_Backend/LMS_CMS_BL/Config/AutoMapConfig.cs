@@ -761,6 +761,14 @@ namespace LMS_CMS_BL.Config
             CreateMap<StockingAddDTO, Stocking>();
             CreateMap<StockingGetDto, Stocking>();
 
+            CreateMap<EvaluationTemplate, EvaluationTemplateGetDTO>();
+            CreateMap<EvaluationTemplateAddDTO, EvaluationTemplate>();
+            CreateMap<EvaluationTemplateEditDTO, EvaluationTemplate>();
+
+            CreateMap<EvaluationTemplateGroup, EvaluationTemplateGroupDTO>();
+            CreateMap<EvaluationEmployeeStudentBookCorrectionAddDTO, EvaluationEmployeeStudentBookCorrection>();
+            CreateMap<EvaluationEmployeeQuestionAddDTO, EvaluationEmployeeQuestion>();
+            CreateMap<EvaluationEmployeeAddDTO, EvaluationEmployee>();
 
         }
     } 

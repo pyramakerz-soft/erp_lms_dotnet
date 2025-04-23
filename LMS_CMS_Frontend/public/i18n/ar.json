@@ -18,6 +18,8 @@
     "Click To Upload":"انقر لتحميل",
     "or drag and drop Icon":"أو سحب وإفلات أيقونة",
     "Max. File size": "الحد الأقصى لحجم الملف",
+    "Maximum Period Count (Time Table)" : "الحد الأقصى لعدد الفترات (الجدول الزمني)" ,
+    "Maximum Period Count (remedials)" : "الحد الأقصى لعدد الفترات (الجدوا الاضافى)" ,
     "Enter": "أدخل",
     "Save": "حفظ",
     "Create Categories": "إنشاء الفئات", 

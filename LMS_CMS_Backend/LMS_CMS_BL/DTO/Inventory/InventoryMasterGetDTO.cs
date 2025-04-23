@@ -40,5 +40,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string? SaveName { get; set; }
         public string? BankName { get; set; }
         public long? InsertedByUserId { get; set; }
+        public List<InventoryDetailsGetDTO> InventoryDetails { get; set; }
     }
 }

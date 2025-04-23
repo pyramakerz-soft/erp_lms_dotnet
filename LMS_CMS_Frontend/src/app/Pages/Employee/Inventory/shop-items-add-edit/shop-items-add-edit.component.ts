@@ -161,7 +161,7 @@ export class ShopItemsAddEditComponent {
   }
 
   moveToBack() {
-    this.router.navigateByUrl(`Employee/Shop`)
+    this.router.navigateByUrl(`Employee/Items`)
   }
 
   onCategoryChange(event: Event) {
@@ -239,7 +239,7 @@ export class ShopItemsAddEditComponent {
               title: "Edited Successfully!",
               icon: "success"
             });
-            this.router.navigateByUrl(`Employee/Shop`) 
+            this.router.navigateByUrl(`Employee/Items`) 
             this.isLoading=false
           }, 
           err => {

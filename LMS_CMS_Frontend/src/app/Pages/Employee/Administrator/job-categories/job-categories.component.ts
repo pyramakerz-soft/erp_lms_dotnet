@@ -133,6 +133,10 @@ export class JobCategoriesComponent {
   }
 
   IsAllowDelete(InsertedByID: number) {
+    console.log(this.TableData)
+    console.log(InsertedByID)
+    console.log(this.UserID)
+    console.log(this.AllowDeleteForOthers)
     const IsAllow = this.EditDeleteServ.IsAllowDelete(
       InsertedByID,
       this.UserID,

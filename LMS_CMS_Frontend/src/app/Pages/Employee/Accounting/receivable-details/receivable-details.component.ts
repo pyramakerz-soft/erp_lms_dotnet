@@ -323,7 +323,7 @@ export class ReceivableDetailsComponent {
 
   GetLinkFilesTypeData() {
     this.linkFileTypesData = []
-    this.dataAccordingToLinkFileService.Get(this.DomainName, +this.newDetails.linkFileID).subscribe(
+    this.dataAccordingToLinkFileService.GetTableDataAccordingToLinkFile(this.DomainName, +this.newDetails.linkFileID).subscribe(
       (data) => {
         this.linkFileTypesData = data
       }
@@ -362,7 +362,7 @@ export class ReceivableDetailsComponent {
     this.editingRowId = row.id
     this.editedRowData = { ...row }
     if (this.editedRowData.linkFileID) {
-      this.dataAccordingToLinkFileService.Get(this.DomainName, +this.editedRowData.linkFileID).subscribe(
+      this.dataAccordingToLinkFileService.GetTableDataAccordingToLinkFile(this.DomainName, +this.editedRowData.linkFileID).subscribe(
         (data) => {
           this.linkFileTypesData = data
         }

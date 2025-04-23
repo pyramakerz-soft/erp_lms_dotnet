@@ -129,6 +129,13 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<Cart_ShopItem> Cart_ShopItem { get; set; }
         public DbSet<Stocking> Stocking { get; set; }
         public DbSet<StockingDetails> StockingDetails { get; set; }
+        public DbSet<EvaluationTemplate> EvaluationTemplate { get; set; }
+        public DbSet<EvaluationTemplateGroup> EvaluationTemplateGroup { get; set; }
+        public DbSet<EvaluationTemplateGroupQuestion> EvaluationTemplateGroupQuestion { get; set; }
+        public DbSet<EvaluationBookCorrection> EvaluationBookCorrection { get; set; }
+        public DbSet<EvaluationEmployeeStudentBookCorrection> EvaluationEmployeeStudentBookCorrection { get; set; }
+        public DbSet<EvaluationEmployee> EvaluationEmployee { get; set; }
+        public DbSet<EvaluationEmployeeQuestion> EvaluationEmployeeQuestion { get; set; }
 
 
 
@@ -1105,6 +1112,72 @@ namespace LMS_CMS_DAL.Models.Domains
                 .HasForeignKey(p => p.StoreID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<EvaluationTemplateGroup>()
+                .HasOne(p => p.EvaluationTemplate)
+                .WithMany(p => p.EvaluationTemplateGroups)
+                .HasForeignKey(p => p.EvaluationTemplateID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationTemplateGroupQuestion>()
+                .HasOne(p => p.EvaluationTemplateGroup)
+                .WithMany(p => p.EvaluationTemplateGroupQuestions)
+                .HasForeignKey(p => p.EvaluationTemplateGroupID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationEmployee>()
+                .HasOne(p => p.Evaluated)
+                .WithMany(p => p.EvaluatedEmployees)
+                .HasForeignKey(p => p.EvaluatedID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationEmployee>()
+                .HasOne(p => p.Evaluator)
+                .WithMany(p => p.EvaluatorEmployees)
+                .HasForeignKey(p => p.EvaluatorID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationEmployee>()
+                .HasOne(p => p.EvaluationTemplate)
+                .WithMany(p => p.EvaluationEmployees)
+                .HasForeignKey(p => p.EvaluationTemplateID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationEmployee>()
+                .HasOne(p => p.Classroom)
+                .WithMany(p => p.EvaluationEmployees)
+                .HasForeignKey(p => p.ClassroomID)
+                .OnDelete(DeleteBehavior.Restrict);
+             
+            modelBuilder.Entity<EvaluationEmployeeQuestion>()
+                .HasOne(p => p.EvaluationEmployee)
+                .WithMany(p => p.EvaluationEmployeeQuestions)
+                .HasForeignKey(p => p.EvaluationEmployeeID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationEmployeeQuestion>()
+                .HasOne(p => p.EvaluationTemplateGroupQuestion)
+                .WithMany(p => p.EvaluationEmployeeQuestions)
+                .HasForeignKey(p => p.EvaluationTemplateGroupQuestionID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationEmployeeStudentBookCorrection>()
+                .HasOne(p => p.Student)
+                .WithMany(p => p.EvaluationEmployeeStudentBookCorrections)
+                .HasForeignKey(p => p.StudentID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationEmployeeStudentBookCorrection>()
+                .HasOne(p => p.EvaluationBookCorrection)
+                .WithMany(p => p.EvaluationEmployeeStudentBookCorrections)
+                .HasForeignKey(p => p.EvaluationBookCorrectionID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<EvaluationEmployeeStudentBookCorrection>()
+                .HasOne(p => p.EvaluationEmployee)
+                .WithMany(p => p.EvaluationEmployeeStudentBookCorrections)
+                .HasForeignKey(p => p.EvaluationEmployeeID)
+                .OnDelete(DeleteBehavior.Restrict);
+
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()
                 .HasOne(b => b.DeletedByEmployee)
@@ -1141,13 +1214,18 @@ namespace LMS_CMS_DAL.Models.Domains
                .WithMany()  
                .HasForeignKey(f => f.DeletedByUserId)
                .OnDelete(DeleteBehavior.Restrict);
-
+            
             modelBuilder.Entity<Classroom>()
                 .HasOne(c => c.DeletedByEmployee)
                 .WithMany()
                 .HasForeignKey(c => c.DeletedByUserId)
                 .OnDelete(DeleteBehavior.Restrict); // Optional
-
+            
+            modelBuilder.Entity<EvaluationEmployee>()
+               .HasOne(f => f.DeletedByEmployee)
+               .WithMany()  
+               .HasForeignKey(f => f.DeletedByUserId)
+               .OnDelete(DeleteBehavior.Restrict); 
 
             ///////////////////////// Optional ID According to other field: /////////////////////////  
             modelBuilder.Entity<ReceivableMaster>()

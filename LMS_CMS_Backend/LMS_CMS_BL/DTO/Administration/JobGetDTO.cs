@@ -18,6 +18,6 @@ namespace LMS_CMS_BL.DTO.Administration
         [ForeignKey("JobCategory")]
         public long JobCategoryID { get; set; }
         public string JobCategoryName { get; set; }
-
+        public long? InsertedByUserId { get; set; }
     }
 }

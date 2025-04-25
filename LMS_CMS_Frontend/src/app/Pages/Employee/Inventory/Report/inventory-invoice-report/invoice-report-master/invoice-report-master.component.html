@@ -1,160 +1,140 @@
-<div class="">
-    <div class="flex justify-between">
-        <h1 class="font-semibold text-2xl leading-9">{{inventoryFlag.enName}}</h1>
-        <div class="flex justify-between items-center">
-            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
-            <button (click)="Create()"
-                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
-                Create
-            </button>
-        </div>
+<div class="flex justify-between">
+    <h1 class="primaryTxt font-bold text-2xl leading-9">
+        {{ reportType | titlecase }} Transaction Report
+    </h1>
+</div>
+
+<div class="my-5 flex flex-wrap justify-between items-center">
+    <div class="flex flex-col w-[32%] mb-4">
+        <label class="mb-2 font-medium" for="store">Store</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="store"
+            [(ngModel)]="selectedStoreId">
+            <option [value]="0" disabled selected hidden>Choose Store</option>
+            <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
+            <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
+        </select>
     </div>
 
-    <!-- Filter Section -->
-    <div class="my-5 flex flex-wrap justify-between items-center">
-        <div class="flex flex-col w-[24%] mb-4">
-            <label class="mb-2 font-medium" for="dateFrom">Date From</label>
-            <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateFrom"
-                [(ngModel)]="dateFrom">
-        </div>
-
-        <div class="flex flex-col w-[24%] mb-4">
-            <label class="mb-2 font-medium" for="dateTo">Date To</label>
-            <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateTo"
-                [(ngModel)]="dateTo">
-        </div>
-
-        <div class="flex flex-col w-[24%] mb-4">
-            <label class="mb-2 font-medium" for="store">Store</label>
-            <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="store"
-                [(ngModel)]="selectedStoreId">
-                <option [value]="0" disabled selected hidden>Choose Store</option>
-                <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
-                <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
-            </select>
-        </div>
-
-        <div class="flex items-end w-[24%] mb-4 space-x-4">
-            <button class="p-4 font-medium text-xl rounded-lg secondaryBg text-white" (click)="applyFilters()">
-                Apply Filters
-            </button>
-            <button class="p-4 font-medium text-xl rounded-lg border border-gray-300" (click)="resetFilters()">
-                Reset
-            </button>
-        </div>
+    <div class="flex flex-col w-[32%] mb-4">
+        <label class="mb-2 font-medium" for="dateFrom">Date From</label>
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateFrom"
+            [(ngModel)]="dateFrom">
     </div>
 
-    <!-- Table Section -->
-    <div>
-        <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
-            <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
-                <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
-                    <tr>
-                        <th
-                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                            Store
-                        </th>
-                        <th
-                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                            Invoice Number
-                        </th>
-                        <th
-                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                            Date
-                        </th>
-                        <th
-                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                            Total
-                        </th>
-                        <th
-                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                            Notes
-                        </th>
-                        <th
-                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- No Data Row -->
-                    <tr *ngIf="TableData.length === 0">
-                        <td colspan="6"
-                            class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
-                            No Data Found
-                        </td>
-                    </tr>
-
-                    <!-- Data Rows -->
-                    <tr *ngFor="let row of TableData; let i = index"
-                        [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
-                        class="border-t border-gray-300 text-xs md:text-sm">
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            {{ row.storeName }}
-                        </td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            {{ row.invoiceNumber }}
-                        </td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            {{ row.date }}
-                        </td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            {{ row.total }}
-                        </td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            {{ row.notes }}
-                        </td>
-                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                            <div class="flex space-x-4">
-                                <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
-                                    (click)="Delete(row.id)">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
-                                <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="Edit(row)">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="flex flex-col w-[32%] mb-4">
+        <label class="mb-2 font-medium" for="dateTo">Date To</label>
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateTo"
+            [(ngModel)]="dateTo">
     </div>
 
-    <!-- Pagination Section -->
-    <div class="mt-8 flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-            <button class="flex items-center space-x-2 rounded-lg border py-3 px-4"
-                (click)="changeCurrentPage(CurrentPage-1)" [disabled]="CurrentPage === 1 || TableData.length == 0"
-                [ngClass]="{'cursor-not-allowed opacity-50': CurrentPage === 1 || TableData.length == 0}">
-                <i class="fa-solid fa-arrow-left"></i>
-                <p>Previous</p>
-            </button>
-            <div class="flex">
-                <div *ngFor="let page of [].constructor(TotalPages); let i = index"
-                    class="rounded-lg py-[10px] w-[40px]"
-                    [ngClass]="{'border': i+1 == CurrentPage || TableData.length == 0}"
-                    (click)="changeCurrentPage(i+1)">
-                    <p class="text-center">{{ i + 1 }}</p>
-                </div>
+<div class="flex flex-col w-[32%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Transaction Types</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
+        [(ngModel)]="selectedFlagIds" multiple (change)="onFlagsChange()"
+        >
+        <option [value]="0">Select All</option>
+        <option *ngFor="let flag of currentFlags" [value]="flag.id">
+            {{ flag.name }} (ID: {{ flag.id }})
+        </option>
+    </select>
+</div>
+
+
+
+    <div class="w-[32%] flex justify-end">
+        <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
+            [disabled]="!dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0" [ngClass]="{ 
+                'bg-gray-100 text-gray-300': !dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0, 
+                'secondaryBg text-white': dateFrom && dateTo && selectedStoreId && selectedFlagIds.length > 0
+            }">
+            View Report
+        </button>
+    </div>
+</div>
+
+<div *ngIf="showTable" class="mb-5 flex justify-end space-x-4">
+    <img class="w-5 cursor-pointer" src="Icons/Excel.png" >
+    <img class="w-5 cursor-pointer" src="Icons/PDF.png" >
+    <img class="w-5 cursor-pointer" src="Icons/Print.png" >
+</div>
+
+<div *ngIf="showTable" class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+    
+    <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Invoice #
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Date
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Store
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Total Amount
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Transaction Type
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="transactions.length === 0">
+                <td colspan="5"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+<tr *ngFor="let transaction of transactions; let i = index"
+    [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+    class="border-t border-gray-300 text-xs md:text-sm">
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        {{ transaction.invoiceNumber }}
+    </td>
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        {{ transaction.date | date:'mediumDate' }}
+    </td>
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        {{ transaction.storeName }}
+    </td>
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        {{ transaction.total | currency }}
+    </td>
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        {{ transaction.flagEnName }}
+    </td>
+</tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+<div *ngIf="showTable" class="mt-8 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+        <button class="flex items-center space-x-2 rounded-lg border py-3 px-4" (click)="changePage(currentPage-1)"
+            [disabled]="currentPage === 1 || transactions.length == 0"
+            [ngClass]="{'cursor-not-allowed opacity-50': currentPage === 1 || transactions.length == 0}">
+            <i class="fa-solid fa-arrow-left"></i>
+            <p>Previous</p>
+        </button>
+        <div class="flex">
+            <div *ngFor="let page of [].constructor(totalPages); let i = index" class="rounded-lg py-[10px] w-[40px]"
+                [ngClass]="{'border': i+1 == currentPage || transactions.length == 0}" (click)="changePage(i+1)">
+                <p class="text-center">{{ i + 1 }}</p>
             </div>
-            <button class="flex items-center space-x-2 rounded-lg border py-3 px-4"
-                (click)="changeCurrentPage(CurrentPage+1)"
-                [disabled]="CurrentPage === TotalPages || TableData.length == 0"
-                [ngClass]="{'cursor-not-allowed opacity-50': CurrentPage === TotalPages || TableData.length == 0}">
-                <p>Next</p>
-                <i class="fa-solid fa-arrow-right"></i>
-            </button>
         </div>
+        <button class="flex items-center space-x-2 rounded-lg border py-3 px-4" (click)="changePage(currentPage+1)"
+            [disabled]="currentPage === totalPages || transactions.length == 0"
+            [ngClass]="{'cursor-not-allowed opacity-50': currentPage === totalPages || transactions.length == 0}">
+            <p>Next</p>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
 
-        <div class="flex items-center space-x-2">
-            <input (input)="validateNumber($event)" class="rounded-lg border py-3 px-4 w-[73px]" [(ngModel)]="PageSize"
-                min="1" (input)="validatePageSize($event)" (ngModelChange)="changeCurrentPage(CurrentPage)">
-            <p>items Per Page</p>
-        </div>
-
-        <div>
-            <p>{{CurrentPage}} of {{TotalPages}} pages ({{TotalRecords}} Item)</p>
-        </div>
+    <div>
+        <p>{{currentPage}} of {{totalPages}} pages ({{totalRecords}} Items)</p>
     </div>
 </div>

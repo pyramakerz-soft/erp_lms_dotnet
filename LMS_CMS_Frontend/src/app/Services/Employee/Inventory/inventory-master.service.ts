@@ -158,6 +158,38 @@ export class InventoryMasterService {
        .set('Content-Type', 'application/json');
      return this.http.delete(`${this.baseUrl}/InventoryMaster/${id}`, { headers })
    }
+
+search(
+  DomainName: string,
+  storeId: number,
+  dateFrom: string,
+  dateTo: string,
+  flagIds: number[],
+  pageNumber: number = 1,
+  pageSize: number = 10
+) {
+  if (DomainName != null) {
+    this.header = DomainName;
+  }
+  const token = localStorage.getItem("current_token");
+  const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+
+  // Build URL with multiple FlagIds parameters
+  let url = `${this.baseUrl}/InventoryMaster/Search?storeId=${storeId}&DateFrom=${dateFrom}&DateTo=${dateTo}`;
+  
+  // Add each flagId as a separate parameter
+  flagIds.forEach(id => {
+    url += `&FlagIds=${id}`;
+  });
+
+  // Add pagination parameters
+  url += `&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+
+  return this.http.get<any>(url, { headers });
+}
  
  }
  

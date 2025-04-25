@@ -130,6 +130,7 @@ import { AcademicSequentialReportComponent } from './Pages/Employee/Registration
 import { TransferedFromKindergartenReportComponent } from './Pages/Employee/Registration/Reports/transfered-from-kindergarten-report/transfered-from-kindergarten-report.component';
 import { InvoiceReportComponent } from './Pages/Employee/Inventory/Report/InventoryTransactionReport/invoice-report/invoice-report.component';
 import { TemplateComponent } from './Pages/Employee/LMS/template/template.component';
+import { InventoryTransactionReportComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master/invoice-report-master.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -303,9 +304,11 @@ export const routes: Routes = [
         
             { path: "Template", component: TemplateComponent, title: "Template", canActivate:[noNavigateWithoutLoginGuard ] },
 
-        ]
-
-    },
+            { path: 'Inventory-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Inventory Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
+            { path: 'Sales-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Sales Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
+            { path: 'Purchase-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Purchase Transaction Report',canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard],data: { reportType: 'purchase' }
+        }]
+},
     { 
         path: "Parent", 
         component: MainLayoutComponent, 

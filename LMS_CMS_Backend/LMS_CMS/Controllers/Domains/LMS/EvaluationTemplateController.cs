@@ -34,8 +34,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "" }
+            allowedTypes: new[] { "octa", "employee" }
+            //pages: new[] { "" }
         )]
         public IActionResult Get()
         {
@@ -69,8 +69,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("id")]
         [Authorize_Endpoint_(
-           allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "" }
+           allowedTypes: new[] { "octa", "employee" }
+           //pages: new[] { "" }
        )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -106,8 +106,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpPost]
         [Authorize_Endpoint_(
-          allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "" }
+          allowedTypes: new[] { "octa", "employee" }
+          //pages: new[] { "" }
       )]
         public async Task<IActionResult> Add(EvaluationTemplateAddDTO newData)
         {
@@ -149,8 +149,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            allowEdit: 1,
-            pages: new[] { "" }
+            allowEdit: 1
+            //pages: new[] { "" }
         )]
         public async Task<IActionResult> EditAsync(EvaluationTemplateEditDTO newData)
         {
@@ -221,8 +221,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-          allowDelete: 1,
-          pages: new[] { "Grade" }
+          allowDelete: 1
+          //pages: new[] { "Grade" }
       )]
         public IActionResult Delete(long id)
         {

@@ -76,7 +76,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<LMS_CMS_DAL.Models.Domains.LMS.EvaluationTemplate> templates;
+            LMS_CMS_DAL.Models.Domains.LMS.EvaluationTemplate templates;
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
@@ -88,16 +88,16 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            templates = await Unit_Of_Work.evaluationTemplate_Repository.Select_All_With_IncludesById<LMS_CMS_DAL.Models.Domains.LMS.EvaluationTemplate>(
+            templates = await Unit_Of_Work.evaluationTemplate_Repository.FindByIncludesAsync(
                     sem => sem.IsDeleted != true && sem.ID == id,
                     query => query.Include(emp => emp.EvaluationTemplateGroups));
 
-            if (templates == null || templates.Count == 0)
+            if (templates == null )
             {
                 return NotFound();
             }
 
-            List<EvaluationTemplateGetDTO> Dto = mapper.Map<List<EvaluationTemplateGetDTO>>(templates);
+            EvaluationTemplateGetDTO Dto = mapper.Map<EvaluationTemplateGetDTO>(templates);
 
             return Ok(Dto);
         }

@@ -7,38 +7,35 @@ using LMS_CMS_PL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LMS_CMS_PL.Controllers.Domains.LMS
 {
     [Route("api/with-domain/[controller]")]
     [ApiController]
     [Authorize]
-    public class EvaluationTemplateGroupController : ControllerBase
+    public class EvaluationTemplateGroupQuestionsController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
         IMapper mapper;
         private readonly CheckPageAccessService _checkPageAccessService;
 
-        public EvaluationTemplateGroupController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
+        public EvaluationTemplateGroupQuestionsController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
             _checkPageAccessService = checkPageAccessService;
         }
-
         ///////////////////////////////////////////////////////////////////////////////////
-
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "" }
-        )]
+          allowedTypes: new[] { "octa", "employee" },
+          pages: new[] { "" }
+      )]
         public IActionResult Get()
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<EvaluationTemplateGroup> groups;
+            List<EvaluationTemplateGroupQuestion> questions;
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
@@ -50,14 +47,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            groups = Unit_Of_Work.evaluationTemplateGroup_Repository.FindBy(t => t.IsDeleted != true);
+            questions = Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.FindBy(t => t.IsDeleted != true);
 
-            if (groups == null || groups.Count == 0)
+            if (questions == null || questions.Count == 0)
             {
                 return NotFound();
             }
 
-            List<EvaluationTemplateGroupDTO> Dto = mapper.Map<List<EvaluationTemplateGroupDTO>>(groups);
+            List<EvaluationTemplateGroupQuestionGetDTO> Dto = mapper.Map<List<EvaluationTemplateGroupQuestionGetDTO>>(questions);
 
             return Ok(Dto);
         }
@@ -73,7 +70,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            EvaluationTemplateGroup group;
+            EvaluationTemplateGroupQuestion question;
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
@@ -85,16 +82,15 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            group = await Unit_Of_Work.evaluationTemplateGroup_Repository.FindByIncludesAsync(
-                    sem => sem.IsDeleted != true && sem.ID == id,
-                    query => query.Include(emp => emp.EvaluationTemplateGroupQuestions));
+            question = Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.First_Or_Default(
+                    sem => sem.IsDeleted != true && sem.ID == id);
 
-            if (group == null )
+            if (question == null )
             {
                 return NotFound();
             }
 
-            EvaluationTemplateGroupDTO Dto = mapper.Map<EvaluationTemplateGroupDTO>(group);
+            EvaluationTemplateGroupQuestionGetDTO Dto = mapper.Map<EvaluationTemplateGroupQuestionGetDTO>(question);
 
             return Ok(Dto);
         }
@@ -106,7 +102,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
           allowedTypes: new[] { "octa", "employee" },
           pages: new[] { "" }
       )]
-        public async Task<IActionResult> Add(EvaluationTemplateGroupAddDTO newData)
+        public async Task<IActionResult> Add(EvaluationTemplateGroupQuestionAddDTO newData)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -121,22 +117,22 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
             if (newData == null)
             {
-                return BadRequest("Evaluation Template Group is empty");
+                return BadRequest("Evaluation Template Group Question is empty");
             }
 
-            EvaluationTemplateGroup group = mapper.Map<EvaluationTemplateGroup>(newData);
+            EvaluationTemplateGroupQuestion question = mapper.Map<EvaluationTemplateGroupQuestion>(newData);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            group.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            question.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                group.InsertedByOctaId = userId;
+                question.InsertedByOctaId = userId;
             }
             else if (userTypeClaim == "employee")
             {
-                group.InsertedByUserId = userId;
+                question.InsertedByUserId = userId;
             }
-            Unit_Of_Work.evaluationTemplateGroup_Repository.Add(group);
+            Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.Add(question);
             Unit_Of_Work.SaveChanges();
             return Ok(newData);
         }
@@ -149,7 +145,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             allowEdit: 1,
             pages: new[] { "" }
         )]
-        public async Task<IActionResult> EditAsync(EvaluationTemplateGroupEditDTO newData)
+        public async Task<IActionResult> EditAsync(EvaluationTemplateGroupQuestionEditDTO newData)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -167,48 +163,48 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             if (newData == null)
             {
-                return BadRequest("Evaluation Template group cannot be null");
+                return BadRequest("Evaluation Template group question cannot be null");
             }
             if (newData.ID == null)
             {
-                return BadRequest("Evaluation Template group id can not be null");
+                return BadRequest("Evaluation Template group question id can not be null");
             }
 
-            EvaluationTemplateGroup group = Unit_Of_Work.evaluationTemplateGroup_Repository.First_Or_Default(s => s.ID == newData.ID && s.IsDeleted != true);
-            if (group == null)
+            EvaluationTemplateGroupQuestion question = Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.First_Or_Default(s => s.ID == newData.ID && s.IsDeleted != true);
+            if (question == null)
             {
-                return BadRequest("this Evaluation Template group not exist");
+                return BadRequest("this Evaluation Template group question not exist");
             }
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, group);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, question);
                 if (accessCheck != null)
                 {
                     return accessCheck;
                 }
             }
 
-            mapper.Map(newData, group);
+            mapper.Map(newData, question);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            group.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            question.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                group.UpdatedByOctaId = userId;
-                if (group.UpdatedByUserId != null)
+                question.UpdatedByOctaId = userId;
+                if (question.UpdatedByUserId != null)
                 {
-                    group.UpdatedByUserId = null;
+                    question.UpdatedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                group.UpdatedByUserId = userId;
-                if (group.UpdatedByOctaId != null)
+                question.UpdatedByUserId = userId;
+                if (question.UpdatedByOctaId != null)
                 {
-                    group.UpdatedByOctaId = null;
+                    question.UpdatedByOctaId = null;
                 }
             }
-            Unit_Of_Work.evaluationTemplateGroup_Repository.Update(group);
+            Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.Update(question);
             Unit_Of_Work.SaveChanges();
             return Ok(newData);
         }
@@ -241,46 +237,46 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 return BadRequest("id cannot be null");
             }
-            EvaluationTemplateGroup group = Unit_Of_Work.evaluationTemplateGroup_Repository.Select_By_Id(id);
+            EvaluationTemplateGroupQuestion question = Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.Select_By_Id(id);
 
             if (userTypeClaim == "employee")
             {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, group);
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, question);
                 if (accessCheck != null)
                 {
                     return accessCheck;
                 }
             }
 
-            if (group == null || group.IsDeleted == true)
+            if (question == null || question.IsDeleted == true)
             {
                 return NotFound("No Evaluation Template group with this ID");
             }
 
-            group.IsDeleted = true;
+            question.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            group.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            question.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")
             {
-                group.DeletedByOctaId = userId;
-                if (group.DeletedByUserId != null)
+                question.DeletedByOctaId = userId;
+                if (question.DeletedByUserId != null)
                 {
-                    group.DeletedByUserId = null;
+                    question.DeletedByUserId = null;
                 }
             }
             else if (userTypeClaim == "employee")
             {
-                group.DeletedByUserId = userId;
-                if (group.DeletedByOctaId != null)
+                question.DeletedByUserId = userId;
+                if (question.DeletedByOctaId != null)
                 {
-                    group.DeletedByOctaId = null;
+                    question.DeletedByOctaId = null;
                 }
             }
 
-            Unit_Of_Work.evaluationTemplateGroup_Repository.Update(group);
+            Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.Update(question);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }
+
     }
 }
-

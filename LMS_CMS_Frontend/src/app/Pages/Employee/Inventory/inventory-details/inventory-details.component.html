@@ -573,16 +573,15 @@
               class="w-full border border-gray-300 px-2 py-1 rounded-md"
             />
           </td>
-          <!-- <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.price }}
-                    </td> -->
-          <td  class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+          <td *ngIf="!IsPriceEditable && mode === 'Create'" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            {{ row.price }}
+          </td>
+          <td *ngIf="IsPriceEditable && mode === 'Edit'" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
             <input
               [(ngModel)]="row.price"
               (ngModelChange)="EditPrice(row)"
               type="number"
-              class="w-full border border-gray-300 px-2 py-1 rounded-md"
-            />
+              class="w-full border border-gray-300 px-2 py-1 rounded-md"/>
           </td>
           <!-- <td
             class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0"

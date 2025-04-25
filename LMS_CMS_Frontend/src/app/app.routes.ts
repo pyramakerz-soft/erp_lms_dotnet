@@ -227,7 +227,7 @@ export const routes: Routes = [
             { path: "Purchase Returns", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 10 } },
             { path: "Purchase Returns Item/:FlagId", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Purchase Returns Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
-            { path: "Purchases", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 9 } },
+            { path: "Purchases ", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 9 } },
             { path: "Purchases Item/:FlagId", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Purchases Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Opening Balances", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 1 } },

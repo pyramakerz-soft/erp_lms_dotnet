@@ -59,6 +59,55 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             List<EvaluationTemplateGroupDTO> Dto = mapper.Map<List<EvaluationTemplateGroupDTO>>(groups);
 
+            for (int i = 0; i < groups.Count; i++)
+            {
+                List<EvaluationTemplateGroupQuestion> evaluationTemplateGroupQuestions = Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.FindBy(t => t.IsDeleted != true && t.EvaluationTemplateGroupID == groups[i].ID);   
+                List<EvaluationTemplateGroupQuestionGetDTO> evaluationTemplateGroupQuestionGetDTOs = mapper.Map<List<EvaluationTemplateGroupQuestionGetDTO>>(evaluationTemplateGroupQuestions);
+                Dto[i].EvaluationTemplateGroupQuestions = evaluationTemplateGroupQuestionGetDTOs;
+            }
+
+            return Ok(Dto);
+        }
+        
+        ///////////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("GetByTemplateID/{templateId}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" }
+            //pages: new[] { "" }
+        )]
+        public IActionResult GetByTemplateID(long templateId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<EvaluationTemplateGroup> groups;
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            long.TryParse(userIdClaim, out long userId);
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            groups = Unit_Of_Work.evaluationTemplateGroup_Repository.FindBy(t => t.IsDeleted != true && t.EvaluationTemplateID == templateId);
+
+            if (groups == null || groups.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<EvaluationTemplateGroupDTO> Dto = mapper.Map<List<EvaluationTemplateGroupDTO>>(groups);
+
+            for (int i = 0; i < groups.Count; i++)
+            {
+                List<EvaluationTemplateGroupQuestion> evaluationTemplateGroupQuestions = Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.FindBy(t => t.IsDeleted != true && t.EvaluationTemplateGroupID == groups[i].ID);   
+                List<EvaluationTemplateGroupQuestionGetDTO> evaluationTemplateGroupQuestionGetDTOs = mapper.Map<List<EvaluationTemplateGroupQuestionGetDTO>>(evaluationTemplateGroupQuestions);
+                Dto[i].EvaluationTemplateGroupQuestions = evaluationTemplateGroupQuestionGetDTOs;
+            }
+
             return Ok(Dto);
         }
 

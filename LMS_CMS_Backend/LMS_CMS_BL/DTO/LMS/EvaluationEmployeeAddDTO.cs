@@ -18,7 +18,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public long ClassroomID { get; set; }
         public long EvaluationBookCorrectionID { get; set; }
 
-        public List<EvaluationEmployeeQuestionAddDTO> EvaluationEmployeeQuestions { get; set; }
-        public List<EvaluationEmployeeStudentBookCorrectionAddDTO> EvaluationEmployeeStudentBookCorrections { get; set; }
+        public List<EvaluationEmployeeQuestionAddDTO> EvaluationEmployeeQuestionsList { get; set; }
+        public List<EvaluationEmployeeStudentBookCorrectionAddDTO> EvaluationEmployeeStudentBookCorrectionsList { get; set; }
     }
 }

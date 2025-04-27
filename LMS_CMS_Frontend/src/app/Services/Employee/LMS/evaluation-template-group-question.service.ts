@@ -25,7 +25,7 @@ export class EvaluationTemplateGroupQuestionService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
     return this.http.get<EvaluationTemplateGroupQuestion[]>(
-      `${this.baseUrl}/EvaluationTemplateGroupQuestion`,
+      `${this.baseUrl}/EvaluationTemplateGroupQuestions`,
       { headers }
     );
   }
@@ -44,7 +44,7 @@ export class EvaluationTemplateGroupQuestionService {
       .set('Content-Type', 'application/json');
 
     return this.http.post(
-      `${this.baseUrl}/EvaluationTemplateGroupQuestion`,
+      `${this.baseUrl}/EvaluationTemplateGroupQuestions`,
       EvaluationTemplateGroupQuestion,
       {
         headers: headers,
@@ -66,7 +66,7 @@ export class EvaluationTemplateGroupQuestionService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
     return this.http.put(
-      `${this.baseUrl}/EvaluationTemplateGroupQuestion`,
+      `${this.baseUrl}/EvaluationTemplateGroupQuestions`,
       EvaluationTemplateGroupQuestion,
       { headers }
     );
@@ -82,7 +82,7 @@ export class EvaluationTemplateGroupQuestionService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
     return this.http.delete(
-      `${this.baseUrl}/EvaluationTemplateGroupQuestion/${id}`,
+      `${this.baseUrl}/EvaluationTemplateGroupQuestions/${id}`,
       { headers }
     );
   }
@@ -97,7 +97,7 @@ export class EvaluationTemplateGroupQuestionService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
     return this.http.get<EvaluationTemplateGroupQuestion>(
-      `${this.baseUrl}/EvaluationTemplateGroupQuestion/${id}`,
+      `${this.baseUrl}/EvaluationTemplateGroupQuestions/${id}`,
       { headers }
     );
   }

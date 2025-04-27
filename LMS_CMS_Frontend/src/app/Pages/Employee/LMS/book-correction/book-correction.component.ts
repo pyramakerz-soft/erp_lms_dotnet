@@ -1,38 +1,35 @@
 import { Component } from '@angular/core';
-import { Template } from '../../../../Models/LMS/template';
-import { ActivatedRoute, Router } from '@angular/router';
+import { EvaluationBookCorrection } from '../../../../Models/LMS/evaluation-book-correction';
+import { EvaluationBookCorrectionService } from '../../../../Services/Employee/LMS/evaluation-book-correction.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
-import { SubjectCategory } from '../../../../Models/LMS/subject-category';
+import { SearchComponent } from '../../../../Component/search/search.component';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { ApiService } from '../../../../Services/api.service';
+import { DomainService } from '../../../../Services/Employee/domain.service';
 import { DeleteEditPermissionService } from '../../../../Services/shared/delete-edit-permission.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
-import { firstValueFrom } from 'rxjs';
-import { BusCategoryService } from '../../../../Services/Employee/Bus/bus-category.service';
-import { DomainService } from '../../../../Services/Employee/domain.service';
-import { EvaluationTemplateService } from '../../../../Services/Employee/LMS/evaluation-template.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { SearchComponent } from '../../../../Component/search/search.component';
 
 @Component({
-  selector: 'app-template',
+  selector: 'app-book-correction',
   standalone: true,
   imports: [FormsModule, CommonModule, SearchComponent],
-  templateUrl: './template.component.html',
-  styleUrl: './template.component.css'
+  templateUrl: './book-correction.component.html',
+  styleUrl: './book-correction.component.css'
 })
-export class TemplateComponent {
-
-  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
+export class BookCorrectionComponent {
+ User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
 
-  TableData: Template[] = [];
+  TableData: EvaluationBookCorrection[] = [];
 
   DomainName: string = '';
   UserID: number = 0;
@@ -43,11 +40,11 @@ export class TemplateComponent {
   path: string = '';
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'name'];
+  keysArray: string[] = ['id', 'englishName' ,'arabicName'];
 
-  template: Template = new Template();
+  book: EvaluationBookCorrection = new EvaluationBookCorrection();
 
-  validationErrors: { [key in keyof Template]?: string } = {};
+  validationErrors: { [key in keyof EvaluationBookCorrection]?: string } = {};
   isLoading = false;
 
   constructor(
@@ -58,7 +55,7 @@ export class TemplateComponent {
     public DomainServ: DomainService,
     public EditDeleteServ: DeleteEditPermissionService,
     public ApiServ: ApiService,
-    public templateServ: EvaluationTemplateService
+    public BookCorrectionServ: EvaluationBookCorrectionService
   ) { }
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -83,7 +80,7 @@ export class TemplateComponent {
 
   GetAllData() {
     this.TableData = [];
-    this.templateServ.Get(this.DomainName).subscribe((d) => {
+    this.BookCorrectionServ.Get(this.DomainName).subscribe((d) => {
       this.TableData = d;
       console.log(this.TableData)
     });
@@ -91,14 +88,14 @@ export class TemplateComponent {
 
   Create() {
     this.mode = 'Create';
-    this.template = new Template();
+    this.book = new EvaluationBookCorrection();
     this.validationErrors = {};
     this.openModal();
   }
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Template?',
+      title: 'Are you sure you want to delete this Book?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',
@@ -107,17 +104,17 @@ export class TemplateComponent {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.templateServ.Delete(id, this.DomainName).subscribe((d) => {
+        this.BookCorrectionServ.Delete(id, this.DomainName).subscribe((d) => {
           this.GetAllData();
         });
       }
     });
   }
 
-  Edit(row: Template) {
+  Edit(row: EvaluationBookCorrection) {
     this.mode = 'Edit';
-    this.templateServ.GetByID(row.id, this.DomainName).subscribe((d) => {
-      this.template = d;
+    this.BookCorrectionServ.GetByID(row.id, this.DomainName).subscribe((d) => {
+      this.book = d;
     });
     this.openModal();
   }
@@ -144,8 +141,8 @@ export class TemplateComponent {
     if (this.isFormValid()) {
       this.isLoading = true;
       if (this.mode == 'Create') {
-        this.templateServ.Add(
-          this.template,
+        this.BookCorrectionServ.Add(
+          this.book,
           this.DomainName
         ).subscribe(
           (d) => {
@@ -166,8 +163,8 @@ export class TemplateComponent {
         );
       }
       if (this.mode == 'Edit') {
-        this.templateServ.Edit(
-          this.template,
+        this.BookCorrectionServ.Edit(
+          this.book,
           this.DomainName
         ).subscribe(
           (d) => {
@@ -202,13 +199,13 @@ export class TemplateComponent {
 
   isFormValid(): boolean {
     let isValid = true;
-    for (const key in this.template) {
-      if (this.template.hasOwnProperty(key)) {
-        const field = key as keyof Template;
-        if (!this.template[field]) {
+    for (const key in this.book) {
+      if (this.book.hasOwnProperty(key)) {
+        const field = key as keyof EvaluationBookCorrection;
+        if (!this.book[field]) {
           if (
-            field == 'englishTitle' ||
-            field == 'arabicTitle'
+            field == 'englishName' ||
+            field == 'arabicName'
           ) {
             this.validationErrors[field] = `*${this.capitalizeField(
               field
@@ -221,13 +218,13 @@ export class TemplateComponent {
     return isValid;
   }
 
-  capitalizeField(field: keyof Template): string {
+  capitalizeField(field: keyof EvaluationBookCorrection): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
-  onInputValueChange(event: { field: keyof Template; value: any }) {
+  onInputValueChange(event: { field: keyof EvaluationBookCorrection; value: any }) {
     const { field, value } = event;
-    (this.template as any)[field] = value;
+    (this.book as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
@@ -237,8 +234,8 @@ export class TemplateComponent {
     this.key = event.key;
     this.value = event.value;
     try {
-      const data: Template[] = await firstValueFrom(
-        this.templateServ.Get(this.DomainName)
+      const data: EvaluationBookCorrection[] = await firstValueFrom(
+        this.BookCorrectionServ.Get(this.DomainName)
       );
       this.TableData = data || [];
 
@@ -263,7 +260,4 @@ export class TemplateComponent {
     }
   }
 
-  moveToGroups(Id: number) {
-    this.router.navigateByUrl('Employee/EvaluationTemplateGroup' + '/' + Id);
-  }
 }

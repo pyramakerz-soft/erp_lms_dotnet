@@ -196,6 +196,7 @@ export class   InventoryDetailsComponent {
       (this.FlagId == 13 && this.mode == 'Create')
     ) {
       //CanEditPrice
+      console.log(this.FlagId)
       this.IsPriceEditable = true;
     }
 

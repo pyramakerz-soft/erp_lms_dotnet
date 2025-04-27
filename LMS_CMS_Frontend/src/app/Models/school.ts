@@ -13,5 +13,7 @@ export class School {
         public reportImageFile : File|null = null,
         public vatNumber: string|null = null,
         public reportImage : string = "",
+        public maximumPeriodCountTimeTable: number = 0,
+        public maximumPeriodCountRemedials: number = 0,
     ) {}
 }

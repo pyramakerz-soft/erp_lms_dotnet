@@ -116,6 +116,7 @@ import { StudentsInformationFormReportComponent } from './Pages/Employee/Registr
 import { PdfPrintComponent } from './Component/pdf-print/pdf-print.component';
 import { AcademicSequentialReportComponent } from './Pages/Employee/Registration/Reports/academic-sequential-report/academic-sequential-report.component';
 import { TransferedFromKindergartenReportComponent } from './Pages/Employee/Registration/Reports/transfered-from-kindergarten-report/transfered-from-kindergarten-report.component';
+import { TemplateComponent } from './Pages/Employee/LMS/template/template.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -226,7 +227,7 @@ export const routes: Routes = [
             { path: "Purchase Returns", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 10 } },
             { path: "Purchase Returns Item/:FlagId", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Purchase Returns Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
-            { path: "Purchases", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 9 } },
+            { path: "Purchases ", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 9 } },
             { path: "Purchases Item/:FlagId", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Purchases Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Opening Balances", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 1 } },
@@ -272,6 +273,7 @@ export const routes: Routes = [
             { path: "StudentsInformationFormReport", component: StudentsInformationFormReportComponent, title: "StudentsInformationFormReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "TransferedFromKindergartenReport", component: TransferedFromKindergartenReportComponent, title: "TransferedFromKindergartenReport", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Template", component: TemplateComponent, title: "Template", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

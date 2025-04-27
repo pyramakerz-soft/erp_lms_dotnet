@@ -248,7 +248,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         //    allowedTypes: new[] { "octa", "employee" },
         //    pages: new[] { "" }
         //)]
-        public IActionResult GenerateXML()
+        public async Task<IActionResult> GenerateXML()
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
 
@@ -292,7 +292,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
             string cerPath = Path.Combine(csr, "PCSID.json");
-            string csrPath = Path.Combine(csr, "CSR.csr");
             string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
 
             XmlDocument doc = new XmlDocument();
@@ -301,13 +300,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             if (!System.IO.File.Exists(xml))
                 throw new FileNotFoundException();
-
-            string csrContent = await System.IO.File.ReadAllTextAsync(csrPath);
-            csrContent = csrContent
-                .Replace("-----BEGIN CERTIFICATE REQUEST-----", "")
-                .Replace("-----END CERTIFICATE REQUEST-----", "")
-                .Replace("\n", "")
-                .Replace("\r", "");
 
             string jsonContent = System.IO.File.ReadAllText(cerPath);
             dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
@@ -324,16 +316,28 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 .Replace("\r", "");
 
             var signed = _signer.SignDocument(doc, certDecoded, privateKeyContent);
-            signed.SignedEInvoice.PreserveWhitespace = true;
+            signed.SignedEInvoice.Normalize();
             signed.SaveSignedEInvoice(xml);
 
-            XmlDocument newDoc = new XmlDocument();
-            newDoc.PreserveWhitespace = true;
-            newDoc.Load(xml);
+            XmlDsigC14NTransform transform = new XmlDsigC14NTransform();
+            doc.Load(xml);
+            doc.PreserveWhitespace = false;
+            transform.LoadInput(doc);
 
-            InvoicingServices inv = new();
-            inv.FormatXml(xml);
-            inv.SaveFormatted(newDoc, xml, false);
+            var settings = new XmlWriterSettings
+            {
+                Indent = false, 
+                NewLineHandling = NewLineHandling.None,
+                NewLineChars = "",
+                OmitXmlDeclaration = false, 
+                Encoding = Encoding.UTF8
+            };
+
+            using (var writer = XmlWriter.Create(xml, settings))
+            {
+                doc.Save(writer);
+            }
+
             return Ok(signed.IsValid);
         }
         #endregion

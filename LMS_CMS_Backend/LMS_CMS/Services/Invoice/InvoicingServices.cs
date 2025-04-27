@@ -18,6 +18,7 @@ using System.IO;
 using Org.BouncyCastle.Utilities.Encoders;
 using Org.BouncyCastle.X509;
 using Zatca.EInvoice.SDK.Contracts;
+using Zatca.EInvoice.SDK.Contracts.Models;
 
 namespace LMS_CMS_PL.Services.Invoice
 {
@@ -182,7 +183,7 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public async Task GenerateXML(InventoryMaster master)
+        public void GenerateXML(InventoryMaster master)
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
@@ -193,36 +194,37 @@ namespace LMS_CMS_PL.Services.Invoice
                 Directory.CreateDirectory(invoices);
             }
 
-            string newXmlPath = Path.Combine(invoices, $"INV001.xml");
+            string newXmlPath = Path.Combine(invoices, "INV001.xml");
             string tempXmlPath = Path.Combine(examplePath, "INV001.xml");
             string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
             //string csrPath = Path.Combine(csr, "CSR.csr");
-            string cerPath = Path.Combine(csr, "CSID.json");
+            string certPath = Path.Combine(csr, "PCSID.json");
 
-            XmlDocument tempXml = new XmlDocument();
-            tempXml.PreserveWhitespace = true;
-            tempXml.Load(tempXmlPath);
+            File.Copy(tempXmlPath, newXmlPath, true);
+
+            XmlDocument inv = new XmlDocument();
+            inv.PreserveWhitespace = true;
+            inv.Load(newXmlPath);
 
             string uuid = Guid.NewGuid().ToString();
             string date = DateTime.Now.ToString("yyyy-MM-dd");
             string time = DateTime.Now.ToString("HH:mm:ss");
 
-            XmlNamespaceManager nsMgr = RegisterAllNamespaces(tempXml);
+            XmlNamespaceManager nsMgr = RegisterAllNamespaces(inv);
 
-            AddValue(tempXml, "//cbc:UUID", uuid, nsMgr);
-            AddValue(tempXml, "//cbc:IssueDate", date, nsMgr); // edit in master
-            AddValue(tempXml, "//cbc:IssueTime", time, nsMgr); // edit in master
-            AddValue(tempXml, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
+            AddValue(inv, "//cbc:UUID", uuid, nsMgr);
+            AddValue(inv, "//cbc:IssueDate", date, nsMgr); // edit in master
+            AddValue(inv, "//cbc:IssueTime", time, nsMgr); // edit in master
+            AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
 
-            File.Copy(tempXmlPath, newXmlPath, true);
-            //SaveFormatted(tempXml, newXmlPath);
+            //SaveFormatted(inv, newXmlPath);
 
             //XmlDocument newXml = new XmlDocument();
             //newXml.PreserveWhitespace = true;
             //newXml.Load(newXmlPath);
 
 
-            string jsonContent = File.ReadAllText(cerPath);
+            string jsonContent = File.ReadAllText(certPath);
             dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
             string base64Cert = jsonObject.binarySecurityToken;
 

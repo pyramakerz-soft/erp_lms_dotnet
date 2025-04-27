@@ -1,1 +1,73 @@
-<p>evaluation-feedback works!</p>
+<div class="">
+    <div class="flex justify-between">
+        <h1 class="font-semibold text-2xl leading-9">Evaluation Feedback</h1>
+        <div class="flex justify-between items-center">
+            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        </div>
+    </div>
+
+    <div>
+        <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+            <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+                <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                    <tr>
+                        <th *ngIf="mode =='Evaluated' "
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Evaluator
+                        </th>
+                        <th *ngIf="mode =='Evaluator' "
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Evaluated
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Date
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Name Of Evaluation
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- No Data Row -->
+                    <tr *ngIf="TableData.length === 0">
+                        <td colspan="11"
+                            class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                            No Data Found
+                        </td>
+                    </tr>
+
+                    <!-- Data Rows -->
+                    <tr *ngFor="let row of TableData; let i = index"
+                        [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                        class="border-t border-gray-300 text-xs md:text-sm">
+                        <td *ngIf="mode =='Evaluated' " class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.evaluatorEnglishName }}
+                        </td>
+                        <td *ngIf="mode =='Evaluator' " class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.evaluatedEnglishName }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.date }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.evaluationTemplateName }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            <div class="flex space-x-4">
+                                <button>
+                                    <i class="fa-regular fa-eye" (click)="moveEvaluation(row.id)"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

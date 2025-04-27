@@ -1,3 +1,4 @@
+import { EvaluationEmployeeQuestionAdd } from "./evaluation-employee-question-add";
 import { EvaluationTemplateGroupQuestion } from "./evaluation-template-group-question";
 
 export class EvaluationTemplateGroups {
@@ -8,6 +9,7 @@ export class EvaluationTemplateGroups {
     public evaluationTemplateID: number = 0,
     public insertedAt: string = '',
     public insertedByUserId: number = 0,
-    public evaluationTemplateGroupQuestions: EvaluationTemplateGroupQuestion[] = []
+    public evaluationTemplateGroupQuestions: EvaluationTemplateGroupQuestion[] = [] ,
+    public evaluationEmployeeQuestions : EvaluationEmployeeQuestionAdd[] = []
   ) {}
 }

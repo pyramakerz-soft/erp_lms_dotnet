@@ -9,6 +9,7 @@ using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -148,6 +149,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<EvaluationEmployeeStudentBookCorrection> EvaluationEmployeeStudentBookCorrection_Repository;
         GenericRepo<EvaluationEmployee> EvaluationEmployee_Repository;
         GenericRepo<EvaluationEmployeeQuestion> EvaluationEmployeeQuestion_Repository;
+        GenericRepo<SchoolPCs> SchoolPCs_Repository;
 
 
 
@@ -1618,6 +1620,18 @@ namespace LMS_CMS_BL.UOW
                     EvaluationTemplateGroupQuestion_Repository = new GenericRepo<EvaluationTemplateGroupQuestion>(db);
                 }
                 return EvaluationTemplateGroupQuestion_Repository;
+            }
+        }
+        
+        public GenericRepo<SchoolPCs> schoolPCs_Repository
+        {
+            get
+            {
+                if (SchoolPCs_Repository == null)
+                {
+                    SchoolPCs_Repository = new GenericRepo<SchoolPCs>(db);
+                }
+                return SchoolPCs_Repository;
             }
         }
 

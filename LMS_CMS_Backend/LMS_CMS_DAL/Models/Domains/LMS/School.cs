@@ -1,4 +1,5 @@
 ﻿using LMS_CMS_DAL.Models.Domains.Inventory;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -34,6 +35,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<Section> Sections { get; set; } = new HashSet<Section>();
         public ICollection<Building> Buildings { get; set; } = new HashSet<Building>();
         public ICollection<ShopItem> ShopItem { get; set; } = new HashSet<ShopItem>();
+        public ICollection<SchoolPCs>? SchoolPCs { get; set; } = new HashSet<SchoolPCs>();
 
     }
 }

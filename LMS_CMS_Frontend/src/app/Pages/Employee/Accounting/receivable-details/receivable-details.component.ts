@@ -257,6 +257,11 @@ export class ReceivableDetailsComponent {
           (data) => {
             let id = JSON.parse(data).id
             this.router.navigateByUrl(`Employee/Receivable Details/${id}`)
+            Swal.fire({
+              title: 'Saved Successfully',
+              icon: 'success', 
+              confirmButtonColor: '#FF7519',  
+            })
             this.isLoading = false
           },
           err => {

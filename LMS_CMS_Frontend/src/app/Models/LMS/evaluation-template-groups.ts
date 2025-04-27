@@ -8,6 +8,7 @@ export class EvaluationTemplateGroups {
     public evaluationTemplateID: number = 0,
     public insertedAt: string = '',
     public insertedByUserId: number = 0,
-    public evaluationTemplateGroupQuestions: EvaluationTemplateGroupQuestion[] = []
+    public evaluationTemplateGroupQuestions: EvaluationTemplateGroupQuestion[] = [],
+    public isOpen: boolean = false
   ) {}
 }

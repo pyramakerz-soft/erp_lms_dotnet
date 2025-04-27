@@ -27,6 +27,18 @@ export class EvaluationTemplateGroupService {
       .set('Content-Type', 'application/json');
     return this.http.get<EvaluationTemplateGroups[]>(`${this.baseUrl}/EvaluationTemplateGroup`, { headers })
   }
+  
+  GetByTemplateID(templateId:number, DomainName:string) {
+    if(DomainName!=null) {
+      this.header=DomainName 
+    }
+    const token = localStorage.getItem("current_token");
+    const headers = new HttpHeaders()
+      .set('domain-name', this.header)
+      .set('Authorization', `Bearer ${token}`)
+      .set('Content-Type', 'application/json');
+    return this.http.get<EvaluationTemplateGroups[]>(`${this.baseUrl}/EvaluationTemplateGroup/GetByTemplateID/${templateId}`, { headers })
+  }
 
   Add(newData: EvaluationTemplateGroups,DomainName:string) {
     if(DomainName!=null) {

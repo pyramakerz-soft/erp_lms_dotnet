@@ -14,7 +14,7 @@ export class EvaluationEmployeeService {
     this.baseUrl = ApiServ.BaseUrl
   }
 
-  Add(evaluationEmployee:EvaluationEmployeeAdd ,DomainName:string) {
+  Add(evaluationEmployee:EvaluationEmployeeAdd ,DomainName:string) { 
     if(DomainName!=null) {
       this.header=DomainName
     }
@@ -24,6 +24,6 @@ export class EvaluationEmployeeService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
 
-    return this.http.post(`${this.baseUrl}/EvaluationEmployee`, {evaluationEmployee}, { headers })
+    return this.http.post(`${this.baseUrl}/EvaluationEmployee`, evaluationEmployee, { headers })
   }
 }

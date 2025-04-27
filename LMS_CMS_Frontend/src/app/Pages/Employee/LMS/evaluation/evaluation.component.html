@@ -7,7 +7,7 @@
     <div class="flex flex-col w-[30%] mb-4">
         <label class="mb-2 font-medium" for="Template">Template</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Template"
-            [(ngModel)]="EvaluationEmployee.evaluationTemplateID">
+            [(ngModel)]="EvaluationEmployee.evaluationTemplateID" (change)="onTemplateChange()">
             <option [value]="0" disabled selected hidden>Choose Template</option>
             <option *ngFor="let c of Templates" [value]="c.id">{{ c.englishTitle }}</option>
             <option *ngIf="Templates.length === 0" disabled selected>No Data Found</option>
@@ -45,7 +45,7 @@
     <div class="flex flex-col w-[25%] mb-4">
         <label class="mb-2 font-medium" for="Class" [ngClass]="{ 'text-gray-400': !SchoolID, 'primaryTxt': SchoolID }">Class</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Class"
-            [disabled]="!SchoolID" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolID }"
+            [disabled]="!SchoolID" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolID }" (change)="onClassChange()"
             [(ngModel)]="EvaluationEmployee.classroomID">
             <option [value]="0" disabled selected hidden>Choose Class</option>
             <option *ngFor="let c of Classs" [value]="c.id">{{ c.name }}</option>
@@ -65,9 +65,198 @@
     </div> 
 
     <div>
-        <button class="p-4  font-medium text-xl rounded-lg" (click)="ViewTemplate()"
+        <button class="px-4 py-3 cursor-pointer font-medium text-lg rounded-lg" (click)="ViewTemplate()"
             [disabled]="!EvaluationEmployee.date || !EvaluationEmployee.period || !EvaluationEmployee.classroomID || !EvaluationEmployee.evaluationTemplateID || !EvaluationEmployee.evaluatedID"
             [ngClass]="{ 'bg-gray-100 text-gray-300': !EvaluationEmployee.date || !EvaluationEmployee.period || !EvaluationEmployee.classroomID || !EvaluationEmployee.evaluationTemplateID || !EvaluationEmployee.evaluatedID,
              'secondaryBg text-white': EvaluationEmployee.date && EvaluationEmployee.period && EvaluationEmployee.classroomID && EvaluationEmployee.evaluationTemplateID && EvaluationEmployee.evaluatedID }">View Template</button>
+    </div>
+</div>
+
+<div *ngIf="EvaluationTemplateGroups.length != 0">
+    <div *ngIf="currentStep === 1">
+        <div *ngFor="let row of EvaluationTemplateGroups; let i = index">
+            <div class="mb-5">
+                <div class="primaryBg text-white text-xl font-bold p-4 mb-5 flex justify-between rounded-lg">
+                    <p>{{row.englishTitle}}</p>
+                    <div (click)="toggleQuestionVisibility(i)">
+                        <i *ngIf="row.isOpen" class="fa-solid fa-caret-up cursor-pointer"></i>
+                        <i *ngIf="!row.isOpen" class="fa-solid fa-caret-down cursor-pointer"></i>
+                    </div>
+                </div>
+    
+                <div>
+                    <div *ngIf="row.isOpen">
+                        <div *ngFor="let question of row.evaluationTemplateGroupQuestions; let j = index">
+                            <div class="bg-[#EAECF0] p-6 flex flex-col space-y-6 rounded-lg" [ngClass]="{'mb-3': j != row.evaluationTemplateGroupQuestions.length - 1}">
+                                <p class="primaryTxt font-bold text-xl">{{ j + 1 }} {{ question.englishTitle }}</p>
+                                <div class="flex justify-between"> 
+                                    <div class="flex space-x-4 items-center">
+                                        <input type="radio" id="QuestionMake-{{question.id}}-1" class="square-radio" name="{{question.id}}"
+                                        [checked]="getQuestionMark(question.id) === 1"
+                                            (change)="onQuestionInputValueChange($event, question.id)" [value]="1"/>
+                                        <label for="QuestionMake-{{question.id}}-1" class="ml-4 primaryTxt font-bold text-lg">1</label>
+                                    </div>
+                                    <div class="flex space-x-4 items-center">
+                                        <input type="radio" id="QuestionMake-{{question.id}}-2" class="square-radio" name="{{question.id}}"
+                                        [checked]="getQuestionMark(question.id) === 2"
+                                            (change)="onQuestionInputValueChange($event, question.id)" [value]="2"/>
+                                        <label for="QuestionMake-{{question.id}}-2" class="ml-4 primaryTxt font-bold text-lg">2</label>
+                                    </div>
+                                    <div class="flex space-x-4 items-center">
+                                        <input type="radio" id="QuestionMake-{{question.id}}-3" class="square-radio" name="{{question.id}}"
+                                        [checked]="getQuestionMark(question.id) === 3"
+                                            (change)="onQuestionInputValueChange($event, question.id)" [value]="3"/>
+                                        <label for="QuestionMake-{{question.id}}-3" class="ml-4 primaryTxt font-bold text-lg">3</label>
+                                    </div>
+                                    <div class="flex space-x-4 items-center">
+                                        <input type="radio" id="QuestionMake-{{question.id}}-4" class="square-radio" name="{{question.id}}"
+                                        [checked]="getQuestionMark(question.id) === 4"
+                                            (change)="onQuestionInputValueChange($event, question.id)" [value]="4"/>
+                                        <label for="QuestionMake-{{question.id}}-4" class="ml-4 primaryTxt font-bold text-lg">4</label>
+                                    </div>
+                                    <div class="flex space-x-4 items-center">
+                                        <input type="radio" id="QuestionMake-{{question.id}}-5" class="square-radio" name="{{question.id}}"
+                                        [checked]="getQuestionMark(question.id) === 5"
+                                            (change)="onQuestionInputValueChange($event, question.id)" [value]="5"/>
+                                        <label for="QuestionMake-{{question.id}}-5" class="ml-4 primaryTxt font-bold text-lg">5</label>
+                                    </div>
+                                </div> 
+                                <input type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                                    placeholder="Notes" [value]="getQuestionNote(question.id)"
+                                    (input)="onNotesInputValueChange($event, question.id)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div *ngIf="currentStep === 2">
+        <div class="primaryBg text-white text-xl font-bold p-4 mb-5 flex justify-between rounded-lg">
+            <p>Narrration</p>
+            <div (click)="toggleNarrationVisibility()">
+                <i *ngIf="isNarrationOpen" class="fa-solid fa-caret-up"></i>
+                <i *ngIf="!isNarrationOpen" class="fa-solid fa-caret-down"></i>
+            </div>
+        </div>
+
+        <div>
+            <div *ngIf="isNarrationOpen">
+                <textarea type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-full"
+                    placeholder="Narration" [(ngModel)]="EvaluationEmployee.narration"></textarea>
+            </div>
+        </div>
+    </div>
+
+
+    <div *ngIf="currentStep === 3">
+        <div class="primaryBg text-white text-xl font-bold p-4 mb-5 flex justify-between rounded-lg">
+            <p>Correction</p>
+            <div (click)="toggleCorrectionVisibility()">
+                <i *ngIf="isCorrectionOpen" class="fa-solid fa-caret-up"></i>
+                <i *ngIf="!isCorrectionOpen" class="fa-solid fa-caret-down"></i>
+            </div>
+        </div>
+
+        <div>
+            <div *ngIf="isCorrectionOpen">
+                <div class="flex flex-col w-full mb-5">
+                    <label class="mb-2 font-medium" for="Books">Correction Book</label>
+                    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Books"
+                        [(ngModel)]="EvaluationEmployee.evaluationBookCorrectionID">
+                        <option [value]="0" disabled selected hidden>Choose Correction Book</option>
+                        <option *ngFor="let c of CorrectionBooks" [value]="c.id">{{ c.englishName }}</option>
+                        <option *ngIf="CorrectionBooks.length === 0" disabled selected>No Data Found</option>
+                    </select>
+                </div> 
+
+                <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+                    <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+                        <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                            <tr>
+                                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0 ">
+                                    <div class="flex space-x-2 items-center">
+                                        <input class="rounded bg-[#FFFFFF] border-1 border-[#BDBDBD] w-5 h-5" type="checkbox" id="all" name="all" 
+                                        [checked]="allSelected"
+                                        (change)="toggleSelectAll($event)">
+                                        <p> Student Name </p>
+                                    </div>
+                                </th>
+                                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                                    Status
+                                </th>
+                                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                                    Notes
+                                </th> 
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            <tr *ngIf="Students.length === 0">
+                                <td colspan="3" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                                    No Data Found
+                                </td>
+                            </tr>
+         
+                            <tr *ngFor="let row of Students; let i = index"
+                                [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                                class="text-xs md:text-sm">
+                                <td class="py-5 px-4 border-r border-[#EAECF0] "> 
+                                    <div class="flex space-x-2 items-center">
+                                        <input class="rounded bg-[#FFFFFF] border-1 border-[#BDBDBD] w-5 h-5" type="checkbox" [id]="'Student-' + row.id" 
+                                        [checked]="isStudentSelected(row.id)"
+                                        (change)="toggleStudentSelection($event, row.id)">
+                                        <p> {{ row.en_name }} </p>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 border-r border-[#EAECF0]">
+                                    <div class="flex space-x-1">
+                                      <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+                                        <i class="fa-star cursor-pointer"
+                                           [class.fa-solid]="star <= getRating(row.id)"
+                                           [class.fa-regular]="star > getRating(row.id)"
+                                           [class.text-yellow-400]="star <= getRating(row.id)"
+                                           (click)="updateRatingForStudent(star, row.id)">
+                                        </i>
+                                      </ng-container>
+                                    </div>
+                                  </td>
+                                  <td class="py-5 px-4">
+                                    <textarea type="text"
+                                              class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-full"
+                                              placeholder="Notes"
+                                              [value]="getNote(row.id)"
+                                              (input)="updateNotesForStudent($event, row.id)">
+                                    </textarea>
+                                  </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full flex space-x-5 justify-end mt-6">
+        <button *ngIf="currentStep > 1"
+                class="secondaryBorder secondaryTxt bg-white px-4 py-3 font-medium text-lg rounded-lg cursor-pointer flex space-x-2 items-center"
+                (click)="currentStep = currentStep - 1">
+            <i class="fa-solid fa-arrow-left"></i>
+            <p>Back</p>
+        </button>
+    
+        <button *ngIf="currentStep < 3"
+                class="secondaryBorder secondaryTxt bg-white px-4 py-3 font-medium text-lg rounded-lg cursor-pointer flex space-x-2 items-center"
+                (click)="currentStep = currentStep + 1">
+            <p>Next</p>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    
+        <button *ngIf="currentStep === 3"
+                class="secondaryBg text-white px-4 py-3 font-medium text-lg rounded-lg cursor-pointer"
+                (click)="Submit()">
+            Submit
+        </button>
     </div>
 </div>

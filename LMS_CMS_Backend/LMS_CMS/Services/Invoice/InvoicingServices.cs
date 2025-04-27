@@ -137,7 +137,7 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public static async Task<string> GenerateXML(InventoryMaster master)
+        public static async Task<bool> GenerateXML(InventoryMaster master)
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
@@ -253,11 +253,16 @@ namespace LMS_CMS_PL.Services.Invoice
             ////SaveFormatted(doc, newInvoicePath);
             SignResult signer = InvoiceSigning(newXmlPath, certPath, privateKeyPath);
 
-            string invoiceHash = signer.Steps.FirstOrDefault(x => x.StepName == "Generate EInvoice Hash").ResultedValue;
+            if (!signer.IsValid)
+                return false;
 
+            string invoiceHash = signer.Steps.FirstOrDefault(x => x.StepName == "Generate EInvoice Hash").ResultedValue;
             string reporting = await InvoiceReporting(newXmlPath, invoiceHash, uuid);
 
-            return reporting;
+            if (reporting != "OK")
+                return false;
+
+            return true;
         }
 
         public static SignResult InvoiceSigning(string xmlPath, string certPath, string privateKeyPath)

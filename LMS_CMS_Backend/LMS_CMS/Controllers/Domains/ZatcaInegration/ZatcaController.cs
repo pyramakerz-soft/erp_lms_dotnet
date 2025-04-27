@@ -101,10 +101,12 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
 
-            await InvoicingServices.GenerateXML(master);
+            bool result = await InvoicingServices.GenerateXML(master);
+
+            if (!result)
+                return BadRequest();
 
             return Ok("Invoice XML created successfully.");
-
         }
         #endregion
 

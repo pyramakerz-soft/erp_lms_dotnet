@@ -7,6 +7,7 @@ using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -136,6 +137,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<EvaluationEmployeeStudentBookCorrection> EvaluationEmployeeStudentBookCorrection { get; set; }
         public DbSet<EvaluationEmployee> EvaluationEmployee { get; set; }
         public DbSet<EvaluationEmployeeQuestion> EvaluationEmployeeQuestion { get; set; }
+        public DbSet<SchoolPCs> SchoolPCs { get; set; }
 
 
 

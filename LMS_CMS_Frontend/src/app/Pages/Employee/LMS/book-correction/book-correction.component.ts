@@ -22,7 +22,7 @@ import { MenuService } from '../../../../Services/shared/menu.service';
   styleUrl: './book-correction.component.css'
 })
 export class BookCorrectionComponent {
- User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
+  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   AllowEdit: boolean = false;
   AllowDelete: boolean = false;

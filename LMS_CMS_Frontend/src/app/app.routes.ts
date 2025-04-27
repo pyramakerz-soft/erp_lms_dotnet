@@ -121,6 +121,8 @@ import { EvaluationComponent } from './Pages/Employee/LMS/evaluation/evaluation.
 import { EvaluationTemplateGroupComponent } from './Pages/Employee/LMS/evaluation-template-group/evaluation-template-group.component';
 import { EvaluationTemplateGroupQuestionComponent } from './Pages/Employee/LMS/evaluation-template-group-question/evaluation-template-group-question.component';
 import { BookCorrectionComponent } from './Pages/Employee/LMS/book-correction/book-correction.component';
+import { EvaluationFeedbackComponent } from './Pages/Employee/LMS/evaluation-feedback/evaluation-feedback.component';
+import { EvaluationEmployeeAnswerComponent } from './Pages/Employee/LMS/evaluation-employee-answer/evaluation-employee-answer.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -281,7 +283,10 @@ export const routes: Routes = [
             { path: "Evaluation", component: EvaluationComponent, title: "Evaluation", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "EvaluationTemplateGroup/:id", component: EvaluationTemplateGroupComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "EvaluationTemplateGroupQuestion/:id", component: EvaluationTemplateGroupQuestionComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "EvaluationBookCorrection", component: BookCorrectionComponent, title: "EvaluationBookCorrection", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrectionForEvaluated", component: EvaluationFeedbackComponent, title: "EvaluationBookCorrectionForEvaluated", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrectionForEvaluator", component: EvaluationFeedbackComponent, title: "EvaluationBookCorrectionForEvaluator", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrectionForEvaluated/:id", component: EvaluationEmployeeAnswerComponent, title: "EvaluationBookCorrectionForEvaluated", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrectionForEvaluator/:id", component: EvaluationEmployeeAnswerComponent, title: "EvaluationBookCorrectionForEvaluator", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

@@ -113,7 +113,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         ///////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" }
            //pages: new[] { "" }
@@ -136,7 +136,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             group = await Unit_Of_Work.evaluationTemplateGroup_Repository.FindByIncludesAsync(
                     sem => sem.IsDeleted != true && sem.ID == id,
-                    query => query.Include(emp => emp.EvaluationTemplateGroupQuestions));
+                    query => query.Include(emp => emp.EvaluationTemplateGroupQuestions.Where(s => s.IsDeleted != true)));
 
             if (group == null )
             {
@@ -229,14 +229,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return BadRequest("this Evaluation Template group not exist");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, group);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, group);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             mapper.Map(newData, group);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -292,14 +292,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
             EvaluationTemplateGroup group = Unit_Of_Work.evaluationTemplateGroup_Repository.Select_By_Id(id);
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, group);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, group);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             if (group == null || group.IsDeleted == true)
             {

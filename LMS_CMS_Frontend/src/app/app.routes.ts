@@ -117,6 +117,10 @@ import { PdfPrintComponent } from './Component/pdf-print/pdf-print.component';
 import { AcademicSequentialReportComponent } from './Pages/Employee/Registration/Reports/academic-sequential-report/academic-sequential-report.component';
 import { TransferedFromKindergartenReportComponent } from './Pages/Employee/Registration/Reports/transfered-from-kindergarten-report/transfered-from-kindergarten-report.component';
 import { TemplateComponent } from './Pages/Employee/LMS/template/template.component';
+import { EvaluationComponent } from './Pages/Employee/LMS/evaluation/evaluation.component';
+import { EvaluationTemplateGroupComponent } from './Pages/Employee/LMS/evaluation-template-group/evaluation-template-group.component';
+import { EvaluationTemplateGroupQuestionComponent } from './Pages/Employee/LMS/evaluation-template-group-question/evaluation-template-group-question.component';
+import { BookCorrectionComponent } from './Pages/Employee/LMS/book-correction/book-correction.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -274,6 +278,10 @@ export const routes: Routes = [
             { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "TransferedFromKindergartenReport", component: TransferedFromKindergartenReportComponent, title: "TransferedFromKindergartenReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Template", component: TemplateComponent, title: "Template", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Evaluation", component: EvaluationComponent, title: "Evaluation", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationTemplateGroup/:id", component: EvaluationTemplateGroupComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationTemplateGroupQuestion/:id", component: EvaluationTemplateGroupQuestionComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrection", component: BookCorrectionComponent, title: "EvaluationBookCorrection", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

@@ -24,7 +24,7 @@ namespace LMS_CMS_BL.DTO.Accounting
         [EmailAddress]
         public string Email { get; set; }
         public long CountryID { get; set; }
-        public string CountryName { get; set; }
+        public string? CountryName { get; set; }
         public string CommercialRegister { get; set; }
         public string TaxCard { get; set; }
         public long AccountNumberID { get; set; }

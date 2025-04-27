@@ -1,0 +1,73 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Evaluation</h1> 
+</div>
+
+
+<div class="my-5 flex flex-wrap justify-between items-center">
+    <div class="flex flex-col w-[30%] mb-4">
+        <label class="mb-2 font-medium" for="Template">Template</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Template"
+            [(ngModel)]="EvaluationEmployee.evaluationTemplateID">
+            <option [value]="0" disabled selected hidden>Choose Template</option>
+            <option *ngFor="let c of Templates" [value]="c.id">{{ c.englishTitle }}</option>
+            <option *ngIf="Templates.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div> 
+     
+    <div class="flex flex-col w-[30%] mb-4">
+        <label class="mb-2 font-medium" for="date">Date</label> 
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="date" 
+        [(ngModel)]="EvaluationEmployee.date">
+    </div> 
+     
+    <div class="flex flex-col w-[30%] mb-4">
+        <label class="mb-2 font-medium" for="Employee">Employee</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Employee"
+            [(ngModel)]="EvaluationEmployee.evaluatedID">
+            <option [value]="0" disabled selected hidden>Choose Employee</option>
+            <ng-container *ngFor="let c of Employees">
+                <option *ngIf="c.id != UserID" [value]="c.id">{{ c.en_name }}</option>
+              </ng-container>
+            <option *ngIf="Employees.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div> 
+     
+    <div class="flex flex-col w-[25%] mb-4">
+        <label class="mb-2 font-medium" for="school">School</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school"
+            [(ngModel)]="SchoolID" (change)="onSchoolChange($event)">
+            <option [value]="0" disabled selected hidden>Choose School</option>
+            <option *ngFor="let c of Schools" [value]="c.id">{{ c.name }}</option>
+            <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[25%] mb-4">
+        <label class="mb-2 font-medium" for="Class" [ngClass]="{ 'text-gray-400': !SchoolID, 'primaryTxt': SchoolID }">Class</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Class"
+            [disabled]="!SchoolID" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolID }"
+            [(ngModel)]="EvaluationEmployee.classroomID">
+            <option [value]="0" disabled selected hidden>Choose Class</option>
+            <option *ngFor="let c of Classs" [value]="c.id">{{ c.name }}</option>
+            <option *ngIf="Classs.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div> 
+     
+    <div class="flex flex-col w-[25%] mb-4">
+        <label class="mb-2 font-medium" for="Period" [ngClass]="{ 'text-gray-400': !SchoolID, 'primaryTxt': SchoolID }">Time Period</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Period"
+            [disabled]="!SchoolID" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolID }"
+            [(ngModel)]="EvaluationEmployee.period">
+            <option [value]="0" disabled selected hidden>Choose Period</option>
+            <option *ngFor="let c of Periods" [value]="c">{{ c }}</option>
+            <option *ngIf="Periods.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div> 
+
+    <div>
+        <button class="p-4  font-medium text-xl rounded-lg" (click)="ViewTemplate()"
+            [disabled]="!EvaluationEmployee.date || !EvaluationEmployee.period || !EvaluationEmployee.classroomID || !EvaluationEmployee.evaluationTemplateID || !EvaluationEmployee.evaluatedID"
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !EvaluationEmployee.date || !EvaluationEmployee.period || !EvaluationEmployee.classroomID || !EvaluationEmployee.evaluationTemplateID || !EvaluationEmployee.evaluatedID,
+             'secondaryBg text-white': EvaluationEmployee.date && EvaluationEmployee.period && EvaluationEmployee.classroomID && EvaluationEmployee.evaluationTemplateID && EvaluationEmployee.evaluatedID }">View Template</button>
+    </div>
+</div>

@@ -120,7 +120,7 @@ export class SavesComponent {
 
   Delete(id: number) {
     Swal.fire({
-      title: 'Are you sure you want to delete this Save?',
+      title: 'Are you sure you want to delete this Safe?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF7519',

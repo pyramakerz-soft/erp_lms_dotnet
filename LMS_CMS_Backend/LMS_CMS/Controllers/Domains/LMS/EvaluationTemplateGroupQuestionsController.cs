@@ -61,7 +61,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         ///////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
            allowedTypes: new[] { "octa", "employee" }
            //pages: new[] { "" }
@@ -176,14 +176,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return BadRequest("this Evaluation Template group question not exist");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, question);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, question);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             mapper.Map(newData, question);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -239,14 +239,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
             EvaluationTemplateGroupQuestion question = Unit_Of_Work.evaluationTemplateGroupQuestion_Repository.Select_By_Id(id);
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, question);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, question);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             if (question == null || question.IsDeleted == true)
             {

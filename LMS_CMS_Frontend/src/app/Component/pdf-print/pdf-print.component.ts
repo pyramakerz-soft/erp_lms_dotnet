@@ -207,4 +207,6 @@ export class PdfPrintComponent {
     };
     html2pdf().from(this.printContainer.nativeElement).set(opt).save();
   }
+
+  
 }

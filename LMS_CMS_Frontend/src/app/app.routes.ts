@@ -131,6 +131,7 @@ import { TransferedFromKindergartenReportComponent } from './Pages/Employee/Regi
 import { InvoiceReportComponent } from './Pages/Employee/Inventory/Report/InventoryTransactionReport/invoice-report/invoice-report.component';
 import { TemplateComponent } from './Pages/Employee/LMS/template/template.component';
 import { InventoryTransactionReportComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master/invoice-report-master.component';
+import { InvoiceReportMasterDetailedComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master-detailed/invoice-report-master-detailed.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -306,8 +307,13 @@ export const routes: Routes = [
 
             { path: 'Inventory-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Inventory Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
             { path: 'Sales-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Sales Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
-            { path: 'Purchase-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Purchase Transaction Report',canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard],data: { reportType: 'purchase' }
-        }]
+            { path: 'Purchase-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Purchase Transaction Report',canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard],data: { reportType: 'purchase' }},
+        
+            { path: 'Inventory-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Inventory Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
+            { path: 'Sales-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Sales Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
+            { path: 'Purchase-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Purchase Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard],data: { reportType: 'purchase' }}
+        
+        ]
 },
     { 
         path: "Parent", 

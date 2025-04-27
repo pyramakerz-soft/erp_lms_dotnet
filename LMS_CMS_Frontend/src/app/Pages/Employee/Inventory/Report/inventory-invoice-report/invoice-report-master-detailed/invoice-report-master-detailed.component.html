@@ -1,6 +1,6 @@
 <div class="flex justify-between">
     <h1 class="primaryTxt font-bold text-2xl leading-9">
-        {{ reportType | titlecase }} Transaction Report
+        {{ reportType | titlecase }} Transaction Detailed Report
     </h1>
 </div>
 
@@ -27,33 +27,20 @@
             [(ngModel)]="dateTo">
     </div>
 
-<div class="flex flex-col w-[32%] mb-4">
-    <label class="mb-2 font-medium" for="flags">Transaction Types</label>
-    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
-        [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
-        <option [value]="-1" selected>Select All</option>
-        <option *ngFor="let flag of currentFlags" [value]="flag.id">
-            {{ flag.name }}
-        </option>
-    </select>
-</div>
-
-<div class="absolute -top-[9999px] -left-[9999px]">
-    <div id="Data" class="hidden">
-        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'Inventory Transactions Report'"
-            [infoRows]="getInfoRows()"
-            [tableHeaders]="['Invoice #', 'Date', 'Store', 'Transaction Type', 'Total Amount', 'Notes']"
-            [tableData]="transactionsForExport" #pdfComponentRef>
-        </app-pdf-print>
+    <div class="flex flex-col w-[32%] mb-4">
+        <label class="mb-2 font-medium" for="flags">Transaction Types</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
+            [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
+            <option [value]="-1" selected>Select All</option>
+            <option *ngFor="let flag of currentFlags" [value]="flag.id">
+                {{ flag.name }}
+            </option>
+        </select>
     </div>
-</div>
-
-
 
     <div class="w-[32%] flex justify-end">
         <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
-            [disabled]="!dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0"
- [ngClass]="{ 
+            [disabled]="!dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0" [ngClass]="{ 
                 'bg-gray-100 text-gray-300': !dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0, 
                 'secondaryBg text-white': dateFrom && dateTo && selectedStoreId && selectedFlagIds.length > 0
             }">
@@ -70,70 +57,70 @@
 
 <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">
-        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'Inventory Transactions Report'"
-            [infoRows]="getInfoRows()"
-            [tableHeaders]="['Invoice #', 'Date', 'Store', 'Total Amount', 'Transaction Type']"
-            [tableData]="transactionsForExport" #pdfComponentRef>
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'Inventory Transactions Detailed Report'"
+            [infoRows]="getInfoRows()" [tableDataWithHeader]="getTableDataWithHeader()" #pdfComponentRef>
         </app-pdf-print>
     </div>
 </div>
 
-
 <div *ngIf="showTable" class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
-    
-<table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
-    <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
-        <tr>
-            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                Invoice #
-            </th>
-            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                Date
-            </th>
-            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                Store
-            </th>
-            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                Transaction Type
-            </th>
-            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                Total Amount
-            </th>
-        </tr>
-    </thead>
-    <tbody>           <tr *ngIf="transactions.length === 0">
-                <td colspan="5"
+    <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Invoice #
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Date
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Store
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Transaction Type
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Total Amount
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Items Count
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="transactions.length === 0">
+                <td colspan="6"
                     class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                     No Data Found
                 </td>
             </tr>
 
-<tr *ngFor="let transaction of transactions; let i = index"
-    [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
-    class="border-t border-gray-300 text-xs md:text-sm">
-    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-        {{ transaction.invoiceNumber }}
-    </td>
-    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-        {{ transaction.date | date:'mediumDate' }}
-    </td>
-    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-        {{ transaction.storeName }}
-    </td>
-    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-            {{ transaction.flagEnName }}
-    </td>
-        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            <tr *ngFor="let transaction of transactions; let i = index"
+                [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                class="border-t border-gray-300 text-xs md:text-sm">
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ transaction.invoiceNumber }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ transaction.date | date:'mediumDate' }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ transaction.storeName }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ transaction.flagEnName }}
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                     {{ transaction.total | currency }}
-
-        </td>
-
-</tr>
+                </td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ transaction.inventoryDetails?.length || 0 }}
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>
 
-<!-- Pagination -->
 <div *ngIf="showTable" class="mt-8 flex justify-between items-center">
     <div class="flex items-center space-x-4">
         <button class="flex items-center space-x-2 rounded-lg border py-3 px-4" (click)="changePage(currentPage-1)"
@@ -160,3 +147,4 @@
         <p>{{currentPage}} of {{totalPages}} pages ({{totalRecords}} Items)</p>
     </div>
 </div>
+

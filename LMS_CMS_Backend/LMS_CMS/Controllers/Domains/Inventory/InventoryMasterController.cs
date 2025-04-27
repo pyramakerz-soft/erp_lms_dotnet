@@ -364,7 +364,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
             if (newData.StudentID != 0 && newData.StudentID != null)
             {
-                Master.Vat = vat;
+                //Master.Vat = vat;
             }
 
             Unit_Of_Work.inventoryMaster_Repository.Add(Master);

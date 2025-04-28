@@ -364,10 +364,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 Master.InsertedByUserId = userId;
             }
-            if (newData.StudentID != 0 && newData.StudentID != null)
-            {
-                //Master.Vat = vat;
-            }
+            //if (newData.StudentID != 0 && newData.StudentID != null)
+            //{
+            //    //Master.Vat = vat;
+            //}
 
             Unit_Of_Work.inventoryMaster_Repository.Add(Master);
             await Unit_Of_Work.SaveChangesAsync();
@@ -410,10 +410,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             bool result = await InvoicingServices.GenerateXML(Master);
 
-            if (result)
-                return BadRequest("Failed to generate XML file.");
+            //if (result)
+            //    return BadRequest("Failed to generate XML file.");
 
-            return Ok($"{Master.ID}, and XML created successfully.");
+            return Ok(Master.ID);
         }
 
 

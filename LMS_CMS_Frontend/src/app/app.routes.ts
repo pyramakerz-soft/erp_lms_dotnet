@@ -280,13 +280,14 @@ export const routes: Routes = [
             { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "TransferedFromKindergartenReport", component: TransferedFromKindergartenReportComponent, title: "TransferedFromKindergartenReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Template", component: TemplateComponent, title: "Template", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Book Correction", component: BookCorrectionComponent, title: "BookCorrectionComponent", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Evaluation", component: EvaluationComponent, title: "Evaluation", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "EvaluationTemplateGroup/:id", component: EvaluationTemplateGroupComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "EvaluationTemplateGroupQuestion/:id", component: EvaluationTemplateGroupQuestionComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "EvaluationBookCorrectionForEvaluated", component: EvaluationFeedbackComponent, title: "EvaluationBookCorrectionForEvaluated", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "EvaluationBookCorrectionForEvaluator", component: EvaluationFeedbackComponent, title: "EvaluationBookCorrectionForEvaluator", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "EvaluationBookCorrectionForEvaluated/:id", component: EvaluationEmployeeAnswerComponent, title: "EvaluationBookCorrectionForEvaluated", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "EvaluationBookCorrectionForEvaluator/:id", component: EvaluationEmployeeAnswerComponent, title: "EvaluationBookCorrectionForEvaluator", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Received Evaluations", component: EvaluationFeedbackComponent, title: "Received Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Created Evaluations", component: EvaluationFeedbackComponent, title: "Created Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Received Evaluations/:id", component: EvaluationEmployeeAnswerComponent, title: "Received Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Created Evaluations/:id", component: EvaluationEmployeeAnswerComponent, title: "Created Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

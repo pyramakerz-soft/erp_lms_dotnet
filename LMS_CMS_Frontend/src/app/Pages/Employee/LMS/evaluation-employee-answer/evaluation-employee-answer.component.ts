@@ -68,10 +68,10 @@ export class EvaluationEmployeeAnswerComponent {
         this.AllowEditForOthers = settingsPage.allow_Edit_For_Others;
       }
     });
-    if (this.path == "EvaluationBookCorrectionForEvaluated") {
+    if (this.path == "Received Evaluations") {
       this.mode = "Evaluated"
       console.log(this.path)
-    } else if (this.path == "EvaluationBookCorrectionForEvaluator") {
+    } else if (this.path == "Created Evaluations") {
       this.mode = "Evaluator"
     }
     this.EvaluationId = Number(this.activeRoute.snapshot.paramMap.get('id'));
@@ -86,10 +86,10 @@ export class EvaluationEmployeeAnswerComponent {
   }
 
   moveEvaluation() {
-    if (this.path == "EvaluationBookCorrectionForEvaluated") {
-      this.router.navigateByUrl(`Employee/EvaluationBookCorrectionForEvaluated`);
-    } else if (this.path == "EvaluationBookCorrectionForEvaluator") {
-      this.router.navigateByUrl(`Employee/EvaluationBookCorrectionForEvaluator`);
+    if (this.path == "Received Evaluations") {
+      this.router.navigateByUrl(`Employee/Received Evaluations`);
+    } else if (this.path == "Created Evaluations") {
+      this.router.navigateByUrl(`Employee/Created Evaluations`);
     }
   }
   

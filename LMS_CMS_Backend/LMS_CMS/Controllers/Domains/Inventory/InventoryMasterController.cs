@@ -410,10 +410,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             bool result = await InvoicingServices.GenerateXML(Master);
 
-            //if (result)
-            //    string reporting = await InvoicingServices.InvoiceReporting(invoiceHash, uuid, invoiceEncoded);
+            if (result)
+                return BadRequest("Failed to generate XML file.");
 
-            return Ok(Master.ID);
+            return Ok($"{Master.ID}, and XML created successfully.");
         }
 
 

@@ -123,25 +123,6 @@
 	</cac:AccountingSupplierParty>
 	<cac:AccountingCustomerParty>
 		<cac:Party>
-			<cac:PostalAddress>
-				<cbc:StreetName>صلاح الدين | Salah Al-Din</cbc:StreetName>
-				<cbc:BuildingNumber>1111</cbc:BuildingNumber>
-				<cbc:CitySubdivisionName>المروج | Al-Murooj</cbc:CitySubdivisionName>
-				<cbc:CityName>الرياض | Riyadh</cbc:CityName>
-				<cbc:PostalZone>12222</cbc:PostalZone>
-				<cac:Country>
-					<cbc:IdentificationCode>SA</cbc:IdentificationCode>
-				</cac:Country>
-			</cac:PostalAddress>
-			<cac:PartyTaxScheme>
-				<cbc:CompanyID>399999999800003</cbc:CompanyID>
-				<cac:TaxScheme>
-					<cbc:ID>VAT</cbc:ID>
-				</cac:TaxScheme>
-			</cac:PartyTaxScheme>
-			<cac:PartyLegalEntity>
-				<cbc:RegistrationName>شركة نماذج فاتورة المحدودة | Fatoora Samples LTD</cbc:RegistrationName>
-			</cac:PartyLegalEntity>
 		</cac:Party>
 	</cac:AccountingCustomerParty>
 	<cac:PaymentMeans>

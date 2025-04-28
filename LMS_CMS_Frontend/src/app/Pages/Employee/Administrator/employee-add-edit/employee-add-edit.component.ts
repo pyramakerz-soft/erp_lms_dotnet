@@ -39,8 +39,7 @@ export class EmployeeAddEditComponent {
   EmpType: number = 0;
   EmpId: number = 0;
   validationErrors: { [key in keyof EmployeeGet]?: string } = {};
-  emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-  mobilePattern = /^0(10|11|12|15)\d{8}$/;
+  emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/; 
   DeletedFiles: number[] = []
   isLoading = false;
 
@@ -156,17 +155,8 @@ export class EmployeeAddEditComponent {
     if (this.Data.email && !this.emailPattern.test(this.Data.email)) {
       this.validationErrors["email"] = `*Email is not valid`;
       isValid = false;
-    }
-
-    if (this.Data.mobile && !this.mobilePattern.test(this.Data.mobile)) {
-      this.validationErrors["mobile"] = `*Mobile Number is not valid`;
-      isValid = false;
-    }
-
-    if (this.Data.phone && !this.mobilePattern.test(this.Data.phone)) {
-      this.validationErrors["phone"] = `*Phone Number is not valid`;
-      isValid = false;
-    }
+    } 
+    
     return isValid;
   }
 
@@ -202,21 +192,34 @@ export class EmployeeAddEditComponent {
             this.isLoading = false;
             return true;
           },
-          (error) => { 
-            if(error.error.errors.Password){
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.error.errors.Password[0] || 'An unexpected error occurred',
-                confirmButtonColor: '#FF7519',
-              });
-            }else{
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.error.errors || 'An unexpected error occurred',
-                confirmButtonColor: '#FF7519',
-              });
+          (error) => {  
+            switch(true) {
+              case error.error.errors?.Password !== undefined:
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error.errors.Password[0] || 'An unexpected error occurred',
+                  confirmButtonColor: '#FF7519',
+                });
+                break;
+              
+              case error.error === "This Email Already Exist":
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error || 'An unexpected error occurred',
+                  confirmButtonColor: '#FF7519',
+                });
+                break;
+              
+              default:
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error.errors || 'An unexpected error occurred',
+                  confirmButtonColor: '#FF7519',
+                });
+                break;
             }
             this.isLoading = false;
             return false;
@@ -236,13 +239,25 @@ export class EmployeeAddEditComponent {
           },
           (error) => { 
             this.isLoading = false;
-            console.log(error)
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: error.error || 'An unexpected error occurred',
-              confirmButtonColor: '#FF7519',
-            });
+            switch(true) { 
+              case error.error === "This Email Already Exist":
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error || 'An unexpected error occurred',
+                  confirmButtonColor: '#FF7519',
+                });
+                break;
+              
+              default:
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error.errors || 'An unexpected error occurred',
+                  confirmButtonColor: '#FF7519',
+                });
+                break;
+            }
             return false;
           }
         );

@@ -10,6 +10,7 @@ import { EmployeeService } from '../../../../Services/Employee/employee.service'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EditPass } from '../../../../Models/Employee/edit-pass';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-employee-view',
@@ -50,7 +51,7 @@ export class EmployeeViewComponent {
         this.path = url[0].path
         this.EmpId = Number(this.activeRoute.snapshot.paramMap.get('id'))
         this.EmpServ.Get_Employee_By_ID(this.EmpId, this.DomainName).subscribe(async (data) => {
-          this.Data = data;
+          this.Data = data; 
           if (data.files == null) {
             this.Data.files = []
           }
@@ -73,17 +74,30 @@ export class EmployeeViewComponent {
   edit() {
     this.router.navigateByUrl(`Employee/Employee Edit/${this.EmpId}`)
   }
+  
   downloadFile(file: any): void {
-    const fileURL = file.link;
-    const a = document.createElement('a');
-    a.href = fileURL;
-    a.download = file.name || 'downloaded_file';
-    a.target = '_blank';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    fetch(file.link)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name || 'downloaded_file';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+        console.error('Download failed:', error);
+      });
   }
-
+  
   toggleChangePassword() {
     this.isChange = !this.isChange;
   }
@@ -91,10 +105,38 @@ export class EmployeeViewComponent {
   UpdatePassword(){
     this.editpasss.Id=this.EmpId;
     this.editpasss.Password=this.password
-   this.EmpServ.EditPassword(this.editpasss,this.DomainName).subscribe(()=>{
-    this.isChange = false
-    this.password = '';
-   })
+    this.EmpServ.EditPassword(this.editpasss,this.DomainName).subscribe(()=>{
+        this.isChange = false
+        this.password = '';
+        Swal.fire({
+          icon: 'success',
+          title: 'Done',
+          text: 'Updatedd Successfully',
+          confirmButtonColor: '#FF7519',
+        });
+      },
+      (error) => {  
+          switch(true) {
+            case error.error.errors?.Password !== undefined:
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error.errors.Password[0] || 'An unexpected error occurred',
+                confirmButtonColor: '#FF7519',
+              });
+              break; 
+            
+            default:
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.error.errors || 'An unexpected error occurred',
+                confirmButtonColor: '#FF7519',
+              });
+              break;
+          }
+      } 
+    )
   }
 
   CancelUpdatePassword(){

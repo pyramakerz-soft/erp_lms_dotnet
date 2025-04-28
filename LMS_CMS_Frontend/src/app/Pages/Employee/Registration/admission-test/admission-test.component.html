@@ -144,6 +144,7 @@
             <h6 class="font-medium text-base leading-6 mb-1 mt-3">{{ 'Grade' | translate }}</h6>
             <div class="flex flex-col mb-4">
               <select
+                [disabled]="!SchoolId || SchoolId === 0"
                 (ngModelChange)="onGradeChange($event); onInputValueChange({ field: 'gradeID', value: $event })"
                 class="rounded-lg border border-solid border-gray-300 py-1 overflow-y-auto w-[500px] h-[45px] mb-3"
                 id="gradeSelect"

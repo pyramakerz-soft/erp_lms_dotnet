@@ -227,7 +227,7 @@ export class DomainsComponent {
                 <div class='grid justify-items-start'>
                   <p><strong>Admin Name:</strong> ${result.userName}</p>
                   <p><strong>Password:</strong> ${result.password}</p>
-                  <p><strong>Link:</strong> ${result.userName}.${Header}</p>
+                  <p><strong>Link:</strong> ${result.link}</p>
                 </div>
               `,
               showCancelButton: false,

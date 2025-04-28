@@ -1,343 +1,296 @@
 <div class="flex justify-between items-center">
-    <div class="flex justify-between items-center space-x-5">
-        <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
-        <h1 class="font-semibold text-2xl leading-9">
-            {{Data.user_Name}}
-        </h1>
-    </div>
-    <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg mt-2"
-    (click)="Save()">
+  <div class="flex justify-between items-center space-x-5">
+    <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
+    <h1 class="font-semibold text-2xl leading-9">
+      {{Data.user_Name}}
+    </h1>
+  </div>
+  <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg mt-2" (click)="Save()">
     <span *ngIf="!isLoading">Save</span>
     <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
-</button>
+  </button>
 </div>
 
 <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap py-3">
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="name">User Name</label>
-        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User Name" [(ngModel)]="Data.user_Name " />
-            
-          <span *ngIf="validationErrors['user_Name']" class="text-red-500 ml-3 font-normal">{{ validationErrors["user_Name"] }}</span>
-    </div>
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="name">User Name</label>
+    <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter User Name" [(ngModel)]="Data.user_Name " />
 
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="name">Address</label>
-        <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter Address" [(ngModel)]="Data.address" />
-    </div>
+    <span *ngIf="validationErrors['user_Name']" class="text-red-500 ml-3 font-normal">{{ validationErrors["user_Name"]
+      }}</span>
+  </div>
 
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="name">Phone</label>
-        <input id="phone" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User phone" [(ngModel)]="Data.phone" />
-    </div>
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="Address">Address</label>
+    <input id="Address" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter Address" [(ngModel)]="Data.address" />
+  </div>
 
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="mobile">Mobile Number</label>
-        <input id="mobile" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User mobile" [(ngModel)]="Data.mobile" />
-    </div>
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="Phone">Phone</label>
+    <input id="phone" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter User phone" [(ngModel)]="Data.phone" />
+  </div>
 
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="name">National Id</label>
-        <input id="name"  (input)="validateNumber($event,'nationalID')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter National Id" [(ngModel)]="Data.nationalID" />
-    </div>
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="mobile">Mobile Number</label>
+    <input id="mobile" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter User mobile" [(ngModel)]="Data.mobile" />
+  </div>
 
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="passportNumber">Passport Number</label>
-        <input id="passportNumber"  (input)="validateNumber($event,'passportNumber')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User passportNumber" [(ngModel)]="Data.passportNumber" />
-    </div>
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="National">National Id</label>
+    <input id="National" (input)="validateNumber($event,'nationalID')"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter National Id"
+      [(ngModel)]="Data.nationalID" />
+  </div>
 
-
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="residenceNumber">Residence number</label>
-        <input id="residenceNumber" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User residenceNumber" [(ngModel)]="Data.residenceNumber" />
-    </div>
-
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="birthdayDate">BirthDay Date</label>
-        <input id="birthdayDate" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter User birthdayDate" [(ngModel)]="Data.birthdayDate" />
-    </div>
-
-    <div class="flex flex-col w-[49%] mb-4">
-        <label class="mb-2" for="bus">Choose Nationality</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
-            [(ngModel)]="Data.nationality">
-            <option [value]=0 disabled selected hidden>Choose Nationality</option>
-            <option *ngFor="let National of nationalities" [value]="National.id">{{ National.name }}</option>
-            <option *ngIf="nationalities.length === 0" disabled selected>No Data Found</option>
-        </select>
-    </div>
-    
-    <div class="flex flex-col mb-4 w-[49%]">
-        <label class="mb-2 primaryTxt" for="expireDate">Date of appointment</label>
-        <input id="dateOfAppointment" type="date"  class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-        placeholder="Enter Date" [(ngModel)]="Data.dateOfAppointment" />
-    </div>
-
-    <div class="flex w-full space-x-5 items-center mb-4">
-        <div class="flex w-[20%] space-x-5 items-center mb-4">
-            <input type="checkbox"class="w-5 h-5"
-            (change)="onIsActiveChange($event)"
-            [checked]="EndDate">
-            <label for="active" class="text-sm">End Date</label>
-        </div>
-    
-        <div *ngIf="EndDate==true" class="flex flex-col mb-4 w-[33%]">
-            <label class="mb-2 primaryTxt" for="dateOfLeavingWork">Date of Leaving Work</label>
-            <input id="dateOfLeavingWork" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                placeholder="Enter date Of Leaving Work" [(ngModel)]="Data.dateOfLeavingWork" />
-        </div>
-    
-        <div *ngIf="EndDate==true" class="flex flex-col w-[33%] mb-4">
-            <label class="mb-2" for="bus">Choose Reasonsforleavingwork</label>
-            <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
-                [(ngModel)]="Data.reasonOfLeavingID">
-                <option [value]=null disabled selected hidden>Choose Reasonsforleavingwork</option>
-                <option *ngFor="let reason of Reasons" [value]="reason.id">{{ reason.name }}</option>
-                <option *ngIf="Reasons.length === 0" disabled selected>No Data Found</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="flex w-full space-x-5 items-center mb-4">
-        <div class="flex flex-col w-[73%]">
-            <label class="mb-2 primaryTxt" for="monthSalary">Month Salary</label>
-            <input id="monthSalary" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                placeholder="Enter monthSalary" [(ngModel)]="Data.monthSalary" />
-        </div>
-    
-        <div class="flex w-[23%] space-x-5 items-center mt-5">
-            <input type="checkbox"  class="w-5 h-5"
-            (change)="onHasAttendanceChange($event)"
-            [checked]="Data.hasAttendance">
-            <label for="active" class="text-sm">Has Attendance</label>
-        </div>
-    </div>
-
-    <div class="flex flex-col mb-4 w-[33%]">
-        <label class="mb-2 primaryTxt" for="attendanceTime">Attendance Time</label>
-        <div class="flex items-center gap-2">
-          <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
-            id="attendanceHours"
-             (input)="validateNumber($event)"
-            class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
-            placeholder="HH"
-            [(ngModel)]="attendanceTime.hours"
-            type="number"
-            min="1"
-            max="12" />
-          <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
-            id="attendanceMinutes"
-             (input)="validateNumber($event)"
-            class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
-            placeholder="MM"
-            type="number"
-            [(ngModel)]="attendanceTime.minutes"
-            min="0"
-            max="59"/>
-          <select (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
-            id="attendancePeriod"
-            class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
-            [(ngModel)]="attendanceTime.periods">
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="flex flex-col mb-4 w-[33%]">
-        <label class="mb-2 primaryTxt" for="departureTime">Departure Time</label>
-        <div class="flex items-center gap-2">
-          <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
-            id="departureHours"
-            (input)="validateNumber($event)"
-            class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
-            placeholder="HH"
-            type="number"
-            [(ngModel)]="departureTime.hour"
-            min="1"
-            max="12"/>
-          <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
-            id="departureMinutes"
-            (input)="validateNumber($event)"
-            class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
-            placeholder="MM"
-            type="number"
-            [(ngModel)]="departureTime.minute"
-            min="0"
-            max="59"/>
-          <select (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })"
-            id="departurePeriod"
-            class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
-            [(ngModel)]="departureTime.period">
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-          </select>
-        </div>
-      </div>
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="passportNumber">Passport Number</label>
+    <input id="passportNumber" (input)="validateNumber($event,'passportNumber')"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter User passportNumber"
+      [(ngModel)]="Data.passportNumber" />
+  </div>
 
 
-      
-    <div class="flex flex-col mb-4 w-[33%]">
-        <label class="mb-2 primaryTxt" for="delayAllowance">Delay Allowance</label>
-        <input id="delayAllowance"  (input)="validateNumber($event, 'delayAllowance')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter delayAllowance" [(ngModel)]="Data.delayAllowance" />
-    </div>
-    
-    <div class="flex flex-col w-full mb-4">
-        <label class="mb-2" for="bus"> Account Number</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
-            [(ngModel)]="Data.accountNumberID">
-            <option [value]=null disabled selected hidden> Account Number</option>
-            <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
-            <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
-        </select>
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="residenceNumber">Residence number</label>
+    <input id="residenceNumber" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter User residenceNumber" [(ngModel)]="Data.residenceNumber" />
+  </div>
+
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="birthdayDate">BirthDay Date</label>
+    <input id="birthdayDate" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter User birthdayDate" [(ngModel)]="Data.birthdayDate" />
+  </div>
+
+  <div class="flex flex-col w-[49%] mb-4">
+    <label class="mb-2" for="Nationality">Choose Nationality</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Nationality"
+      [(ngModel)]="Data.nationality">
+      <option [value]="null" disabled selected hidden>Choose Nationality</option>
+      <option *ngFor="let National of nationalities" [value]="National.id">{{ National.name }}</option>
+      <option *ngIf="nationalities.length === 0" disabled selected>No Data Found</option>
+    </select>
+  </div>
+
+  <div class="flex flex-col mb-4 w-[49%]">
+    <label class="mb-2 primaryTxt" for="dateOfAppointment">Date of appointment</label>
+    <input id="dateOfAppointment" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+      placeholder="Enter Date" [(ngModel)]="Data.dateOfAppointment" />
+  </div>
+
+  <div class="flex w-full space-x-5 items-center mb-4">
+    <div class="flex w-[20%] space-x-5 items-center mb-4">
+      <input type="checkbox" class="w-5 h-5" id="End" (change)="onIsActiveChange($event)" [checked]="EndDate">
+      <label for="End" class="text-sm">End Date</label>
     </div>
 
-    <div class="flex flex-col mb-4 w-[33%]">
-        <label class="mb-2 primaryTxt" for="annualLeaveBalance">Annual Leave Balance</label>
-        <input id="annualLeaveBalance" (input)="validateNumber($event, 'annualLeaveBalance')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter annualLeaveBalance" [(ngModel)]="Data.annualLeaveBalance" />
-    </div>
-    <div class="flex flex-col mb-4 w-[33%]">
-        <label class="mb-2 primaryTxt" for="casualLeavesBalance">Casual Leaves Balance</label>
-        <input id="casualLeavesBalance"  (input)="validateNumber($event, 'casualLeavesBalance')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter casualLeavesBalance" [(ngModel)]="Data.casualLeavesBalance" />
-    </div>
-    <div class="flex flex-col mb-4 w-[33%]">
-        <label class="mb-2 primaryTxt" for="monthlyLeaveRequestBalance">Monthly Leave Request Balance</label>
-        <input id="monthlyLeaveRequestBalance"  (input)="validateNumber($event, 'monthlyLeaveRequestBalance')" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-            placeholder="Enter monthlyLeaveRequestBalance" [(ngModel)]="Data.monthlyLeaveRequestBalance" />
+    <div *ngIf="EndDate==true" class="flex flex-col mb-4 w-[33%]">
+      <label class="mb-2 primaryTxt" for="dateOfLeavingWork">Date of Leaving Work</label>
+      <input id="dateOfLeavingWork" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        placeholder="Enter date Of Leaving Work" [(ngModel)]="Data.dateOfLeavingWork" />
     </div>
 
-    <div class="flex flex-col w-[48%] mb-4">
-        <label class="mb-2" for="bus">Departments</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
-            [(ngModel)]="Data.departmentID">
-            <option [value]=null disabled selected hidden>Choose Department</option>
-            <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
-            <option *ngIf="departments.length === 0" disabled selected>No Data Found</option>
-        </select>
+    <div *ngIf="EndDate==true" class="flex flex-col w-[33%] mb-4">
+      <label class="mb-2" for="Reasons">Choose Reasons For Leaving Work</label>
+      <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Reasons"
+        [(ngModel)]="Data.reasonOfLeavingID">
+        <option [value]="null" disabled selected hidden>Choose Reason</option>
+        <option *ngFor="let reason of Reasons" [value]="reason.id">{{ reason.name }}</option>
+        <option *ngIf="Reasons.length === 0" disabled selected>No Data Found</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex w-full space-x-5 items-center mb-4">
+    <div class="flex flex-col w-[73%]">
+      <label class="mb-2 primaryTxt" for="monthSalary">Month Salary</label>
+      <input id="monthSalary" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        placeholder="Enter monthSalary" [(ngModel)]="Data.monthSalary" />
     </div>
 
-    <div class="flex flex-col w-[48%] mb-4">
-        <label class="mb-2" for="bus">Job Category</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
-        (change)="OnSelectJobCategory()"
-            [(ngModel)]="Data.jobCategoryId">
-            <option [value]=null disabled selected hidden>Choose Job Category</option>
-            <option *ngFor="let job of JobCategories" [value]="job.id">{{ job.name }}</option>
-            <option *ngIf="JobCategories.length === 0" disabled selected>No Data Found</option>
-        </select>
+    <div class="flex w-[23%] space-x-5 items-center mt-5">
+      <input type="checkbox" class="w-5 h-5" id="Attendance" (change)="onHasAttendanceChange($event)"
+        [checked]="Data.hasAttendance">
+      <label for="Attendance" class="text-sm">Has Attendance</label>
     </div>
+  </div>
 
-    <div class="flex flex-col w-[48%] mb-4">
-        <label class="mb-2" for="bus">Jobs</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
-            [(ngModel)]="Data.jobID">
-            <option [value]=null disabled selected hidden>Choose Job</option>
-            <option *ngFor="let job of Jobs" [value]="job.id">{{ job.name }}</option>
-            <option *ngIf="Jobs.length === 0" disabled selected>No Data Found</option>
-        </select>
+  <div class="flex flex-col mb-4 w-[33%]">
+    <label class="mb-2 primaryTxt" for="attendanceTime">Attendance Time</label>
+    <div class="flex items-center gap-2">
+      <input (ngModelChange)=" onInputValueChange({ field: 'attendanceTime', value: $event })" id="attendanceHours"
+        (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
+        placeholder="HH" [(ngModel)]="attendanceTime.hours" type="number" min="1" max="12" />
+      <input (ngModelChange)=" onInputValueChange({ field: 'attendanceTime', value: $event })" id="attendanceMinutes"
+        (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
+        placeholder="MM" type="number" [(ngModel)]="attendanceTime.minutes" min="0" max="59" />
+      <select (ngModelChange)=" onInputValueChange({ field: 'attendanceTime', value: $event })" id="attendancePeriod"
+        class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]" [(ngModel)]="attendanceTime.periods">
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
     </div>
+  </div>
 
-    <div class="flex flex-col w-[48%] mb-4">
-        <label class="mb-2" for="bus">Academic Degree</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="bus"
-            [(ngModel)]="Data.academicDegreeID">
-            <option [value]=null disabled selected hidden>Choose Academic Degree</option>
-            <option *ngFor="let Acc of academicDegree" [value]="Acc.id">{{ Acc.name }}</option>
-            <option *ngIf="academicDegree.length === 0" disabled selected>No Data Found</option>
-        </select>
+  <div class="flex flex-col mb-4 w-[33%]">
+    <label class="mb-2 primaryTxt" for="departureTime">Departure Time</label>
+    <div class="flex items-center gap-2">
+      <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })" id="departureHours"
+        (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
+        placeholder="HH" type="number" [(ngModel)]="departureTime.hour" min="1" max="12" />
+      <input (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })" id="departureMinutes"
+        (input)="validateNumber($event)" class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]"
+        placeholder="MM" type="number" [(ngModel)]="departureTime.minute" min="0" max="59" />
+      <select (ngModelChange)=" onInputValueChange({ field: 'departureTime', value: $event })" id="departurePeriod"
+        class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-[30%]" [(ngModel)]="departureTime.period">
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
     </div>
+    <span *ngIf="validationErrors['departureTime']" class="text-red-500 ml-3 font-normal">{{
+      validationErrors["departureTime"] }}</span>
+  </div>
 
-    <div class="flex flex-col mb-4 w-[48%]">
-        <label class="mb-2 primaryTxt" for="graduationYear">Graduation Year</label>
-        <input
-          id="graduationYear"
-          (input)="validateNumber($event, 'graduationYear')"
-          class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-          placeholder="Enter Year"
-          [(ngModel)]="Data.graduationYear"
-          min="1900" 
-          max="2099"
-        />
+
+
+  <div class="flex flex-col mb-4 w-[33%]">
+    <label class="mb-2 primaryTxt" for="delayAllowance">Delay Allowance</label>
+    <input id="delayAllowance" (input)="validateNumber($event, 'delayAllowance')"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter delayAllowance"
+      [(ngModel)]="Data.delayAllowance" />
+  </div>
+
+  <div class="flex flex-col w-full mb-4">
+    <label class="mb-2" for="Account"> Account Number</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Account"
+      [(ngModel)]="Data.accountNumberID">
+      <option [value]='null' disabled selected hidden> Account Number</option>
+      <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
+      <option *ngIf="AccountNumbers.length === 0" disabled selected>No Data Found</option>
+    </select>
+  </div>
+
+  <div class="flex flex-col mb-4 w-[33%]">
+    <label class="mb-2 primaryTxt" for="annualLeaveBalance">Annual Leave Balance</label>
+    <input id="annualLeaveBalance" (input)="validateNumber($event, 'annualLeaveBalance')"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter annualLeaveBalance"
+      [(ngModel)]="Data.annualLeaveBalance" />
+  </div>
+  <div class="flex flex-col mb-4 w-[33%]">
+    <label class="mb-2 primaryTxt" for="casualLeavesBalance">Casual Leaves Balance</label>
+    <input id="casualLeavesBalance" (input)="validateNumber($event, 'casualLeavesBalance')"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter casualLeavesBalance"
+      [(ngModel)]="Data.casualLeavesBalance" />
+  </div>
+  <div class="flex flex-col mb-4 w-[33%]">
+    <label class="mb-2 primaryTxt" for="monthlyLeaveRequestBalance">Monthly Leave Request Balance</label>
+    <input id="monthlyLeaveRequestBalance" (input)="validateNumber($event, 'monthlyLeaveRequestBalance')"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter monthlyLeaveRequestBalance"
+      [(ngModel)]="Data.monthlyLeaveRequestBalance" />
+  </div>
+
+  <div class="flex flex-col w-[48%] mb-4">
+    <label class="mb-2" for="Departments">Departments</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Departments"
+      [(ngModel)]="Data.departmentID">
+      <option [value]="null" disabled selected hidden>Choose Department</option>
+      <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+      <option *ngIf="departments.length === 0" disabled selected>No Data Found</option>
+    </select>
+  </div>
+
+  <div class="flex flex-col w-[48%] mb-4">
+    <label class="mb-2" for="Category">Job Category</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Category"
+      (change)="OnSelectJobCategory()" [(ngModel)]="Data.jobCategoryId">
+      <option [value]="null" disabled selected hidden>Choose Job Category</option>
+      <option *ngFor="let job of JobCategories" [value]="job.id">{{ job.name }}</option>
+      <option *ngIf="JobCategories.length === 0" disabled selected>No Data Found</option>
+    </select>
+  </div>
+
+  <div class="flex flex-col w-[48%] mb-4">
+    <label class="mb-2" for="Jobs">Jobs</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Jobs"
+      [(ngModel)]="Data.jobID" [disabled]="Data.jobCategoryId == 0 || Data.jobCategoryId == null"
+      [ngClass]="{'bg-gray-300': Data.jobCategoryId == 0 || Data.jobCategoryId == null}">
+      <option [value]="null" disabled selected hidden>Choose Job</option>
+      <option *ngFor="let job of Jobs" [value]="job.id">{{ job.name }}</option>
+      <option *ngIf="Jobs.length === 0" disabled selected>No Data Found</option>
+    </select>
+  </div>
+
+  <div class="flex flex-col w-[48%] mb-4">
+    <label class="mb-2" for="Degree">Academic Degree</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Degree"
+      [(ngModel)]="Data.academicDegreeID">
+      <option [value]="null" disabled selected hidden>Choose Academic Degree</option>
+      <option *ngFor="let Acc of academicDegree" [value]="Acc.id">{{ Acc.name }}</option>
+      <option *ngIf="academicDegree.length === 0" disabled selected>No Data Found</option>
+    </select>
+  </div>
+
+  <div class="flex flex-col mb-4 w-[48%]">
+    <label class="mb-2 primaryTxt" for="graduationYear">Graduation Year</label>
+    <input id="graduationYear" (input)="validateNumber($event, 'graduationYear')"
+      class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Year"
+      [(ngModel)]="Data.graduationYear" min="1900" max="2099" />
+  </div>
+
+  <div class="flex flex-col w-full mb-4">
+    <label class="mb-2 cursor-pointer" (click)="toggleDropdown()">
+      Working Days
+    </label>
+    <div class="relative">
+      <div class="flex flex-wrap gap-2 mb-2 border border-solid border-gray-300 rounded-lg px-4 py-3"
+        (click)="toggleDropdown()">
+        <span *ngFor="let selected of selectedDays"
+          class="mr-2 mb-1 bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center">
+          {{ selected.name }}
+          <button type="button" class="ml-2 text-red-500 hover:text-red-700" (click)="removeDay(selected.id)">
+            &times;
+          </button>
+        </span>
+
+        <span *ngIf="selectedDays.length === 0" class="text-gray-400">
+          Select working days...
+        </span>
       </div>
 
-    <div class="flex flex-col w-full mb-4">
-        <label class="mb-2 cursor-pointer" (click)="toggleDropdown()">
-          Working Days
-        </label>
-        <div class="relative">
-          <div
-            class="flex flex-wrap gap-2 mb-2 border border-solid border-gray-300 rounded-lg px-4 py-3"
-            (click)="toggleDropdown()"
-          >
-            <span
-              *ngFor="let selected of selectedDays"
-              class="mr-2 mb-1 bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center"
-            >
-              {{ selected.name }}
-              <button
-                type="button"
-                class="ml-2 text-red-500 hover:text-red-700"
-                (click)="removeDay(selected.id)"
-              >
-                &times;
-              </button>
-            </span>
+      <div
+        class="absolute bg-white border border-solid border-gray-300 rounded-lg shadow-md w-full mt-1 max-h-48 overflow-y-auto z-10"
+        *ngIf="isDropdownOpen">
+        <ul>
+          <li *ngFor="let day of days" class="px-4 py-2 cursor-pointer hover:bg-gray-100" (click)="selectDay(day)">
+            {{ day.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-            <span *ngIf="selectedDays.length === 0" class="text-gray-400">
-              Select working days...
-            </span>
-          </div>
-      
-          <div
-            class="absolute bg-white border border-solid border-gray-300 rounded-lg shadow-md w-full mt-1 max-h-48 overflow-y-auto z-10"
-            *ngIf="isDropdownOpen"
-          >
-            <ul>
-              <li
-                *ngFor="let day of days"
-                class="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                (click)="selectDay(day)"
-              >
-                {{ day.name }}
-              </li>
-            </ul>
-          </div>
-        </div>
+  <div class="flex flex-col mb-4 w-full">
+    <h6 class="font-medium text-base leading-6 mb-1 mt-3">Note</h6>
+    <div class="flex justify-start gap-2 items-start">
+      <div class="flex flex-col w-full">
+        <textarea class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
+          [(ngModel)]="Data.note" placeholder="Enter Note"></textarea>
       </div>
-      
-      <div class="flex flex-col mb-4 w-full">
-        <h6 class="font-medium text-base leading-6 mb-1 mt-3">Note</h6>
-        <div class="flex justify-start gap-2 items-start">
-          <div class="flex flex-col w-full">
-            <textarea
-              class="w-full h-[100px] rounded-lg border border-solid border-gray-300 px-2 py-1 mb-3 resize-none"
-              [(ngModel)]="Data.note"
-              placeholder="Enter Note"
-            ></textarea>
-          </div>
-        </div>
-      </div>
-      
+    </div>
+  </div>
+
 </div>
 
 <div class="">
   <div class="flex justify-between">
     <h1 class="font-semibold text-2xl leading-9">Children`s</h1>
     <div class="flex justify-between items-center">
-      <button
-        (click)="Create()"
-        class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2"
-      >
+      <button (click)="Create()"
+        class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
         Add Child
       </button>
     </div>
@@ -346,19 +299,15 @@
   <div>
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
       <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
-        <thead
-          class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+        <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
           <tr>
-            <th
-              class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
               ID
             </th>
-            <th
-              class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
               Name
             </th>
-            <th
-              class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
               Actions
             </th>
           </tr>
@@ -366,20 +315,15 @@
         <tbody>
           <!-- No Data Row -->
           <tr *ngIf="TableData.length === 0">
-            <td
-              colspan="11"
-              class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm"
-            >
+            <td colspan="3" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
               No Data Found
             </td>
           </tr>
 
           <!-- Data Rows -->
-          <tr
-            *ngFor="let row of TableData; let i = index"
+          <tr *ngFor="let row of TableData; let i = index"
             [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
-            class="border-t border-gray-300 text-xs md:text-sm"
-          >
+            class="border-t border-gray-300 text-xs md:text-sm">
             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
               {{ row.id }}
             </td>
@@ -388,9 +332,7 @@
             </td>
             <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
               <div class="flex space-x-4">
-                <button
-                  (click)="DeleteChild(row.id)"
-                >
+                <button (click)="DeleteChild(row.id)">
                   <i class="fa-regular fa-trash-can"></i>
                 </button>
               </div>
@@ -403,48 +345,30 @@
 </div>
 
 <!-- Modal -->
-<div
-  id="default-modal"
-  tabindex="-1"
-  aria-hidden="true"
-  [ngClass]="{ hidden: !isModalVisible }"
-  class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50"
->
-  <div
-    class="relative bg-white w-[669px] h-auto rounded-2xl p-12 gap-4 shadow-md"
-  >
+<div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{ hidden: !isModalVisible }"
+  class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+  <div class="relative bg-white w-[669px] h-auto rounded-2xl p-12 gap-4 shadow-md">
     <!-- Close Icon -->
-    <button
-      (click)="closeModal()"
-      class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200"
-    >
+    <button (click)="closeModal()"
+      class="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition duration-200">
       <i class="fa-solid fa-xmark text-2xl"></i>
     </button>
 
     <h1 class="font-semibold text-2xl leading-9">
       Add Child
     </h1>
-    <div
-      class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
+    <div class="mt-4 bg-[#F7F7F7] w-[573px] h-auto rounded-[24px] p-[16px_24px] gap-[20px]">
       <div class="flex flex-col mt-2 gap-2 items-start">
-          
-          <h6 class="font-medium text-base leading-6 mb-1 mt-3">National ID</h6>
-          <input type="text"
-          class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-          [(ngModel)]="NationalID"
-          (ngModelChange)="SelectChild(NationalID)"
-          placeholder="Enter Title " />
 
-          <h6 class="font-medium text-base leading-6 mb-1 mt-3">Student</h6>
-          <input type="text"
-          class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-          [(ngModel)]="Student.user_Name" 
-          [disabled]="true" 
-          />
-          
-        <button
-          class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
-          (click)="CreateOREdit()">
+        <h6 class="font-medium text-base leading-6 mb-1 mt-3">National ID</h6>
+        <input type="text" class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+          [(ngModel)]="NationalID" (ngModelChange)="SelectChild(NationalID)" placeholder="Enter Title " />
+
+        <h6 class="font-medium text-base leading-6 mb-1 mt-3">Student</h6>
+        <input type="text" class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
+          [(ngModel)]="Student.user_Name" [disabled]="true" />
+
+        <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="CreateOREdit()">
           Save
         </button>
       </div>

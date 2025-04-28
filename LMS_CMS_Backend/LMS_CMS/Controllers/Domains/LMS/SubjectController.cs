@@ -66,6 +66,42 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             return Ok(subjectsDTO);
         }
 
+        ////////////////////////////////////////////////////////////////////////////////
+        
+        [HttpGet("GetByGrade/{gradeId}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "Subject" }
+        )]
+        public async Task<IActionResult> GetByGrade(long gradeId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<Subject> subjects = await Unit_Of_Work.subject_Repository.Select_All_With_IncludesById<Subject>(
+                    f => f.IsDeleted != true && f.GradeID == gradeId,
+                    query => query.Include(emp => emp.Grade),
+                    query => query.Include(emp => emp.SubjectCategory)
+                    );
+
+            if (subjects == null || subjects.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<SubjectGetDTO> subjectsDTO = mapper.Map<List<SubjectGetDTO>>(subjects);
+
+            string serverUrl = $"{Request.Scheme}://{Request.Host}/";
+            foreach (var subject in subjectsDTO)
+            {
+                if (!string.IsNullOrEmpty(subject.IconLink))
+                {
+                    subject.IconLink = $"{serverUrl}{subject.IconLink.Replace("\\", "/")}"; 
+                }
+            }
+
+            return Ok(subjectsDTO);
+        }
+
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },

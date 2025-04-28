@@ -111,10 +111,7 @@ export class AdmissionTestComponent {
     });
 
     this.GetAllData();
-    this.GetAllSchools();
-    this.GetAllGrades();
-    this.GetAllYears();
-    this.GetAllSubjects();
+    this.GetAllSchools();  
 
     this.subscription = this.languageService.language$.subscribe(direction => {
       this.isRtl = direction === 'rtl';
@@ -127,18 +124,23 @@ export class AdmissionTestComponent {
   }
 
   onSchoolChange(selectedSchoolId: number) {
+    this.test.academicYearID = 0
+    this.test.gradeID = 0
+    this.test.subjectID = 0
     this.SchoolId = selectedSchoolId;
     if (this.SchoolId && this.SchoolId !== 0) {
-      this.AcadenicYears = this.AcadenicYears.filter(a => a.schoolID == selectedSchoolId)
+      this.GetYearsBySchoolId()
+      this.GetGradesBySchoolId()
     } else {
       this.AcadenicYears = [];
     }
   }
 
   onGradeChange(selectedGradeId: number) {
+    this.test.subjectID = 0
     this.test.gradeID = selectedGradeId;
     if (this.test.gradeID && this.test.gradeID !== 0) {
-      this.Subjects = this.Subjects.filter(s => s.gradeID == selectedGradeId)
+      this.GetSubjectsByGradeId()
     } else {
       this.Subjects = [];
     }
@@ -155,26 +157,30 @@ export class AdmissionTestComponent {
     })
   }
 
-  GetAllGrades() {
-    this.GradeServ.Get(this.DomainName).subscribe((d) => {
+  GetGradesBySchoolId() {
+    this.Grades = []
+    this.GradeServ.GetBySchoolId(this.SchoolId, this.DomainName).subscribe((d) => {
       this.Grades = d
     })
   }
 
-  GetAllSubjects() {
-    this.SubjectServ.Get(this.DomainName).subscribe((d) => {
+  GetSubjectsByGradeId() {
+    this.Subjects = []
+    this.SubjectServ.GetByGradeId(this.test.gradeID, this.DomainName).subscribe((d) => {
       this.Subjects = d
     })
   }
 
   GetAllSchools() {
+    this.Schools = []
     this.SchoolServ.Get(this.DomainName).subscribe((d) => {
       this.Schools = d
     })
   }
 
-  GetAllYears() {
-    this.AcadimicYearServ.Get(this.DomainName).subscribe((d) => {
+  GetYearsBySchoolId() {
+    this.AcadenicYears = []
+    this.AcadimicYearServ.GetBySchoolId(this.SchoolId, this.DomainName).subscribe((d) => {
       this.AcadenicYears = d
     })
   }
@@ -266,7 +272,14 @@ export class AdmissionTestComponent {
   }
 
   closeModal() {
-    this.isModalVisible = false;
+    this.isModalVisible = false; 
+    this.test = new Test();
+    this.Schools = [];
+    this.AcadenicYears = [];
+    this.Grades = [];
+    this.Subjects = [];
+    this.SchoolId = 0; 
+    this.validationErrors = {}
   }
 
   openModal() {
@@ -292,9 +305,11 @@ export class AdmissionTestComponent {
     }
     return isValid;
   }
+
   capitalizeField(field: keyof Test): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
+
   onInputValueChange(event: { field: keyof Test, value: any }) {
     const { field, value } = event;
     (this.test as any)[field] = value;

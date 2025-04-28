@@ -31,8 +31,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
-            //pages: new[] { "" }
+            allowedTypes: new[] { "octa", "employee" } ,
+            pages: new[] { "EvaluationTemplateGroup" }
         )]
         public IActionResult Get()
         {
@@ -73,8 +73,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("GetByTemplateID/{templateId}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
-            //pages: new[] { "" }
+            allowedTypes: new[] { "octa", "employee" } ,
+            pages: new[] { "EvaluationTemplateGroup" }
         )]
         public IActionResult GetByTemplateID(long templateId)
         {
@@ -115,8 +115,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-           allowedTypes: new[] { "octa", "employee" }
-           //pages: new[] { "" }
+           allowedTypes: new[] { "octa", "employee" } ,
+           pages: new[] { "EvaluationTemplateGroup" }
        )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -152,8 +152,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpPost]
         [Authorize_Endpoint_(
-          allowedTypes: new[] { "octa", "employee" }
-          //pages: new[] { "" }
+          allowedTypes: new[] { "octa", "employee" } ,
+          pages: new[] { "EvaluationTemplateGroup" }
       )]
         public async Task<IActionResult> Add(EvaluationTemplateGroupAddDTO newData)
         {
@@ -195,8 +195,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            allowEdit: 1
-            //pages: new[] { "" }
+            allowEdit: 1 ,
+        pages: new[] { "EvaluationTemplateGroup" }
         )]
         public async Task<IActionResult> EditAsync(EvaluationTemplateGroupEditDTO newData)
         {
@@ -229,14 +229,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return BadRequest("this Evaluation Template group not exist");
             }
 
-            //if (userTypeClaim == "employee")
-            //{
-            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, group);
-            //    if (accessCheck != null)
-            //    {
-            //        return accessCheck;
-            //    }
-            //}
+            if (userTypeClaim == "employee")
+            {
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "EvaluationTemplateGroup", roleId, userId, group);
+                if (accessCheck != null)
+                {
+                    return accessCheck;
+                }
+            }
 
             mapper.Map(newData, group);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -267,8 +267,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-          allowDelete: 1
-          //pages: new[] { "Grade" }
+          allowDelete: 1 ,
+          pages: new[] { "EvaluationTemplateGroup" }
       )]
         public IActionResult Delete(long id)
         {
@@ -292,14 +292,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
             EvaluationTemplateGroup group = Unit_Of_Work.evaluationTemplateGroup_Repository.Select_By_Id(id);
 
-            //if (userTypeClaim == "employee")
-            //{
-            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, group);
-            //    if (accessCheck != null)
-            //    {
-            //        return accessCheck;
-            //    }
-            //}
+            if (userTypeClaim == "employee")
+            {
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "EvaluationTemplateGroup", roleId, userId, group);
+                if (accessCheck != null)
+                {
+                    return accessCheck;
+                }
+            }
 
             if (group == null || group.IsDeleted == true)
             {

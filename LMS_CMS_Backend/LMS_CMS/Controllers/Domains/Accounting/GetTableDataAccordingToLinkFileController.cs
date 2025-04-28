@@ -243,7 +243,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Accounting
                 return BadRequest();
             }
         }
-        [HttpGet("GetTableDataAccordingToLinkFile/{linkFileId}/{subAccountId}")]
+        [HttpGet("GetTableDataAccordingToLinkFile/{linkFileId}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Accounting" }

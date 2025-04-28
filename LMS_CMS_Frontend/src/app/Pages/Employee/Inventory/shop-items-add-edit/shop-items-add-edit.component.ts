@@ -221,8 +221,8 @@ export class ShopItemsAddEditComponent {
             this.isLoading=false
           }, 
           err => { 
-            if(err.error == "BarCode Must Be unique"){
             this.isLoading=false
+            if(err.error == "BarCode Must Be unique"){
               Swal.fire({
                 title: "BarCode Must Be unique",
                 text: "Please change the BarCode",

@@ -18,7 +18,7 @@ namespace LMS_CMS_BL.DTO
         [ForeignKey("Employee")]
         public long EmployeeID { get; set; }
         public string Type { get; set; }
-        public long Size { get; set; }
+        public double Size { get; set; }
         public long LastModified { get; set; }
     }
 }

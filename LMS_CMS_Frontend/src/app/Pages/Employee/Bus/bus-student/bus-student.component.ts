@@ -3,7 +3,7 @@ import { Bus } from '../../../../Models/Bus/bus';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountService } from '../../../../Services/account.service';
 import { BusService } from '../../../../Services/Employee/Bus/bus.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { BusStudentService } from '../../../../Services/Employee/Bus/bus-student.service';
 import { BusStudent } from '../../../../Models/Bus/bus-student';
@@ -85,7 +85,7 @@ export class BusStudentComponent {
 
   constructor(public busService:BusService, public busStudentService:BusStudentService, public account:AccountService, public activeRoute:ActivatedRoute ,public EditDeleteServ:DeleteEditPermissionService,
     public menuService :MenuService,public ApiServ:ApiService, public schoolService:SchoolService, public busCategoryService:BusCategoryService, public sectionService:SectionService, 
-    public gradeService:GradeService, public classroomService:ClassroomService, public semesterService:SemesterService, public studentService:StudentService ,public AcademicServ:AcadimicYearService){}
+    public gradeService:GradeService, public classroomService:ClassroomService, public semesterService:SemesterService, public studentService:StudentService, public router:Router ,public AcademicServ:AcadimicYearService){}
 
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -453,5 +453,10 @@ export class BusStudentComponent {
     else{
       this.busStudentData=this.busStudentData.filter(t=>t.studentAcademicYear==selectedValue)
     }
+  }
+
+  
+  moveToBus() {
+    this.router.navigateByUrl("Employee/Bus Details")
   }
 }

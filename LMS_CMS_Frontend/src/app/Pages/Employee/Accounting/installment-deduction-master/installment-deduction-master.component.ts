@@ -144,8 +144,8 @@ export class InstallmentDeductionMasterComponent {
           if (typeof fieldValue === 'string') {
             return fieldValue.toLowerCase().includes(this.value.toLowerCase());
           }
-          if (typeof fieldValue === 'number') {
-            return fieldValue === numericValue;
+          if (typeof fieldValue === 'number') { 
+            return fieldValue.toString().includes(numericValue.toString())
           }
           return fieldValue == this.value;
         });

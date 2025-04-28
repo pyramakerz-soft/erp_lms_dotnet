@@ -225,8 +225,8 @@ export class SectionComponent {
   }
 
   Save() {
-    this.isLoading = false;
     if (this.isFormValid()) {
+      this.isLoading = true;
       if (this.editSection == false) {
         this.sectionService.Add(this.section, this.DomainName).subscribe(
           (result: any) => {

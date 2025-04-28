@@ -19,6 +19,10 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using MimeKit;
 
 namespace LMS_CMS_PL.Controllers.Octa
 {
@@ -270,11 +274,46 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             Unit_Of_Work.SaveChanges();
 
+            string domainLink = null;
+
+            // to make a new route in sever 
+            using (HttpClient client = new HttpClient())
+            {
+                var requestBody = new
+                {
+                    subdomain = domain.Name
+                };
+
+                var json = JsonSerializer.Serialize(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("https://8b1r2kegpb.execute-api.us-east-1.amazonaws.com/CreateSubDomain", content);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Parse JSON and extract domain link
+                var outerJson = JsonDocument.Parse(responseContent);
+                if (outerJson.RootElement.TryGetProperty("body", out JsonElement bodyElement))
+                {
+                    var innerJson = JsonDocument.Parse(bodyElement.GetString());
+                    if (innerJson.RootElement.TryGetProperty("message", out JsonElement messageElement))
+                    {
+                        string message = messageElement.GetString();
+                        var match = Regex.Match(message, @"Subdomain (\S+) created successfully\.");
+                        if (match.Success)
+                        {
+                            domainLink = match.Groups[1].Value; 
+                        }
+                    }
+                }
+            }
+
             return Ok(new
             {
                 message = "Domain and database setup successfully.",
                 userName = domain.Name,
                 password = Pass,
+                link = domainLink,
                 notFoundPages = notFoundPages.Any() ? notFoundPages : null,
                 notModulePages = notModulePages.Any() ? notModulePages : null
             });

@@ -169,33 +169,41 @@ export class InvoiceReportMasterDetailedComponent implements OnInit {
     });
   }
 
-  private prepareExportData(): void {
-    this.transactionsForExport = this.transactions.map(t => ({
-      header: `Invoice #${t.invoiceNumber}`,
-      summary: [
-        { key: 'Date', value: new Date(t.date).toLocaleDateString() },
-        { key: 'Store', value: t.storeName },
-        { key: 'Transaction Type', value: t.flagEnName },
-        { key: 'Total Amount', value: t.total },
-        { key: 'Notes', value: t.notes || 'N/A' }
-      ],
-      table: {
-        headers: ['ID', 'Item ID', 'Quantity', 'Price', 'Total Price', 'Notes'],
-        data: t.inventoryDetails.map(d => ({
-          'ID': d.id,
-          'Item ID': d.shopItemID,
-          'Quantity': d.quantity,
-          'Price': d.price,
-          'Total Price': d.totalPrice,
-          'Notes': d.notes || 'N/A'
-        }))
-      }
-    }));
-  }
+// Update the prepareExportData method
+private prepareExportData(): void {
+  this.transactionsForExport = this.transactions.map(t => ({
+    header: `Invoice #${t.invoiceNumber}`,
+    summary: [
+      { key: 'Date', value: new Date(t.date).toLocaleDateString() },
+      { key: 'Store', value: t.storeName },
+      { key: 'Transaction Type', value: t.flagEnName },
+      { key: 'Total Amount', value: t.total },
+      { key: 'Notes', value: t.notes || 'N/A' }
+    ],
+    table: {
+      headers: ['ID', 'Item ID', 'Name', 'Quantity', 'Price', 'Total Price', 'Notes'],
+      data: t.inventoryDetails.map(d => ({
+        'ID': d.id,
+        'Item ID': d.shopItemID,
+        'Name': d.name || d.shopItemName || 'N/A',
+        'Quantity': d.quantity,
+        'Price': d.price,
+        'Total Price': d.totalPrice,
+        'Notes': d.notes || 'N/A'
+      }))
+    }
+  }));
+}
 
-  getTableDataWithHeader(): any[] {
-    return this.transactionsForExport;
-  }
+// Update getTableDataWithHeader to return properly structured data
+getTableDataWithHeader(): any[] {
+  return this.transactionsForExport.map(item => ({
+    header: item.header,
+    data: item.summary,
+    tableHeaders: item.table.headers,
+    tableData: item.table.data
+  }));
+}
 
   getInfoRows(): any[] {
     return [

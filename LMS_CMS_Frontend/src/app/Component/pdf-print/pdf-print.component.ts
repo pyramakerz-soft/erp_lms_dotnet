@@ -3,6 +3,15 @@ import { OnChanges, Component, ElementRef, Input, SimpleChanges, ViewChild } fro
 import { FormsModule } from '@angular/forms';
 import html2pdf from 'html2pdf.js';
 
+
+// Add this interface at the top of the file
+interface TableSection {
+  header: string;
+  data: { key: string; value: any }[];
+  tableHeaders: string[];
+  tableData: any[];
+}
+
 @Component({
   selector: 'app-pdf-print',
   standalone: true,
@@ -15,7 +24,7 @@ export class PdfPrintComponent {
   @Input() school: any;
   @Input() tableHeaders: string[] | null = null;
   @Input() tableData: any[] | null = null;
-  @Input() tableDataWithHeader: any[] | null = null;
+  @Input() tableDataWithHeader: TableSection[] | null = null;
   @Input() fileName: string = 'report';
   @Input() Title: string = '';
   @Input() infoRows: {

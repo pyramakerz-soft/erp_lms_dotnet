@@ -6,6 +6,7 @@ namespace LMS_CMS_DAL.Models.Domains.Zatca
     public class SchoolPCs : AuditableEntity
     {
         public long ID { get; set; }
+        public string PCName { get; set; }
         public string SerialNumber { get; set; }
 
         [ForeignKey("School")]

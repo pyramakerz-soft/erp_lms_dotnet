@@ -144,7 +144,7 @@
         </div>
         <div class="flex flex-col mb-4 w-[49%]">
             <label class="mb-2 primaryTxt" for="afterCount">After Count</label>
-            <input id="afterCount" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+            <input id="afterCount" type="number" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                 placeholder="Enter After Count" [(ngModel)]="template.afterCount"
                 (ngModelChange)="onInputValueChange({ field: 'afterCount', value: $event })"/>
             <span *ngIf="validationErrors['afterCount']" class="text-red-500 ml-3 font-normal">{{validationErrors['afterCount'] }}</span>

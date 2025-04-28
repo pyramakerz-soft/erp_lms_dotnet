@@ -27,6 +27,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public decimal Total { get; set; }
         public decimal? TotalWithVat { get; set; }
         public decimal? VatAmount { get; set; }
+        public decimal? VatPercent { get; set; }
         public string? InvoiceHash { get; set; }
         public string? QRCode { get; set; }
         public string? XmlInvoiceFile { get; set; }

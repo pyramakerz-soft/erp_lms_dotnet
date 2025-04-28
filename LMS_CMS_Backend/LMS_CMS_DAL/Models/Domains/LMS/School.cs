@@ -26,6 +26,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? ReportHeaderTwoAr { get; set; }
         public string? ReportImage { get; set; }
         public string? VatNumber { get; set; }
+        public string? CRN { get; set; } //Commercial Registration Number
         public int? MaximumPeriodCountTimeTable { get; set; }
         public int? MaximumPeriodCountRemedials { get; set; } 
 

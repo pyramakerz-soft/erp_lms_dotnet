@@ -82,10 +82,10 @@
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <div class="flex space-x-4">
-                                <button (click)="Delete(row.id)">
+                                <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)" (click)="Delete(row.id)">
                                     <i class="fa-regular fa-trash-can"></i>
                                 </button>
-                                <button (click)="Edit(row)">
+                                <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="Edit(row)">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                             </div>
@@ -130,8 +130,8 @@
                 <input id="mark" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
                     placeholder="Enter Arabic Title" [(ngModel)]="question.mark"
                     (ngModelChange)="onInputValueChange({ field: 'mark', value: $event })" />
-                <span *ngIf="validationErrors['mark']"
-                    class="text-red-500 ml-3 font-normal">{{validationErrors['mark'] }}</span>
+                <span *ngIf="validationErrors['mark']" class="text-red-500 ml-3 font-normal">{{validationErrors['mark']
+                    }}</span>
             </div>
         </div>
         <div class="flex justify-end">

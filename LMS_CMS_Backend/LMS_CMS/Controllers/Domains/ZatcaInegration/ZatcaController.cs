@@ -43,9 +43,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 Directory.CreateDirectory(invoices);
             }
 
-            CsrResult csr = _csrGenerator.GenerateCsr(csrGeneration, EnvironmentType.Production, true);
-            csr.SavePrivateKeyToFile(privateKeyPath);
-            csr.SaveCsrToFile(csrPath);
+            InvoicingServices.GenerateCSRandPrivateKey(csrGeneration, privateKeyPath, csrPath);
 
             await InvoicingServices.GeneratePublicKey(publicKeyPath, privateKeyPath);
 
@@ -110,50 +108,50 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         }
         #endregion
 
-        #region Invoice Signing 
-        [HttpPost("InvoiceSigning")]
-        //[Authorize_Endpoint_(
-        //    allowedTypes: new[] { "octa", "employee" },
-        //    pages: new[] { "" }
-        //)]
-        public async Task<IActionResult> InvoiceSigning()
-        {
-            //string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
-            string xml = Path.Combine(invoices, "INV001.xml");
+        //#region Invoice Signing 
+        //[HttpPost("InvoiceSigning")]
+        ////[Authorize_Endpoint_(
+        ////    allowedTypes: new[] { "octa", "employee" },
+        ////    pages: new[] { "" }
+        ////)]
+        //public async Task<IActionResult> InvoiceSigning()
+        //{
+        //    //string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
+        //    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
+        //    string xml = Path.Combine(invoices, "INV001.xml");
 
-            string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-            string cerPath = Path.Combine(csr, "PCSID.json");
-            string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
+        //    string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
+        //    string cerPath = Path.Combine(csr, "PCSID.json");
+        //    string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
 
-            XmlDocument doc = new XmlDocument();
-            doc.PreserveWhitespace = true;
-            doc.Load(xml);
+        //    XmlDocument doc = new XmlDocument();
+        //    doc.PreserveWhitespace = true;
+        //    doc.Load(xml);
 
-            if (!System.IO.File.Exists(xml))
-                throw new FileNotFoundException();
+        //    if (!System.IO.File.Exists(xml))
+        //        throw new FileNotFoundException();
 
-            XmlNamespaceManager nsMgr = new XmlNamespaceManager(doc.NameTable);
-            nsMgr.AddNamespace("cbc", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
+        //    XmlNamespaceManager nsMgr = new XmlNamespaceManager(doc.NameTable);
+        //    nsMgr.AddNamespace("cbc", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
 
-            string jsonContent = System.IO.File.ReadAllText(cerPath);
-            dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
-            string base64Cert = jsonObject.binarySecurityToken;
+        //    string jsonContent = System.IO.File.ReadAllText(cerPath);
+        //    dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
+        //    string base64Cert = jsonObject.binarySecurityToken;
 
-            byte[] certBytes = Convert.FromBase64String(base64Cert);
-            string certDecoded = Encoding.UTF8.GetString(certBytes);
+        //    byte[] certBytes = Convert.FromBase64String(base64Cert);
+        //    string certDecoded = Encoding.UTF8.GetString(certBytes);
 
-            SignResult result = InvoicingServices.InvoiceSigning(xml, cerPath, privateKeyPath);
+        //    SignResult result = InvoicingServices.InvoiceSigning(xml, cerPath, privateKeyPath);
 
-            string invoiceHash = result.Steps.FirstOrDefault(x => x.StepName == "Generate EInvoice Hash").ResultedValue;
+        //    string invoiceHash = result.Steps.FirstOrDefault(x => x.StepName == "Generate EInvoice Hash").ResultedValue;
 
-            string uuid = "afdce130-3dc5-44fb-b494-0c4a9e22343a";
-            string invoiceEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(doc.InnerXml));
+        //    string uuid = "afdce130-3dc5-44fb-b494-0c4a9e22343a";
+        //    string invoiceEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(doc.InnerXml));
 
-            string reporting = await InvoicingServices.InvoiceReporting(invoiceHash, uuid, invoiceEncoded);
+        //    string reporting = await InvoicingServices.InvoiceReporting(invoiceHash, uuid, invoiceEncoded);
 
-            return Ok(reporting);
-        }
-        #endregion
+        //    return Ok(reporting);
+        //}
+        //#endregion
     }
 }

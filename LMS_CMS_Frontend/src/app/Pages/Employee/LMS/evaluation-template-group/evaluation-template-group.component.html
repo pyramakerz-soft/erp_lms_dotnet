@@ -1,6 +1,6 @@
 <div class="flex justify-between items-center">
     <div class="flex justify-between items-center space-x-5">
-        <i class="fa-solid fa-chevron-left"  (click)="moveToTemplate()"></i>
+        <i class="fa-solid fa-chevron-left" (click)="moveToTemplate()"></i>
         <h1 class="primaryTxt font-semibold text-2xl leading-9">Template</h1>
     </div>
 </div>
@@ -83,11 +83,11 @@
                         </td>
                         <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
                             <div class="flex space-x-4">
-                                <button 
+                                <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
                                     (click)="Delete(row.id)">
                                     <i class="fa-regular fa-trash-can"></i>
                                 </button>
-                                <button  (click)="Edit(row)">
+                                <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="Edit(row)">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                                 <button>

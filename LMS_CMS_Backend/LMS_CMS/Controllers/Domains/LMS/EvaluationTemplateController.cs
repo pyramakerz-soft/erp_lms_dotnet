@@ -34,8 +34,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" }
-            //pages: new[] { "" }
+            allowedTypes: new[] { "octa", "employee" } ,
+            pages: new[] { "Template" }
         )]
         public IActionResult Get()
         {
@@ -69,8 +69,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-           allowedTypes: new[] { "octa", "employee" }
-           //pages: new[] { "" }
+           allowedTypes: new[] { "octa", "employee" } ,
+           pages: new[] { "Template" }
        )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -106,8 +106,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpPost]
         [Authorize_Endpoint_(
-          allowedTypes: new[] { "octa", "employee" }
-          //pages: new[] { "" }
+          allowedTypes: new[] { "octa", "employee" } ,
+          pages: new[] { "Template" }
       )]
         public async Task<IActionResult> Add(EvaluationTemplateAddDTO newData)
         {
@@ -149,8 +149,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            allowEdit: 1
-            //pages: new[] { "" }
+            allowEdit: 1 ,
+            pages: new[] { "Template" }
         )]
         public async Task<IActionResult> EditAsync(EvaluationTemplateEditDTO newData)
         {
@@ -183,14 +183,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return BadRequest("this Evaluation Template not exist");
             }
 
-            //if (userTypeClaim == "employee")
-            //{
-            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, template);
-            //    if (accessCheck != null)
-            //    {
-            //        return accessCheck;
-            //    }
-            //}
+            if (userTypeClaim == "employee")
+            {
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Template", roleId, userId, template);
+                if (accessCheck != null)
+                {
+                    return accessCheck;
+                }
+            }
 
             mapper.Map(newData, template);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -221,8 +221,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-          allowDelete: 1
-          //pages: new[] { "Grade" }
+          allowDelete: 1 ,
+          pages: new[] { "Template" }
       )]
         public IActionResult Delete(long id)
         {
@@ -246,14 +246,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
             EvaluationTemplate template = Unit_Of_Work.evaluationTemplate_Repository.Select_By_Id(id);
 
-            //if (userTypeClaim == "employee")
-            //{
-            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, template);
-            //    if (accessCheck != null)
-            //    {
-            //        return accessCheck;
-            //    }
-            //}
+            if (userTypeClaim == "employee")
+            {
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Template", roleId, userId, template);
+                if (accessCheck != null)
+                {
+                    return accessCheck;
+                }
+            }
 
             if (template == null || template.IsDeleted == true)
             {

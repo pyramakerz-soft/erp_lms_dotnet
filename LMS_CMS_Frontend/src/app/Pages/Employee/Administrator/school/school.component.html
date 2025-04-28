@@ -112,6 +112,40 @@
                 [(ngModel)]="school.vatNumber" 
                 (ngModelChange)="onInputValueChange({ field: 'vatNumber', value: $event })"/>
             </div>
+
+
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="streetName">{{ 'Street Name' | translate }}</label>
+                <input id="streetName" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="{{ 'Enter' | translate }} {{ 'StreetName' | translate }}"
+                [(ngModel)]="school.streetName" 
+                (ngModelChange)="onInputValueChange({ field: 'streetName', value: $event })"/>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="buildingNumber">{{ 'Building Number' | translate }}</label>
+                <input id="buildingNumber" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="{{ 'Enter' | translate }} {{ 'BuildingNumber' | translate }}"
+                [(ngModel)]="school.buildingNumber" 
+                (ngModelChange)="onInputValueChange({ field: 'buildingNumber', value: $event })"/>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="citySubdivision">{{ 'City Subdivision' | translate }}</label>
+                <input id="citySubdivision" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="{{ 'Enter' | translate }} {{ 'CitySubdivision' | translate }}"
+                [(ngModel)]="school.citySubdivision" 
+                (ngModelChange)="onInputValueChange({ field: 'citySubdivision', value: $event })"/>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="city">{{ 'City' | translate }}</label>
+                <input id="city" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="{{ 'Enter' | translate }} {{ 'City' | translate }}"
+                [(ngModel)]="school.city" 
+                (ngModelChange)="onInputValueChange({ field: 'city', value: $event })"/>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="PostalZone">{{ 'PostalZone' | translate }}</label>
+                <input id="PostalZone" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="{{ 'Enter' | translate }} {{ 'PostalZone' | translate }}"
+                [(ngModel)]="school.postalZone" 
+                (ngModelChange)="onInputValueChange({ field: 'postalZone', value: $event })"/>
+            </div>
+
+
             <div class="w-full mb-4">
                 <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed border-2">
                     <div class="flex justify-center w-full">

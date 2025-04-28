@@ -18,6 +18,11 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [StringLength(100, ErrorMessage = "School cannot be longer than 100 characters.")]
         public string Name { get; set; }
         public string?  Address { get; set; }
+        public string? StreetName { get; set; }
+        public string? BuildingNumber { get; set; }
+        public string? CitySubdivision { get; set; }
+        public string? City { get; set; }
+        public string? PostalZone { get; set; }
         [ForeignKey("SchoolType")]
         public long SchoolTypeID { get; set; }
         public string? ReportHeaderOneEn { get; set; }
@@ -26,6 +31,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? ReportHeaderTwoAr { get; set; }
         public string? ReportImage { get; set; }
         public string? VatNumber { get; set; }
+        public string? CRN { get; set; } //Commercial Registration Number
         public int? MaximumPeriodCountTimeTable { get; set; }
         public int? MaximumPeriodCountRemedials { get; set; } 
 

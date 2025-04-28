@@ -4,16 +4,19 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LMS_CMS_DAL.Migrations.Domains
+namespace LMS_CMS_DAL.Migrations.LMS_CMS_
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250428074801_updateMasterandSchool")]
+    partial class updateMasterandSchool
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3813,9 +3816,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("SaveID")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("SchoolId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
@@ -3869,8 +3869,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("SaveID");
-
-                    b.HasIndex("SchoolId");
 
                     b.HasIndex("StoreID");
 
@@ -5291,16 +5289,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BuildingNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CRN")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CitySubdivision")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -5335,9 +5324,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("PostalZone")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ReportHeaderOneAr")
                         .HasColumnType("nvarchar(max)");
 
@@ -5355,9 +5341,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<long>("SchoolTypeID")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("StreetName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -9232,10 +9215,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("SaveID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.School", "School")
-                        .WithMany()
-                        .HasForeignKey("SchoolId");
-
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.Store", "Store")
                         .WithMany("InventoryMasters")
                         .HasForeignKey("StoreID")
@@ -9270,8 +9249,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("InventoryFlags");
 
                     b.Navigation("Save");
-
-                    b.Navigation("School");
 
                     b.Navigation("Store");
 

@@ -34,8 +34,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "" }
+            allowedTypes: new[] { "octa", "employee" }
+            //pages: new[] { "" }
         )]
         public IActionResult Get()
         {
@@ -67,16 +67,16 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         ///////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize_Endpoint_(
-           allowedTypes: new[] { "octa", "employee" },
-           pages: new[] { "" }
+           allowedTypes: new[] { "octa", "employee" }
+           //pages: new[] { "" }
        )]
         public async Task<IActionResult> GetById(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<LMS_CMS_DAL.Models.Domains.LMS.EvaluationTemplate> templates;
+            LMS_CMS_DAL.Models.Domains.LMS.EvaluationTemplate templates;
 
             var userClaims = HttpContext.User.Claims;
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
@@ -88,16 +88,16 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return Unauthorized("User ID or Type claim not found.");
             }
 
-            templates = await Unit_Of_Work.evaluationTemplate_Repository.Select_All_With_IncludesById<LMS_CMS_DAL.Models.Domains.LMS.EvaluationTemplate>(
+            templates = await Unit_Of_Work.evaluationTemplate_Repository.FindByIncludesAsync(
                     sem => sem.IsDeleted != true && sem.ID == id,
-                    query => query.Include(emp => emp.EvaluationTemplateGroups));
+                    query => query.Include(emp => emp.EvaluationTemplateGroups.Where(s=>s.IsDeleted!=true)));
 
-            if (templates == null || templates.Count == 0)
+            if (templates == null )
             {
                 return NotFound();
             }
 
-            List<EvaluationTemplateGetDTO> Dto = mapper.Map<List<EvaluationTemplateGetDTO>>(templates);
+            EvaluationTemplateGetDTO Dto = mapper.Map<EvaluationTemplateGetDTO>(templates);
 
             return Ok(Dto);
         }
@@ -106,8 +106,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpPost]
         [Authorize_Endpoint_(
-          allowedTypes: new[] { "octa", "employee" },
-          pages: new[] { "" }
+          allowedTypes: new[] { "octa", "employee" }
+          //pages: new[] { "" }
       )]
         public async Task<IActionResult> Add(EvaluationTemplateAddDTO newData)
         {
@@ -149,8 +149,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            allowEdit: 1,
-            pages: new[] { "" }
+            allowEdit: 1
+            //pages: new[] { "" }
         )]
         public async Task<IActionResult> EditAsync(EvaluationTemplateEditDTO newData)
         {
@@ -183,14 +183,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return BadRequest("this Evaluation Template not exist");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, template);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "", roleId, userId, template);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             mapper.Map(newData, template);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -221,8 +221,8 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
           allowedTypes: new[] { "octa", "employee" },
-          allowDelete: 1,
-          pages: new[] { "Grade" }
+          allowDelete: 1
+          //pages: new[] { "Grade" }
       )]
         public IActionResult Delete(long id)
         {
@@ -246,14 +246,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
             EvaluationTemplate template = Unit_Of_Work.evaluationTemplate_Repository.Select_By_Id(id);
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, template);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "", roleId, userId, template);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             if (template == null || template.IsDeleted == true)
             {

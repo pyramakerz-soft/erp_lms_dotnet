@@ -264,6 +264,11 @@ export class AccountingEntriesDetailsComponent {
           (data) => {
             let id = JSON.parse(data).id
             this.router.navigateByUrl(`Employee/Accounting Entries Details/${id}`)
+            Swal.fire({
+              title: 'Saved Successfully',
+              icon: 'success', 
+              confirmButtonColor: '#FF7519',  
+            })
           }
         )
       } else if(this.isEdit){

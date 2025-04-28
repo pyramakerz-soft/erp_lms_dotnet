@@ -57,7 +57,7 @@
                             <button (click)="view(row.id)">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
-                            <button (click)="Delete(row.id)" *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)">
+                            <button (click)="Delete(row.id)" *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId) && row.id != 1 && row.id != 2 && row.id != 3">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
                             <button (click)="Edit(row)" *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)">

@@ -14,5 +14,8 @@ namespace LMS_CMS_BL.DTO.LMS
         public string EnglishTitle { get; set; }
         public string ArabicTitle { get; set; }
         public long EvaluationTemplateID { get; set; }
+        public List<EvaluationTemplateGroupQuestionGetDTO> EvaluationTemplateGroupQuestions { get; set; }
+        public long? InsertedByUserId { get; set; }
+
     }
 }

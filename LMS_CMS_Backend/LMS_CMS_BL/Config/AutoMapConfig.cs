@@ -766,10 +766,51 @@ namespace LMS_CMS_BL.Config
             CreateMap<EvaluationTemplateEditDTO, EvaluationTemplate>();
 
             CreateMap<EvaluationTemplateGroup, EvaluationTemplateGroupDTO>();
+            CreateMap<EvaluationTemplateGroupAddDTO, EvaluationTemplateGroup>();
+            CreateMap<EvaluationTemplateGroupEditDTO, EvaluationTemplateGroup>();
+
+            CreateMap<EvaluationTemplateGroupQuestion, EvaluationTemplateGroupQuestionGetDTO>();
+            CreateMap<EvaluationTemplateGroupQuestionEditDTO, EvaluationTemplateGroupQuestion>();
+            CreateMap<EvaluationTemplateGroupQuestionAddDTO, EvaluationTemplateGroupQuestion>();
+
+
+            CreateMap<EvaluationBookCorrection, EvaluationBookCorrectionGetDTO>();
+            CreateMap<EvaluationBookCorrectionAddDTO, EvaluationBookCorrection>();
+            CreateMap<EvaluationBookCorrectionEditDTO, EvaluationBookCorrection>();
+
             CreateMap<EvaluationEmployeeStudentBookCorrectionAddDTO, EvaluationEmployeeStudentBookCorrection>();
             CreateMap<EvaluationEmployeeQuestionAddDTO, EvaluationEmployeeQuestion>();
             CreateMap<EvaluationEmployeeAddDTO, EvaluationEmployee>();
 
+            CreateMap<EvaluationEmployee, EvaluationEmployeeGetDTO>()
+                 .ForMember(dest => dest.EvaluatorArabicName, opt => opt.MapFrom(src => src.Evaluator.ar_name))
+                 .ForMember(dest => dest.EvaluatorEnglishName, opt => opt.MapFrom(src => src.Evaluator.en_name))
+                 .ForMember(dest => dest.EvaluatedArabicName, opt => opt.MapFrom(src => src.Evaluated.ar_name))
+                 .ForMember(dest => dest.EvaluatedEnglishName, opt => opt.MapFrom(src => src.Evaluated.en_name))
+                 .ForMember(dest => dest.ClassroomName, opt => opt.MapFrom(src => src.Classroom.Name))
+                 .ForMember(dest => dest.EvaluationTemplateArabicTitle, opt => opt.MapFrom(src => src.EvaluationTemplate.ArabicTitle))
+                 .ForMember(dest => dest.EvaluationTemplateEnglishTitle, opt => opt.MapFrom(src => src.EvaluationTemplate.EnglishTitle));
+            
+            CreateMap<EvaluationEmployee, EvaluationEmployeeWithQuestionsGetDTO>()
+                 .ForMember(dest => dest.EvaluatorArabicName, opt => opt.MapFrom(src => src.Evaluator.ar_name))
+                 .ForMember(dest => dest.EvaluatorEnglishName, opt => opt.MapFrom(src => src.Evaluator.en_name))
+                 .ForMember(dest => dest.EvaluatedArabicName, opt => opt.MapFrom(src => src.Evaluated.ar_name))
+                 .ForMember(dest => dest.EvaluatedEnglishName, opt => opt.MapFrom(src => src.Evaluated.en_name))
+                 .ForMember(dest => dest.ClassroomName, opt => opt.MapFrom(src => src.Classroom.Name))
+                 .ForMember(dest => dest.EvaluationTemplateArabicTitle, opt => opt.MapFrom(src => src.EvaluationTemplate.ArabicTitle))
+                 .ForMember(dest => dest.EvaluationTemplateEnglishTitle, opt => opt.MapFrom(src => src.EvaluationTemplate.EnglishTitle));
+
+            CreateMap<EvaluationEmployeeStudentBookCorrection, EvaluationEmployeeStudentBookCorrectionsGetDTO>()
+                 .ForMember(dest => dest.StudentArabicName, opt => opt.MapFrom(src => src.Student.ar_name))
+                 .ForMember(dest => dest.StudentEnglishName, opt => opt.MapFrom(src => src.Student.en_name))
+                 .ForMember(dest => dest.EvaluationBookCorrectionEnglishName, opt => opt.MapFrom(src => src.EvaluationBookCorrection.EnglishName))
+                 .ForMember(dest => dest.EvaluationBookCorrectionArabicName, opt => opt.MapFrom(src => src.EvaluationBookCorrection.ArabicName));
+
+            CreateMap<EvaluationEmployeeQuestion, EvaluationEmployeeQuestionGetDTO>()
+                 .ForMember(dest => dest.QuestionArabicTitle, opt => opt.MapFrom(src => src.EvaluationTemplateGroupQuestion.ArabicTitle))
+                 .ForMember(dest => dest.QuestionEnglishTitle, opt => opt.MapFrom(src => src.EvaluationTemplateGroupQuestion.EnglishTitle));
+
+            CreateMap<EvaluationTemplateGroup, EvaluationEmployeeQuestionGroupGetDTO>();
         }
     } 
 }

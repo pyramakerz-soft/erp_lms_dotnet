@@ -1,0 +1,20 @@
+.square-radio {
+    -webkit-appearance: none;  /* Remove default styling in Webkit browsers */
+    -moz-appearance: none;     /* Remove default styling in Firefox */
+    appearance: none;          /* Remove default styling in all browsers */
+    width: 18px;               
+    height: 18px;         
+    border-radius: 100%;
+    border: 2px solid #FF7519;  
+    background-color: #ffffff00;    
+    position: relative;
+}
+
+.square-radio:checked::before {
+    content: '';     
+    position: absolute; 
+    width: 18px;
+    height: 18px;
+    border-radius: 100%;
+    background-color: #FF7519;  
+}

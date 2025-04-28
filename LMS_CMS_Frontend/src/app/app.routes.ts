@@ -132,6 +132,11 @@ import { InvoiceReportComponent } from './Pages/Employee/Inventory/Report/Invent
 import { TemplateComponent } from './Pages/Employee/LMS/template/template.component';
 import { InventoryTransactionReportComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master/invoice-report-master.component';
 import { InvoiceReportMasterDetailedComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master-detailed/invoice-report-master-detailed.component';
+import { EvaluationComponent } from './Pages/Employee/LMS/evaluation/evaluation.component';
+import { EvaluationTemplateGroupComponent } from './Pages/Employee/LMS/evaluation-template-group/evaluation-template-group.component';
+import { EvaluationTemplateGroupQuestionComponent } from './Pages/Employee/LMS/evaluation-template-group-question/evaluation-template-group-question.component';
+import { EvaluationFeedbackComponent } from './Pages/Employee/LMS/evaluation-feedback/evaluation-feedback.component';
+import { EvaluationEmployeeAnswerComponent } from './Pages/Employee/LMS/evaluation-employee-answer/evaluation-employee-answer.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -254,7 +259,7 @@ export const routes: Routes = [
             { path: "Purchase Returns", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 10 } },
             { path: "Purchase Returns Item/:FlagId", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Purchase Returns Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
-            { path: "Purchases", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 9 } },
+            { path: "Purchases ", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 9 } },
             { path: "Purchases Item/:FlagId", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Purchases Item/Edit/:FlagId/:id", component: InventoryDetailsComponent, title: "Purchases Item" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Opening Balances", component: InventoryMasterComponent, title: "Sales", canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard], data: { id: 1 } },
@@ -311,8 +316,15 @@ export const routes: Routes = [
         
             { path: 'Inventory-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Inventory Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
             { path: 'Sales-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Sales Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
-            { path: 'Purchase-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Purchase Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard],data: { reportType: 'purchase' }}
+            { path: 'Purchase-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Purchase Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard],data: { reportType: 'purchase' }},
         
+            { path: "Evaluation", component: EvaluationComponent, title: "Evaluation", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationTemplateGroup/:id", component: EvaluationTemplateGroupComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationTemplateGroupQuestion/:id", component: EvaluationTemplateGroupQuestionComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrectionForEvaluated", component: EvaluationFeedbackComponent, title: "EvaluationBookCorrectionForEvaluated", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrectionForEvaluator", component: EvaluationFeedbackComponent, title: "EvaluationBookCorrectionForEvaluator", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrectionForEvaluated/:id", component: EvaluationEmployeeAnswerComponent, title: "EvaluationBookCorrectionForEvaluated", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationBookCorrectionForEvaluator/:id", component: EvaluationEmployeeAnswerComponent, title: "EvaluationBookCorrectionForEvaluator", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
 },
     { 

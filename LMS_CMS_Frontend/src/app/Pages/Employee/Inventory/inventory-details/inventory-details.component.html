@@ -274,7 +274,7 @@
         >
           <img src="Images/FileAttached.png" class="w-1/4" />
           <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
-            <span class="secondaryTxt">Click to Upload </span>or drag and drop
+            <span class="secondaryTxt">Click to Upload </span> 
             Icons
           </p>
           <p class="font-normal text-xs md:text-sm text-[#8E8E93]">
@@ -573,16 +573,15 @@
               class="w-full border border-gray-300 px-2 py-1 rounded-md"
             />
           </td>
-          <!-- <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                        {{ row.price }}
-                    </td> -->
-          <td  class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+          <td *ngIf="!IsPriceEditable && mode === 'Create'" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            {{ row.price }}
+          </td>
+          <td *ngIf="IsPriceEditable && mode === 'Edit'" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
             <input
               [(ngModel)]="row.price"
               (ngModelChange)="EditPrice(row)"
               type="number"
-              class="w-full border border-gray-300 px-2 py-1 rounded-md"
-            />
+              class="w-full border border-gray-300 px-2 py-1 rounded-md"/>
           </td>
           <!-- <td
             class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0"

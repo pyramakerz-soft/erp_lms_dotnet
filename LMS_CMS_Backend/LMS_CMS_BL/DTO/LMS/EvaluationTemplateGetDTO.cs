@@ -16,6 +16,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public int Weight { get; set; }
         public int AfterCount { get; set; }
         public ICollection<EvaluationTemplateGroupDTO> EvaluationTemplateGroups { get; set; } = new HashSet<EvaluationTemplateGroupDTO>();
+        public long? InsertedByUserId { get; set; }
 
     }
 }

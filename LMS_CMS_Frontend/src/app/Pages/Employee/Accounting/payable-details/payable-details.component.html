@@ -13,13 +13,17 @@
             <div class="flex justify-between">
                 <div class="flex flex-col w-[30%]">
                     <label class="mb-2 primaryTxt font-medium" for="payableDocTypesID">Doc Type</label>
-                    <select (ngModelChange)="onInputValueChange({ field: 'payableDocTypeID', value: $event })"
+                    <select *ngIf="!isView" (ngModelChange)="onInputValueChange({ field: 'payableDocTypeID', value: $event })"
                     [disabled]="isView"
                     class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto text-lg" id="payableDocTypesID" [(ngModel)]="payable.payableDocTypeID">
                         <option [value]="0" disabled selected hidden>Choose Doc Type</option>
                         <option *ngFor="let dataType of dataTypesData" [value]="dataType.id">{{ dataType.name }}</option>
                         <option *ngIf="dataTypesData.length === 0" disabled selected>No Data Found</option>
                     </select>
+                    <div *ngIf="isView"  
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto text-lg">
+                        {{payable.payableDocTypesName}}
+                    </div>
                     <span *ngIf="validationErrors['payableDocTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['payableDocTypeID'] }}</span>
                 </div>
                 <div class="flex flex-col w-[30%]">

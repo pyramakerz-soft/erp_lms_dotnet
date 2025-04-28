@@ -217,7 +217,7 @@ export class ShopItemsAddEditComponent {
               title: "Added Successfully!",
               icon: "success"
             });
-            this.router.navigateByUrl(`Employee/Shop`)
+            this.router.navigateByUrl(`Employee/Items`)
             this.isLoading=false
           }, 
           err => { 

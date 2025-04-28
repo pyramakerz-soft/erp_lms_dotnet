@@ -7,10 +7,12 @@ using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
+using LMS_CMS_PL.Services.Invoice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Diagnostics.Metrics;
 using System.Xml;
 using System.Xml.Linq;
@@ -364,7 +366,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             }
             if (newData.StudentID != 0 && newData.StudentID != null)
             {
-                Master.Vat = vat;
+                //Master.Vat = vat;
             }
 
             Unit_Of_Work.inventoryMaster_Repository.Add(Master);
@@ -406,6 +408,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
+            bool result = await InvoicingServices.GenerateXML(Master);
+
+            //if (result)
+            //    string reporting = await InvoicingServices.InvoiceReporting(invoiceHash, uuid, invoiceEncoded);
 
             return Ok(Master.ID);
         }

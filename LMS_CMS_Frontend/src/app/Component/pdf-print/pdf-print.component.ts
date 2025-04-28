@@ -24,7 +24,9 @@ export class PdfPrintComponent {
   @Input() school: any;
   @Input() tableHeaders: string[] | null = null;
   @Input() tableData: any[] | null = null;
-  @Input() tableDataWithHeader: TableSection[] | null = null;
+  @Input() tableDataWithHeader2: TableSection[] | null = null;
+    @Input() tableDataWithHeader: any[] | null = null;
+ 
   @Input() fileName: string = 'report';
   @Input() Title: string = '';
   @Input() infoRows: {

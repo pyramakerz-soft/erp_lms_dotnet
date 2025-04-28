@@ -73,6 +73,7 @@ school = {
 getStoreName(): string {
   return this.stores.find(s => s.id === this.selectedStoreId)?.name || 'All Stores';
 }
+
 getInfoRows(): any[] {
   return [
     { keyEn: 'From Date: ' + this.dateFrom },
@@ -130,60 +131,53 @@ this.selectedFlagIds = [];
   }
 
 
-  // selectedFlagId: number = 0; // New single selected ID
+  // selectedFlagId: number = 0; 
 
 
-onFlagSelected() {
-  this.selectedFlagIds = []
-  console.log("this.selectedFlagId",this.selectedFlagId)
-
-  if (this.selectedFlagId == -1) {
-    // Select all based on reportType
-  console.log(-1)
-    this.selectedFlagIds = this.getAllFlagsForReportType();
-  } else {
-    // Single flag selected
-  console.log("number")
-    this.selectedFlagIds = [this.selectedFlagId];
-  }
-  console.log(this.selectedFlagIds)
-}
-getAllFlagsForReportType(): number[] {
-  if (this.reportType === 'inventory') {
-    return [1,2,3,4,5,6,7,8];
-  }
-  if (this.reportType === 'sales') {
-    return [11,12];
-  }
-  if (this.reportType === 'purchase') {
-    return [9,10,13];
-  }
-  return [];
-}
-
-
- onFlagsChange() {
-  
-  if (this.selectedFlagIds.includes(0) && !this.selectedFlagIds.includes(0)) {
-    
-    this.selectedFlagIds = [0, ...this.currentFlags.map(flag => flag.id)];
-  }
-  
-  else if (!this.selectedFlagIds.includes(0) && this.selectedFlagIds.includes(0)) {
-    
+  onFlagSelected() {
     this.selectedFlagIds = [];
+    if (this.selectedFlagId == -1) {
+      this.selectedFlagIds = this.getAllFlagsForReportType();
+    } else {
+      this.selectedFlagIds = [this.selectedFlagId];
+    }
   }
+
+  getAllFlagsForReportType(): number[] {
+    if (this.reportType === 'inventory') {
+      return [1,2,3,4,5,6,7,8];
+    }
+    if (this.reportType === 'sales') {
+      return [11,12];
+    }
+    if (this.reportType === 'purchase') {
+      return [9,10,13];
+    }
+    return [];
+  }
+
+//  onFlagsChange() {
   
-  else if (this.selectedFlagIds.length === this.currentFlags.length && !this.selectedFlagIds.includes(0)) {
+//   if (this.selectedFlagIds.includes(0) && !this.selectedFlagIds.includes(0)) {
     
-    this.selectedFlagIds = [0, ...this.selectedFlagIds];
-  }
+//     this.selectedFlagIds = [0, ...this.currentFlags.map(flag => flag.id)];
+//   }
   
-  else if (this.selectedFlagIds.includes(0) && this.selectedFlagIds.length < this.currentFlags.length + 1) {
+//   else if (!this.selectedFlagIds.includes(0) && this.selectedFlagIds.includes(0)) {
     
-    this.selectedFlagIds = this.selectedFlagIds.filter(id => id !== 0);
-  }
-}
+//     this.selectedFlagIds = [];
+//   }
+  
+//   else if (this.selectedFlagIds.length === this.currentFlags.length && !this.selectedFlagIds.includes(0)) {
+    
+//     this.selectedFlagIds = [0, ...this.selectedFlagIds];
+//   }
+  
+//   else if (this.selectedFlagIds.includes(0) && this.selectedFlagIds.length < this.currentFlags.length + 1) {
+    
+//     this.selectedFlagIds = this.selectedFlagIds.filter(id => id !== 0);
+//   }
+// }
 
   loadStores() {
     this.isLoading = true;
@@ -199,49 +193,49 @@ getAllFlagsForReportType(): number[] {
     });
   }
 
-viewReport() {
-  if (!this.validateFilters()) return;
+  viewReport() {
+    if (!this.validateFilters()) return;
 
-  this.isLoading = true;
-  this.showTable = false;
+    this.isLoading = true;
+    this.showTable = false;
 
-  const formattedDateFrom = this.formatDateForAPI(this.dateFrom);
-  const formattedDateTo = this.formatDateForAPI(this.dateTo);
+    const formattedDateFrom = this.formatDateForAPI(this.dateFrom);
+    const formattedDateTo = this.formatDateForAPI(this.dateTo);
 
-  this.inventoryMasterService.search(
-    this.inventoryMasterService.ApiServ.GetHeader(),
-    this.selectedStoreId,
-    formattedDateFrom,
-    formattedDateTo,
-    this.selectedFlagIds,
-    this.currentPage,
-    this.pageSize
-  ).subscribe({
-    next: (response: any) => {
-      if (Array.isArray(response)) {
-        this.transactions = response;
-        this.totalRecords = response.length;
-        this.totalPages = Math.ceil(response.length / this.pageSize);
-      } else if (response?.data) {
-        this.transactions = response.data;
-        this.totalRecords = response.pagination?.totalRecords || response.data.length;
-        this.totalPages = response.pagination?.totalPages || Math.ceil(response.data.length / this.pageSize);
-      } else {
+    this.inventoryMasterService.search(
+      this.inventoryMasterService.ApiServ.GetHeader(),
+      this.selectedStoreId,
+      formattedDateFrom,
+      formattedDateTo,
+      this.selectedFlagIds,
+      this.currentPage,
+      this.pageSize
+    ).subscribe({
+      next: (response: any) => {
+        if (Array.isArray(response)) {
+          this.transactions = response;
+          this.totalRecords = response.length;
+          this.totalPages = Math.ceil(response.length / this.pageSize);
+        } else if (response?.data) {
+          this.transactions = response.data;
+          this.totalRecords = response.pagination?.totalRecords || response.data.length;
+          this.totalPages = response.pagination?.totalPages || Math.ceil(response.data.length / this.pageSize);
+        } else {
+          this.transactions = [];
+        }
+
+        this.prepareExportData();
+        this.showTable = true;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading transactions:', error);
         this.transactions = [];
+        this.showTable = true;
+        this.isLoading = false;
       }
-
-      this.prepareExportData();
-      this.showTable = true;
-      this.isLoading = false;
-    },
-    error: (error) => {
-      console.error('Error loading transactions:', error);
-      this.transactions = [];
-      this.showTable = true;
-      this.isLoading = false;
-    }
-  });
-}
+    });
+  }
 
 private prepareExportData(): void {
   this.transactionsForExport = this.transactions.map(t => ({
@@ -359,7 +353,7 @@ printReport() {
     reportHeaderTwoEn: 'Transaction Summary',
     reportHeaderOneAr: 'تقرير المخزون',
     reportHeaderTwoAr: 'ملخص المعاملات',
-    reportImage: 'assets/images/logo.png' // Update with your logo path
+    reportImage: '' // Update with your logo
   };
 
   const tableHeaders = ['ID', 'Invoice #', 'Date', 'Store', 'Transaction Type', 'Total Amount', 'Notes'];

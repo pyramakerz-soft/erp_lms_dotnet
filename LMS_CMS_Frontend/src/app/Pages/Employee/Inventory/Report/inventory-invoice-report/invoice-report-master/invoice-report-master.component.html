@@ -27,16 +27,17 @@
             [(ngModel)]="dateTo">
     </div>
 
-<div class="flex flex-col w-[32%] mb-4">
-    <label class="mb-2 font-medium" for="flags">Transaction Types</label>
-    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
-        [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
-        <option [value]="-1" selected>Select All</option>
-        <option *ngFor="let flag of currentFlags" [value]="flag.id">
-            {{ flag.name }}
-        </option>
-    </select>
-</div>
+    <div class="flex flex-col w-[32%] mb-4">
+        <label class="mb-2 font-medium" for="flags">Transaction Types</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
+            [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
+            <option [value]="-1" selected>Select All</option>
+            <option *ngFor="let flag of currentFlags" [value]="flag.id">
+                {{ flag.name }}
+            </option>
+        </select>
+    </div>
+
 
 <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">

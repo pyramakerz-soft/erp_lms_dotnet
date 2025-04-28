@@ -169,7 +169,7 @@ export class InvoiceReportMasterDetailedComponent implements OnInit {
     });
   }
 
-// Update the prepareExportData method
+
 private prepareExportData(): void {
   this.transactionsForExport = this.transactions.map(t => ({
     header: `Invoice #${t.invoiceNumber}`,
@@ -195,7 +195,7 @@ private prepareExportData(): void {
   }));
 }
 
-// Update getTableDataWithHeader to return properly structured data
+
 getTableDataWithHeader(): any[] {
   return this.transactionsForExport.map(item => ({
     header: item.header,

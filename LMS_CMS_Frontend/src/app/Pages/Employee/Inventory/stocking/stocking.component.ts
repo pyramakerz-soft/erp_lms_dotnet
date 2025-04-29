@@ -83,7 +83,7 @@ export class StockingComponent {
 
    Create() {
      this.mode = 'Create';
-     this.router.navigateByUrl(`Employee/Stocking Details`)
+     this.router.navigateByUrl(`Employee/Stocking Item`)
    }
  
    Delete(id: number) {
@@ -105,7 +105,7 @@ export class StockingComponent {
    }
  
    Edit(row: Stocking) {
-     this.router.navigateByUrl(`Employee/Stocking Details/Edit/${row.id}`)
+     this.router.navigateByUrl(`Employee/Stocking Item/Edit/${row.id}`)
    }
  
    IsAllowDelete(InsertedByID: number) {

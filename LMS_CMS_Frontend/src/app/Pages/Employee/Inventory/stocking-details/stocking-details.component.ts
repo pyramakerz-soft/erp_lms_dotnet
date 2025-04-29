@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { Stocking } from '../../../../Models/Inventory/stocking';
 import { StockingDetails } from '../../../../Models/Inventory/stocking-details';
 import { StockingService } from '../../../../Services/Employee/Inventory/stocking.service';
@@ -26,11 +26,13 @@ import { InventoryMaster } from '../../../../Models/Inventory/InventoryMaster';
 import { InventoryMasterService } from '../../../../Services/Employee/Inventory/inventory-master.service';
 import html2pdf from 'html2pdf.js';
 import { ReportsService } from '../../../../Services/shared/reports.service';
+import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.component';
+import { SearchDropdownComponent } from '../../../../Component/search-dropdown/search-dropdown.component';
 
 @Component({
   selector: 'app-stocking-details',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule,PdfPrintComponent, SearchDropdownComponent],
   templateUrl: './stocking-details.component.html',
   styleUrl: './stocking-details.component.css',
 })
@@ -101,6 +103,9 @@ export class StockingDetailsComponent {
   StoreAndDateSpanWhenPrint: boolean = false;
   NewDetailsWhenEdit: StockingDetails[] = [];
   DetailsToDeleted: StockingDetails[] = [];
+  tableDataForPrint: any[] = []
+  showPDF: boolean = false;
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
 
   constructor(
     private router: Router,
@@ -120,7 +125,7 @@ export class StockingDetailsComponent {
     public InventoryMastrServ: InventoryMasterService,
     private cdr: ChangeDetectorRef,
     public printservice: ReportsService
-  ) {}
+  ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -488,19 +493,19 @@ export class StockingDetailsComponent {
           this.StockingDetailsServ.Delete(
             element.id,
             this.DomainName
-          ).subscribe((d) => {});
+          ).subscribe((d) => { });
         });
         this.Data.stockingDetails = this.TableData;
         this.StockingDetailsServ.Edit(
           this.Data.stockingDetails,
           this.DomainName
-        ).subscribe((d) => {});
+        ).subscribe((d) => { });
         this.StockingDetailsServ.Add(
           this.NewDetailsWhenEdit,
           this.DomainName
         ).subscribe(
-          (d) => {},
-          (error) => {}
+          (d) => { },
+          (error) => { }
         );
         this.StockingServ.Edit(this.Data, this.DomainName).subscribe(
           (d) => {
@@ -782,83 +787,20 @@ export class StockingDetailsComponent {
         await this.Receipt();
         break;
     }
-    this.StoreAndDateSpanWhenPrint = false; // Now it's truly after printing
+    this.StoreAndDateSpanWhenPrint = false; 
   }
-
-  Receipt() {
-    const elements = document.querySelectorAll('.print-section');
   
-    const clonedContent = Array.from(elements).map(el => {
-      const clone = el.cloneNode(true) as HTMLElement;
-      this.inlineAllStyles(el as HTMLElement, clone);
-      return clone.outerHTML;
-    }).join('');
-  
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = '0';
-    document.body.appendChild(iframe);
-  
-    const doc = iframe.contentWindow?.document;
-  
-    if (doc) {
-      doc.open();
-      doc.write(`
-        <html>
-          <head>
-            <title>Receipt Print</title>
-            <style>
-              @media print {
-                @page {
-                  size: 80mm auto; /* adjust to 58mm if needed */
-                  margin: 10mm;
-                }
-                body {
-                  width: 80mm;
-                  font-family: Arial, sans-serif;
-                }
-              }
-  
-              body {
-                width: 80mm;
-                margin: 0 auto;
-                padding: 10px;
-                font-family: Arial, sans-serif;
-                background: white;
-              }
-  
-              .print-section {
-                width: 100%;
-              }
-            </style>
-          </head>
-          <body>
-            ${clonedContent}
-          </body>
-        </html>
-      `);
-      doc.close();
-  
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-  
-      setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    }
-  }
-
   async Blank() {
-    this.IsActualStockHiddenForBlankPrint = true;
+    const backupTableData = JSON.parse(JSON.stringify(this.TableData)); // 🛡 Deep copy
+    this.TableData.forEach((row) => {
+      row.actualStock = "";
+      row.theDifference = "";
+    });
     this.cdr.detectChanges();
     return new Promise<void>((resolve) => {
       setTimeout(async () => {
-        await this.GeneralPrint();
-        this.IsActualStockHiddenForBlankPrint = false;
+        await this.Print();
+        this.TableData = backupTableData; // ✅ Safe, not modified
         this.cdr.detectChanges();
         resolve();
       }, 300);
@@ -866,13 +808,12 @@ export class StockingDetailsComponent {
   }
 
   async Differences() {
-    const backupFilteredDetails = [...this.FilteredDetails];
-    const backupTableData = [...this.TableData];
+    const backupTableData = JSON.parse(JSON.stringify(this.TableData)); // 🛡 Deep copy
     this.TableData = this.TableData.filter((f) => f.theDifference != 0);
     this.cdr.detectChanges();
     return new Promise<void>((resolve) => {
       setTimeout(async () => {
-        await this.GeneralPrint();
+        await this.Print();
         this.TableData = backupTableData;
         this.cdr.detectChanges();
         resolve();
@@ -880,171 +821,79 @@ export class StockingDetailsComponent {
     });
   }
 
-  Print() {
-    this.cdr.detectChanges();
-    return new Promise<void>((resolve) => {
-      setTimeout(async () => {
-        await this.GeneralPrint();
-        this.cdr.detectChanges();
-        resolve();
-      }, 300);
-    });
-  }
+  async Print() {
+    await this.formateData()
+    this.showPDF = true;
+    setTimeout(() => {
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+      // Create a print-specific stylesheet
+      const printStyle = `
+      <style>
+      @page { size: auto; margin: 0mm; }
+      body { 
+            margin: 0; 
+          }
+  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
 
-  GeneralPrint() {
-    const elements = document.querySelectorAll('.print-section');
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
 
-    // Create printable HTML content
-    const clonedContent = Array.from(elements)
-      .map((el) => {
-        const clone = el.cloneNode(true) as HTMLElement;
-        this.inlineAllStyles(el as HTMLElement, clone);
-        return clone.outerHTML;
-      })
-      .join('');
-
-    // Create hidden iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = '0';
-    document.body.appendChild(iframe);
-
-    const doc = iframe.contentWindow?.document;
-
-    if (doc) {
-      doc.open();
-      doc.write(`
-        <html>
-          <head>
-            <title>Print</title>
-            <style>
-              @page {
-                size: landscape;
-                margin: 1cm;
-              }
+      document.body.appendChild(printContainer);
+      window.print();
       
-              * {
-                box-sizing: border-box;
-              }
-      
-              body {
-                font-family: Arial, sans-serif;
-                padding: 20px;
-                margin: 0;
-              }
-      
-              .print-section {
-                width: 100% !important;
-                overflow: visible !important;
-              }
-      
-              table {
-                width: 100% !important;
-                table-layout: fixed !important;
-                border-collapse: collapse;
-                word-wrap: break-word;
-              }
-      
-              th, td {
-                padding: 8px;
-                font-size: 12px;
-                text-align: left;
-                border: 1px solid #ccc;
-                word-break: break-word;
-                white-space: normal;
-              }
-      
-              th {
-                background-color: #f3f3f3;
-              }
-      
-              input, select, textarea {
-                border: none;
-                font-size: 12px;
-                width: 100%;
-                box-sizing: border-box;
-              }
-      
-              button, .fa-trash-can, input[type="file"] {
-                display: none !important;
-              }
-      
-              @media print {
-                html, body {
-                  width: 100%;
-                  height: auto;
-                  margin: 0;
-                  padding: 0;
-                }
-      
-                thead {
-                  display: table-header-group;
-                }
-      
-                tr, td, th {
-                  page-break-inside: avoid;
-                }
-              }
-            </style>
-          </head>
-          <body>
-            ${clonedContent}
-          </body>
-        </html>
-      `);
-      doc.close();
-
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-
       setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    }
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
+  }
+  
+  async DownloadAsPDF() {
+    this.showPDF = true;
+    await this.formateData()
+    setTimeout(() => {
+      this.pdfComponentRef.downloadPDF();
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500);
   }
 
-  inlineAllStyles(source: HTMLElement, target: HTMLElement) {
-    const sourceStyles = window.getComputedStyle(source);
-    const cssText = Array.from(sourceStyles)
-      .map((key) => `${key}: ${sourceStyles.getPropertyValue(key)};`)
-      .join(' ');
-    target.setAttribute('style', cssText);
-
-    const children = Array.from(source.children) as HTMLElement[];
-    const targetChildren = Array.from(target.children) as HTMLElement[];
-
-    for (let i = 0; i < children.length; i++) {
-      this.inlineAllStyles(children[i], targetChildren[i]);
-    }
-  }
-
-  getStoreNameById(id: number | string): string {
-    console.log('Looking for storeID:', id);
-    console.log('Available stores:', this.Stores);
-    const store = this.Stores.find((s) => s.id === +id);
-    console.log('Found store:', store);
-    return store ? store.name : '—';
-  }
-
-  //////////////////////////// Print ////////////////////////////////
-
-  DownloadAsPDF() {
-    this.StoreAndDateSpanWhenPrint = true;
-    this.cdr.detectChanges();
-    return new Promise<void>((resolve) => {
-      setTimeout(async () => {
-        await this.GeneralPrint();
-        this.cdr.detectChanges();
-        this.StoreAndDateSpanWhenPrint = false;
-        resolve();
-      }, 300);
+  formateData() {
+    const sourceData = this.mode === "Create" ? this.Data?.stockingDetails ?? [] : this.TableData ?? [];
+    this.tableDataForPrint = sourceData.map((row) => {
+      return {
+        BarCode: row.barCode || '',
+        Item_Id: row.shopItemID || '',
+        Item_Name: row.shopItemName || '',
+        Current_Stock: row.currentStock || '',
+        Actual_Stock: row.actualStock || '',
+        The_Difference: row.theDifference || '',
+      };
     });
   }
-
+  
   async DownloadAsExcel() {
     const tableHeaders = [
       'Bar Code',
@@ -1091,4 +940,62 @@ export class StockingDetailsComponent {
       tables: tables,
     });
   }
+
+  async Receipt() {
+    await this.formateData();
+    this.showPDF = true;
+  
+    setTimeout(() => {
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+  
+      const printStyle = `
+        <style>
+        @page { 
+          size: 80mm 200mm; /* Width: 80mm like POS printer, Height: auto */
+          margin: 5mm;
+        }
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        @media print {
+          body > *:not(#print-container) {
+            display: none !important;
+          }
+          #print-container {
+            display: block !important;
+            position: static !important;
+            width: 80mm; /* Receipt width */
+            min-height: 200mm; /* You can adjust */
+            background: white !important;
+            box-shadow: none !important;
+            margin: 0 auto !important;
+            padding: 5mm;
+            font-size: 12px;
+          }
+        }
+        </style>
+      `;
+  
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+  
+      document.body.appendChild(printContainer);
+      window.print();
+  
+      setTimeout(() => {
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
+  }
+
 }
+
+
+  

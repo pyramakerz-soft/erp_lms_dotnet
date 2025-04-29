@@ -417,6 +417,7 @@ export class   InventoryDetailsComponent {
           },
           (error) => {
             this.isLoading = false;
+            console.log(error)
             Swal.fire({
               icon: 'error',
               title: 'Oops...',

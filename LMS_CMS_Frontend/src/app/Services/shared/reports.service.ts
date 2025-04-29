@@ -106,6 +106,7 @@ export class ReportsService {
     }[];
     filename?: string;
   }) {
+    console.log(options)
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Report");
   

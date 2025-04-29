@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using Zatca.EInvoice.SDK.Contracts.Models;
 using Zatca.EInvoice.SDK;
+using System.Security.Cryptography.X509Certificates;
 
 namespace LMS_CMS_PL.Services.Invoice
 {
@@ -183,169 +184,163 @@ namespace LMS_CMS_PL.Services.Invoice
 
             //SaveFormatted(inv, newXmlPath);
 
-            //AddValue(inv, "//cbc:ID[text()='SME00001']", $"INV{master.ID.ToString()}", nsMgr);
-            //AddValue(inv, "//cbc:UUID", uuid, nsMgr);
-            //AddValue(inv, "//cac:AdditionalDocumentReference/cbc:UUID", master.ID.ToString(), nsMgr);
-            //AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID", master.School.CRN, nsMgr);
-            //AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName", master.School.StreetName, nsMgr);
-            //AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingNumber", master.School.BuildingNumber, nsMgr);
-            //AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName", master.School.CitySubdivision, nsMgr);
-            //AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CityName", master.School.City, nsMgr);
-            //AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PostalZone", master.School.PostalZone, nsMgr);
-            //AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID", master.School.VatNumber, nsMgr);
-            //AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName", master.School.Name, nsMgr);
-            //AddValue(inv, "//cac:TaxTotal/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
-            //AddValue(inv, "(//cac:TaxTotal)[2]/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
-            //AddValue(inv, "//cac:TaxSubtotal/cbc:TaxableAmount", master.Total.ToString(), nsMgr);
-            //AddValue(inv, "//cac:TaxSubtotal/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
-            //AddValue(inv, "//cac:TaxSubtotal/cbc:TaxCategory/cbc:Percent", master.VatPercent.ToString(), nsMgr);
-            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:LineExtensionAmount", master.Total.ToString(), nsMgr);
-            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount", master.Total.ToString(), nsMgr);
-            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", master.TotalWithVat.ToString(), nsMgr);
-            ////AddValue(inv, "//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount", "master.AllowanceTotalAmount", nsMgr);
-            ////AddValue(inv, "//cac:LegalMonetaryTotal/cbc:PrepaidAmount", "master.PrepaidAmount", nsMgr);
-            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:PayableAmount", master.TotalWithVat.ToString(), nsMgr);
+            AddValue(inv, "//cbc:ID[text()='SME00001']", $"INV{master.ID.ToString()}", nsMgr);
+            AddValue(inv, "//cbc:UUID", uuid, nsMgr);
+            AddValue(inv, "//cac:AdditionalDocumentReference/cbc:UUID", master.ID.ToString(), nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID", master.School.CRN, nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName", master.School.StreetName, nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingNumber", master.School.BuildingNumber, nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName", master.School.CitySubdivision, nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CityName", master.School.City, nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PostalZone", master.School.PostalZone, nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID", master.School.VatNumber, nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName", master.School.Name, nsMgr);
+            AddValue(inv, "//cac:TaxTotal/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
+            AddValue(inv, "(//cac:TaxTotal)[2]/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
+            AddValue(inv, "//cac:TaxSubtotal/cbc:TaxableAmount", master.Total.ToString(), nsMgr);
+            AddValue(inv, "//cac:TaxSubtotal/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
+            AddValue(inv, "//cac:TaxSubtotal/cbc:TaxCategory/cbc:Percent", master.VatPercent.ToString(), nsMgr);
+            AddValue(inv, "//cac:LegalMonetaryTotal/cbc:LineExtensionAmount", master.Total.ToString(), nsMgr);
+            AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount", master.Total.ToString(), nsMgr);
+            AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", master.TotalWithVat.ToString(), nsMgr);
+            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount", "master.AllowanceTotalAmount", nsMgr);
+            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:PrepaidAmount", "master.PrepaidAmount", nsMgr);
+            AddValue(inv, "//cac:LegalMonetaryTotal/cbc:PayableAmount", master.TotalWithVat.ToString(), nsMgr);
 
-            //XmlElement root = inv.DocumentElement;
+            XmlElement root = inv.DocumentElement;
 
-            //for (int i = 1; i <= 3; i++)
-            //{
-                //XmlNode original = inv.SelectSingleNode("(//cac:InvoiceLine)[1]", nsMgr);
-                //original.SelectSingleNode("cbc:ID", nsMgr).InnerText = i.ToString();
-                //original.SelectSingleNode("cbc:InvoicedQuantity", nsMgr).InnerText = "33.000000";
-                //original.SelectSingleNode("cbc:LineExtensionAmount", nsMgr).InnerText = "99.00";
+            //XmlNode original = inv.SelectSingleNode("(//cac:InvoiceLine)[1]", nsMgr);
+            //original.SelectSingleNode("cbc:ID", nsMgr).InnerText = i.ToString();
+            //original.SelectSingleNode("cbc:InvoicedQuantity", nsMgr).InnerText = "33.000000";
+            //original.SelectSingleNode("cbc:LineExtensionAmount", nsMgr).InnerText = "99.00";
 
-                //XmlNode xmlNode = original.CloneNode(true);
-                //original.RemoveAll();
-                //string xx = $@"<cac:InvoiceLine>
-                //          <cbc:ID>{i.ToString()}</cbc:ID>
-                //          <cbc:InvoicedQuantity unitCode=""PCE"">33.000000</cbc:InvoicedQuantity>
-                //          <cbc:LineExtensionAmount currencyID=""SAR"">99.00</cbc:LineExtensionAmount>
-                //          <cac:TaxTotal>
-                //           <cbc:TaxAmount currencyID=""SAR"">14.85</cbc:TaxAmount>
-                //           <cbc:RoundingAmount currencyID=""SAR"">113.85</cbc:RoundingAmount>
-                //          </cac:TaxTotal>
-                //          <cac:Item>
-                //           <cbc:Name>كتاب</cbc:Name>
-                //           <cac:ClassifiedTaxCategory>
-                //            <cbc:ID>S</cbc:ID>
-                //            <cbc:Percent>15.00</cbc:Percent>
-                //            <cac:TaxScheme>
-                //             <cbc:ID>VAT</cbc:ID>
-                //            </cac:TaxScheme>
-                //           </cac:ClassifiedTaxCategory>
-                //          </cac:Item>
-                //          <cac:Price>
-                //           <cbc:PriceAmount currencyID=""SAR"">3.00</cbc:PriceAmount>
-                //           <cac:AllowanceCharge>
-                //            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-                //            <cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>
-                //            <cbc:Amount currencyID=""SAR"">0.00</cbc:Amount>
-                //           </cac:AllowanceCharge>
-                //          </cac:Price>
-                //         </cac:InvoiceLine>";
-                //XmlDocument xdoc = new XmlDocument();
-                //xdoc.LoadXml(inv.InnerXml);
+            //XmlNode xmlNode = original.CloneNode(true);
+            //original.RemoveAll();
+            //string xx = $@"<cac:InvoiceLine>
+            //          <cbc:ID>{i.ToString()}</cbc:ID>
+            //          <cbc:InvoicedQuantity unitCode=""PCE"">33.000000</cbc:InvoicedQuantity>
+            //          <cbc:LineExtensionAmount currencyID=""SAR"">99.00</cbc:LineExtensionAmount>
+            //          <cac:TaxTotal>
+            //           <cbc:TaxAmount currencyID=""SAR"">14.85</cbc:TaxAmount>
+            //           <cbc:RoundingAmount currencyID=""SAR"">113.85</cbc:RoundingAmount>
+            //          </cac:TaxTotal>
+            //          <cac:Item>
+            //           <cbc:Name>كتاب</cbc:Name>
+            //           <cac:ClassifiedTaxCategory>
+            //            <cbc:ID>S</cbc:ID>
+            //            <cbc:Percent>15.00</cbc:Percent>
+            //            <cac:TaxScheme>
+            //             <cbc:ID>VAT</cbc:ID>
+            //            </cac:TaxScheme>
+            //           </cac:ClassifiedTaxCategory>
+            //          </cac:Item>
+            //          <cac:Price>
+            //           <cbc:PriceAmount currencyID=""SAR"">3.00</cbc:PriceAmount>
+            //           <cac:AllowanceCharge>
+            //            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+            //            <cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>
+            //            <cbc:Amount currencyID=""SAR"">0.00</cbc:Amount>
+            //           </cac:AllowanceCharge>
+            //          </cac:Price>
+            //         </cac:InvoiceLine>";
+            //XmlDocument xdoc = new XmlDocument();
+            //xdoc.LoadXml(inv.InnerXml);
 
-                //XmlDocumentFragment docFrag = xdoc.CreateDocumentFragment();
+            //XmlDocumentFragment docFrag = xdoc.CreateDocumentFragment();
 
-                ////Set the contents of the document fragment.
-                //docFrag.InnerXml = xx;
-                //XmlElement element = ConvertStringToXmlElement(xx, nsMgr);
+            ////Set the contents of the document fragment.
+            //docFrag.InnerXml = xx;
+            //XmlElement element = ConvertStringToXmlElement(xx, nsMgr);
 
-                //XmlElement original = (XmlElement)temp.SelectSingleNode("//cac:InvoiceLine[cbc:ID='1']", nsMgr);
+            //XmlElement original = (XmlElement)temp.SelectSingleNode("//cac:InvoiceLine[cbc:ID='1']", nsMgr);
 
-                //// Clone it deeply (with all nested content)
-                //XmlElement cloned = (XmlElement)original.CloneNode(true);
+            //// Clone it deeply (with all nested content)
+            //XmlElement cloned = (XmlElement)original.CloneNode(true);
 
-                //XmlElement idElem = (XmlElement)cloned.SelectSingleNode("cbc:ID", nsMgr);
-                //if (idElem != null) idElem.InnerText = "7";
+            //XmlElement idElem = (XmlElement)cloned.SelectSingleNode("cbc:ID", nsMgr);
+            //if (idElem != null) idElem.InnerText = "7";
 
-                //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cbc:InvoicedQuantity", nsMgr);
-                //if (qtyElem != null) qtyElem.InnerText = "55.000000";
+            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cbc:InvoicedQuantity", nsMgr);
+            //if (qtyElem != null) qtyElem.InnerText = "55.000000";
 
-                //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cbc:LineExtensionAmount", nsMgr);
-                //if (qtyElem != null) qtyElem.InnerText = "99.00";
+            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cbc:LineExtensionAmount", nsMgr);
+            //if (qtyElem != null) qtyElem.InnerText = "99.00";
 
-                //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cac:TaxTotal/cbc:TaxAmount", nsMgr);
-                //if (qtyElem != null) qtyElem.InnerText = "14.85";
+            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cac:TaxTotal/cbc:TaxAmount", nsMgr);
+            //if (qtyElem != null) qtyElem.InnerText = "14.85";
 
-                //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cac:TaxTotal/cbc:RoundingAmount", nsMgr);
-                //if (qtyElem != null) qtyElem.InnerText = "113.85";
+            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cac:TaxTotal/cbc:RoundingAmount", nsMgr);
+            //if (qtyElem != null) qtyElem.InnerText = "113.85";
 
+            foreach (InventoryDetails itemDetail in master.InventoryDetails)
+            {
+                int counter = 0;
+                decimal itemTotalPriceWithVat = itemDetail.TotalPrice + (decimal)master.VatAmount;
+                XmlElement invoiceLine = inv.CreateElement("cac", "InvoiceLine", nsMgr.LookupNamespace("cac"));
 
-                //XmlElement invoiceLine = inv.CreateElement("cac", "InvoiceLine", nsMgr.LookupNamespace("cac"));
+                // ID
+                AppendElementWithText(inv, invoiceLine, "cbc", "ID", (counter + 1).ToString(), nsMgr);
 
-                //// ID
-                //AppendElementWithText(inv, invoiceLine, "cbc", "ID", i.ToString(), nsMgr);
+                // InvoicedQuantity
+                XmlElement quantity = AppendElementWithText(inv, invoiceLine, "cbc", "InvoicedQuantity", itemDetail.Quantity.ToString(), nsMgr);
+                quantity.SetAttribute("unitCode", "PCE");
 
-                //// InvoicedQuantity
-                //XmlElement quantity = AppendElementWithText(inv, invoiceLine, "cbc", "InvoicedQuantity", "33.000000", nsMgr);
-                //quantity.SetAttribute("unitCode", "PCE");
+                // LineExtensionAmount
+                XmlElement lineAmount = AppendElementWithText(inv, invoiceLine, "cbc", "LineExtensionAmount", itemDetail.TotalPrice.ToString(), nsMgr);
+                lineAmount.SetAttribute("currencyID", "SAR");
 
-                //// LineExtensionAmount
-                //XmlElement lineAmount = AppendElementWithText(inv, invoiceLine, "cbc", "LineExtensionAmount", "99.00", nsMgr);
-                //lineAmount.SetAttribute("currencyID", "SAR");
+                // TaxTotal
+                XmlElement taxTotal = inv.CreateElement("cac", "TaxTotal", nsMgr.LookupNamespace("cac"));
+                XmlElement taxAmount = AppendElementWithText(inv, taxTotal, "cbc", "TaxAmount", master.VatAmount.ToString(), nsMgr);
+                taxAmount.SetAttribute("currencyID", "SAR");
+                XmlElement roundingAmount = AppendElementWithText(inv, taxTotal, "cbc", "RoundingAmount", itemTotalPriceWithVat.ToString(), nsMgr);
+                roundingAmount.SetAttribute("currencyID", "SAR");
+                invoiceLine.AppendChild(taxTotal);
 
-                //// TaxTotal
-                //XmlElement taxTotal = inv.CreateElement("cac", "TaxTotal", nsMgr.LookupNamespace("cac"));
-                //XmlElement taxAmount = AppendElementWithText(inv, taxTotal, "cbc", "TaxAmount", "14.85", nsMgr);
-                //taxAmount.SetAttribute("currencyID", "SAR");
-                //XmlElement roundingAmount = AppendElementWithText(inv, taxTotal, "cbc", "RoundingAmount", "113.85", nsMgr);
-                //roundingAmount.SetAttribute("currencyID", "SAR");
-                //invoiceLine.AppendChild(taxTotal);
+                // Item
+                XmlElement item = inv.CreateElement("cac", "Item", nsMgr.LookupNamespace("cac"));
+                AppendElementWithText(inv, item, "cbc", "Name", itemDetail.ShopItem.EnName + " | " + itemDetail.ShopItem.ArName, nsMgr);
 
-                //// Item
-                //XmlElement item = inv.CreateElement("cac", "Item", nsMgr.LookupNamespace("cac"));
-                //AppendElementWithText(inv, item, "cbc", "Name", "كتاب", nsMgr);
+                XmlElement classifiedTaxCategory = inv.CreateElement("cac", "ClassifiedTaxCategory", nsMgr.LookupNamespace("cac"));
+                AppendElementWithText(inv, classifiedTaxCategory, "cbc", "ID", "S", nsMgr);
+                AppendElementWithText(inv, classifiedTaxCategory, "cbc", "Percent", master.VatPercent.ToString(), nsMgr);
+                AppendElementWithText(inv, classifiedTaxCategory, "cbc", "Percent", master.VatPercent.ToString(), nsMgr);
 
-                //XmlElement classifiedTaxCategory = inv.CreateElement("cac", "ClassifiedTaxCategory", nsMgr.LookupNamespace("cac"));
-                //AppendElementWithText(inv, classifiedTaxCategory, "cbc", "ID", "S", nsMgr);
-                //AppendElementWithText(inv, classifiedTaxCategory, "cbc", "Percent", "15.00", nsMgr);
+                XmlElement taxScheme = inv.CreateElement("cac", "TaxScheme", nsMgr.LookupNamespace("cac"));
+                AppendElementWithText(inv, taxScheme, "cbc", "ID", "VAT", nsMgr);
+                classifiedTaxCategory.AppendChild(taxScheme);
 
-                //XmlElement taxScheme = inv.CreateElement("cac", "TaxScheme", nsMgr.LookupNamespace("cac"));
-                //AppendElementWithText(inv, taxScheme, "cbc", "ID", "VAT", nsMgr);
-                //classifiedTaxCategory.AppendChild(taxScheme);
+                item.AppendChild(classifiedTaxCategory);
+                invoiceLine.AppendChild(item);
 
-                //item.AppendChild(classifiedTaxCategory);
-                //invoiceLine.AppendChild(item);
+                // Price
+                XmlElement price = inv.CreateElement("cac", "Price", nsMgr.LookupNamespace("cac"));
+                XmlElement priceAmount = AppendElementWithText(inv, price, "cbc", itemDetail.Price.ToString(), "3.00", nsMgr);
+                priceAmount.SetAttribute("currencyID", "SAR");
 
-                //// Price
-                //XmlElement price = inv.CreateElement("cac", "Price", nsMgr.LookupNamespace("cac"));
-                //XmlElement priceAmount = AppendElementWithText(inv, price, "cbc", "PriceAmount", "3.00", nsMgr);
-                //priceAmount.SetAttribute("currencyID", "SAR");
+                XmlElement allowanceCharge = inv.CreateElement("cac", "AllowanceCharge", nsMgr.LookupNamespace("cac"));
+                AppendElementWithText(inv, allowanceCharge, "cbc", "ChargeIndicator", "true", nsMgr);
+                AppendElementWithText(inv, allowanceCharge, "cbc", "AllowanceChargeReason", "discount", nsMgr);
+                XmlElement amount = AppendElementWithText(inv, allowanceCharge, "cbc", "Amount", "0.00", nsMgr);
+                amount.SetAttribute("currencyID", "SAR");
 
-                //XmlElement allowanceCharge = inv.CreateElement("cac", "AllowanceCharge", nsMgr.LookupNamespace("cac"));
-                //AppendElementWithText(inv, allowanceCharge, "cbc", "ChargeIndicator", "true", nsMgr);
-                //AppendElementWithText(inv, allowanceCharge, "cbc", "AllowanceChargeReason", "discount", nsMgr);
-                //XmlElement amount = AppendElementWithText(inv, allowanceCharge, "cbc", "Amount", "0.00", nsMgr);
-                //amount.SetAttribute("currencyID", "SAR");
-
-                //price.AppendChild(allowanceCharge);
-                //invoiceLine.AppendChild(price);
+                price.AppendChild(allowanceCharge);
+                invoiceLine.AppendChild(price);
 
                 ////XmlElementToString(invoiceLine);
 
                 //string xx = XmlElementToString(invoiceLine);
 
-                //root.AppendChild(docFrag);
+                root.AppendChild(invoiceLine);
                 //root.AppendChild(cloned);
-            //}
+            }
 
-            //XmlWriterSettings settings = new XmlWriterSettings
-            //{
-            //    Indent = true,
-            //    IndentChars = "  ",
-            //    NewLineChars = "\n",
-            //    NewLineHandling = NewLineHandling.Replace,
-            //    Encoding = Encoding.UTF8,
-            //    OmitXmlDeclaration = false
-            //};
+            XmlNodeList invoiceLines = inv.SelectNodes("//cac:InvoiceLine", nsMgr);
 
-            //using (XmlWriter writer = XmlWriter.Create(newXmlPath, settings))
-            //{
-            //    inv.Save(writer);
-            //}
+            foreach (var line in invoiceLines)
+            {
+                InsertWhitespace((XmlElement)line);
+            }
 
             SaveFormatted(inv, newXmlPath);
 
@@ -361,6 +356,49 @@ namespace LMS_CMS_PL.Services.Invoice
                 return false;
 
             return true;
+        }
+
+        public static async Task<string> UpdatePCSID(string securityToken, string csrContent, string version, string otp)
+        {
+            HttpClient client = new HttpClient();
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Patch, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+
+            request.Headers.Add("accept", "application/json");
+            request.Headers.Add("OTP", otp);
+            request.Headers.Add("accept-language", "en");
+            request.Headers.Add("Accept-Version", version);
+            request.Headers.Add("Authorization", $"Basic {securityToken}");
+
+            string jsonPayload = $@"
+            {{
+              ""csr"": ""{csrContent}""
+            }}";
+
+            request.Content = new StringContent(jsonPayload);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            return responseBody;
+        }
+
+        public static string GetCertificateDate()
+        {
+            string certPath = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR/PCSID.json");
+            string certContent = File.ReadAllText(certPath);
+
+            dynamic jsonObject = JsonConvert.DeserializeObject(certContent);
+            string base64Cert = jsonObject.binarySecurityToken;
+
+            byte[] certBytes = Convert.FromBase64String(base64Cert);
+            var cert = new X509Certificate2(certBytes);
+
+            string expires = cert.NotAfter.ToString();
+
+            return expires;
         }
 
         public static XmlElement ConvertStringToXmlElement(string xmlString, XmlNamespaceManager nsMgr)
@@ -381,7 +419,6 @@ namespace LMS_CMS_PL.Services.Invoice
 
             return doc.DocumentElement;
         }
-
 
         private static SignResult InvoiceSigning(string xmlPath, string certPath, string privateKeyPath)
         {
@@ -480,9 +517,9 @@ namespace LMS_CMS_PL.Services.Invoice
             return response.ReasonPhrase;
         }
 
-        private static void SaveFormatted(XmlDocument doc, string path, bool omitXmlDeclaration = true)
+        private static void SaveFormatted(XmlDocument doc, string filePath, bool omitXmlDeclaration = true)
         {
-            doc.PreserveWhitespace = true;
+            doc.PreserveWhitespace = false;
             XmlWriterSettings settings = new XmlWriterSettings
             {
                 OmitXmlDeclaration = omitXmlDeclaration,
@@ -493,10 +530,40 @@ namespace LMS_CMS_PL.Services.Invoice
                 Encoding = Encoding.UTF8
             };
 
-            using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             using (var writer = XmlWriter.Create(fs, settings))
             {
                 doc.Save(writer);
+            }
+        }
+
+        private static void InsertWhitespace(XmlElement parentElement)
+        {
+            XmlDocument doc = parentElement.OwnerDocument;
+
+            // Add leading whitespace before first child
+            if (parentElement.HasChildNodes)
+            {
+                parentElement.InsertBefore(doc.CreateWhitespace("\r\n\t"), parentElement.FirstChild);
+            }
+
+            // Insert whitespace between each child node
+            for (int i = parentElement.ChildNodes.Count - 1; i > 0; i--)
+            {
+                XmlNode prev = parentElement.ChildNodes[i - 1];
+                XmlNode current = parentElement.ChildNodes[i];
+
+                if (!(prev is XmlWhitespace)) // avoid duplicating whitespaces
+                {
+                    XmlNode whitespace = doc.CreateWhitespace("\r\n\t");
+                    parentElement.InsertBefore(whitespace, current);
+                }
+            }
+
+            // Add trailing newline after last child
+            if (parentElement.HasChildNodes)
+            {
+                parentElement.AppendChild(doc.CreateWhitespace("\r\n\t"));
             }
         }
 

@@ -166,6 +166,7 @@ export class AssetsComponent {
       if (this.mode == 'Create') {
         this.AssetServ.Add(this.asset, this.DomainName).subscribe(data => {
           this.closeModal()
+          this.GetAllData();
           this.isLoading = false
         },
           err => {
@@ -182,6 +183,7 @@ export class AssetsComponent {
       if (this.mode == 'Edit') {
         this.AssetServ.Edit(this.asset, this.DomainName).subscribe(data => {
           this.closeModal()
+          this.GetAllData();
           this.isLoading = false
         },
           err => {
@@ -195,9 +197,7 @@ export class AssetsComponent {
             });
           });
       }
-      this.GetAllData();
-    }
-    this.GetAllData();
+    } 
   }
 
   closeModal() {

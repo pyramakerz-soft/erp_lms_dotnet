@@ -100,10 +100,8 @@ export class RegistrationFormFieldComponent {
 
   Create() {
     this.mode = 'Create';
-    this.Category = new RegistrationCategory();
-    this.Category.orderInForm = 0;
-    this.openModal();
-
+    this.Category = new RegistrationCategory(); 
+    this.openModal(); 
   }
 
   Delete(id: number) {
@@ -188,7 +186,7 @@ export class RegistrationFormFieldComponent {
     this.isModalVisible = false;
   }
 
-  openModal() {
+  openModal() { 
     this.isModalVisible = true;
   }
 

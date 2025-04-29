@@ -167,8 +167,8 @@ export class DebitsComponent {
       this.isLoading = true
       if (this.mode == 'Create') {
         this.DebitServ.Add(this.debit, this.DomainName).subscribe((d) => {
-          this.GetAllData();
           this.closeModal();
+          this.GetAllData();
         },
           err => {
             this.isLoading = false
@@ -183,8 +183,8 @@ export class DebitsComponent {
       }
       if (this.mode == 'Edit') {
         this.DebitServ.Edit(this.debit, this.DomainName).subscribe((d) => {
-          this.GetAllData();
           this.closeModal();
+          this.GetAllData();
         },
           err => {
             this.isLoading = false
@@ -197,8 +197,7 @@ export class DebitsComponent {
             });
           });
       }
-    }
-    this.GetAllData();
+    } 
   }
 
   closeModal() {

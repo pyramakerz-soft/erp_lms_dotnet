@@ -95,7 +95,7 @@ export class RegistrationConfirmationDetailsComponent {
     this.registrationFormService.GetById(1, this.DomainName).subscribe(
       (data) => {
         this.RegistrationFormData = data
-        this.RegistrationFormData.categories.sort((a, b) => a.orderInForm - b.orderInForm)
+        this.RegistrationFormData.categories.sort((a, b) => (a.orderInForm ? a.orderInForm : 0) - (b.orderInForm ? b.orderInForm : 0))
         this.RegistrationFormData.categories.forEach(element => {
           element.fields.sort((a, b) => a.orderInForm - b.orderInForm)
         });

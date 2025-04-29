@@ -100,23 +100,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpGet("Search")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Inventory" }
-        )]
+             allowedTypes: new[] { "octa", "employee" },
+             pages: new[] { "Inventory" }
+         )]
         public async Task<IActionResult> GetSearch([FromQuery] InventoryMasterSearch obj)
         {
             var Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
-
-            // Input validation
             if (obj.FlagIds == null || !obj.FlagIds.Any())
                 return BadRequest("FlagIds cannot be null or empty.");
-
             if (!DateTime.TryParse(obj.DateFrom, out DateTime dateFrom))
                 return BadRequest("DateFrom is not a valid date.");
-
             if (!DateTime.TryParse(obj.DateTo, out DateTime dateTo))
                 return BadRequest("DateTo is not a valid date.");
-
             if (dateFrom > dateTo)
                 return BadRequest("DateFrom cannot be after DateTo.");
 
@@ -127,23 +122,34 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                               .Include(x => x.InventoryFlags)
                               .Include(x => x.InventoryDetails)
                               .Include(x => x.Save)
-                              .Include(x => x.Bank)
-            );
+                              .Include(x => x.Bank));
 
             var filteredData = data.Where(f =>
-                DateTime.TryParse(f.Date, out var parsedDate) &&     
+                DateTime.TryParse(f.Date, out var parsedDate) &&
                 parsedDate >= dateFrom &&
-                parsedDate <= dateTo
-            ).ToList();
-
+                parsedDate <= dateTo &&
+                (
+                    obj.ShopItemId == null || !obj.ShopItemId.Any() ||
+                    f.InventoryDetails.Any(x => obj.ShopItemId.Contains(x.ShopItemID))) &&
+                    (obj.StoredId == null || (f.Store != null && f.Store.ID == obj.StoredId)))
+                    .ToList();
             if (!filteredData.Any())
                 return NotFound("No records found matching the search criteria.");
-
+            decimal AllTotal = 0;
+            foreach (var item in filteredData)
+            {
+                var flagValue = item.InventoryFlags?.FlagValue ?? 0m;
+                var total = item.Total;
+                AllTotal += total * flagValue;
+            }
             var dto = mapper.Map<List<InventoryMasterGetDTO>>(filteredData);
-
-            return Ok(dto);
+            var response = new
+            {
+                AllTotal,
+                Data = dto
+            };
+            return Ok(response);
         }
-
 
         /////////////////////////////////////////////////////////////////////////////
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.Administration
 {
-    public class AcademicDegree
+    public class AcademicDegree : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

@@ -96,8 +96,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             AcademicDegree academicDegree = mapper.Map<AcademicDegree>(newAcademicDegree);
 
 
-            //TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            //job.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            //academicDegree.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             //if (userTypeClaim == "octa")
             //{
             //    job.InsertedByOctaId = userId;

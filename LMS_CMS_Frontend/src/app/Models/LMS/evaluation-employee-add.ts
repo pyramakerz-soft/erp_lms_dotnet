@@ -14,7 +14,7 @@ export class EvaluationEmployeeAdd {
         public evaluatorID: number = 0,
         public evaluatedID: number = 0,
         public evaluationTemplateID: number = 0,
-        public evaluationTemplateName: string = '',
+        public evaluationTemplateEnglishTitle: string = '',
         public classroomID: number = 0, 
         public evaluationBookCorrectionID: number = 0, 
         public evaluationEmployeeQuestionsList: EvaluationEmployeeQuestionAdd[] = [],

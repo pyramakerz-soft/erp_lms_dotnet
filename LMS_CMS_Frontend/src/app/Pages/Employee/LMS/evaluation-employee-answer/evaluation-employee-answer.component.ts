@@ -73,6 +73,7 @@ export class EvaluationEmployeeAnswerComponent {
       console.log(this.path)
     } else if (this.path == "Created Evaluations") {
       this.mode = "Evaluator"
+      console.log(this.path)
     }
     this.EvaluationId = Number(this.activeRoute.snapshot.paramMap.get('id'));
     this.GetData()
@@ -81,7 +82,10 @@ export class EvaluationEmployeeAnswerComponent {
   GetData() {
     this.EvaluationEmployeeServ.GetEvaluations(this.EvaluationId, this.DomainName).subscribe((d) => {
       this.data = d;
-      console.log(this.data)
+      if(this.data.feedback===null){
+        this.data.feedback=''
+      }
+      console.log( this.data.feedback )
     });
   }
 

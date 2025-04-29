@@ -401,25 +401,6 @@ namespace LMS_CMS_PL.Services.Invoice
             return expires;
         }
 
-        public static XmlElement ConvertStringToXmlElement(string xmlString, XmlNamespaceManager nsMgr)
-        {
-            XmlDocument doc = new XmlDocument();
-
-            // Attach namespace manager's name table to doc
-            doc.XmlResolver = null; // Security best practice
-            doc.LoadXml(xmlString);
-
-            // Optionally register namespaces in the new doc (not strictly required)
-            foreach (string prefix in nsMgr)
-            {
-                string ns = nsMgr.LookupNamespace(prefix);
-                if (!string.IsNullOrEmpty(ns))
-                    doc.DocumentElement.SetAttribute($"xmlns:{prefix}", ns);
-            }
-
-            return doc.DocumentElement;
-        }
-
         private static SignResult InvoiceSigning(string xmlPath, string certPath, string privateKeyPath)
         {
             if (!File.Exists(xmlPath))
@@ -564,27 +545,6 @@ namespace LMS_CMS_PL.Services.Invoice
             if (parentElement.HasChildNodes)
             {
                 parentElement.AppendChild(doc.CreateWhitespace("\r\n\t"));
-            }
-        }
-
-        private static string XmlElementToString(XmlElement element, bool omitXmlDeclaration = true)
-        {
-            var settings = new XmlWriterSettings
-            {
-                OmitXmlDeclaration = omitXmlDeclaration,
-                Indent = true,
-                IndentChars = "  ", // two spaces for indentation
-                NewLineChars = "\n",
-                NewLineHandling = NewLineHandling.Replace,
-                Encoding = Encoding.UTF8
-            };
-
-            using (var stringWriter = new StringWriter())
-            using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
-            {
-                element.WriteTo(xmlWriter);
-                xmlWriter.Flush();
-                return stringWriter.ToString();
             }
         }
 

@@ -94,6 +94,24 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
                 return BadRequest("Academic Degree cannot be null");
             }
             AcademicDegree academicDegree = mapper.Map<AcademicDegree>(newAcademicDegree);
+
+
+            //TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            //job.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            //if (userTypeClaim == "octa")
+            //{
+            //    job.InsertedByOctaId = userId;
+            //}
+            //else if (userTypeClaim == "employee")
+            //{
+            //    job.InsertedByUserId = userId;
+            //}
+
+            //Unit_Of_Work.job_Repository.Add(job);
+            //Unit_Of_Work.SaveChanges();
+            //return Ok(newJob);
+
+
             List<AcademicDegree> AcademicDegrees = Unit_Of_Work.academicDegree_Repository.Select_All();
             long Count = AcademicDegrees.Count();
             academicDegree.ID = Count + 1;

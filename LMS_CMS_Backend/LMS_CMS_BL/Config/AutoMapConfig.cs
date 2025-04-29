@@ -641,7 +641,10 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<InventoryDetails, InventoryDetailsGetDTO>()
                 .ForMember(dest => dest.BarCode, opt => opt.MapFrom(src => src.ShopItem.BarCode))
-                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.ShopItem.InventorySubCategories.InventoryCategoriesID))
+                .ForMember(dest => dest.SubCategoryId, opt => opt.MapFrom(src => src.ShopItem.InventorySubCategoriesID));
+
             CreateMap<InventoryDetailsGetDTO, InventoryDetails>();
             CreateMap<InventoryDetailsAddDTO, InventoryDetails>();
 

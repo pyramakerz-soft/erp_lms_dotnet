@@ -5,7 +5,7 @@
 </div>
 
 <div class="my-5 flex flex-wrap justify-between items-center">
-    <div class="flex flex-col w-[32%] mb-4">
+    <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="store">Store</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="store"
             [(ngModel)]="selectedStoreId">
@@ -15,19 +15,19 @@
         </select>
     </div>
 
-    <div class="flex flex-col w-[32%] mb-4">
+    <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="dateFrom">Date From</label>
         <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateFrom"
             [(ngModel)]="dateFrom">
     </div>
 
-    <div class="flex flex-col w-[32%] mb-4">
+    <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="dateTo">Date To</label>
         <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateTo"
             [(ngModel)]="dateTo">
     </div>
 
-    <div class="flex flex-col w-[32%] mb-4">
+    <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="flags">Transaction Types</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
             [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
@@ -38,23 +38,42 @@
         </select>
     </div>
 
-
-<div class="absolute -top-[9999px] -left-[9999px]">
-    <div id="Data" class="hidden">
-        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'Inventory Transactions Report'"
-            [infoRows]="getInfoRows()"
-            [tableHeaders]="['Invoice #', 'Date', 'Store', 'Transaction Type', 'Total Amount', 'Notes']"
-            [tableData]="transactionsForExport" #pdfComponentRef>
-        </app-pdf-print>
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2 font-medium" for="category">Category</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="category"
+            [(ngModel)]="selectedCategoryId" (change)="onCategorySelected()">
+            <option [value]="null" selected>Select All</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+            </option>
+        </select>
     </div>
-</div>
 
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2 font-medium" for="subCategory">Sub Category</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="subCategory"
+            [(ngModel)]="selectedSubCategoryId" (change)="onSubCategorySelected()" [disabled]="!selectedCategoryId">
+            <option [value]="null" selected>Select All</option>
+            <option *ngFor="let subCategory of subCategories" [value]="subCategory.id">
+                {{ subCategory.name }}
+            </option>
+        </select>
+    </div>
 
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2 font-medium" for="item">Item</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="item" [(ngModel)]="selectedItemId"
+            [disabled]="!selectedSubCategoryId">
+            <option [value]="null" selected>Select All</option>
+            <option *ngFor="let item of items" [value]="item.id">
+                {{ item.enName }}
+            </option>
+        </select>
+    </div>
 
-    <div class="w-[32%] flex justify-end">
+    <div class="w-[24%] flex justify-end">
         <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
-            [disabled]="!dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0"
- [ngClass]="{ 
+            [disabled]="!dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0" [ngClass]="{ 
                 'bg-gray-100 text-gray-300': !dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0, 
                 'secondaryBg text-white': dateFrom && dateTo && selectedStoreId && selectedFlagIds.length > 0
             }">

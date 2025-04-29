@@ -8,6 +8,9 @@ import { InventoryMasterService } from '../../../../../../Services/Employee/Inve
 import { StoresService } from '../../../../../../Services/Employee/Inventory/stores.service';
 import * as XLSX from 'xlsx';
 import { PdfPrintComponent } from '../../../../../../Component/pdf-print/pdf-print.component';
+import { InventoryCategoryService } from '../../../../../../Services/Employee/Inventory/inventory-category.service';
+import { InventorySubCategoriesService } from '../../../../../../Services/Employee/Inventory/inventory-sub-categories.service';
+import { ShopItemService } from '../../../../../../Services/Employee/Inventory/shop-item.service';
 
 interface FlagOption {
   id: number;
@@ -73,11 +76,19 @@ export class InvoiceReportMasterDetailedComponent implements OnInit {
   };
 
   currentFlags: FlagOption[] = [];
-
+selectedCategoryId: number | null = null;
+selectedSubCategoryId: number | null = null;
+selectedItemId: number | null = null;
+categories: any[] = [];
+subCategories: any[] = [];
+items: any[] = [];
   constructor(
-    private route: ActivatedRoute,
-    private inventoryMasterService: InventoryMasterService,
-    private storesService: StoresService
+  private route: ActivatedRoute,
+  private inventoryMasterService: InventoryMasterService,
+  private storesService: StoresService,
+  private categoryService: InventoryCategoryService,
+  private subCategoryService: InventorySubCategoriesService,
+  private shopItemService: ShopItemService
   ) {}
 
   ngOnInit() {
@@ -87,7 +98,62 @@ export class InvoiceReportMasterDetailedComponent implements OnInit {
       this.selectedFlagIds = this.currentFlags.map(flag => flag.id);
     });
     this.loadStores();
+
+      this.loadCategories();
+
   }
+
+
+  loadCategories() {
+  this.categoryService.Get(this.categoryService.ApiServ.GetHeader()).subscribe({
+    next: (categories) => {
+      this.categories = categories;
+    },
+    error: (error) => {
+      console.error('Error loading categories:', error);
+    }
+  });
+}
+onCategorySelected() {
+  this.selectedSubCategoryId = null;
+  this.selectedItemId = null;
+  this.items = [];
+  
+  if (this.selectedCategoryId === null) {
+    this.subCategories = [];
+    // Explicitly disable the dependent dropdowns
+    this.selectedSubCategoryId = null;
+    this.selectedItemId = null;
+  } else {
+    this.subCategoryService.GetByCategoryId(this.selectedCategoryId, this.subCategoryService.ApiServ.GetHeader())
+      .subscribe({
+        next: (subCategories) => {
+          this.subCategories = subCategories;
+        },
+        error: (error) => {
+          console.error('Error loading subcategories:', error);
+        }
+      });
+  }
+}
+
+onSubCategorySelected() {
+  this.selectedItemId = null;
+  
+  if (this.selectedSubCategoryId === null) {
+    this.items = [];
+  } else {
+    this.shopItemService.GetBySubCategory(this.selectedSubCategoryId, this.shopItemService.ApiServ.GetHeader())
+      .subscribe({
+        next: (items) => {
+          this.items = items;
+        },
+        error: (error) => {
+          console.error('Error loading items:', error);
+        }
+      });
+  }
+}
 
   loadStores() {
     this.isLoading = true;
@@ -125,24 +191,27 @@ export class InvoiceReportMasterDetailedComponent implements OnInit {
     return [];
   }
 
-  viewReport() {
-    if (!this.validateFilters()) return;
+viewReport() {
+  if (!this.validateFilters()) return;
 
-    this.isLoading = true;
-    this.showTable = false;
+  this.isLoading = true;
+  this.showTable = false;
 
-    const formattedDateFrom = this.formatDateForAPI(this.dateFrom);
-    const formattedDateTo = this.formatDateForAPI(this.dateTo);
+  const formattedDateFrom = this.formatDateForAPI(this.dateFrom);
+  const formattedDateTo = this.formatDateForAPI(this.dateTo);
 
-    this.inventoryMasterService.search(
-      this.inventoryMasterService.ApiServ.GetHeader(),
-      this.selectedStoreId,
-      formattedDateFrom,
-      formattedDateTo,
-      this.selectedFlagIds,
-      this.currentPage,
-      this.pageSize
-    ).subscribe({
+  this.inventoryMasterService.search(
+    this.inventoryMasterService.ApiServ.GetHeader(),
+    this.selectedStoreId,
+    formattedDateFrom,
+    formattedDateTo,
+    this.selectedFlagIds,
+    this.selectedCategoryId,
+    this.selectedSubCategoryId,
+    this.selectedItemId,
+    this.currentPage,
+    this.pageSize
+  ).subscribe({
       next: (response: any) => {
         if (Array.isArray(response)) {
           this.transactions = response;

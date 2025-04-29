@@ -1,11 +1,11 @@
 <div class="flex justify-between">
     <h1 class="primaryTxt font-bold text-2xl leading-9">
-        {{ reportType | titlecase }} Transaction Detailed Report
+        {{ reportType | titlecase }} Transaction Report
     </h1>
 </div>
 
 <div class="my-5 flex flex-wrap justify-between items-center">
-    <div class="flex flex-col w-[32%] mb-4">
+    <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="store">Store</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="store"
             [(ngModel)]="selectedStoreId">
@@ -15,19 +15,19 @@
         </select>
     </div>
 
-    <div class="flex flex-col w-[32%] mb-4">
+    <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="dateFrom">Date From</label>
         <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateFrom"
             [(ngModel)]="dateFrom">
     </div>
 
-    <div class="flex flex-col w-[32%] mb-4">
+    <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="dateTo">Date To</label>
         <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateTo"
             [(ngModel)]="dateTo">
     </div>
 
-    <div class="flex flex-col w-[32%] mb-4">
+    <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="flags">Transaction Types</label>
         <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
             [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
@@ -38,7 +38,33 @@
         </select>
     </div>
 
-    <div class="w-[32%] flex justify-end">
+<!-- For Category dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">cat</label>
+<select [(ngModel)]="selectedCategoryId" (change)="onCategorySelected()">
+    <option [ngValue]="null">Select All</option>
+    <option *ngFor="let category of categories" [ngValue]="category.id">
+        {{ category.name }}
+    </option>
+</select>
+</div>
+<!-- For SubCategory dropdown -->
+<select [(ngModel)]="selectedSubCategoryId" (change)="onSubCategorySelected()" [disabled]="selectedCategoryId === null">
+    <option [ngValue]="null">Select All</option>
+    <option *ngFor="let subCategory of subCategories" [ngValue]="subCategory.id">
+        {{ subCategory.name }}
+    </option>
+</select>
+
+<!-- For Item dropdown -->
+<select [(ngModel)]="selectedItemId" [disabled]="selectedSubCategoryId === null">
+    <option [ngValue]="null">Select All</option>
+    <option *ngFor="let item of items" [ngValue]="item.id">
+        {{ item.enName }}
+    </option>
+</select>
+
+    <div class="w-[24%] flex justify-end">
         <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
             [disabled]="!dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0" [ngClass]="{ 
                 'bg-gray-100 text-gray-300': !dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0, 

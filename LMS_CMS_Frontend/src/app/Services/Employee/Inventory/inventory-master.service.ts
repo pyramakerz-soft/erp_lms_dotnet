@@ -167,6 +167,9 @@ search(
   dateFrom: string,
   dateTo: string,
   flagIds: number[],
+  categoryId?: number | null,
+  subCategoryId?: number | null,
+  itemId?: number | null,
   pageNumber: number = 1,
   pageSize: number = 10
 ) {
@@ -179,7 +182,7 @@ search(
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
 
-  // Build URL with multiple FlagIds parameters
+  // Build URL with parameters
   let url = `${this.baseUrl}/InventoryMaster/Search?storeId=${storeId}&DateFrom=${dateFrom}&DateTo=${dateTo}`;
   
   // Add each flagId as a separate parameter
@@ -187,12 +190,70 @@ search(
     url += `&FlagIds=${id}`;
   });
 
+  // Add categoryId if provided
+  if (categoryId !== undefined && categoryId !== null) {
+    url += `&CategoryId=${categoryId}`;
+  }
+
+  // Add subCategoryId if provided
+  if (subCategoryId !== undefined && subCategoryId !== null) {
+    url += `&SubCategoryId=${subCategoryId}`;
+  }
+
+  // Add itemId if provided
+  if (itemId !== undefined && itemId !== null) {
+    url += `&ItemId=${itemId}`;
+  }
+
   // Add pagination parameters
   url += `&pageNumber=${pageNumber}&pageSize=${pageSize}`;
 
   return this.http.get<any>(url, { headers });
 }
  
+searchInvoice(
+  DomainName: string,
+  storeId: number,
+  dateFrom: string,
+  dateTo: string,
+  flagIds: number[],
+  categoryId?: number | null,
+  subCategoryId?: number | null,
+  itemId?: number | null,
+  pageNumber: number = 1,
+  pageSize: number = 10
+) {
+  if (DomainName != null) {
+    this.header = DomainName;
+  }
+  const token = localStorage.getItem("current_token");
+  const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+
+  let url = `${this.baseUrl}/InventoryMaster/SearchInvoice?StoredId=${storeId}&DateFrom=${dateFrom}&DateTo=${dateTo}`;
+  
+  flagIds.forEach(id => {
+    url += `&FlagIds=${id}`;
+  });
+
+  if (categoryId !== undefined && categoryId !== null) {
+    url += `&CategoryId=${categoryId}`;
+  }
+
+  if (subCategoryId !== undefined && subCategoryId !== null) {
+    url += `&SubCategoryId=${subCategoryId}`;
+  }
+
+  if (itemId !== undefined && itemId !== null) {
+    url += `&ItemId=${itemId}`;
+  }
+
+  url += `&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+
+  return this.http.get<any>(url, { headers });
+}
  }
  
 

@@ -8,6 +8,9 @@ import { InventoryMasterService } from '../../../../../../Services/Employee/Inve
 import { StoresService } from '../../../../../../Services/Employee/Inventory/stores.service';
 import * as XLSX from 'xlsx';
 import { PdfPrintComponent } from '../../../../../../Component/pdf-print/pdf-print.component';
+import { InventoryCategoryService } from '../../../../../../Services/Employee/Inventory/inventory-category.service';
+import { InventorySubCategoriesService } from '../../../../../../Services/Employee/Inventory/inventory-sub-categories.service';
+import { ShopItemService } from '../../../../../../Services/Employee/Inventory/shop-item.service';
 
 
 interface FlagOption {
@@ -54,7 +57,7 @@ getTableDataWithHeader(): any[] {
   reportType: string = '';
   selectedFlagId: number = -1; // single selected id
 selectedFlagIds: number[] = []; // array to send to backend
-  
+
   @ViewChild(PdfPrintComponent) pdfPrintComponent!: PdfPrintComponent;
 
   showPDF = false;
@@ -111,11 +114,19 @@ getInfoRows(): any[] {
   pageSize: number = 10;
   totalPages: number = 1;
   totalRecords: number = 0;
-
+  selectedCategoryId: number | null = null;
+  selectedSubCategoryId: number | null = null;
+  selectedItemId: number | null = null;
+  categories: any[] = [];
+  subCategories: any[] = [];
+  items: any[] = [];
   constructor(
     private route: ActivatedRoute,
     private inventoryMasterService: InventoryMasterService,
-    private storesService: StoresService
+    private storesService: StoresService,
+    private categoryService: InventoryCategoryService,
+    private subCategoryService: InventorySubCategoriesService,
+    private shopItemService: ShopItemService
   ) {}
 
   ngOnInit() {
@@ -128,6 +139,56 @@ getInfoRows(): any[] {
 
     this.selectedFlagId = 0;
 this.selectedFlagIds = [];
+this.loadCategories();
+
+  }
+    loadCategories() {
+    this.categoryService.Get(this.categoryService.ApiServ.GetHeader()).subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+      }
+    });
+  }
+
+ onCategorySelected() {
+    this.selectedSubCategoryId = null;
+    this.selectedItemId = null;
+    this.items = [];
+    
+    if (this.selectedCategoryId) {
+      this.subCategoryService.GetByCategoryId(this.selectedCategoryId, this.subCategoryService.ApiServ.GetHeader())
+        .subscribe({
+          next: (subCategories) => {
+            this.subCategories = subCategories;
+          },
+          error: (error) => {
+            console.error('Error loading subcategories:', error);
+          }
+        });
+    } else {
+      this.subCategories = [];
+    }
+  }
+
+  onSubCategorySelected() {
+    this.selectedItemId = null;
+    
+    if (this.selectedSubCategoryId) {
+      this.shopItemService.GetBySubCategory(this.selectedSubCategoryId, this.shopItemService.ApiServ.GetHeader())
+        .subscribe({
+          next: (items) => {
+            this.items = items;
+          },
+          error: (error) => {
+            console.error('Error loading items:', error);
+          }
+        });
+    } else {
+      this.items = [];
+    }
   }
 
 
@@ -193,7 +254,7 @@ this.selectedFlagIds = [];
     });
   }
 
-  viewReport() {
+ viewReport() {
     if (!this.validateFilters()) return;
 
     this.isLoading = true;
@@ -202,24 +263,23 @@ this.selectedFlagIds = [];
     const formattedDateFrom = this.formatDateForAPI(this.dateFrom);
     const formattedDateTo = this.formatDateForAPI(this.dateTo);
 
-    this.inventoryMasterService.search(
+    this.inventoryMasterService.searchInvoice(
       this.inventoryMasterService.ApiServ.GetHeader(),
       this.selectedStoreId,
       formattedDateFrom,
       formattedDateTo,
       this.selectedFlagIds,
+      this.selectedCategoryId,
+      this.selectedSubCategoryId,
+      this.selectedItemId,
       this.currentPage,
       this.pageSize
     ).subscribe({
       next: (response: any) => {
-        if (Array.isArray(response)) {
-          this.transactions = response;
-          this.totalRecords = response.length;
-          this.totalPages = Math.ceil(response.length / this.pageSize);
-        } else if (response?.data) {
+        if (response?.data) {
           this.transactions = response.data;
-          this.totalRecords = response.pagination?.totalRecords || response.data.length;
-          this.totalPages = response.pagination?.totalPages || Math.ceil(response.data.length / this.pageSize);
+          this.totalRecords = response.allTotal || response.data.length;
+          this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
         } else {
           this.transactions = [];
         }

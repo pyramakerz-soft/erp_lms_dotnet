@@ -16,6 +16,7 @@ import { Question } from '../../../../Models/Registration/question';
 import { TestWithQuestion } from '../../../../Models/Registration/test-with-question';
 import { Answer } from '../../../../Models/Registration/answer';
 import { QuestionOption } from '../../../../Models/Registration/question-option';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registraion-test',
@@ -188,6 +189,12 @@ export class RegistraionTestComponent {
       )
       .subscribe((a) => {
         this.GetAllData();
+        Swal.fire({
+          icon: 'success',
+          title: 'Done',
+          text: 'Added Succeessfully',
+          confirmButtonColor: '#FF7519',
+        });
         this.router.navigateByUrl(`Parent/Admission Test`);
       });
   }

@@ -469,6 +469,12 @@ export class StockingDetailsComponent {
         this.StockingServ.Add(this.Data, this.DomainName).subscribe(
           (d) => {
             this.MasterId = d;
+            Swal.fire({
+              icon: 'success',
+              title: 'Done',
+              text: 'Stocking Added Succeessfully',
+              confirmButtonColor: '#FF7519',
+            });
             this.router.navigateByUrl(`Employee/Stocking`);
           },
           (error) => {
@@ -509,6 +515,12 @@ export class StockingDetailsComponent {
         );
         this.StockingServ.Edit(this.Data, this.DomainName).subscribe(
           (d) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Done',
+              text: 'Stocking Edited Succeessfully',
+              confirmButtonColor: '#FF7519',
+            });
             this.router.navigateByUrl(`Employee/Stocking`);
           },
           (error) => {

@@ -18,12 +18,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
     public class AcademicDegreeController : ControllerBase
     {
         private readonly DbContextFactoryService _dbContextFactory;
-        IMapper mapper; 
+        IMapper mapper;
+        private readonly CheckPageAccessService _checkPageAccessService;
 
-        public AcademicDegreeController(DbContextFactoryService dbContextFactory, IMapper mapper)
+        public AcademicDegreeController(DbContextFactoryService dbContextFactory, IMapper mapper, CheckPageAccessService checkPageAccessService)
         {
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _checkPageAccessService = checkPageAccessService;
         }
 
         ///////////////////////////////////////////
@@ -37,7 +39,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            List<AcademicDegree> AcademicDegrees = Unit_Of_Work.academicDegree_Repository.Select_All();
+            List<AcademicDegree> AcademicDegrees = Unit_Of_Work.academicDegree_Repository.FindBy(d => d.IsDeleted != true);
 
             if (AcademicDegrees == null || AcademicDegrees.Count == 0)
             {
@@ -58,7 +60,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            AcademicDegree academicDegree = Unit_Of_Work.academicDegree_Repository.First_Or_Default(d => d.ID == id);
+            AcademicDegree academicDegree = Unit_Of_Work.academicDegree_Repository.First_Or_Default(d => d.ID == id && d.IsDeleted != true);
 
             if (academicDegree == null)
             {
@@ -95,26 +97,21 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             }
             AcademicDegree academicDegree = mapper.Map<AcademicDegree>(newAcademicDegree);
 
-
-            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            //academicDegree.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-            //if (userTypeClaim == "octa")
-            //{
-            //    job.InsertedByOctaId = userId;
-            //}
-            //else if (userTypeClaim == "employee")
-            //{
-            //    job.InsertedByUserId = userId;
-            //}
-
-            //Unit_Of_Work.job_Repository.Add(job);
-            //Unit_Of_Work.SaveChanges();
-            //return Ok(newJob);
-
-
             List<AcademicDegree> AcademicDegrees = Unit_Of_Work.academicDegree_Repository.Select_All();
             long Count = AcademicDegrees.Count();
             academicDegree.ID = Count + 1;
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            academicDegree.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                academicDegree.InsertedByOctaId = userId;
+            }
+            else if (userTypeClaim == "employee")
+            {
+                academicDegree.InsertedByUserId = userId;
+            }  
+
             Unit_Of_Work.academicDegree_Repository.Add(academicDegree);
             Unit_Of_Work.SaveChanges();
             return Ok(newAcademicDegree);
@@ -156,6 +153,34 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
               
             mapper.Map(newAcademicDegree, academicDegree);
 
+            if (userTypeClaim == "employee")
+            {
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Academic Degree", roleId, userId, academicDegree);
+                if (accessCheck != null)
+                {
+                    return accessCheck;
+                }
+            }
+             
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            academicDegree.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                academicDegree.UpdatedByOctaId = userId;
+                if (academicDegree.UpdatedByUserId != null)
+                {
+                    academicDegree.UpdatedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                academicDegree.UpdatedByUserId = userId;
+                if (academicDegree.UpdatedByOctaId != null)
+                {
+                    academicDegree.UpdatedByOctaId = null;
+                }
+            }
+
             Unit_Of_Work.academicDegree_Repository.Update(academicDegree);
             Unit_Of_Work.SaveChanges();
             return Ok(newAcademicDegree);
@@ -184,21 +209,45 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             {
                 return Unauthorized("User ID or Type claim not found.");
             }
-
-            //if (id == 0)
-            //{
-            //    return BadRequest("Enter Academic Degree ID");
-            //}
-
+             
             AcademicDegree academicDegree = Unit_Of_Work.academicDegree_Repository.First_Or_Default(t => t.ID == id);
-
-
+             
             if (academicDegree == null)
             {
                 return NotFound();
             }
 
-            Unit_Of_Work.academicDegree_Repository.Delete(id);
+            if (userTypeClaim == "employee")
+            {
+                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Academic Degree", roleId, userId, academicDegree);
+                if (accessCheck != null)
+                {
+                    return accessCheck;
+                }
+            }
+
+            academicDegree.IsDeleted = true;
+
+            TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
+            academicDegree.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
+            if (userTypeClaim == "octa")
+            {
+                academicDegree.DeletedByOctaId = userId;
+                if (academicDegree.DeletedByUserId != null)
+                {
+                    academicDegree.DeletedByUserId = null;
+                }
+            }
+            else if (userTypeClaim == "employee")
+            {
+                academicDegree.DeletedByUserId = userId;
+                if (academicDegree.DeletedByOctaId != null)
+                {
+                    academicDegree.DeletedByOctaId = null;
+                }
+            }
+
+            Unit_Of_Work.academicDegree_Repository.Update(academicDegree);
             Unit_Of_Work.SaveChanges();
             return Ok();
         }

@@ -200,6 +200,12 @@ export class EmployeeAddEditComponent {
       if (this.mode == "Create") {
         return this.EmpServ.Add(this.Data, this.DomainName).toPromise().then(
           (data) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Done',
+              text: 'Employee Added Succeessfully',
+              confirmButtonColor: '#FF7519',
+            });
             this.moveToEmployee();
             this.isLoading = false;
             return true;
@@ -245,6 +251,12 @@ export class EmployeeAddEditComponent {
         }
         return this.EmpServ.Edit(this.Data, this.DomainName).toPromise().then(
           (data) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Done',
+              text: 'Employee Edited Succeessfully',
+              confirmButtonColor: '#FF7519',
+            });
             this.moveToEmployee();
             this.isLoading = false;
             return true;

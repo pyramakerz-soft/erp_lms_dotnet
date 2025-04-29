@@ -39,6 +39,8 @@ import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.com
 import { ReportsService } from '../../../../Services/shared/reports.service';
 import { SearchDropdownComponent } from '../../../../Component/search-dropdown/search-dropdown.component';
 import { map } from 'rxjs/operators';
+import { School } from '../../../../Models/school';
+import { SchoolService } from '../../../../Services/Employee/school.service';
 
 @Component({
   selector: 'app-inventory-details',
@@ -132,6 +134,7 @@ export class InventoryDetailsComponent {
   totalPages = 1;
 
   tableDataForPrint: any[]=[];
+  schools:School[]=[]
 
   constructor(
     private router: Router,
@@ -154,7 +157,8 @@ export class InventoryDetailsComponent {
     public shopitemServ: ShopItemService,
     public SupplierServ: SupplierService,
     public InventoryFlagServ: InventoryFlagService,
-    public reportsService: ReportsService
+    public reportsService: ReportsService ,
+    public SchoolServ : SchoolService
   ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -212,6 +216,7 @@ export class InventoryDetailsComponent {
     await this.GetAllStores();
     await this.GetAllSaves();
     await this.GetAllBanks();
+    await this.GetAllSchools();
     this.GetInventoryFlagInfo();
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -242,6 +247,11 @@ export class InventoryDetailsComponent {
     });
   }
 
+  GetAllSchools(){
+    this.SchoolServ.Get(this.DomainName).subscribe((d)=>{
+      this.schools=d
+    })
+  }
 
   GetAllStores() {
     this.storeServ.Get(this.DomainName).subscribe((d) => {

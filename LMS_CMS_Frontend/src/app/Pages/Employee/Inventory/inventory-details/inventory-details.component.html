@@ -38,13 +38,13 @@
         No Data Found
       </option>
     </select>
-    <span *ngIf="validationErrors['storeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors["storeID"]
-      }}</span>
+    <span *ngIf="validationErrors['storeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors["storeID"]}}</span>
     <span *ngIf="IsPrint"
       class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block">
       {{ getStoreNameById(Data.storeID) }}
     </span>
   </div>
+
   <div class="flex flex-col mb-4 w-[24%]">
     <label class="mb-2 primaryTxt" for="name">Invoice Number</label>
     <input id="name" type="text"
@@ -62,6 +62,20 @@
       class="rounded-lg border border-solid border-gray-300 px-4 py-3 bg-gray-100 text-sm text-gray-600 block">
       {{ Data.date }}
     </span>
+  </div>
+
+  <div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2" for="store">School</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school"
+      (ngModelChange)="onInputValueChange({ field: 'schoolId', value: $event })"
+      [(ngModel)]="Data.schoolId">
+      <option [value]="0" disabled selected hidden>Choose School</option>
+      <option *ngFor="let s of schools" [value]="s.id">{{ s.name }}</option>
+      <option *ngIf="schools.length === 0" disabled selected>
+        No Data Found
+      </option>
+    </select>
+    <span *ngIf="validationErrors['schoolId']" class="text-red-500 ml-3 font-normal">{{ validationErrors["schoolId"]}}</span>
   </div>
 
   <div *ngIf="FlagId == 8" class="flex flex-col w-[24%] mb-4">
@@ -94,6 +108,7 @@
       [serviceFunction]="SearchSuppliers">
     </app-search-dropdown>
   </div>
+  
 
   <div *ngIf="IsRemainingCashVisa" class="flex justify-start w-full mb-4 space-x-5">
     <div class="flex w-[8%] space-x-5 items-center mb-4">

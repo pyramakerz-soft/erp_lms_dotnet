@@ -12,7 +12,10 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string DateFrom { get; set; }
         public string DateTo { get; set; }
         public List<long> FlagIds { get; set; }
-        public List<long>? ShopItemId { get; set; }
+        //public List<long>? ShopItemId { get; set; }
+        public long? CategoryId { get; set; }
+        public long? SubCategoryId { get; set; }
+        public long? ItemId { get; set; }
 
     }
 }

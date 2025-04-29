@@ -237,6 +237,12 @@ export class AccountingEmployeeEditComponent {
       this.isLoading = true
       this.employeeServ.EditAccountingEmployee(this.Data, this.DomainName).subscribe((d) => {
         this.GetAllData();
+        Swal.fire({
+          icon: 'success',
+          title: 'Done',
+          text: 'Employee Edited Succeessfully',
+          confirmButtonColor: '#FF7519',
+        });
         this.router.navigateByUrl(`Employee/Employee Accounting`)
         this.isLoading = false
       },

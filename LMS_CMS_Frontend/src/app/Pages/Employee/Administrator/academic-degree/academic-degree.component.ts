@@ -158,9 +158,9 @@ export class AcademicDegreeComponent {
           this.DomainName
         ).subscribe(
           (d) => {
+            this.closeModal();
             this.GetAllData();
             this.isLoading = false;
-            this.closeModal();
           },
           (error) => {
             this.isLoading = false; // Hide spinner
@@ -180,9 +180,9 @@ export class AcademicDegreeComponent {
           this.DomainName
         ).subscribe(
           (d) => {
+            this.closeModal();
             this.GetAllData();
             this.isLoading = false;
-            this.closeModal();
           },
           (error) => {
             this.isLoading = false; // Hide spinner
@@ -196,8 +196,7 @@ export class AcademicDegreeComponent {
           }
         );
       }
-    }
-    this.GetAllData();
+    } 
   }
 
   closeModal() {

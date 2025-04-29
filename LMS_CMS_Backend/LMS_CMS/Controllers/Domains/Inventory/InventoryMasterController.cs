@@ -100,55 +100,59 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
         [HttpGet("Search")]
         [Authorize_Endpoint_(
-             allowedTypes: new[] { "octa", "employee" },
-             pages: new[] { "Inventory" }
-         )]
+         allowedTypes: new[] { "octa", "employee" },
+         pages: new[] { "Inventory" }
+        )]
         public async Task<IActionResult> GetSearch([FromQuery] InventoryMasterSearch obj)
         {
-            var Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+            var unitOfWork = _dbContextFactory.CreateOneDbContext(HttpContext);
+
             if (obj.FlagIds == null || !obj.FlagIds.Any())
                 return BadRequest("FlagIds cannot be null or empty.");
-            if (!DateTime.TryParse(obj.DateFrom, out DateTime dateFrom))
-                return BadRequest("DateFrom is not a valid date.");
-            if (!DateTime.TryParse(obj.DateTo, out DateTime dateTo))
-                return BadRequest("DateTo is not a valid date.");
+
+            if (!DateTime.TryParse(obj.DateFrom, out var dateFrom) || !DateTime.TryParse(obj.DateTo, out var dateTo))
+                return BadRequest("Invalid date format.");
+
             if (dateFrom > dateTo)
                 return BadRequest("DateFrom cannot be after DateTo.");
 
-            var data = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById<InventoryMaster>(
+            var data = await unitOfWork.inventoryMaster_Repository.Select_All_With_IncludesById<InventoryMaster>(
                 f => f.IsDeleted != true && obj.FlagIds.Contains(f.FlagId),
-                query => query.Include(x => x.Store)
-                              .Include(x => x.Student)
-                              .Include(x => x.InventoryFlags)
-                              .Include(x => x.InventoryDetails)
-                              .Include(x => x.Save)
-                              .Include(x => x.Bank));
+                query => query
+                    .Include(x => x.Store)
+                    .Include(x => x.Student)
+                    .Include(x => x.InventoryFlags)
+                    .Include(x => x.InventoryDetails)
+                        .ThenInclude(detail => detail.ShopItem)
+                            .ThenInclude(shopItem => shopItem.InventorySubCategories)
+                                .ThenInclude(subCategory => subCategory.InventoryCategories)
+                    .Include(x => x.Save)
+                    .Include(x => x.Bank)
+            );
 
             var filteredData = data.Where(f =>
                 DateTime.TryParse(f.Date, out var parsedDate) &&
-                parsedDate >= dateFrom &&
-                parsedDate <= dateTo &&
-                (
-                    obj.ShopItemId == null || !obj.ShopItemId.Any() ||
-                    f.InventoryDetails.Any(x => obj.ShopItemId.Contains(x.ShopItemID))) &&
-                    (obj.StoredId == null || (f.Store != null && f.Store.ID == obj.StoredId)))
-                    .ToList();
+                parsedDate >= dateFrom && parsedDate <= dateTo &&
+                (obj.StoredId == null || (f.Store != null && f.Store.ID == obj.StoredId)) &&
+                f.InventoryDetails.Any(detail =>
+                    (obj.CategoryId == null || detail.ShopItem.InventorySubCategories.InventoryCategoriesID == obj.CategoryId) &&
+                    (obj.SubCategoryId == null || detail.ShopItem.InventorySubCategoriesID == obj.SubCategoryId) &&
+                    (obj.ItemId == null || detail.ShopItemID == obj.ItemId)
+                )
+            ).ToList();
+
             if (!filteredData.Any())
                 return NotFound("No records found matching the search criteria.");
-            decimal AllTotal = 0;
-            foreach (var item in filteredData)
-            {
-                var flagValue = item.InventoryFlags?.FlagValue ?? 0m;
-                var total = item.Total;
-                AllTotal += total * flagValue;
-            }
+
+            var allTotal = filteredData.Sum(item => (item.Total) * (item.InventoryFlags?.FlagValue ?? 0));
+
             var dto = mapper.Map<List<InventoryMasterGetDTO>>(filteredData);
-            var response = new
+
+            return Ok(new
             {
-                AllTotal,
+                AllTotal = allTotal,
                 Data = dto
-            };
-            return Ok(response);
+            });
         }
 
         /////////////////////////////////////////////////////////////////////////////

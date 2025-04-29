@@ -148,13 +148,13 @@
 		</cac:TaxCategory>
 	</cac:AllowanceCharge>
 	<cac:TaxTotal>
-		<cbc:TaxAmount currencyID="SAR">30.15</cbc:TaxAmount>
+		<cbc:TaxAmount currencyID="SAR">44.55</cbc:TaxAmount>
 	</cac:TaxTotal>
 	<cac:TaxTotal>
-		<cbc:TaxAmount currencyID="SAR">30.15</cbc:TaxAmount>
+		<cbc:TaxAmount currencyID="SAR">44.55</cbc:TaxAmount>
 		<cac:TaxSubtotal>
-			<cbc:TaxableAmount currencyID="SAR">201.00</cbc:TaxableAmount>
-			<cbc:TaxAmount currencyID="SAR">30.15</cbc:TaxAmount>
+			<cbc:TaxableAmount currencyID="SAR">297.00</cbc:TaxableAmount>
+			<cbc:TaxAmount currencyID="SAR">44.55</cbc:TaxAmount>
 			<cac:TaxCategory>
 				<cbc:ID schemeID="UN/ECE 5305" schemeAgencyID="6">S</cbc:ID>
 				<cbc:Percent>15.00</cbc:Percent>
@@ -165,65 +165,11 @@
 		</cac:TaxSubtotal>
 	</cac:TaxTotal>
 	<cac:LegalMonetaryTotal>
-		<cbc:LineExtensionAmount currencyID="SAR">201.00</cbc:LineExtensionAmount>
-		<cbc:TaxExclusiveAmount currencyID="SAR">201.00</cbc:TaxExclusiveAmount>
-		<cbc:TaxInclusiveAmount currencyID="SAR">231.15</cbc:TaxInclusiveAmount>
+		<cbc:LineExtensionAmount currencyID="SAR">297.00</cbc:LineExtensionAmount>
+		<cbc:TaxExclusiveAmount currencyID="SAR">297.00</cbc:TaxExclusiveAmount>
+		<cbc:TaxInclusiveAmount currencyID="SAR">341.55</cbc:TaxInclusiveAmount>
 		<cbc:AllowanceTotalAmount currencyID="SAR">0.00</cbc:AllowanceTotalAmount>
 		<cbc:PrepaidAmount currencyID="SAR">0.00</cbc:PrepaidAmount>
-		<cbc:PayableAmount currencyID="SAR">231.15</cbc:PayableAmount>
+		<cbc:PayableAmount currencyID="SAR">341.55</cbc:PayableAmount>
 	</cac:LegalMonetaryTotal>
-	<cac:InvoiceLine>
-		<cbc:ID>1</cbc:ID>
-		<cbc:InvoicedQuantity unitCode="PCE">33.000000</cbc:InvoicedQuantity>
-		<cbc:LineExtensionAmount currencyID="SAR">99.00</cbc:LineExtensionAmount>
-		<cac:TaxTotal>
-			<cbc:TaxAmount currencyID="SAR">14.85</cbc:TaxAmount>
-			<cbc:RoundingAmount currencyID="SAR">113.85</cbc:RoundingAmount>
-		</cac:TaxTotal>
-		<cac:Item>
-			<cbc:Name>كتاب</cbc:Name>
-			<cac:ClassifiedTaxCategory>
-				<cbc:ID>S</cbc:ID>
-				<cbc:Percent>15.00</cbc:Percent>
-				<cac:TaxScheme>
-					<cbc:ID>VAT</cbc:ID>
-				</cac:TaxScheme>
-			</cac:ClassifiedTaxCategory>
-		</cac:Item>
-		<cac:Price>
-			<cbc:PriceAmount currencyID="SAR">3.00</cbc:PriceAmount>
-			<cac:AllowanceCharge>
-				<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-				<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>
-				<cbc:Amount currencyID="SAR">0.00</cbc:Amount>
-			</cac:AllowanceCharge>
-		</cac:Price>
-	</cac:InvoiceLine>
-	<cac:InvoiceLine>
-		<cbc:ID>2</cbc:ID>
-		<cbc:InvoicedQuantity unitCode="PCE">3.000000</cbc:InvoicedQuantity>
-		<cbc:LineExtensionAmount currencyID="SAR">102.00</cbc:LineExtensionAmount>
-		<cac:TaxTotal>
-			<cbc:TaxAmount currencyID="SAR">15.30</cbc:TaxAmount>
-			<cbc:RoundingAmount currencyID="SAR">117.30</cbc:RoundingAmount>
-		</cac:TaxTotal>
-		<cac:Item>
-			<cbc:Name>قلم</cbc:Name>
-			<cac:ClassifiedTaxCategory>
-				<cbc:ID>S</cbc:ID>
-				<cbc:Percent>15.00</cbc:Percent>
-				<cac:TaxScheme>
-					<cbc:ID>VAT</cbc:ID>
-				</cac:TaxScheme>
-			</cac:ClassifiedTaxCategory>
-		</cac:Item>
-		<cac:Price>
-			<cbc:PriceAmount currencyID="SAR">34.00</cbc:PriceAmount>
-			<cac:AllowanceCharge>
-				<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-				<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>
-				<cbc:Amount currencyID="SAR">0.00</cbc:Amount>
-			</cac:AllowanceCharge>
-		</cac:Price>
-	</cac:InvoiceLine>
 </Invoice>

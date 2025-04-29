@@ -67,7 +67,7 @@
 		</ext:UBLExtension>
 	</ext:UBLExtensions>
 	<cbc:ProfileID>reporting:1.0</cbc:ProfileID>
-	<cbc:ID>SME00010</cbc:ID>
+	<cbc:ID>SME00001</cbc:ID>
 	<cbc:UUID>378b8875-5481-449b-96bf-8aff1eb6e93e</cbc:UUID>
 	<cbc:IssueDate>2025-04-23</cbc:IssueDate>
 	<cbc:IssueTime>16:09:42</cbc:IssueTime>

@@ -129,6 +129,14 @@ export class InstallmentDeductionDetailComponent {
       this.installmentDeductionMasterServ.Add(this.Data, this.DomainName).subscribe((d) => {
         this.MasterId = d
         this.isLoading = false
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Done',
+          text: 'Done Succeessfully',
+          confirmButtonColor: '#FF7519',
+        });
+        
         this.router.navigateByUrl(`Employee/Installment Deduction Details/Edit/${this.MasterId}`)
       },
         err => {

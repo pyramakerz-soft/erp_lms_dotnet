@@ -2,6 +2,7 @@
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_PL.Services.Invoice;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text;
 using Zatca.EInvoice.SDK.Contracts;
@@ -86,15 +87,15 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 Directory.CreateDirectory(invoices);
             }
 
-            //InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
-            //    x => x.ID == id,
-            //    query => query.Include(m => m.InventoryDetails),
-            //    query => query.Include(m => m.Student));
+            InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
+                x => x.ID == masterId,
+                query => query.Include(m => m.InventoryDetails),
+                query => query.Include(m => m.Student));
 
-            //if (master == null)
-            //    return NotFound();
+            if (master == null)
+                return NotFound();
 
-            InventoryMaster master = new();
+            //InventoryMaster master = new();
 
             //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
 

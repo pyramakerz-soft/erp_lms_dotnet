@@ -154,8 +154,8 @@ export class CreditsComponent {
       this.isLoading = true
       if (this.mode == 'Create') {
         this.CreditServ.Add(this.credit, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal()
+          this.GetAllData()
           this.isLoading = false
         },
           err => {
@@ -171,8 +171,8 @@ export class CreditsComponent {
       }
       if (this.mode == 'Edit') {
         this.CreditServ.Edit(this.credit, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal()
+          this.GetAllData()
           this.isLoading = false
         },
           err => {
@@ -185,10 +185,8 @@ export class CreditsComponent {
               customClass: { confirmButton: 'secondaryBg' },
             });
           });
-      }
-      this.GetAllData()
-    }
-    this.GetAllData()
+      } 
+    } 
   }
 
   closeModal() {

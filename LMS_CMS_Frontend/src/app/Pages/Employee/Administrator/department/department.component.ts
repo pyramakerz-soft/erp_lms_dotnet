@@ -156,9 +156,9 @@ export class DepartmentComponent {
       if (this.mode == 'Create') {
         this.DepartmentServ.Add(this.department, this.DomainName).subscribe(
           (d) => {
-            this.GetAllData();
             this.isLoading = false;
             this.closeModal();
+            this.GetAllData();
           },
           (error) => {
             this.isLoading = false; // Hide spinner
@@ -175,9 +175,9 @@ export class DepartmentComponent {
       if (this.mode == 'Edit') {
         this.DepartmentServ.Edit(this.department, this.DomainName).subscribe(
           (d) => {
-            this.GetAllData();
             this.isLoading = false;
             this.closeModal();
+            this.GetAllData();
           },
           (error) => {
             this.isLoading = false; // Hide spinner
@@ -191,8 +191,7 @@ export class DepartmentComponent {
           }
         );
       }
-    }
-    this.GetAllData();
+    } 
   }
 
   closeModal() {

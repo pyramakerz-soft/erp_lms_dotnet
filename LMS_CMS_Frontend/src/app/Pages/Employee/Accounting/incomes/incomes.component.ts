@@ -166,8 +166,8 @@ export class IncomesComponent {
       this.isLoading = true
       if (this.mode == 'Create') {
         this.IncomeServ.Add(this.income, this.DomainName).subscribe(data => {
-          this.GetAllData();
           this.closeModal();
+          this.GetAllData();
           this.isLoading = false
 
         },
@@ -184,8 +184,8 @@ export class IncomesComponent {
       }
       if (this.mode == 'Edit') {
         this.IncomeServ.Edit(this.income, this.DomainName).subscribe(data => {
-          this.GetAllData();
           this.closeModal();
+          this.GetAllData();
           this.isLoading = false
 
         },
@@ -200,8 +200,7 @@ export class IncomesComponent {
             });
           });
       }
-    }
-    this.GetAllData()
+    } 
   }
 
   closeModal() {

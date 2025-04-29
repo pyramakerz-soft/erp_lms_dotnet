@@ -41,6 +41,7 @@ export class EmployeeAddEditComponent {
   validationErrors: { [key in keyof EmployeeGet]?: string } = {};
   emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/; 
   DeletedFiles: number[] = []
+  SelectedFiles :File [] = []
   isLoading = false;
 
   constructor(public RoleServ: RoleService, public empTypeServ: EmployeeTypeService, public BusCompanyServ: BusCompanyService, public activeRoute: ActivatedRoute, public account: AccountService, public ApiServ: ApiService, private menuService: MenuService, public EditDeleteServ: DeleteEditPermissionService, private router: Router, public EmpServ: EmployeeService) { }
@@ -92,21 +93,29 @@ export class EmployeeAddEditComponent {
     });
   }
 
-  onFilesSelected(event: Event): void {
+  onFilesSelected(event: Event): void { 
     const input = event.target as HTMLInputElement;
     if (input.files) {
       for (let i = 0; i < input.files.length; i++) {
-        const file = input.files[i];
-        this.Data.files.push(file);
+        const file = input.files[i]; 
+        this.SelectedFiles.push(file);
       }
-    }
+    } 
+    input.value = '';
   }
 
   deleteFile(id: any): void {
     const file: any = this.Data.files[id];
     this.DeletedFiles.push(file.id);
     this.Data.files.splice(id, 1);
-  }
+  } 
+  
+  deleteFileFromSelectedFile(file: File): void { 
+    const index = this.SelectedFiles.indexOf(file);
+    if (index !== -1) {
+      this.SelectedFiles.splice(index, 1);
+    } 
+  } 
 
   downloadFile(file: any): void {
     if (this.mode == "Create") {
@@ -185,6 +194,9 @@ export class EmployeeAddEditComponent {
   async Save() {
     if (this.isFormValid()) { 
       this.isLoading = true;
+      for (let i = 0; i < this.SelectedFiles.length; i++) {
+        this.Data.files.push(this.SelectedFiles[i]);
+      }
       if (this.mode == "Create") {
         return this.EmpServ.Add(this.Data, this.DomainName).toPromise().then(
           (data) => {

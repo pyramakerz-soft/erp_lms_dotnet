@@ -168,8 +168,8 @@ export class SavesComponent {
       this.isLoading = true
       if (this.mode == 'Create') {
         this.SaveServ.Add(this.save, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal();
+          this.GetAllData()
           this.isLoading = false
 
         },
@@ -186,8 +186,8 @@ export class SavesComponent {
       }
       if (this.mode == 'Edit') {
         this.SaveServ.Edit(this.save, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal();
+          this.GetAllData()
           this.isLoading = false
 
         },
@@ -202,8 +202,7 @@ export class SavesComponent {
             });
           })
       }
-    }
-    this.GetAllData()
+    } 
   }
 
   closeModal() {

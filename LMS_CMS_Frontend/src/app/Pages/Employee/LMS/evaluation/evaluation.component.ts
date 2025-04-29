@@ -48,8 +48,8 @@ export class EvaluationComponent {
   UserID: number = 0;
   User_Data_After_Login: TokenData = new TokenData( '', 0, 0, 0, 0, '', '', '', '', '' );
 
-  isNarrationOpen = false
-  isCorrectionOpen = false
+  isNarrationOpen = true
+  isCorrectionOpen = true
 
   selectedStudentIds: number[] = [];
   allSelected: boolean = false;  
@@ -126,12 +126,13 @@ export class EvaluationComponent {
     this.evaluationTemplateGroupService.GetByTemplateID(this.EvaluationEmployee.evaluationTemplateID, this.DomainName).subscribe((data) => {
       this.EvaluationTemplateGroups = data;  
       for (let group = 0; group < this.EvaluationTemplateGroups.length; group++) {
+        this.EvaluationTemplateGroups[group].isOpen = true
         for (let question = 0; question < this.EvaluationTemplateGroups[group].evaluationTemplateGroupQuestions.length; question++){
           let evaluationEmployeeQuestionAdd = new EvaluationEmployeeQuestionAdd()
           evaluationEmployeeQuestionAdd.evaluationTemplateGroupQuestionID = this.EvaluationTemplateGroups[group].evaluationTemplateGroupQuestions[question].id
           this.EvaluationEmployee.evaluationEmployeeQuestionsList.push(evaluationEmployeeQuestionAdd)
         } 
-      } 
+      }  
     });
   }
  

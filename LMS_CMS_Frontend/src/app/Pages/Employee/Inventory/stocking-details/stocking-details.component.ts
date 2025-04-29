@@ -32,7 +32,7 @@ import { SearchDropdownComponent } from '../../../../Component/search-dropdown/s
 @Component({
   selector: 'app-stocking-details',
   standalone: true,
-  imports: [FormsModule, CommonModule,PdfPrintComponent, SearchDropdownComponent],
+  imports: [FormsModule, CommonModule, PdfPrintComponent],
   templateUrl: './stocking-details.component.html',
   styleUrl: './stocking-details.component.css',
 })

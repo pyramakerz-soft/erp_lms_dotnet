@@ -11,6 +11,7 @@ using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Octa;
 using LMS_CMS_BL.DTO.Registration;
 using LMS_CMS_BL.DTO.Violation;
+using LMS_CMS_BL.DTO.Zatca;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
@@ -21,6 +22,7 @@ using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -639,7 +641,10 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<InventoryDetails, InventoryDetailsGetDTO>()
                 .ForMember(dest => dest.BarCode, opt => opt.MapFrom(src => src.ShopItem.BarCode))
-                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.ShopItem.InventorySubCategories.InventoryCategoriesID))
+                .ForMember(dest => dest.SubCategoryId, opt => opt.MapFrom(src => src.ShopItem.InventorySubCategoriesID));
+
             CreateMap<InventoryDetailsGetDTO, InventoryDetails>();
             CreateMap<InventoryDetailsAddDTO, InventoryDetails>();
 
@@ -811,6 +816,11 @@ namespace LMS_CMS_BL.Config
                  .ForMember(dest => dest.QuestionEnglishTitle, opt => opt.MapFrom(src => src.EvaluationTemplateGroupQuestion.EnglishTitle));
 
             CreateMap<EvaluationTemplateGroup, EvaluationEmployeeQuestionGroupGetDTO>();
+
+            CreateMap<SchoolPCsAddDTO, SchoolPCs>();
+            CreateMap<SchoolPCsPutDTO, SchoolPCs>();
+            CreateMap<SchoolPCs, SchoolPCsGetDTO>()
+                .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name));
         }
     } 
 }

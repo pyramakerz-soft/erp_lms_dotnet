@@ -129,6 +129,7 @@ export class AccountingEmployeeEditComponent {
     public EmplyeeStudentServ: EmployeeStudentService,
     public StudentServ: StudentService,
   ) { }
+
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -159,9 +160,8 @@ export class AccountingEmployeeEditComponent {
 
   GetAllData() {
     this.employeeServ.GetAcountingEmployee(this.EmployeeId, this.DomainName).subscribe((d: any) => {
-      this.Data = d;
-      console.log(this.Data)
-      this.JobCategoryId = this.Data.jobCategoryId;
+      this.Data = d; 
+      this.JobCategoryId = this.Data.jobCategoryId; 
       this.GetAllJobs()
       this.selectedDays = this.days
       this.selectedDays = this.days.filter(day => this.Data.days.includes(day.id));
@@ -220,8 +220,7 @@ export class AccountingEmployeeEditComponent {
       this.days = d;
     });
   }
-
-
+ 
   GetAllReasons() {
     this.ReasonsServ.Get(this.DomainName).subscribe((d) => {
       this.Reasons = d;
@@ -234,11 +233,16 @@ export class AccountingEmployeeEditComponent {
 
   Save() {
     if(this.isFormValid()){
-      console.log("s",this.Data)
-      this.getFormattedTime()
+      this.getFormattedTime() 
       this.isLoading = true
       this.employeeServ.EditAccountingEmployee(this.Data, this.DomainName).subscribe((d) => {
         this.GetAllData();
+        Swal.fire({
+          icon: 'success',
+          title: 'Done',
+          text: 'Employee Edited Succeessfully',
+          confirmButtonColor: '#FF7519',
+        });
         this.router.navigateByUrl(`Employee/Employee Accounting`)
         this.isLoading = false
       },
@@ -286,9 +290,7 @@ export class AccountingEmployeeEditComponent {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
-  getFormattedTime() {
-  console.log(this.attendanceTime ,this.departureTime)
-
+  getFormattedTime() { 
     const { hours, minutes, periods } = this.attendanceTime;
     if (hours && minutes && periods) {
       this.Data.attendanceTime = `${hours}:${minutes} ${periods}`;
@@ -297,8 +299,7 @@ export class AccountingEmployeeEditComponent {
     const { hour, minute, period } = this.departureTime;
     if (hour && minute && period) {
       this.Data.departureTime = `${hour}:${minute} ${period}`;
-    }
-  console.log(this.Data.attendanceTime ,this.Data.departureTime)
+    } 
   }
 
   parseDepartureTime(departureTimeString: string) {

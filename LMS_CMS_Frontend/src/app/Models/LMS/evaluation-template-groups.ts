@@ -10,7 +10,7 @@ export class EvaluationTemplateGroups {
     public insertedAt: string = '',
     public insertedByUserId: number = 0, 
     public evaluationTemplateGroupQuestions: EvaluationTemplateGroupQuestion[] = [],
-    public isOpen: boolean = false,
+    public isOpen: boolean = true,
     public evaluationEmployeeQuestions : EvaluationEmployeeQuestionAdd[] = [] 
   ) {}
 }

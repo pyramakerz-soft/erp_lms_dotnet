@@ -120,6 +120,12 @@ export class AccountingStudentEditComponent {
     this.isLoading = true
     this.StudentServ.EditAccountingEmployee(this.Data, this.DomainName).subscribe((d) => {
       this.GetAllData();
+      Swal.fire({
+        icon: 'success',
+        title: 'Done',
+        text: 'Student Edited Succeessfully',
+        confirmButtonColor: '#FF7519',
+      });
       this.router.navigateByUrl(`Employee/Student Accounting`)
       this.isLoading = false
     },

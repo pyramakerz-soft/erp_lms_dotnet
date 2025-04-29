@@ -55,6 +55,9 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
 
         [ForeignKey("StoreToTransform")]
         public long? StoreToTransformId { get; set; }
+
+        [ForeignKey("School")]
+        public long? SchoolId { get; set; }
         public InventoryFlags InventoryFlags { get; set; }
         public Store Store { get; set; }
         public Student? Student { get; set; }
@@ -62,6 +65,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public Bank? Bank { get; set; }
         public Supplier? Supplier { get; set; }
         public Store? StoreToTransform { get; set; }
+        public School? School { get; set; }
         public ICollection<InventoryDetails> InventoryDetails { get; set; } = new HashSet<InventoryDetails>();
     }
 }

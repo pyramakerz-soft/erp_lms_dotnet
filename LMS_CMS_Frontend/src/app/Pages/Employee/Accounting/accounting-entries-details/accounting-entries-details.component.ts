@@ -257,12 +257,12 @@ export class AccountingEntriesDetailsComponent {
     }
   }
 
-  Save(){
+  Save(){ 
     if(this.isFormValid()){
       if(this.isCreate){
         this.accountingEntriesService.Add(this.accountingEntries, this.DomainName).subscribe(
           (data) => {
-            let id = JSON.parse(data).id
+            let id = JSON.parse(data).id 
             this.router.navigateByUrl(`Employee/Accounting Entries Details/${id}`)
             Swal.fire({
               title: 'Saved Successfully',
@@ -274,8 +274,15 @@ export class AccountingEntriesDetailsComponent {
       } else if(this.isEdit){
         this.accountingEntriesService.Edit(this.accountingEntries, this.DomainName).subscribe(
           (data) => {
-            this.GetAccountingEntriesByID()
-          }
+            this.GetAccountingEntriesByID() 
+            this.router.navigateByUrl(`Employee/Accounting Entries Details/${this.AccountingEntriesID}`)
+            Swal.fire({
+              title: 'Updated Successfully',
+              icon: 'success', 
+              confirmButtonColor: '#FF7519',  
+            }
+          )
+        } 
         )
       }
     }

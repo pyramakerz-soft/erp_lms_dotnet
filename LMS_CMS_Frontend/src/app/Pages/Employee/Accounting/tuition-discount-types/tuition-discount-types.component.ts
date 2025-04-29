@@ -166,8 +166,8 @@ export class TuitionDiscountTypesComponent {
       this.isLoading = true
       if (this.mode == 'Create') {
         this.tuitionServ.Add(this.tuitionDiscountTypes, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal();
+          this.GetAllData()
           this.isLoading = false
         },
           err => {
@@ -183,8 +183,8 @@ export class TuitionDiscountTypesComponent {
       }
       if (this.mode == 'Edit') {
         this.tuitionServ.Edit(this.tuitionDiscountTypes, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal();
+          this.GetAllData()
           this.isLoading = false
         },
           err => {
@@ -198,8 +198,7 @@ export class TuitionDiscountTypesComponent {
             });
           })
       }
-    }
-    this.GetAllData()
+    } 
   }
 
   closeModal() {

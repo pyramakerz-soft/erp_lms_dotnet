@@ -288,6 +288,12 @@ export class RoleAddEditComponent {
       if (this.mode == "Create") {
         this.RoleServ.AddRole(this.DataToSave, this.DomainName).subscribe({
           next: (response) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Done',
+              text: 'Role Added Succeessfully',
+              confirmButtonColor: '#FF7519',
+            });
             this.router.navigateByUrl("Employee/Role")
           },
           error: (error) => {
@@ -306,6 +312,12 @@ export class RoleAddEditComponent {
       else if (this.mode == "Edit") {
         this.RoleServ.EditRole(this.DataToSave, this.DomainName).subscribe({
           next: (response) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Done',
+              text: 'Role Edited Succeessfully',
+              confirmButtonColor: '#FF7519',
+            });
             this.router.navigateByUrl("Employee/Role")
           },
           error: (error) => { 

@@ -2,9 +2,9 @@
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_PL.Services.Invoice;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text;
-using System.Xml;
 using Zatca.EInvoice.SDK.Contracts;
 using Zatca.EInvoice.SDK.Contracts.Models;
 
@@ -87,15 +87,15 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 Directory.CreateDirectory(invoices);
             }
 
-            //InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
-            //    x => x.ID == id,
-            //    query => query.Include(m => m.InventoryDetails),
-            //    query => query.Include(m => m.Student));
+            InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
+                x => x.ID == masterId,
+                query => query.Include(m => m.InventoryDetails),
+                query => query.Include(m => m.Student));
 
-            //if (master == null)
-            //    return NotFound();
+            if (master == null)
+                return NotFound();
 
-            InventoryMaster master = new();
+            //InventoryMaster master = new();
 
             //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
 
@@ -105,6 +105,50 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 return BadRequest();
 
             return Ok("Invoice XML created successfully.");
+        }
+        #endregion
+
+        #region Update PCSID
+        [HttpPost("UpdatePCSID")]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "" }
+        //)]
+        public async Task<IActionResult> UpdatePCSID(string version, long otp)
+        {
+            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
+            string csrPath = Path.Combine(invoices, "CSR.csr");
+            string csidPath = Path.Combine(invoices, "CSID.json");
+            string pcsidPath = Path.Combine(invoices, "PCSID.json");
+
+            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
+
+            dynamic csidJson = JsonConvert.DeserializeObject(csid);
+            string formattedCsid = JsonConvert.SerializeObject(csidJson, Newtonsoft.Json.Formatting.Indented);
+            await System.IO.File.WriteAllTextAsync(csidPath, formattedCsid);
+
+            string oldPcsidContent = await System.IO.File.ReadAllTextAsync(pcsidPath);
+            dynamic oldPcsidJson = JsonConvert.DeserializeObject(oldPcsidContent);
+            string formattedOldPcsid = JsonConvert.SerializeObject(oldPcsidJson, Newtonsoft.Json.Formatting.Indented);
+
+            string user = oldPcsidJson.binarySecurityToken;
+            string secret = oldPcsidJson.secret;
+
+            string token = $"{user}:{secret}";
+            byte[] tokenBytes = Encoding.UTF8.GetBytes(token);
+            string tokenBase64 = Convert.ToBase64String(tokenBytes);
+
+            string csrContent = await System.IO.File.ReadAllTextAsync(csrPath);
+
+            string csrContentEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(csrContent));
+
+            string pcsid = await InvoicingServices.UpdatePCSID(tokenBase64, csrContentEncoded, version, otp.ToString());
+
+            string formattedPcsid = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(pcsid), Newtonsoft.Json.Formatting.Indented);
+
+            await System.IO.File.WriteAllTextAsync(pcsidPath, formattedPcsid);
+
+            return Ok(formattedPcsid);
         }
         #endregion
 

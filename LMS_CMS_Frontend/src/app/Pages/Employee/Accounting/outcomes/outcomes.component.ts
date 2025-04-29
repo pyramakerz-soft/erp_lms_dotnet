@@ -168,8 +168,8 @@ export class OutcomesComponent {
       this.isLoading = true
       if (this.mode == 'Create') {
         this.OutComeServ.Add(this.outcome, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal()
+          this.GetAllData()
           this.isLoading = false
         },
           err => {
@@ -185,8 +185,8 @@ export class OutcomesComponent {
       }
       if (this.mode == 'Edit') {
         this.OutComeServ.Edit(this.outcome, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal()
+          this.GetAllData()
           this.isLoading = false
         },
           err => {

@@ -59,15 +59,15 @@ export class AccountingTreeComponent {
 
   DomainName: string = '';
   UserID: number = 0;
-  
+
   isModalVisible: boolean = false;
   mode: string = '';
-  
+
   path: string = '';
   key: string = 'id';
   value: any = '';
   keysArray: string[] = ['id', 'name'];
-  
+
   accountingTreeChart: AccountingTreeChart = new AccountingTreeChart();
   mainAccountingTreeChart: AccountingTreeChart = new AccountingTreeChart();
   isEdit: boolean = false;
@@ -118,60 +118,60 @@ export class AccountingTreeComponent {
 
   GetAllData() {
     this.accountingTreeChartService.Get(this.DomainName).subscribe(
-      (data) => { 
+      (data) => {
         this.TableData = data
       }
     )
   }
-  
+
   GetMainData() {
     this.accountingTreeChartService.GetByMainID(this.DomainName).subscribe(
-      (data) => { 
+      (data) => {
         this.MainData = data
       }
     )
   }
-  
-  GetMainDataChildFiltered(id:number) {
+
+  GetMainDataChildFiltered(id: number) {
     this.accountingTreeChartService.GetMainDataChildFiltered(id, this.DomainName).subscribe(
-      (data) => { 
+      (data) => {
         this.MainData = data
       }
     )
   }
-  
+
   GetDataByID() {
-    let id = this.accountingTreeChart.id 
+    let id = this.accountingTreeChart.id
     this.validationErrors = {}
-    if(this.accountingTreeChart.id && this.accountingTreeChart.id != null && this.accountingTreeChart.id != 0){
+    if (this.accountingTreeChart.id && this.accountingTreeChart.id != null && this.accountingTreeChart.id != 0) {
       this.accountingTreeChartService.GetByID(this.accountingTreeChart.id, this.DomainName).subscribe(
-        (data) => { 
+        (data) => {
           this.isEdit = true
           this.accountingTreeChart = data
-          if(this.accountingTreeChart.id)
-          this.GetMainDataChildFiltered(this.accountingTreeChart.id)
+          if (this.accountingTreeChart.id)
+            this.GetMainDataChildFiltered(this.accountingTreeChart.id)
         },
-        (err) =>{
+        (err) => {
           this.isEdit = false
           this.accountingTreeChart = new AccountingTreeChart()
           this.accountingTreeChart.id = id
           this.GetMainData()
         }
       )
-    } else{
+    } else {
       this.accountingTreeChart = new AccountingTreeChart()
-    } 
+    }
   }
-  
+
   GetMainByID() {
-    if(this.accountingTreeChart.mainAccountNumberID == 0 || this.accountingTreeChart.mainAccountNumberID == null){
+    if (this.accountingTreeChart.mainAccountNumberID == 0 || this.accountingTreeChart.mainAccountNumberID == null) {
       this.mainAccountingTreeChart = new AccountingTreeChart()
       this.accountingTreeChart.motionTypeID = 0
       this.accountingTreeChart.endTypeID = 0
       this.accountingTreeChart.level = 1
-    } else{
+    } else {
       this.accountingTreeChartService.GetByID(this.accountingTreeChart.mainAccountNumberID, this.DomainName).subscribe(
-        (data) => { 
+        (data) => {
           this.mainAccountingTreeChart = data
           this.accountingTreeChart.motionTypeID = this.mainAccountingTreeChart.motionTypeID
           this.accountingTreeChart.endTypeID = this.mainAccountingTreeChart.endTypeID
@@ -180,40 +180,40 @@ export class AccountingTreeComponent {
       )
     }
   }
-  
+
   GetLinkFileData() {
     this.linkFileService.Get(this.DomainName).subscribe(
-      (data) => { 
+      (data) => {
         this.LinkFileData = data
       }
     )
   }
-  
+
   GetMotionTypeData() {
     this.motionTypeService.Get(this.DomainName).subscribe(
-      (data) => { 
+      (data) => {
         this.MotionTypeData = data
       }
     )
   }
-  
+
   GetSubTypeData() {
     this.subTypeService.Get(this.DomainName).subscribe(
-      (data) => { 
+      (data) => {
         this.SubTypeData = data
       }
     )
   }
-  
+
   GetEndTypeData() {
     this.endTypeService.Get(this.DomainName).subscribe(
-      (data) => { 
+      (data) => {
         this.EndTypeData = data
       }
     )
   }
 
-  lockLinkFile(){
+  lockLinkFile() {
     this.accountingTreeChart.linkFileID = 0
   }
 
@@ -221,19 +221,19 @@ export class AccountingTreeComponent {
     this.accountingTreeChart.id = accounting
     this.GetDataByID()
   }
-   
+
   validateNumber(event: any, field: keyof AccountingTreeChart): void {
     const value = event.target.value;
     if (isNaN(value) || value === '') {
-      event.target.value = ''; 
+      event.target.value = '';
       if (typeof this.accountingTreeChart[field] === 'string') {
-        this.accountingTreeChart[field] = '' as never;  
-      } 
+        this.accountingTreeChart[field] = '' as never;
+      }
     }
   }
 
   capitalizeField(field: keyof AccountingTreeChart): string {
-      return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
   isFormValid(): boolean {
@@ -242,19 +242,19 @@ export class AccountingTreeComponent {
       if (this.accountingTreeChart.hasOwnProperty(key)) {
         const field = key as keyof AccountingTreeChart;
         if (!this.accountingTreeChart[field]) {
-          if(field == "name" || field == "subTypeID" || field == "id" 
+          if (field == "name" || field == "subTypeID" || field == "id"
             || (this.accountingTreeChart.subTypeID == 2 && (field == "mainAccountNumberID" || field == "linkFileID"))
-            || ((this.accountingTreeChart.mainAccountNumberID == 0 ) && (field == "motionTypeID" || field == "endTypeID"))){
+            || ((this.accountingTreeChart.mainAccountNumberID == 0) && (field == "motionTypeID" || field == "endTypeID"))) {
             this.validationErrors[field] = `*${this.capitalizeField(field)} is required`
             isValid = false;
           }
         } else {
-          if(field == "name"){
-            if(this.accountingTreeChart.name.length > 100){
+          if (field == "name") {
+            if (this.accountingTreeChart.name.length > 100) {
               this.validationErrors[field] = `*${this.capitalizeField(field)} cannot be longer than 100 characters`
               isValid = false;
             }
-          } else{
+          } else {
             this.validationErrors[field] = '';
           }
         }
@@ -265,47 +265,74 @@ export class AccountingTreeComponent {
 
   onInputValueChange(event: { field: keyof AccountingTreeChart, value: any }) {
     const { field, value } = event;
-    
+
     (this.accountingTreeChart as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
-    if(field == "subTypeID"){
+    if (field == "subTypeID") {
       this.validationErrors["mainAccountNumberID"] = ''
       this.validationErrors["linkFileID"] = ''
     }
-    if(field == "mainAccountNumberID"){
+    if (field == "mainAccountNumberID") {
       this.validationErrors["motionTypeID"] = ''
       this.validationErrors["endTypeID"] = ''
     }
   }
 
-  Save(){ 
-    if(this.isFormValid())
-    {
-      if(this.isEdit){
-        this.accountingTreeChartService.Edit(this.accountingTreeChart, this.DomainName).subscribe(
-          (data) => {
-            this.GetAllData()
-            this.validationErrors = {}; 
-            this.accountingTreeChart = new AccountingTreeChart()
-            Swal.fire({
-              title: 'Edited Successfully',
-              icon: 'success', 
-              confirmButtonColor: '#FF7519'
-            })
-          }, (error) => {
-          }
-        )
-      } else{
+  IsAllowDelete(InsertedByID: number) {
+    const IsAllow = this.EditDeleteServ.IsAllowDelete(
+      InsertedByID,
+      this.UserID,
+      this.AllowDeleteForOthers
+    );
+    return IsAllow;
+  }
+
+  IsAllowEdit(InsertedByID: number) {
+    const IsAllow = this.EditDeleteServ.IsAllowEdit(
+      InsertedByID,
+      this.UserID,
+      this.AllowEditForOthers
+    );
+    return IsAllow;
+  }
+
+  Save() {
+    if (this.isFormValid()) {
+      if (this.isEdit) {
+        if (this.AllowEdit && this.IsAllowEdit(this.accountingTreeChart.insertedByUserId)) {
+          this.accountingTreeChartService.Edit(this.accountingTreeChart, this.DomainName).subscribe(
+            (data) => {
+              this.GetAllData()
+              this.validationErrors = {};
+              this.accountingTreeChart = new AccountingTreeChart()
+              Swal.fire({
+                title: 'Edited Successfully',
+                icon: 'success',
+                confirmButtonColor: '#FF7519'
+              })
+            }, (error) => {
+            }
+          )
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'You have no permission to edit this page',
+            confirmButtonText: 'Okay',
+            customClass: { confirmButton: 'secondaryBg' },
+          });
+          this.GetDataByID()
+        }
+      } else {
         this.accountingTreeChartService.Add(this.accountingTreeChart, this.DomainName).subscribe(
           (data) => {
             this.GetAllData()
-            this.validationErrors = {}; 
+            this.validationErrors = {};
             this.accountingTreeChart = new AccountingTreeChart()
             Swal.fire({
               title: 'Added Successfully',
-              icon: 'success', 
+              icon: 'success',
               confirmButtonColor: '#FF7519'
             })
           }, (error) => {

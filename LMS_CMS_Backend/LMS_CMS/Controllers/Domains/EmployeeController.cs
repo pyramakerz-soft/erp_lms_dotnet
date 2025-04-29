@@ -172,10 +172,20 @@ namespace LMS_CMS_PL.Controllers.Domains
             else
                 employeeDTO.Files = new List<EmployeeAttachmentDTO>();
 
-            return Ok(employeeDTO);
+            foreach (var file in filesDTO)
+            {
+                //file.Size = Math.Round(file.Size / (1024.0 * 1024.0), 2);
 
+                string filePath = Path.Combine("Uploads", "Attachments", employee.User_Name.Trim(), file.Name);
 
+                if (System.IO.File.Exists(filePath))
+                {
+                    var fileInfo = new FileInfo(filePath); 
+                    file.Size = Math.Round(fileInfo.Length / (1024.0 * 1024.0), 2);
+                }
+            }
 
+            return Ok(employeeDTO); 
         }
         private string GetMimeType(string filePath)
         {
@@ -217,16 +227,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             if (NewEmployee.Email != null && !Regex.IsMatch(NewEmployee.Email, pattern))
             {
                 return BadRequest("Email Is Not Valid");
-            }
-            string MobilePattern = @"^0(10|11|12|15)\d{8}$";
-            if (NewEmployee.Mobile != null && !Regex.IsMatch(NewEmployee.Mobile, MobilePattern))
-            {
-                return BadRequest("Mobile Is Not Valid");
-            }
-            if (NewEmployee.Phone != null && !Regex.IsMatch(NewEmployee.Phone, MobilePattern))
-            {
-                return BadRequest("Phone Is Not Valid");
-            }
+            } 
             if (NewEmployee.EmployeeTypeID == 2)
             {
                 if (NewEmployee.LicenseNumber == null)
@@ -424,18 +425,7 @@ namespace LMS_CMS_PL.Controllers.Domains
             if (newEmployee.Email != null && !Regex.IsMatch(newEmployee.Email, emailPattern))
             {
                 return BadRequest("Email is not valid.");
-            }
-
-            string mobilePattern = @"^0(10|11|12|15)\d{8}$";
-            if (newEmployee.Mobile != null && !Regex.IsMatch(newEmployee.Mobile, mobilePattern))
-            {
-                return BadRequest("Mobile is not valid.");
-            }
-
-            if (newEmployee.Phone != null && !Regex.IsMatch(newEmployee.Phone, mobilePattern))
-            {
-                return BadRequest("Phone is not valid.");
-            }
+            } 
 
             if (newEmployee.EmployeeTypeID == 2)
             {

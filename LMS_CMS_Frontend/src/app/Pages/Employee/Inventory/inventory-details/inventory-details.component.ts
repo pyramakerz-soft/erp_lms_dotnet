@@ -39,15 +39,17 @@ import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.com
 import { ReportsService } from '../../../../Services/shared/reports.service';
 import { SearchDropdownComponent } from '../../../../Component/search-dropdown/search-dropdown.component';
 import { map } from 'rxjs/operators';
+import { School } from '../../../../Models/school';
+import { SchoolService } from '../../../../Services/Employee/school.service';
 
 @Component({
   selector: 'app-inventory-details',
   standalone: true,
-  imports: [FormsModule, CommonModule, PdfPrintComponent , SearchDropdownComponent],
+  imports: [FormsModule, CommonModule, PdfPrintComponent, SearchDropdownComponent],
   templateUrl: './inventory-details.component.html',
   styleUrl: './inventory-details.component.css',
 })
-export class   InventoryDetailsComponent {
+export class InventoryDetailsComponent {
   User_Data_After_Login: TokenData = new TokenData(
     '',
     0,
@@ -126,10 +128,13 @@ export class   InventoryDetailsComponent {
   filteredSuppliers: any[] = [];
   showSupplierDropdown: boolean = false;
 
-  IsPrint : boolean = false
+  IsPrint: boolean = false
   searchTriggered = false;
   currentPage = 1;
   totalPages = 1;
+
+  tableDataForPrint: any[]=[];
+  schools:School[]=[]
 
   constructor(
     private router: Router,
@@ -152,8 +157,9 @@ export class   InventoryDetailsComponent {
     public shopitemServ: ShopItemService,
     public SupplierServ: SupplierService,
     public InventoryFlagServ: InventoryFlagService,
-    public printservice: ReportsService
-  ) {}
+    public reportsService: ReportsService ,
+    public SchoolServ : SchoolService
+  ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
     this.UserID = this.User_Data_After_Login.id;
@@ -210,6 +216,7 @@ export class   InventoryDetailsComponent {
     await this.GetAllStores();
     await this.GetAllSaves();
     await this.GetAllBanks();
+    await this.GetAllSchools();
     this.GetInventoryFlagInfo();
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
@@ -240,6 +247,11 @@ export class   InventoryDetailsComponent {
     });
   }
 
+  GetAllSchools(){
+    this.SchoolServ.Get(this.DomainName).subscribe((d)=>{
+      this.schools=d
+    })
+  }
 
   GetAllStores() {
     this.storeServ.Get(this.DomainName).subscribe((d) => {
@@ -275,13 +287,13 @@ export class   InventoryDetailsComponent {
       map(res => ({ items: res.students, totalPages: res.totalPages }))
     );
   };
-  
+
   SearchSuppliers = (search: string, page: number) => {
     return this.SupplierServ.GetAllWithSearch(search, page, 10, this.DomainName).pipe(
       map(res => ({ items: res.suppliers, totalPages: res.totalPages }))
     );
   };
-  
+
   GetMasterInfo() {
     this.salesServ.GetById(this.MasterId, this.DomainName).subscribe((d) => {
       this.Data = d;
@@ -393,19 +405,19 @@ export class   InventoryDetailsComponent {
   async Save() {
     if (this.isFormValid()) {
       this.isLoading = true;
-      await this.SaveRow();
+      // await this.SaveRow();
       if (this.mode == 'Create') {
-        console.log("0",this.EditedShopItems)
+        console.log("0", this.EditedShopItems)
         this.salesServ.Add(this.Data, this.DomainName).subscribe(
           (d) => {
             this.MasterId = d;
-            console.log("1",this.EditedShopItems)
+            console.log("1", this.EditedShopItems)
             if (this.EditedShopItems.length > 0) {
-            console.log("2",this.EditedShopItems)
+              console.log("2", this.EditedShopItems)
               this.EditedShopItems.forEach((element) => {
                 if (element.id !== 0) {
                   this.shopitemServ.Edit(element, this.DomainName).subscribe({
-                    next: (res) => {},
+                    next: (res) => { },
                     error: (err) => {
                       console.error('Error updating item:', err);
                     },
@@ -417,6 +429,7 @@ export class   InventoryDetailsComponent {
           },
           (error) => {
             this.isLoading = false;
+            console.log(error)
             Swal.fire({
               icon: 'error',
               title: 'Oops...',
@@ -431,12 +444,12 @@ export class   InventoryDetailsComponent {
         this.Data.inventoryDetails = this.TableData;
         this.salesItemServ
           .Edit(this.Data.inventoryDetails, this.DomainName)
-          .subscribe((d) => {});
+          .subscribe((d) => { });
         this.salesItemServ
           .Add(this.NewDetailsWhenEdit, this.DomainName)
           .subscribe(
-            (d) => {},
-            (error) => {}
+            (d) => { },
+            (error) => { }
           );
         this.salesServ.Edit(this.Data, this.DomainName).subscribe(
           (d) => {
@@ -480,7 +493,7 @@ export class   InventoryDetailsComponent {
     }
     this.CalculateTotalPrice();
   }
-  
+
 
   handleCashChange(isChecked: boolean): void {
     if (!isChecked) {
@@ -570,7 +583,7 @@ export class   InventoryDetailsComponent {
       //   // );
       // }
       if (!this.Data.inventoryDetails) {
-        this.Data.inventoryDetails = []; 
+        this.Data.inventoryDetails = [];
       }
       this.Data.inventoryDetails.push(this.Item);
     }
@@ -677,7 +690,7 @@ export class   InventoryDetailsComponent {
         );
         this.Data.remaining =
           +this.Data.total - (+this.Data.cashAmount + +this.Data.visaAmount);
-        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => {});
+        this.salesServ.Edit(this.Data, this.DomainName).subscribe((d) => { });
       }
       resolve();
     });
@@ -783,124 +796,113 @@ export class   InventoryDetailsComponent {
 
   //////////////////////////// Print ////////////////////////////////
 
-  Print() {
-    this.IsPrint=true
-    const elements = document.querySelectorAll('.print-area');
+  async Print() {
+    await this.formateData()
+    this.showPDF = true;
+    setTimeout(() => {
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+      // Create a print-specific stylesheet
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { 
+            margin: 0; 
+          }
   
-    // Create printable HTML content
-    const clonedContent = Array.from(elements).map(el => {
-      const clone = el.cloneNode(true) as HTMLElement;
-      this.inlineAllStyles(el as HTMLElement, clone);
-      return clone.outerHTML;
-    }).join('');
-  
-    // Create hidden iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = '0';
-    document.body.appendChild(iframe);
-  
-    const doc = iframe.contentWindow?.document;
-  
-    if (doc) {
-      doc.open();
-      doc.write(`
-        <html>
-          <head>
-            <title>Print</title>
-            <style>
-              body {
-                font-family: Arial, sans-serif;
-                padding: 1px;
-              }
-            </style>
-          </head>
-          <body>
-            ${clonedContent}
-          </body>
-        </html>
-      `);
-      doc.close();
-  
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-  
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+
+      // Create a container for printing
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+
+      // Add to body and print
+      document.body.appendChild(printContainer);
+      window.print();
+
+      // Clean up
       setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    }
-    this.IsPrint=false
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
   }
 
-  inlineAllStyles(source: HTMLElement, target: HTMLElement) {
-    const sourceStyles = window.getComputedStyle(source);
-    const cssText = Array.from(sourceStyles)
-      .map(key => `${key}: ${sourceStyles.getPropertyValue(key)};`)
-      .join(' ');
-    target.setAttribute('style', cssText);
-  
-    const children = Array.from(source.children) as HTMLElement[];
-    const targetChildren = Array.from(target.children) as HTMLElement[];
-  
-    for (let i = 0; i < children.length; i++) {
-      this.inlineAllStyles(children[i], targetChildren[i]);
-    }
-  }
-
-  DownloadAsPDF() {
-    this.printservice.DownloadAsPDF('Inventory');
+  async DownloadAsPDF() {
+    this.showPDF = true;
+    await this.formateData()
+    setTimeout(() => {
+      this.pdfComponentRef.downloadPDF();
+      setTimeout(() => this.showPDF = false, 2000);
+    }, 500);
   }
 
   async DownloadAsExcel() {
-    const tableHeaders = [
-      'Bar Code',
-      'Item ID',
-      'Item Name',
-      'Quantity',
-      'Price',
-      'Total Price',
-      'Notes',
+    const headerKeyMap = [
+      { header: 'BarCode', key: 'barCode' },
+      { header: 'Item_Id', key: 'id' },
+      { header: 'Item_Name', key: 'shopItemName' },
+      { header: 'Quantity', key: 'quantity' },
+      { header: 'Price', key: 'price' },
+      { header: 'Total_Price', key: 'totalPrice' },
+      { header: 'Notes', key: 'notes' },
     ];
-
-    const tableData = (
-      this.mode === 'Create' ? this.Data.inventoryDetails : this.TableData || []
-    ).map((row) => {
-      return [
-        row.barCode || '',
-        row.shopItemID || '',
-        row.shopItemName || '',
-        row.quantity || 0,
-        row.price || 0,
-        row.totalPrice || 0,
-        row.notes || '',
-      ];
-    });
-
-    const tables = [
-      {
-        title: 'Inventory Details',
-        headers: tableHeaders,
-        data: tableData,
-      },
-    ];
-
-    await this.printservice.generateExcelReport({
-      filename: 'Inventory.xlsx',
-      mainHeader: {
-        en: 'Inventory Report',
-        ar: 'تقرير المخزون',
-      },
-      subHeaders: [
-        {
-          en: 'Generated on: ' + new Date().toLocaleString(),
-          ar: 'تاريخ الإنشاء: ' + new Date().toLocaleString(),
-        },
+    const sourceData = this.mode === "Create" ? this.Data?.inventoryDetails ?? [] : this.TableData ?? [];
+    const dataRows = sourceData.map(row =>
+      headerKeyMap.map(({ key }) => (row as any)?.[key] ?? '')
+    );
+  
+    await this.reportsService.generateExcelReport({
+      infoRows: [
+        { key: 'Store', value: this.Data?.storeName ?? '' },
+        { key: 'Invoice Number', value: this.Data?.invoiceNumber ?? '' },
+        { key: 'Date', value: this.Data?.date },
+        { key: 'Total', value: this.Data?.total ?? '' }
       ],
-      tables: tables,
+      filename: "Inventory.xlsx",
+      tables: [
+        {
+          title: this.Data?.flagEnName ?? 'Inventory',
+          headers: headerKeyMap.map(h => h.header),
+          data: dataRows
+        }
+      ]
+    });
+  }
+
+  formateData(){
+    const sourceData = this.mode === "Create" ? this.Data?.inventoryDetails ?? [] : this.TableData ?? [];
+    this.tableDataForPrint = sourceData.map((row) => {
+      return {
+        BarCode: row.barCode || '',
+        Item_Id: row.shopItemID || '',
+        Item_Name: row.shopItemName || '',
+        Quantity: row.quantity || '',
+        Price: row.price || '',
+        Total_Price: row.totalPrice || '',
+        Notes: row.notes || ''
+      };
     });
   }
 

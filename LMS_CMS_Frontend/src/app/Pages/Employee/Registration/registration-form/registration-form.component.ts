@@ -126,7 +126,7 @@ export class RegistrationFormComponent {
     this.registrationFormService.GetById(1, this.DomainName).subscribe(
       (data) => {
         this.RegistrationFormData = data
-        this.RegistrationFormData.categories.sort((a, b) => a.orderInForm - b.orderInForm)
+        this.RegistrationFormData.categories.sort((a, b) => (a.orderInForm ? a.orderInForm : 0) - (b.orderInForm ? b.orderInForm : 0))
         this.RegistrationFormData.categories.forEach(element => {
           element.fields.sort((a, b) => a.orderInForm - b.orderInForm)
         });
@@ -496,7 +496,7 @@ export class RegistrationFormComponent {
         this.goToCategory(3)
       }
     } else{
-      this.goToCategory(EmptyFieldCat[0])
+      this.goToCategory(EmptyFieldCat[0] ? EmptyFieldCat[0] : 0)
     }
   }
 

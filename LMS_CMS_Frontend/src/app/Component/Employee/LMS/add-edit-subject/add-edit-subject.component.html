@@ -85,7 +85,7 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="totalMark">Total Mark</label>
-                <input id="totalMark" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Credit Hours" 
+                <input id="totalMark" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Total Mark" 
                 [(ngModel)]="subject.totalMark"
                 (ngModelChange)="onInputValueChange({ field: 'totalMark', value: $event })"
                 (input)="validateNumber($event, 'totalMark')"/>

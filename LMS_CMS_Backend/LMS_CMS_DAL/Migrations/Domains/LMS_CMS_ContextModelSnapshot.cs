@@ -1695,12 +1695,48 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("ID")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByUserId");
 
                     b.ToTable("AcademicDegrees");
                 });
@@ -3677,8 +3713,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -3686,8 +3722,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long>("ShopItemID")
                         .HasColumnType("bigint");
 
-                    b.Property<float>("TotalPrice")
-                        .HasColumnType("real");
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -3813,6 +3849,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<long?>("SaveID")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("SchoolId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
@@ -3866,6 +3905,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("InsertedByUserId");
 
                     b.HasIndex("SaveID");
+
+                    b.HasIndex("SchoolId");
 
                     b.HasIndex("StoreID");
 
@@ -5286,7 +5327,16 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BuildingNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CRN")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CitySubdivision")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -5321,6 +5371,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("PostalZone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ReportHeaderOneAr")
                         .HasColumnType("nvarchar(max)");
 
@@ -5338,6 +5391,9 @@ namespace LMS_CMS_DAL.Migrations.Domains
 
                     b.Property<long>("SchoolTypeID")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("StreetName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -7358,6 +7414,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PCName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<long>("SchoolId")
                         .HasColumnType("bigint");
 
@@ -8193,6 +8253,27 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("AccountNumber");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Administration.AcademicDegree", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
 
                     b.Navigation("DeletedByEmployee");
 
@@ -9212,6 +9293,10 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .HasForeignKey("SaveID")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.School", "School")
+                        .WithMany()
+                        .HasForeignKey("SchoolId");
+
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Inventory.Store", "Store")
                         .WithMany("InventoryMasters")
                         .HasForeignKey("StoreID")
@@ -9246,6 +9331,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("InventoryFlags");
 
                     b.Navigation("Save");
+
+                    b.Navigation("School");
 
                     b.Navigation("Store");
 

@@ -126,7 +126,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                         .ThenInclude(detail => detail.ShopItem)
                             .ThenInclude(shopItem => shopItem.InventorySubCategories)
                                 .ThenInclude(subCategory => subCategory.InventoryCategories)
-                    .Include(x => x.Save)
+                    .Include(x => x.Save) 
                     .Include(x => x.Bank)
             );
 
@@ -156,6 +156,94 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         }
 
         /////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("SearchInvoice")]
+        [Authorize_Endpoint_(
+    allowedTypes: new[] { "octa", "employee" },
+    pages: new[] { "Inventory" }
+)]
+        public async Task<IActionResult> GetSearchInvoice([FromQuery] InventoryMasterSearch obj)
+        {
+            var unitOfWork = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (obj.FlagIds == null || !obj.FlagIds.Any())
+                return BadRequest("FlagIds cannot be null or empty.");
+
+            if (!DateTime.TryParse(obj.DateFrom, out var dateFrom) || !DateTime.TryParse(obj.DateTo, out var dateTo))
+                return BadRequest("Invalid date format.");
+
+            if (dateFrom > dateTo)
+                return BadRequest("DateFrom cannot be after DateTo.");
+
+            var data = await unitOfWork.inventoryMaster_Repository.Select_All_With_IncludesById<InventoryMaster>(
+                f => f.IsDeleted != true && obj.FlagIds.Contains(f.FlagId),
+                query => query
+                    .Include(x => x.Store)
+                    .Include(x => x.Student)
+                    .Include(x => x.InventoryFlags)
+                    .Include(x => x.InventoryDetails)
+                        .ThenInclude(detail => detail.ShopItem)
+                            .ThenInclude(shopItem => shopItem.InventorySubCategories)
+                                .ThenInclude(subCategory => subCategory.InventoryCategories)
+                    .Include(x => x.Save)
+                    .Include(x => x.Bank)
+            );
+
+            var filteredData = data.Where(f =>
+                DateTime.TryParse(f.Date, out var parsedDate) &&
+                parsedDate >= dateFrom && parsedDate <= dateTo &&
+                (obj.StoredId == null || (f.Store != null && f.Store.ID == obj.StoredId)) &&
+                f.InventoryDetails.Any(detail =>
+                    (obj.CategoryId == null || detail.ShopItem.InventorySubCategories.InventoryCategoriesID == obj.CategoryId) &&
+                    (obj.SubCategoryId == null || detail.ShopItem.InventorySubCategoriesID == obj.SubCategoryId) &&
+                    (obj.ItemId == null || detail.ShopItemID == obj.ItemId)
+                )
+            ).ToList();
+
+            if (!filteredData.Any())
+                return NotFound("No records found matching the search criteria.");
+
+            var allTotal = filteredData.Sum(item => item.Total * (item.InventoryFlags?.FlagValue ?? 0));
+
+            // Remove InventoryDetails before returning
+            var summaryDtos = filteredData.Select(f => new
+            {
+                f.ID,
+                f.InvoiceNumber,
+                f.Date,
+                f.Total,
+                f.Remaining,
+                f.IsCash,
+                f.IsVisa,
+                f.CashAmount,
+                f.VisaAmount,
+                f.FlagId,
+                FlagValue = f.InventoryFlags?.FlagValue,
+                FlagArName = f.InventoryFlags?.arName,
+                FlagEnName = f.InventoryFlags?.enName,
+                StoreName = f.Store?.Name,
+                BankName = f.Bank?.Name,
+                StudentName = f.Student?.en_name,
+                SaveName = f.Save?.Name,
+                f.StoreID,
+                f.StudentID,
+                f.SaveID,
+                f.BankID,
+                f.Notes
+            }).ToList();
+
+
+            return Ok(new
+            {
+                AllTotal = allTotal,
+                Data = summaryDtos // ✅ lightweight, safe to serialize
+            });
+
+        }
+
+
+        /////////////////////////////////////////////////////////////////////////////
+
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(

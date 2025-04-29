@@ -416,8 +416,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             bool result = await InvoicingServices.GenerateXML(Master);
 
-            //if (result)
-            //    return BadRequest("Failed to generate XML file.");
+            if (result)
+                return BadRequest("Failed to generate XML file.");
 
             return Ok(Master.ID);
         }

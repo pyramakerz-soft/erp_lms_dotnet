@@ -217,8 +217,7 @@ export class SuppliersComponent {
           })
       }
       this.closeModal()
-    }
-    this.GetAllData()
+    } 
   }
 
   closeModal() {

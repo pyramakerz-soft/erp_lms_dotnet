@@ -36,7 +36,7 @@
             <tbody>
                 <!-- No Data Row -->
                 <tr *ngIf="Data.length === 0">
-                    <td colspan="17"
+                    <td colspan="5"
                         class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                         {{ 'No Data Found' | translate }}
                     </td>
@@ -119,7 +119,7 @@
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
                         [(ngModel)]="Category.orderInForm"
                         placeholder="{{ 'Enter' | translate }} {{ 'Order In Form' | translate }}"
-                        (input)="validateNumber($event, 'orderInForm')" min="0" step="1"
+                        (input)="validateNumber($event, 'orderInForm')" 
                         (ngModelChange)="onInputValueChange({ field: 'orderInForm', value: $event })" />
                     <span *ngIf="validationErrors['orderInForm']" class="text-red-500 ml-3 font-normal">{{
                         validationErrors['orderInForm'] }}</span>

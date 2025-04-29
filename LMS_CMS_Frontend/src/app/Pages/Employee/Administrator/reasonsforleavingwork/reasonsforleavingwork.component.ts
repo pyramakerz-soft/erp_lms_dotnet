@@ -196,8 +196,7 @@ export class ReasonsforleavingworkComponent {
           );
       }
       this.closeModal();
-    }
-    this.GetAllData();
+    } 
   }
 
   closeModal() {

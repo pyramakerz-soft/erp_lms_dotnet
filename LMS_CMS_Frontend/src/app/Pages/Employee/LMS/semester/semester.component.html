@@ -41,9 +41,9 @@
     <h1 class="primaryTxt font-semibold text-2xl leading-9">Semester</h1>
     <div class="flex justify-between items-center ">
         <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
-        
+
         <button (click)="openModal()"
-        class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
             Add Semester
         </button>
     </div>
@@ -60,10 +60,10 @@
                     Semester Name
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Date From 
+                    Date From
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                    Date To 
+                    Date To
                 </th>
                 <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                     Academic Year
@@ -76,7 +76,8 @@
         <tbody>
             <!-- No Data Row -->
             <tr *ngIf="semesterData.length === 0">
-                <td colspan="6" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                <td colspan="6"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
                     No Data Found
                 </td>
             </tr>
@@ -116,41 +117,95 @@
         <div class="flex justify-between items-center">
             <h1 *ngIf="!editSemester" class="font-semibold text-2xl leading-9">Create Semester</h1>
             <h1 *ngIf="editSemester" class="font-semibold text-2xl leading-9">Edit Semester</h1>
-            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
-        </div>
-        
-        <div class="p-[16px_24px] mt-6 mb-4 bg-[#F7F7F7] rounded-3xl">
-            <div class="flex flex-col mb-4">
-                <label class="mb-2 primaryTxt" for="name">Semester Name</label>
-                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Semester Name"
-                [(ngModel)]="semester.name" 
-                (ngModelChange)="onInputValueChange({ field: 'name', value: $event })"/>
-                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
-            </div>
-            <div class="flex flex-col mb-4">
-                <label class="mb-2 primaryTxt" for="dateFrom">Date From</label>
-                <input id="dateFrom" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter From"
-                [(ngModel)]="semester.dateFrom" 
-                (ngModelChange)="onInputValueChange({ field: 'dateFrom', value: $event })"/>
-                <span *ngIf="validationErrors['dateFrom']" class="text-red-500 ml-3 font-normal">{{ validationErrors['dateFrom'] }}</span>
-            </div>
-            <div class="flex flex-col mb-4">
-                <label class="mb-2 primaryTxt" for="dateTo">Date To</label>
-                <input id="dateTo" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter To"
-                [(ngModel)]="semester.dateTo" 
-                (ngModelChange)="onInputValueChange({ field: 'dateTo', value: $event })"/>
-                <span *ngIf="validationErrors['dateTo']" class="text-red-500 ml-3 font-normal">{{ validationErrors['dateTo'] }}</span>
-            </div>
+            <button (click)="closeModal()" type="button"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
 
-        <div class="flex justify-end">
-            <button
-            [disabled]="isLoading"
-            class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+        <div class="flex flex-col mt-6 mb-4 bg-[#F7F7F7] rounded-3xl p-4">
+
+            <div class="flex w-full flex-col mb-4">
+                <label class="mb-2 primaryTxt" for="name">Semester Name</label>
+                <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                    placeholder="Enter Semester Name" [(ngModel)]="semester.name"
+                    (ngModelChange)="onInputValueChange({ field: 'name', value: $event })" />
+                <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name']
+                    }}</span>
+            </div>
+
+            <div class="flex flex-wrap justify-between gap-x-4 gap-y-3">
+                <div class="flex w-[47%] flex-col mb-4">
+                    <label class="mb-2 primaryTxt" for="dateFrom">Date From</label>
+                    <input id="dateFrom" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                        placeholder="Enter From" [(ngModel)]="semester.dateFrom"
+                        (ngModelChange)="onInputValueChange({ field: 'dateFrom', value: $event })" />
+                    <span *ngIf="validationErrors['dateFrom']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['dateFrom'] }}</span>
+                </div>
+
+                <div class="flex w-[47%] flex-col mb-4">
+                    <label class="mb-2 primaryTxt" for="dateTo">Date To</label>
+                    <input id="dateTo" type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                        placeholder="Enter To" [(ngModel)]="semester.dateTo"
+                        (ngModelChange)="onInputValueChange({ field: 'dateTo', value: $event })" />
+                    <span *ngIf="validationErrors['dateTo']" class="text-red-500 ml-3 font-normal">{{
+                        validationErrors['dateTo'] }}</span>
+                </div>
+            </div>
+
+
+            <div class="flex flex-wrap justify-between gap-x-4">
+                <div class="flex w-[47%] flex-col mb-4">
+                    <label class="mb-2" for="WeekStartDayId">Week Start Day</label>
+                    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="WeekStartDayId"
+                      (ngModelChange)="onInputValueChange({ field: 'WeekStartDayId', value: $event })" [(ngModel)]="semester.WeekStartDayId">
+                      <option [value]="0" disabled selected hidden>Choose Day</option>
+                      <option *ngFor="let s of WeekDays" [value]="s.id">{{ s.name }}</option>
+                      <option *ngIf="WeekDays.length === 0" disabled selected>
+                        No Data Found
+                      </option>
+                    </select>
+                    <span *ngIf="validationErrors['WeekStartDayId']" class="text-red-500 ml-3 font-normal">{{
+                      validationErrors["WeekStartDayId"]}}</span>
+                </div>
+
+                <div class="flex w-[47%] flex-col mb-4">
+                    <label class="mb-2" for="WeekEndDayId">Week End Day</label>
+                    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="WeekEndDayId"
+                      (ngModelChange)="onInputValueChange({ field: 'WeekEndDayId', value: $event })" [(ngModel)]="semester.WeekEndDayId">
+                      <option [value]="0" disabled selected hidden>Choose Day</option>
+                      <option *ngFor="let s of WeekDays" [value]="s.id">{{ s.name }}</option>
+                      <option *ngIf="WeekDays.length === 0" disabled selected>
+                        No Data Found
+                      </option>
+                    </select>
+                    <span *ngIf="validationErrors['WeekEndDayId']" class="text-red-500 ml-3 font-normal">{{
+                      validationErrors["WeekEndDayId"]}}</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-between gap-x-4">
+                <div class="flex w-[47%] space-x-5 items-center mb-4">
+                    <input type="checkbox" id="active" class="w-5 h-5"
+                    [checked]="semester.isActive">
+                    <label for="active" class="text-sm">Is Active</label>
+                </div>
+    
+                <div class="flex w-[47%] space-x-5 items-center mb-4">
+                    <input type="checkbox" id="Current" class="w-5 h-5"
+                    [checked]="semester.isCurrent">
+                    <label for="Current" class="text-sm">Is Current</label>
+                </div>
+            </div>
+
+        </div>
+
+
+    <div class="flex justify-end">
+        <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
             (click)="SaveSemester()">
             <span *ngIf="!isLoading">Save</span>
             <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
-          </button>
-        </div>
+        </button>
     </div>
+</div>
 </div>

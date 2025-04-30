@@ -6,6 +6,10 @@ export class Semester {
         public dateTo: string = '',
         public academicYearName: string = '',
         public academicYearID: number = 0,
+        public WeekStartDayId: number = 0,
+        public WeekEndDayId: number = 0,
+        public isActive: boolean = false,
+        public isCurrent: boolean = false,
         public insertedByUserId: number = 0,
     ) {}
 }

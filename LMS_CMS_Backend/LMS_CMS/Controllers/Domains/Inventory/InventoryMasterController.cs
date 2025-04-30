@@ -347,9 +347,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 newData.SupplierId = null;
             }
 
+            School school = new();
+
             if (newData.SchoolId != 0 && newData.SchoolId != null)
             {
-                School school = Unit_Of_Work.school_Repository.First_Or_Default(b => b.ID == newData.SchoolId && b.IsDeleted != true);
+                school = Unit_Of_Work.school_Repository.First_Or_Default(b => b.ID == newData.SchoolId && b.IsDeleted != true);
                 if (school == null)
                 {
                     return NotFound("school not found.");
@@ -527,20 +529,32 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
-            Master.School = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newData.SchoolId && s.IsDeleted != true);
+            Master.School = school;
 
-            bool result = await InvoicingServices.GenerateXML(Master);
+            List<InventoryMaster> masters = Unit_Of_Work.inventoryMaster_Repository.SelectQuery<InventoryMaster>(i => i.IsDeleted != true).ToList();
+
+            string lastInvoiceHash = "0";
+
+            if (masters is not null || masters.Count > 1)
+            {
+                lastInvoiceHash = masters[masters.Count - 2].InvoiceHash;
+            }
+
+            bool result = await InvoicingServices.GenerateXML(Master, lastInvoiceHash);
 
             if (!result)
                 return BadRequest("Failed to generate XML file.");
-            //string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{master.ID}.xml");
-            string xmlPath = "Invoices/XML/INV001.xml";
-            string xml = Path.Combine(Directory.GetCurrentDirectory(), xmlPath);
+
+            DateTime invDate = DateTime.Parse(newData.Date);
+            string date = invDate.ToString("yyyy-MM-dd");
+            string time = invDate.ToString("HH:mm:ss");
+
+            string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{Master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{Master.ID}.xml");
 
             Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
             Master.QRCode = InvoicingServices.GetQRCode(xml);
             Master.uuid = InvoicingServices.GetUUID(xml);
-            Master.XmlInvoiceFile = xmlPath;
+            Master.XmlInvoiceFile = xml;
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();

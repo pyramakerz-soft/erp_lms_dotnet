@@ -2,6 +2,7 @@ export class WeekDay {
 
     constructor(
         public id: number = 0,
-        public name: string = '',
+        public englishName: string = '',
+        public arabicName: string = '',
     ) {}
 }

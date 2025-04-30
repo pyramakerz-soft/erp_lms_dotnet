@@ -1,9 +1,11 @@
 export class SemesterWorkingDays {
     constructor(
         public id: number = 0,
-        public title: string = '',
-        public startDate: string = '',
-        public endDate: string = '',
+        public englishName: string = '',
+        public arabicName: string = '',
+        public dateTo: string = '',
+        public dateFrom: string = '',
+        public semesterID: number = 0,
         public insertedByUserId: number = 0,
     ) {}
 }

@@ -346,6 +346,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 newData.SupplierId = null;
             }
+
+            if (newData.SchoolId != 0 && newData.SchoolId != null)
+            {
+                School school = Unit_Of_Work.school_Repository.First_Or_Default(b => b.ID == newData.SchoolId && b.IsDeleted != true);
+                if (school == null)
+                {
+                    return NotFound("school not found.");
+                }
+            }
+            else
+            {
+                newData.SchoolId = null;
+            }
+
             if (newData.StoreToTransformId != 0 && newData.StoreToTransformId != null)
             {
                 Store StoreToTransform = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreToTransformId && b.IsDeleted != true);
@@ -447,8 +461,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             /// Create
             InventoryMaster Master = mapper.Map<InventoryMaster>(newData);
             LMS_CMS_Context db = Unit_Of_Work.inventoryMaster_Repository.Database();
-            //Master.InvoiceNumber = await _InVoiceNumberCreate.GetNextInvoiceNumber(db, newData.StoreID, newData.FlagId);
-            Master.InvoiceNumber = 1;
+            Master.InvoiceNumber = await _InVoiceNumberCreate.GetNextInvoiceNumber(db, newData.StoreID, newData.FlagId);
             if (Master == null)
             {
                 return BadRequest("Failed to map sale object.");

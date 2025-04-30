@@ -12,7 +12,7 @@ namespace LMS_CMS_BL.DTO.Inventory
     public class InventoryMasterGetDTO
     {
         public long ID { get; set; }
-        public int InvoiceNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string Date { get; set; }
         public bool IsCash { get; set; }
         public bool IsVisa { get; set; }

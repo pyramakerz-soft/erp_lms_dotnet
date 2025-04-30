@@ -344,6 +344,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 newData.SupplierId = null;
             }
+
+            if (newData.SchoolId != 0 && newData.SchoolId != null)
+            {
+                School school = Unit_Of_Work.school_Repository.First_Or_Default(b => b.ID == newData.SchoolId && b.IsDeleted != true);
+                if (school == null)
+                {
+                    return NotFound("school not found.");
+                }
+            }
+            else
+            {
+                newData.SchoolId = null;
+            }
+
             if (newData.StoreToTransformId != 0 && newData.StoreToTransformId != null)
             {
                 Store StoreToTransform = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreToTransformId && b.IsDeleted != true);
@@ -506,10 +520,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
-            bool result = await InvoicingServices.GenerateXML(Master);
+            //bool result = await InvoicingServices.GenerateXML(Master);
 
-            if (result)
-                return BadRequest("Failed to generate XML file.");
+            //if (result)
+            //    return BadRequest("Failed to generate XML file.");
 
             return Ok(Master.ID);
         }

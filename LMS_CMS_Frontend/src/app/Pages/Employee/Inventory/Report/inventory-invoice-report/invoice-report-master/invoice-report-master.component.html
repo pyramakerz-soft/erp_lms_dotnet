@@ -27,49 +27,51 @@
             [(ngModel)]="dateTo">
     </div>
 
-    <div class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2 font-medium" for="flags">Transaction Types</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
-            [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
-            <option [value]="-1" selected>Select All</option>
-            <option *ngFor="let flag of currentFlags" [value]="flag.id">
-                {{ flag.name }}
-            </option>
-        </select>
-    </div>
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Transaction Types</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
+        [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
+        <option [value]="-1" selected>Select All</option>
+        <option *ngFor="let flag of currentFlags" [value]="flag.id">
+            {{ flag.name }}
+        </option>
+    </select>
+</div>
+<!-- For Category dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Category</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+        [(ngModel)]="selectedCategoryId" (change)="onCategorySelected()">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let category of categories" [ngValue]="category.id">
+            {{ category.name }}
+        </option>
+    </select>
+</div>
 
-    <div class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2 font-medium" for="category">Category</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="category"
-            [(ngModel)]="selectedCategoryId" (change)="onCategorySelected()">
-            <option [value]="null" selected>Select All</option>
-            <option *ngFor="let category of categories" [value]="category.id">
-                {{ category.name }}
-            </option>
-        </select>
-    </div>
+<!-- For SubCategory dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags"> Sub Category</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+        [(ngModel)]="selectedSubCategoryId" (change)="onSubCategorySelected()" [disabled]="selectedCategoryId === null">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let subCategory of subCategories" [ngValue]="subCategory.id">
+            {{ subCategory.name }}
+        </option>
+    </select>
+</div>
 
-    <div class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2 font-medium" for="subCategory">Sub Category</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="subCategory"
-            [(ngModel)]="selectedSubCategoryId" (change)="onSubCategorySelected()" [disabled]="!selectedCategoryId">
-            <option [value]="null" selected>Select All</option>
-            <option *ngFor="let subCategory of subCategories" [value]="subCategory.id">
-                {{ subCategory.name }}
-            </option>
-        </select>
-    </div>
-
-    <div class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2 font-medium" for="item">Item</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="item" [(ngModel)]="selectedItemId"
-            [disabled]="!selectedSubCategoryId">
-            <option [value]="null" selected>Select All</option>
-            <option *ngFor="let item of items" [value]="item.id">
-                {{ item.enName }}
-            </option>
-        </select>
-    </div>
+<!-- For Item dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Item</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+        [(ngModel)]="selectedItemId" [disabled]="selectedSubCategoryId === null">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let item of items" [ngValue]="item.id">
+            {{ item.enName }}
+        </option>
+    </select>
+</div>
 
     <div class="w-[24%] flex justify-end">
         <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"

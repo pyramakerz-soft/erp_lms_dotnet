@@ -314,10 +314,10 @@ export const routes: Routes = [
             { path: 'Inventory-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Inventory Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
             { path: 'Sales-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Sales Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
             { path: 'Purchase-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Purchase Transaction Report',canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard],data: { reportType: 'purchase' }},
-        
+         
             { path: 'Inventory-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Inventory Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
             { path: 'Sales-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Sales Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
-            { path: 'Purchase-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Purchase Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard],data: { reportType: 'purchase' }},
+            { path: 'Purchase-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Purchase Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'purchase' }},
         
             { path: "Book Correction", component: BookCorrectionComponent, title: "BookCorrectionComponent", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Evaluation", component: EvaluationComponent, title: "Evaluation", canActivate:[noNavigateWithoutLoginGuard ] },

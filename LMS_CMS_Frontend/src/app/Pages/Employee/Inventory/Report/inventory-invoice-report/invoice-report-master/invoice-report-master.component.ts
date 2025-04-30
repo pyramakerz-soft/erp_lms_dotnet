@@ -136,9 +136,6 @@ getInfoRows(): any[] {
       this.selectedFlagIds = this.currentFlags.map(flag => flag.id);
     });
     this.loadStores();
-
-    this.selectedFlagId = 0;
-this.selectedFlagIds = [];
 this.loadCategories();
 
   }

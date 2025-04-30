@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TokenData } from '../../../../Models/token-data';
 import { AccountingEntries } from '../../../../Models/Accounting/accounting-entries';
@@ -23,11 +23,13 @@ import Swal from 'sweetalert2';
 import { AccountingTreeChart } from '../../../../Models/Accounting/accounting-tree-chart';
 import { AccountingTreeChartService } from '../../../../Services/Employee/Accounting/accounting-tree-chart.service';
 import html2pdf from 'html2pdf.js';
+import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.component';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-accounting-entries-details',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PdfPrintComponent],
   templateUrl: './accounting-entries-details.component.html',
   styleUrl: './accounting-entries-details.component.css'
 })
@@ -71,11 +73,16 @@ export class AccountingEntriesDetailsComponent {
 
   isLoading = false;
 
+
+    @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
+  showPDF = false;
+
+
   constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public accountingEntriesDocTypeService:AccountingEntriesDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public accountingEntriesService:AccountingEntriesService,
     public bankService:BankService, public saveService:SaveService, public accountingEntriesDetailsService:AccountingEntriesDetailsService, public linkFileService:LinkFileService,
-    public dataAccordingToLinkFileService: DataAccordingToLinkFileService, public accountingTreeChartService:AccountingTreeChartService){}
+    public dataAccordingToLinkFileService: DataAccordingToLinkFileService, public accountingTreeChartService:AccountingTreeChartService, public reportsService: ReportsService){}
     
   ngOnInit(){
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -390,30 +397,93 @@ export class AccountingEntriesDetailsComponent {
     });
   }
 
-  DownloadData() {
-    let orderElement = document.getElementById('DataToDownload');
-
-    if (!orderElement) {
-      console.error("Page body not found!");
-      return;
-    }
-
-    document.querySelectorAll('.no-print').forEach(el => {
-      (el as HTMLElement).style.display = 'none';
-    });
-
+  DownloadAsPDF() {
+    this.showPDF = true;
     setTimeout(() => {
-      html2pdf().from(orderElement).set({
-        margin: 10,
-        filename: `AccountingEntries_${this.AccountingEntriesID}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-      }).save().then(() => {
-        document.querySelectorAll('.no-print').forEach(el => {
-          (el as HTMLElement).style.display = '';
-        });
-      });
+      this.pdfComponentRef.downloadPDF();
+      setTimeout(() => this.showPDF = false, 2000);
     }, 500);
   }
+
+  Print() {
+    this.showPDF = true;
+    setTimeout(() => {
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { margin: 0; }
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      setTimeout(() => {
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
+  }
+
+async DownloadAsExcel() {
+  await this.reportsService.generateExcelReport({
+    mainHeader: {
+      en: "Accounting Entries Report",
+      ar: "تقرير القيود المحاسبية"
+    },
+    subHeaders: [
+      { en: "Detailed accounting entries information", ar: "معلومات تفصيلية عن القيود المحاسبية" },
+    ],
+    infoRows: [
+      { key: 'Document Type', value: this.accountingEntries.accountingEntriesDocTypeName || '' },
+      { key: 'Document Number', value: this.accountingEntries.docNumber || '' },
+      { key: 'Date', value: this.accountingEntries.date || '' },
+      { key: 'Total Credit', value: this.totalCredit || 0 },
+      { key: 'Total Debit', value: this.totalDebit || 0 },
+      { key: 'Difference', value: this.theDifference || 0 }
+    ],
+    reportImage: '', // Add image URL if available
+    filename: "Accounting_Entries_Report.xlsx",
+    tables: [
+      {
+        title: "Accounting Entries Details",
+        headers: ['id', 'debitAmount', 'creditAmount', 'accountingTreeChartName', 'subAccountingName', 'note'],
+        data: this.accountingEntriesDetailsData.map((row) => [
+          row.id || 0, 
+          row.debitAmount || 0, 
+          row.creditAmount || 0, 
+          row.accountingTreeChartName || '', 
+          row.subAccountingName || '', 
+          row.note || ''
+        ])
+      }
+    ]
+  });
+}
 }

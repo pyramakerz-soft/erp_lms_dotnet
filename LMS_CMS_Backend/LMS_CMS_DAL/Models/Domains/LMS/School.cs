@@ -1,4 +1,5 @@
 ﻿using LMS_CMS_DAL.Models.Domains.Inventory;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,6 +18,11 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [StringLength(100, ErrorMessage = "School cannot be longer than 100 characters.")]
         public string Name { get; set; }
         public string?  Address { get; set; }
+        public string? StreetName { get; set; }
+        public string? BuildingNumber { get; set; }
+        public string? CitySubdivision { get; set; }
+        public string? City { get; set; }
+        public string? PostalZone { get; set; }
         [ForeignKey("SchoolType")]
         public long SchoolTypeID { get; set; }
         public string? ReportHeaderOneEn { get; set; }
@@ -25,6 +31,9 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string? ReportHeaderTwoAr { get; set; }
         public string? ReportImage { get; set; }
         public string? VatNumber { get; set; }
+        public string? CRN { get; set; } //Commercial Registration Number
+        public int? MaximumPeriodCountTimeTable { get; set; }
+        public int? MaximumPeriodCountRemedials { get; set; } 
 
         public SchoolType SchoolType { get; set; }
         public ICollection<AcademicYear> AcademicYears { get; set; } = new HashSet<AcademicYear>();
@@ -32,6 +41,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public ICollection<Section> Sections { get; set; } = new HashSet<Section>();
         public ICollection<Building> Buildings { get; set; } = new HashSet<Building>();
         public ICollection<ShopItem> ShopItem { get; set; } = new HashSet<ShopItem>();
+        public ICollection<SchoolPCs>? SchoolPCs { get; set; } = new HashSet<SchoolPCs>();
 
     }
 }

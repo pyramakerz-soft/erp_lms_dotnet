@@ -7,13 +7,17 @@ using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
+using LMS_CMS_PL.Services.Invoice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Diagnostics.Metrics;
 using System.Xml;
 using System.Xml.Linq;
+using Zatca.EInvoice.SDK.Contracts.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 //using Zatca.EInvoice.SDK;
 //using Zatca.EInvoice.SDK.Contracts;
 //using Zatca.EInvoice.SDK.Contracts.Models;
@@ -94,8 +98,154 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             return Ok(new { Data = DTO, Pagination = paginationMetadata , inventoryFlag=Flagdto });
         }
 
+        /////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("Search")]
+        [Authorize_Endpoint_(
+         allowedTypes: new[] { "octa", "employee" },
+         pages: new[] { "Inventory" }
+        )]
+        public async Task<IActionResult> GetSearch([FromQuery] InventoryMasterSearch obj)
+        {
+            var unitOfWork = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (obj.FlagIds == null || !obj.FlagIds.Any())
+                return BadRequest("FlagIds cannot be null or empty.");
+
+            if (!DateTime.TryParse(obj.DateFrom, out var dateFrom) || !DateTime.TryParse(obj.DateTo, out var dateTo))
+                return BadRequest("Invalid date format.");
+
+            if (dateFrom > dateTo)
+                return BadRequest("DateFrom cannot be after DateTo.");
+
+            var data = await unitOfWork.inventoryMaster_Repository.Select_All_With_IncludesById<InventoryMaster>(
+                f => f.IsDeleted != true && obj.FlagIds.Contains(f.FlagId),
+                query => query
+                    .Include(x => x.Store)
+                    .Include(x => x.Student)
+                    .Include(x => x.InventoryFlags)
+                    .Include(x => x.InventoryDetails)
+                        .ThenInclude(detail => detail.ShopItem)
+                            .ThenInclude(shopItem => shopItem.InventorySubCategories)
+                                .ThenInclude(subCategory => subCategory.InventoryCategories)
+                    .Include(x => x.Save) 
+                    .Include(x => x.Bank)
+            );
+
+            var filteredData = data.Where(f =>
+                DateTime.TryParse(f.Date, out var parsedDate) &&
+                parsedDate >= dateFrom && parsedDate <= dateTo &&
+                (obj.StoredId == null || (f.Store != null && f.Store.ID == obj.StoredId)) &&
+                f.InventoryDetails.Any(detail =>
+                    (obj.CategoryId == null || detail.ShopItem.InventorySubCategories.InventoryCategoriesID == obj.CategoryId) &&
+                    (obj.SubCategoryId == null || detail.ShopItem.InventorySubCategoriesID == obj.SubCategoryId) &&
+                    (obj.ItemId == null || detail.ShopItemID == obj.ItemId)
+                )
+            ).ToList();
+
+            if (!filteredData.Any())
+                return NotFound("No records found matching the search criteria.");
+
+            var allTotal = filteredData.Sum(item => (item.Total) * (item.InventoryFlags?.FlagValue ?? 0));
+
+            var dto = mapper.Map<List<InventoryMasterGetDTO>>(filteredData);
+
+            return Ok(new
+            {
+                AllTotal = allTotal,
+                Data = dto
+            });
+        }
 
         /////////////////////////////////////////////////////////////////////////////
+
+        [HttpGet("SearchInvoice")]
+        [Authorize_Endpoint_(
+    allowedTypes: new[] { "octa", "employee" },
+    pages: new[] { "Inventory" }
+)]
+        public async Task<IActionResult> GetSearchInvoice([FromQuery] InventoryMasterSearch obj)
+        {
+            var unitOfWork = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (obj.FlagIds == null || !obj.FlagIds.Any())
+                return BadRequest("FlagIds cannot be null or empty.");
+
+            if (!DateTime.TryParse(obj.DateFrom, out var dateFrom) || !DateTime.TryParse(obj.DateTo, out var dateTo))
+                return BadRequest("Invalid date format.");
+
+            if (dateFrom > dateTo)
+                return BadRequest("DateFrom cannot be after DateTo.");
+
+            var data = await unitOfWork.inventoryMaster_Repository.Select_All_With_IncludesById<InventoryMaster>(
+                f => f.IsDeleted != true && obj.FlagIds.Contains(f.FlagId),
+                query => query
+                    .Include(x => x.Store)
+                    .Include(x => x.Student)
+                    .Include(x => x.InventoryFlags)
+                    .Include(x => x.InventoryDetails)
+                        .ThenInclude(detail => detail.ShopItem)
+                            .ThenInclude(shopItem => shopItem.InventorySubCategories)
+                                .ThenInclude(subCategory => subCategory.InventoryCategories)
+                    .Include(x => x.Save)
+                    .Include(x => x.Bank)
+            );
+
+            var filteredData = data.Where(f =>
+                DateTime.TryParse(f.Date, out var parsedDate) &&
+                parsedDate >= dateFrom && parsedDate <= dateTo &&
+                (obj.StoredId == null || (f.Store != null && f.Store.ID == obj.StoredId)) &&
+                f.InventoryDetails.Any(detail =>
+                    (obj.CategoryId == null || detail.ShopItem.InventorySubCategories.InventoryCategoriesID == obj.CategoryId) &&
+                    (obj.SubCategoryId == null || detail.ShopItem.InventorySubCategoriesID == obj.SubCategoryId) &&
+                    (obj.ItemId == null || detail.ShopItemID == obj.ItemId)
+                )
+            ).ToList();
+
+            if (!filteredData.Any())
+                return NotFound("No records found matching the search criteria.");
+
+            var allTotal = filteredData.Sum(item => item.Total * (item.InventoryFlags?.FlagValue ?? 0));
+
+            // Remove InventoryDetails before returning
+            var summaryDtos = filteredData.Select(f => new
+            {
+                f.ID,
+                f.InvoiceNumber,
+                f.Date,
+                f.Total,
+                f.Remaining,
+                f.IsCash,
+                f.IsVisa,
+                f.CashAmount,
+                f.VisaAmount,
+                f.FlagId,
+                FlagValue = f.InventoryFlags?.FlagValue,
+                FlagArName = f.InventoryFlags?.arName,
+                FlagEnName = f.InventoryFlags?.enName,
+                StoreName = f.Store?.Name,
+                BankName = f.Bank?.Name,
+                StudentName = f.Student?.en_name,
+                SaveName = f.Save?.Name,
+                f.StoreID,
+                f.StudentID,
+                f.SaveID,
+                f.BankID,
+                f.Notes
+            }).ToList();
+
+
+            return Ok(new
+            {
+                AllTotal = allTotal,
+                Data = summaryDtos // ✅ lightweight, safe to serialize
+            });
+
+        }
+
+
+        /////////////////////////////////////////////////////////////////////////////
+
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
@@ -177,7 +327,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
                 if (student.Nationality != 148)
                 {
-                    vat = 15;
+                    vat = 0.15m;
                 }
             }
             else
@@ -196,6 +346,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 newData.SupplierId = null;
             }
+
+            if (newData.SchoolId != 0 && newData.SchoolId != null)
+            {
+                School school = Unit_Of_Work.school_Repository.First_Or_Default(b => b.ID == newData.SchoolId && b.IsDeleted != true);
+                if (school == null)
+                {
+                    return NotFound("school not found.");
+                }
+            }
+            else
+            {
+                newData.SchoolId = null;
+            }
+
             if (newData.StoreToTransformId != 0 && newData.StoreToTransformId != null)
             {
                 Store StoreToTransform = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreToTransformId && b.IsDeleted != true);
@@ -314,10 +478,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 Master.InsertedByUserId = userId;
             }
-            if (newData.StudentID != 0 && newData.StudentID != null)
-            {
-                Master.Vat = vat;
-            }
+            //if (newData.StudentID != 0 && newData.StudentID != null)
+            //{
+            //    //Master.Vat = vat;
+            //}
 
             Unit_Of_Work.inventoryMaster_Repository.Add(Master);
             await Unit_Of_Work.SaveChangesAsync();
@@ -355,9 +519,31 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
+            Master.uuid = Guid.NewGuid().ToString();
+            Master.VatPercent = vat;
+            Master.VatAmount = Master.Total * Master.VatPercent;
+            Master.TotalWithVat = Master.Total + Master.VatAmount;
+
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
+            Master.School = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newData.SchoolId && s.IsDeleted != true);
+
+            bool result = await InvoicingServices.GenerateXML(Master);
+
+            if (!result)
+                return BadRequest("Failed to generate XML file.");
+            //string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{master.ID}.xml");
+            string xmlPath = "Invoices/XML/INV001.xml";
+            string xml = Path.Combine(Directory.GetCurrentDirectory(), xmlPath);
+
+            Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
+            Master.QRCode = InvoicingServices.GetQRCode(xml);
+            Master.uuid = InvoicingServices.GetUUID(xml);
+            Master.XmlInvoiceFile = xmlPath;
+
+            Unit_Of_Work.inventoryMaster_Repository.Update(Master);
+            await Unit_Of_Work.SaveChangesAsync();
 
             return Ok(Master.ID);
         }

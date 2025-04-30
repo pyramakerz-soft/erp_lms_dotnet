@@ -1,7 +1,4 @@
-<div class="flex justify-between items-center">
-    <!-- <h1 class="font-semibold text-2xl leading-9">
-        {{ mode == 'Create' ? 'Create Employee' : 'Edit Employee' }}
-    </h1> -->
+<div class="flex justify-between items-center"> 
     <div class="flex justify-between items-center space-x-5">
         <i class="fa-solid fa-chevron-left" (click)="moveToEmployee()"></i>
         <h1 class="font-semibold text-2xl leading-9">
@@ -153,7 +150,7 @@
             <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
                 <img src="Images/Icon frame.png" class="w-1/4" alt="Upload Icon">
                 <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3">
-                    <span class="secondaryTxt">Click to Upload</span> or drag and drop files
+                    <span class="secondaryTxt">Click to Upload</span> 
                 </p>
                 <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB each)</p>
             </label>
@@ -183,6 +180,37 @@
                     <p class="secondaryTxt cursor-pointer hover:underline mt-2" (click)="downloadFile(file)">
                         Click to View
                     </p>
+                </div>
+            </div>
+
+            <div class="w-[64%]">
+                <div class="flex flex-col">
+                    <label class="mb-2 primaryTxt" for="name-{{ i }}">Add Name</label>
+                    <input id="name-{{ i }}" type="text" [value]="file.name"
+                        class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                        placeholder="Enter Attachment Name" (change)="changeFileName(i, $event)" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="SelectedFiles.length > 0" class="bg-white p-4 rounded-lg">
+    <div class="flex flex-wrap gap-4">
+        <div *ngFor="let file of SelectedFiles; let i = index" class="flex w-full items-center gap-4 mb-4">
+            <div class="flex flex-col w-[34%]">
+                <h1 class="text-sm font-semibold mb-2">Name</h1>
+                <p class="text-sm font-medium text-gray-700 mb-4">{{ file.name }}</p>
+                <div class="border border-cacaca rounded-lg p-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-file"></i>
+                            <p class="text-sm font-medium text-gray-700 truncate max-w-[150px]">{{ file.name }}</p>
+                        </div>
+                        <button (click)="deleteFileFromSelectedFile(file)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div> 
                 </div>
             </div>
 

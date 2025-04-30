@@ -11,6 +11,11 @@ namespace LMS_CMS_BL.DTO.LMS
         public long ID { get; set; }
         public string Name { get; set; }
         public string? Address { get; set; }
+        public string? StreetName { get; set; }
+        public string? BuildingNumber { get; set; }
+        public string? CitySubdivision { get; set; }
+        public string? City { get; set; }
+        public string? PostalZone { get; set; }
         public string SchoolTypeName { get; set; }
         public string? ReportHeaderOneEn { get; set; }
         public string? ReportHeaderOneAr { get; set; }
@@ -20,5 +25,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public long SchoolTypeID { get; set; } 
         public string? VatNumber { get; set; }
         public long? InsertedByUserId { get; set; }
+        public int? MaximumPeriodCountTimeTable { get; set; }
+        public int? MaximumPeriodCountRemedials { get; set; }
     }
 }

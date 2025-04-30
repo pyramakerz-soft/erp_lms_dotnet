@@ -13,13 +13,17 @@
             <div class="flex justify-between">
                 <div class="flex flex-col w-[30%]">
                     <label class="mb-2 primaryTxt font-medium" for="receivableDocTypesID">Doc Type</label>
-                    <select (ngModelChange)="onInputValueChange({ field: 'receivableDocTypesID', value: $event })"
+                    <select *ngIf="!isView"  (ngModelChange)="onInputValueChange({ field: 'receivableDocTypesID', value: $event })"
                         [disabled]="isView" class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto text-lg"
                         id="receivableDocTypesID" [(ngModel)]="receivable.receivableDocTypesID">
                         <option [value]="0" disabled selected hidden>Choose Doc Type</option>
                         <option *ngFor="let dataType of dataTypesData" [value]="dataType.id">{{ dataType.name }}</option>
                         <option *ngIf="dataTypesData.length === 0" disabled selected>No Data Found</option>
                     </select>
+                    <div *ngIf="isView"  
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto text-lg">
+                        {{receivable.receivableDocTypesName}}
+                    </div>
                     <span *ngIf="validationErrors['receivableDocTypesID']" class="text-red-500 ml-3 font-normal">{{
                         validationErrors['receivableDocTypesID'] }}</span>
                 </div>
@@ -88,8 +92,12 @@
         </div>
     
         <div class="no-print flex justify-end mt-5 space-x-4 items-center"> 
-            <i class="fa-solid fa-print text-lg cursor-pointer" *ngIf="!isCreate" (click)="DownloadData()"></i>
-                
+            <div class="flex space-x-4" *ngIf="!isCreate">
+                <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="DownloadAsExcel()" title="Export to Excel">
+                <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()" title="Download as PDF">
+                <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()" title="Print">
+            </div>
+              
             <button *ngIf="!isView" [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
                 <span *ngIf="!isLoading">Save</span>
                 <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
@@ -270,3 +278,22 @@
         </div>
     </div>
 </div> 
+
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [school]="{ 
+                reportHeaderOneEn: 'Receivable Report',
+                reportHeaderTwoEn: 'Detailed receivable information',
+                reportHeaderOneAr: 'تقرير القبض',
+                reportHeaderTwoAr: 'معلومات تفصيلية عن القبض',
+            }" [fileName]="'Receivable_Report'" [infoRows]="[
+                { keyEn: 'Document Type: ' + receivable.receivableDocTypesName },
+                { keyEn: 'Document Number: ' + receivable.docNumber },
+                { keyEn: 'Date: ' + receivable.date },
+                { keyEn: 'Total Amount: ' + totalAmount }
+            ]" [tableHeaders]="['id', 'amount', 'linkFileName', 'linkFileTypeName', 'notes']"
+            [tableData]="receivableDetailsData" #pdfComponentRef>
+        </app-pdf-print>
+    </div>
+</div>

@@ -116,6 +116,13 @@ import { StudentsInformationFormReportComponent } from './Pages/Employee/Registr
 import { PdfPrintComponent } from './Component/pdf-print/pdf-print.component';
 import { AcademicSequentialReportComponent } from './Pages/Employee/Registration/Reports/academic-sequential-report/academic-sequential-report.component';
 import { TransferedFromKindergartenReportComponent } from './Pages/Employee/Registration/Reports/transfered-from-kindergarten-report/transfered-from-kindergarten-report.component';
+import { TemplateComponent } from './Pages/Employee/LMS/template/template.component';
+import { EvaluationComponent } from './Pages/Employee/LMS/evaluation/evaluation.component';
+import { EvaluationTemplateGroupComponent } from './Pages/Employee/LMS/evaluation-template-group/evaluation-template-group.component';
+import { EvaluationTemplateGroupQuestionComponent } from './Pages/Employee/LMS/evaluation-template-group-question/evaluation-template-group-question.component';
+import { BookCorrectionComponent } from './Pages/Employee/LMS/book-correction/book-correction.component';
+import { EvaluationFeedbackComponent } from './Pages/Employee/LMS/evaluation-feedback/evaluation-feedback.component';
+import { EvaluationEmployeeAnswerComponent } from './Pages/Employee/LMS/evaluation-employee-answer/evaluation-employee-answer.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -213,7 +220,7 @@ export const routes: Routes = [
             { path: "Receivable Doc Type", component: ReceivableDocTypeComponent, title: "Receivable Doc Type" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Inventory Categories", component: CategoriesComponent, title: "Inventory categories" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Inventory Sub Categories/:id", component: SubCategoryComponent, title: "Sub_categories" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
-            { path: "Shop", component: ShopItemsComponent, title: "Shop Items" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
+            { path: "Items", component: ShopItemsComponent, title: "Shop Items" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Shop Item/Create", component: ShopItemsAddEditComponent, title: "Create Shop Items" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Shop Item/:id", component: ShopItemsAddEditComponent, title: "Edit Shop Items" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
             { path: "Stores", component: StoresComponent, title: "Store" , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ]},
@@ -263,8 +270,8 @@ export const routes: Routes = [
             { path: "Order History", component: OrderHistoryComponent, title: "Order History", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ] },
             { path: "Order/:id", component: OrderItemsComponent, title: "Order Items", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ] },
             { path: "Stocking", component: StockingComponent, title: "Stocking", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ] },
-            { path: "Stocking Details", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ] },
-            { path: "Stocking Details/Edit/:id", component: StockingDetailsComponent, title: "Stocking Details", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ] },
+            { path: "Stocking Item", component: StockingDetailsComponent, title: "Stocking Item", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ] },
+            { path: "Stocking Item/Edit/:id", component: StockingDetailsComponent, title: "Stocking Item", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard ] },
             { path: "StudentsNamesInClass", component: StudentsNamesInClassComponent, title: "Students' Names In Class", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "StudentInformation", component: StudentInformationComponent, title: "StudentInformation", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "ProofRegistrationAndSuccessForm", component: ProofRegistrationAndSuccessFormReportComponent, title: "ProofRegistrationAndSuccessForm", canActivate:[noNavigateWithoutLoginGuard ] },
@@ -272,6 +279,15 @@ export const routes: Routes = [
             { path: "StudentsInformationFormReport", component: StudentsInformationFormReportComponent, title: "StudentsInformationFormReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "TransferedFromKindergartenReport", component: TransferedFromKindergartenReportComponent, title: "TransferedFromKindergartenReport", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Template", component: TemplateComponent, title: "Template", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Book Correction", component: BookCorrectionComponent, title: "BookCorrectionComponent", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Evaluation", component: EvaluationComponent, title: "Evaluation", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationTemplateGroup/:id", component: EvaluationTemplateGroupComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "EvaluationTemplateGroupQuestion/:id", component: EvaluationTemplateGroupQuestionComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Received Evaluations", component: EvaluationFeedbackComponent, title: "Received Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Created Evaluations", component: EvaluationFeedbackComponent, title: "Created Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Received Evaluations/:id", component: EvaluationEmployeeAnswerComponent, title: "Received Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Created Evaluations/:id", component: EvaluationEmployeeAnswerComponent, title: "Created Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
     },
     { 

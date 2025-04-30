@@ -168,8 +168,8 @@ export class TuitionFeesTypesComponent {
 
       if (this.mode == 'Create') {
         this.TuitionFeesTypeServ.Add(this.tuitionFeesType, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal()
+          this.GetAllData()
           this.isLoading = false
         },
           err => {
@@ -185,8 +185,8 @@ export class TuitionFeesTypesComponent {
       }
       if (this.mode == 'Edit') {
         this.TuitionFeesTypeServ.Edit(this.tuitionFeesType, this.DomainName).subscribe((d) => {
-          this.GetAllData()
           this.closeModal()
+          this.GetAllData()
           this.isLoading = false
         },
           err => {
@@ -200,8 +200,7 @@ export class TuitionFeesTypesComponent {
             });
           })
       }
-    }
-    this.GetAllData()
+    } 
   }
 
   closeModal() {

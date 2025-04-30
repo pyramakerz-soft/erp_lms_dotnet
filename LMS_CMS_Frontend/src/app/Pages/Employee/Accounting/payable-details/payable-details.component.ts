@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Payable } from '../../../../Models/Accounting/payable';
 import { PayableDocType } from '../../../../Models/Accounting/payable-doc-type';
@@ -22,11 +22,13 @@ import { MenuService } from '../../../../Services/shared/menu.service';
 import { PayableDetailsService } from '../../../../Services/Employee/Accounting/payable-details.service';
 import Swal from 'sweetalert2';
 import html2pdf from 'html2pdf.js';
+import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.component';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-payable-details',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PdfPrintComponent],
   templateUrl: './payable-details.component.html',
   styleUrl: './payable-details.component.css'
 })
@@ -67,12 +69,15 @@ export class PayableDetailsComponent {
   editedRowData: PayableDetails = new PayableDetails()
 
   isLoading = false;
+
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
+  showPDF = false;
   
   constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public payableDocTypeService: PayableDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public payableService: PayableService,
     public bankService: BankService, public saveService: SaveService, public payableDetailsService: PayableDetailsService, public linkFileService: LinkFileService,
-    public dataAccordingToLinkFileService: DataAccordingToLinkFileService) { }
+    public dataAccordingToLinkFileService: DataAccordingToLinkFileService, public reportsService: ReportsService) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -170,6 +175,10 @@ export class PayableDetailsComponent {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
 
+  DetailsCapitalizeField(field: keyof PayableDetails): string {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+  }
+
   isFormValid(): boolean {
     let isValid = true;
     for (const key in this.payable) {
@@ -184,6 +193,39 @@ export class PayableDetailsComponent {
           this.validationErrors[field] = '';
         }
       }
+    }
+    return isValid;
+  }
+
+  isDetailsFormValid(detail: PayableDetails): boolean {
+    console.log(detail)
+    let isValid = true;
+    for (const key in detail) {
+      if (this.hasOwnProperty(key)) {
+        const field = key as keyof PayableDetails;
+        if (!detail[field]) {
+          if (field == "amount" || field == "linkFileName") {
+
+            this.validationErrorsForDetails[field] = `*${this.DetailsCapitalizeField(field)} is required`
+            isValid = false;
+          }
+        }
+        else {
+          this.validationErrorsForDetails[field] = '';
+        }
+      }
+    }
+    if (detail.linkFileID == 0) {
+      this.validationErrorsForDetails["linkFileID"] = 'link File is required'
+      isValid = false;
+    }
+    if (detail.linkFileTypeID == 0) {
+      this.validationErrorsForDetails["linkFileTypeID"] = 'Link File Data is required'
+      isValid = false;
+    }
+    if (detail.amount == null || detail.amount == "") {
+      this.validationErrorsForDetails["amount"] = 'amount is required'
+      isValid = false;
     }
     return isValid;
   }
@@ -214,6 +256,26 @@ export class PayableDetailsComponent {
       (!isNaN(this.newDetails.amount ? this.newDetails.amount : 0) && !isNaN(this.editedRowData.amount ? this.editedRowData.amount : 0)) &&
       (this.newDetails.linkFileID || this.editedRowData.linkFileID) &&
       (this.newDetails.linkFileTypeID || this.editedRowData.linkFileTypeID)) {
+      this.isDetailsValid = true
+    } else {
+      this.isDetailsValid = false
+    }
+  }
+
+  onInputValueChangeForEditDetails(event: { field: keyof PayableDetails, value: any }) {
+    const { field, value } = event;
+    (this.editedRowData as any)[field] = value;
+    if (value) {
+      this.validationErrorsForDetails[field] = '';
+    }
+    if (field == "linkFileID") {
+      this.editedRowData.linkFileTypeID = 0
+    }
+
+    if ((this.editedRowData.amount || this.editedRowData.amount) &&
+      (!isNaN(this.editedRowData.amount ? this.editedRowData.amount : 0) && !isNaN(this.editedRowData.amount ? this.editedRowData.amount : 0)) &&
+      (this.editedRowData.linkFileID || this.editedRowData.linkFileID) &&
+      (this.editedRowData.linkFileTypeID || this.editedRowData.linkFileTypeID)) {
       this.isDetailsValid = true
     } else {
       this.isDetailsValid = false
@@ -257,6 +319,11 @@ export class PayableDetailsComponent {
           (data) => {
             let id = JSON.parse(data).id
             this.router.navigateByUrl(`Employee/Payable Details/${id}`)
+            Swal.fire({
+              title: 'Saved Successfully',
+              icon: 'success',
+              confirmButtonColor: '#FF7519',
+            })
           }
         )
       } else if (this.isEdit) {
@@ -273,10 +340,10 @@ export class PayableDetailsComponent {
         )
       }
     }
-  } 
-  
-  GetPayableDetails(){
-    this.payableDetailsData = [] 
+  }
+
+  GetPayableDetails() {
+    this.payableDetailsData = []
     this.payableDetailsService.Get(this.DomainName, this.PayableID).subscribe(
       (data) => {
         this.payableDetailsData = data
@@ -297,10 +364,11 @@ export class PayableDetailsComponent {
     )
   }
 
-  GetLinkFilesTypeData() {
+  GetLinkFilesTypeData(id:number) {
     this.linkFileTypesData = []
-    this.dataAccordingToLinkFileService.GetTableDataAccordingToLinkFile(this.DomainName, +this.newDetails.linkFileID).subscribe(
+    this.dataAccordingToLinkFileService.GetTableDataAccordingToLinkFile(this.DomainName, id).subscribe(
       (data) => {
+        console.log(this.linkFileTypesData)
         this.linkFileTypesData = data
       }
     )
@@ -315,19 +383,23 @@ export class PayableDetailsComponent {
   }
 
   SaveNewDetails() {
-    this.isLoading = true;
     this.newDetails.payableMasterID = this.PayableID
-    this.payableDetailsService.Add(this.newDetails, this.DomainName).subscribe(
-      (data) => {
-        this.isLoading = false;
-        this.isNewDetails = false
-        this.newDetails = new PayableDetails()
-        this.GetPayableDetails()
-        this.editingRowId = null;
-        this.editedRowData = new PayableDetails();
-        this.isDetailsValid = false
-      }
-    )
+    console.log(1)
+    if (this.isDetailsFormValid(this.newDetails)) {
+      this.isLoading = true;
+      this.payableDetailsService.Add(this.newDetails, this.DomainName).subscribe(
+        (data) => {
+          this.isLoading = false;
+          this.isNewDetails = false
+          this.newDetails = new PayableDetails()
+          this.GetPayableDetails()
+          this.editingRowId = null;
+          this.editedRowData = new PayableDetails();
+          this.isDetailsValid = false
+        }
+      )
+    }
+    this.isLoading = false;
   }
 
   EditDetail(row: PayableDetails) {
@@ -344,20 +416,21 @@ export class PayableDetailsComponent {
         }
       )
     }
-
   }
 
   SaveEditedDetail() {
-    this.payableDetailsService.Edit(this.editedRowData, this.DomainName).subscribe(
-      (data) => {
-        this.editingRowId = null;
-        this.editedRowData = new PayableDetails();
-        this.isDetailsValid = false
-        this.isNewDetails = false
-        this.newDetails = new PayableDetails()
-        this.GetPayableDetails()
-      }
-    )
+    if (this.isDetailsFormValid(this.editedRowData)) {
+      this.payableDetailsService.Edit(this.editedRowData, this.DomainName).subscribe(
+        (data) => {
+          this.editingRowId = null;
+          this.editedRowData = new PayableDetails();
+          this.isDetailsValid = false
+          this.isNewDetails = false
+          this.newDetails = new PayableDetails()
+          this.GetPayableDetails()
+        }
+      )
+    }
   }
 
   DeleteDetail(id: number) {
@@ -380,30 +453,118 @@ export class PayableDetailsComponent {
     });
   }
 
-  DownloadData() {
-    let orderElement = document.getElementById('DataToDownload');
+  // DownloadData() {
+  //   let orderElement = document.getElementById('DataToDownload');
 
-    if (!orderElement) {
-      console.error("Page body not found!");
-      return;
-    }
+  //   if (!orderElement) {
+  //     console.error("Page body not found!");
+  //     return;
+  //   }
 
-    document.querySelectorAll('.no-print').forEach(el => {
-      (el as HTMLElement).style.display = 'none';
-    });
+  //   document.querySelectorAll('.no-print').forEach(el => {
+  //     (el as HTMLElement).style.display = 'none';
+  //   });
 
+  //   setTimeout(() => {
+  //     html2pdf().from(orderElement).set({
+  //       margin: 10,
+  //       filename: `Payable_${this.PayableID}.pdf`,
+  //       image: { type: 'jpeg', quality: 0.98 },
+  //       html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+  //       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  //     }).save().then(() => {
+  //       document.querySelectorAll('.no-print').forEach(el => {
+  //         (el as HTMLElement).style.display = '';
+  //       });
+  //     });
+  //   }, 500);
+  // }
+
+  DownloadAsPDF() {
+    this.showPDF = true;
     setTimeout(() => {
-      html2pdf().from(orderElement).set({
-        margin: 10,
-        filename: `Payable_${this.PayableID}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-      }).save().then(() => {
-        document.querySelectorAll('.no-print').forEach(el => {
-          (el as HTMLElement).style.display = '';
-        });
-      });
+      this.pdfComponentRef.downloadPDF();
+      setTimeout(() => this.showPDF = false, 2000);
     }, 500);
   }
+
+  Print() {
+    this.showPDF = true;
+    setTimeout(() => {
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { margin: 0; }
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      setTimeout(() => {
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
+  }
+
+  async DownloadAsExcel() {
+    await this.reportsService.generateExcelReport({
+      mainHeader: {
+        en: "Payable Report",
+        ar: "تقرير الدفع"
+      },
+      subHeaders: [
+        { en: "Detailed payable information", ar: "معلومات تفصيلية عن الدفع" },
+      ],
+      infoRows: [
+        { key: 'Document Type', value: this.payable.payableDocTypesName || '' },
+        { key: 'Document Number', value: this.payable.docNumber || '' },
+        { key: 'Date', value: this.payable.date || '' },
+        { key: 'Total Amount', value: this.totalAmount || 0 }
+      ],
+      reportImage: '', // Add image URL if available
+      filename: "Payable_Report.xlsx",
+      tables: [
+        {
+          title: "Payable Details",
+          headers: ['id', 'amount', 'linkFileName', 'linkFileTypeName', 'notes'],
+          data: this.payableDetailsData.map((row) => [
+            row.id || 0, 
+            row.amount || 0, 
+            row.linkFileName || '', 
+            row.linkFileTypeName || '', 
+            row.notes || ''
+          ])
+        }
+      ]
+    });
+  }
+
 }

@@ -1,6 +1,8 @@
 <div>
-    <h1 class="primaryTxt font-semibold text-2xl leading-9 mb-5">{{ bus.name }}</h1>
-    
+    <div class="flex items-center space-x-5 mb-5">
+        <i class="fa-solid fa-chevron-left" (click)="moveToBus()"></i> 
+        <h1 class="primaryTxt font-semibold text-2xl">{{ bus.name }}</h1>
+    </div>
     <div class="flex flex-wrap justify-between">
         <div class="bg-[#EBEBEB] p-3 w-[30%] mb-4">
             <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Name</p>

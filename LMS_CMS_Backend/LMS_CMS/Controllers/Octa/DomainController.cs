@@ -19,6 +19,10 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using MimeKit;
 
 namespace LMS_CMS_PL.Controllers.Octa
 {
@@ -115,22 +119,54 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             addedPageIds.Add(page.ID);
 
-            LMS_CMS_DAL.Models.Domains.Page pageNew = new LMS_CMS_DAL.Models.Domains.Page
-            {
-                ID = page.ID,
-                en_name = page.en_name,
-                ar_name = page.ar_name,
-                IsDisplay = page.IsDisplay,
-                Page_ID = page.Page_ID
-            };
+            //LMS_CMS_DAL.Models.Domains.Page pageNew = new LMS_CMS_DAL.Models.Domains.Page
+            //{
+            //    ID = page.ID,
+            //    en_name = page.en_name,
+            //    ar_name = page.ar_name,
+            //    IsDisplay = page.IsDisplay,
+            //    Page_ID = page.Page_ID
+            //};
 
-            Unit_Of_Work.page_Repository.Add(pageNew);
+            //Unit_Of_Work.page_Repository.Add(pageNew);
+
+            var alreadyExists = Unit_Of_Work.page_Repository.Select_By_Id(page.ID);
+            if (alreadyExists == null)
+            {
+                LMS_CMS_DAL.Models.Domains.Page pageNew = new LMS_CMS_DAL.Models.Domains.Page
+                {
+                    ID = page.ID,
+                    en_name = page.en_name,
+                    ar_name = page.ar_name,
+                    IsDisplay = page.IsDisplay,
+                    Page_ID = page.Page_ID
+                };
+
+                Unit_Of_Work.page_Repository.Add(pageNew);
+            }
 
             var childPages = GetPagesByParentId(page.ID);
             foreach (var childPage in childPages)
             {
                 AddPageWithChildren(childPage, Unit_Of_Work);
             }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        private void DeletePageWithChildren(LMS_CMS_DAL.Models.Octa.Page page, UOW Unit_Of_Work)
+        {
+            if (page == null) return;
+             
+            var childPages = GetPagesByParentId(page.ID);
+             
+            foreach (var childPage in childPages)
+            {
+                DeletePageWithChildren(childPage, Unit_Of_Work);  
+            }
+
+            // After deleting all children, delete the current page
+            Unit_Of_Work.page_Repository.Delete(page.ID);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,11 +306,46 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             Unit_Of_Work.SaveChanges();
 
+            string domainLink = null;
+
+            // to make a new route in sever 
+            using (HttpClient client = new HttpClient())
+            {
+                var requestBody = new
+                {
+                    subdomain = domain.Name
+                };
+
+                var json = JsonSerializer.Serialize(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("https://8b1r2kegpb.execute-api.us-east-1.amazonaws.com/CreateSubDomain", content);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Parse JSON and extract domain link
+                var outerJson = JsonDocument.Parse(responseContent);
+                if (outerJson.RootElement.TryGetProperty("body", out JsonElement bodyElement))
+                {
+                    var innerJson = JsonDocument.Parse(bodyElement.GetString());
+                    if (innerJson.RootElement.TryGetProperty("message", out JsonElement messageElement))
+                    {
+                        string message = messageElement.GetString();
+                        var match = Regex.Match(message, @"Subdomain (\S+) created successfully\.");
+                        if (match.Success)
+                        {
+                            domainLink = match.Groups[1].Value; 
+                        }
+                    }
+                }
+            }
+
             return Ok(new
             {
                 message = "Domain and database setup successfully.",
                 userName = domain.Name,
                 password = Pass,
+                link = domainLink,
                 notFoundPages = notFoundPages.Any() ? notFoundPages : null,
                 notModulePages = notModulePages.Any() ? notModulePages : null
             });
@@ -340,42 +411,89 @@ namespace LMS_CMS_PL.Controllers.Octa
             }
 
             // Delete What is not there
-            var FoundPages = Unit_Of_Work.page_Repository.Select_All();
-            if (FoundPages != null || FoundPages.Count != 0)
-            {
-                for (int i = 0; i < FoundPages.Count; i++)
-                {
-                    long id = FoundPages[i].ID;
-                    var existingPage = Unit_Of_Work.page_Repository.Select_By_Id(id);
+            //var FoundPages = Unit_Of_Work.page_Repository.Select_All();
+            //if (FoundPages != null || FoundPages.Count != 0)
+            //{
+            //    for (int i = 0; i < FoundPages.Count; i++)
+            //    {
+            //        long id = FoundPages[i].ID;
+            //        var existingPage = Unit_Of_Work.page_Repository.Select_By_Id(id);
 
-                    if (existingPage != null)
+            //        if (existingPage != null)
+            //        {
+            //            Unit_Of_Work.page_Repository.Delete(existingPage.ID);
+            //        }
+            //    }
+            //    Unit_Of_Work.SaveChanges();
+            //}
+
+            // 1) Get All the Existing
+            var existingPages = Unit_Of_Work.page_Repository.Select_All();
+
+            // 2) Get The New Ones (Make Sure This step is before deleting the deleted ones)
+            var notFoundPages = new List<long>();
+            var notModulePages = new List<long>();
+
+            if (domain.Pages != null || domain.Pages.Length != 0)
+            {
+                for (int i = 0; i < domain.Pages.Length; i++)
+                {
+                    var page = _Unit_Of_Work.page_Octa_Repository.Select_By_Id_Octa(domain.Pages[i]);
+                    if (page != null)
                     {
-                        Unit_Of_Work.page_Repository.Delete(existingPage.ID);
+                        var existingPage = Unit_Of_Work.page_Repository.Select_By_Id(domain.Pages[i]);
+
+                        if (page == null)
+                        {
+                            notFoundPages.Add(domain.Pages[i]);
+                        }
+                        else if (page.Page_ID != null)
+                        {
+                            notModulePages.Add(domain.Pages[i]);
+                        }
+                        else
+                        {
+                            AddPageWithChildren(page, Unit_Of_Work);
+                        }
                     }
                 }
                 Unit_Of_Work.SaveChanges();
             }
 
-            var notFoundPages = new List<long>();
-            var notModulePages = new List<long>();
-
-            for (long i = 0; i < domain.Pages.Length; i++)
+            // 3) Get The Deleted Ones (By Default it will delete the role details as on delete cascade
+            if (existingPages != null || existingPages.Count != 0)
             {
-                var page = _Unit_Of_Work.page_Octa_Repository.Select_By_Id_Octa(domain.Pages[i]);
-
-                if (page == null)
+                for (int i = 0; i < existingPages.Count; i++)
                 {
-                    notFoundPages.Add(domain.Pages[i]);
+                    if (!domain.Pages.Contains(existingPages[i].ID) && existingPages[i].Page_ID == null)
+                    { 
+                        var page = _Unit_Of_Work.page_Octa_Repository.Select_By_Id_Octa(existingPages[i].ID);
+                        DeletePageWithChildren(page, Unit_Of_Work);
+                    } 
                 }
-                else if (page.Page_ID != null)
-                {
-                    notModulePages.Add(domain.Pages[i]);
-                } 
-                else
-                {
-                    AddPageWithChildren(page, Unit_Of_Work);
-                }
+                Unit_Of_Work.SaveChanges();
             }
+
+            //var notFoundPages = new List<long>();
+            //var notModulePages = new List<long>();
+
+            //for (long i = 0; i < domain.Pages.Length; i++)
+            //{
+            //    var page = _Unit_Of_Work.page_Octa_Repository.Select_By_Id_Octa(domain.Pages[i]);
+
+            //    if (page == null)
+            //    {
+            //        notFoundPages.Add(domain.Pages[i]);
+            //    }
+            //    else if (page.Page_ID != null)
+            //    {
+            //        notModulePages.Add(domain.Pages[i]);
+            //    }
+            //    else
+            //    {
+            //        AddPageWithChildren(page, Unit_Of_Work);
+            //    }
+            //}
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             //// Add all pages to Admin role
@@ -392,7 +510,12 @@ namespace LMS_CMS_PL.Controllers.Octa
                 };
                 roleDetail.InsertedByOctaId = userId;
                 roleDetail.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
-                Unit_Of_Work.role_Detailes_Repository.Add(roleDetail);
+
+                Role_Detailes existingRoleDetail =  Unit_Of_Work.role_Detailes_Repository.First_Or_Default(d => d.IsDeleted != true && d.Role_ID == roleDetail.Role_ID && d.Page_ID == roleDetail.Page_ID);
+                if (existingRoleDetail == null)
+                {
+                    Unit_Of_Work.role_Detailes_Repository.Add(roleDetail);
+                }
             } 
 
             Unit_Of_Work.SaveChanges();

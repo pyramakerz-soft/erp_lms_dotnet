@@ -21,11 +21,13 @@ import { LinkFileService } from '../../../../Services/Employee/Accounting/link-f
 import { DataAccordingToLinkFileService } from '../../../../Services/Employee/Accounting/data-according-to-link-file.service';
 import Swal from 'sweetalert2';
 import html2pdf from 'html2pdf.js';
+import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.component';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-receivable-details',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PdfPrintComponent],
   templateUrl: './receivable-details.component.html',
   styleUrl: './receivable-details.component.css'
 })
@@ -66,11 +68,14 @@ export class ReceivableDetailsComponent {
   editedRowData: ReceivableDetails = new ReceivableDetails()
   isLoading = false
 
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
+  showPDF = false;
+  
   constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public receivableDocTypeService: ReceivableDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public receivableService: ReceivableService,
     public bankService: BankService, public saveService: SaveService, public receivableDetailsService: ReceivableDetailsService, public linkFileService: LinkFileService,
-    public dataAccordingToLinkFileService: DataAccordingToLinkFileService) { }
+    public dataAccordingToLinkFileService: DataAccordingToLinkFileService, public reportsService: ReportsService) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -257,6 +262,11 @@ export class ReceivableDetailsComponent {
           (data) => {
             let id = JSON.parse(data).id
             this.router.navigateByUrl(`Employee/Receivable Details/${id}`)
+            Swal.fire({
+              title: 'Saved Successfully',
+              icon: 'success', 
+              confirmButtonColor: '#FF7519',  
+            })
             this.isLoading = false
           },
           err => {
@@ -404,30 +414,117 @@ export class ReceivableDetailsComponent {
     });
   }
 
-  DownloadData() {
-    let orderElement = document.getElementById('DataToDownload');
+  // DownloadData() {
+  //   let orderElement = document.getElementById('DataToDownload');
 
-    if (!orderElement) {
-      console.error("Page body not found!");
-      return;
-    }
+  //   if (!orderElement) {
+  //     console.error("Page body not found!");
+  //     return;
+  //   }
 
-    document.querySelectorAll('.no-print').forEach(el => {
-      (el as HTMLElement).style.display = 'none';
-    });
+  //   document.querySelectorAll('.no-print').forEach(el => {
+  //     (el as HTMLElement).style.display = 'none';
+  //   });
 
+  //   setTimeout(() => {
+  //     html2pdf().from(orderElement).set({
+  //       margin: 10,
+  //       filename: `Receivable_${this.ReceivableID}.pdf`,
+  //       image: { type: 'jpeg', quality: 0.98 },
+  //       html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+  //       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  //     }).save().then(() => {
+  //       document.querySelectorAll('.no-print').forEach(el => {
+  //         (el as HTMLElement).style.display = '';
+  //       });
+  //     });
+  //   }, 500);
+  // }  
+
+  DownloadAsPDF() {
+    this.showPDF = true;
     setTimeout(() => {
-      html2pdf().from(orderElement).set({
-        margin: 10,
-        filename: `Receivable_${this.ReceivableID}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-      }).save().then(() => {
-        document.querySelectorAll('.no-print').forEach(el => {
-          (el as HTMLElement).style.display = '';
-        });
-      });
+      this.pdfComponentRef.downloadPDF();
+      setTimeout(() => this.showPDF = false, 2000);
     }, 500);
-  }  
+  }
+
+  Print() {
+    this.showPDF = true;
+    setTimeout(() => {
+      const printContents = document.getElementById("Data")?.innerHTML;
+      if (!printContents) {
+        console.error("Element not found!");
+        return;
+      }
+
+      const printStyle = `
+        <style>
+          @page { size: auto; margin: 0mm; }
+          body { margin: 0; }
+          @media print {
+            body > *:not(#print-container) {
+              display: none !important;
+            }
+            #print-container {
+              display: block !important;
+              position: static !important;
+              top: auto !important;
+              left: auto !important;
+              width: 100% !important;
+              height: auto !important;
+              background: white !important;
+              box-shadow: none !important;
+              margin: 0 !important;
+            }
+          }
+        </style>
+      `;
+
+      const printContainer = document.createElement('div');
+      printContainer.id = 'print-container';
+      printContainer.innerHTML = printStyle + printContents;
+
+      document.body.appendChild(printContainer);
+      window.print();
+      
+      setTimeout(() => {
+        document.body.removeChild(printContainer);
+        this.showPDF = false;
+      }, 100);
+    }, 500);
+  }
+
+  async DownloadAsExcel() {
+    await this.reportsService.generateExcelReport({
+      mainHeader: {
+        en: "Receivable Report",
+        ar: "تقرير القبض"
+      },
+      subHeaders: [
+        { en: "Detailed receivable information", ar: "معلومات تفصيلية عن القبض" },
+      ],
+      infoRows: [
+        { key: 'Document Type', value: this.receivable.receivableDocTypesName || '' },
+        { key: 'Document Number', value: this.receivable.docNumber || '' },
+        { key: 'Date', value: this.receivable.date || '' },
+        { key: 'Total Amount', value: this.totalAmount || 0 }
+      ],
+      reportImage: '', // Add image URL if available
+      filename: "Receivable_Report.xlsx",
+      tables: [
+        {
+          title: "Receivable Details",
+          headers: ['id', 'amount', 'linkFileName', 'linkFileTypeName', 'notes'],
+          data: this.receivableDetailsData.map((row) => [
+            row.id || 0, 
+            row.amount || 0, 
+            row.linkFileName || '', 
+            row.linkFileTypeName || '', 
+            row.notes || ''
+          ])
+        }
+      ]
+    });
+  }
 }

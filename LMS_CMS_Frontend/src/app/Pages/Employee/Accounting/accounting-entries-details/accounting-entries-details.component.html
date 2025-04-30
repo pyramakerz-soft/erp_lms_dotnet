@@ -12,13 +12,17 @@
         <div class="flex justify-between">
             <div class="flex flex-col w-[30%]">
                 <label class="mb-2 primaryTxt font-medium" for="accountingEntriesDocTypeID">Doc Type</label>
-                <select (ngModelChange)="onInputValueChange({ field: 'accountingEntriesDocTypeID', value: $event })"
+                <select *ngIf="!isView" (ngModelChange)="onInputValueChange({ field: 'accountingEntriesDocTypeID', value: $event })"
                 [disabled]="isView"
                 class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="accountingEntriesDocTypeID" [(ngModel)]="accountingEntries.accountingEntriesDocTypeID">
                     <option [value]="0" disabled selected hidden>Choose Doc Type</option>
                     <option *ngFor="let dataType of dataTypesData" [value]="dataType.id">{{ dataType.name }}</option>
                     <option *ngIf="dataTypesData.length === 0" disabled selected>No Data Found</option>
                 </select>
+                <div *ngIf="isView"  
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto text-lg">
+                    {{accountingEntries.accountingEntriesDocTypeName}}
+                </div>
                 <span *ngIf="validationErrors['accountingEntriesDocTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['accountingEntriesDocTypeID'] }}</span>
             </div>
             <div class="flex flex-col w-[30%]">
@@ -62,9 +66,13 @@
     </div>
     
     <div class="no-print flex justify-end mt-5 space-x-4 items-center">
-        <i class="fa-solid fa-print text-lg cursor-pointer" *ngIf="!isCreate" (click)="DownloadData()"></i>
+        <div class="flex space-x-4" *ngIf="!isCreate">
+            <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="DownloadAsExcel()" title="Export to Excel">
+            <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()" title="Download as PDF">
+            <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()" title="Print">
+        </div>
 
-        <button *ngIf="!isView" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()"> Save </button>
+        <button *ngIf="!isView" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg cursor-pointer" (click)="Save()"> Save </button>
     </div>
 </div>
 
@@ -235,4 +243,26 @@
             </tbody>
         </table>
     </div>      
+</div>
+
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [school]="{ 
+                reportHeaderOneEn: 'Accounting Entries Report',
+                reportHeaderTwoEn: 'Detailed accounting entries information',
+                reportHeaderOneAr: 'تقرير القيود المحاسبية',
+                reportHeaderTwoAr: 'معلومات تفصيلية عن القيود المحاسبية'
+            }" [fileName]="'Accounting_Entries_Report'" [infoRows]="[
+                { keyEn: 'Document Type: ' + accountingEntries.accountingEntriesDocTypeName },
+                { keyEn: 'Document Number: ' + accountingEntries.docNumber },
+                { keyEn: 'Date: ' + accountingEntries.date },
+                { keyEn: 'Total Credit: ' + totalCredit },
+                { keyEn: 'Total Debit: ' + totalDebit },
+                { keyEn: 'Difference: ' + theDifference }
+            ]"
+            [tableHeaders]="['id', 'debitAmount', 'creditAmount', 'accountingTreeChartName', 'subAccountingName', 'note']"
+            [tableData]="accountingEntriesDetailsData" #pdfComponentRef>
+        </app-pdf-print>
+    </div>
 </div>

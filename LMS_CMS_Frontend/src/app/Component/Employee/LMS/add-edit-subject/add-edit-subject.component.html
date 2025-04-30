@@ -85,7 +85,7 @@
             </div>
             <div class="flex flex-col w-[49%] mb-4">
                 <label class="mb-2 primaryTxt" for="totalMark">Total Mark</label>
-                <input id="totalMark" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Credit Hours" 
+                <input id="totalMark" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Total Mark" 
                 [(ngModel)]="subject.totalMark"
                 (ngModelChange)="onInputValueChange({ field: 'totalMark', value: $event })"
                 (input)="validateNumber($event, 'totalMark')"/>
@@ -104,7 +104,7 @@
                             <img *ngIf="!subject.iconLink && !subject.iconFile" src="Images/Icon frame.png" class="w-1/4">
                             <img *ngIf="!subject.iconLink && subject.iconFile" src="Images/FileAttached.png" class="w-1/4">
                             <img *ngIf="subject.iconLink" [src]="subject.iconLink" class="w-1/3 object-cover">
-                            <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to Upload </span>or drag and drop Icon</p>
+                            <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to Upload </span></p>
                             <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB)</p>
                         </label>
                         <input id="file-upload" type="file" class="hidden" (change)="onImageFileSelected($event)" accept="image/jpeg, image/png"  />
@@ -132,11 +132,15 @@
                 <span *ngIf="validationErrors['numberOfSessionPerWeek']" class="text-red-500 ml-3 font-normal">{{ validationErrors['numberOfSessionPerWeek'] }}</span>
             </div>
         </div>
-
+ 
         <div class="flex justify-end">
-            <button class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="SaveSubject()">
-                Save
-            </button>
+            <button
+            [disabled]="isLoading"
+            class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+            (click)="SaveSubject()">
+            <span *ngIf="!isLoading">Save</span>
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          </button>
         </div>
     </div>
 </div>

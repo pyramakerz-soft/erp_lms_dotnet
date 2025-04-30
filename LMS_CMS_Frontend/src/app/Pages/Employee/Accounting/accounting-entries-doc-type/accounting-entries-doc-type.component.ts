@@ -247,8 +247,8 @@ User_Data_After_Login: TokenData = new TokenData(
             if (typeof fieldValue === 'string') {
               return fieldValue.toLowerCase().includes(this.value.toLowerCase());
             }
-            if (typeof fieldValue === 'number') {
-              return fieldValue === numericValue;
+            if (typeof fieldValue === 'number') { 
+              return fieldValue.toString().includes(numericValue.toString())
             }
             return fieldValue == this.value;
           });

@@ -285,7 +285,7 @@ export class BusStatusComponent {
           return fieldValue.toLowerCase().includes(this.value.toLowerCase());
         }
         if (typeof fieldValue === 'number') {
-          return fieldValue === numericValue;
+          return fieldValue.toString().includes(numericValue.toString())
         }
         return fieldValue == this.value;
       });

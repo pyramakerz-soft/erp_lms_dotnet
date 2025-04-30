@@ -11,6 +11,7 @@ using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.DTO.Octa;
 using LMS_CMS_BL.DTO.Registration;
 using LMS_CMS_BL.DTO.Violation;
+using LMS_CMS_BL.DTO.Zatca;
 using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Administration;
@@ -21,6 +22,7 @@ using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -639,7 +641,10 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<InventoryDetails, InventoryDetailsGetDTO>()
                 .ForMember(dest => dest.BarCode, opt => opt.MapFrom(src => src.ShopItem.BarCode))
-                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName));
+                .ForMember(dest => dest.ShopItemName, opt => opt.MapFrom(src => src.ShopItem.EnName))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.ShopItem.InventorySubCategories.InventoryCategoriesID))
+                .ForMember(dest => dest.SubCategoryId, opt => opt.MapFrom(src => src.ShopItem.InventorySubCategoriesID));
+
             CreateMap<InventoryDetailsGetDTO, InventoryDetails>();
             CreateMap<InventoryDetailsAddDTO, InventoryDetails>();
 
@@ -761,7 +766,61 @@ namespace LMS_CMS_BL.Config
             CreateMap<StockingAddDTO, Stocking>();
             CreateMap<StockingGetDto, Stocking>();
 
+            CreateMap<EvaluationTemplate, EvaluationTemplateGetDTO>();
+            CreateMap<EvaluationTemplateAddDTO, EvaluationTemplate>();
+            CreateMap<EvaluationTemplateEditDTO, EvaluationTemplate>();
 
+            CreateMap<EvaluationTemplateGroup, EvaluationTemplateGroupDTO>();
+            CreateMap<EvaluationTemplateGroupAddDTO, EvaluationTemplateGroup>();
+            CreateMap<EvaluationTemplateGroupEditDTO, EvaluationTemplateGroup>();
+
+            CreateMap<EvaluationTemplateGroupQuestion, EvaluationTemplateGroupQuestionGetDTO>();
+            CreateMap<EvaluationTemplateGroupQuestionEditDTO, EvaluationTemplateGroupQuestion>();
+            CreateMap<EvaluationTemplateGroupQuestionAddDTO, EvaluationTemplateGroupQuestion>();
+
+
+            CreateMap<EvaluationBookCorrection, EvaluationBookCorrectionGetDTO>();
+            CreateMap<EvaluationBookCorrectionAddDTO, EvaluationBookCorrection>();
+            CreateMap<EvaluationBookCorrectionEditDTO, EvaluationBookCorrection>();
+
+            CreateMap<EvaluationEmployeeStudentBookCorrectionAddDTO, EvaluationEmployeeStudentBookCorrection>();
+            CreateMap<EvaluationEmployeeQuestionAddDTO, EvaluationEmployeeQuestion>();
+            CreateMap<EvaluationEmployeeAddDTO, EvaluationEmployee>();
+
+            CreateMap<EvaluationEmployee, EvaluationEmployeeGetDTO>()
+                 .ForMember(dest => dest.EvaluatorArabicName, opt => opt.MapFrom(src => src.Evaluator.ar_name))
+                 .ForMember(dest => dest.EvaluatorEnglishName, opt => opt.MapFrom(src => src.Evaluator.en_name))
+                 .ForMember(dest => dest.EvaluatedArabicName, opt => opt.MapFrom(src => src.Evaluated.ar_name))
+                 .ForMember(dest => dest.EvaluatedEnglishName, opt => opt.MapFrom(src => src.Evaluated.en_name))
+                 .ForMember(dest => dest.ClassroomName, opt => opt.MapFrom(src => src.Classroom.Name))
+                 .ForMember(dest => dest.EvaluationTemplateArabicTitle, opt => opt.MapFrom(src => src.EvaluationTemplate.ArabicTitle))
+                 .ForMember(dest => dest.EvaluationTemplateEnglishTitle, opt => opt.MapFrom(src => src.EvaluationTemplate.EnglishTitle));
+            
+            CreateMap<EvaluationEmployee, EvaluationEmployeeWithQuestionsGetDTO>()
+                 .ForMember(dest => dest.EvaluatorArabicName, opt => opt.MapFrom(src => src.Evaluator.ar_name))
+                 .ForMember(dest => dest.EvaluatorEnglishName, opt => opt.MapFrom(src => src.Evaluator.en_name))
+                 .ForMember(dest => dest.EvaluatedArabicName, opt => opt.MapFrom(src => src.Evaluated.ar_name))
+                 .ForMember(dest => dest.EvaluatedEnglishName, opt => opt.MapFrom(src => src.Evaluated.en_name))
+                 .ForMember(dest => dest.ClassroomName, opt => opt.MapFrom(src => src.Classroom.Name))
+                 .ForMember(dest => dest.EvaluationTemplateArabicTitle, opt => opt.MapFrom(src => src.EvaluationTemplate.ArabicTitle))
+                 .ForMember(dest => dest.EvaluationTemplateEnglishTitle, opt => opt.MapFrom(src => src.EvaluationTemplate.EnglishTitle));
+
+            CreateMap<EvaluationEmployeeStudentBookCorrection, EvaluationEmployeeStudentBookCorrectionsGetDTO>()
+                 .ForMember(dest => dest.StudentArabicName, opt => opt.MapFrom(src => src.Student.ar_name))
+                 .ForMember(dest => dest.StudentEnglishName, opt => opt.MapFrom(src => src.Student.en_name))
+                 .ForMember(dest => dest.EvaluationBookCorrectionEnglishName, opt => opt.MapFrom(src => src.EvaluationBookCorrection.EnglishName))
+                 .ForMember(dest => dest.EvaluationBookCorrectionArabicName, opt => opt.MapFrom(src => src.EvaluationBookCorrection.ArabicName));
+
+            CreateMap<EvaluationEmployeeQuestion, EvaluationEmployeeQuestionGetDTO>()
+                 .ForMember(dest => dest.QuestionArabicTitle, opt => opt.MapFrom(src => src.EvaluationTemplateGroupQuestion.ArabicTitle))
+                 .ForMember(dest => dest.QuestionEnglishTitle, opt => opt.MapFrom(src => src.EvaluationTemplateGroupQuestion.EnglishTitle));
+
+            CreateMap<EvaluationTemplateGroup, EvaluationEmployeeQuestionGroupGetDTO>();
+
+            CreateMap<SchoolPCsAddDTO, SchoolPCs>();
+            CreateMap<SchoolPCsPutDTO, SchoolPCs>();
+            CreateMap<SchoolPCs, SchoolPCsGetDTO>()
+                .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name));
         }
     } 
 }

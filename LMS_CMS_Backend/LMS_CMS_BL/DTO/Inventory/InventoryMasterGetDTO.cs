@@ -12,7 +12,7 @@ namespace LMS_CMS_BL.DTO.Inventory
     public class InventoryMasterGetDTO
     {
         public long ID { get; set; }
-        public int InvoiceNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string Date { get; set; }
         public bool IsCash { get; set; }
         public bool IsVisa { get; set; }
@@ -32,6 +32,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public int ItemInOut { get; set; }
         public int FlagValue { get; set; }
         public long? SaveID { get; set; }
+        public long? SchoolId { get; set; }
         public long? SupplierId { get; set; }
         public long? BankID { get; set; }
         public long? StoreToTransformId { get; set; }
@@ -40,5 +41,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string? SaveName { get; set; }
         public string? BankName { get; set; }
         public long? InsertedByUserId { get; set; }
+        public List<InventoryDetailsGetDTO> InventoryDetails { get; set; }
     }
 }

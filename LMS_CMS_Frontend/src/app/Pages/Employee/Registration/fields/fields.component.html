@@ -185,8 +185,7 @@
                 <div class="flex flex-col">
                     <input type="text"
                         class="w-[500px] h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-                        [(ngModel)]="field.orderInForm" placeholder=" " (input)="validateNumber($event, 'orderInForm')"
-                        min="0" step="1"
+                        [(ngModel)]="field.orderInForm" placeholder="Ender Order In Form" (input)="validateNumber($event, 'orderInForm')" 
                         (ngModelChange)="onInputValueChange({ field: 'orderInForm', value: $event })" />
                     <span *ngIf="validationErrors['orderInForm']" class="text-red-500 ml-3 font-normal">{{
                         validationErrors['orderInForm'] }}</span>

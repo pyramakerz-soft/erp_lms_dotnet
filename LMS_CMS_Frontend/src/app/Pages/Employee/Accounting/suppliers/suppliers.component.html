@@ -142,12 +142,13 @@
             <option *ngFor="let Acc of AccountNumbers" [value]="Acc.id">{{ Acc.name }}</option>
             <option *ngIf="AccountNumbers.length === 0" disabled>No Data Found</option>
           </select>
+          <span *ngIf="validationErrors['accountNumberID']" class="text-red-500 font-normal">{{ validationErrors['accountNumberID'] }}</span>
         </div>
 
         <div class="flex flex-col w-[48%]">
           <h6 class="font-medium text-base leading-6 mb-1 mt-3">Country</h6>
           <select class="w-full h-[45px] rounded-lg border border-solid border-gray-300 px-2 mb-3"
-            [(ngModel)]="Supplier.countryID">
+            [(ngModel)]="Supplier.countryID" (ngModelChange)="onInputValueChange({ field: 'countryID', value: $event })">
             <option [value]="0" disabled selected hidden>Choose Country</option>
             <option *ngFor="let country of contries" [value]="country.id">{{ country.name }}</option>
             <option *ngIf="contries.length === 0" disabled>No Data Found</option>

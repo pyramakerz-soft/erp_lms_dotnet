@@ -161,7 +161,7 @@ export class ShopItemsAddEditComponent {
   }
 
   moveToBack() {
-    this.router.navigateByUrl(`Employee/Shop`)
+    this.router.navigateByUrl(`Employee/Items`)
   }
 
   onCategoryChange(event: Event) {
@@ -217,12 +217,12 @@ export class ShopItemsAddEditComponent {
               title: "Added Successfully!",
               icon: "success"
             });
-            this.router.navigateByUrl(`Employee/Shop`)
+            this.router.navigateByUrl(`Employee/Items`)
             this.isLoading=false
           }, 
           err => { 
-            if(err.error == "BarCode Must Be unique"){
             this.isLoading=false
+            if(err.error == "BarCode Must Be unique"){
               Swal.fire({
                 title: "BarCode Must Be unique",
                 text: "Please change the BarCode",
@@ -239,7 +239,7 @@ export class ShopItemsAddEditComponent {
               title: "Edited Successfully!",
               icon: "success"
             });
-            this.router.navigateByUrl(`Employee/Shop`) 
+            this.router.navigateByUrl(`Employee/Items`) 
             this.isLoading=false
           }, 
           err => {

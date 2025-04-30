@@ -33,6 +33,7 @@ export class AddEditSubjectComponent {
   Sections: Section[] = []
   Grades: Grade[] = []
   subjectCategories:SubjectCategory[] = []
+  isLoading = false;
 
   constructor(public subjectService: SubjectService, public subjectCategoryService: SubjectCategoryService, public dialogRef: MatDialogRef<AddEditSubjectComponent>, 
     public schoolService: SchoolService, public sectionService:SectionService, public gradeService:GradeService, public ApiServ:ApiService,
@@ -68,6 +69,8 @@ export class AddEditSubjectComponent {
     this.Grades = []
     this.selectedSchool = null
     this.selectedSection = null
+
+    this.isLoading = false;
 
     if(this.editSubject){
       this.editSubject = false
@@ -221,12 +224,14 @@ export class AddEditSubjectComponent {
 
   SaveSubject(){
     if(this.isFormValid()){
+      this.isLoading = true;
       if(this.editSubject == false){
         (this.subjectService.Add(this.subject, this.DomainName)).subscribe(
           (result: any) => {
             this.closeDialog()
           },
           error => {
+            this.isLoading = false;
           }
         );
       } else{
@@ -235,6 +240,7 @@ export class AddEditSubjectComponent {
             this.closeDialog()
           },
           error => {
+            this.isLoading = false;
           }
         );
       }  

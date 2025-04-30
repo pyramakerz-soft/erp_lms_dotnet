@@ -70,7 +70,13 @@ export class SchoolService {
     formData.append('reportHeaderTwoEn', school.reportHeaderTwoEn?.toString() ?? '');
     formData.append('reportHeaderTwoAr', school.reportHeaderTwoAr?.toString() ?? '');
     formData.append('vatNumber', school.vatNumber?.toString() ?? '');
-  
+    formData.append('maximumPeriodCountRemedials', school.maximumPeriodCountRemedials?.toString() ?? '');
+    formData.append('maximumPeriodCountTimeTable', school.maximumPeriodCountTimeTable?.toString() ?? '');
+    formData.append('postalZone', school.postalZone?.toString() ?? '');
+    formData.append('city', school.city?.toString() ?? '');
+    formData.append('citySubdivision', school.citySubdivision?.toString() ?? '');
+    formData.append('buildingNumber', school.buildingNumber?.toString() ?? '');
+    formData.append('streetName', school.streetName?.toString() ?? '');
     if (school.reportImageFile) {
       formData.append('reportImageFile', school.reportImageFile, school.reportImageFile.name);
     } else if (school.reportImage) {

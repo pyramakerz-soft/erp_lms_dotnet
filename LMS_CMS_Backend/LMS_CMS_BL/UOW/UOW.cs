@@ -9,6 +9,7 @@ using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_DAL.Models.Domains.RegisterationModule;
 using LMS_CMS_DAL.Models.Domains.ViolationModule;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using LMS_CMS_DAL.Models.Octa;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -141,6 +142,14 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<Cart_ShopItem> Cart_ShopItem_Repository;
         GenericRepo<Stocking> Stocking_Repository;
         GenericRepo<StockingDetails> StockingDetails_Repository;
+        GenericRepo<EvaluationTemplate> EvaluationTemplate_Repository;
+        GenericRepo<EvaluationTemplateGroup> EvaluationTemplateGroup_Repository;
+        GenericRepo<EvaluationTemplateGroupQuestion> EvaluationTemplateGroupQuestion_Repository;
+        GenericRepo<EvaluationBookCorrection> EvaluationBookCorrection_Repository;
+        GenericRepo<EvaluationEmployeeStudentBookCorrection> EvaluationEmployeeStudentBookCorrection_Repository;
+        GenericRepo<EvaluationEmployee> EvaluationEmployee_Repository;
+        GenericRepo<EvaluationEmployeeQuestion> EvaluationEmployeeQuestion_Repository;
+        GenericRepo<SchoolPCs> SchoolPCs_Repository;
 
 
 
@@ -1529,6 +1538,103 @@ namespace LMS_CMS_BL.UOW
                 return Order_Repository;
             }
         }
+        
+        public GenericRepo<EvaluationBookCorrection> evaluationBookCorrection_Repository
+        {
+            get
+            {
+                if (EvaluationBookCorrection_Repository == null)
+                {
+                    EvaluationBookCorrection_Repository = new GenericRepo<EvaluationBookCorrection>(db);
+                }
+                return EvaluationBookCorrection_Repository;
+            }
+        }
+        
+        public GenericRepo<EvaluationEmployee> evaluationEmployee_Repository
+        {
+            get
+            {
+                if (EvaluationEmployee_Repository == null)
+                {
+                    EvaluationEmployee_Repository = new GenericRepo<EvaluationEmployee>(db);
+                }
+                return EvaluationEmployee_Repository;
+            }
+        }
+        
+        public GenericRepo<EvaluationEmployeeQuestion> evaluationEmployeeQuestion_Repository
+        {
+            get
+            {
+                if (EvaluationEmployeeQuestion_Repository == null)
+                {
+                    EvaluationEmployeeQuestion_Repository = new GenericRepo<EvaluationEmployeeQuestion>(db);
+                }
+                return EvaluationEmployeeQuestion_Repository;
+            }
+        }
+        
+        public GenericRepo<EvaluationEmployeeStudentBookCorrection> evaluationEmployeeStudentBookCorrection_Repository
+        {
+            get
+            {
+                if (EvaluationEmployeeStudentBookCorrection_Repository == null)
+                {
+                    EvaluationEmployeeStudentBookCorrection_Repository = new GenericRepo<EvaluationEmployeeStudentBookCorrection>(db);
+                }
+                return EvaluationEmployeeStudentBookCorrection_Repository;
+            }
+        }
+        
+        public GenericRepo<EvaluationTemplate> evaluationTemplate_Repository
+        {
+            get
+            {
+                if (EvaluationTemplate_Repository == null)
+                {
+                    EvaluationTemplate_Repository = new GenericRepo<EvaluationTemplate>(db);
+                }
+                return EvaluationTemplate_Repository;
+            }
+        }
+        
+        public GenericRepo<EvaluationTemplateGroup> evaluationTemplateGroup_Repository
+        {
+            get
+            {
+                if (EvaluationTemplateGroup_Repository == null)
+                {
+                    EvaluationTemplateGroup_Repository = new GenericRepo<EvaluationTemplateGroup>(db);
+                }
+                return EvaluationTemplateGroup_Repository;
+            }
+        }
+        
+        public GenericRepo<EvaluationTemplateGroupQuestion> evaluationTemplateGroupQuestion_Repository
+        {
+            get
+            {
+                if (EvaluationTemplateGroupQuestion_Repository == null)
+                {
+                    EvaluationTemplateGroupQuestion_Repository = new GenericRepo<EvaluationTemplateGroupQuestion>(db);
+                }
+                return EvaluationTemplateGroupQuestion_Repository;
+            }
+        }
+        
+        public GenericRepo<SchoolPCs> schoolPCs_Repository
+        {
+            get
+            {
+                if (SchoolPCs_Repository == null)
+                {
+                    SchoolPCs_Repository = new GenericRepo<SchoolPCs>(db);
+                }
+                return SchoolPCs_Repository;
+            }
+        }
+
         public void SaveChanges()
         {
             db.SaveChanges();

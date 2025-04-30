@@ -14,22 +14,32 @@ namespace LMS_CMS_PL.Services
         //{
         //    this.db = db;
         //}
-        public async Task<int> GetNextInvoiceNumber(LMS_CMS_Context db , long storeId, long flagId)
+        public async Task<string> GetNextInvoiceNumber(LMS_CMS_Context db, long storeId, long flagId)
         {
-            int lastInvoice = await db.InventoryMaster
-                .Where(x => x.StoreID == storeId && x.FlagId == flagId)
-                .OrderByDescending(x => x.InvoiceNumber)
+            string prefix = storeId.ToString() + flagId.ToString();
+
+            var invoiceNumbers = await db.InventoryMaster
+                .Where(x => x.StoreID == storeId && x.FlagId == flagId && x.InvoiceNumber.StartsWith(prefix))
                 .Select(x => x.InvoiceNumber)
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            string invoiceStr = lastInvoice.ToString();
+            long maxNumber = 0;
 
-            string trimmedInvoice = invoiceStr.Length > 2 ? invoiceStr.Substring(2) : "0";
-            int cleanedInvoice = int.Parse(trimmedInvoice);
+            if (invoiceNumbers.Any())
+            {
+                maxNumber = invoiceNumbers
+                    .Select(inv =>
+                    {
+                        var suffix = inv.Length > prefix.Length ? inv.Substring(prefix.Length) : "0";
+                        return long.TryParse(suffix, out var num) ? num : 0;
+                    })
+                    .Max();
+            }
 
-            int nextNumber = cleanedInvoice != 0 ? cleanedInvoice + 1 : 1;
+            long nextNumber = maxNumber + 1;
 
-            return int.Parse($"{storeId}{flagId}{nextNumber}"); 
+            return $"{prefix}{nextNumber}";
         }
+
     }
 }

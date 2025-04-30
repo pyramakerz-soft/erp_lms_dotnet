@@ -16,6 +16,8 @@ using System;
 using System.Diagnostics.Metrics;
 using System.Xml;
 using System.Xml.Linq;
+using Zatca.EInvoice.SDK.Contracts.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 //using Zatca.EInvoice.SDK;
 //using Zatca.EInvoice.SDK.Contracts;
 //using Zatca.EInvoice.SDK.Contracts.Models;
@@ -325,7 +327,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
                 if (student.Nationality != 148)
                 {
-                    vat = 15;
+                    vat = 0.15m;
                 }
             }
             else
@@ -344,6 +346,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 newData.SupplierId = null;
             }
+
+            if (newData.SchoolId != 0 && newData.SchoolId != null)
+            {
+                School school = Unit_Of_Work.school_Repository.First_Or_Default(b => b.ID == newData.SchoolId && b.IsDeleted != true);
+                if (school == null)
+                {
+                    return NotFound("school not found.");
+                }
+            }
+            else
+            {
+                newData.SchoolId = null;
+            }
+
             if (newData.StoreToTransformId != 0 && newData.StoreToTransformId != null)
             {
                 Store StoreToTransform = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreToTransformId && b.IsDeleted != true);
@@ -503,13 +519,31 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
+            Master.uuid = Guid.NewGuid().ToString();
+            Master.VatPercent = vat;
+            Master.VatAmount = Master.Total * Master.VatPercent;
+            Master.TotalWithVat = Master.Total + Master.VatAmount;
+
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
+            Master.School = Unit_Of_Work.school_Repository.First_Or_Default(s => s.ID == newData.SchoolId && s.IsDeleted != true);
+
             bool result = await InvoicingServices.GenerateXML(Master);
 
-            if (result)
+            if (!result)
                 return BadRequest("Failed to generate XML file.");
+            //string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{master.ID}.xml");
+            string xmlPath = "Invoices/XML/INV001.xml";
+            string xml = Path.Combine(Directory.GetCurrentDirectory(), xmlPath);
+
+            Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
+            Master.QRCode = InvoicingServices.GetQRCode(xml);
+            Master.uuid = InvoicingServices.GetUUID(xml);
+            Master.XmlInvoiceFile = xmlPath;
+
+            Unit_Of_Work.inventoryMaster_Repository.Update(Master);
+            await Unit_Of_Work.SaveChangesAsync();
 
             return Ok(Master.ID);
         }

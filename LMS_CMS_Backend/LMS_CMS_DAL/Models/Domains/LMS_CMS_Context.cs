@@ -137,7 +137,24 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<EvaluationEmployeeStudentBookCorrection> EvaluationEmployeeStudentBookCorrection { get; set; }
         public DbSet<EvaluationEmployee> EvaluationEmployee { get; set; }
         public DbSet<EvaluationEmployeeQuestion> EvaluationEmployeeQuestion { get; set; }
-        public DbSet<SchoolPCs> SchoolPCs { get; set; }
+        public DbSet<BloomLevel> BloomLevel { get; set; }
+        public DbSet<DokLevel> DokLevel { get; set; } 
+        public DbSet<Tag> Tag { get; set; }
+        public DbSet<WeightType> WeightType { get; set; }
+        public DbSet<LessonResourceType> LessonResourceType { get; set; }
+        public DbSet<LessonActivityType> LessonActivityType { get; set; }
+        public DbSet<PerformanceType> PerformanceType { get; set; }
+        public DbSet<Medal> Medal { get; set; }
+        public DbSet<LessonLive> LessonLive { get; set; }
+        public DbSet<LessonActivity> LessonActivity { get; set; }
+        public DbSet<LessonResourceClassroom> LessonResourceClassroom { get; set; }
+        public DbSet<LessonResource> LessonResource { get; set; }
+        public DbSet<LessonTag> LessonTag { get; set; }
+        public DbSet<SemesterWorkingWeek> SemesterWorkingWeek { get; set; }
+        public DbSet<Lesson> Lesson { get; set; }
+        public DbSet<SubjectWeightType> SubjectWeightType { get; set; }
+        public DbSet<StudentPerformance> StudentPerformance { get; set; }
+        public DbSet<StudentMedal> StudentMedal { get; set; }
 
 
 
@@ -274,6 +291,14 @@ namespace LMS_CMS_DAL.Models.Domains
                 .ValueGeneratedNever();
 
             modelBuilder.Entity<OrderState>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever(); 
+            
+            modelBuilder.Entity<BloomLevel>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+            
+            modelBuilder.Entity<DokLevel>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 
@@ -1179,6 +1204,145 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany(p => p.EvaluationEmployeeStudentBookCorrections)
                 .HasForeignKey(p => p.EvaluationEmployeeID)
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonLive>()
+                .HasOne(p => p.WeekDay)
+                .WithMany(p => p.LessonLives)
+                .HasForeignKey(p => p.WeekDayID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonLive>()
+                .HasOne(p => p.Classroom)
+                .WithMany(p => p.LessonLives)
+                .HasForeignKey(p => p.ClassroomID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonLive>()
+                .HasOne(p => p.Subject)
+                .WithMany(p => p.LessonLives)
+                .HasForeignKey(p => p.SubjectID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonActivity>()
+                .HasOne(p => p.Lesson)
+                .WithMany(p => p.LessonActivities)
+                .HasForeignKey(p => p.LessonID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonActivity>()
+                .HasOne(p => p.LessonActivityType)
+                .WithMany(p => p.LessonActivities)
+                .HasForeignKey(p => p.LessonActivityTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonResourceClassroom>()
+                .HasOne(p => p.Classroom)
+                .WithMany(p => p.LessonResourceClassrooms)
+                .HasForeignKey(p => p.ClassroomID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonResourceClassroom>()
+                .HasOne(p => p.LessonResource)
+                .WithMany(p => p.LessonResourceClassrooms)
+                .HasForeignKey(p => p.LessonResourceID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonResource>()
+                .HasOne(p => p.LessonResourceType)
+                .WithMany(p => p.LessonResources)
+                .HasForeignKey(p => p.LessonResourceTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonResource>()
+                .HasOne(p => p.Lesson)
+                .WithMany(p => p.LessonResources)
+                .HasForeignKey(p => p.LessonID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonTag>()
+                .HasOne(p => p.Lesson)
+                .WithMany(p => p.LessonTags)
+                .HasForeignKey(p => p.LessonID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<LessonTag>()
+                .HasOne(p => p.Tag)
+                .WithMany(p => p.LessonTags)
+                .HasForeignKey(p => p.TagID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<SemesterWorkingWeek>()
+                .HasOne(p => p.Semester)
+                .WithMany(p => p.SemesterWorkingWeeks)
+                .HasForeignKey(p => p.SemesterID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Semester>()
+                .HasOne(p => p.WeekStartDay)
+                .WithMany(p => p.StartDaySemesters)
+                .HasForeignKey(p => p.WeekStartDayID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Semester>()
+                .HasOne(p => p.WeekEndDay)
+                .WithMany(p => p.EndDaySemesters)
+                .HasForeignKey(p => p.WeekEndDayID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Lesson>()
+                .HasOne(p => p.Subject)
+                .WithMany(p => p.Lessons)
+                .HasForeignKey(p => p.SubjectID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<Lesson>()
+                .HasOne(p => p.SemesterWorkingWeek)
+                .WithMany(p => p.Lessons)
+                .HasForeignKey(p => p.SemesterWorkingWeekID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<SubjectWeightType>()
+                .HasOne(p => p.WeightType)
+                .WithMany(p => p.SubjectWeightTypes)
+                .HasForeignKey(p => p.WeightTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<SubjectWeightType>()
+                .HasOne(p => p.Subject)
+                .WithMany(p => p.SubjectWeightTypes)
+                .HasForeignKey(p => p.SubjectID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<StudentMedal>()
+                .HasOne(p => p.Student)
+                .WithMany(p => p.StudentMedals)
+                .HasForeignKey(p => p.StudentID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<StudentMedal>()
+                .HasOne(p => p.Medal)
+                .WithMany(p => p.StudentMedals)
+                .HasForeignKey(p => p.MedalID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<StudentPerformance>()
+                .HasOne(p => p.Student)
+                .WithMany(p => p.StudentPerformances)
+                .HasForeignKey(p => p.StudentID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<StudentPerformance>()
+                .HasOne(p => p.PerformanceType)
+                .WithMany(p => p.StudentPerformances)
+                .HasForeignKey(p => p.PerformanceTypeID)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            modelBuilder.Entity<StudentPerformance>()
+                .HasOne(p => p.Subject)
+                .WithMany(p => p.StudentPerformances)
+                .HasForeignKey(p => p.SubjectID)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()

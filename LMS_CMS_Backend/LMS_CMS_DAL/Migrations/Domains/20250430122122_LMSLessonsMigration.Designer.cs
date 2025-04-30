@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250430122122_LMSLessonsMigration")]
+    partial class LMSLessonsMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -8467,6 +8470,62 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.ToTable("Violation");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.WeekDay", b =>
+                {
+                    b.Property<long>("ID")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ArabicName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeletedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("EnglishName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("InsertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("InsertedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InsertedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("UpdatedByOctaId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("UpdatedByUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DeletedByUserId");
+
+                    b.HasIndex("InsertedByUserId");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("WeekDay");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Zatca.SchoolPCs", b =>
                 {
                     b.Property<long>("ID")
@@ -11252,7 +11311,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Days", "WeekDay")
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.WeekDay", "WeekDay")
                         .WithMany("LessonLives")
                         .HasForeignKey("WeekDayID")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -11522,12 +11581,12 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("UpdatedByUserId");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Days", "WeekEndDay")
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.WeekDay", "WeekEndDay")
                         .WithMany("EndDaySemesters")
                         .HasForeignKey("WeekEndDayID")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.Days", "WeekStartDay")
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.WeekDay", "WeekStartDay")
                         .WithMany("StartDaySemesters")
                         .HasForeignKey("WeekStartDayID")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -12559,6 +12618,27 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("UpdatedByEmployee");
                 });
 
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.WeekDay", b =>
+                {
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("DeletedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "InsertedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("InsertedByUserId");
+
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "UpdatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("DeletedByEmployee");
+
+                    b.Navigation("InsertedByEmployee");
+
+                    b.Navigation("UpdatedByEmployee");
+                });
+
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Zatca.SchoolPCs", b =>
                 {
                     b.HasOne("LMS_CMS_DAL.Models.Domains.Employee", "DeletedByEmployee")
@@ -12779,12 +12859,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Days", b =>
                 {
                     b.Navigation("EmployeeDays");
-
-                    b.Navigation("EndDaySemesters");
-
-                    b.Navigation("LessonLives");
-
-                    b.Navigation("StartDaySemesters");
                 });
 
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ECommerce.Cart", b =>
@@ -13216,6 +13290,15 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.ViolationModule.Violation", b =>
                 {
                     b.Navigation("EmployeeTypeViolations");
+                });
+
+            modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.WeekDay", b =>
+                {
+                    b.Navigation("EndDaySemesters");
+
+                    b.Navigation("LessonLives");
+
+                    b.Navigation("StartDaySemesters");
                 });
 #pragma warning restore 612, 618
         }

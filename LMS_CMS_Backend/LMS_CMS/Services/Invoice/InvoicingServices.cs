@@ -159,7 +159,7 @@ namespace LMS_CMS_PL.Services.Invoice
             string date = DateTime.Now.ToString("yyyy-MM-dd");
             string time = DateTime.Now.ToString("HH:mm:ss");
 
-            //string newXmlPath = Path.Combine(invoices, $"{school.CRN}_{date.Replace("-", "")}T{time.Replace(":","")}_{date}-{master.ID}.xml");
+            //string newXmlPath = Path.Combine(invoices, $"{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":","")}_{date}-{master.ID}.xml");
             string newXmlPath = Path.Combine(invoices, $"INV001.xml");
             string tempXmlPath = Path.Combine(examplePath, "INV001.xml");
             string certPath = Path.Combine(csr, "PCSID.json");
@@ -177,7 +177,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
             XmlNamespaceManager nsMgr = RegisterAllNamespaces(inv);
 
-            AddValue(inv, "//cbc:UUID", uuid, nsMgr);
+            AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
             AddValue(inv, "//cbc:IssueDate", date, nsMgr); // edit in master
             AddValue(inv, "//cbc:IssueTime", time, nsMgr); // edit in master
             AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
@@ -189,7 +189,7 @@ namespace LMS_CMS_PL.Services.Invoice
             AddValue(inv, "//cac:AdditionalDocumentReference/cbc:UUID", master.ID.ToString(), nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID", master.School.CRN, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName", master.School.StreetName, nsMgr);
-            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingNumber", master.School.BuildingNumber, nsMgr);
+            AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingNumber", "00"+master.School.BuildingNumber, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName", master.School.CitySubdivision, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CityName", master.School.City, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PostalZone", master.School.PostalZone, nsMgr);
@@ -199,7 +199,8 @@ namespace LMS_CMS_PL.Services.Invoice
             AddValue(inv, "(//cac:TaxTotal)[2]/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
             AddValue(inv, "//cac:TaxSubtotal/cbc:TaxableAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:TaxSubtotal/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
-            AddValue(inv, "//cac:TaxSubtotal/cbc:TaxCategory/cbc:Percent", master.VatPercent.ToString(), nsMgr);
+            AddValue(inv, "//cac:AllowanceCharge/cac:TaxCategory[1]/cbc:Percent", (master.VatPercent * 100).ToString(), nsMgr);
+            AddValue(inv, "//cac:AllowanceCharge/cac:TaxCategory[2]/cbc:Percent", (master.VatPercent * 100).ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:LineExtensionAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", master.TotalWithVat.ToString(), nsMgr);
@@ -275,7 +276,7 @@ namespace LMS_CMS_PL.Services.Invoice
             foreach (InventoryDetails itemDetail in master.InventoryDetails)
             {
                 int counter = 0;
-                decimal itemTotalPriceWithVat = itemDetail.TotalPrice + (decimal)master.VatAmount;
+                decimal itemTotalPriceWithVat = itemDetail.TotalPrice + (decimal)(itemDetail.TotalPrice * master.VatPercent);
                 XmlElement invoiceLine = inv.CreateElement("cac", "InvoiceLine", nsMgr.LookupNamespace("cac"));
 
                 // ID
@@ -291,7 +292,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
                 // TaxTotal
                 XmlElement taxTotal = inv.CreateElement("cac", "TaxTotal", nsMgr.LookupNamespace("cac"));
-                XmlElement taxAmount = AppendElementWithText(inv, taxTotal, "cbc", "TaxAmount", master.VatAmount.ToString(), nsMgr);
+                XmlElement taxAmount = AppendElementWithText(inv, taxTotal, "cbc", "TaxAmount", (itemDetail.TotalPrice * master.VatPercent).ToString(), nsMgr);
                 taxAmount.SetAttribute("currencyID", "SAR");
                 XmlElement roundingAmount = AppendElementWithText(inv, taxTotal, "cbc", "RoundingAmount", itemTotalPriceWithVat.ToString(), nsMgr);
                 roundingAmount.SetAttribute("currencyID", "SAR");
@@ -303,8 +304,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
                 XmlElement classifiedTaxCategory = inv.CreateElement("cac", "ClassifiedTaxCategory", nsMgr.LookupNamespace("cac"));
                 AppendElementWithText(inv, classifiedTaxCategory, "cbc", "ID", "S", nsMgr);
-                AppendElementWithText(inv, classifiedTaxCategory, "cbc", "Percent", master.VatPercent.ToString(), nsMgr);
-                AppendElementWithText(inv, classifiedTaxCategory, "cbc", "Percent", master.VatPercent.ToString(), nsMgr);
+                AppendElementWithText(inv, classifiedTaxCategory, "cbc", "Percent", (master.VatPercent * 100).ToString(), nsMgr);
 
                 XmlElement taxScheme = inv.CreateElement("cac", "TaxScheme", nsMgr.LookupNamespace("cac"));
                 AppendElementWithText(inv, taxScheme, "cbc", "ID", "VAT", nsMgr);
@@ -315,7 +315,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
                 // Price
                 XmlElement price = inv.CreateElement("cac", "Price", nsMgr.LookupNamespace("cac"));
-                XmlElement priceAmount = AppendElementWithText(inv, price, "cbc", itemDetail.Price.ToString(), "3.00", nsMgr);
+                XmlElement priceAmount = AppendElementWithText(inv, price, "cbc", "PriceAmount", itemDetail.Price.ToString(), nsMgr);
                 priceAmount.SetAttribute("currencyID", "SAR");
 
                 XmlElement allowanceCharge = inv.CreateElement("cac", "AllowanceCharge", nsMgr.LookupNamespace("cac"));
@@ -342,6 +342,41 @@ namespace LMS_CMS_PL.Services.Invoice
                 InsertWhitespace((XmlElement)line);
             }
 
+            XmlNodeList taxTotalNode = inv.SelectNodes("//cac:TaxTotal", nsMgr);
+
+            foreach (var tax in taxTotalNode)
+            {
+                InsertWhitespace((XmlElement)tax);
+            }
+
+            XmlNodeList itemNode = inv.SelectNodes("//cac:Item", nsMgr);
+
+            foreach (var item in itemNode)
+            {
+                InsertWhitespace((XmlElement)item);
+            }
+
+            XmlNodeList classTax = inv.SelectNodes("//cac:ClassifiedTaxCategory", nsMgr);
+
+            foreach (var clt in classTax)
+            {
+                InsertWhitespace((XmlElement)clt);
+            }
+
+            XmlNodeList priceNode = inv.SelectNodes("//cac:Price", nsMgr);
+
+            foreach (var pn in priceNode)
+            {
+                InsertWhitespace((XmlElement)pn);
+            }
+
+            XmlNodeList allowance = inv.SelectNodes("//cac:AllowanceCharge", nsMgr);
+
+            foreach (var allCha in allowance)
+            {
+                InsertWhitespace((XmlElement)allCha);
+            }
+
             SaveFormatted(inv, newXmlPath);
 
             SignResult signer = InvoiceSigning(newXmlPath, certPath, privateKeyPath);
@@ -349,7 +384,7 @@ namespace LMS_CMS_PL.Services.Invoice
             if (!signer.IsValid)
                 return false;
 
-            string invoiceHash = signer.Steps.FirstOrDefault(x => x.StepName == "Generate EInvoice Hash").ResultedValue;
+            string invoiceHash = signer.Steps[1].ResultedValue;
             string reporting = await InvoiceReporting(newXmlPath, invoiceHash, uuid);
 
             if (reporting != "OK")
@@ -383,6 +418,36 @@ namespace LMS_CMS_PL.Services.Invoice
             string responseBody = await response.Content.ReadAsStringAsync();
 
             return responseBody;
+        }
+
+        public static string GetInvoiceHash(string xmlPath)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
+            doc.Load(xmlPath);
+            XmlNamespaceManager nsMgr = RegisterAllNamespaces(doc);
+            string invoiceHash = doc.SelectSingleNode("//ds:DigestValue", nsMgr).InnerText;
+            return invoiceHash;
+        }
+
+        public static string GetQRCode(string xmlPath)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
+            doc.Load(xmlPath);
+            XmlNamespaceManager nsMgr = RegisterAllNamespaces(doc);
+            string qrCode = doc.SelectSingleNode("//cac:AdditionalDocumentReference[cbc:ID='QR']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", nsMgr).InnerText;
+            return qrCode;
+        }
+
+        public static string GetUUID(string xmlPath)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
+            doc.Load(xmlPath);
+            XmlNamespaceManager nsMgr = RegisterAllNamespaces(doc);
+            string uuid = doc.SelectSingleNode("//cbc:UUID", nsMgr).InnerText;
+            return uuid;
         }
 
         public static string GetCertificateDate()

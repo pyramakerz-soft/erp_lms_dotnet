@@ -30,6 +30,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public decimal? VatPercent { get; set; }
         public string? InvoiceHash { get; set; }
         public string? QRCode { get; set; }
+        public string? uuid { get; set; }
         public string? XmlInvoiceFile { get; set; }
         public string? Status { get; set; }
         public string? Notes { get; set; }

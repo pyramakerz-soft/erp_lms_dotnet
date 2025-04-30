@@ -17,7 +17,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         //[Required(ErrorMessage = "Name is required")]
         //[StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         //public string Name { get; set; }
-        public int InvoiceNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string Date { get; set; }
         public bool IsCash { get; set; }
         public bool IsVisa { get; set; }
@@ -30,6 +30,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public decimal? VatPercent { get; set; }
         public string? InvoiceHash { get; set; }
         public string? QRCode { get; set; }
+        public string? uuid { get; set; }
         public string? XmlInvoiceFile { get; set; }
         public string? Status { get; set; }
         public string? Notes { get; set; }

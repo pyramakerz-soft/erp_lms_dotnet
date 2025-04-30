@@ -14,7 +14,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         //[Required(ErrorMessage = "Name is required")]
         //[StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
         //public string Name { get; set; }
-        public int? InvoiceNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string Date { get; set; }
         public bool IsCash { get; set; }
         public bool IsVisa { get; set; }
@@ -32,6 +32,6 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long? BankID { get; set; }
         public long? SchoolId { get; set; }
         public long? StoreToTransformId { get; set; }
-        public List<InventoryDetailsAddDTO>? InventoryDetails { get; set; }
+        public List<InventoryDetailsAddDTO> InventoryDetails { get; set; }
     }
 }

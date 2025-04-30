@@ -9,6 +9,7 @@ import { AccountService } from '../../../../Services/account.service';
 import { MenuService } from '../../../../Services/shared/menu.service';
 import { AddEditSubjectComponent } from '../../../../Component/Employee/LMS/add-edit-subject/add-edit-subject.component';
 import { MatDialog } from '@angular/material/dialog';
+import { WeightType } from '../../../../Models/LMS/weight-type';
 
 @Component({
   selector: 'app-subject-view',
@@ -27,6 +28,8 @@ export class SubjectViewComponent {
   UserID: number = 0;
   User_Data_After_Login: TokenData = new TokenData("", 0, 0, 0, 0, "", "", "", "", "")
   path: string = ""
+  WeightTypes:WeightType[]=[]
+  
 
   constructor(public subjectService: SubjectService, public activeRoute:ActivatedRoute, public router:Router, public EditDeleteServ: DeleteEditPermissionService, 
     public account: AccountService, private menuService: MenuService, public dialog: MatDialog){}
@@ -82,6 +85,10 @@ export class SubjectViewComponent {
     dialogRef.afterClosed().subscribe(result => {
       this.GetSubjectById()
     });
+  }
+
+  AddWeight(){
+    
   }
 
   IsAllowEdit(InsertedByID: number) {

@@ -144,7 +144,7 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public static async Task<bool> GenerateXML(InventoryMaster master)
+        public static async Task<bool> GenerateXML(InventoryMaster master, string lastInvoiceHash)
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
@@ -155,12 +155,13 @@ namespace LMS_CMS_PL.Services.Invoice
                 Directory.CreateDirectory(invoices);
             }
 
+            DateTime invDate = DateTime.Parse(master.Date);
+            
             string uuid = Guid.NewGuid().ToString();
-            string date = DateTime.Now.ToString("yyyy-MM-dd");
-            string time = DateTime.Now.ToString("HH:mm:ss");
+            string date = invDate.ToString("yyyy-MM-dd");
+            string time = invDate.ToString("HH:mm:ss");
 
-            //string newXmlPath = Path.Combine(invoices, $"{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":","")}_{date}-{master.ID}.xml");
-            string newXmlPath = Path.Combine(invoices, $"INV001.xml");
+            string newXmlPath = Path.Combine(invoices, $"{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{master.ID}.xml");
             string tempXmlPath = Path.Combine(examplePath, "INV001.xml");
             string certPath = Path.Combine(csr, "PCSID.json");
             string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
@@ -180,7 +181,15 @@ namespace LMS_CMS_PL.Services.Invoice
             AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
             AddValue(inv, "//cbc:IssueDate", date, nsMgr); // edit in master
             AddValue(inv, "//cbc:IssueTime", time, nsMgr); // edit in master
-            AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
+
+            if (lastInvoiceHash == "0")
+            {
+                AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(lastInvoiceHash))), nsMgr);
+            }
+            else
+            {
+                AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", lastInvoiceHash, nsMgr);
+            }
 
             //SaveFormatted(inv, newXmlPath);
 

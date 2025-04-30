@@ -18,7 +18,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
 
         [ForeignKey("WeekDay")]
         public long WeekDayID { get; set; }
-        public WeekDay WeekDay { get; set; }
+        public Days WeekDay { get; set; }
 
         [ForeignKey("Classroom")]
         public long ClassroomID { get; set; }

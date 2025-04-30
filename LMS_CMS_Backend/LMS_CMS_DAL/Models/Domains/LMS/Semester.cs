@@ -24,11 +24,11 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
 
         [ForeignKey("WeekStartDay")]
         public long? WeekStartDayID { get; set; }
-        public WeekDay? WeekStartDay { get; set; }
+        public Days? WeekStartDay { get; set; }
 
         [ForeignKey("WeekEndDay")]
         public long? WeekEndDayID { get; set; }
-        public WeekDay? WeekEndDay { get; set; }
+        public Days? WeekEndDay { get; set; }
 
         [ForeignKey("AcademicYear")]
         public long? AcademicYearID { get; set; }

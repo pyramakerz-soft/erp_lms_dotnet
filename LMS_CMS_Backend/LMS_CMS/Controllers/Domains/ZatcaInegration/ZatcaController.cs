@@ -72,41 +72,41 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         }
         #endregion
 
-        #region Generate XML
-        [HttpPost("GenerateXML")]
-        //[Authorize_Endpoint_(
-        //    allowedTypes: new[] { "octa", "employee" },
-        //    pages: new[] { "" }
-        //)]
-        public async Task<IActionResult> GenerateXML(long masterId)
-        {
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
+        //#region Generate XML
+        //[HttpPost("GenerateXML")]
+        ////[Authorize_Endpoint_(
+        ////    allowedTypes: new[] { "octa", "employee" },
+        ////    pages: new[] { "" }
+        ////)]
+        //public async Task<IActionResult> GenerateXML(long masterId)
+        //{
+        //    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
 
-            if (!Directory.Exists(invoices))
-            {
-                Directory.CreateDirectory(invoices);
-            }
+        //    if (!Directory.Exists(invoices))
+        //    {
+        //        Directory.CreateDirectory(invoices);
+        //    }
 
-            InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
-                x => x.ID == masterId,
-                query => query.Include(m => m.InventoryDetails),
-                query => query.Include(m => m.Student));
+        //    InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
+        //        x => x.ID == masterId,
+        //        query => query.Include(m => m.InventoryDetails),
+        //        query => query.Include(m => m.Student));
 
-            if (master == null)
-                return NotFound();
+        //    if (master == null)
+        //        return NotFound();
 
-            //InventoryMaster master = new();
+        //    //InventoryMaster master = new();
 
-            //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
+        //    //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
 
-            bool result = await InvoicingServices.GenerateXML(master);
+        //    bool result = await InvoicingServices.GenerateXML(master);
 
-            if (!result)
-                return BadRequest();
+        //    if (!result)
+        //        return BadRequest();
 
-            return Ok("Invoice XML created successfully.");
-        }
-        #endregion
+        //    return Ok("Invoice XML created successfully.");
+        //}
+        //#endregion
 
         #region Update PCSID
         [HttpPost("UpdatePCSID")]

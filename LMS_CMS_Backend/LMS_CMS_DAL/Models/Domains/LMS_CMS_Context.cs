@@ -138,8 +138,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<EvaluationEmployee> EvaluationEmployee { get; set; }
         public DbSet<EvaluationEmployeeQuestion> EvaluationEmployeeQuestion { get; set; }
         public DbSet<BloomLevel> BloomLevel { get; set; }
-        public DbSet<DokLevel> DokLevel { get; set; }
-        public DbSet<WeekDay> WeekDay { get; set; }
+        public DbSet<DokLevel> DokLevel { get; set; } 
         public DbSet<Tag> Tag { get; set; }
         public DbSet<WeightType> WeightType { get; set; }
         public DbSet<LessonResourceType> LessonResourceType { get; set; }
@@ -293,11 +292,7 @@ namespace LMS_CMS_DAL.Models.Domains
 
             modelBuilder.Entity<OrderState>()
                 .Property(p => p.ID)
-                .ValueGeneratedNever();
-            
-            modelBuilder.Entity<WeekDay>()
-                .Property(p => p.ID)
-                .ValueGeneratedNever();
+                .ValueGeneratedNever(); 
             
             modelBuilder.Entity<BloomLevel>()
                 .Property(p => p.ID)

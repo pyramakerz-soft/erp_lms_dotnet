@@ -163,7 +163,7 @@ export class InventoryMasterService {
 
 search(
   DomainName: string,
-  storeId: number,
+  storeId: number | null,  // Update parameter type to accept null
   dateFrom: string,
   dateTo: string,
   flagIds: number[],
@@ -183,8 +183,12 @@ search(
     .set('Content-Type', 'application/json');
 
   // Build URL with parameters
-  let url = `${this.baseUrl}/InventoryMaster/Search?storeId=${storeId}&DateFrom=${dateFrom}&DateTo=${dateTo}`;
+  let url = `${this.baseUrl}/InventoryMaster/Search?DateFrom=${dateFrom}&DateTo=${dateTo}`;
   
+  // Add storeId if provided (or skip if null for "All Stores")
+  if (storeId !== null) {
+    url += `&storeId=${storeId}`;
+  }
   // Add each flagId as a separate parameter
   flagIds.forEach(id => {
     url += `&FlagIds=${id}`;
@@ -210,10 +214,9 @@ search(
 
   return this.http.get<any>(url, { headers });
 }
- 
-searchInvoice(
+ searchInvoice(
   DomainName: string,
-  storeId: number,
+  storeId: number | null,  // Updated to accept null
   dateFrom: string,
   dateTo: string,
   flagIds: number[],
@@ -232,24 +235,35 @@ searchInvoice(
     .set('Authorization', `Bearer ${token}`)
     .set('Content-Type', 'application/json');
 
-  let url = `${this.baseUrl}/InventoryMaster/SearchInvoice?StoredId=${storeId}&DateFrom=${dateFrom}&DateTo=${dateTo}`;
+  // Build URL with parameters
+  let url = `${this.baseUrl}/InventoryMaster/SearchInvoice?DateFrom=${dateFrom}&DateTo=${dateTo}`;
   
+  // Add storeId if provided (skip if null for "All Stores")
+  if (storeId !== null) {
+    url += `&StoredId=${storeId}`;
+  }
+
+  // Add each flagId as a separate parameter
   flagIds.forEach(id => {
     url += `&FlagIds=${id}`;
   });
 
+  // Add categoryId if provided
   if (categoryId !== undefined && categoryId !== null) {
     url += `&CategoryId=${categoryId}`;
   }
 
+  // Add subCategoryId if provided
   if (subCategoryId !== undefined && subCategoryId !== null) {
     url += `&SubCategoryId=${subCategoryId}`;
   }
 
+  // Add itemId if provided
   if (itemId !== undefined && itemId !== null) {
     url += `&ItemId=${itemId}`;
   }
 
+  // Add pagination parameters
   url += `&pageNumber=${pageNumber}&pageSize=${pageSize}`;
 
   return this.http.get<any>(url, { headers });

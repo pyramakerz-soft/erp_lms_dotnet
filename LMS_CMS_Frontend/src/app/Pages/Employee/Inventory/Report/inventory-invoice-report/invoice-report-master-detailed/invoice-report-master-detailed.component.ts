@@ -27,7 +27,7 @@ interface FlagOption {
 export class InvoiceReportMasterDetailedComponent implements OnInit {
   dateFrom: string = '';
   dateTo: string = '';
-  selectedStoreId: number = 0;
+selectedStoreId: number | null = null;
   stores: Store[] = [];
   transactions: InventoryMaster[] = [];
   showTable: boolean = false;
@@ -294,10 +294,9 @@ getTableDataWithHeader(): any[] {
     return `${day}/${month}`;
   }
 
-  private validateFilters(): boolean {
-    return !!this.dateFrom && !!this.dateTo && !!this.selectedStoreId && this.selectedFlagIds.length > 0;
-  }
-
+private validateFilters(): boolean {
+  return !!this.dateFrom && !!this.dateTo && this.selectedFlagIds.length > 0;
+}
   changePage(page: number) {
     this.currentPage = page;
     this.viewReport();

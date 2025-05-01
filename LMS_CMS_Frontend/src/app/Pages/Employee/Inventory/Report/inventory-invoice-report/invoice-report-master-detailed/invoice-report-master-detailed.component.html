@@ -5,15 +5,14 @@
 </div>
 
 <div class="my-5 flex flex-wrap justify-between items-center">
-    <div class="flex flex-col w-[24%] mb-4">
-        <label class="mb-2 font-medium" for="store">Store</label>
-        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="store"
-            [(ngModel)]="selectedStoreId">
-            <option [value]="0" disabled selected hidden>Choose Store</option>
-            <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
-            <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
-        </select>
-    </div>
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="store">Store</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="store" [(ngModel)]="selectedStoreId">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let store of stores" [ngValue]="store.id">{{ store.name }}</option>
+        <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
+    </select>
+</div>
 
     <div class="flex flex-col w-[24%] mb-4">
         <label class="mb-2 font-medium" for="dateFrom">Date From</label>
@@ -71,15 +70,15 @@
 </select>
 </div>
 
-    <div class="w-[24%] flex justify-end">
-        <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
-            [disabled]="!dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0" [ngClass]="{ 
-                'bg-gray-100 text-gray-300': !dateFrom || !dateTo || !selectedStoreId || selectedFlagIds.length === 0, 
-                'secondaryBg text-white': dateFrom && dateTo && selectedStoreId && selectedFlagIds.length > 0
-            }">
-            View Report
-        </button>
-    </div>
+<div class="w-[24%] flex justify-end">
+    <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
+        [disabled]="!dateFrom || !dateTo || selectedStoreId === undefined || selectedFlagIds.length === 0" [ngClass]="{ 
+            'bg-gray-100 text-gray-300': !dateFrom || !dateTo || selectedStoreId === undefined || selectedFlagIds.length === 0, 
+            'secondaryBg text-white': dateFrom && dateTo && selectedStoreId !== undefined && selectedFlagIds.length > 0
+        }">
+        View Report
+    </button>
+</div>
 </div>
 
 <div *ngIf="showTable" class="mb-5 flex justify-end space-x-4">

@@ -49,7 +49,7 @@ getTableDataWithHeader(): any[] {
 }
   dateFrom: string = '';
   dateTo: string = '';
-  selectedStoreId: number = 0;
+  selectedStoreId: number |null = null;
   stores: Store[] = [];
   transactions: InventoryMaster[] = [];
   showTable: boolean = false;
@@ -129,16 +129,16 @@ getInfoRows(): any[] {
     private shopItemService: ShopItemService
   ) {}
 
-  ngOnInit() {
+ngOnInit() {
     this.route.data.subscribe(data => {
       this.reportType = data['reportType'];
       this.currentFlags = this.availableFlags[this.reportType];
       this.selectedFlagIds = this.currentFlags.map(flag => flag.id);
     });
     this.loadStores();
-this.loadCategories();
-
-  }
+    this.loadCategories();
+    this.selectedStoreId = null; // Initialize with null for "Select All"
+}
     loadCategories() {
     this.categoryService.Get(this.categoryService.ApiServ.GetHeader()).subscribe({
       next: (categories) => {
@@ -250,49 +250,48 @@ this.loadCategories();
       }
     });
   }
+viewReport() {
+  if (!this.validateFilters()) return;
 
- viewReport() {
-    if (!this.validateFilters()) return;
+  this.isLoading = true;
+  this.showTable = false;
 
-    this.isLoading = true;
-    this.showTable = false;
+  const formattedDateFrom = this.formatDateForAPI(this.dateFrom);
+  const formattedDateTo = this.formatDateForAPI(this.dateTo);
 
-    const formattedDateFrom = this.formatDateForAPI(this.dateFrom);
-    const formattedDateTo = this.formatDateForAPI(this.dateTo);
-
-    this.inventoryMasterService.searchInvoice(
-      this.inventoryMasterService.ApiServ.GetHeader(),
-      this.selectedStoreId,
-      formattedDateFrom,
-      formattedDateTo,
-      this.selectedFlagIds,
-      this.selectedCategoryId,
-      this.selectedSubCategoryId,
-      this.selectedItemId,
-      this.currentPage,
-      this.pageSize
-    ).subscribe({
-      next: (response: any) => {
-        if (response?.data) {
-          this.transactions = response.data;
-          this.totalRecords = response.allTotal || response.data.length;
-          this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
-        } else {
-          this.transactions = [];
-        }
-
-        this.prepareExportData();
-        this.showTable = true;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading transactions:', error);
+  this.inventoryMasterService.searchInvoice(
+    this.inventoryMasterService.ApiServ.GetHeader(),
+    this.selectedStoreId, // null is passed for "All Stores"
+    formattedDateFrom,
+    formattedDateTo,
+    this.selectedFlagIds,
+    this.selectedCategoryId,
+    this.selectedSubCategoryId,
+    this.selectedItemId,
+    this.currentPage,
+    this.pageSize
+  ).subscribe({
+    next: (response: any) => {
+      if (response?.data) {
+        this.transactions = response.data;
+        this.totalRecords = response.allTotal || response.data.length;
+        this.totalPages = Math.ceil(this.totalRecords / this.pageSize);
+      } else {
         this.transactions = [];
-        this.showTable = true;
-        this.isLoading = false;
       }
-    });
-  }
+
+      this.prepareExportData();
+      this.showTable = true;
+      this.isLoading = false;
+    },
+    error: (error) => {
+      console.error('Error loading transactions:', error);
+      this.transactions = [];
+      this.showTable = true;
+      this.isLoading = false;
+    }
+  });
+}
 
 private prepareExportData(): void {
   this.transactionsForExport = this.transactions.map(t => ({
@@ -314,8 +313,11 @@ private prepareExportData(): void {
   }
 
 private validateFilters(): boolean {
-  return !!this.dateFrom && !!this.dateTo && !!this.selectedStoreId && this.selectedFlagIds.length > 0;
+  return !!this.dateFrom && !!this.dateTo && 
+         this.selectedStoreId !== undefined && // Changed from null to undefined check
+         this.selectedFlagIds.length > 0;
 }
+
 
 
   changePage(page: number) {

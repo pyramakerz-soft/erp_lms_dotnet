@@ -821,6 +821,18 @@ namespace LMS_CMS_BL.Config
             CreateMap<SchoolPCsPutDTO, SchoolPCs>();
             CreateMap<SchoolPCs, SchoolPCsGetDTO>()
                 .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School.Name));
+
+            CreateMap<Medal, MedalGetDTO>();
+            CreateMap<MedalAddDto, Medal>();
+            CreateMap<MedalEditDTO, Medal>();
+
+            CreateMap<LessonActivityType, LessonActivityTypeGetDTO>();
+            CreateMap<LessonActivityTypeAddDTO, LessonActivityType>();
+            CreateMap<LessonActivityTypeEditDto, LessonActivityType>();
+
+            CreateMap<LessonResourceType, LessonResourceTypeGetDTo>();
+            CreateMap<LessonResourceTypeAddDTO, LessonResourceType>();
+            CreateMap<LessonResourceTypeEditDTO, LessonResourceType>();
         }
     } 
 }

@@ -6,5 +6,6 @@
         public string PCName { get; set; }
         public string SerialNumber { get; set; }
         public string School { get; set; }
+        public DateOnly? CertificateDate { get; set; }
     }
 }

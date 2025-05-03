@@ -5,6 +5,7 @@ using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.Inventory;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
 using LMS_CMS_PL.Services.Invoice;
@@ -533,14 +534,19 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             List<InventoryMaster> masters = Unit_Of_Work.inventoryMaster_Repository.SelectQuery<InventoryMaster>(i => i.IsDeleted != true).ToList();
 
-            string lastInvoiceHash = "0";
+            string lastInvoiceHash = "";
 
-            if (masters is not null || masters.Count > 1)
+            if (masters.Count > 1 || masters is not null)
             {
                 lastInvoiceHash = masters[masters.Count - 2].InvoiceHash;
             }
 
-            bool result = await InvoicingServices.GenerateXML(Master, lastInvoiceHash);
+            SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.SchoolId == newData.SchoolId && b.IsDeleted != true);
+
+            if (pc is null)
+                return NotFound("PC not found.");
+
+            bool result = await InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);
 
             if (!result)
                 return BadRequest("Failed to generate XML file.");
@@ -555,6 +561,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Master.QRCode = InvoicingServices.GetQRCode(xml);
             Master.uuid = InvoicingServices.GetUUID(xml);
             Master.XmlInvoiceFile = xml;
+            //Master.Status = "Sent";
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();

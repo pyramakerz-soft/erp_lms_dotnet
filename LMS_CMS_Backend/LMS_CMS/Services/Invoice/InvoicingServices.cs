@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using Zatca.EInvoice.SDK.Contracts.Models;
 using Zatca.EInvoice.SDK;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LMS_CMS_PL.Services.Invoice
 {
@@ -144,11 +145,11 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public static async Task<bool> GenerateXML(InventoryMaster master, string lastInvoiceHash)
+        public static async Task<bool> GenerateXML(InventoryMaster master, string lastInvoiceHash, long pcId)
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
-            string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
+            string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSRs/PC-{pcId}");
 
             if (!Directory.Exists(invoices))
             {
@@ -179,22 +180,20 @@ namespace LMS_CMS_PL.Services.Invoice
             XmlNamespaceManager nsMgr = RegisterAllNamespaces(inv);
 
             AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
-            AddValue(inv, "//cbc:IssueDate", date, nsMgr); // edit in master
-            AddValue(inv, "//cbc:IssueTime", time, nsMgr); // edit in master
+            AddValue(inv, "//cbc:IssueDate", date, nsMgr); 
+            AddValue(inv, "//cbc:IssueTime", time, nsMgr); 
 
-            if (lastInvoiceHash == "0")
+            if (lastInvoiceHash.IsNullOrEmpty())
             {
-                AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(lastInvoiceHash))), nsMgr);
+                AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
             }
             else
             {
                 AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", lastInvoiceHash, nsMgr);
             }
 
-            //SaveFormatted(inv, newXmlPath);
-
             AddValue(inv, "//cbc:ID[text()='SME00001']", $"INV{master.ID.ToString()}", nsMgr);
-            AddValue(inv, "//cbc:UUID", uuid, nsMgr);
+            AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
             AddValue(inv, "//cac:AdditionalDocumentReference/cbc:UUID", master.ID.ToString(), nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID", master.School.CRN, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName", master.School.StreetName, nsMgr);
@@ -213,74 +212,9 @@ namespace LMS_CMS_PL.Services.Invoice
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:LineExtensionAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", master.TotalWithVat.ToString(), nsMgr);
-            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount", "master.AllowanceTotalAmount", nsMgr);
-            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:PrepaidAmount", "master.PrepaidAmount", nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:PayableAmount", master.TotalWithVat.ToString(), nsMgr);
 
             XmlElement root = inv.DocumentElement;
-
-            //XmlNode original = inv.SelectSingleNode("(//cac:InvoiceLine)[1]", nsMgr);
-            //original.SelectSingleNode("cbc:ID", nsMgr).InnerText = i.ToString();
-            //original.SelectSingleNode("cbc:InvoicedQuantity", nsMgr).InnerText = "33.000000";
-            //original.SelectSingleNode("cbc:LineExtensionAmount", nsMgr).InnerText = "99.00";
-
-            //XmlNode xmlNode = original.CloneNode(true);
-            //original.RemoveAll();
-            //string xx = $@"<cac:InvoiceLine>
-            //          <cbc:ID>{i.ToString()}</cbc:ID>
-            //          <cbc:InvoicedQuantity unitCode=""PCE"">33.000000</cbc:InvoicedQuantity>
-            //          <cbc:LineExtensionAmount currencyID=""SAR"">99.00</cbc:LineExtensionAmount>
-            //          <cac:TaxTotal>
-            //           <cbc:TaxAmount currencyID=""SAR"">14.85</cbc:TaxAmount>
-            //           <cbc:RoundingAmount currencyID=""SAR"">113.85</cbc:RoundingAmount>
-            //          </cac:TaxTotal>
-            //          <cac:Item>
-            //           <cbc:Name>كتاب</cbc:Name>
-            //           <cac:ClassifiedTaxCategory>
-            //            <cbc:ID>S</cbc:ID>
-            //            <cbc:Percent>15.00</cbc:Percent>
-            //            <cac:TaxScheme>
-            //             <cbc:ID>VAT</cbc:ID>
-            //            </cac:TaxScheme>
-            //           </cac:ClassifiedTaxCategory>
-            //          </cac:Item>
-            //          <cac:Price>
-            //           <cbc:PriceAmount currencyID=""SAR"">3.00</cbc:PriceAmount>
-            //           <cac:AllowanceCharge>
-            //            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-            //            <cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>
-            //            <cbc:Amount currencyID=""SAR"">0.00</cbc:Amount>
-            //           </cac:AllowanceCharge>
-            //          </cac:Price>
-            //         </cac:InvoiceLine>";
-            //XmlDocument xdoc = new XmlDocument();
-            //xdoc.LoadXml(inv.InnerXml);
-
-            //XmlDocumentFragment docFrag = xdoc.CreateDocumentFragment();
-
-            ////Set the contents of the document fragment.
-            //docFrag.InnerXml = xx;
-            //XmlElement element = ConvertStringToXmlElement(xx, nsMgr);
-
-            //XmlElement original = (XmlElement)temp.SelectSingleNode("//cac:InvoiceLine[cbc:ID='1']", nsMgr);
-
-            //// Clone it deeply (with all nested content)
-            //XmlElement cloned = (XmlElement)original.CloneNode(true);
-
-            //XmlElement idElem = (XmlElement)cloned.SelectSingleNode("cbc:ID", nsMgr);
-            //if (idElem != null) idElem.InnerText = "7";
-
-            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cbc:InvoicedQuantity", nsMgr);
-            //if (qtyElem != null) qtyElem.InnerText = "55.000000";
-
-            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cbc:LineExtensionAmount", nsMgr);
-            //if (qtyElem != null) qtyElem.InnerText = "99.00";
-
-            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cac:TaxTotal/cbc:TaxAmount", nsMgr);
-            //if (qtyElem != null) qtyElem.InnerText = "14.85";
-
-            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cac:TaxTotal/cbc:RoundingAmount", nsMgr);
-            //if (qtyElem != null) qtyElem.InnerText = "113.85";
 
             foreach (InventoryDetails itemDetail in master.InventoryDetails)
             {
@@ -336,12 +270,7 @@ namespace LMS_CMS_PL.Services.Invoice
                 price.AppendChild(allowanceCharge);
                 invoiceLine.AppendChild(price);
 
-                ////XmlElementToString(invoiceLine);
-
-                //string xx = XmlElementToString(invoiceLine);
-
                 root.AppendChild(invoiceLine);
-                //root.AppendChild(cloned);
             }
 
             XmlNodeList invoiceLines = inv.SelectNodes("//cac:InvoiceLine", nsMgr);
@@ -351,14 +280,14 @@ namespace LMS_CMS_PL.Services.Invoice
                 InsertWhitespace((XmlElement)line);
             }
 
-            XmlNodeList taxTotalNode = inv.SelectNodes("//cac:TaxTotal", nsMgr);
+            XmlNodeList taxTotalNode = inv.SelectNodes("//cac:InvoiceLine/cac:TaxTotal", nsMgr);
 
             foreach (var tax in taxTotalNode)
             {
                 InsertWhitespace((XmlElement)tax);
             }
 
-            XmlNodeList itemNode = inv.SelectNodes("//cac:Item", nsMgr);
+            XmlNodeList itemNode = inv.SelectNodes("//cac:InvoiceLine/cac:Item", nsMgr);
 
             foreach (var item in itemNode)
             {
@@ -372,7 +301,7 @@ namespace LMS_CMS_PL.Services.Invoice
                 InsertWhitespace((XmlElement)clt);
             }
 
-            XmlNodeList priceNode = inv.SelectNodes("//cac:Price", nsMgr);
+            XmlNodeList priceNode = inv.SelectNodes("//cac:InvoiceLine/cac:Price", nsMgr);
 
             foreach (var pn in priceNode)
             {
@@ -394,10 +323,10 @@ namespace LMS_CMS_PL.Services.Invoice
                 return false;
 
             string invoiceHash = signer.Steps[1].ResultedValue;
-            string reporting = await InvoiceReporting(newXmlPath, invoiceHash, uuid);
+            //string reporting = await InvoiceReporting(newXmlPath, invoiceHash, uuid, pcId);
 
-            if (reporting != "OK")
-                return false;
+            //if (reporting == "Accepted" || reporting == "OK")
+            //    return true;
 
             return true;
         }
@@ -526,10 +455,12 @@ namespace LMS_CMS_PL.Services.Invoice
             return signed;
         }
 
-        private static async Task<string> InvoiceReporting(string xmlPath, string invoiceHash, string uuid)
+        private static async Task<string> InvoiceReporting(string xmlPath, string invoiceHash, string uuid, long pcId)
         {
-            string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
+            string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSRs/PC-{pcId}");
             string certPath = Path.Combine(csr, "PCSID.json");
+
+            string version = "V2";
 
             XmlDocument doc = new XmlDocument();
             doc.PreserveWhitespace = true;
@@ -550,7 +481,7 @@ namespace LMS_CMS_PL.Services.Invoice
             request.Headers.Add("accept", "application/json");
             request.Headers.Add("accept-language", "en");
             request.Headers.Add("Clearance-Status", "0");
-            request.Headers.Add("Accept-Version", "V2");
+            request.Headers.Add("Accept-Version", version);
             request.Headers.Add("Authorization", $"Basic {authorization}");
 
             string invoiceEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(doc.InnerXml));

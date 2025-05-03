@@ -1,8 +1,11 @@
 ﻿using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains.Inventory;
+using LMS_CMS_DAL.Models.Domains.Zatca;
+using LMS_CMS_PL.Services;
 using LMS_CMS_PL.Services.Invoice;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 using System.Text;
 using Zatca.EInvoice.SDK.Contracts;
@@ -15,12 +18,12 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
     public class ZatcaController : ControllerBase
     {
         private readonly ICsrGenerator _csrGenerator;
-        private readonly UOW _unit_Of_Work;
+        private readonly DbContextFactoryService _dbContextFactory;
 
-        public ZatcaController(ICsrGenerator csrGenerator, UOW unit_of_work)
+        public ZatcaController(ICsrGenerator csrGenerator, DbContextFactoryService dbContextFactory)
         {
             _csrGenerator = csrGenerator;
-            _unit_Of_Work = unit_of_work;
+            _dbContextFactory = dbContextFactory;
         }
 
         #region Generate PCSID
@@ -29,23 +32,60 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         //    allowedTypes: new[] { "octa", "employee" },
         //    pages: new[] { "" }
         //)]
-        public async Task<IActionResult> GeneratePCSID(string version, long otp, CsrGenerationDto csrGeneration)
+        public async Task<IActionResult> GeneratePCSID(long otp, long schoolPcId)
         {
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-            string privateKeyPath = Path.Combine(invoices, "PrivateKey.pem");
-            string csrPath = Path.Combine(invoices, "CSR.csr");
-            string publicKeyPath = Path.Combine(invoices, "PublicKey.pem");
-            string csidPath = Path.Combine(invoices, "CSID.json");
-            string pcsidPath = Path.Combine(invoices, "PCSID.json");
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            if (!Directory.Exists(invoices))
+            SchoolPCs schoolPc = await Unit_Of_Work.schoolPCs_Repository.FindByIncludesAsync(
+                d => d.ID == schoolPcId && d.IsDeleted != true,
+                query => query.Include(s => s.School)
+            );
+
+            if (schoolPc is null)
+                return NotFound("School PC not found.");
+
+            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSRs");
+            string csr = Path.Combine(invoices, $"PC-{schoolPcId}");
+            string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
+            string csrPath = Path.Combine(csr, "CSR.csr");
+            string publicKeyPath = Path.Combine(csr, "PublicKey.pem");
+            string csidPath = Path.Combine(csr, "CSID.json");
+            string pcsidPath = Path.Combine(csr, "PCSID.json");
+
+            if (!Directory.Exists(csr))
             {
-                Directory.CreateDirectory(invoices);
+                Directory.CreateDirectory(csr);
             }
+
+            string commonName = schoolPc.School.Name;
+            string serialNumber = $"1-{schoolPcId}|2-{schoolPc.PCName}|3-{schoolPc.SerialNumber}";
+            string organizationIdentifier = schoolPc.School.VatNumber;
+            string organizationUnitName = schoolPc.School.Name;
+            string organizationName = schoolPc.School.Name;
+            string countryName = "SA";
+            string invoiceType = "0100";
+            string locationAddress = schoolPc.School.City;
+            string industryBusinessCategory = "Learning";
+
+
+            CsrGenerationDto csrGeneration = new(
+                commonName, 
+                serialNumber, 
+                organizationIdentifier, 
+                organizationUnitName, 
+                organizationName, 
+                countryName, 
+                invoiceType, 
+                locationAddress, 
+                industryBusinessCategory
+            );
+
 
             InvoicingServices.GenerateCSRandPrivateKey(csrGeneration, privateKeyPath, csrPath);
 
             await InvoicingServices.GeneratePublicKey(publicKeyPath, privateKeyPath);
+
+            string version = "V2";
 
             string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
 

@@ -12,5 +12,6 @@ namespace LMS_CMS_DAL.Models.Domains.Zatca
         [ForeignKey("School")]
         public long SchoolId { get; set; }
         public School? School { get; set; }
+        public DateOnly? CertificateDate { get; set; }
     }
 }

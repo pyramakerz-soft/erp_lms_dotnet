@@ -89,7 +89,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             SchoolPCs pc = await Unit_Of_Work.schoolPCs_Repository.FindByIncludesAsync(
                 d => d.ID == id && d.IsDeleted != true,
                 query => query.Include(s => s.School)
-                );
+            );
 
             if (pc == null)
             {

@@ -150,6 +150,24 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<EvaluationEmployee> EvaluationEmployee_Repository;
         GenericRepo<EvaluationEmployeeQuestion> EvaluationEmployeeQuestion_Repository;
         GenericRepo<SchoolPCs> SchoolPCs_Repository;
+        GenericRepo<BloomLevel> BloomLevel_Repository;
+        GenericRepo<DokLevel> DokLevel_Repository;
+        GenericRepo<Lesson> Lesson_Repository;
+        GenericRepo<LessonActivity> LessonActivity_Repository;
+        GenericRepo<LessonActivityType> LessonActivityType_Repository;
+        GenericRepo<LessonLive> LessonLive_Repository;
+        GenericRepo<LessonResource> LessonResource_Repository;
+        GenericRepo<LessonResourceType> LessonResourceType_Repository;
+        GenericRepo<LessonResourceClassroom> LessonResourceClassroom_Repository;
+        GenericRepo<LessonTag> LessonTag_Repository;
+        GenericRepo<Medal> Medal_Repository;
+        GenericRepo<StudentMedal> StudentMedal_Repository;
+        GenericRepo<StudentPerformance> StudentPerformance_Repository;
+        GenericRepo<WeightType> WeightType_Repository;
+        GenericRepo<SubjectWeightType> SubjectWeightType_Repository;
+        GenericRepo<SemesterWorkingWeek> SemesterWorkingWeek_Repository;
+        GenericRepo<Tag> Tag_Repository;
+        GenericRepo<PerformanceType> PerformanceType_Repository;
 
 
 
@@ -1632,6 +1650,222 @@ namespace LMS_CMS_BL.UOW
                     SchoolPCs_Repository = new GenericRepo<SchoolPCs>(db);
                 }
                 return SchoolPCs_Repository;
+            }
+        }
+        
+        public GenericRepo<BloomLevel> bloomLevel_Repository
+        {
+            get
+            {
+                if (BloomLevel_Repository == null)
+                {
+                    BloomLevel_Repository = new GenericRepo<BloomLevel>(db);
+                }
+                return BloomLevel_Repository;
+            }
+        }
+        
+        public GenericRepo<DokLevel> dokLevel_Repository
+        {
+            get
+            {
+                if (DokLevel_Repository == null)
+                {
+                    DokLevel_Repository = new GenericRepo<DokLevel>(db);
+                }
+                return DokLevel_Repository;
+            }
+        }
+        
+        public GenericRepo<Lesson> lesson_Repository
+        {
+            get
+            {
+                if (Lesson_Repository == null)
+                {
+                    Lesson_Repository = new GenericRepo<Lesson>(db);
+                }
+                return Lesson_Repository;
+            }
+        }
+        
+        public GenericRepo<LessonActivity> lessonActivity_Repository
+        {
+            get
+            {
+                if (LessonActivity_Repository == null)
+                {
+                    LessonActivity_Repository = new GenericRepo<LessonActivity>(db);
+                }
+                return LessonActivity_Repository;
+            }
+        }
+        
+        public GenericRepo<LessonActivityType> lessonActivityType_Repository
+        {
+            get
+            {
+                if (LessonActivityType_Repository == null)
+                {
+                    LessonActivityType_Repository = new GenericRepo<LessonActivityType>(db);
+                }
+                return LessonActivityType_Repository;
+            }
+        }
+        
+        public GenericRepo<LessonLive> lessonLive_Repository
+        {
+            get
+            {
+                if (LessonLive_Repository == null)
+                {
+                    LessonLive_Repository = new GenericRepo<LessonLive>(db);
+                }
+                return LessonLive_Repository;
+            }
+        }
+        
+        public GenericRepo<LessonResource> lessonResource_Repository
+        {
+            get
+            {
+                if (LessonResource_Repository == null)
+                {
+                    LessonResource_Repository = new GenericRepo<LessonResource>(db);
+                }
+                return LessonResource_Repository;
+            }
+        }
+        
+        public GenericRepo<LessonResourceType> lessonResourceType_Repository
+        {
+            get
+            {
+                if (LessonResourceType_Repository == null)
+                {
+                    LessonResourceType_Repository = new GenericRepo<LessonResourceType>(db);
+                }
+                return LessonResourceType_Repository;
+            }
+        }
+        
+        public GenericRepo<LessonResourceClassroom> lessonResourceClassroom_Repository
+        {
+            get
+            {
+                if (LessonResourceClassroom_Repository == null)
+                {
+                    LessonResourceClassroom_Repository = new GenericRepo<LessonResourceClassroom>(db);
+                }
+                return LessonResourceClassroom_Repository;
+            }
+        }
+        
+        public GenericRepo<LessonTag> lessonTag_Repository
+        {
+            get
+            {
+                if (LessonTag_Repository == null)
+                {
+                    LessonTag_Repository = new GenericRepo<LessonTag>(db);
+                }
+                return LessonTag_Repository;
+            }
+        }
+        
+        public GenericRepo<Medal> medal_Repository
+        {
+            get
+            {
+                if (Medal_Repository == null)
+                {
+                    Medal_Repository = new GenericRepo<Medal>(db);
+                }
+                return Medal_Repository;
+            }
+        }
+        
+        public GenericRepo<StudentMedal> studentMedal_Repository
+        {
+            get
+            {
+                if (StudentMedal_Repository == null)
+                {
+                    StudentMedal_Repository = new GenericRepo<StudentMedal>(db);
+                }
+                return StudentMedal_Repository;
+            }
+        }
+        
+        public GenericRepo<StudentPerformance> studentPerformance_Repository
+        {
+            get
+            {
+                if (StudentPerformance_Repository == null)
+                {
+                    StudentPerformance_Repository = new GenericRepo<StudentPerformance>(db);
+                }
+                return StudentPerformance_Repository;
+            }
+        }
+        
+        public GenericRepo<WeightType> weightType_Repository
+        {
+            get
+            {
+                if (WeightType_Repository == null)
+                {
+                    WeightType_Repository = new GenericRepo<WeightType>(db);
+                }
+                return WeightType_Repository;
+            }
+        }
+        
+        public GenericRepo<SubjectWeightType> subjectWeightType_Repository
+        {
+            get
+            {
+                if (SubjectWeightType_Repository == null)
+                {
+                    SubjectWeightType_Repository = new GenericRepo<SubjectWeightType>(db);
+                }
+                return SubjectWeightType_Repository;
+            }
+        }
+        
+        public GenericRepo<SemesterWorkingWeek> semesterWorkingWeek_Repository
+        {
+            get
+            {
+                if (SemesterWorkingWeek_Repository == null)
+                {
+                    SemesterWorkingWeek_Repository = new GenericRepo<SemesterWorkingWeek>(db);
+                }
+                return SemesterWorkingWeek_Repository;
+            }
+        }
+        
+        public GenericRepo<Tag> tag_Repository
+        {
+            get
+            {
+                if (Tag_Repository == null)
+                {
+                    Tag_Repository = new GenericRepo<Tag>(db);
+                }
+                return Tag_Repository;
+            }
+        }
+        
+        public GenericRepo<PerformanceType> performanceType_Repository
+        {
+            get
+            {
+                if (PerformanceType_Repository == null)
+                {
+                    PerformanceType_Repository = new GenericRepo<PerformanceType>(db);
+                }
+                return PerformanceType_Repository;
             }
         }
 

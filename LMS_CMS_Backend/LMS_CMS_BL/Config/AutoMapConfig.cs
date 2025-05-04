@@ -833,6 +833,37 @@ namespace LMS_CMS_BL.Config
             CreateMap<LessonResourceType, LessonResourceTypeGetDTo>();
             CreateMap<LessonResourceTypeAddDTO, LessonResourceType>();
             CreateMap<LessonResourceTypeEditDTO, LessonResourceType>();
+
+            CreateMap<LessonLive, LessonLiveGetDTO>()
+                 .ForMember(dest => dest.WeekDayName, opt => opt.MapFrom(src => src.WeekDay.Name))
+                 .ForMember(dest => dest.SubjectEnglishName, opt => opt.MapFrom(src => src.Subject.en_name))
+                 .ForMember(dest => dest.SubjectArabicName, opt => opt.MapFrom(src => src.Subject.ar_name))
+                 .ForMember(dest => dest.ClassroomName, opt => opt.MapFrom(src => src.Classroom.Name));
+
+            CreateMap<LessonLiveAddDTO, LessonLive>();
+            CreateMap<LessonLivePutDTO, LessonLive>();
+
+            CreateMap<Lesson, LessonGetDTO>() 
+                 .ForMember(dest => dest.SubjectEnglishName, opt => opt.MapFrom(src => src.Subject.en_name))
+                 .ForMember(dest => dest.SubjectArabicName, opt => opt.MapFrom(src => src.Subject.ar_name))
+                 .ForMember(dest => dest.GradeID, opt => opt.MapFrom(src => src.Subject.GradeID))
+                 .ForMember(dest => dest.SemesterWorkingWeekEnglishName, opt => opt.MapFrom(src => src.SemesterWorkingWeek.EnglishName))
+                 .ForMember(dest => dest.SemesterWorkingWeekArabicName, opt => opt.MapFrom(src => src.SemesterWorkingWeek.ArabicName))
+                 .ForMember(dest => dest.AcademicYearID, opt => opt.MapFrom(src => src.SemesterWorkingWeek.Semester.AcademicYearID))
+                 .ForMember(dest => dest.SchoolID, opt => opt.MapFrom(src => src.SemesterWorkingWeek.Semester.AcademicYear.SchoolID))
+                 .ForMember(dest => dest.SemesterID, opt => opt.MapFrom(src => src.SemesterWorkingWeek.SemesterID));
+            CreateMap<LessonAddDTO, Lesson>();
+            CreateMap<LessonPutDTO, Lesson>();
+
+            CreateMap<Tag, TagGetDTO>();
+
+            CreateMap<LessonActivity, LessonActivityGetDTO>()
+                 .ForMember(dest => dest.LessonEnglishTitle, opt => opt.MapFrom(src => src.Lesson.EnglishTitle))
+                 .ForMember(dest => dest.LessonArabicTitle, opt => opt.MapFrom(src => src.Lesson.ArabicTitle))
+                 .ForMember(dest => dest.LessonActivityTypeEnglishName, opt => opt.MapFrom(src => src.LessonActivityType.EnglishName)) 
+                 .ForMember(dest => dest.LessonActivityTypeArabicName, opt => opt.MapFrom(src => src.LessonActivityType.ArabicName));
+            CreateMap<LessonActivityAddDTO, LessonActivity>();
+            CreateMap<LessonActivityPutDTO, LessonActivity>();
         }
     } 
 }

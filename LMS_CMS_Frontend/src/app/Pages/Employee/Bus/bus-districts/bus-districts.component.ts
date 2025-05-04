@@ -237,7 +237,13 @@ export class BusDistrictsComponent {
   async onSearchEvent(event: { key: string, value: any }) {
     this.key = event.key;
     this.value = event.value;
-    await this.GetTableData();
+
+    const data: BusType[] = await firstValueFrom(
+      this.busDistrictServ.Get(this.DomainName)
+    );
+
+    this.TableData = data || [];
+ 
     if (this.value != "") {
       const numericValue = isNaN(Number(this.value)) ? this.value : parseInt(this.value, 10);
 

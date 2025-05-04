@@ -174,7 +174,7 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public static Task<bool> GenerateXML(InventoryMaster master, string lastInvoiceHash, long pcId)
+        public static bool GenerateXML(InventoryMaster master, string lastInvoiceHash, long pcId)
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");

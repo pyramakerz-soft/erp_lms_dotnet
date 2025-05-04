@@ -155,15 +155,15 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         #endregion
 
         #region Report Invoice
-        [HttpPost("ReportInvoice")]
+        //[HttpPost("ReportInvoice")]
         //[Authorize_Endpoint_(
         //    allowedTypes: new[] { "octa", "employee" },
         //    pages: new[] { "" }
         //)]
-        public async Task<IActionResult> ReportInvoice()
-        {
+        //public async Task<IActionResult> ReportInvoice()
+        //{
             
-        }
+        //}
         #endregion
     }
 }

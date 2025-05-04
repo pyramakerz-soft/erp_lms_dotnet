@@ -526,6 +526,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Master.VatPercent = vat;
             Master.VatAmount = Master.Total * Master.VatPercent;
             Master.TotalWithVat = Master.Total + Master.VatAmount;
+            //Master.SchoolPCId = newData.SchoolPCsId;
+            Master.SchoolPCId = 2;
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
@@ -541,27 +543,26 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 lastInvoiceHash = masters[masters.Count - 2].InvoiceHash;
             }
 
-            SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.SchoolId == newData.SchoolId && b.IsDeleted != true);
+            SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.ID == Master.SchoolPCId && b.IsDeleted != true);
 
             if (pc is null)
                 return NotFound("PC not found.");
 
-            bool result = await InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);
+            bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);
 
             if (!result)
                 return BadRequest("Failed to generate XML file.");
 
             DateTime invDate = DateTime.Parse(newData.Date);
             string date = invDate.ToString("yyyy-MM-dd");
-            string time = invDate.ToString("HH:mm:ss");
+            string time = invDate.ToString("HH:mm:ss").Replace(":", "");
 
-            string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{Master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{Master.ID}.xml");
+            string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{Master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{Master.ID}.xml");
 
             Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
             Master.QRCode = InvoicingServices.GetQRCode(xml);
             Master.uuid = InvoicingServices.GetUUID(xml);
             Master.XmlInvoiceFile = xml;
-            //Master.Status = "Sent";
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();

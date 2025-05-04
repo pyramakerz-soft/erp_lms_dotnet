@@ -545,8 +545,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (pc is null)
                 return NotFound("PC not found.");
-
-            bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);
+             
+            bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID); 
 
             if (!result)
                 return BadRequest("Failed to generate XML file.");

@@ -834,6 +834,12 @@ namespace LMS_CMS_BL.Config
             CreateMap<LessonResourceTypeAddDTO, LessonResourceType>();
             CreateMap<LessonResourceTypeEditDTO, LessonResourceType>();
 
+            CreateMap<PerformanceType, PerformanceTypeGetDTO>();
+            CreateMap<PerformanceTypeAddDTO, PerformanceType>();
+            CreateMap<PerformanceTypeEditDTO, PerformanceType>();
+
+            CreateMap<StudentPerformanceAddDTO, StudentPerformanceAddDTO>();
+
             CreateMap<LessonLive, LessonLiveGetDTO>()
                  .ForMember(dest => dest.WeekDayName, opt => opt.MapFrom(src => src.WeekDay.Name))
                  .ForMember(dest => dest.SubjectEnglishName, opt => opt.MapFrom(src => src.Subject.en_name))
@@ -864,6 +870,22 @@ namespace LMS_CMS_BL.Config
                  .ForMember(dest => dest.LessonActivityTypeArabicName, opt => opt.MapFrom(src => src.LessonActivityType.ArabicName));
             CreateMap<LessonActivityAddDTO, LessonActivity>();
             CreateMap<LessonActivityPutDTO, LessonActivity>();
+
+            CreateMap<StudentPerformance, StudentPerformanceGetDTO>()
+                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.en_name))
+                 .ForMember(dest => dest.PerformanceTypeName, opt => opt.MapFrom(src => src.PerformanceType.EnglishName))
+                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.en_name));
+
+            CreateMap<StudentPerformanceAddDTO, StudentPerformance>();
+
+            CreateMap<StudentMedal, StudentMedalGetDTO>()
+                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.en_name))
+                 .ForMember(dest => dest.MedalName, opt => opt.MapFrom(src => src.Medal.EnglishName))
+                 .ForMember(dest => dest.ImageLink, opt => opt.MapFrom(src => src.Medal.ImageLink));
+
+            CreateMap<StudentMedalAddDTO, StudentMedal>();
+
+
         }
     } 
 }

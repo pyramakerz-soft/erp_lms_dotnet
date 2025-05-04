@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LMS_CMS_BL.DTO.LMS;
 using LMS_CMS_BL.UOW;
+using LMS_CMS_DAL.Models.Domains;
 using LMS_CMS_DAL.Models.Domains.LMS;
 using LMS_CMS_PL.Attribute;
 using LMS_CMS_PL.Services;
@@ -53,7 +54,32 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         }
 
         ////////////////////////////////////////////////////////////////////////
-        
+
+        [HttpGet("{id}")]
+        [Authorize_Endpoint_(
+        allowedTypes: new[] { "octa", "employee" }
+    //,
+    //pages: new[] { "" }
+    )]
+        public IActionResult GetById(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            Medal medals = Unit_Of_Work.medal_Repository.First_Or_Default(
+                    f => f.IsDeleted != true&& f.ID==id);
+
+            if (medals == null )
+            {
+                return NotFound();
+            }
+
+            MedalGetDTO DTO = mapper.Map<MedalGetDTO>(medals);
+
+            return Ok(DTO);
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+
         [HttpPost]
         [Authorize_Endpoint_(
          allowedTypes: new[] { "octa", "employee" }
@@ -128,7 +154,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 {
                     await newMedal.ImageForm.CopyToAsync(stream);
                 }
-                medal.ImageLink = Path.Combine("Uploads", "Medal", medal.ID.ToString(), fileName);
+                //medal.ImageLink = Path.Combine("Uploads", "Medal", medal.ID.ToString(), fileName);
+                medal.ImageLink = $"{Request.Scheme}://{Request.Host}/Uploads/Medal/{medal.ID.ToString()}/{fileName}";
+
             }
 
             Unit_Of_Work.medal_Repository.Update(medal);
@@ -191,6 +219,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             //        return accessCheck;
             //    }
             //}
+            mapper.Map(newModal, medal);
 
             if (newModal.ImageForm != null)
             {
@@ -220,11 +249,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 {
                     await newModal.ImageForm.CopyToAsync(stream);
                 }
-                medal.ImageLink = Path.Combine("Uploads", "Medal", medal.ID.ToString(), fileName);
+                medal.ImageLink = $"{Request.Scheme}://{Request.Host}/Uploads/Medal/{medal.ID.ToString()}/{fileName}";
+
             }
 
 
-            mapper.Map(newModal, medal);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             medal.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
             if (userTypeClaim == "octa")

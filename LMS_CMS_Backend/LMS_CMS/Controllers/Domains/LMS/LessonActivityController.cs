@@ -30,17 +30,23 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet]
+        [HttpGet("GetByLessonID/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Lesson Activity" }
         )]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
+            Lesson lesson = Unit_Of_Work.lesson_Repository.First_Or_Default(d => d.IsDeleted != true && d.ID == id);
+            if (lesson == null)
+            {
+                return NotFound("No Lesson With this ID");
+            }
+
             List<LessonActivity> lessonActivities = await Unit_Of_Work.lessonActivity_Repository.Select_All_With_IncludesById<LessonActivity>(
-                    f => f.IsDeleted != true,
+                    f => f.IsDeleted != true && f.LessonID == id,
                     query => query.Include(emp => emp.Lesson),
                     query => query.Include(emp => emp.LessonActivityType)
                     );

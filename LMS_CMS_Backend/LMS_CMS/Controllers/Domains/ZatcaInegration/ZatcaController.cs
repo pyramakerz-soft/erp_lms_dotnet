@@ -69,14 +69,14 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             string industryBusinessCategory = "Learning";
 
             CsrGenerationDto csrGeneration = new(
-                commonName, 
-                serialNumber, 
-                organizationIdentifier, 
-                organizationUnitName, 
-                organizationName, 
-                countryName, 
-                invoiceType, 
-                locationAddress, 
+                commonName,
+                serialNumber,
+                organizationIdentifier,
+                organizationUnitName,
+                organizationName,
+                countryName,
+                invoiceType,
+                locationAddress,
                 industryBusinessCategory
             );
 
@@ -114,7 +114,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             Unit_Of_Work.schoolPCs_Repository.Update(schoolPc);
             Unit_Of_Work.SaveChanges();
 
-            return Ok(formattedPcsid); 
+            return Ok(formattedPcsid);
         }
         #endregion
 
@@ -162,18 +162,14 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         }
         #endregion
 
-        #region Report Invoice 
+        #region Report Invoice
+        [HttpPost("ReportInvoice")]
+        //#region Report Invoice
         //[HttpPost("ReportInvoice")]
         //[Authorize_Endpoint_(
         //    allowedTypes: new[] { "octa", "employee" },
         //    pages: new[] { "" }
         //)]
-<<<<<<< HEAD
-        //public async Task<IActionResult> ReportInvoice()
-        //{
-            
-        //} 
-        #endregion 
         public async Task<IActionResult> ReportInvoice(long masterId)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -283,6 +279,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             return Ok();
         }
-        #endregion 
+        #endregion
     }
 }

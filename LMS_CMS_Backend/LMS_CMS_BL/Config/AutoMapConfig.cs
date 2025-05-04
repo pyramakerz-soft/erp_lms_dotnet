@@ -885,7 +885,13 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<StudentMedalAddDTO, StudentMedal>();
 
-
+            CreateMap<LessonResource, LessonResourceGetDTO>()
+                 .ForMember(dest => dest.LessonEnglishTitle, opt => opt.MapFrom(src => src.Lesson.EnglishTitle))
+                 .ForMember(dest => dest.LessonArabicTitle, opt => opt.MapFrom(src => src.Lesson.ArabicTitle))
+                 .ForMember(dest => dest.LessonResourceTypeEnglishName, opt => opt.MapFrom(src => src.LessonResourceType.EnglishName))
+                 .ForMember(dest => dest.LessonResourceTypeArabicName, opt => opt.MapFrom(src => src.LessonResourceType.ArabicName));
+            CreateMap<LessonResourceAddDTO, LessonResource>();
+            CreateMap<LessonResourcePutDTO, LessonResource>();
         }
     } 
 }

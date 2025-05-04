@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace LMS_CMS_PL.Controllers.Domains.LMS
 {
@@ -29,17 +30,23 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        [HttpGet]
+        [HttpGet("GetByLessonID/{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
             pages: new[] { "Lesson Activity" }
         )]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
+            Lesson lesson = Unit_Of_Work.lesson_Repository.First_Or_Default(d => d.IsDeleted != true && d.ID == id);
+            if (lesson == null)
+            {
+                return NotFound("No Lesson With this ID");
+            }
+
             List<LessonActivity> lessonActivities = await Unit_Of_Work.lessonActivity_Repository.Select_All_With_IncludesById<LessonActivity>(
-                    f => f.IsDeleted != true,
+                    f => f.IsDeleted != true && f.LessonID == id,
                     query => query.Include(emp => emp.Lesson),
                     query => query.Include(emp => emp.LessonActivityType)
                     );
@@ -236,88 +243,159 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             string AttachmentLinkExists = lessonActivityExists.AttachmentLink;
             if(EditLessonActivity.AttachmentFile != null)
             {
-
-            }
-            else
-            {
+                var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/LessonActivity");
                 if (!string.IsNullOrEmpty(lessonActivityExists.AttachmentLink))
                 {
-                    if(AttachmentLinkExists.StartsWith("Uploads", StringComparison.OrdinalIgnoreCase))
+                    if (AttachmentLinkExists != null && AttachmentLinkExists.StartsWith("Uploads", StringComparison.OrdinalIgnoreCase))
                     {
+                        var oldLessonActivityFolder = Path.Combine(baseFolder, enNameExists);
 
+                        string existingFilePath = Path.Combine(baseFolder, enNameExists);
+
+                        if (System.IO.File.Exists(existingFilePath))
+                        {
+                            System.IO.File.Delete(existingFilePath); // Delete the old file
+                        }
+
+                        if (Directory.Exists(oldLessonActivityFolder))
+                        {
+                            Directory.Delete(oldLessonActivityFolder, true);
+                        }
+                    }
+
+                }
+
+                var lessonActivityFolder = Path.Combine(baseFolder, EditLessonActivity.EnglishTitle);
+                if (!Directory.Exists(lessonActivityFolder))
+                {
+                    Directory.CreateDirectory(lessonActivityFolder);
+                }
+
+                if (EditLessonActivity.AttachmentFile.Length > 0)
+                {
+                    var filePath = Path.Combine(lessonActivityFolder, EditLessonActivity.AttachmentFile.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await EditLessonActivity.AttachmentFile.CopyToAsync(stream);
                     }
                 }
+
+                EditLessonActivity.AttachmentLink = Path.Combine("Uploads", "LessonActivity", EditLessonActivity.EnglishTitle, EditLessonActivity.AttachmentFile.FileName); 
             }
+            else
+            { 
+                if(EditLessonActivity.AttachmentLink == null)
+                {
+                    if (!string.IsNullOrEmpty(lessonActivityExists.AttachmentLink))
+                    {
+                        if(AttachmentLinkExists.StartsWith("Uploads", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/LessonActivity");
+                            var oldLessonActivityFolder = Path.Combine(baseFolder, enNameExists); 
 
-            // If File ==> See if there Are an old file if yes Delete it
-            // If No file ==> see if the string same as the old (Nochange) if not the same see if the old has upload word if yes delete the old file
+                            string existingFilePath = Path.Combine(baseFolder, enNameExists);
 
-            // Also See if the englishname changed
+                            if (System.IO.File.Exists(existingFilePath))
+                            {
+                                System.IO.File.Delete(existingFilePath); // Delete the old file
+                            }
 
+                            if (Directory.Exists(oldLessonActivityFolder))
+                            {
+                                Directory.Delete(oldLessonActivityFolder, true);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    string url = EditLessonActivity.AttachmentLink.Replace("/", "\\");
+                    if (AttachmentLinkExists != null)
+                    {
+                        if (AttachmentLinkExists.StartsWith("Uploads", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (EditLessonActivity.EnglishTitle != enNameExists)
+                            {
+                                var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/LessonActivity");
+                                var oldLessonActivityFolder = Path.Combine(baseFolder, enNameExists);
+                                var newLessonActivityFolder = Path.Combine(baseFolder, EditLessonActivity.EnglishTitle);
+                                if (url.EndsWith(AttachmentLinkExists, StringComparison.OrdinalIgnoreCase))
+                                { 
+                                    // Rename the folder if it exists
+                                    if (Directory.Exists(oldLessonActivityFolder))
+                                    {
+                                        if (!Directory.Exists(newLessonActivityFolder))
+                                        {
+                                            Directory.CreateDirectory(newLessonActivityFolder);
+                                        }
 
-            //if (EditSubject.IconFile != null)
-            //{
-            //    var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/SubjectIcon");
-            //    var oldSubjectFolder = Path.Combine(baseFolder, enNameExists);
-            //    var subjectFolder = Path.Combine(baseFolder, EditSubject.en_name);
+                                        var files = Directory.GetFiles(oldLessonActivityFolder);
+                                        foreach (var file in files)
+                                        {
+                                            var fileName = Path.GetFileName(file);
+                                            var destFile = Path.Combine(newLessonActivityFolder, fileName);
+                                            System.IO.File.Move(file, destFile);
+                                        }
 
-            //    string existingFilePath = Path.Combine(baseFolder, enNameExists);
+                                        Directory.Delete(oldLessonActivityFolder);
+                                    }
+                                    EditLessonActivity.AttachmentLink = Path.Combine("Uploads", "LessonActivity", EditLessonActivity.EnglishTitle, Path.GetFileName(AttachmentLinkExists));
+                                }
+                                else
+                                {
+                                    EditLessonActivity.AttachmentLink = EditLessonActivity.AttachmentLink;  
 
-            //    if (System.IO.File.Exists(existingFilePath))
-            //    {
-            //        System.IO.File.Delete(existingFilePath); // Delete the old file
-            //    }
+                                    string existingFilePath = Path.Combine(baseFolder, enNameExists);
 
-            //    if (Directory.Exists(oldSubjectFolder))
-            //    {
-            //        Directory.Delete(oldSubjectFolder, true);
-            //    }
+                                    if (System.IO.File.Exists(existingFilePath))
+                                    {
+                                        System.IO.File.Delete(existingFilePath); // Delete the old file
+                                    }
 
-            //    if (!Directory.Exists(subjectFolder))
-            //    {
-            //        Directory.CreateDirectory(subjectFolder);
-            //    }
+                                    if (Directory.Exists(oldLessonActivityFolder))
+                                    {
+                                        Directory.Delete(oldLessonActivityFolder, true);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/LessonActivity");
+                                var oldLessonActivityFolder = Path.Combine(baseFolder, enNameExists); 
 
-            //    if (EditSubject.IconFile.Length > 0)
-            //    {
-            //        var filePath = Path.Combine(subjectFolder, EditSubject.IconFile.FileName);
-            //        using (var stream = new FileStream(filePath, FileMode.Create))
-            //        {
-            //            await EditSubject.IconFile.CopyToAsync(stream);
-            //        }
-            //    }
+                                string existingFilePath = Path.Combine(baseFolder, enNameExists);
 
-            //    EditSubject.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, EditSubject.IconFile.FileName);
-            //}
-            //else
-            //{
-            //    if (EditSubject.en_name != enNameExists)
-            //    {
-            //        var baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/SubjectIcon");
-            //        var oldSubjectFolder = Path.Combine(baseFolder, enNameExists);
-            //        var newSubjectFolder = Path.Combine(baseFolder, EditSubject.en_name);
+                                if (System.IO.File.Exists(existingFilePath))
+                                {
+                                    System.IO.File.Delete(existingFilePath); // Delete the old file
+                                }
 
-            //        // Rename the folder if it exists
-            //        if (Directory.Exists(oldSubjectFolder))
-            //        {
-            //            if (!Directory.Exists(newSubjectFolder))
-            //            {
-            //                Directory.CreateDirectory(newSubjectFolder);
-            //            }
+                                if (Directory.Exists(oldLessonActivityFolder))
+                                {
+                                    Directory.Delete(oldLessonActivityFolder, true);
+                                }
 
-            //            var files = Directory.GetFiles(oldSubjectFolder);
-            //            foreach (var file in files)
-            //            {
-            //                var fileName = Path.GetFileName(file);
-            //                var destFile = Path.Combine(newSubjectFolder, fileName);
-            //                System.IO.File.Move(file, destFile);
-            //            }
+                                if (url.EndsWith(AttachmentLinkExists, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    EditLessonActivity.AttachmentLink = AttachmentLinkExists;
+                                }
+                                else{
+                                    EditLessonActivity.AttachmentLink = EditLessonActivity.AttachmentLink;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            EditLessonActivity.AttachmentLink = EditLessonActivity.AttachmentLink;
+                        }
+                    }
+                    else
+                    {
 
-            //            Directory.Delete(oldSubjectFolder);
-            //        }
-            //    }
-            //    EditSubject.IconLink = Path.Combine("Uploads", "SubjectIcon", EditSubject.en_name, Path.GetFileName(iconLinkExists));
-            //}
+                        EditLessonActivity.AttachmentLink = EditLessonActivity.AttachmentLink;
+                    }
+                }
+            } 
 
             mapper.Map(EditLessonActivity, lessonActivityExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

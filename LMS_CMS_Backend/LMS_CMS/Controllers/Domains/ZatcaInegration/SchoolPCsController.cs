@@ -129,7 +129,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             }
 
             SchoolPCs pc = _mapper.Map<SchoolPCs>(schoolPCsDto);
-            pc.SerialNumber = Guid.NewGuid().ToString();
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             pc.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);

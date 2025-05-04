@@ -67,7 +67,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             string locationAddress = schoolPc.School.City;
             string industryBusinessCategory = "Learning";
 
-
             CsrGenerationDto csrGeneration = new(
                 commonName, 
                 serialNumber, 
@@ -79,7 +78,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 locationAddress, 
                 industryBusinessCategory
             );
-
 
             InvoicingServices.GenerateCSRandPrivateKey(csrGeneration, privateKeyPath, csrPath);
 
@@ -111,42 +109,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             return Ok(formattedPcsid); 
         }
         #endregion
-
-        //#region Generate XML
-        //[HttpPost("GenerateXML")]
-        ////[Authorize_Endpoint_(
-        ////    allowedTypes: new[] { "octa", "employee" },
-        ////    pages: new[] { "" }
-        ////)]
-        //public async Task<IActionResult> GenerateXML(long masterId)
-        //{
-        //    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
-
-        //    if (!Directory.Exists(invoices))
-        //    {
-        //        Directory.CreateDirectory(invoices);
-        //    }
-
-        //    InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
-        //        x => x.ID == masterId,
-        //        query => query.Include(m => m.InventoryDetails),
-        //        query => query.Include(m => m.Student));
-
-        //    if (master == null)
-        //        return NotFound();
-
-        //    //InventoryMaster master = new();
-
-        //    //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
-
-        //    bool result = await InvoicingServices.GenerateXML(master);
-
-        //    if (!result)
-        //        return BadRequest();
-
-        //    return Ok("Invoice XML created successfully.");
-        //}
-        //#endregion
 
         #region Update PCSID
         [HttpPost("UpdatePCSID")]
@@ -192,50 +154,16 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         }
         #endregion
 
-        //#region Invoice Signing 
-        //[HttpPost("InvoiceSigning")]
-        ////[Authorize_Endpoint_(
-        ////    allowedTypes: new[] { "octa", "employee" },
-        ////    pages: new[] { "" }
-        ////)]
-        //public async Task<IActionResult> InvoiceSigning()
-        //{
-        //    //string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
-        //    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
-        //    string xml = Path.Combine(invoices, "INV001.xml");
-
-        //    string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-        //    string cerPath = Path.Combine(csr, "PCSID.json");
-        //    string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
-
-        //    XmlDocument doc = new XmlDocument();
-        //    doc.PreserveWhitespace = true;
-        //    doc.Load(xml);
-
-        //    if (!System.IO.File.Exists(xml))
-        //        throw new FileNotFoundException();
-
-        //    XmlNamespaceManager nsMgr = new XmlNamespaceManager(doc.NameTable);
-        //    nsMgr.AddNamespace("cbc", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
-
-        //    string jsonContent = System.IO.File.ReadAllText(cerPath);
-        //    dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
-        //    string base64Cert = jsonObject.binarySecurityToken;
-
-        //    byte[] certBytes = Convert.FromBase64String(base64Cert);
-        //    string certDecoded = Encoding.UTF8.GetString(certBytes);
-
-        //    SignResult result = InvoicingServices.InvoiceSigning(xml, cerPath, privateKeyPath);
-
-        //    string invoiceHash = result.Steps.FirstOrDefault(x => x.StepName == "Generate EInvoice Hash").ResultedValue;
-
-        //    string uuid = "afdce130-3dc5-44fb-b494-0c4a9e22343a";
-        //    string invoiceEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(doc.InnerXml));
-
-        //    string reporting = await InvoicingServices.InvoiceReporting(invoiceHash, uuid, invoiceEncoded);
-
-        //    return Ok(reporting);
-        //}
-        //#endregion
+        #region Report Invoice
+        [HttpPost("ReportInvoice")]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "" }
+        //)]
+        public async Task<IActionResult> ReportInvoice()
+        {
+            
+        }
+        #endregion
     }
 }

@@ -65,8 +65,19 @@ namespace LMS_CMS_PL.Services.Invoice
 
             using (HttpClient client = new HttpClient())
             {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post,
-                    "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/compliance");
+                bool isProduction = false;
+                HttpRequestMessage request;
+
+                if (isProduction)
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post,
+                        "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/compliance");
+                }
+                else
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post,
+                        "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/compliance");
+                }
 
                 request.Headers.Add("accept", "application/json");
                 request.Headers.Add("OTP", OTP.ToString());
@@ -90,7 +101,16 @@ namespace LMS_CMS_PL.Services.Invoice
             {
                 HttpClient client = new HttpClient();
 
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+                bool isProduction = false;
+                HttpRequestMessage request;
+                if (isProduction)
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/production/CSIDs");
+                }
+                else
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+                }
 
                 request.Headers.Add("accept", "application/json");
                 request.Headers.Add("Accept-Version", version);
@@ -125,7 +145,16 @@ namespace LMS_CMS_PL.Services.Invoice
 
                 HttpClient client = new HttpClient();
 
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/compliance/invoices");
+                bool isProduction = false;
+                HttpRequestMessage request;
+                if (isProduction)
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/compliance/invoices");
+                }
+                else
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/compliance/invoices");
+                }
 
                 request.Headers.Add("accept", "application/json");
                 request.Headers.Add("Accept-Language", "en");
@@ -145,7 +174,7 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public static async Task<bool> GenerateXML(InventoryMaster master, string lastInvoiceHash, long pcId)
+        public static Task<bool> GenerateXML(InventoryMaster master, string lastInvoiceHash, long pcId)
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
@@ -317,12 +346,12 @@ namespace LMS_CMS_PL.Services.Invoice
 
             SaveFormatted(inv, newXmlPath);
 
-            SignResult signer = InvoiceSigning(newXmlPath, certPath, privateKeyPath);
+            //SignResult signer = InvoiceSigning(newXmlPath, certPath, privateKeyPath);
 
-            if (!signer.IsValid)
-                return false;
+            //if (!signer.IsValid)
+            //    return false;
 
-            string invoiceHash = signer.Steps[1].ResultedValue;
+            //string invoiceHash = signer.Steps[1].ResultedValue;
             //string reporting = await InvoiceReporting(newXmlPath, invoiceHash, uuid, pcId);
 
             //if (reporting == "Accepted" || reporting == "OK")
@@ -335,7 +364,16 @@ namespace LMS_CMS_PL.Services.Invoice
         {
             HttpClient client = new HttpClient();
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Patch, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+            bool isProduction = false;
+            HttpRequestMessage request;
+            if (isProduction)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/production/CSIDs");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+            }
 
             request.Headers.Add("accept", "application/json");
             request.Headers.Add("OTP", otp);
@@ -476,7 +514,18 @@ namespace LMS_CMS_PL.Services.Invoice
 
             HttpClient client = new HttpClient();
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/invoices/reporting/single");
+            bool isProduction = false;
+            HttpRequestMessage request;
+
+            if (isProduction)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/invoices/reporting/single");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/invoices/reporting/single");
+            }
+            
 
             request.Headers.Add("accept", "application/json");
             request.Headers.Add("accept-language", "en");

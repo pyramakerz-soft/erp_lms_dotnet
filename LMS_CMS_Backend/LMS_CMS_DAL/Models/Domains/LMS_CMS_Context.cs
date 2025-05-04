@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace LMS_CMS_DAL.Models.Domains
 {
@@ -155,6 +156,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<SubjectWeightType> SubjectWeightType { get; set; }
         public DbSet<StudentPerformance> StudentPerformance { get; set; }
         public DbSet<StudentMedal> StudentMedal { get; set; }
+        public DbSet<SchoolPCs> SchoolPCs { get; set; }
 
 
 
@@ -1443,6 +1445,10 @@ namespace LMS_CMS_DAL.Models.Domains
                .Ignore(r => r.Employee)
                .Ignore(r => r.Student)
                .Ignore(r => r.Save);
+
+            modelBuilder.Entity<SchoolPCs>()
+               .Property(e => e.ID)
+               .ValueGeneratedNever();
         }
     }
 }

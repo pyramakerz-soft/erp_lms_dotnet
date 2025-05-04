@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Zatca.EInvoice.SDK.Contracts;
 using Zatca.EInvoice.SDK.Contracts.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 {
@@ -45,7 +46,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 return NotFound("School PC not found.");
 
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSRs");
-            string csr = Path.Combine(invoices, $"PC-{schoolPcId}");
+            string csr = Path.Combine(invoices, $"PC-{schoolPc.ID}-{schoolPc.School.ID}");
             string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
             string csrPath = Path.Combine(csr, "CSR.csr");
             string publicKeyPath = Path.Combine(csr, "PublicKey.pem");
@@ -106,6 +107,13 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             await System.IO.File.WriteAllTextAsync(pcsidPath, formattedPcsid);
 
+            string certificateDate = InvoicingServices.GetCertificateDate(pcsid);
+
+            schoolPc.CertificateDate = DateOnly.Parse(certificateDate);
+
+            Unit_Of_Work.schoolPCs_Repository.Update(schoolPc);
+            Unit_Of_Work.SaveChanges();
+
             return Ok(formattedPcsid); 
         }
         #endregion
@@ -160,10 +168,121 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         //    allowedTypes: new[] { "octa", "employee" },
         //    pages: new[] { "" }
         //)]
+<<<<<<< HEAD
         //public async Task<IActionResult> ReportInvoice()
         //{
             
         //} 
+        #endregion 
+        public async Task<IActionResult> ReportInvoice(long masterId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            InventoryMaster master = await Unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
+                d => d.ID == masterId && d.IsDeleted != true,
+                query => query.Include(s => s.School)
+            );
+
+            if (master is null)
+                return NotFound("Invoice not found.");
+
+            DateTime invDate = DateTime.Parse(master.Date);
+            string date = invDate.ToString("yyyy-MM-dd");
+            string time = invDate.ToString("HH:mm:ss").Replace(":", "");
+
+            string xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.ID}.xml");
+
+            if (master.IsValid == 0 || master.IsValid == null)
+            {
+                HttpResponseMessage complianceResponse = await InvoicingServices.InvoiceCompliance(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+
+                if (!complianceResponse.IsSuccessStatusCode)
+                {
+                    return BadRequest($"Error compliance for invoice {master.ID}: {complianceResponse.ReasonPhrase}");
+                }
+
+                HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    master.Status = "Reported";
+                    master.IsValid = 1;
+                }
+                else
+                {
+                    master.Status = "Not Reported";
+                    master.IsValid = 0;
+                }
+                Unit_Of_Work.inventoryMaster_Repository.Update(master);
+                Unit_Of_Work.SaveChanges();
+            }
+
+            return master.IsValid == 1 ? Ok(master.Status) : BadRequest(master.Status);
+        }
+        #endregion
+
+        #region Report Invoices
+        [HttpPost("ReportInvoices")]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "" }
+        //)]
+        public async Task<IActionResult> ReportInvoices(long schoolId, long schoolPcId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<InventoryMaster> masters = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById<List<InventoryMaster>>(
+                d => d.SchoolId == schoolId && d.SchoolPCId == schoolPcId && d.IsDeleted != true,
+                query => query.Include(s => s.School)
+            );
+
+            if (masters is null || masters.Count == 0)
+                return NotFound("No invoices found.");
+
+            foreach (var master in masters)
+            {
+                if (master.IsValid == 0 || master.IsValid == null)
+                {
+                    try
+                    {
+                        DateTime invDate = DateTime.Parse(master.Date);
+                        string date = invDate.ToString("yyyy-MM-dd");
+                        string time = invDate.ToString("HH:mm:ss").Replace(":", "");
+
+                        string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSR/PC-{master.SchoolPCId}-{master.SchoolId}");
+                        string xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.ID}.xml");
+
+                        HttpResponseMessage complianceResponse = await InvoicingServices.InvoiceCompliance(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+
+                        if (!complianceResponse.IsSuccessStatusCode)
+                        {
+                            return BadRequest($"Error compliance for invoice {master.ID}: {complianceResponse.ReasonPhrase}");
+                        }
+
+                        HttpResponseMessage reportingResponse = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+
+                        if (reportingResponse.IsSuccessStatusCode)
+                        {
+                            master.Status = "Reported";
+                            master.IsValid = 1;
+                        }
+                        else
+                        {
+                            master.Status = "Not Reported";
+                            master.IsValid = 0;
+                        }
+                        Unit_Of_Work.inventoryMaster_Repository.Update(master);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest($"Error reporting invoice {master.ID}: {ex.Message}");
+                    }
+                }
+            }
+            Unit_Of_Work.SaveChanges();
+
+            return Ok();
+        }
         #endregion 
     }
 }

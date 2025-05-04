@@ -102,6 +102,44 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         }
         #endregion
 
+        #region Get By School Id
+        [HttpGet("GetBySchoolId")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" },
+            pages: new[] { "SchoolPCs" }
+        )]
+        public async Task<IActionResult> GetBySchoolId(long schoolId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            var userClaims = HttpContext.User.Claims;
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+
+            long.TryParse(userIdClaim, out long userId);
+
+            var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+
+            if (userIdClaim == null || userTypeClaim == null)
+            {
+                return Unauthorized("User ID or Type claim not found.");
+            }
+
+            List<SchoolPCs> pcs = await Unit_Of_Work.schoolPCs_Repository.Select_All_With_IncludesById<SchoolPCs>(
+                d => d.IsDeleted != true && d.SchoolId == schoolId,
+                query => query.Include(s => s.School)
+            );
+
+            if (pcs == null || pcs.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<SchoolPCsGetDTO> schoolPCsDto = _mapper.Map<List<SchoolPCsGetDTO>>(pcs);
+
+            return Ok(schoolPCsDto);
+        }
+        #endregion
+
         #region Add PC
         [HttpPost]
         [Authorize_Endpoint_(

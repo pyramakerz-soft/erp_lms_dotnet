@@ -26,6 +26,8 @@ interface FlagOption {
   styleUrl: './invoice-report-master.component.css'
 })
 export class InventoryTransactionReportComponent implements OnInit {
+
+  
 getTableDataWithHeader(): any[] {
   return this.transactions.map(transaction => ({
     header: `Invoice #${transaction.invoiceNumber} - ${transaction.storeName} - ${new Date(transaction.date).toLocaleDateString()}`,

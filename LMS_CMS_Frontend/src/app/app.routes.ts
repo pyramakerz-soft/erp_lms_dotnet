@@ -128,7 +128,6 @@ import { StudentsInformationFormReportComponent } from './Pages/Employee/Registr
 import { PdfPrintComponent } from './Component/pdf-print/pdf-print.component';
 import { AcademicSequentialReportComponent } from './Pages/Employee/Registration/Reports/academic-sequential-report/academic-sequential-report.component';
 import { TransferedFromKindergartenReportComponent } from './Pages/Employee/Registration/Reports/transfered-from-kindergarten-report/transfered-from-kindergarten-report.component';
-import { InvoiceReportComponent } from './Pages/Employee/Inventory/Report/InventoryTransactionReport/invoice-report/invoice-report.component';
 import { TemplateComponent } from './Pages/Employee/LMS/template/template.component';
 import { InventoryTransactionReportComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master/invoice-report-master.component';
 import { InvoiceReportMasterDetailedComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master-detailed/invoice-report-master-detailed.component';
@@ -306,8 +305,6 @@ export const routes: Routes = [
             { path: "StudentsInformationFormReport", component: StudentsInformationFormReportComponent, title: "StudentsInformationFormReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "TransferedFromKindergartenReport", component: TransferedFromKindergartenReportComponent, title: "TransferedFromKindergartenReport", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "InventoryTransactionInvoiceReport", component: InvoiceReportComponent, title: "InventoryTransactionInvoiceReport", canActivate:[noNavigateWithoutLoginGuard ] },
-            { path: "InventoryTransactionInvoiceReport", component: InvoiceReportComponent, title: "InventoryTransactionInvoiceReport", canActivate:[noNavigateWithoutLoginGuard ] },
         
             { path: "Template", component: TemplateComponent, title: "Template", canActivate:[noNavigateWithoutLoginGuard ] },
 

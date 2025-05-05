@@ -82,6 +82,8 @@ selectedItemId: number | null = null;
 categories: any[] = [];
 subCategories: any[] = [];
 items: any[] = [];
+
+
   constructor(
   private route: ActivatedRoute,
   private inventoryMasterService: InventoryMasterService,
@@ -247,19 +249,22 @@ private prepareExportData(): void {
       { key: 'Store', value: t.storeName },
       { key: 'Transaction Type', value: t.flagEnName },
       { key: 'Total Amount', value: t.total },
+      { key: 'All Total', value: this.totalRecords },
       { key: 'Notes', value: t.notes || 'N/A' }
     ],
     table: {
       headers: ['ID', 'Item ID', 'Name', 'Quantity', 'Price', 'Total Price', 'Notes'],
-      data: t.inventoryDetails.map(d => ({
+      data: t.inventoryDetails?.map(d => ({
         'ID': d.id,
         'Item ID': d.shopItemID,
-        'Name': d.name || d.shopItemName || 'N/A',
+        'Name': d.shopItemName || d.name || 'N/A',
         'Quantity': d.quantity,
         'Price': d.price,
         'Total Price': d.totalPrice,
+        // 'Category': d.categoryId || 'N/A',
+        // 'SubCategory': d.subCategoryId || 'N/A',
         'Notes': d.notes || 'N/A'
-      }))
+      })) || []
     }
   }));
 }

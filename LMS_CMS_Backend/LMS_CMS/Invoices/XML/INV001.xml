@@ -25,14 +25,14 @@
                                     <ds:Transform Algorithm="http://www.w3.org/2006/12/xml-c14n11" />
                                 </ds:Transforms>
                                 <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
-                                <ds:DigestValue>KO08xu/gw6dwadI9jhevE2Al9edaHNSRoHfHjZ2pj0Q=</ds:DigestValue>
+                                <ds:DigestValue>7pPXQ8bEA9Wiel78okUxJhe6ZCfjZoWqlUZujOT08ag=</ds:DigestValue>
                             </ds:Reference>
                             <ds:Reference Type="http://www.w3.org/2000/09/xmldsig#SignatureProperties" URI="#xadesSignedProperties">
                                 <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
-                                <ds:DigestValue>MmExNTU5MzBkNmVjMDRiOGUyMjEzYmM4MjMyZWE2NTliYTFiNWUyODYzYmFhNTJkOWYyZTA3NWQ0MzYyYTI4OQ==</ds:DigestValue>
+                                <ds:DigestValue>M2M3YjhiMDk1NGIxOTk0NjI2YTQ2ZDcyMjkwYjE0NDllMzAzMDAwMjcxOWMwYjhlZjE4MWE4MjYwYmU4YzM1Nw==</ds:DigestValue>
                             </ds:Reference>
                         </ds:SignedInfo>
-                        <ds:SignatureValue>MEQCIB5pA2YDyU43OdKez6EI20icnLAAhjBPIRo+n8o8rPRHAiANDD5NfCeowIUa1eE0pCkjhcmhkAqb1i9YRsa6+tD9cw==</ds:SignatureValue>
+                        <ds:SignatureValue>MEUCIQDW7hnqFlPkw1R/aeWlQC9DxDRKhjmDYHdeWfu68NKTjAIgexbRDpqza+XSd1n13Dqmi0vpq5yyYqJotdp9dT2x/WU=</ds:SignatureValue>
                         <ds:KeyInfo>
                             <ds:X509Data>
                                 <ds:X509Certificate>MIID4TCCA4agAwIBAgITFwAAO2UUq8FdtgYK5gABAAA7ZTAKBggqhkjOPQQDAjBiMRUwEwYKCZImiZPyLGQBGRYFbG9jYWwxEzARBgoJkiaJk/IsZAEZFgNnb3YxFzAVBgoJkiaJk/IsZAEZFgdleHRnYXp0MRswGQYDVQQDExJQUlpFSU5WT0lDRVNDQTEtQ0EwHhcNMjQwMTE1MTcyNTE5WhcNMjkwMTEzMTcyNTE5WjB1MQswCQYDVQQGEwJTQTEmMCQGA1UEChMdTWF4aW11bSBTcGVlZCBUZWNoIFN1cHBseSBMVEQxFjAUBgNVBAsTDVJpeWFkaCBCcmFuY2gxJjAkBgNVBAMTHVRTVC04ODY0MzExNDUtMzk5OTk5OTk5OTAwMDAzMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE5VP9dQWnki4zRgUYjpND4AuVU4XAVaqsJbVTvdKI9EIdzoJTFDCWHGbGFNzkYP0yoNLto/5/80YDB5vNFugXaKOCAgkwggIFMIGvBgNVHREEgacwgaSkgaEwgZ4xOzA5BgNVBAQMMjEtVFNUfDItVFNUfDMtZWQyMmYxZDgtZTZhMi0xMTE4LTliNTgtZDlhOGYxMWU0NDVmMR8wHQYKCZImiZPyLGQBAQwPMzk5OTk5OTk5OTAwMDAzMQ0wCwYDVQQMDAQxMTAwMREwDwYDVQQaDAhSUlJEMjkyOTEcMBoGA1UEDwwT2Y1TdXBwbHkgYWN0aXZpdGllczAdBgNVHQ4EFgQUZvBNpwf0RsY0oSd2Yz6N84ixBFYwHwYDVR0jBBgwFoAUcpPRDmv6JFsTherBFfO4FfsbBY0wewYIKwYBBQUHAQEEbzBtMGsGCCsGAQUFBzAChl9odHRwOi8vYWlhMS56YXRjYS5nb3Yuc2EvQ2VydEVucm9sbC9QUlpFaW52b2ljZVNDQTEuZXh0Z2F6dC5nb3YubG9jYWxfUFJaRUlOVk9JQ0VTQ0ExLUNBKDEpLmNydDAOBgNVHQ8BAf8EBAMCB4AwPAYJKwYBBAGCNxUHBC8wLQYlKwYBBAGCNxUIgYaoHYTQ+xKG7Z0kh877GdPAVWaH+qVlhdmEPgIBZAIBEjAdBgNVHSUEFjAUBggrBgEFBQcDAwYIKwYBBQUHAwIwJwYJKwYBBAGCNxUKBBowGDAKBggrBgEFBQcDAzAKBggrBgEFBQcDAjAKBggqhkjOPQQDAgNJADBGAiEA/oh4HoaeLhzH1M7f+N0kJfhIn6DysBFZXFMpgg+zhxoCIQCUl0xKrLlndC9WnPteR5LuuQvjgPAJoRIEwbCyRiIy6w==</ds:X509Certificate>
@@ -42,7 +42,7 @@
                             <xades:QualifyingProperties Target="signature" xmlns:xades="http://uri.etsi.org/01903/v1.3.2#">
                                 <xades:SignedProperties Id="xadesSignedProperties">
                                     <xades:SignedSignatureProperties>
-                                        <xades:SigningTime>2025-04-30T13:47:58</xades:SigningTime>
+                                        <xades:SigningTime>2025-05-05T09:21:25</xades:SigningTime>
                                         <xades:SigningCertificate>
                                             <xades:Cert>
                                                 <xades:CertDigest>
@@ -67,17 +67,17 @@
 </ext:UBLExtensions>
 	
 	<cbc:ProfileID>reporting:1.0</cbc:ProfileID>
-	<cbc:ID>INV36</cbc:ID>
-	<cbc:UUID>0dbfc73c-1d3d-4b73-8790-6d107be9c710</cbc:UUID>
-	<cbc:IssueDate>2025-04-30</cbc:IssueDate>
-	<cbc:IssueTime>13:47:58</cbc:IssueTime>
+	<cbc:ID>INV11</cbc:ID>
+	<cbc:UUID>f6c5ef61-aee2-4040-9a6a-f850d7171a11</cbc:UUID>
+	<cbc:IssueDate>2025-05-05</cbc:IssueDate>
+	<cbc:IssueTime>09:21:25</cbc:IssueTime>
 	<cbc:InvoiceTypeCode name="0200000">388</cbc:InvoiceTypeCode>
 	<cbc:Note languageID="ar">ABC</cbc:Note>
 	<cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>
 	<cbc:TaxCurrencyCode>SAR</cbc:TaxCurrencyCode>
 	<cac:AdditionalDocumentReference>
 		<cbc:ID>ICV</cbc:ID>
-		<cbc:UUID>36</cbc:UUID>
+		<cbc:UUID>11</cbc:UUID>
 	</cac:AdditionalDocumentReference>
 	<cac:AdditionalDocumentReference>
 		<cbc:ID>PIH</cbc:ID>
@@ -90,7 +90,7 @@
 	<cac:AdditionalDocumentReference>
         <cbc:ID>QR</cbc:ID>
         <cac:Attachment>
-            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">AQhTY2hvb2wgMQIPMzk5OTk5OTk5OTAwMDAzAxMyMDI1LTA0LTMwVDEzOjQ3OjU4BAU4MC41MAUFMTAuNTAGLEtPMDh4dS9ndzZkd2FkSTlqaGV2RTJBbDllZGFITlNSb0hmSGpaMnBqMFE9B2BNRVFDSUI1cEEyWUR5VTQzT2RLZXo2RUkyMGljbkxBQWhqQlBJUm8rbjhvOHJQUkhBaUFOREQ1TmZDZW93SVVhMWVFMHBDa2poY21oa0FxYjFpOVlSc2E2K3REOWN3PT0IWDBWMBAGByqGSM49AgEGBSuBBAAKA0IABOVT/XUFp5IuM0YFGI6TQ+ALlVOFwFWqrCW1U73SiPRCHc6CUxQwlhxmxhTc5GD9MqDS7aP+f/NGAwebzRboF2gJSDBGAiEA/oh4HoaeLhzH1M7f+N0kJfhIn6DysBFZXFMpgg+zhxoCIQCUl0xKrLlndC9WnPteR5LuuQvjgPAJoRIEwbCyRiIy6w==</cbc:EmbeddedDocumentBinaryObject>
+            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain"></cbc:EmbeddedDocumentBinaryObject>
         </cac:Attachment>
 </cac:AdditionalDocumentReference><cac:Signature>
       <cbc:ID>urn:oasis:names:specification:ubl:signature:Invoice</cbc:ID>
@@ -98,26 +98,26 @@
 </cac:Signature><cac:AccountingSupplierParty>
 		<cac:Party>
 			<cac:PartyIdentification>
-				<cbc:ID schemeID="CRN">1010010000</cbc:ID>
+				<cbc:ID schemeID="CRN" />
 			</cac:PartyIdentification>
 			<cac:PostalAddress>
-				<cbc:StreetName>Abu Qir</cbc:StreetName>
-				<cbc:BuildingNumber>0023</cbc:BuildingNumber>
-				<cbc:CitySubdivisionName>Zezenia</cbc:CitySubdivisionName>
-				<cbc:CityName>Alexandria</cbc:CityName>
-				<cbc:PostalZone>12345</cbc:PostalZone>
+				<cbc:StreetName />
+				<cbc:BuildingNumber>00</cbc:BuildingNumber>
+				<cbc:CitySubdivisionName />
+				<cbc:CityName />
+				<cbc:PostalZone />
 				<cac:Country>
 					<cbc:IdentificationCode>SA</cbc:IdentificationCode>
 				</cac:Country>
 			</cac:PostalAddress>
 			<cac:PartyTaxScheme>
-				<cbc:CompanyID>399999999900003</cbc:CompanyID>
+				<cbc:CompanyID />
 				<cac:TaxScheme>
 					<cbc:ID>VAT</cbc:ID>
 				</cac:TaxScheme>
 			</cac:PartyTaxScheme>
 			<cac:PartyLegalEntity>
-				<cbc:RegistrationName>School 1</cbc:RegistrationName>
+				<cbc:RegistrationName>school 1</cbc:RegistrationName>
 			</cac:PartyLegalEntity>
 		</cac:Party>
 	</cac:AccountingSupplierParty>
@@ -138,7 +138,7 @@
 	
 		<cac:TaxCategory>
 			<cbc:ID schemeID="UN/ECE 5305" schemeAgencyID="6">S</cbc:ID>
-			<cbc:Percent>15.00</cbc:Percent>
+			<cbc:Percent>0</cbc:Percent>
 			<cac:TaxScheme>
 				<cbc:ID schemeID="UN/ECE 5153" schemeAgencyID="6">VAT</cbc:ID>
 			</cac:TaxScheme>
@@ -146,7 +146,7 @@
 	
 		<cac:TaxCategory>
 			<cbc:ID schemeID="UN/ECE 5305" schemeAgencyID="6">S</cbc:ID>
-			<cbc:Percent>15.00</cbc:Percent>
+			<cbc:Percent>0</cbc:Percent>
 			<cac:TaxScheme>
 				<cbc:ID schemeID="UN/ECE 5153" schemeAgencyID="6">VAT</cbc:ID>
 			</cac:TaxScheme>
@@ -156,17 +156,17 @@
 	</cac:AllowanceCharge>
 	<cac:TaxTotal>
 	
-		<cbc:TaxAmount currencyID="SAR">10.50</cbc:TaxAmount>
+		<cbc:TaxAmount currencyID="SAR">0</cbc:TaxAmount>
 	
 	
 	</cac:TaxTotal>
 	<cac:TaxTotal>
 	
-		<cbc:TaxAmount currencyID="SAR">10.50</cbc:TaxAmount>
+		<cbc:TaxAmount currencyID="SAR">0</cbc:TaxAmount>
 	
 		<cac:TaxSubtotal>
-			<cbc:TaxableAmount currencyID="SAR">70</cbc:TaxableAmount>
-			<cbc:TaxAmount currencyID="SAR">10.50</cbc:TaxAmount>
+			<cbc:TaxableAmount currencyID="SAR">30</cbc:TaxableAmount>
+			<cbc:TaxAmount currencyID="SAR">0</cbc:TaxAmount>
 			<cac:TaxCategory>
 				<cbc:ID schemeID="UN/ECE 5305" schemeAgencyID="6">S</cbc:ID>
 				<cbc:Percent>15.00</cbc:Percent>
@@ -179,55 +179,31 @@
 	
 	</cac:TaxTotal>
 	<cac:LegalMonetaryTotal>
-		<cbc:LineExtensionAmount currencyID="SAR">70</cbc:LineExtensionAmount>
-		<cbc:TaxExclusiveAmount currencyID="SAR">70</cbc:TaxExclusiveAmount>
-		<cbc:TaxInclusiveAmount currencyID="SAR">80.50</cbc:TaxInclusiveAmount>
+		<cbc:LineExtensionAmount currencyID="SAR">30</cbc:LineExtensionAmount>
+		<cbc:TaxExclusiveAmount currencyID="SAR">30</cbc:TaxExclusiveAmount>
+		<cbc:TaxInclusiveAmount currencyID="SAR">30</cbc:TaxInclusiveAmount>
 		<cbc:AllowanceTotalAmount currencyID="SAR">0.00</cbc:AllowanceTotalAmount>
 		<cbc:PrepaidAmount currencyID="SAR">0.00</cbc:PrepaidAmount>
-		<cbc:PayableAmount currencyID="SAR">80.50</cbc:PayableAmount>
+		<cbc:PayableAmount currencyID="SAR">30</cbc:PayableAmount>
 	</cac:LegalMonetaryTotal>
 <cac:InvoiceLine>
 	<cbc:ID>1</cbc:ID>
-	<cbc:InvoicedQuantity unitCode="PCE">1</cbc:InvoicedQuantity>
-	<cbc:LineExtensionAmount currencyID="SAR">40</cbc:LineExtensionAmount>
-	<cac:TaxTotal>
-	<cbc:TaxAmount currencyID="SAR">6.00</cbc:TaxAmount>
-	<cbc:RoundingAmount currencyID="SAR">46.00</cbc:RoundingAmount>
-	</cac:TaxTotal>
-	<cac:Item>
-	<cbc:Name>Item 1 | Item 1</cbc:Name>
-	<cac:ClassifiedTaxCategory>
-	<cbc:ID>S</cbc:ID>
-	<cbc:Percent>15.00</cbc:Percent>
-	<cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme>
-	</cac:ClassifiedTaxCategory>
-	</cac:Item>
-	<cac:Price>
-	<cbc:PriceAmount currencyID="SAR">40</cbc:PriceAmount>
-	<cac:AllowanceCharge>
-	<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-	<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>
-	<cbc:Amount currencyID="SAR">0.00</cbc:Amount>
-	</cac:AllowanceCharge>
-	</cac:Price>
-	</cac:InvoiceLine><cac:InvoiceLine>
-	<cbc:ID>1</cbc:ID>
-	<cbc:InvoicedQuantity unitCode="PCE">1</cbc:InvoicedQuantity>
+	<cbc:InvoicedQuantity unitCode="PCE">3</cbc:InvoicedQuantity>
 	<cbc:LineExtensionAmount currencyID="SAR">30</cbc:LineExtensionAmount>
 	<cac:TaxTotal>
-	<cbc:TaxAmount currencyID="SAR">4.50</cbc:TaxAmount>
-	<cbc:RoundingAmount currencyID="SAR">34.50</cbc:RoundingAmount>
+	<cbc:TaxAmount currencyID="SAR">0</cbc:TaxAmount>
+	<cbc:RoundingAmount currencyID="SAR">30</cbc:RoundingAmount>
 	</cac:TaxTotal>
 	<cac:Item>
-	<cbc:Name>Item 2 | Item 2</cbc:Name>
+	<cbc:Name>en_name | ar_name</cbc:Name>
 	<cac:ClassifiedTaxCategory>
 	<cbc:ID>S</cbc:ID>
-	<cbc:Percent>15.00</cbc:Percent>
+	<cbc:Percent>0</cbc:Percent>
 	<cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme>
 	</cac:ClassifiedTaxCategory>
 	</cac:Item>
 	<cac:Price>
-	<cbc:PriceAmount currencyID="SAR">30</cbc:PriceAmount>
+	<cbc:PriceAmount currencyID="SAR">10</cbc:PriceAmount>
 	<cac:AllowanceCharge>
 	<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
 	<cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>

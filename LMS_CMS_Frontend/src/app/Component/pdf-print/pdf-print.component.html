@@ -29,13 +29,12 @@
         </div>
     </div>
 
-<div *ngIf="tableDataWithHeader2">
-    <div *ngFor="let section of tableDataWithHeader2" class="mb-8">
+<div *ngIf="tableDataWithHeaderArray">
+    <div *ngFor="let section of tableDataWithHeaderArray" class="mb-8">
         <div class="p-2 rounded-top mb-2">
             <h5 class="primaryTxt font-semibold text-xl leading-9">{{ section.header }}</h5>
         </div>
 
-        <!-- Summary Information -->
         <div class="mb-4 p-3 border rounded-2xl shadow-sm bg-[#EBEBEB]">
             <table class="w-full">
                 <tbody>
@@ -47,7 +46,6 @@
             </table>
         </div>
 
-        <!-- Details Table -->
         <div class="mt-4 overflow-x-auto rounded-xl border border-[#BDBDBD]">
             <table class="w-full inset-0 rounded-xl text-left text-[#6F6F6F]">
                 <thead>

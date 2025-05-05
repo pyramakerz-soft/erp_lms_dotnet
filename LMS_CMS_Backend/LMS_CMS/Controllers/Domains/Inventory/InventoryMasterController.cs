@@ -527,7 +527,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Master.VatAmount = Master.Total * Master.VatPercent;
             Master.TotalWithVat = Master.Total + Master.VatAmount;
             //Master.SchoolPCId = newData.SchoolPCsId;
-            Master.SchoolPCId = 2;
+            Master.SchoolPCId = 1;
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
@@ -563,6 +563,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Master.QRCode = InvoicingServices.GetQRCode(xml);
             Master.uuid = InvoicingServices.GetUUID(xml);
             Master.XmlInvoiceFile = xml;
+            Master.QrImage = InvoicingServices.GenerateQrImage(Master.QRCode);
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();

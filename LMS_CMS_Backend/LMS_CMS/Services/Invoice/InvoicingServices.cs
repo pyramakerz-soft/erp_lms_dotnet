@@ -233,6 +233,15 @@ namespace LMS_CMS_PL.Services.Invoice
                 AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", lastInvoiceHash, nsMgr);
             }
 
+            if (master.IsCash == false && master.IsVisa == false)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "10", nsMgr);
+
+            if (master.IsCash == true)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "10", nsMgr);
+
+            if (master.IsVisa == true)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "48", nsMgr);
+
             AddValue(inv, "//cbc:ID[text()='SME00001']", $"INV{master.ID.ToString()}", nsMgr);
             AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
             AddValue(inv, "//cac:AdditionalDocumentReference/cbc:UUID", master.ID.ToString(), nsMgr);

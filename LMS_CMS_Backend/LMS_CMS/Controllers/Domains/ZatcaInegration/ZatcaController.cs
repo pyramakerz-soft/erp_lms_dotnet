@@ -178,15 +178,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                 query => query.Include(s => s.School)
             );
 
-            SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(
-                d => d.ID == master.SchoolPCId && d.IsDeleted != true
-            );
-
-            if (pc.CertificateDate.Value == DateOnly.FromDateTime(DateTime.Now.AddDays(1)) || pc.CertificateDate == null)
-            {
-                return BadRequest("Please Update the Certificate.");
-            }
-
             if (master is null)
                 return NotFound("Invoice not found.");
 
@@ -240,16 +231,6 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             {
                 if (master.IsValid == 0 || master.IsValid == null)
                 {
-
-                    SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(
-                        d => d.ID == master.SchoolPCId && d.IsDeleted != true
-                    );
-
-                    if (pc.CertificateDate.Value == DateOnly.FromDateTime(DateTime.Now.AddDays(1)) || pc.CertificateDate == null)
-                    {
-                        return BadRequest($"Please Update the Certificate for PC No. {pc.ID}");
-                    }
-
                     try
                     {
                         DateTime invDate = DateTime.Parse(master.Date);

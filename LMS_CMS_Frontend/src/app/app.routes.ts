@@ -129,6 +129,8 @@ import { LessonResourcesTypeComponent } from './Pages/Employee/LMS/lesson-resour
 import { StudentMedal } from './Models/LMS/student-medal';
 import { StudentMedalComponent } from './Pages/Employee/LMS/student-medal/student-medal.component';
 import { LessonComponent } from './Pages/Employee/LMS/lesson/lesson.component';
+import { PerformanceTypeComponent } from './Pages/Employee/LMS/performance-type/performance-type.component';
+import { DailyPerformanceComponent } from './Pages/Employee/LMS/daily-performance/daily-performance.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -299,7 +301,6 @@ export const routes: Routes = [
             { path: "Lesson Resource Type", component: LessonResourcesTypeComponent, title: "Lesson Resource Type", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Student Medal", component: StudentMedalComponent, title: "Student Medal", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Lesson", component: LessonComponent, title: "Lesson", canActivate:[noNavigateWithoutLoginGuard ] },
-     
         ]
     },
     { 

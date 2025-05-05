@@ -298,6 +298,20 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
+            SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(
+                d => d.ID == newData.SchoolPCId && d.IsDeleted != true
+            );
+
+            if (pc.CertificateDate.Value == DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
+            {
+                return BadRequest("Please Update the Certificate.");
+            }
+
+            if (pc.CertificateDate == null)
+            {
+                return BadRequest("Please Create the Certificate.");
+            }
+
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             long.TryParse(userIdClaim, out long userId);
             var userTypeClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
@@ -362,7 +376,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 newData.SchoolId = null;
             }
-
+            if (newData.SchoolPCId != 0 && newData.SchoolPCId != null)
+            {
+               SchoolPCs SchoolPCId = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.ID == newData.SchoolPCId && b.IsDeleted != true);
+                if (SchoolPCId == null)
+                {
+                    return NotFound("SchoolPCId not found.");
+                }
+            }
+            else
+            {
+                newData.SchoolPCId = null;
+            }
             if (newData.StoreToTransformId != 0 && newData.StoreToTransformId != null)
             {
                 Store StoreToTransform = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreToTransformId && b.IsDeleted != true);
@@ -526,8 +551,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Master.VatPercent = vat;
             Master.VatAmount = Master.Total * Master.VatPercent;
             Master.TotalWithVat = Master.Total + Master.VatAmount;
-            //Master.SchoolPCId = newData.SchoolPCsId;
-            Master.SchoolPCId = 2;
+            Master.SchoolPCId = newData.SchoolPCId;
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
@@ -547,8 +571,8 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             if (pc is null)
                 return NotFound("PC not found.");
-    
-            bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);  
+
+            bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);
 
             if (!result)
                 return BadRequest("Failed to generate XML file.");
@@ -563,6 +587,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Master.QRCode = InvoicingServices.GetQRCode(xml);
             Master.uuid = InvoicingServices.GetUUID(xml);
             Master.XmlInvoiceFile = xml;
+            Master.QrImage = InvoicingServices.GenerateQrImage(Master.QRCode);
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();

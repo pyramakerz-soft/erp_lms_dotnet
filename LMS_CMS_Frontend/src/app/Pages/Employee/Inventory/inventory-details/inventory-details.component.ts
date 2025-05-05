@@ -41,6 +41,8 @@ import { SearchDropdownComponent } from '../../../../Component/search-dropdown/s
 import { map } from 'rxjs/operators';
 import { School } from '../../../../Models/school';
 import { SchoolService } from '../../../../Services/Employee/school.service';
+import { SchoolPCs } from '../../../../Models/Inventory/school-pcs';
+import { SchoolPCsService } from '../../../../Services/Employee/Inventory/school-pcs.service';
 
 @Component({
   selector: 'app-inventory-details',
@@ -135,6 +137,7 @@ export class InventoryDetailsComponent {
 
   tableDataForPrint: any[]=[];
   schools:School[]=[]
+  schoolPCs:SchoolPCs[]=[]
 
   constructor(
     private router: Router,
@@ -158,7 +161,8 @@ export class InventoryDetailsComponent {
     public SupplierServ: SupplierService,
     public InventoryFlagServ: InventoryFlagService,
     public reportsService: ReportsService ,
-    public SchoolServ : SchoolService
+    public SchoolServ : SchoolService ,
+    public schoolpcsServ :SchoolPCsService 
   ) { }
   async ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -250,6 +254,20 @@ export class InventoryDetailsComponent {
   GetAllSchools(){
     this.SchoolServ.Get(this.DomainName).subscribe((d)=>{
       this.schools=d
+      if(this.schools.length==1){
+        this.Data.schoolId=this.schools[0].id
+        this.GetAllSchoolPCs()
+      }
+    })
+  }
+
+  GetAllSchoolPCs(){
+    this.schoolpcsServ.GetBySchoolId(this.Data.schoolId ,this.DomainName).subscribe((d)=>{
+      this.schoolPCs=d
+      if(this.schoolPCs.length==1){
+        this.Data.schoolPCId=this.schoolPCs[0].id
+      }
+      console.log(this.schoolPCs)
     })
   }
 
@@ -406,6 +424,7 @@ export class InventoryDetailsComponent {
     if (this.isFormValid()) {
       this.isLoading = true;
       // await this.SaveRow();
+      console.log(this.Data)
       if (this.mode == 'Create') {
         console.log("0", this.EditedShopItems)
         this.salesServ.Add(this.Data, this.DomainName).subscribe(

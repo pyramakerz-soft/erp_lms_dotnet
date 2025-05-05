@@ -11,6 +11,9 @@ using Zatca.EInvoice.SDK.Contracts.Models;
 using Zatca.EInvoice.SDK;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.NetworkInformation;
+using System.Drawing;
+using ZXing.Windows.Compatibility;
 
 namespace LMS_CMS_PL.Services.Invoice
 {
@@ -229,6 +232,15 @@ namespace LMS_CMS_PL.Services.Invoice
             {
                 AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", lastInvoiceHash, nsMgr);
             }
+
+            if (master.IsCash == false && master.IsVisa == false)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "10", nsMgr);
+
+            if (master.IsCash == true)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "10", nsMgr);
+
+            if (master.IsVisa == true)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "48", nsMgr);
 
             AddValue(inv, "//cbc:ID[text()='SME00001']", $"INV{master.ID.ToString()}", nsMgr);
             AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
@@ -648,6 +660,25 @@ namespace LMS_CMS_PL.Services.Invoice
             elem.InnerText = innerText;
             parent.AppendChild(elem);
             return elem;
+        }
+
+        public static byte[] GenerateQrImage(string qrCode)
+        {
+            var writer = new BarcodeWriter
+            {
+                Format = ZXing.BarcodeFormat.QR_CODE,
+                Options = new ZXing.Common.EncodingOptions
+                {
+                    Width = 100,
+                    Height = 100,
+                    Margin = 1
+                }
+            };
+
+            using Bitmap qrBitmap = writer.Write(qrCode);
+            using MemoryStream ms = new MemoryStream();
+            qrBitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            return ms.ToArray();
         }
     }
 }

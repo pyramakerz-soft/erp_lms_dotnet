@@ -362,7 +362,18 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 newData.SchoolId = null;
             }
-
+            if (newData.SchoolPCId != 0 && newData.SchoolPCId != null)
+            {
+               SchoolPCs SchoolPCId = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.ID == newData.SchoolPCId && b.IsDeleted != true);
+                if (SchoolPCId == null)
+                {
+                    return NotFound("SchoolPCId not found.");
+                }
+            }
+            else
+            {
+                newData.SchoolPCId = null;
+            }
             if (newData.StoreToTransformId != 0 && newData.StoreToTransformId != null)
             {
                 Store StoreToTransform = Unit_Of_Work.store_Repository.First_Or_Default(b => b.ID == newData.StoreToTransformId && b.IsDeleted != true);
@@ -522,47 +533,47 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            Master.uuid = Guid.NewGuid().ToString();
-            Master.VatPercent = vat;
-            Master.VatAmount = Master.Total * Master.VatPercent;
-            Master.TotalWithVat = Master.Total + Master.VatAmount;
-            //Master.SchoolPCId = newData.SchoolPCsId;
-            Master.SchoolPCId = 2;
+            //Master.uuid = Guid.NewGuid().ToString();
+            //Master.VatPercent = vat;
+            //Master.VatAmount = Master.Total * Master.VatPercent;
+            //Master.TotalWithVat = Master.Total + Master.VatAmount;
+            ////Master.SchoolPCId = newData.SchoolPCsId;
+            //Master.SchoolPCId = 2;
 
-            Unit_Of_Work.inventoryMaster_Repository.Update(Master);
-            await Unit_Of_Work.SaveChangesAsync();
+            //Unit_Of_Work.inventoryMaster_Repository.Update(Master);
+            //await Unit_Of_Work.SaveChangesAsync();
 
-            Master.School = school;
+            //Master.School = school;
 
-            List<InventoryMaster> masters = Unit_Of_Work.inventoryMaster_Repository.SelectQuery<InventoryMaster>(i => i.IsDeleted != true).ToList();
+            //List<InventoryMaster> masters = Unit_Of_Work.inventoryMaster_Repository.SelectQuery<InventoryMaster>(i => i.IsDeleted != true).ToList();
 
-            string lastInvoiceHash = "";
+            //string lastInvoiceHash = "";
 
-            if (masters.Count > 1 || masters is not null)
-            {
-                lastInvoiceHash = masters[masters.Count - 2].InvoiceHash;
-            }
+            //if (masters.Count > 1 || masters is not null)
+            //{
+            //    lastInvoiceHash = masters[masters.Count - 2].InvoiceHash;
+            //}
 
-            SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.ID == Master.SchoolPCId && b.IsDeleted != true);
+            //SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.ID == Master.SchoolPCId && b.IsDeleted != true);
 
-            if (pc is null)
-                return NotFound("PC not found.");
+            //if (pc is null)
+            //    return NotFound("PC not found.");
     
-            bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);  
+            //bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);  
 
-            if (!result)
-                return BadRequest("Failed to generate XML file.");
+            //if (!result)
+            //    return BadRequest("Failed to generate XML file.");
 
-            DateTime invDate = DateTime.Parse(newData.Date);
-            string date = invDate.ToString("yyyy-MM-dd");
-            string time = invDate.ToString("HH:mm:ss").Replace(":", "");
+            //DateTime invDate = DateTime.Parse(newData.Date);
+            //string date = invDate.ToString("yyyy-MM-dd");
+            //string time = invDate.ToString("HH:mm:ss").Replace(":", "");
 
-            string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{Master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{Master.ID}.xml");
+            //string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{Master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{Master.ID}.xml");
 
-            Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
-            Master.QRCode = InvoicingServices.GetQRCode(xml);
-            Master.uuid = InvoicingServices.GetUUID(xml);
-            Master.XmlInvoiceFile = xml;
+            //Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
+            //Master.QRCode = InvoicingServices.GetQRCode(xml);
+            //Master.uuid = InvoicingServices.GetUUID(xml);
+            //Master.XmlInvoiceFile = xml;
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();

@@ -33,7 +33,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public int FlagValue { get; set; }
         public long? SaveID { get; set; }
         public long? SchoolId { get; set; }
-        public long? SchoolPCs { get; set; }
+        public long? SchoolPCId { get; set; }
         public long? SupplierId { get; set; }
         public long? BankID { get; set; }
         public long? StoreToTransformId { get; set; }

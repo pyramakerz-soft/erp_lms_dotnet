@@ -31,6 +31,7 @@ export class InventoryMaster {
             public flagValue :number =0,
             public itemInOut :number =0,
             public schoolId :number =0,
+            public schoolPCId :number =0,
             public insertedAt :string ="",
             public insertedByUserId :number =0,
             public attachments : string [] =[],

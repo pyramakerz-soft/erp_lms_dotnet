@@ -19,7 +19,7 @@ export class ApiService {
     // const hostname = window.location.hostname;
     // var Header = hostname.split('.')[0]
 
-    var Header = 'Domain__Three';
+    var Header = 'domain_new';
 
     return Header;
   }

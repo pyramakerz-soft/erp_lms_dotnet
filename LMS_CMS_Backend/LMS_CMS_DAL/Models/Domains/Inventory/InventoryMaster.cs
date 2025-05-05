@@ -35,6 +35,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public string? XmlInvoiceFile { get; set; }
         public string? Status { get; set; }
         public byte? IsValid { get; set; }
+        public byte[]? QrImage { get; set; }
         public string? Notes { get; set; }
         public List<string>? Attachments { get; set; }
 

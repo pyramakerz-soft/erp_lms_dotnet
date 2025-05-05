@@ -533,12 +533,12 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 }
             }
 
-            //Master.uuid = Guid.NewGuid().ToString();
-            //Master.VatPercent = vat;
-            //Master.VatAmount = Master.Total * Master.VatPercent;
-            //Master.TotalWithVat = Master.Total + Master.VatAmount;
-            ////Master.SchoolPCId = newData.SchoolPCsId;
-            //Master.SchoolPCId = 2;
+            Master.uuid = Guid.NewGuid().ToString();
+            Master.VatPercent = vat;
+            Master.VatAmount = Master.Total * Master.VatPercent;
+            Master.TotalWithVat = Master.Total + Master.VatAmount;
+            //Master.SchoolPCId = newData.SchoolPCsId;
+            Master.SchoolPCId = 1;
 
             //Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             //await Unit_Of_Work.SaveChangesAsync();
@@ -570,10 +570,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
 
             //string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{Master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{Master.ID}.xml");
 
-            //Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
-            //Master.QRCode = InvoicingServices.GetQRCode(xml);
-            //Master.uuid = InvoicingServices.GetUUID(xml);
-            //Master.XmlInvoiceFile = xml;
+            Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
+            Master.QRCode = InvoicingServices.GetQRCode(xml);
+            Master.uuid = InvoicingServices.GetUUID(xml);
+            Master.XmlInvoiceFile = xml;
 
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();

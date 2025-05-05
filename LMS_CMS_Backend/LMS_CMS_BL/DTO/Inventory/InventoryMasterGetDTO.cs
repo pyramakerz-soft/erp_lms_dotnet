@@ -31,6 +31,16 @@ namespace LMS_CMS_BL.DTO.Inventory
         public string? FlagArTitle { get; set; }
         public int ItemInOut { get; set; }
         public int FlagValue { get; set; }
+        public decimal? TotalWithVat { get; set; }
+        public decimal? VatAmount { get; set; }
+        public decimal? VatPercent { get; set; }
+        public string? InvoiceHash { get; set; }
+        public string? QRCode { get; set; }
+        public string? uuid { get; set; }
+        public string? XmlInvoiceFile { get; set; }
+        public string? Status { get; set; }
+        public byte? IsValid { get; set; }
+        public string? QrImage { get; set; }
         public long? SaveID { get; set; }
         public long? SchoolId { get; set; }
         public long? SchoolPCId { get; set; }

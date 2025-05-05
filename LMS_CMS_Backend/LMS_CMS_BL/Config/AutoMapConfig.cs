@@ -892,6 +892,9 @@ namespace LMS_CMS_BL.Config
                  .ForMember(dest => dest.LessonResourceTypeArabicName, opt => opt.MapFrom(src => src.LessonResourceType.ArabicName));
             CreateMap<LessonResourceAddDTO, LessonResource>();
             CreateMap<LessonResourcePutDTO, LessonResource>();
+
+            CreateMap<SemesterWorkingWeek, SemesterWorkingWeekGetDTO>()
+               .ForMember(dest => dest.SemesterName, opt => opt.MapFrom(src => src.Semester.Name));
         }
     } 
 }

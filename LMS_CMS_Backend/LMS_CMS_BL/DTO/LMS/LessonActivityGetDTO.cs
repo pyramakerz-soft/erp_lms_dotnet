@@ -23,5 +23,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public long LessonActivityTypeID { get; set; }
         public string LessonActivityTypeEnglishName { get; set; }
         public string LessonActivityTypeArabicName { get; set; }
+
+        public long? InsertedByUserId { get; set; }
     }
 }

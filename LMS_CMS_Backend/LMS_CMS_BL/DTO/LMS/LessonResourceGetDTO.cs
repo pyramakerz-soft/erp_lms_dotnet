@@ -19,5 +19,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public string LessonResourceTypeEnglishName { get; set; }
         public string LessonResourceTypeArabicName { get; set; }
         public List<ClassroomGetDTO> Classrooms { get; set; }
+
+        public long? InsertedByUserId { get; set; }
     }
 }

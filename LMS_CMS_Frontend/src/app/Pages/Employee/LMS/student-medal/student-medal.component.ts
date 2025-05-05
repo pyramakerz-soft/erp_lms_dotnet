@@ -112,12 +112,16 @@ export class StudentMedalComponent {
   }
 
   getAllSchools() {
+    this.schools=[]
     this.SchoolServ.Get(this.DomainName).subscribe((d) => {
       this.schools = d
     })
   }
 
   getAllStudents() {
+    this.IsView=false
+    this.students=[]
+    this.SelectedStudentId=0
     this.studentServ.GetBySchoolGradeClassID(this.SelectedSchoolId,this.SelectedGradeId,this.SelectedClassId, this.DomainName).subscribe((d: any) => {
       console.log(d)
       this.students=d.students
@@ -125,12 +129,21 @@ export class StudentMedalComponent {
   }
 
   getAllGradesBySchoolId() {
+    this.Grades = []
+    this.IsView=false
+    this.SelectedGradeId=0
+    this.SelectedClassId=0
+    this.SelectedStudentId=0
     this.GradeServ.GetBySchoolId(this.SelectedSchoolId, this.DomainName).subscribe((d) => {
       this.Grades = d
     })
   }
 
   getAllClassByGradeId() {
+    this.class = []
+    this.SelectedClassId=0
+    this.SelectedStudentId=0
+    this.IsView=false
     this.ClassroomServ.GetByGradeId(this.SelectedGradeId, this.DomainName).subscribe((d) => {
       this.class = d
     })
@@ -142,6 +155,7 @@ export class StudentMedalComponent {
   }
   
   GetAllMedals(){
+    this.medals=[]
     this.MedalServ.Get(this.DomainName).subscribe((d)=>{
       this.medals=d
     })
@@ -203,6 +217,8 @@ export class StudentMedalComponent {
 
     View(){
       this.IsView=true
+      this.SelectedStudent=new Student()
+      this.TableData=[]
       this.studentServ.GetByID(this.SelectedStudentId,this.DomainName).subscribe((d)=>{
         this.SelectedStudent=d
         console.log( this.SelectedStudent)

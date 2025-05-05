@@ -6,7 +6,7 @@
     <div class="w-[49%]">
         <label for="School1" class="block mb-2 text-sm font-medium text-gray-900">School</label>
         <select id="School1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedSchoolId" (change)="getAllGradesBySchoolId()">
+            [(ngModel)]="SelectedSchoolId" (change)="getAllGradesBySchoolId(); IsView = false">
             <option value=0 disabled selected hidden>Select a School</option>
             <option *ngFor="let stu of schools" [value]="stu.id">
                 {{ stu.name }}
@@ -17,7 +17,7 @@
     <div class="w-[49%]">
         <label for="Grade" class="block mb-2 text-sm font-medium text-gray-900">Grade</label>
         <select id="Grade" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedGradeId" [disabled]="!SelectedSchoolId" (change)="getAllClassByGradeId()">
+            [(ngModel)]="SelectedGradeId" [disabled]="!SelectedSchoolId" (change)="getAllClassByGradeId(); IsView = false">
             <option value=0 disabled selected hidden>Select a grade</option>
             <option *ngFor="let ac of Grades" [value]="ac.id">
                 {{ ac.name }}
@@ -28,7 +28,7 @@
     <div class="w-[49%]">
         <label for="Class" class="block mb-2 text-sm font-medium text-gray-900">Class</label>
         <select id="Class" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedClassId" [disabled]="!SelectedGradeId" (change)="getAllStudents()">
+            [(ngModel)]="SelectedClassId" [disabled]="!SelectedGradeId" (change)="getAllStudents(); IsView = false">
             <option value=0 disabled selected hidden>Select a class</option>
             <option *ngFor="let ac of class" [value]="ac.id">
                 {{ ac.name }}
@@ -39,7 +39,7 @@
     <div class="w-[49%]">
         <label for="student" class="block mb-2 text-sm font-medium text-gray-900">Students</label>
         <select id="student" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedStudentId" [disabled]="!SelectedClassId" >
+            [(ngModel)]="SelectedStudentId" [disabled]="!SelectedClassId" (change)=" IsView = false">
             <option value=0 disabled selected hidden>Select a student</option>
             <option *ngFor="let ac of students" [value]="ac.id">
                 {{ ac.user_Name }}

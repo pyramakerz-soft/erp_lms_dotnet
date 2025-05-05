@@ -49,17 +49,16 @@
 
     <div class="mt-7 ml-2">
         <button class="p-3 font-medium text-xl rounded-lg" 
-            [disabled]="!SelectedSchoolId || !SelectedGradeId || !SelectedYearId || !SelectedClassId"
-            [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedGradeId || !SelectedYearId || !SelectedClassId, 'secondaryBg text-white': SelectedSchoolId && SelectedGradeId && SelectedYearId && SelectedClassId }">View
+            [disabled]="!SelectedSchoolId || !SelectedGradeId || !SelectedStudentId || !SelectedClassId" (click)="View()"
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedGradeId || !SelectedStudentId || !SelectedClassId, 'secondaryBg text-white': SelectedSchoolId && SelectedGradeId && SelectedStudentId && SelectedClassId }">View
         </button>
     </div>
 </div>
 
-<div class="">
+<div class="mt-5" *ngIf="IsView">
     <div class="flex justify-between">
         <h1 class="font-semibold text-2xl leading-9">{{SelectedStudent.user_Name}}</h1>
         <div class="flex justify-between items-center">
-            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
             <button (click)="Create()"
                 class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
                 Add Medal
@@ -126,7 +125,7 @@
 </div>
 
 <!-- Modal -->
-<!-- <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{ hidden: !isModalVisible }"
+<div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{ hidden: !isModalVisible }"
     class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
     <div class="bg-white rounded-2xl p-12 w-1/2 max-h-[95%] overflow-y-auto">
         <div class="flex justify-between items-center">
@@ -135,25 +134,23 @@
             <button (click)="closeModal()" type="button"
                 class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
         </div>
-
-        <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
-            <div class="flex flex-col mb-4 w-[49%]">
-                <label class="mb-2 primaryTxt" for="englishName">English Name</label>
-                <input id="englishName" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                    placeholder="Enter English Name" [(ngModel)]="Type.englishName"
-                    (ngModelChange)="onInputValueChange({ field: 'englishName', value: $event })" />
-                <span *ngIf="validationErrors['englishName']" class="text-red-500 ml-3 font-normal">{{
-                    validationErrors['englishName']}}</span>
+  
+        <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap gap-4">
+            <div 
+              *ngFor="let row of medals; let i = index" 
+              (click)="selectMedal(row.id)"
+              (ngModelChange)="onInputValueChange({ field: 'medalID', value: $event })"
+              [ngClass]="{
+                'border-4 border-blue-500 rounded-xl': stuMedal.medalID === row.id,
+                'cursor-pointer': true
+              }"
+            >
+              <img *ngIf="row.imageLink" [src]="row.imageLink" class="w-24 h-24 object-cover rounded-xl" />
             </div>
-            <div class="flex flex-col mb-4 w-[49%]">
-                <label class="mb-2 primaryTxt" for="arabicName">Arabic Name</label>
-                <input id="arabicName" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
-                    placeholder="Enter Arabic Name" [(ngModel)]="Type.arabicName"
-                    (ngModelChange)="onInputValueChange({ field: 'arabicName', value: $event })" />
-                <span *ngIf="validationErrors['arabicName']"
-                    class="text-red-500 ml-3 font-normal">{{validationErrors['arabicName'] }}</span>
-            </div>
-        </div>
+            <span *ngIf="validationErrors['medalID']" class="text-red-500 ml-3 font-normal">{{
+                    validationErrors['medalID']}}</span>
+          </div>
+          
         <div class="flex justify-end">
             <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
                 (click)="CreateOREdit()">
@@ -162,4 +159,4 @@
             </button>
         </div>
     </div>
-</div> -->
+</div>

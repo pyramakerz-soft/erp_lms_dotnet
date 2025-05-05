@@ -1,0 +1,154 @@
+<div class="flex justify-between mb-3">
+    <h1 class="font-semibold text-2xl leading-9">Daily Performance</h1>
+</div>
+
+<div class="flex justify-start items-center space-x-4">
+    <div class="w-[49%]">
+        <label for="School1" class="block mb-2 text-sm font-medium text-gray-900">School</label>
+        <select id="School1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+            [(ngModel)]="SelectedSchoolId" (change)="getAllGradesBySchoolId(); IsView = false">
+            <option value=0 disabled selected hidden>Select a School</option>
+            <option *ngFor="let stu of schools" [value]="stu.id">
+                {{ stu.name }}
+            </option>
+        </select>
+    </div>
+
+    <div class="w-[49%]">
+        <label for="Grade" class="block mb-2 text-sm font-medium text-gray-900">Grade</label>
+        <select id="Grade" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+            [(ngModel)]="SelectedGradeId" [disabled]="!SelectedSchoolId" (change)="getAllClassByGradeId(); getAllSubject(); IsView = false">
+            <option value=0 disabled selected hidden>Select a grade</option>
+            <option *ngFor="let ac of Grades" [value]="ac.id">
+                {{ ac.name }}
+            </option>
+        </select>
+    </div>
+
+    <div class="w-[49%]">
+        <label for="Class" class="block mb-2 text-sm font-medium text-gray-900">Class</label>
+        <select id="Class" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+            [(ngModel)]="SelectedClassId" [disabled]="!SelectedGradeId" (change)="View(); IsView = false">
+            <option value=0 disabled selected hidden>Select a class</option>
+            <option *ngFor="let ac of class" [value]="ac.id">
+                {{ ac.name }}
+            </option>
+        </select>
+    </div>
+
+    <div class="w-[49%]">
+        <label for="subject" class="block mb-2 text-sm font-medium text-gray-900">Subjects</label>
+        <select id="subject" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+            [(ngModel)]="SelectedSubjectId" [disabled]="!SelectedGradeId" (change)=" IsView = false">
+            <option value=0 disabled selected hidden>Select a subject</option>
+            <option *ngFor="let ac of subjects" [value]="ac.id">
+                {{ ac.en_name }}
+            </option>
+        </select>
+    </div>
+
+    <div class="mt-7 ml-2">
+        <button class="p-3 font-medium text-xl rounded-lg" 
+            [disabled]="!SelectedSchoolId || !SelectedGradeId || !SelectedSubjectId || !SelectedClassId" (click)="View()"
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedGradeId || !SelectedSubjectId || !SelectedClassId, 'secondaryBg text-white': SelectedSchoolId && SelectedGradeId && SelectedSubjectId && SelectedClassId }">View
+        </button>
+    </div>
+</div>
+
+
+<div class="mt-5" *ngIf="IsView">
+    <div class="flex justify-between">
+        <div class="flex justify-between items-center">
+            <button 
+                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+                Add Medal
+            </button>
+        </div>
+    </div>
+
+    <div class="flex justify-between">
+        <div class="w-[49%]">
+            <label for="Types" class="block mb-2 text-sm font-medium text-gray-900">Types</label>
+            <select id="Types"
+                    multiple
+                    [(ngModel)]="selectedTypeIds"
+                    name="types"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full h-40">
+              <option *ngFor="let ac of PerformanceTypes" [value]="ac.id">
+                {{ ac.englishName }}
+              </option>
+            </select>
+          </div>
+    
+        <div class="w-[49%]">
+            <label for="star" class="block mb-2 text-sm font-medium text-gray-900">Stars</label>
+            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+                <i class="fa-star cursor-pointer class.fa-regular"></i>
+              </ng-container>
+        </div>
+    </div>
+
+<!--     
+    <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+        <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+            <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                <tr>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0 ">
+                        <div class="flex space-x-2 items-center">
+                            <input class="rounded bg-[#FFFFFF] border-1 border-[#BDBDBD] w-5 h-5" type="checkbox" id="all" name="all" 
+                            [checked]="allSelected"
+                            (change)="toggleSelectAll($event)">
+                            <p> Student Name </p>
+                        </div>
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Status
+                    </th>
+                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Notes
+                    </th> 
+                </tr>
+            </thead>
+            <tbody> 
+                <tr *ngIf="Students.length === 0">
+                    <td colspan="3" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                        No Data Found
+                    </td>
+                </tr>
+
+                <tr *ngFor="let row of Students; let i = index"
+                    [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                    class="text-xs md:text-sm">
+                    <td class="py-5 px-4 border-r border-[#EAECF0] "> 
+                        <div class="flex space-x-2 items-center">
+                            <input class="rounded bg-[#FFFFFF] border-1 border-[#BDBDBD] w-5 h-5" type="checkbox" [id]="'Student-' + row.id" 
+                            [checked]="isStudentSelected(row.id)"
+                            (change)="toggleStudentSelection($event, row.id)">
+                            <p> {{ row.en_name }} </p>
+                        </div>
+                    </td>
+                    <td class="py-5 px-4 border-r border-[#EAECF0]">
+                        <div class="flex space-x-1">
+                          <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+                            <i class="fa-star cursor-pointer"
+                               [class.fa-solid]="star <= getRating(row.id)"
+                               [class.fa-regular]="star > getRating(row.id)"
+                               [class.text-yellow-400]="star <= getRating(row.id)"
+                               (click)="updateRatingForStudent(star, row.id)">
+                            </i>
+                          </ng-container>
+                        </div>
+                      </td>
+                      <td class="py-5 px-4">
+                        <textarea type="text"
+                                  class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-full"
+                                  placeholder="Notes"
+                                  [value]="getNote(row.id)"
+                                  (input)="updateNotesForStudent($event, row.id)">
+                        </textarea>
+                      </td>
+                </tr>
+            </tbody>
+        </table>
+    </div> -->
+</div>

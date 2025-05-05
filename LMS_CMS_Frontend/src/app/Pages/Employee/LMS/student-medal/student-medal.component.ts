@@ -21,6 +21,8 @@ import { StudentMedal } from '../../../../Models/LMS/student-medal';
 import { StudentMedalService } from '../../../../Services/Employee/LMS/student-medal.service';
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
+import { MedalService } from '../../../../Services/Employee/LMS/medal.service';
+import { Medal } from '../../../../Models/LMS/medal';
 
 @Component({
   selector: 'app-student-medal',
@@ -46,6 +48,7 @@ export class StudentMedalComponent {
   Grades: Grade[] = []
   class: Classroom[] = []
   isLoading: boolean = false
+  medals :Medal[]=[]
 
   SelectedSchoolId: number = 0;
   SelectedYearId: number = 0;
@@ -69,6 +72,9 @@ export class StudentMedalComponent {
   keysArray: string[] = ['id', 'englishName' ,'arabicName'];
 
   validationErrors: { [key in keyof StudentMedal]?: string } = {};
+  SelectedMedalId: number | null = null;
+  IsView:boolean=false
+
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -82,7 +88,8 @@ export class StudentMedalComponent {
     private studentServ: StudentService,
     private GradeServ: GradeService,
     private ClassroomServ: ClassroomService,
-    public studentMedalServ : StudentMedalService
+    public studentMedalServ : StudentMedalService ,
+    public MedalServ : MedalService
   ) { }
 
   ngOnInit() {
@@ -112,7 +119,8 @@ export class StudentMedalComponent {
 
   getAllStudents() {
     this.studentServ.GetBySchoolGradeClassID(this.SelectedSchoolId,this.SelectedGradeId,this.SelectedClassId, this.DomainName).subscribe((d: any) => {
-      this.students=d
+      console.log(d)
+      this.students=d.students
     })
   }
 
@@ -127,6 +135,17 @@ export class StudentMedalComponent {
       this.class = d
     })
   }
+  selectMedal(id: number) {
+    this.SelectedMedalId = id;
+    this.stuMedal.medalID=id; 
+    this.validationErrors['medalID'] = '';
+  }
+  
+  GetAllMedals(){
+    this.MedalServ.Get(this.DomainName).subscribe((d)=>{
+      this.medals=d
+    })
+  }
 
   GetAllData() {
       this.TableData = [];
@@ -139,12 +158,14 @@ export class StudentMedalComponent {
     Create() {
       this.mode = 'Create';
       this.stuMedal = new StudentMedal();
+      this.stuMedal.studentID=this.SelectedStudentId
+      this.GetAllMedals()
       this.validationErrors = {};
       this.openModal();
     }
   
     CreateOREdit() {
-      if (this.isFormValid()) {
+      if(this.isFormValid()){
         this.isLoading = true;
         console.log(this.stuMedal)
           this.studentMedalServ.Add(
@@ -167,8 +188,8 @@ export class StudentMedalComponent {
               });
             }
           );
-      }
       this.GetAllData();
+      }
     }
   
     closeModal() {
@@ -178,6 +199,18 @@ export class StudentMedalComponent {
     openModal() {
       this.validationErrors = {};
       this.isModalVisible = true;
+    }
+
+    View(){
+      this.IsView=true
+      this.studentServ.GetByID(this.SelectedStudentId,this.DomainName).subscribe((d)=>{
+        this.SelectedStudent=d
+        console.log( this.SelectedStudent)
+      })
+      this.studentMedalServ.GetByStudentID(this.SelectedStudentId,this.DomainName).subscribe((d=>{
+          this.TableData=d
+          console.log(this.TableData,d)
+      }))
     }
   
     isFormValid(): boolean {

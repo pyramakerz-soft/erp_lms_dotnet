@@ -106,7 +106,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         [HttpGet("GetBySchoolId")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "SchoolPCs" }
+            pages: new[] { "SchoolPCs" , "Inventory" }
         )]
         public async Task<IActionResult> GetBySchoolId(long schoolId)
         {
@@ -144,7 +144,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         [HttpPost]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "SchoolPCs" }
+            pages: new[] { "SchoolPCs" , "Inventory" }
         )]
         public IActionResult Add(SchoolPCsAddDTO schoolPCsDto)
         {

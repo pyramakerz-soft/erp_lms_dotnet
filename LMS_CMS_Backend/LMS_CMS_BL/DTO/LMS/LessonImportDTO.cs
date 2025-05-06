@@ -10,5 +10,6 @@ namespace LMS_CMS_BL.DTO.LMS
     {
         public long FromLessonID { get; set; }
         public long ToSemesterWorkingWeekID { get; set; }
+        public long SubjectID { get; set; }
     }
 }

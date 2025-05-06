@@ -567,10 +567,10 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 lastInvoiceHash = masters[masters.Count - 2].InvoiceHash;
             }
 
-            SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.ID == Master.SchoolPCId && b.IsDeleted != true);
+            //SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.ID == Master.SchoolPCId && b.IsDeleted != true);
 
-            if (pc is null)
-                return NotFound("PC not found.");
+            //if (pc is null)
+            //    return NotFound("PC not found.");
 
             bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);
 

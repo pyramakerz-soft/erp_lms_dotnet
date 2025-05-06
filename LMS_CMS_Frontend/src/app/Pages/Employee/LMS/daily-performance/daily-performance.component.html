@@ -17,7 +17,8 @@
     <div class="w-[49%]">
         <label for="Grade" class="block mb-2 text-sm font-medium text-gray-900">Grade</label>
         <select id="Grade" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
-            [(ngModel)]="SelectedGradeId" [disabled]="!SelectedSchoolId" (change)="getAllClassByGradeId(); getAllSubject(); IsView = false">
+            [(ngModel)]="SelectedGradeId" [disabled]="!SelectedSchoolId"
+            (change)="getAllClassByGradeId(); getAllSubject(); IsView = false">
             <option value=0 disabled selected hidden>Select a grade</option>
             <option *ngFor="let ac of Grades" [value]="ac.id">
                 {{ ac.name }}
@@ -48,8 +49,9 @@
     </div>
 
     <div class="mt-7 ml-2">
-        <button class="p-3 font-medium text-xl rounded-lg" 
-            [disabled]="!SelectedSchoolId || !SelectedGradeId || !SelectedSubjectId || !SelectedClassId" (click)="View()"
+        <button class="p-3 font-medium text-xl rounded-lg"
+            [disabled]="!SelectedSchoolId || !SelectedGradeId || !SelectedSubjectId || !SelectedClassId"
+            (click)="View()"
             [ngClass]="{ 'bg-gray-100 text-gray-300': !SelectedSchoolId || !SelectedGradeId || !SelectedSubjectId || !SelectedClassId, 'secondaryBg text-white': SelectedSchoolId && SelectedGradeId && SelectedSubjectId && SelectedClassId }">View
         </button>
     </div>
@@ -58,97 +60,170 @@
 
 <div class="mt-5" *ngIf="IsView">
     <div class="flex justify-between">
-        <div class="flex justify-between items-center">
-            <button 
-                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+        <div class="flex justify-between items-end">
+            <button class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2" (click)="Create()"> 
                 Add Medal
             </button>
         </div>
     </div>
 
-    <div class="flex justify-between">
-        <div class="w-[49%]">
-            <label for="Types" class="block mb-2 text-sm font-medium text-gray-900">Types</label>
-            <select id="Types"
-                    multiple
-                    [(ngModel)]="selectedTypeIds"
-                    name="types"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full h-40">
-              <option *ngFor="let ac of PerformanceTypes" [value]="ac.id">
-                {{ ac.englishName }}
-              </option>
-            </select>
-          </div>
-    
-        <div class="w-[49%]">
-            <label for="star" class="block mb-2 text-sm font-medium text-gray-900">Stars</label>
-            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
-                <i class="fa-star cursor-pointer class.fa-regular"></i>
-              </ng-container>
+    <div class="flex justify-between mt-4 gap-2 items-center">
+        <!-- Types -->
+        <div class="w-[35%]">
+            <label class="block mb-2 text-sm font-medium text-gray-900" for="ac">Types</label>
+            <div class="relative">
+                <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer min-h-[48px]"
+                    (click)="toggleDropdown()" tabindex="0">
+                    <ng-container *ngIf="PerformanceTypesSelected.length > 0; else placeholder">
+                        <div class="flex flex-wrap">
+                            <span class="mr-2 mb-1 bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center"
+                                *ngFor="let selected of PerformanceTypesSelected">
+                                {{ selected.englishName }}
+                                <span class="ml-2 cursor-pointer text-red-500" (click)="removeSelected(selected.id)">
+                                    &times;
+                                </span>
+                            </span>
+                        </div>
+                    </ng-container>
+                    <ng-template #placeholder>
+                        <span class="text-gray-400">Choose Type</span>
+                    </ng-template>
+                </div>
+                <div class="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full shadow-md z-10"
+                    *ngIf="dropdownOpen">
+                    <ul>
+                        <li *ngFor="let Type of PerformanceTypes" class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            (click)="selectType(Type)">
+                            {{ Type.englishName }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stars -->
+        <div class="w-[35%]">
+            <label class="block mb-2 text-sm font-medium text-gray-900" for="star">Stars</label>
+            <div class="border border-gray-300 rounded-lg px-4 py-3 min-h-[48px] flex items-center space-x-1">
+                <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+                    <i class="fa-star cursor-pointer text-2xl" [ngClass]="{
+                  'fa-solid text-yellow-400': star <= selectedRating,
+                  'fa-regular text-gray-400': star > selectedRating
+                }" (click)="setStar(star)"></i>
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- Apply Button -->
+        <div class="mt-5 w-[25%] flex items-center justify-start space-x-3">
+            <button class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2" (click)="Applay()">
+                Apply
+            </button>
+            <button class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2" (click)="submitRatings()">
+                Save
+            </button>
         </div>
     </div>
 
-<!--     
+
     <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
-        <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
-            <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+        <table class="w-full bg-[#EBEBEB] text-left text-[#6F6F6F] text-sm md:text-base">
+            <thead class="bg-[#EBEBEB] border border-[#BDBDBD] border-t-0 border-l-0">
                 <tr>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0 ">
+                    <th class="py-4 px-4 min-w-[160px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
                         <div class="flex space-x-2 items-center">
-                            <input class="rounded bg-[#FFFFFF] border-1 border-[#BDBDBD] w-5 h-5" type="checkbox" id="all" name="all" 
-                            [checked]="allSelected"
-                            (change)="toggleSelectAll($event)">
-                            <p> Student Name </p>
+                            <input class="rounded bg-white border border-[#BDBDBD] w-5 h-5" type="checkbox" id="all"
+                                [checked]="allSelected"
+                                name="all" (change)="toggleSelectAll($event)">
+                            <p>Student Name</p>
                         </div>
                     </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Status
+                    <ng-container *ngFor="let row of PerformanceTypesSelected">
+                        <th
+                            class="py-4 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.englishName }}
+                        </th>
+                    </ng-container>
+                    <th class="py-4 px-4 min-w-[160px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                        Comment
                     </th>
-                    <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
-                        Notes
-                    </th> 
                 </tr>
             </thead>
-            <tbody> 
-                <tr *ngIf="Students.length === 0">
-                    <td colspan="3" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+
+            <tbody>
+                <tr *ngIf="students.length === 0">
+                    <td colspan="100%" class="bg-white px-4 py-4 text-center border-t border-gray-300 text-sm">
                         No Data Found
                     </td>
                 </tr>
 
-                <tr *ngFor="let row of Students; let i = index"
+                <tr *ngFor="let row of students; let i = index"
                     [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
-                    class="text-xs md:text-sm">
-                    <td class="py-5 px-4 border-r border-[#EAECF0] "> 
+                    class="border-t border-gray-300 text-sm">
+
+                    <!-- Student Name -->
+                    <td class="py-4 px-4 border border-[#EAECF0]">
                         <div class="flex space-x-2 items-center">
-                            <input class="rounded bg-[#FFFFFF] border-1 border-[#BDBDBD] w-5 h-5" type="checkbox" [id]="'Student-' + row.id" 
-                            [checked]="isStudentSelected(row.id)"
-                            (change)="toggleStudentSelection($event, row.id)">
-                            <p> {{ row.en_name }} </p>
+                            <input class="rounded bg-white border border-[#BDBDBD] w-5 h-5" type="checkbox"
+                                [id]="'Student-' + row.id" [checked]="isStudentSelected(row.id)"
+                                (change)="toggleStudentSelection($event, row.id)">
+                            <p>{{ row.en_name }}</p>
                         </div>
                     </td>
-                    <td class="py-5 px-4 border-r border-[#EAECF0]">
-                        <div class="flex space-x-1">
-                          <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
-                            <i class="fa-star cursor-pointer"
-                               [class.fa-solid]="star <= getRating(row.id)"
-                               [class.fa-regular]="star > getRating(row.id)"
-                               [class.text-yellow-400]="star <= getRating(row.id)"
-                               (click)="updateRatingForStudent(star, row.id)">
-                            </i>
-                          </ng-container>
-                        </div>
-                      </td>
-                      <td class="py-5 px-4">
-                        <textarea type="text"
-                                  class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto w-full"
-                                  placeholder="Notes"
-                                  [value]="getNote(row.id)"
-                                  (input)="updateNotesForStudent($event, row.id)">
-                        </textarea>
-                      </td>
+
+                    <!-- Stars -->
+                    <ng-container *ngFor="let type of PerformanceTypesSelected">
+                        <td class="py-4 px-4 border border-[#EAECF0] text-center">
+                            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+                                <i class="fa-star cursor-pointer text-xl" [ngClass]="{
+                                  'fa-solid text-yellow-400': star <= getStars(row.id, type.id),
+                                  'fa-regular text-gray-400': star > getStars(row.id, type.id)
+                                }" (click)="setRating(row.id, type.id, star)">
+                                </i>
+                            </ng-container>
+                        </td>
+                    </ng-container>
+
+                    <!-- Comment -->
+                    <td class="py-4 px-4 border border-[#EAECF0]">
+                        <textarea class="w-full h-[100px] rounded-lg border border-gray-300 px-2 py-1 resize-none"
+                            placeholder="Enter Note">
+                </textarea>
+                    </td>
                 </tr>
             </tbody>
         </table>
-    </div> -->
+    </div>
+</div>
+
+
+<div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{ hidden: !isModalVisible }"
+    class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+    <div class="bg-white rounded-2xl p-12 w-1/2 max-h-[95%] overflow-y-auto">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="mode == 'Create'" class="font-semibold text-2xl leading-9">Choose Medal</h1>
+            <h1 *ngIf="mode == 'Edit'" class="font-semibold text-2xl leading-9">Edit Type</h1>
+            <button (click)="closeModal()" type="button"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+  
+        <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap gap-4">
+            <div 
+              *ngFor="let row of medals; let i = index" 
+              (click)="selectMedal(row.id)"
+              [ngClass]="{
+                'border-4 border-blue-500 rounded-xl': SelectedMedalId === row.id,
+                'cursor-pointer': true}">
+              <img *ngIf="row.imageLink" [src]="row.imageLink" class="w-24 h-24 object-cover rounded-xl" />
+            </div>
+          </div>
+          
+        <div class="flex justify-end">
+            <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+                (click)="Save()">
+                <span *ngIf="!isLoading">Save</span>
+                <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+            </button>
+        </div>
+    </div>
 </div>

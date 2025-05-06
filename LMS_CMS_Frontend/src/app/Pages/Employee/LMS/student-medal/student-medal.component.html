@@ -129,7 +129,7 @@
     class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
     <div class="bg-white rounded-2xl p-12 w-1/2 max-h-[95%] overflow-y-auto">
         <div class="flex justify-between items-center">
-            <h1 *ngIf="mode == 'Create'" class="font-semibold text-2xl leading-9">Create Type</h1>
+            <h1 *ngIf="mode == 'Create'" class="font-semibold text-2xl leading-9">Choose Medal</h1>
             <h1 *ngIf="mode == 'Edit'" class="font-semibold text-2xl leading-9">Edit Type</h1>
             <button (click)="closeModal()" type="button"
                 class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
@@ -142,9 +142,7 @@
               (ngModelChange)="onInputValueChange({ field: 'medalID', value: $event })"
               [ngClass]="{
                 'border-4 border-blue-500 rounded-xl': stuMedal.medalID === row.id,
-                'cursor-pointer': true
-              }"
-            >
+                'cursor-pointer': true}">
               <img *ngIf="row.imageLink" [src]="row.imageLink" class="w-24 h-24 object-cover rounded-xl" />
             </div>
             <span *ngIf="validationErrors['medalID']" class="text-red-500 ml-3 font-normal">{{

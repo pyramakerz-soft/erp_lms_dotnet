@@ -302,6 +302,11 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 d => d.ID == newData.SchoolPCId && d.IsDeleted != true
             );
 
+            if (pc == null)
+            {
+                return NotFound("PC not found.");
+            }
+
             if (pc.CertificateDate.Value == DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
             {
                 return BadRequest("Please Update the Certificate.");

@@ -27,7 +27,7 @@ import { Medal } from '../../../../Models/LMS/medal';
 @Component({
   selector: 'app-student-medal',
   standalone: true,
-  imports: [FormsModule, CommonModule, SearchComponent],
+  imports: [FormsModule, CommonModule],
   templateUrl: './student-medal.component.html',
   styleUrl: './student-medal.component.css'
 })
@@ -74,7 +74,6 @@ export class StudentMedalComponent {
   validationErrors: { [key in keyof StudentMedal]?: string } = {};
   SelectedMedalId: number | null = null;
   IsView:boolean=false
-
 
   constructor(
     public activeRoute: ActivatedRoute,

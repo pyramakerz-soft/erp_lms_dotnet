@@ -22,7 +22,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public long LessonID { get; set; }
         public long LessonResourceTypeID { get; set; }
 
-        public List<long>? NewClasseRooms { get; set; }
-        public List<ClassroomGetDTO>? Classerooms { get; set; }
+        public List<long>? NewClassRooms { get; set; }
+        public List<long>? Classrooms { get; set; }
     }
 }

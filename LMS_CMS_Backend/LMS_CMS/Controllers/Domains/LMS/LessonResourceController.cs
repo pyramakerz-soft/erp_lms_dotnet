@@ -480,7 +480,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 foreach (var lessonResourceClassroom in lessonResourceClassrooms)
                 {
-                    if (EditLessonResource.Classerooms == null || !EditLessonResource.Classerooms.Any(c => c.ID == lessonResourceClassroom.ClassroomID))
+                    if (EditLessonResource.Classrooms == null || !EditLessonResource.Classrooms.Contains(lessonResourceClassroom.ClassroomID))
                     {
                         lessonResourceClassroom.IsDeleted = true;
                         lessonResourceClassroom.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);
@@ -507,9 +507,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 }
             }
 
-            if (EditLessonResource.NewClasseRooms != null && EditLessonResource.NewClasseRooms.Count != 0)
+            if (EditLessonResource.NewClassRooms != null && EditLessonResource.NewClassRooms.Count != 0)
             {
-                foreach (var classroom in EditLessonResource.NewClasseRooms)
+                foreach (var classroom in EditLessonResource.NewClassRooms)
                 {
                     Classroom classroomExists = Unit_Of_Work.classroom_Repository.First_Or_Default(d => d.IsDeleted != true && d.ID == classroom);
 

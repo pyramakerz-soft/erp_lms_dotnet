@@ -26,6 +26,7 @@ namespace LMS_CMS_BL.DTO.LMS
         public long AcademicYearID { get; set; }
         public long GradeID { get; set; }
         public long SchoolID { get; set; }
+        public long? InsertedByUserId { get; set; }
 
         public List<TagGetDTO> Tags { get; set; }
     }

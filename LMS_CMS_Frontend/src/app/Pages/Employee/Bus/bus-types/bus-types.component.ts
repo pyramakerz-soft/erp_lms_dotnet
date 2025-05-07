@@ -270,8 +270,14 @@ export class BusTypesComponent {
 
   async onSearchEvent(event: { key: string; value: any }) {
     this.key = event.key;
-    this.value = event.value;
-    await this.GetTableData();
+    this.value = event.value; 
+    
+    const data: BusType[] = await firstValueFrom(
+      this.BusTypeServ.Get(this.DomainName)
+    );
+
+    this.TableData = data || [];
+
     if (this.value != '') {
       const numericValue = isNaN(Number(this.value))
         ? this.value

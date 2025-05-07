@@ -74,10 +74,9 @@ export class AccountingEntriesDetailsComponent {
   isLoading = false;
 
 
-    @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
   showPDF = false;
-
-
+  
   constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public accountingEntriesDocTypeService:AccountingEntriesDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public accountingEntriesService:AccountingEntriesService,
@@ -397,6 +396,34 @@ export class AccountingEntriesDetailsComponent {
     });
   }
 
+
+  // DownloadData() {
+  //   let orderElement = document.getElementById('DataToDownload');
+
+  //   if (!orderElement) {
+  //     console.error("Page body not found!");
+  //     return;
+  //   }
+
+  //   document.querySelectorAll('.no-print').forEach(el => {
+  //     (el as HTMLElement).style.display = 'none';
+  //   });
+
+  //   setTimeout(() => {
+  //     html2pdf().from(orderElement).set({
+  //       margin: 10,
+  //       filename: `AccountingEntries_${this.AccountingEntriesID}.pdf`,
+  //       image: { type: 'jpeg', quality: 0.98 },
+  //       html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+  //       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  //     }).save().then(() => {
+  //       document.querySelectorAll('.no-print').forEach(el => {
+  //         (el as HTMLElement).style.display = '';
+  //       });
+  //     });
+  //   }, 500);
+  // }
+
   DownloadAsPDF() {
     this.showPDF = true;
     setTimeout(() => {
@@ -451,39 +478,40 @@ export class AccountingEntriesDetailsComponent {
     }, 500);
   }
 
-async DownloadAsExcel() {
-  await this.reportsService.generateExcelReport({
-    mainHeader: {
-      en: "Accounting Entries Report",
-      ar: "تقرير القيود المحاسبية"
-    },
-    subHeaders: [
-      { en: "Detailed accounting entries information", ar: "معلومات تفصيلية عن القيود المحاسبية" },
-    ],
-    infoRows: [
-      { key: 'Document Type', value: this.accountingEntries.accountingEntriesDocTypeName || '' },
-      { key: 'Document Number', value: this.accountingEntries.docNumber || '' },
-      { key: 'Date', value: this.accountingEntries.date || '' },
-      { key: 'Total Credit', value: this.totalCredit || 0 },
-      { key: 'Total Debit', value: this.totalDebit || 0 },
-      { key: 'Difference', value: this.theDifference || 0 }
-    ],
-    reportImage: '', // Add image URL if available
-    filename: "Accounting_Entries_Report.xlsx",
-    tables: [
-      {
-        title: "Accounting Entries Details",
-        headers: ['id', 'debitAmount', 'creditAmount', 'accountingTreeChartName', 'subAccountingName', 'note'],
-        data: this.accountingEntriesDetailsData.map((row) => [
-          row.id || 0, 
-          row.debitAmount || 0, 
-          row.creditAmount || 0, 
-          row.accountingTreeChartName || '', 
-          row.subAccountingName || '', 
-          row.note || ''
-        ])
-      }
-    ]
-  });
-}
+
+  async DownloadAsExcel() {
+    await this.reportsService.generateExcelReport({
+      mainHeader: {
+        en: "Accounting Entries Report",
+        ar: "تقرير القيود المحاسبية"
+      },
+      subHeaders: [
+        { en: "Detailed accounting entries information", ar: "معلومات تفصيلية عن القيود المحاسبية" },
+      ],
+      infoRows: [
+        { key: 'Document Type', value: this.accountingEntries.accountingEntriesDocTypeName || '' },
+        { key: 'Document Number', value: this.accountingEntries.docNumber || '' },
+        { key: 'Date', value: this.accountingEntries.date || '' },
+        { key: 'Total Credit', value: this.totalCredit || 0 },
+        { key: 'Total Debit', value: this.totalDebit || 0 },
+        { key: 'Difference', value: this.theDifference || 0 }
+      ],
+      reportImage: '', // Add image URL if available
+      filename: "Accounting_Entries_Report.xlsx",
+      tables: [
+        {
+          title: "Accounting Entries Details",
+          headers: ['id', 'debitAmount', 'creditAmount', 'accountingTreeChartName', 'subAccountingName', 'note'],
+          data: this.accountingEntriesDetailsData.map((row) => [
+            row.id || 0, 
+            row.debitAmount || 0, 
+            row.creditAmount || 0, 
+            row.accountingTreeChartName || '', 
+            row.subAccountingName || '', 
+            row.note || ''
+          ])
+        }
+      ]
+    });
+  }
 }

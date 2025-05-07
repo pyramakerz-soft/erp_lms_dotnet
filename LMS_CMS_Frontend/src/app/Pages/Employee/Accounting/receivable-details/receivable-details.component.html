@@ -91,19 +91,19 @@
             </div>
         </div>
     
-<div class="no-print flex justify-end mt-5 space-x-4 items-center">
-    <div class="flex space-x-4" *ngIf="!isCreate">
-        <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="DownloadAsExcel()" title="Export to Excel">
-        <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()" title="Download as PDF">
-        <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()" title="Print">
-    </div>
 
-    <button *ngIf="!isView" [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
-        (click)="Save()">
-        <span *ngIf="!isLoading">Save</span>
-        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
-    </button>
-</div>
+        <div class="no-print flex justify-end mt-5 space-x-4 items-center"> 
+            <div class="flex space-x-4" *ngIf="!isCreate">
+                <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="DownloadAsExcel()" title="Export to Excel">
+                <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()" title="Download as PDF">
+                <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()" title="Print">
+            </div>
+              
+            <button *ngIf="!isView" [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg" (click)="Save()">
+                <span *ngIf="!isLoading">Save</span>
+                <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+            </button>
+        </div>
     </div>
     
     <div class="mt-6" *ngIf="!isCreate">
@@ -279,6 +279,7 @@
         </div>
     </div>
 </div> 
+
 
 <div class="absolute -top-[9999px] -left-[9999px]">
     <div id="Data" class="hidden">

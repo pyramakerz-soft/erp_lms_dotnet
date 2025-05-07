@@ -1,5 +1,6 @@
 ﻿using LMS_CMS_DAL.Models.Domains.AccountingModule;
 using LMS_CMS_DAL.Models.Domains.LMS;
+using LMS_CMS_DAL.Models.Domains.Zatca;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -33,6 +34,8 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public string? uuid { get; set; }
         public string? XmlInvoiceFile { get; set; }
         public string? Status { get; set; }
+        public byte? IsValid { get; set; }
+        public byte[]? QrImage { get; set; }
         public string? Notes { get; set; }
         public List<string>? Attachments { get; set; }
 
@@ -59,6 +62,9 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
 
         [ForeignKey("School")]
         public long? SchoolId { get; set; }
+
+        [ForeignKey("SchoolPCs")]
+        public long? SchoolPCId { get; set; }
         public InventoryFlags InventoryFlags { get; set; }
         public Store Store { get; set; }
         public Student? Student { get; set; }
@@ -67,6 +73,7 @@ namespace LMS_CMS_DAL.Models.Domains.Inventory
         public Supplier? Supplier { get; set; }
         public Store? StoreToTransform { get; set; }
         public School? School { get; set; }
+        public SchoolPCs? SchoolPCs { get; set; }
         public ICollection<InventoryDetails> InventoryDetails { get; set; } = new HashSet<InventoryDetails>();
     }
 }

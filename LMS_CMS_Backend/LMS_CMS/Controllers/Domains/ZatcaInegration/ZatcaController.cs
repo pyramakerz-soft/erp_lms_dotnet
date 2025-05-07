@@ -1,9 +1,12 @@
 ﻿using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Domains.Inventory;
+using LMS_CMS_DAL.Models.Domains.Zatca;
+using LMS_CMS_PL.Services;
 using LMS_CMS_PL.Services.Invoice;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Drawing;
 using System.Text;
 using Zatca.EInvoice.SDK.Contracts;
 using Zatca.EInvoice.SDK.Contracts.Models;
@@ -15,12 +18,12 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
     public class ZatcaController : ControllerBase
     {
         private readonly ICsrGenerator _csrGenerator;
-        private readonly UOW _unit_Of_Work;
+        private readonly DbContextFactoryService _dbContextFactory;
 
-        public ZatcaController(ICsrGenerator csrGenerator, UOW unit_of_work)
+        public ZatcaController(ICsrGenerator csrGenerator, DbContextFactoryService dbContextFactory)
         {
             _csrGenerator = csrGenerator;
-            _unit_Of_Work = unit_of_work;
+            _dbContextFactory = dbContextFactory;
         }
 
         #region Generate PCSID
@@ -29,23 +32,58 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         //    allowedTypes: new[] { "octa", "employee" },
         //    pages: new[] { "" }
         //)]
-        public async Task<IActionResult> GeneratePCSID(string version, long otp, CsrGenerationDto csrGeneration)
+        public async Task<IActionResult> GeneratePCSID(long otp, long schoolPcId)
         {
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-            string privateKeyPath = Path.Combine(invoices, "PrivateKey.pem");
-            string csrPath = Path.Combine(invoices, "CSR.csr");
-            string publicKeyPath = Path.Combine(invoices, "PublicKey.pem");
-            string csidPath = Path.Combine(invoices, "CSID.json");
-            string pcsidPath = Path.Combine(invoices, "PCSID.json");
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            if (!Directory.Exists(invoices))
+            SchoolPCs schoolPc = await Unit_Of_Work.schoolPCs_Repository.FindByIncludesAsync(
+                d => d.ID == schoolPcId && d.IsDeleted != true,
+                query => query.Include(s => s.School)
+            );
+
+            if (schoolPc is null)
+                return NotFound("School PC not found.");
+
+            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSRs");
+            string csr = Path.Combine(invoices, $"PC-{schoolPc.ID}-{schoolPc.School.ID}");
+            string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
+            string csrPath = Path.Combine(csr, "CSR.csr");
+            string publicKeyPath = Path.Combine(csr, "PublicKey.pem");
+            string csidPath = Path.Combine(csr, "CSID.json");
+            string pcsidPath = Path.Combine(csr, "PCSID.json");
+
+            if (!Directory.Exists(csr))
             {
-                Directory.CreateDirectory(invoices);
+                Directory.CreateDirectory(csr);
             }
+
+            string commonName = schoolPc.School.Name;
+            string serialNumber = $"1-{schoolPcId}|2-{schoolPc.PCName}|3-{schoolPc.SerialNumber}";
+            string organizationIdentifier = schoolPc.School.VatNumber;
+            string organizationUnitName = schoolPc.School.Name;
+            string organizationName = schoolPc.School.Name;
+            string countryName = "SA";
+            string invoiceType = "0100";
+            string locationAddress = schoolPc.School.City;
+            string industryBusinessCategory = "Learning";
+
+            CsrGenerationDto csrGeneration = new(
+                commonName,
+                serialNumber,
+                organizationIdentifier,
+                organizationUnitName,
+                organizationName,
+                countryName,
+                invoiceType,
+                locationAddress,
+                industryBusinessCategory
+            );
 
             InvoicingServices.GenerateCSRandPrivateKey(csrGeneration, privateKeyPath, csrPath);
 
             await InvoicingServices.GeneratePublicKey(publicKeyPath, privateKeyPath);
+
+            string version = "V2";
 
             string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
 
@@ -68,43 +106,14 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             await System.IO.File.WriteAllTextAsync(pcsidPath, formattedPcsid);
 
-            return Ok(formattedPcsid); 
-        }
-        #endregion
+            string certificateDate = InvoicingServices.GetCertificateDate(pcsid);
 
-        #region Generate XML
-        [HttpPost("GenerateXML")]
-        //[Authorize_Endpoint_(
-        //    allowedTypes: new[] { "octa", "employee" },
-        //    pages: new[] { "" }
-        //)]
-        public async Task<IActionResult> GenerateXML(long masterId)
-        {
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
+            schoolPc.CertificateDate = DateOnly.Parse(certificateDate);
 
-            if (!Directory.Exists(invoices))
-            {
-                Directory.CreateDirectory(invoices);
-            }
+            Unit_Of_Work.schoolPCs_Repository.Update(schoolPc);
+            Unit_Of_Work.SaveChanges();
 
-            InventoryMaster master = await _unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
-                x => x.ID == masterId,
-                query => query.Include(m => m.InventoryDetails),
-                query => query.Include(m => m.Student));
-
-            if (master == null)
-                return NotFound();
-
-            //InventoryMaster master = new();
-
-            //string invoiceXmlPath = Path.Combine(invoices, $"INV-001.xml");
-
-            bool result = await InvoicingServices.GenerateXML(master);
-
-            if (!result)
-                return BadRequest();
-
-            return Ok("Invoice XML created successfully.");
+            return Ok(formattedPcsid);
         }
         #endregion
 
@@ -152,50 +161,137 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         }
         #endregion
 
-        //#region Invoice Signing 
-        //[HttpPost("InvoiceSigning")]
-        ////[Authorize_Endpoint_(
-        ////    allowedTypes: new[] { "octa", "employee" },
-        ////    pages: new[] { "" }
-        ////)]
-        //public async Task<IActionResult> InvoiceSigning()
-        //{
-        //    //string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
-        //    string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
-        //    string xml = Path.Combine(invoices, "INV001.xml");
+        #region Report Invoice
+        [HttpPost("ReportInvoice")]
+        //#region Report Invoice
+        //[HttpPost("ReportInvoice")]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "" }
+        //)]
+        public async Task<IActionResult> ReportInvoice(long masterId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-        //    string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
-        //    string cerPath = Path.Combine(csr, "PCSID.json");
-        //    string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
+            InventoryMaster master = await Unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
+                d => d.ID == masterId && d.IsDeleted != true,
+                query => query.Include(s => s.School)
+            );
 
-        //    XmlDocument doc = new XmlDocument();
-        //    doc.PreserveWhitespace = true;
-        //    doc.Load(xml);
+            if (master is null)
+                return NotFound("Invoice not found.");
 
-        //    if (!System.IO.File.Exists(xml))
-        //        throw new FileNotFoundException();
+            DateTime invDate = DateTime.Parse(master.Date);
+            string date = invDate.ToString("yyyy-MM-dd");
+            string time = invDate.ToString("HH:mm:ss").Replace(":", "");
 
-        //    XmlNamespaceManager nsMgr = new XmlNamespaceManager(doc.NameTable);
-        //    nsMgr.AddNamespace("cbc", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
+            string xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.ID}.xml");
 
-        //    string jsonContent = System.IO.File.ReadAllText(cerPath);
-        //    dynamic jsonObject = JsonConvert.DeserializeObject(jsonContent);
-        //    string base64Cert = jsonObject.binarySecurityToken;
+            if (master.IsValid == 0 || master.IsValid == null)
+            {
+                HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
 
-        //    byte[] certBytes = Convert.FromBase64String(base64Cert);
-        //    string certDecoded = Encoding.UTF8.GetString(certBytes);
+                if (response.IsSuccessStatusCode)
+                {
+                    master.Status = "Reported";
+                    master.IsValid = 1;
+                }
+                else
+                {
+                    master.Status = "Not Reported";
+                    master.IsValid = 0;
+                }
+                Unit_Of_Work.inventoryMaster_Repository.Update(master);
+                Unit_Of_Work.SaveChanges();
+            }
 
-        //    SignResult result = InvoicingServices.InvoiceSigning(xml, cerPath, privateKeyPath);
+            return master.IsValid == 1 ? Ok(master.Status) : BadRequest(master.Status);
+        }
+        #endregion
 
-        //    string invoiceHash = result.Steps.FirstOrDefault(x => x.StepName == "Generate EInvoice Hash").ResultedValue;
+        #region Report Invoices
+        [HttpPost("ReportInvoices")]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "" }
+        //)]
+        public async Task<IActionResult> ReportInvoices(long schoolId, long schoolPcId)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-        //    string uuid = "afdce130-3dc5-44fb-b494-0c4a9e22343a";
-        //    string invoiceEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(doc.InnerXml));
+            List<InventoryMaster> masters = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById<List<InventoryMaster>>(
+                d => d.SchoolId == schoolId && d.SchoolPCId == schoolPcId && d.IsDeleted != true,
+                query => query.Include(s => s.School)
+            );
 
-        //    string reporting = await InvoicingServices.InvoiceReporting(invoiceHash, uuid, invoiceEncoded);
+            if (masters is null || masters.Count == 0)
+                return NotFound("No invoices found.");
 
-        //    return Ok(reporting);
-        //}
-        //#endregion
+            foreach (var master in masters)
+            {
+                if (master.IsValid == 0 || master.IsValid == null)
+                {
+                    try
+                    {
+                        DateTime invDate = DateTime.Parse(master.Date);
+                        string date = invDate.ToString("yyyy-MM-dd");
+                        string time = invDate.ToString("HH:mm:ss").Replace(":", "");
+
+                        string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSR/PC-{master.SchoolPCId}-{master.SchoolId}");
+                        string xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.ID}.xml");
+
+                        HttpResponseMessage reportingResponse = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+
+                        if (reportingResponse.IsSuccessStatusCode)
+                        {
+                            master.Status = "Reported";
+                            master.IsValid = 1;
+                        }
+                        else
+                        {
+                            master.Status = "Not Reported";
+                            master.IsValid = 0;
+                        }
+                        Unit_Of_Work.inventoryMaster_Repository.Update(master);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest($"Error reporting invoice {master.ID}: {ex.Message}");
+                    }
+                }
+            }
+            Unit_Of_Work.SaveChanges();
+
+            return Ok();
+        }
+        #endregion
+
+        #region Filter by School and Date
+        [HttpGet("FilterBySchoolAndDate")]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "" }
+        //)]
+        public async Task<IActionResult> FilterBySchoolAndDate(long schoolId, string startDate, string endDate, int pageNumber, int pageSize)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            DateTime start = DateTime.Parse(startDate);
+            DateTime end = DateTime.Parse(endDate);
+
+            List<InventoryMaster> masters = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById_Pagination<InventoryMaster>(
+                d => d.SchoolId == schoolId && DateTime.Parse(d.Date) >= start && DateTime.Parse(d.Date) <= end && d.IsDeleted != true,
+                query => query.Include(s => s.School)
+            )
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            if (masters is null || masters.Count == 0)
+                return NotFound("No invoices found.");
+
+            return Ok(masters);
+        }
+        #endregion
     }
 }

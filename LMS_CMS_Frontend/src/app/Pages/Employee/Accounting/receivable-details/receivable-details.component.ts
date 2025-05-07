@@ -21,8 +21,9 @@ import { LinkFileService } from '../../../../Services/Employee/Accounting/link-f
 import { DataAccordingToLinkFileService } from '../../../../Services/Employee/Accounting/data-according-to-link-file.service';
 import Swal from 'sweetalert2';
 import html2pdf from 'html2pdf.js';
-import { ReportsService } from '../../../../Services/shared/reports.service';
+
 import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.component';
+import { ReportsService } from '../../../../Services/shared/reports.service';
 
 @Component({
   selector: 'app-receivable-details',
@@ -68,15 +69,15 @@ export class ReceivableDetailsComponent {
   editedRowData: ReceivableDetails = new ReceivableDetails()
   isLoading = false
 
-    @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
   showPDF = false;
   
   constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public receivableDocTypeService: ReceivableDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public receivableService: ReceivableService,
     public bankService: BankService, public saveService: SaveService, public receivableDetailsService: ReceivableDetailsService, public linkFileService: LinkFileService,
-    public dataAccordingToLinkFileService: DataAccordingToLinkFileService,public reportsService: ReportsService,
-) { }
+
+    public dataAccordingToLinkFileService: DataAccordingToLinkFileService, public reportsService: ReportsService) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -415,7 +416,35 @@ export class ReceivableDetailsComponent {
     });
   }
 
- DownloadAsPDF() {
+
+  // DownloadData() {
+  //   let orderElement = document.getElementById('DataToDownload');
+
+  //   if (!orderElement) {
+  //     console.error("Page body not found!");
+  //     return;
+  //   }
+
+  //   document.querySelectorAll('.no-print').forEach(el => {
+  //     (el as HTMLElement).style.display = 'none';
+  //   });
+
+  //   setTimeout(() => {
+  //     html2pdf().from(orderElement).set({
+  //       margin: 10,
+  //       filename: `Receivable_${this.ReceivableID}.pdf`,
+  //       image: { type: 'jpeg', quality: 0.98 },
+  //       html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+  //       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  //     }).save().then(() => {
+  //       document.querySelectorAll('.no-print').forEach(el => {
+  //         (el as HTMLElement).style.display = '';
+  //       });
+  //     });
+  //   }, 500);
+  // }  
+
+  DownloadAsPDF() {
     this.showPDF = true;
     setTimeout(() => {
       this.pdfComponentRef.downloadPDF();

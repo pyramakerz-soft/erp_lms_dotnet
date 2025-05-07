@@ -20,10 +20,20 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public string DateFrom { get; set; }
         public string DateTo { get; set; }
         public bool? IsCurrent { get; set; }
+        public bool? IsActive { get; set; }
+
+        [ForeignKey("WeekStartDay")]
+        public long? WeekStartDayID { get; set; }
+        public Days? WeekStartDay { get; set; }
+
+        [ForeignKey("WeekEndDay")]
+        public long? WeekEndDayID { get; set; }
+        public Days? WeekEndDay { get; set; }
 
         [ForeignKey("AcademicYear")]
         public long? AcademicYearID { get; set; }
         public AcademicYear? AcademicYear { get; set; }
         public ICollection<BusStudent> BusStudents { get; set; } = new HashSet<BusStudent>();
+        public ICollection<SemesterWorkingWeek> SemesterWorkingWeeks { get; set; } = new HashSet<SemesterWorkingWeek>();
     }
 }

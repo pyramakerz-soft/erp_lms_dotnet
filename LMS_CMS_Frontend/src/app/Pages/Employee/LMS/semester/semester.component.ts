@@ -16,6 +16,7 @@ import Swal from 'sweetalert2';
 import { School } from '../../../../Models/school';
 import { SchoolService } from '../../../../Services/Employee/school.service';
 import { firstValueFrom } from 'rxjs';
+import { WeekDay } from '../../../../Models/week-day';
 
 @Component({
   selector: 'app-semester',
@@ -40,6 +41,7 @@ export class SemesterComponent {
   AllowEditForOthers: boolean = false;
   AllowDeleteForOthers: boolean = false;
   path: string = ""
+  WeekDays:WeekDay[]=[]
 
   DomainName: string = "";
   UserID: number = 0;
@@ -65,6 +67,7 @@ export class SemesterComponent {
 
     this.getAcademicYearData()
     this.getSemesterData()
+    this.GetAllWeeks()
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);
@@ -92,6 +95,10 @@ export class SemesterComponent {
         this.semesterData = data;
       }
     )
+  }
+
+  GetAllWeeks(){
+
   }
 
   GetSemesterById(Id: number) {

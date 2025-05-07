@@ -1,0 +1,464 @@
+<div class="flex justify-between">
+    <h1 class="primaryTxt font-bold text-2xl leading-9">Lessons</h1>
+    <div class="flex justify-between items-center space-x-3">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        <button (click)="ImportModal()"
+            class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center">
+            Import Lesson
+        </button>
+        <button (click)="openModal()"
+            class="rounded-lg secondaryBg text-white px-4 py-3 flex items-center justify-center">
+            Create Lesson
+        </button>
+    </div>
+</div>
+
+<div class="my-5 flex flex-wrap justify-between items-center">
+    <div class="flex flex-col w-[30%] mb-4">
+        <label class="mb-2 font-medium" for="school">School</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school"
+            [(ngModel)]="SchoolId" (change)="onSchoolChange($event)">
+            <option [value]="0" disabled selected hidden>Choose School</option>
+            <option *ngFor="let c of Schools" [value]="c.id">{{ c.name }}</option>
+            <option *ngIf="Schools.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[30%] mb-4">
+        <label class="mb-2" for="Grade" [ngClass]="{ 'text-gray-400': !SchoolId, 'primaryTxt': SchoolId }">Grade</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="Grade"
+            [disabled]="!SchoolId" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolId }" [(ngModel)]="GradeId"
+            (change)="onGradeChange($event)">
+            <option [value]="0" disabled selected hidden>Choose Grade</option>
+            <option *ngFor="let g of Grades" [value]="g.id">{{ g.name }}</option>
+            <option *ngIf="Grades.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[30%] mb-4">
+        <label class="mb-2" for="subject"
+            [ngClass]="{ 'text-gray-400': !GradeId, 'primaryTxt': GradeId }">Subject</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subject"
+            [disabled]="!GradeId" [ngClass]="{ 'bg-[#EBEBEB]': !GradeId }"
+            [(ngModel)]="SubjectId" (change)="onSubjectOrSemesterChange()">
+            <option [value]="0" disabled selected hidden>Choose Subject</option>
+            <option *ngFor="let g of Subjects" [value]="g.id">{{ g.en_name }}</option>
+            <option *ngIf="Subjects.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[45%] mb-4">
+        <label class="mb-2" for="AcademicYear"
+            [ngClass]="{ 'text-gray-400': !SchoolId, 'primaryTxt': SchoolId }">Year</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="AcademicYear"
+            [disabled]="!SchoolId" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolId }" [(ngModel)]="AcademicYearId"
+            (change)="onYearChange($event)">
+            <option [value]="0" disabled selected hidden>Choose Year</option>
+            <option *ngFor="let g of AcademicYears" [value]="g.id">{{ g.name }}</option>
+            <option *ngIf="AcademicYears.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div class="flex flex-col w-[45%] mb-4">
+        <label class="mb-2" for="semester"
+            [ngClass]="{ 'text-gray-400': !AcademicYearId, 'primaryTxt': AcademicYearId }">Semester</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semester"
+            [disabled]="!AcademicYearId" [ngClass]="{ 'bg-[#EBEBEB]': !AcademicYearId }"
+            [(ngModel)]="SemesterId" (change)="onSubjectOrSemesterChange()">
+            <option [value]="0" disabled selected hidden>Choose Semester</option>
+            <option *ngFor="let g of Semesters" [value]="g.id">{{ g.name }}</option>
+            <option *ngIf="Semesters.length === 0" disabled selected>No Data Found</option>
+        </select>
+    </div>
+
+    <div>
+        <button class="p-4  font-medium text-xl rounded-lg" (click)="Apply()"
+            [disabled]="!SchoolId || !GradeId || !AcademicYearId || !SubjectId || !SemesterId"
+            [ngClass]="{ 'bg-gray-100 text-gray-300': !SchoolId || !GradeId || !AcademicYearId || !SubjectId || !SemesterId, 'secondaryBg text-white': SchoolId && GradeId && AcademicYearId && SubjectId && SemesterId }">
+            Apply
+        </button>
+    </div>
+</div>
+ 
+<div *ngIf="showTable" class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    English Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Arabic Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Order
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Subject English Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Subject Arabic Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Week English Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Week Arabic Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="TableData.length === 0">
+                <td colspan="9" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of TableData; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.englishTitle }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arabicTitle }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.order }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subjectEnglishName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.subjectArabicName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.semesterWorkingWeekEnglishName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.semesterWorkingWeekArabicName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex items-center justify-between">
+                        <button 
+                            (click)="Delete(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button  (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <img src="Icons/LessonActivity.png" (click)="MoveToLessonActivity(row.id)">
+                        <img src="Icons/LessonResource.png" (click)="MoveToLessonResource(row.id)"> 
+                        <!-- <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                            (click)="Delete(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button> -->
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+ 
+
+
+<!-- Add-Edit Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px] max-h-[90%] overflow-y-auto">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!editLesson" class="font-semibold text-2xl leading-9">Create Lesson</h1>
+            <h1 *ngIf="editLesson" class="font-semibold text-2xl leading-9">Edit Lesson</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="mt-6 mb-4 flex justify-between flex-wrap">
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="englishName">English Name</label>
+                <input id="englishName" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter English Name"
+                [(ngModel)]="lesson.englishTitle" 
+                (ngModelChange)="onInputValueChange({ field: 'englishTitle', value: $event })"/>
+                <span *ngIf="validationErrors['englishTitle']" class="text-red-500 ml-3 font-normal">{{ validationErrors['englishTitle'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="arabicName">Arabic Name</label>
+                <input id="arabicName" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Arabic Name"
+                [(ngModel)]="lesson.arabicTitle" 
+                (ngModelChange)="onInputValueChange({ field: 'arabicTitle', value: $event })"/>
+                <span *ngIf="validationErrors['arabicTitle']" class="text-red-500 ml-3 font-normal">{{ validationErrors['arabicTitle'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="schoolModel">School</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="schoolModel"
+                    [(ngModel)]="SchoolModalId" (change)="onSchoolModalChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose School</option>
+                    <option *ngFor="let c of SchoolsModal" [value]="c.id">{{ c.name }}</option>
+                    <option *ngIf="SchoolsModal.length === 0" disabled selected>No Data Found</option>
+                </select> 
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="GradeModal" [ngClass]="{ 'text-gray-400': !SchoolModalId, 'primaryTxt': SchoolModalId }">Grade</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="GradeModal"
+                    [disabled]="!SchoolModalId" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolModalId }" [(ngModel)]="GradeModalId"
+                    (change)="onGradeModalChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose Grade</option>
+                    <option *ngFor="let g of GradesModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="GradesModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="subjectModal"
+                    [ngClass]="{ 'text-gray-400': !GradeModalId, 'primaryTxt': GradeModalId }">Subject</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subjectModal"
+                    [disabled]="!GradeModalId" [ngClass]="{ 'bg-[#EBEBEB]': !GradeModalId }"
+                    [(ngModel)]="lesson.subjectID" (ngModelChange)="onInputValueChange({ field: 'subjectID', value: $event })">
+                    <option [value]="0" disabled selected hidden>Choose Subject</option>
+                    <option *ngFor="let g of SubjectsModal" [value]="g.id">{{ g.en_name }}</option>
+                    <option *ngIf="SubjectsModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+                <span *ngIf="validationErrors['subjectID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['subjectID'] }}</span>
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="AcademicYearModal"
+                    [ngClass]="{ 'text-gray-400': !SchoolModalId, 'primaryTxt': SchoolModalId }">Year</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="AcademicYearModal"
+                    [disabled]="!SchoolModalId" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolModalId }" [(ngModel)]="AcademicYearModalId"
+                    (change)="onYearModalChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose Year</option>
+                    <option *ngFor="let g of AcademicYearsModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="AcademicYearsModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="semesterModal"
+                    [ngClass]="{ 'text-gray-400': !AcademicYearModalId, 'primaryTxt': AcademicYearModalId }">Semester</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semesterModal"
+                    [disabled]="!AcademicYearModalId" [ngClass]="{ 'bg-[#EBEBEB]': !AcademicYearModalId }"
+                    [(ngModel)]="SemesterModalId" (change)="onSemesterModalChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose Semester</option>
+                    <option *ngFor="let g of SemestersModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="SemestersModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="WeekModal"
+                    [ngClass]="{ 'text-gray-400': !SemesterModalId, 'primaryTxt': SemesterModalId }">Week</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="WeekModal"
+                    [disabled]="!SemesterModalId" [ngClass]="{ 'bg-[#EBEBEB]': !SemesterModalId }"
+                    [(ngModel)]="lesson.semesterWorkingWeekID" (ngModelChange)="onInputValueChange({ field: 'semesterWorkingWeekID', value: $event })">
+                    <option [value]="0" disabled selected hidden>Choose Week</option>
+                    <option *ngFor="let g of WeeksModal" [value]="g.id">{{ g.englishName }}</option>
+                    <option *ngIf="WeeksModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+                <span *ngIf="validationErrors['semesterWorkingWeekID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['semesterWorkingWeekID'] }}</span>
+            </div> 
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="order">Lesson Order</label>
+                <input id="order" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Lesson Order"
+                [(ngModel)]="lesson.order" (input)="validateNumber($event, 'order')"
+                (ngModelChange)="onInputValueChange({ field: 'order', value: $event })"/>
+                <span *ngIf="validationErrors['order']" class="text-red-500 ml-3 font-normal">{{ validationErrors['order'] }}</span>
+            </div> 
+            <div class="flex flex-col mb-4 w-full">
+                <label class="mb-2 primaryTxt">Details</label>
+                
+                <quill-editor
+                (ngModelChange)="onInputValueChange({ field: 'details', value: $event })"
+                [(ngModel)]="lesson.details"
+                [modules]="editorModules"
+                theme="snow" 
+                class="quill-editor-wrapper"
+                placeholder="Enter lesson details" >
+                </quill-editor>
+
+                <span *ngIf="validationErrors['details']" class="text-red-500 ml-3 font-normal">{{ validationErrors['details'] }}</span>
+            </div> 
+        </div>
+
+        <div class="flex flex-col mb-4 w-full">
+            <label class="mb-2 primaryTxt font-medium" for="tag">Tags</label>
+            <div class="border border-gray-300 rounded-lg px-4 py-3 flex flex-wrap gap-2 mb-4">
+                <span *ngFor="let opt of Tags; let i = index"
+                    class="flex items-center mr-2 mb-1 bg-gray-200 rounded px-3 py-2">
+                    {{ opt }}
+                    <button type="button" class="ml-2 text-white bg-[#6F6F6F] rounded px-1" (click)="removeTag(i)">
+                        &times;
+                    </button>
+                </span>
+                <input type="text" class="flex-grow outline-none" [(ngModel)]="inputValue" id="tag"
+                    (keydown.enter)="addTag()" placeholder="Enter tags" />
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button
+            [disabled]="isLoading"
+            class="secondaryBg text-white font-medium px-4 py-2 rounded-lg cursor-pointer"
+            (click)="Save()">
+            <span *ngIf="!isLoading">Save</span>
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Import Modal -->
+<div id="Import_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px] max-h-[90%] overflow-y-auto">
+        <div class="flex justify-between items-center">
+            <h1 class="font-semibold text-2xl leading-9">Import Lesson From</h1> 
+            <button (click)="closeImportModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="mt-6 mb-4 flex justify-between flex-wrap"> 
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="schoolModel">School</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="schoolModel"
+                    [(ngModel)]="SchoolModalId" (change)="onSchoolModalChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose School</option>
+                    <option *ngFor="let c of SchoolsModal" [value]="c.id">{{ c.name }}</option>
+                    <option *ngIf="SchoolsModal.length === 0" disabled selected>No Data Found</option>
+                </select> 
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="GradeModal" [ngClass]="{ 'text-gray-400': !SchoolModalId, 'primaryTxt': SchoolModalId }">Grade</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="GradeModal"
+                    [disabled]="!SchoolModalId" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolModalId }" [(ngModel)]="GradeModalId"
+                    (change)="onGradeModalChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose Grade</option>
+                    <option *ngFor="let g of GradesModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="GradesModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="subjectModal"
+                    [ngClass]="{ 'text-gray-400': !GradeModalId, 'primaryTxt': GradeModalId }">Subject</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subjectModal"
+                    [disabled]="!GradeModalId" [ngClass]="{ 'bg-[#EBEBEB]': !GradeModalId }"
+                    [(ngModel)]="SubjectModalId"
+                    (change)="onSemesterAndSubjectModalChange()">
+                    <option [value]="0" disabled selected hidden>Choose Subject</option>
+                    <option *ngFor="let g of SubjectsModal" [value]="g.id">{{ g.en_name }}</option>
+                    <option *ngIf="SubjectsModal.length === 0" disabled selected>No Data Found</option>
+                </select> 
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="AcademicYearModal"
+                    [ngClass]="{ 'text-gray-400': !SchoolModalId, 'primaryTxt': SchoolModalId }">Year</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="AcademicYearModal"
+                    [disabled]="!SchoolModalId" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolModalId }" [(ngModel)]="AcademicYearModalId"
+                    (change)="onYearModalChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose Year</option>
+                    <option *ngFor="let g of AcademicYearsModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="AcademicYearsModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="semesterModal"
+                    [ngClass]="{ 'text-gray-400': !AcademicYearModalId, 'primaryTxt': AcademicYearModalId }">Semester</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semesterModal"
+                    [disabled]="!AcademicYearModalId" [ngClass]="{ 'bg-[#EBEBEB]': !AcademicYearModalId }"
+                    [(ngModel)]="SemesterModalId" (change)="onSemesterAndSubjectModalChange()">
+                    <option [value]="0" disabled selected hidden>Choose Semester</option>
+                    <option *ngFor="let g of SemestersModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="SemestersModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="LessonModal"
+                    [ngClass]="{ 'text-gray-400': !SubjectModalId || !SemesterModalId, 'primaryTxt': SubjectModalId && SemesterModalId }">Lesson</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="LessonModal"
+                    [disabled]="!SubjectModalId || !SemesterModalId" [ngClass]="{ 'bg-[#EBEBEB]': !SubjectModalId || !SemesterModalId }"
+                    [(ngModel)]="SelectedLessonImportFrom">
+                    <option [value]="0" disabled selected hidden>Choose Lesson</option>
+                    <option *ngFor="let g of LessonsImportedFrom" [value]="g.id">{{ g.englishTitle }}</option>
+                    <option *ngIf="LessonsImportedFrom.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>   
+        </div> 
+        
+        
+        
+        <div class="flex justify-between items-center">
+            <h1 class="font-semibold text-2xl leading-9">Import Lesson To</h1>  
+        </div>
+        
+        <div class="mt-6 mb-4 flex justify-between flex-wrap"> 
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="schoolModalImportTo">School</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="schoolModalImportTo"
+                    [(ngModel)]="SchoolModalImportToId" (change)="onSchoolModalImportToChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose School</option>
+                    <option *ngFor="let c of SchoolsModal" [value]="c.id">{{ c.name }}</option>
+                    <option *ngIf="SchoolsModal.length === 0" disabled selected>No Data Found</option>
+                </select> 
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="GradeModalImportTo" [ngClass]="{ 'text-gray-400': !SchoolModalImportToId, 'primaryTxt': SchoolModalImportToId }">Grade</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="GradeModalImportTo"
+                    [disabled]="!SchoolModalImportToId" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolModalImportToId }" [(ngModel)]="GradeModalImportToId"
+                    (change)="onGradeModalImportToChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose Grade</option>
+                    <option *ngFor="let g of GradesImportToModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="GradesImportToModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="subjectModalImportTo"
+                    [ngClass]="{ 'text-gray-400': !GradeModalImportToId, 'primaryTxt': GradeModalImportToId }">Subject</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="subjectModalImportTo"
+                    [disabled]="!GradeModalImportToId" [ngClass]="{ 'bg-[#EBEBEB]': !GradeModalImportToId }"
+                    [(ngModel)]="SubjectModalImportToId">
+                    <option [value]="0" disabled selected hidden>Choose Subject</option>
+                    <option *ngFor="let g of SubjectsImportToModal" [value]="g.id">{{ g.en_name }}</option>
+                    <option *ngIf="SubjectsImportToModal.length === 0" disabled selected>No Data Found</option>
+                </select> 
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="AcademicYearModalImportTo"
+                    [ngClass]="{ 'text-gray-400': !SchoolModalImportToId, 'primaryTxt': SchoolModalImportToId }">Year</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="AcademicYearModalImportTo"
+                    [disabled]="!SchoolModalImportToId" [ngClass]="{ 'bg-[#EBEBEB]': !SchoolModalImportToId }" [(ngModel)]="AcademicYearModalImportToId"
+                    (change)="onYearModalImportToChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose Year</option>
+                    <option *ngFor="let g of AcademicYearsImportToModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="AcademicYearsImportToModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="semesterModalImportTo"
+                    [ngClass]="{ 'text-gray-400': !AcademicYearModalImportToId, 'primaryTxt': AcademicYearModalImportToId }">Semester</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="semesterModalImportTo"
+                    [disabled]="!AcademicYearModalImportToId" [ngClass]="{ 'bg-[#EBEBEB]': !AcademicYearModalImportToId }"
+                    [(ngModel)]="SemesterModalImportToId" (change)="onSemesterModalImportToChange($event)">
+                    <option [value]="0" disabled selected hidden>Choose Semester</option>
+                    <option *ngFor="let g of SemestersImportToModal" [value]="g.id">{{ g.name }}</option>
+                    <option *ngIf="SemestersImportToModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="WeekModalImportTo"
+                    [ngClass]="{ 'text-gray-400': !SemesterModalImportToId, 'primaryTxt': SemesterModalImportToId }">Week</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="WeekModalImportTo"
+                    [disabled]="!SemesterModalImportToId" [ngClass]="{ 'bg-[#EBEBEB]': !SemesterModalImportToId }"
+                    [(ngModel)]="SelectedWeekImportTo">
+                    <option [value]="0" disabled selected hidden>Choose Week</option>
+                    <option *ngFor="let g of WeeksImportToModal" [value]="g.id">{{ g.englishName }}</option>
+                    <option *ngIf="WeeksImportToModal.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>   
+        </div> 
+
+        <div class="flex justify-end">
+            <button
+            [disabled]="isLoading"
+            class="text-white font-medium px-4 py-2 rounded-lg cursor-pointer"
+            (click)="Import()"
+            [disabled]="!SelectedLessonImportFrom || !SelectedWeekImportTo || !SubjectModalImportToId" 
+            [ngClass]="{ 'bg-[#EBEBEB]': !SelectedLessonImportFrom || !SelectedWeekImportTo || SubjectModalImportToId, 
+                        'secondaryBg': SelectedLessonImportFrom && SelectedWeekImportTo && SubjectModalImportToId}">
+            <span *ngIf="!isLoading">Import</span>
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          </button>
+        </div>
+    </div>
+</div>

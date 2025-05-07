@@ -70,15 +70,15 @@ export class PayableDetailsComponent {
 
   isLoading = false;
 
-    @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
-  showPDF = false;
 
+  @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
+  showPDF = false;
+  
   constructor(
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public payableDocTypeService: PayableDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public payableService: PayableService,
-    public bankService: BankService, public saveService: SaveService, public payableDetailsService: PayableDetailsService, public linkFileService: LinkFileService,public reportsService: ReportsService,
-
-    public dataAccordingToLinkFileService: DataAccordingToLinkFileService) { }
+    public bankService: BankService, public saveService: SaveService, public payableDetailsService: PayableDetailsService, public linkFileService: LinkFileService,
+    public dataAccordingToLinkFileService: DataAccordingToLinkFileService, public reportsService: ReportsService) { }
 
   ngOnInit() {
     this.User_Data_After_Login = this.account.Get_Data_Form_Token();
@@ -454,7 +454,35 @@ export class PayableDetailsComponent {
     });
   }
 
-   DownloadAsPDF() {
+
+  // DownloadData() {
+  //   let orderElement = document.getElementById('DataToDownload');
+
+  //   if (!orderElement) {
+  //     console.error("Page body not found!");
+  //     return;
+  //   }
+
+  //   document.querySelectorAll('.no-print').forEach(el => {
+  //     (el as HTMLElement).style.display = 'none';
+  //   });
+
+  //   setTimeout(() => {
+  //     html2pdf().from(orderElement).set({
+  //       margin: 10,
+  //       filename: `Payable_${this.PayableID}.pdf`,
+  //       image: { type: 'jpeg', quality: 0.98 },
+  //       html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: true },
+  //       jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+  //     }).save().then(() => {
+  //       document.querySelectorAll('.no-print').forEach(el => {
+  //         (el as HTMLElement).style.display = '';
+  //       });
+  //     });
+  //   }, 500);
+  // }
+
+  DownloadAsPDF() {
     this.showPDF = true;
     setTimeout(() => {
       this.pdfComponentRef.downloadPDF();

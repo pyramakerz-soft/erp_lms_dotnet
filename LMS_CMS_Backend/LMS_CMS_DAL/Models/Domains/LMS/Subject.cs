@@ -37,7 +37,10 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public SubjectCategory SubjectCategory { get; set; }
 
         public ICollection<Test> Tests { get; set; } = new HashSet<Test>();
-
+        public ICollection<StudentPerformance> StudentPerformances { get; set; } = new HashSet<StudentPerformance>();
+        public ICollection<SubjectWeightType> SubjectWeightTypes { get; set; } = new HashSet<SubjectWeightType>();
+        public ICollection<Lesson> Lessons { get; set; } = new HashSet<Lesson>();
+        public ICollection<LessonLive> LessonLives { get; set; } = new HashSet<LessonLive>();
     }
 }
 

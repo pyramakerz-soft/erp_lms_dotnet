@@ -69,7 +69,7 @@
   <div class="flex flex-col w-[24%] mb-4">
     <label class="mb-2" for="store">School</label>
     <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="school"
-      (ngModelChange)="onInputValueChange({ field: 'schoolId', value: $event })" [(ngModel)]="Data.schoolId">
+      (ngModelChange)="onInputValueChange({ field: 'schoolId', value: $event })" [(ngModel)]="Data.schoolId" (change)="GetAllSchoolPCs()">
       <option [value]="0" disabled selected hidden>Choose School</option>
       <option *ngFor="let s of schools" [value]="s.id">{{ s.name }}</option>
       <option *ngIf="schools.length === 0" disabled selected>
@@ -78,6 +78,20 @@
     </select>
     <span *ngIf="validationErrors['schoolId']" class="text-red-500 ml-3 font-normal">{{
       validationErrors["schoolId"]}}</span>
+  </div>
+
+  <div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2" for="schoolPCs">SchoolPCs</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="schoolPCs" [disabled]="!Data.schoolId"
+      (ngModelChange)="onInputValueChange({ field: 'schoolPCId', value: $event })" [(ngModel)]="Data.schoolPCId">
+      <option [value]="0" disabled selected hidden>Choose schoolPCs</option>
+      <option *ngFor="let s of schoolPCs" [value]="s.id">{{ s.pcName }}</option>
+      <option *ngIf="schoolPCs.length === 0" disabled selected>
+        No Data Found
+      </option>
+    </select>
+    <span *ngIf="validationErrors['schoolPCId']" class="text-red-500 ml-3 font-normal">{{
+      validationErrors["schoolPCId"]}}</span>
   </div>
 
   <div *ngIf="FlagId == 8" class="flex flex-col w-[24%] mb-4">

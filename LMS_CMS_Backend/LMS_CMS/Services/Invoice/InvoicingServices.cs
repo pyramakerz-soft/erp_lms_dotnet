@@ -10,6 +10,10 @@ using Newtonsoft.Json.Linq;
 using Zatca.EInvoice.SDK.Contracts.Models;
 using Zatca.EInvoice.SDK;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.IdentityModel.Tokens;
+using System.Net.NetworkInformation;
+using System.Drawing;
+using ZXing.Windows.Compatibility;
 
 namespace LMS_CMS_PL.Services.Invoice
 {
@@ -64,8 +68,19 @@ namespace LMS_CMS_PL.Services.Invoice
 
             using (HttpClient client = new HttpClient())
             {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post,
-                    "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/compliance");
+                bool isProduction = false;
+                HttpRequestMessage request;
+
+                if (isProduction)
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post,
+                        "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/compliance");
+                }
+                else
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post,
+                        "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/compliance");
+                }
 
                 request.Headers.Add("accept", "application/json");
                 request.Headers.Add("OTP", OTP.ToString());
@@ -89,7 +104,16 @@ namespace LMS_CMS_PL.Services.Invoice
             {
                 HttpClient client = new HttpClient();
 
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+                bool isProduction = false;
+                HttpRequestMessage request;
+                if (isProduction)
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/production/CSIDs");
+                }
+                else
+                {
+                    request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+                }
 
                 request.Headers.Add("accept", "application/json");
                 request.Headers.Add("Accept-Version", version);
@@ -110,57 +134,76 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public static async Task<string> InvoiceCompliance(string csidPath, string EncodedInvoice, string invoiceHash, string uuid, string version)
+        public static async Task<HttpResponseMessage> InvoiceCompliance(string xmlPath, string invoiceHash, string uuid, long pcId, long schoolId)
         {
-            try
+            string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSRs/PC-{pcId}-{schoolId}");
+            string certPath = Path.Combine(csr, "CSID.json");
+            string csidContent = await File.ReadAllTextAsync(certPath);
+
+            JObject obj = JObject.Parse(csidContent);
+            string token = (string)obj["binarySecurityToken"];
+            string secret = (string)obj["secret"];
+
+            string authorization = Convert.ToBase64String(Encoding.UTF8.GetBytes(token + ":" + secret));
+
+            HttpClient client = new HttpClient();
+
+            bool isProduction = false;
+            HttpRequestMessage request;
+            if (isProduction)
             {
-                string csidContent = await File.ReadAllTextAsync(csidPath);
-
-                JObject obj = JObject.Parse(csidContent);
-                string token = (string)obj["binarySecurityToken"];
-                string secret = (string)obj["secret"];
-
-                string authorization = Convert.ToBase64String(Encoding.UTF8.GetBytes(token + ":" + secret));
-
-                HttpClient client = new HttpClient();
-
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/compliance/invoices");
-
-                request.Headers.Add("accept", "application/json");
-                request.Headers.Add("Accept-Language", "en");
-                request.Headers.Add("Accept-Version", version);
-                request.Headers.Add("Authorization", $"Basic {authorization}");
-
-                request.Content = new StringContent("");
-                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                HttpResponseMessage response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync();
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/compliance/invoices");
             }
-            catch (Exception ex)
+            else
             {
-                return ex.Message;
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/compliance/invoices");
             }
+
+            string version = "V2";
+
+            XmlDocument doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
+            doc.Load(xmlPath);
+
+            request.Headers.Add("accept", "application/json");
+            request.Headers.Add("Accept-Language", "en");
+            request.Headers.Add("Accept-Version", version);
+            request.Headers.Add("Authorization", $"Basic {authorization}");
+
+            string invoiceEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(doc.InnerXml));
+
+            string jsonPayload = $@"
+            {{
+              ""invoiceHash"": ""{invoiceHash}"",
+              ""uuid"": ""{uuid}"",
+              ""invoice"": ""{invoiceEncoded}""
+            }}";
+
+            request.Content = new StringContent(jsonPayload);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            HttpResponseMessage response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return response;
         }
 
-        public static async Task<bool> GenerateXML(InventoryMaster master)
+        public static bool GenerateXML(InventoryMaster master, string lastInvoiceHash, long pcId)
         {
             string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
-            string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
+            string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSRs/PC-{master.SchoolPCId}-{master.SchoolId}");
 
             if (!Directory.Exists(invoices))
             {
                 Directory.CreateDirectory(invoices);
             }
 
-            string uuid = Guid.NewGuid().ToString();
-            string date = DateTime.Now.ToString("yyyy-MM-dd");
-            string time = DateTime.Now.ToString("HH:mm:ss");
+            DateTime invDate = DateTime.Parse(master.Date);
+            
+            string date = invDate.ToString("yyyy-MM-dd");
+            string time = invDate.ToString("HH:mm:ss");
 
-            //string newXmlPath = Path.Combine(invoices, $"{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":","")}_{date}-{master.ID}.xml");
-            string newXmlPath = Path.Combine(invoices, $"INV001.xml");
+            string newXmlPath = Path.Combine(invoices, $"{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{master.ID}.xml");
             string tempXmlPath = Path.Combine(examplePath, "INV001.xml");
             string certPath = Path.Combine(csr, "PCSID.json");
             string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
@@ -178,14 +221,29 @@ namespace LMS_CMS_PL.Services.Invoice
             XmlNamespaceManager nsMgr = RegisterAllNamespaces(inv);
 
             AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
-            AddValue(inv, "//cbc:IssueDate", date, nsMgr); // edit in master
-            AddValue(inv, "//cbc:IssueTime", time, nsMgr); // edit in master
-            AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
+            AddValue(inv, "//cbc:IssueDate", date, nsMgr); 
+            AddValue(inv, "//cbc:IssueTime", time, nsMgr); 
 
-            //SaveFormatted(inv, newXmlPath);
+            if (lastInvoiceHash.IsNullOrEmpty())
+            {
+                AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("0"))), nsMgr);
+            }
+            else
+            {
+                AddValue(inv, "//cac:AdditionalDocumentReference[cbc:ID='PIH']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject", lastInvoiceHash, nsMgr);
+            }
+
+            if (master.IsCash == false && master.IsVisa == false)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "10", nsMgr);
+
+            if (master.IsCash == true)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "10", nsMgr);
+
+            if (master.IsVisa == true)
+                AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "48", nsMgr);
 
             AddValue(inv, "//cbc:ID[text()='SME00001']", $"INV{master.ID.ToString()}", nsMgr);
-            AddValue(inv, "//cbc:UUID", uuid, nsMgr);
+            AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
             AddValue(inv, "//cac:AdditionalDocumentReference/cbc:UUID", master.ID.ToString(), nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID", master.School.CRN, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName", master.School.StreetName, nsMgr);
@@ -204,74 +262,9 @@ namespace LMS_CMS_PL.Services.Invoice
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:LineExtensionAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", master.TotalWithVat.ToString(), nsMgr);
-            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount", "master.AllowanceTotalAmount", nsMgr);
-            //AddValue(inv, "//cac:LegalMonetaryTotal/cbc:PrepaidAmount", "master.PrepaidAmount", nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:PayableAmount", master.TotalWithVat.ToString(), nsMgr);
 
             XmlElement root = inv.DocumentElement;
-
-            //XmlNode original = inv.SelectSingleNode("(//cac:InvoiceLine)[1]", nsMgr);
-            //original.SelectSingleNode("cbc:ID", nsMgr).InnerText = i.ToString();
-            //original.SelectSingleNode("cbc:InvoicedQuantity", nsMgr).InnerText = "33.000000";
-            //original.SelectSingleNode("cbc:LineExtensionAmount", nsMgr).InnerText = "99.00";
-
-            //XmlNode xmlNode = original.CloneNode(true);
-            //original.RemoveAll();
-            //string xx = $@"<cac:InvoiceLine>
-            //          <cbc:ID>{i.ToString()}</cbc:ID>
-            //          <cbc:InvoicedQuantity unitCode=""PCE"">33.000000</cbc:InvoicedQuantity>
-            //          <cbc:LineExtensionAmount currencyID=""SAR"">99.00</cbc:LineExtensionAmount>
-            //          <cac:TaxTotal>
-            //           <cbc:TaxAmount currencyID=""SAR"">14.85</cbc:TaxAmount>
-            //           <cbc:RoundingAmount currencyID=""SAR"">113.85</cbc:RoundingAmount>
-            //          </cac:TaxTotal>
-            //          <cac:Item>
-            //           <cbc:Name>كتاب</cbc:Name>
-            //           <cac:ClassifiedTaxCategory>
-            //            <cbc:ID>S</cbc:ID>
-            //            <cbc:Percent>15.00</cbc:Percent>
-            //            <cac:TaxScheme>
-            //             <cbc:ID>VAT</cbc:ID>
-            //            </cac:TaxScheme>
-            //           </cac:ClassifiedTaxCategory>
-            //          </cac:Item>
-            //          <cac:Price>
-            //           <cbc:PriceAmount currencyID=""SAR"">3.00</cbc:PriceAmount>
-            //           <cac:AllowanceCharge>
-            //            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-            //            <cbc:AllowanceChargeReason>discount</cbc:AllowanceChargeReason>
-            //            <cbc:Amount currencyID=""SAR"">0.00</cbc:Amount>
-            //           </cac:AllowanceCharge>
-            //          </cac:Price>
-            //         </cac:InvoiceLine>";
-            //XmlDocument xdoc = new XmlDocument();
-            //xdoc.LoadXml(inv.InnerXml);
-
-            //XmlDocumentFragment docFrag = xdoc.CreateDocumentFragment();
-
-            ////Set the contents of the document fragment.
-            //docFrag.InnerXml = xx;
-            //XmlElement element = ConvertStringToXmlElement(xx, nsMgr);
-
-            //XmlElement original = (XmlElement)temp.SelectSingleNode("//cac:InvoiceLine[cbc:ID='1']", nsMgr);
-
-            //// Clone it deeply (with all nested content)
-            //XmlElement cloned = (XmlElement)original.CloneNode(true);
-
-            //XmlElement idElem = (XmlElement)cloned.SelectSingleNode("cbc:ID", nsMgr);
-            //if (idElem != null) idElem.InnerText = "7";
-
-            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cbc:InvoicedQuantity", nsMgr);
-            //if (qtyElem != null) qtyElem.InnerText = "55.000000";
-
-            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cbc:LineExtensionAmount", nsMgr);
-            //if (qtyElem != null) qtyElem.InnerText = "99.00";
-
-            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cac:TaxTotal/cbc:TaxAmount", nsMgr);
-            //if (qtyElem != null) qtyElem.InnerText = "14.85";
-
-            //XmlElement qtyElem = (XmlElement)cloned.SelectSingleNode("cac:TaxTotal/cbc:RoundingAmount", nsMgr);
-            //if (qtyElem != null) qtyElem.InnerText = "113.85";
 
             foreach (InventoryDetails itemDetail in master.InventoryDetails)
             {
@@ -327,12 +320,7 @@ namespace LMS_CMS_PL.Services.Invoice
                 price.AppendChild(allowanceCharge);
                 invoiceLine.AppendChild(price);
 
-                ////XmlElementToString(invoiceLine);
-
-                //string xx = XmlElementToString(invoiceLine);
-
                 root.AppendChild(invoiceLine);
-                //root.AppendChild(cloned);
             }
 
             XmlNodeList invoiceLines = inv.SelectNodes("//cac:InvoiceLine", nsMgr);
@@ -342,14 +330,14 @@ namespace LMS_CMS_PL.Services.Invoice
                 InsertWhitespace((XmlElement)line);
             }
 
-            XmlNodeList taxTotalNode = inv.SelectNodes("//cac:TaxTotal", nsMgr);
+            XmlNodeList taxTotalNode = inv.SelectNodes("//cac:InvoiceLine/cac:TaxTotal", nsMgr);
 
             foreach (var tax in taxTotalNode)
             {
                 InsertWhitespace((XmlElement)tax);
             }
 
-            XmlNodeList itemNode = inv.SelectNodes("//cac:Item", nsMgr);
+            XmlNodeList itemNode = inv.SelectNodes("//cac:InvoiceLine/cac:Item", nsMgr);
 
             foreach (var item in itemNode)
             {
@@ -363,7 +351,7 @@ namespace LMS_CMS_PL.Services.Invoice
                 InsertWhitespace((XmlElement)clt);
             }
 
-            XmlNodeList priceNode = inv.SelectNodes("//cac:Price", nsMgr);
+            XmlNodeList priceNode = inv.SelectNodes("//cac:InvoiceLine/cac:Price", nsMgr);
 
             foreach (var pn in priceNode)
             {
@@ -384,12 +372,6 @@ namespace LMS_CMS_PL.Services.Invoice
             if (!signer.IsValid)
                 return false;
 
-            string invoiceHash = signer.Steps[1].ResultedValue;
-            string reporting = await InvoiceReporting(newXmlPath, invoiceHash, uuid);
-
-            if (reporting != "OK")
-                return false;
-
             return true;
         }
 
@@ -397,7 +379,16 @@ namespace LMS_CMS_PL.Services.Invoice
         {
             HttpClient client = new HttpClient();
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Patch, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+            bool isProduction = false;
+            HttpRequestMessage request;
+            if (isProduction)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/production/CSIDs");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids");
+            }
 
             request.Headers.Add("accept", "application/json");
             request.Headers.Add("OTP", otp);
@@ -450,18 +441,15 @@ namespace LMS_CMS_PL.Services.Invoice
             return uuid;
         }
 
-        public static string GetCertificateDate()
+        public static string GetCertificateDate(string pcsidContent)
         {
-            string certPath = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR/PCSID.json");
-            string certContent = File.ReadAllText(certPath);
-
-            dynamic jsonObject = JsonConvert.DeserializeObject(certContent);
+            dynamic jsonObject = JsonConvert.DeserializeObject(pcsidContent);
             string base64Cert = jsonObject.binarySecurityToken;
 
             byte[] certBytes = Convert.FromBase64String(base64Cert);
             var cert = new X509Certificate2(certBytes);
 
-            string expires = cert.NotAfter.ToString();
+            string expires = cert.NotAfter.ToString("yyyy-MM-dd");
 
             return expires;
         }
@@ -517,10 +505,12 @@ namespace LMS_CMS_PL.Services.Invoice
             return signed;
         }
 
-        private static async Task<string> InvoiceReporting(string xmlPath, string invoiceHash, string uuid)
+        public static async Task<HttpResponseMessage> InvoiceReporting(string xmlPath, string invoiceHash, string uuid, long pcId, long schoolId)
         {
-            string csr = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/CSR");
+            string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSRs/PC-{pcId}-{schoolId}");
             string certPath = Path.Combine(csr, "PCSID.json");
+
+            string version = "V2";
 
             XmlDocument doc = new XmlDocument();
             doc.PreserveWhitespace = true;
@@ -536,12 +526,23 @@ namespace LMS_CMS_PL.Services.Invoice
 
             HttpClient client = new HttpClient();
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/invoices/reporting/single");
+            bool isProduction = false;
+            HttpRequestMessage request;
+
+            if (isProduction)
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/core/invoices/reporting/single");
+            }
+            else
+            {
+                request = new HttpRequestMessage(HttpMethod.Post, "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/invoices/reporting/single");
+            }
+            
 
             request.Headers.Add("accept", "application/json");
             request.Headers.Add("accept-language", "en");
             request.Headers.Add("Clearance-Status", "0");
-            request.Headers.Add("Accept-Version", "V2");
+            request.Headers.Add("Accept-Version", version);
             request.Headers.Add("Authorization", $"Basic {authorization}");
 
             string invoiceEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(doc.InnerXml));
@@ -558,9 +559,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
             HttpResponseMessage response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            dynamic responseObject = JsonConvert.DeserializeObject(responseBody);
-            return response.ReasonPhrase;
+            return response;
         }
 
         private static void SaveFormatted(XmlDocument doc, string filePath, bool omitXmlDeclaration = true)
@@ -661,6 +660,25 @@ namespace LMS_CMS_PL.Services.Invoice
             elem.InnerText = innerText;
             parent.AppendChild(elem);
             return elem;
+        }
+
+        public static byte[] GenerateQrImage(string qrCode)
+        {
+            var writer = new BarcodeWriter
+            {
+                Format = ZXing.BarcodeFormat.QR_CODE,
+                Options = new ZXing.Common.EncodingOptions
+                {
+                    Width = 100,
+                    Height = 100,
+                    Margin = 1
+                }
+            };
+
+            using Bitmap qrBitmap = writer.Write(qrCode);
+            using MemoryStream ms = new MemoryStream();
+            qrBitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            return ms.ToArray();
         }
     }
 }

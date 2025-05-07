@@ -50,3 +50,13 @@ html[dir='rtl'] {
     direction: rtl;
     text-align: right;
 }
+
+
+.quill-editor-wrapper .ql-container { 
+    height: auto !important; /* override Quill's height */ 
+    font-style:normal !important;
+}
+
+.quill-editor-wrapper .ql-editor {
+    min-height: 200px; 
+}

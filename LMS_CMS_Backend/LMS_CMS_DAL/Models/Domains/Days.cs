@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LMS_CMS_DAL.Models.Domains.LMS;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,5 +17,8 @@ namespace LMS_CMS_DAL.Models.Domains
         public string Name { get; set; }
 
         public ICollection<EmployeeDays> EmployeeDays { get; set; } = new HashSet<EmployeeDays>();
+        public ICollection<Semester> StartDaySemesters { get; set; } = new HashSet<Semester>();
+        public ICollection<Semester> EndDaySemesters { get; set; } = new HashSet<Semester>();
+        public ICollection<LessonLive> LessonLives { get; set; } = new HashSet<LessonLive>();
     }
 }

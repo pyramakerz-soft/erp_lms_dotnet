@@ -30,4 +30,91 @@
             <p class="font-medium text-base text-[#1E1E1E]">{{ semester.dateTo }}</p>
         </div>
     </div>
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3 mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Date From</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ semester.dateFrom }}</p>
+        </div>
+    </div>
+    <div class="p-3 w-[30%]">
+        <div class="bg-[#EBEBEB] p-3 mb-4">
+            <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Date To</p>
+            <p class="font-medium text-base text-[#1E1E1E]">{{ semester.dateTo }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="flex space-x-5 items-center w-[30%] mb-4 p-3">
+    <i *ngIf="semester.isActive" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+    <i *ngIf="!semester.isActive" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
+    <label class="text-sm">Is Active</label>
+</div>
+<div class="flex space-x-5 items-center w-[30%] mb-4 p-3">
+    <i *ngIf="semester.isCurrent" class="secondaryTxt text-2xl fa-regular fa-square-check"></i>
+    <i *ngIf="!semester.isCurrent" class="text-[#BDBDBD] text-2xl fa-regular fa-square"></i>
+    <label class="text-sm">Is Current</label>
+</div>
+
+
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Working weeks</h1>
+    <div class="flex justify-between items-center ">
+
+        <button (click)="Generate()"
+            class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2">
+            Generate
+        </button>
+    </div>
+</div>
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Title
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    Start Date
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    End Date
+                </th>
+                <!-- <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th> -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="WorkingWeeks.length === 0">
+                <td colspan="6"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of WorkingWeeks; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.englishName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.dateTo }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.dateFrom }}</td>
+                <!-- <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex space-x-4">
+                        <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                            (click)="delete(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                </td> -->
+            </tr>
+        </tbody>
+    </table>
 </div>

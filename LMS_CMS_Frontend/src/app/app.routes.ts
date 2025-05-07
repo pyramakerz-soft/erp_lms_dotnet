@@ -137,6 +137,15 @@ import { EvaluationTemplateGroupQuestionComponent } from './Pages/Employee/LMS/e
 import { EvaluationFeedbackComponent } from './Pages/Employee/LMS/evaluation-feedback/evaluation-feedback.component';
 import { EvaluationEmployeeAnswerComponent } from './Pages/Employee/LMS/evaluation-employee-answer/evaluation-employee-answer.component';
 import { BookCorrectionComponent } from './Pages/Employee/LMS/book-correction/book-correction.component';
+import { MedalComponent } from './Pages/Employee/LMS/medal/medal.component';
+import { LessonActivityTypeComponent } from './Pages/Employee/LMS/lesson-activity-type/lesson-activity-type.component';
+import { LessonResourcesTypeComponent } from './Pages/Employee/LMS/lesson-resources-type/lesson-resources-type.component';
+import { StudentMedalComponent } from './Pages/Employee/LMS/student-medal/student-medal.component';
+import { LessonComponent } from './Pages/Employee/LMS/lesson/lesson.component';
+import { PerformanceTypeComponent } from './Pages/Employee/LMS/performance-type/performance-type.component';
+import { DailyPerformanceComponent } from './Pages/Employee/LMS/daily-performance/daily-performance.component';
+import { LessonResourceComponent } from './Pages/Employee/LMS/lesson-resource/lesson-resource.component';
+import { LessonActivityComponent } from './Pages/Employee/LMS/lesson-activity/lesson-activity.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -324,6 +333,16 @@ export const routes: Routes = [
             { path: "Created Evaluations", component: EvaluationFeedbackComponent, title: "Created Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Received Evaluations/:id", component: EvaluationEmployeeAnswerComponent, title: "Received Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Created Evaluations/:id", component: EvaluationEmployeeAnswerComponent, title: "Created Evaluations", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Medal", component: MedalComponent, title: "Medal", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Lesson Activity Type", component: LessonActivityTypeComponent, title: "Lesson Activity Type", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Lesson Resource Type", component: LessonResourcesTypeComponent, title: "Lesson Resource Type", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Student Medal", component: StudentMedalComponent, title: "Student Medal", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Lesson", component: LessonComponent, title: "Lesson", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Daily Performance", component: DailyPerformanceComponent, title: "Daily Performance", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Student Medal", component: StudentMedalComponent, title: "Student Medal", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Performance Type", component: PerformanceTypeComponent, title: "Performance Type", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Lesson Activity/:id", component: LessonActivityComponent, title: "Lesson Activity", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Lesson Resource/:id", component: LessonResourceComponent, title: "Lesson Resource", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
 },
     { 

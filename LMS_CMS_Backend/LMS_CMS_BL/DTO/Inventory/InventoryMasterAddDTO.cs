@@ -32,6 +32,7 @@ namespace LMS_CMS_BL.DTO.Inventory
         public long? BankID { get; set; }
         public long? SchoolId { get; set; }
         public long? StoreToTransformId { get; set; }
+        public long? SchoolPCId { get; set; }
         public List<InventoryDetailsAddDTO> InventoryDetails { get; set; }
     }
 }

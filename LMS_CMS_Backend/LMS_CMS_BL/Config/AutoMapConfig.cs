@@ -895,6 +895,9 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<SemesterWorkingWeek, SemesterWorkingWeekGetDTO>()
                .ForMember(dest => dest.SemesterName, opt => opt.MapFrom(src => src.Semester.Name));
+
+            CreateMap<DailyPerformanceAddDTO, DailyPerformance>();
+
         }
     } 
 }

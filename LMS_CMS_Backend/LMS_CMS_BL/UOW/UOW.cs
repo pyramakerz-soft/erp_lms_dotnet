@@ -1807,7 +1807,19 @@ namespace LMS_CMS_BL.UOW
                 return StudentPerformance_Repository;
             }
         }
-        
+
+        public GenericRepo<DailyPerformance> dailyPerformance_Repository
+        {
+            get
+            {
+                if (DailyPerformance_Repository == null)
+                {
+                    DailyPerformance_Repository = new GenericRepo<DailyPerformance>(db);
+                }
+                return DailyPerformance_Repository;
+            }
+        }
+
         public GenericRepo<WeightType> weightType_Repository
         {
             get

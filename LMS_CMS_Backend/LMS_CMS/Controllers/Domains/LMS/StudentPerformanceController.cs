@@ -108,11 +108,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                     return BadRequest("PerformanceType id not exist");
                 }
 
-                Subject s = Unit_Of_Work.subject_Repository.First_Or_Default(s => s.ID == type.SubjectID && s.IsDeleted != true);
-                if (s == null)
-                {
-                    return BadRequest("Subject id not exist");
-                }
+                //Subject s = Unit_Of_Work.subject_Repository.First_Or_Default(s => s.ID == type.SubjectID && s.IsDeleted != true);
+                //if (s == null)
+                //{
+                //    return BadRequest("Subject id not exist");
+                //}
                 StudentPerformance Type = mapper.Map<StudentPerformance>(type);
 
                 TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

@@ -168,8 +168,7 @@ namespace LMS_CMS_BL.UOW
         GenericRepo<SemesterWorkingWeek> SemesterWorkingWeek_Repository;
         GenericRepo<Tag> Tag_Repository;
         GenericRepo<PerformanceType> PerformanceType_Repository;
-
-
+        GenericRepo<DailyPerformance> DailyPerformance_Repository;
 
         public UOW(Octa_DbContext octa_Db)
         {

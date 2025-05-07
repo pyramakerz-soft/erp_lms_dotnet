@@ -873,7 +873,6 @@ namespace LMS_CMS_BL.Config
             CreateMap<LessonActivityPutDTO, LessonActivity>();
 
             CreateMap<StudentPerformance, StudentPerformanceGetDTO>()
-                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.en_name))
                  .ForMember(dest => dest.PerformanceTypeName, opt => opt.MapFrom(src => src.PerformanceType.EnglishName))
                  .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.en_name));
 

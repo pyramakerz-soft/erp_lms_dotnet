@@ -157,6 +157,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<StudentPerformance> StudentPerformance { get; set; }
         public DbSet<StudentMedal> StudentMedal { get; set; }
         public DbSet<SchoolPCs> SchoolPCs { get; set; }
+        public DbSet<DailyPerformance> DailyPerformance { get; set; }
 
 
 
@@ -1338,13 +1339,18 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany(p => p.StudentPerformances)
                 .HasForeignKey(p => p.PerformanceTypeID)
                 .OnDelete(DeleteBehavior.Restrict);
-            
-            modelBuilder.Entity<StudentPerformance>()
+
+            modelBuilder.Entity<DailyPerformance>()
                 .HasOne(p => p.Subject)
-                .WithMany(p => p.StudentPerformances)
+                .WithMany(p => p.DailyPerformance)
                 .HasForeignKey(p => p.SubjectID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<StudentPerformance>()
+                .HasOne(p => p.DailyPerformance)
+                .WithMany(p => p.StudentPerformance)
+                .HasForeignKey(p => p.DailyPerformanceID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()

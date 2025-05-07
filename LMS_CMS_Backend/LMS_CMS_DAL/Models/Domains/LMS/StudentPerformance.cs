@@ -20,11 +20,11 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("PerformanceType")]
         public long PerformanceTypeID { get; set; }
         public PerformanceType PerformanceType { get; set; }
-
-        [ForeignKey("Subject")]
-        public long SubjectID { get; set; }
-        public Subject Subject { get; set; }
-
+      
         public int Stars { get; set; }
+
+        [ForeignKey("DailyPerformance")]
+        public long DailyPerformanceID { get; set; }
+        public DailyPerformance DailyPerformance { get; set; }
     }
 }

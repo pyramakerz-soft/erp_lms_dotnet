@@ -18,11 +18,13 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
     {
         private readonly ICsrGenerator _csrGenerator;
         private readonly DbContextFactoryService _dbContextFactory;
+        private readonly IConfiguration _configuration;
 
-        public ZatcaController(ICsrGenerator csrGenerator, DbContextFactoryService dbContextFactory)
+        public ZatcaController(ICsrGenerator csrGenerator, DbContextFactoryService dbContextFactory, IConfiguration configuration)
         {
             _csrGenerator = csrGenerator;
             _dbContextFactory = dbContextFactory;
+            _configuration = configuration;
         }
 
         #region Generate PCSID
@@ -84,7 +86,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string version = "V2";
 
-            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
+            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version, _configuration);
 
             dynamic csidJson = JsonConvert.DeserializeObject(csid);
             string formattedCsid = JsonConvert.SerializeObject(csidJson, Formatting.Indented);
@@ -99,7 +101,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string requestId = csidJson.requestID.ToString();
 
-            string pcsid = await InvoicingServices.GeneratePCSID(tokenBase64, version, requestId);
+            string pcsid = await InvoicingServices.GeneratePCSID(tokenBase64, version, requestId, _configuration);
 
             string formattedPcsid = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(pcsid), Formatting.Indented);
 
@@ -129,7 +131,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             string csidPath = Path.Combine(invoices, "CSID.json");
             string pcsidPath = Path.Combine(invoices, "PCSID.json");
 
-            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
+            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version, _configuration);
 
             dynamic csidJson = JsonConvert.DeserializeObject(csid);
             string formattedCsid = JsonConvert.SerializeObject(csidJson, Newtonsoft.Json.Formatting.Indented);
@@ -150,7 +152,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string csrContentEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(csrContent));
 
-            string pcsid = await InvoicingServices.UpdatePCSID(tokenBase64, csrContentEncoded, version, otp.ToString());
+            string pcsid = await InvoicingServices.UpdatePCSID(tokenBase64, csrContentEncoded, version, otp.ToString(), _configuration);
 
             string formattedPcsid = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(pcsid), Newtonsoft.Json.Formatting.Indented);
 
@@ -195,7 +197,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             if (master.IsValid == 0 || master.IsValid == null)
             {
-                HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+                HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId, _configuration);
 
                 string responseContent = await response.Content.ReadAsStringAsync();
                 dynamic responseJson = JsonConvert.DeserializeObject(responseContent);
@@ -252,7 +254,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                         string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSR/PC-{master.SchoolPCId}-{master.SchoolId}");
                         string xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.ID}.xml");
 
-                        HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+                        HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId, _configuration);
 
                         string responseContent = await response.Content.ReadAsStringAsync();
                         dynamic responseJson = JsonConvert.DeserializeObject(responseContent);

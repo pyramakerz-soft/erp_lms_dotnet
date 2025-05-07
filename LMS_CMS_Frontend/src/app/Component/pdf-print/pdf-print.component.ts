@@ -3,6 +3,15 @@ import { OnChanges, Component, ElementRef, Input, SimpleChanges, ViewChild } fro
 import { FormsModule } from '@angular/forms';
 import html2pdf from 'html2pdf.js';
 
+
+// Add this interface at the top of the file
+interface TableSection {
+  header: string;
+  data: { key: string; value: any }[];
+  tableHeaders: string[];
+  tableData: any[];
+}
+
 @Component({
   selector: 'app-pdf-print',
   standalone: true,
@@ -15,7 +24,9 @@ export class PdfPrintComponent {
   @Input() school: any;
   @Input() tableHeaders: string[] | null = null;
   @Input() tableData: any[] | null = null;
-  @Input() tableDataWithHeader: any[] | null = null;
+  @Input() tableDataWithHeaderArray: TableSection[] | null = null;
+    @Input() tableDataWithHeader: any[] | null = null;
+ 
   @Input() fileName: string = 'report';
   @Input() Title: string = '';
   @Input() infoRows: {
@@ -40,6 +51,57 @@ export class PdfPrintComponent {
       this.splitTableGenerically();
     }
   }
+  print() {
+  const printContents = this.printContainer.nativeElement.innerHTML;
+  
+  // Create a print-specific stylesheet
+  const printStyle = `
+    <style>
+      @page { size: auto; margin: 0mm; }
+      body { margin: 0;
+      }
+      .print-content {
+        padding: 20px;
+      }
+      @media print {
+        body * {
+        }
+        .print-overlay,
+        .print-overlay * {
+          visibility: visible;
+          position: static;
+          background: none;
+        }
+        .print-content {
+        }
+      }
+    </style>
+  `;
+
+  // Create print overlay
+  const printOverlay = document.createElement('div');
+  printOverlay.className = 'print-overlay';
+  printOverlay.innerHTML = `
+    <div class="print-content">
+      ${printContents}
+    </div>
+  `;
+
+  // Add to body
+  document.body.appendChild(printOverlay);
+  document.body.insertAdjacentHTML('beforeend', printStyle);
+
+  // Print and clean up
+  setTimeout(() => {
+    window.print();
+    
+    setTimeout(() => {
+      document.body.removeChild(printOverlay);
+      const styles = document.querySelectorAll('style[data-print-style]');
+      styles.forEach(style => document.body.removeChild(style));
+    }, 100);
+  }, 100);
+}
 
   // ngAfterViewInit(): void {
   //   if (this.school?.reportImage?.startsWith('http')) {
@@ -156,4 +218,6 @@ export class PdfPrintComponent {
     };
     html2pdf().from(this.printContainer.nativeElement).set(opt).save();
   }
+
+  
 }

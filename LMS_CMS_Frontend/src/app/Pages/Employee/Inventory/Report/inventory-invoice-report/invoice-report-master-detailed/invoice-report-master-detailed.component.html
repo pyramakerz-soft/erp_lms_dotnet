@@ -1,0 +1,163 @@
+<div class="flex justify-between">
+    <h1 class="primaryTxt font-bold text-2xl leading-9">
+        {{ reportType | titlecase }} Transaction Report Detailed
+    </h1>
+</div>
+
+<div class="my-5 flex flex-wrap justify-between items-center">
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="store">Store</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="store" [(ngModel)]="selectedStoreId">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let store of stores" [ngValue]="store.id">{{ store.name }}</option>
+        <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
+    </select>
+</div>
+
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2 font-medium" for="dateFrom">Date From</label>
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateFrom"
+            [(ngModel)]="dateFrom">
+    </div>
+
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2 font-medium" for="dateTo">Date To</label>
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateTo"
+            [(ngModel)]="dateTo">
+    </div>
+
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2 font-medium" for="flags">Transaction Types</label>
+        <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
+            [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
+            <option [value]="-1" selected>Select All</option>
+            <option *ngFor="let flag of currentFlags" [value]="flag.id">
+                {{ flag.name }}
+            </option>
+        </select>
+    </div>
+
+<!-- For Category dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Category</label>
+<select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" [(ngModel)]="selectedCategoryId" (change)="onCategorySelected()">
+    <option [ngValue]="null">Select All</option>
+    <option *ngFor="let category of categories" [ngValue]="category.id">
+        {{ category.name }}
+    </option>
+</select>
+</div>
+
+<!-- For SubCategory dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags"> Sub Category</label>
+<select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" [(ngModel)]="selectedSubCategoryId" (change)="onSubCategorySelected()" [disabled]="selectedCategoryId === null">
+    <option [ngValue]="null">Select All</option>
+    <option *ngFor="let subCategory of subCategories" [ngValue]="subCategory.id">
+        {{ subCategory.name }}
+    </option>
+</select>
+</div>
+
+<!-- For Item dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Item</label>
+<select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" [(ngModel)]="selectedItemId" [disabled]="selectedSubCategoryId === null">
+    <option [ngValue]="null">Select All</option>
+    <option *ngFor="let item of items" [ngValue]="item.id">
+        {{ item.enName }}
+    </option>
+</select>
+</div>
+
+<div class="w-[24%] flex justify-end">
+    <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
+        [disabled]="!dateFrom || !dateTo || selectedStoreId === undefined || selectedFlagIds.length === 0" [ngClass]="{ 
+            'bg-gray-100 text-gray-300': !dateFrom || !dateTo || selectedStoreId === undefined || selectedFlagIds.length === 0, 
+            'secondaryBg text-white': dateFrom && dateTo && selectedStoreId !== undefined && selectedFlagIds.length > 0
+        }">
+        View Report
+    </button>
+</div>
+</div>
+
+<div *ngIf="showTable" class="mb-5 flex justify-end space-x-4">
+    <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="exportExcel()" title="Export to Excel">
+    <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()" title="Export to PDF">
+    <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()" title="Print Report">
+</div>
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'Inventory Transactions Detailed Report'"
+            [infoRows]="getInfoRows()" [tableDataWithHeaderArray]="getTableDataWithHeader()" #pdfComponentRef>
+        </app-pdf-print>
+    </div>
+</div>
+    
+    <!-- New table structure matching PDF output -->
+    <div *ngFor="let section of getTableDataWithHeader()" class="mb-8">
+        <!-- Header section -->
+        <div class="p-2 rounded-top mb-2 bg-primary-100">
+            <h5 class="primaryTxt font-semibold text-xl leading-9">{{ section.header }}</h5>
+        </div>
+    
+        <!-- Summary information -->
+        <div class="mb-4 p-3 border rounded-2xl shadow-sm bg-[#EBEBEB]">
+            <table class="w-full">
+                <tbody>
+                    <tr *ngFor="let item of section.data">
+                        <td class="font-semibold p-2 w-1/3">{{ item.key }}</td>
+                        <td class="p-2">{{ item.value }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    
+        <!-- Detailed items table -->
+        <div class="mt-4 overflow-x-auto rounded-xl border border-[#BDBDBD]">
+            <table class="w-full inset-0 rounded-xl text-left text-[#6F6F6F]">
+                <thead>
+                    <tr class="bg-gray-200 text-sm">
+                        <th *ngFor="let header of section.tableHeaders" class="p-2">{{ header }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="section.tableData.length === 0">
+                        <td [attr.colspan]="section.tableHeaders.length" class="text-center p-4">No Data Found</td>
+                    </tr>
+                    <tr *ngFor="let row of section.tableData; let i = index" [ngClass]="{ 'bg-gray-100': i % 2 === 1 }">
+                        <td *ngFor="let header of section.tableHeaders" class="p-2 border">{{ row[header] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<div *ngIf="showTable" class="mt-8 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+        <button class="flex items-center space-x-2 rounded-lg border py-3 px-4" (click)="changePage(currentPage-1)"
+            [disabled]="currentPage === 1 || transactions.length == 0"
+            [ngClass]="{'cursor-not-allowed opacity-50': currentPage === 1 || transactions.length == 0}">
+            <i class="fa-solid fa-arrow-left"></i>
+            <p>Previous</p>
+        </button>
+        <div class="flex">
+            <div *ngFor="let page of [].constructor(totalPages); let i = index" class="rounded-lg py-[10px] w-[40px]"
+                [ngClass]="{'border': i+1 == currentPage || transactions.length == 0}" (click)="changePage(i+1)">
+                <p class="text-center">{{ i + 1 }}</p>
+            </div>
+        </div>
+        <button class="flex items-center space-x-2 rounded-lg border py-3 px-4" (click)="changePage(currentPage+1)"
+            [disabled]="currentPage === totalPages || transactions.length == 0"
+            [ngClass]="{'cursor-not-allowed opacity-50': currentPage === totalPages || transactions.length == 0}">
+            <p>Next</p>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <div>
+        <p>{{currentPage}} of {{totalPages}} pages ({{totalRecords}} Items)</p>
+    </div>
+</div>
+

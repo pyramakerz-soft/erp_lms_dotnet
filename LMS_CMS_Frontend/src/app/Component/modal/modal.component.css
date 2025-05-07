@@ -1,0 +1,11 @@
+#modal-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#modal-overlay .modal-content {
+    max-width: 50%;
+    min-width: 400px;
+    
+}

@@ -1,0 +1,286 @@
+<div class="px-5 py-3">
+    <!-- Header with Search -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Medical Report</h1>
+        <div class="flex items-center space-x-4">
+            <app-search [keysArray]="searchKeysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+        </div>
+    </div>
+    
+    <!-- MH By Doctor Tab -->
+    <div *ngIf="selectedTab === 'MH By Doctor'" class="space-y-4">
+        <!-- Filtration System -->
+        <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+            <!-- School Select -->
+            <div class="flex flex-col mb-4 w-[32%]">
+                <label class="mb-2 primaryTxt" for="school">School</label>
+                <select id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto">
+                    <option [value]="null" disabled selected hidden>Choose School</option>
+                    <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
+                    <option *ngIf="schools.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <!-- Grade Select -->
+            <div class="flex flex-col mb-4 w-[32%]">
+                <label class="mb-2 primaryTxt" for="grade">Grade</label>
+                <select id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()"
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                    [disabled]="!selectedSchool">
+                    <option [value]="null" disabled selected hidden>Choose Grade</option>
+                    <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
+                    <option *ngIf="grades.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <!-- Class Select -->
+            <div class="flex flex-col mb-4 w-[32%]">
+                <label class="mb-2 primaryTxt" for="class">Class</label>
+                <select id="class" [(ngModel)]="selectedClass" (change)="onClassChange()"
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                    [disabled]="!selectedGrade">
+                    <option [value]="null" disabled selected hidden>Choose Class</option>
+                    <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+                    <option *ngIf="classes.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <!-- Student Select -->
+            <div class="flex flex-col mb-4 w-[87%]">
+                <label class="mb-2 primaryTxt" for="student">Student</label>
+                <select id="student" [(ngModel)]="selectedStudent"
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" [disabled]="!selectedClass">
+                    <option [value]="null" disabled selected hidden>Choose Student</option>
+                    <option *ngFor="let student of students" [value]="student.id">{{ student.en_name }}</option>
+                    <option *ngIf="students.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <!-- Filter Button -->
+            <div class="flex flex-col mb-4 w-[12%] justify-end">
+                <button (click)="filterMHByDoctor()"
+                    class="text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 bg-[#FF7519]">
+                    Search for
+                </button>
+            </div>
+        </div>
+    </div>
+
+<div *ngIf="selectedTab === 'Hygiene Form'" class="space-y-4">
+    <!-- Filtration System -->
+    <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+        <!-- School Select -->
+        <div class="flex flex-col mb-4 w-[32%]">
+            <label class="mb-2 primaryTxt" for="school">School</label>
+            <select id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto">
+                <option [value]="null" disabled selected hidden>Choose School</option>
+                <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
+                <option *ngIf="schools.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
+
+        <!-- Grade Select -->
+        <div class="flex flex-col mb-4 w-[32%]">
+            <label class="mb-2 primaryTxt" for="grade">Grade</label>
+            <select id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                [disabled]="!selectedSchool">
+                <option [value]="null" disabled selected hidden>Choose Grade</option>
+                <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
+                <option *ngIf="grades.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
+
+        <!-- Class Select -->
+        <div class="flex flex-col mb-4 w-[32%]">
+            <label class="mb-2 primaryTxt" for="class">Class</label>
+            <select id="class" [(ngModel)]="selectedClass" (change)="onClassChange()"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                [disabled]="!selectedGrade">
+                <option [value]="null" disabled selected hidden>Choose Class</option>
+                <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+                <option *ngIf="classes.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
+
+        <!-- Student Select -->
+        <div class="flex flex-col mb-4 w-[87%]">
+            <label class="mb-2 primaryTxt" for="student">Student</label>
+            <select id="student" [(ngModel)]="selectedStudent"
+                class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" [disabled]="!selectedClass">
+                <option [value]="null" disabled selected hidden>Choose Student</option>
+                <option *ngFor="let student of students" [value]="student.id">{{ student.en_name }}</option>
+                <option *ngIf="students.length === 0" disabled selected>No Data Found</option>
+            </select>
+        </div>
+
+        <!-- Filter Button -->
+        <div class="flex flex-col mb-4 w-[12%] justify-end">
+            <button (click)="filterHygieneForms()"
+                class="text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 bg-[#FF7519]">
+                Search for
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Follow Up Tab -->
+    <div *ngIf="selectedTab === 'Follow Up'" class="space-y-4">
+        <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+            <!-- School Select -->
+            <div class="flex flex-col mb-4 w-[32%]">
+                <label class="mb-2 primaryTxt" for="school">School</label>
+                <select id="school" [(ngModel)]="selectedSchool" (change)="onSchoolChange()"
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto">
+                    <option [value]="null" disabled selected hidden>Choose School</option>
+                    <option *ngFor="let school of schools" [value]="school.id">{{ school.name }}</option>
+                    <option *ngIf="schools.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <!-- Grade Select -->
+            <div class="flex flex-col mb-4 w-[32%]">
+                <label class="mb-2 primaryTxt" for="grade">Grade</label>
+                <select id="grade" [(ngModel)]="selectedGrade" (change)="onGradeChange()"
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                    [disabled]="!selectedSchool">
+                    <option [value]="null" disabled selected hidden>Choose Grade</option>
+                    <option *ngFor="let grade of grades" [value]="grade.id">{{ grade.name }}</option>
+                    <option *ngIf="grades.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <!-- Class Select -->
+            <div class="flex flex-col mb-4 w-[32%]">
+                <label class="mb-2 primaryTxt" for="class">Class</label>
+                <select id="class" [(ngModel)]="selectedClass" (change)="onClassChange()"
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+                    [disabled]="!selectedGrade">
+                    <option [value]="null" disabled selected hidden>Choose Class</option>
+                    <option *ngFor="let class of classes" [value]="class.id">{{ class.name }}</option>
+                    <option *ngIf="classes.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <!-- Student Select -->
+            <div class="flex flex-col mb-4 w-[87%]">
+                <label class="mb-2 primaryTxt" for="student">Student</label>
+                <select id="student" [(ngModel)]="selectedStudent"
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" [disabled]="!selectedClass">
+                    <option [value]="null" disabled selected hidden>Choose Student</option>
+                    <option *ngFor="let student of students" [value]="student.id">{{ student.en_name }}</option>
+                    <option *ngIf="students.length === 0" disabled selected>No Data Found</option>
+                </select>
+            </div>
+
+            <!-- Filter Button -->
+            <div class="flex flex-col mb-4 w-[12%] justify-end">
+                <button (click)="filterFollowUps()"
+                    class="text-white rounded-lg px-4 py-2.5 flex items-center justify-center gap-2 bg-[#FF7519]">
+                    Search for
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Tabs and Buttons Section -->
+<div class="flex justify-between items-center mb-6">
+    <!-- Tabs -->
+    <div class="flex space-x-4">
+        <button *ngFor="let tab of tabs" (click)="selectTab(tab)" [ngClass]="{
+        'bg-[#FF7519] text-white': selectedTab === tab,
+        'bg-gray-200 text-gray-700': selectedTab !== tab
+      }" class="px-4 py-3 text-sm font-medium rounded-sm focus:outline-none transition-colors duration-200">
+            {{ tab }}
+        </button>
+    </div>
+
+    <!-- Print Buttons -->
+    <div class="flex justify-end space-x-4">
+        <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="exportToExcel()">
+        <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="exportToPDF()">
+        <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="printTable()">
+    </div>
+</div>
+<!-- <div class="mb-5 flex justify-end space-x-4">
+    <img class="w-5" src="Icons/Excel.png">
+    <button>
+    </button>
+    <button>
+        <img class="w-5" src="Icons/PDF.png">
+    </button>
+    <button>
+        <img class="w-5" src="Icons/Print.png">
+    </button>
+</div> -->
+
+<!-- Tab Content -->
+
+<div *ngIf="selectedTab === 'MH By Parent'">
+    <app-table class="print-area" [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']" [data]="mhByParentData"
+        [keys]="['date', 'description', 'insertDate', 'lastModified']" [showViewAction]="true" [showEditAction]="false" (view)="onView($event)"
+        (delete)="deleteMH($event)"></app-table>
+</div>
+
+
+<div *ngIf="selectedTab === 'MH By Doctor'" class="space-y-4">
+    <!-- MH By Doctor Table -->
+<app-table [headers]="['Date', 'Description', 'Insert Date', 'Last Modified', 'Actions']"
+    [data]="filteredMHByDoctorData" [keys]="['date', 'description', 'insertDate', 'lastModified']"
+    [showViewAction]="true" [showEditAction]="false" (view)="onView($event)" (delete)="deleteMH($event)" (edit)="openEditModal($event)">
+</app-table>
+    
+    <!-- Modal Overlay -->
+    <div id="edit-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isEditModalVisible}"
+        class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+<app-medical-history-modal [isVisible]="isEditModalVisible" (isVisibleChange)="isEditModalVisible = $event"
+    (onSave)="loadMHByDoctorData()" [medicalHistoryData]="selectedMedicalHistory">
+</app-medical-history-modal>
+    </div>
+    </div>
+
+
+<!-- Hygiene Form Table -->
+<div *ngIf="selectedTab === 'Hygiene Form'" class="space-y-4">
+    <!-- Hygiene Form Table -->
+    <app-hygiene-form-table [students]="students" [hygieneTypes]="hygieneTypes" [isViewOnly]="true"
+        [showSelectAll]="false"> <!-- Set showSelectAll to false -->
+    </app-hygiene-form-table>
+</div>
+
+
+
+<div *ngIf="selectedTab === 'Follow Up'" class="space-y-4">
+        <!-- Follow Up Table -->
+        <div class="block">
+            <app-table
+                [headers]="['ID', 'School', 'Grade', 'Class', 'Student', 'Complaints', 'Diagnosis', 'Recommendation', 'Actions']"
+                [data]="filteredFollowUps"
+                [keys]="['id', 'schoolName', 'gradeName', 'className', 'studentName', 'complaints', 'diagnosisName', 'recommendation']"
+                (delete)="deleteFollowUp($event) " [showEditAction]="false">
+            </app-table>
+        </div>
+    </div>
+
+    <div class="absolute -top-[9999px] -left-[9999px]">
+        <div id="pdfPrintData" class="hidden">
+            <app-pdf-print *ngIf="showPDFView" [school]="pdfSchoolData" [fileName]="pdfFileName" [Title]="pdfTitle"
+                [infoRows]="pdfInfoRows" [tableHeaders]="pdfTableHeaders" [tableData]="pdfTableData"
+                [autoDownload]="autoDownloadPDF" #pdfComponentRef>
+            </app-pdf-print>
+        </div>
+    </div>
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="printData" class="hidden">
+        <app-pdf-print *ngIf="showPrintView" [school]="pdfSchoolData" [fileName]="pdfFileName" [Title]="pdfTitle"
+            [infoRows]="pdfInfoRows" [tableHeaders]="pdfTableHeaders" [tableData]="pdfTableData" #printComponentRef>
+        </app-pdf-print>
+    </div>
+</div>
+

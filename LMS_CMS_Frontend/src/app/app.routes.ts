@@ -100,16 +100,28 @@ import { ShopItemsAddEditComponent } from './Pages/Employee/Inventory/shop-items
 import { StoresComponent } from './Pages/Employee/Inventory/stores/stores.component';
 import { InventoryMasterComponent } from './Pages/Employee/Inventory/inventory-master/inventory-master.component';
 import { InventoryDetailsComponent } from './Pages/Employee/Inventory/inventory-details/inventory-details.component';
+import { CreateHygieneFormComponent } from './Pages/Employee/Clinic/hygiene_form/create-hygiene-form/create-hygiene-form.component';
+import { HygieneFormComponent } from './Pages/Employee/Clinic/hygiene_form/hygiene-form/hygiene-form.component';
+import { DrugsComponent } from './Pages/Employee/Clinic/drugs/drugs.component';
+import { DiagnosisComponent } from './Pages/Employee/Clinic/diagnosis/diagnosis.component';
+import { HygieneTypesComponent } from './Pages/Employee/Clinic/hygiene-types/hygiene-types.component';
+import { FollowUpComponent } from './Pages/Employee/Clinic/follow-up/follow-up.component';
+import { MedicalHistoryComponent } from './Pages/Employee/Clinic/medical-history/medical-history-table/medical-history.component';
 import { ShopComponent } from './Pages/Student/Ecommerce/shop/shop.component';
 import { ShopItemComponent } from './Pages/Student/Ecommerce/shop-item/shop-item.component';
 import { CartComponent } from './Pages/Student/Ecommerce/cart/cart.component';
 import { OrderComponent } from './Pages/Student/Ecommerce/order/order.component';
+import { DosesComponent } from './Pages/Employee/Clinic/doses/doses.component';
+import { MedicalReportComponent } from './Pages/Employee/Clinic/medical-report/medical-report/medical-report.component';
 import { OrderItemsComponent } from './Pages/Student/Ecommerce/order-items/order-items.component';
 import { OrderHistoryComponent } from './Pages/Employee/E-Commerce/order-history/order-history.component';
 import { StockingComponent } from './Pages/Employee/Inventory/stocking/stocking.component';
 import { StockingDetailsComponent } from './Pages/Employee/Inventory/stocking-details/stocking-details.component';
+import { ViewHygieneFormComponent } from './Pages/Employee/Clinic/hygiene_form/veiw-hygiene-form/veiw-hygiene-form.component';
 import { StudentsNamesInClassComponent } from './Pages/Employee/Registration/Reports/students-names-in-class/students-names-in-class.component';
 import { StudentInformationComponent } from './Pages/Employee/Registration/Reports/student-information/student-information.component';
+import { MedicalHistoryByDoctorComponent } from './Pages/Employee/Clinic/medical-report/medical-history-by-doctor/medical-history-by-doctor.component';
+import { MedicalHistoryByParentComponent } from './Pages/Employee/Clinic/medical-report/medical-history-by-parent/medical-history-by-parent.component';
 import { ProofRegistrationAndSuccessFormReportComponent } from './Pages/Employee/Registration/Reports/proof-registration-and-success-form-report/proof-registration-and-success-form-report.component';
 import { ProofRegistrationReportComponent } from './Pages/Employee/Registration/Reports/proof-registration-report/proof-registration-report.component';
 import { StudentsInformationFormReportComponent } from './Pages/Employee/Registration/Reports/students-information-form-report/students-information-form-report.component';
@@ -117,12 +129,14 @@ import { PdfPrintComponent } from './Component/pdf-print/pdf-print.component';
 import { AcademicSequentialReportComponent } from './Pages/Employee/Registration/Reports/academic-sequential-report/academic-sequential-report.component';
 import { TransferedFromKindergartenReportComponent } from './Pages/Employee/Registration/Reports/transfered-from-kindergarten-report/transfered-from-kindergarten-report.component';
 import { TemplateComponent } from './Pages/Employee/LMS/template/template.component';
+import { InventoryTransactionReportComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master/invoice-report-master.component';
+import { InvoiceReportMasterDetailedComponent } from './Pages/Employee/Inventory/Report/inventory-invoice-report/invoice-report-master-detailed/invoice-report-master-detailed.component';
 import { EvaluationComponent } from './Pages/Employee/LMS/evaluation/evaluation.component';
 import { EvaluationTemplateGroupComponent } from './Pages/Employee/LMS/evaluation-template-group/evaluation-template-group.component';
 import { EvaluationTemplateGroupQuestionComponent } from './Pages/Employee/LMS/evaluation-template-group-question/evaluation-template-group-question.component';
-import { BookCorrectionComponent } from './Pages/Employee/LMS/book-correction/book-correction.component';
 import { EvaluationFeedbackComponent } from './Pages/Employee/LMS/evaluation-feedback/evaluation-feedback.component';
 import { EvaluationEmployeeAnswerComponent } from './Pages/Employee/LMS/evaluation-employee-answer/evaluation-employee-answer.component';
+import { BookCorrectionComponent } from './Pages/Employee/LMS/book-correction/book-correction.component';
 import { MedalComponent } from './Pages/Employee/LMS/medal/medal.component';
 import { LessonActivityTypeComponent } from './Pages/Employee/LMS/lesson-activity-type/lesson-activity-type.component';
 import { LessonResourcesTypeComponent } from './Pages/Employee/LMS/lesson-resources-type/lesson-resources-type.component';
@@ -145,6 +159,18 @@ export const routes: Routes = [
         title: "Employee Home", 
         canActivate:[navigateIfEmployeeGuard, noNavigateWithoutLoginGuard], 
         children: [
+            { path: "Hygiene Types", component: HygieneTypesComponent, title: "Hygiene Types", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard] },
+            { path: "Diagnosis", component: DiagnosisComponent, title: "Diagnosis" },
+            { path: "Drugs", component: DrugsComponent, title: "Drugs" },
+            { path: "Hygiene Form Medical Report", component: HygieneFormComponent, title: "Hygiene Form" },
+            { path: "Create Hygiene Form", component: CreateHygieneFormComponent, title: "Create Hygiene Form" },
+            { path: 'view hygiene form/:id', component: ViewHygieneFormComponent },
+            { path: 'mh by parent/:id', component: MedicalHistoryByParentComponent },
+            {path:  'mh by doctor/:id',  component: MedicalHistoryByDoctorComponent},
+            { path: "Follow Up", component: FollowUpComponent, title: "Follow Up" },
+            { path: "Medical History", component: MedicalHistoryComponent, title: "Medical History" },
+            { path: "Medical Report", component: MedicalReportComponent, title: "Medical Report" },
+            { path: "Doses", component: DosesComponent, title: "Doses" },
             { path: "", component: EmployeeHomeComponent, title: "EmployeeHome" }, 
             { path: "Bus Details",component: BusDetailsComponent,title: "Bus"  , canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]},     
             { path: "Bus Students/:domainName/:busId", component: BusStudentComponent, title: "Bus Students", canActivate:[noNavigateWithoutLoginGuard, navigateIfHaveSettingPageGuard]}, 
@@ -288,7 +314,17 @@ export const routes: Routes = [
             { path: "StudentsInformationFormReport", component: StudentsInformationFormReportComponent, title: "StudentsInformationFormReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "TransferedFromKindergartenReport", component: TransferedFromKindergartenReportComponent, title: "TransferedFromKindergartenReport", canActivate:[noNavigateWithoutLoginGuard ] },
+        
             { path: "Template", component: TemplateComponent, title: "Template", canActivate:[noNavigateWithoutLoginGuard ] },
+
+            { path: 'Inventory-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Inventory Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
+            { path: 'Sales-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Sales Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
+            { path: 'Purchase-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Purchase Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'purchase' }},
+         
+            { path: 'Inventory-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Inventory Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
+            { path: 'Sales-Transaction-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Sales Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
+            { path: 'Purchase-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Purchase Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'purchase' }},
+        
             { path: "Book Correction", component: BookCorrectionComponent, title: "BookCorrectionComponent", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Evaluation", component: EvaluationComponent, title: "Evaluation", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "EvaluationTemplateGroup/:id", component: EvaluationTemplateGroupComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
@@ -308,7 +344,7 @@ export const routes: Routes = [
             { path: "Lesson Activity/:id", component: LessonActivityComponent, title: "Lesson Activity", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Lesson Resource/:id", component: LessonResourceComponent, title: "Lesson Resource", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
-    },
+},
     { 
         path: "Parent", 
         component: MainLayoutComponent, 
@@ -359,4 +395,3 @@ export const routes: Routes = [
 
     { path: '**', redirectTo: '/' }
 ];
-

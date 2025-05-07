@@ -73,6 +73,7 @@ export class AccountingEntriesDetailsComponent {
 
   isLoading = false;
 
+
   @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
   showPDF = false;
   
@@ -395,6 +396,7 @@ export class AccountingEntriesDetailsComponent {
     });
   }
 
+
   // DownloadData() {
   //   let orderElement = document.getElementById('DataToDownload');
 
@@ -475,6 +477,7 @@ export class AccountingEntriesDetailsComponent {
       }, 100);
     }, 500);
   }
+
 
   async DownloadAsExcel() {
     await this.reportsService.generateExcelReport({

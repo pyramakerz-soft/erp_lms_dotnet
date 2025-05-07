@@ -459,7 +459,7 @@ export class ClassroomComponent {
   }
   
   checkSection(element:any) {
-    return element.sectionID == this.selectedSection
+    return element.sectionI  == this.selectedSection
   }
 
   SaveCopy(){

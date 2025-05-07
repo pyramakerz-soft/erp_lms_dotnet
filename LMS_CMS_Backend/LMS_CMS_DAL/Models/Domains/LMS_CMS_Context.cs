@@ -1451,10 +1451,6 @@ namespace LMS_CMS_DAL.Models.Domains
                .Ignore(r => r.Employee)
                .Ignore(r => r.Student)
                .Ignore(r => r.Save);
-
-            modelBuilder.Entity<SchoolPCs>()
-               .Property(e => e.ID)
-               .ValueGeneratedNever();
         }
     }
 }

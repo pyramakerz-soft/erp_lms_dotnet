@@ -307,14 +307,14 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return NotFound("PC not found.");
             }
 
-            if (pc.CertificateDate.Value == DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
-            {
-                return BadRequest("Please Update the Certificate.");
-            }
-
             if (pc.CertificateDate == null)
             {
                 return BadRequest("Please Create the Certificate.");
+            }
+
+            if (pc.CertificateDate.Value <= DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
+            {
+                return BadRequest("Please Update the Certificate.");
             }
 
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
@@ -473,6 +473,7 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
                 return BadRequest("Total should be sum up all the totalPrice values in InventoryDetails");
 
             }
+            newData.FlagId = 12;
 
             if (newData.FlagId == 8 || newData.FlagId == 9 || newData.FlagId == 10 || newData.FlagId == 11 || newData.FlagId == 12)
             {
@@ -511,10 +512,6 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             {
                 Master.InsertedByUserId = userId;
             }
-            //if (newData.StudentID != 0 && newData.StudentID != null)
-            //{
-            //    //Master.Vat = vat;
-            //}
 
             Unit_Of_Work.inventoryMaster_Repository.Add(Master);
             await Unit_Of_Work.SaveChangesAsync();
@@ -561,41 +558,45 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             Unit_Of_Work.inventoryMaster_Repository.Update(Master);
             await Unit_Of_Work.SaveChangesAsync();
 
-            Master.School = school;
-
-            List<InventoryMaster> masters = Unit_Of_Work.inventoryMaster_Repository.SelectQuery<InventoryMaster>(i => i.IsDeleted != true).ToList();
-
-            string lastInvoiceHash = "";
-
-            if (masters.Count > 1 || masters is not null)
+            if (Master.FlagId == 11 || Master.FlagId == 12)
             {
-                lastInvoiceHash = masters[masters.Count - 2].InvoiceHash;
+                Master.School = school;
+
+                List<InventoryMaster> masters = Unit_Of_Work.inventoryMaster_Repository.SelectQuery<InventoryMaster>(i => i.IsDeleted != true).ToList();
+
+                string lastInvoiceHash = "";
+
+                if (masters.Count > 1 || masters is not null)
+                {
+                    if (Master.FlagId == 11)
+                        lastInvoiceHash = masters[masters.Count - 2].InvoiceHash;
+                }
+
+                bool result = InvoicingServices.GenerateInvoiceXML(Master, lastInvoiceHash);
+
+                if (!result)
+                    return BadRequest("Failed to generate XML file.");
+
+                DateTime invDate = DateTime.Parse(newData.Date);
+                string date = invDate.ToString("yyyy-MM-dd");
+                string time = invDate.ToString("HH:mm:ss").Replace(":", "");
+
+                string xml = string.Empty;
+                if (Master.FlagId == 11)
+                    xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XMLInvoices/{Master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{Master.StoreID}_{Master.FlagId}_{Master.ID}.xml");
+
+                if (Master.FlagId == 12)
+                    xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XMLCredits/{Master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{Master.StoreID}_{Master.FlagId}_{Master.ID}.xml");
+
+                Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
+                Master.QRCode = InvoicingServices.GetQRCode(xml);
+                Master.uuid = InvoicingServices.GetUUID(xml);
+                Master.XmlInvoiceFile = xml;
+                Master.QrImage = InvoicingServices.GenerateQrImage(Master.QRCode);
+
+                Unit_Of_Work.inventoryMaster_Repository.Update(Master);
+                await Unit_Of_Work.SaveChangesAsync();
             }
-
-            //SchoolPCs pc = Unit_Of_Work.schoolPCs_Repository.First_Or_Default(b => b.ID == Master.SchoolPCId && b.IsDeleted != true);
-
-            //if (pc is null)
-            //    return NotFound("PC not found.");
-
-            bool result = InvoicingServices.GenerateXML(Master, lastInvoiceHash, pc.ID);
-
-            if (!result)
-                return BadRequest("Failed to generate XML file.");
-
-            DateTime invDate = DateTime.Parse(newData.Date);
-            string date = invDate.ToString("yyyy-MM-dd");
-            string time = invDate.ToString("HH:mm:ss").Replace(":", "");
-
-            string xml = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{Master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{Master.ID}.xml");
-
-            Master.InvoiceHash = InvoicingServices.GetInvoiceHash(xml);
-            Master.QRCode = InvoicingServices.GetQRCode(xml);
-            Master.uuid = InvoicingServices.GetUUID(xml);
-            Master.XmlInvoiceFile = xml;
-            Master.QrImage = InvoicingServices.GenerateQrImage(Master.QRCode);
-
-            Unit_Of_Work.inventoryMaster_Repository.Update(Master);
-            await Unit_Of_Work.SaveChangesAsync();
 
             return Ok(Master.ID);
         }

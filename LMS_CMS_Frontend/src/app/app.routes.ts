@@ -146,6 +146,8 @@ import { PerformanceTypeComponent } from './Pages/Employee/LMS/performance-type/
 import { DailyPerformanceComponent } from './Pages/Employee/LMS/daily-performance/daily-performance.component';
 import { LessonResourceComponent } from './Pages/Employee/LMS/lesson-resource/lesson-resource.component';
 import { LessonActivityComponent } from './Pages/Employee/LMS/lesson-activity/lesson-activity.component';
+import { LessonLiveComponent } from './Pages/Employee/LMS/lesson-live/lesson-live.component';
+import { StudentLessonLiveComponent } from './Pages/Student/LMS/student-lesson-live/student-lesson-live.component';
 
 export const routes: Routes = [
     { path: "", component: LoginComponent, title: "Login", canActivate:[noNavigateToLoginIfLoginGuard] },
@@ -314,17 +316,13 @@ export const routes: Routes = [
             { path: "StudentsInformationFormReport", component: StudentsInformationFormReportComponent, title: "StudentsInformationFormReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "AcademicSequentialReport", component: AcademicSequentialReportComponent, title: "AcademicSequentialReport", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "TransferedFromKindergartenReport", component: TransferedFromKindergartenReportComponent, title: "TransferedFromKindergartenReport", canActivate:[noNavigateWithoutLoginGuard ] },
-        
             { path: "Template", component: TemplateComponent, title: "Template", canActivate:[noNavigateWithoutLoginGuard ] },
-
             { path: 'Inventory-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Inventory Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
             { path: 'Sales-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Sales Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
             { path: 'Purchase-Transaction-Report', component: InventoryTransactionReportComponent, title: 'Purchase Transaction Report',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'purchase' }},
-         
             { path: 'Inventory-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Inventory Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'inventory' }},
             { path: 'Sales-Transaction-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Sales Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'sales' }},
             { path: 'Purchase-Transaction-Report-Detailed', component: InvoiceReportMasterDetailedComponent, title: 'Purchase Transaction Report Detailed',canActivate: [noNavigateWithoutLoginGuard],data: { reportType: 'purchase' }},
-        
             { path: "Book Correction", component: BookCorrectionComponent, title: "BookCorrectionComponent", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Evaluation", component: EvaluationComponent, title: "Evaluation", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "EvaluationTemplateGroup/:id", component: EvaluationTemplateGroupComponent, title: "EvaluationTemplateGroup", canActivate:[noNavigateWithoutLoginGuard ] },
@@ -343,6 +341,7 @@ export const routes: Routes = [
             { path: "Performance Type", component: PerformanceTypeComponent, title: "Performance Type", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Lesson Activity/:id", component: LessonActivityComponent, title: "Lesson Activity", canActivate:[noNavigateWithoutLoginGuard ] },
             { path: "Lesson Resource/:id", component: LessonResourceComponent, title: "Lesson Resource", canActivate:[noNavigateWithoutLoginGuard ] },
+            { path: "Lesson Live", component: LessonLiveComponent, title: "Lesson Live", canActivate:[noNavigateWithoutLoginGuard ] },
         ]
 },
     { 
@@ -369,7 +368,9 @@ export const routes: Routes = [
             { path: "Ecommerce/ShopItem/:id", component: ShopItemComponent, title: "Shop Item" },
             { path: "Ecommerce/Cart", component: CartComponent, title: "Cart" },
             { path: "Ecommerce/Order", component: OrderComponent, title: "Order" },
-            { path: "Ecommerce/Order/:id", component: OrderItemsComponent, title: "Order Items" }
+            { path: "Ecommerce/Order/:id", component: OrderItemsComponent, title: "Order Items" },
+            { path: "Lesson Live", component: StudentLessonLiveComponent, title: "Lesson Live" }
+
         ]
     },
     { 

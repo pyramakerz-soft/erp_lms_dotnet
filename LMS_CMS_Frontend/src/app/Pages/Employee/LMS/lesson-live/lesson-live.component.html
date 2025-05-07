@@ -1,0 +1,167 @@
+<div class="">
+    <div class="flex justify-between">
+        <h1 class="font-semibold text-2xl leading-9">Lesson Live</h1>
+        <div class="flex justify-between items-center">
+            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+            <button (click)="Create()"
+                class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2">
+                Create Lesson Live
+            </button>
+        </div>
+    </div>
+
+    <div>
+        <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+            <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+                <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+                    <tr>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            ID
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Classroom
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Week Day
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Period
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Subject
+                        </th>
+                        <th
+                            class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- No Data Row -->
+                    <tr *ngIf="TableData.length === 0">
+                        <td colspan="11"
+                            class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                            No Data Found
+                        </td>
+                    </tr>
+
+                    <!-- Data Rows -->
+                    <tr *ngFor="let row of TableData; let i = index"
+                        [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+                        class="border-t border-gray-300 text-xs md:text-sm">
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.id }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.classroomName }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.weekDayName }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.period }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            {{ row.subjectEnglishName }}
+                        </td>
+                        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                            <div class="flex space-x-4">
+                                <button (click)="Delete(row.id)">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                                <button (click)="Edit(row)">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{ hidden: !isModalVisible }"
+    class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+    <div class="bg-white rounded-2xl p-12 w-1/2 max-h-[95%] overflow-y-auto">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="mode == 'Create'" class="font-semibold text-2xl leading-9">Create Lesson Live</h1>
+            <h1 *ngIf="mode == 'Edit'" class="font-semibold text-2xl leading-9">Edit Lesson Live</h1>
+            <button (click)="closeModal()" type="button"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+
+        <div class="mt-6 mb-4 rounded-3xl flex justify-between flex-wrap">
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label for="Class" class="block mb-2 text-sm font-medium text-gray-900">Classroom</label>
+                <select id="Class"  (ngModelChange)="onInputValueChange({ field: 'classroomID', value: $event })"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                    [(ngModel)]="live.classroomID"(change)="selectClass()">
+                    <option value=0 disabled selected hidden>Select a class</option>
+                    <option *ngFor="let ac of classrooms" [value]="ac.id">
+                        {{ ac.name }}
+                    </option>
+                </select>
+                <span *ngIf="validationErrors['classroomID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['classroomID']}}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label for="subject" class="block mb-2 text-sm font-medium text-gray-900">Subjects</label>
+                <select id="subject"  (ngModelChange)="onInputValueChange({ field: 'subjectID', value: $event })"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                    [(ngModel)]="live.subjectID" [disabled]="!live.classroomID" >
+                    <option value=0 disabled selected hidden>Select a subject</option>
+                    <option *ngFor="let ac of subject" [value]="ac.id">
+                        {{ ac.en_name }}
+                    </option>
+                </select>
+                <span *ngIf="validationErrors['subjectID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['subjectID']}}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label for="day" class="block mb-2 text-sm font-medium text-gray-900">Week Days</label>
+                <select id="day"  (ngModelChange)="onInputValueChange({ field: 'weekDayID', value: $event })"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full"
+                    [(ngModel)]="live.weekDayID">
+                    <option value=0 disabled selected hidden>Select Day</option>
+                    <option *ngFor="let ac of days" [value]="ac.id">
+                        {{ ac.name }}
+                    </option>
+                </select>
+                <span *ngIf="validationErrors['weekDayID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['weekDayID']}}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="period">period</label>
+                <input id="period" type="number" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                    placeholder="Enter period" [(ngModel)]="live.period"
+                    (input)="validateNumber($event, 'period')"  (ngModelChange)="onInputValueChange({ field: 'period', value: $event })"
+                    (ngModelChange)="onInputValueChange({ field: 'period', value: $event })" />
+                <span *ngIf="validationErrors['period']" class="text-red-500 ml-3 font-normal">{{ validationErrors['period']}}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-full">
+                <label class="mb-2 primaryTxt" for="liveLink">Live Link</label>
+                <input id="liveLink" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                    placeholder="Enter Live Link" [(ngModel)]="live.liveLink"  (ngModelChange)="onInputValueChange({ field: 'liveLink', value: $event })"
+                    (ngModelChange)="onInputValueChange({ field: 'liveLink', value: $event })" />
+                <span *ngIf="validationErrors['liveLink']" class="text-red-500 ml-3 font-normal">{{ validationErrors['liveLink']}}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-full">
+                <label class="mb-2 primaryTxt" for="recordLink">Record Link</label>
+                <input id="recordLink" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                    placeholder="Enter Record Link" [(ngModel)]="live.recordLink"
+                    (ngModelChange)="onInputValueChange({ field: 'recordLink', value: $event })" />
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <button [disabled]="isLoading" class="secondaryBg text-white font-medium px-4 py-2 rounded-lg"
+                (click)="CreateOREdit()">
+                <span *ngIf="!isLoading">Save</span>
+                <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+            </button>
+        </div>
+    </div>
+</div>

@@ -3,6 +3,8 @@ import { BusType } from '../../Models/Bus/bus-type';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+
 
 @Component({
   selector: 'app-search',
@@ -12,6 +14,8 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './search.component.css'
 })
 export class SearchComponent {
+private searchSubject = new Subject<string>();
+
   @Input() key: string = "id" ;
   value: any = "";
   IsSearchOpen: boolean = false;
@@ -19,7 +23,14 @@ export class SearchComponent {
   @Input() keysArray: string[] = [];
   constructor() { }
 
-  ngOnInit() { }
+ngOnInit() {
+    this.searchSubject.pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+    ).subscribe(() => {
+        this.SearchByKeyValue();
+    });
+}
 
   SearchToggle() {
     this.IsSearchOpen = !this.IsSearchOpen;

@@ -1,0 +1,19 @@
+<!-- Modal Overlay -->
+<div id="modal-overlay"
+    class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50"
+    (click)="closeModal()">
+    <div class="relative bg-white w-[669px] h-[257px] rounded-2xl p-8 flex flex-col gap-6 shadow-md"
+        (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <h1 class="font-semibold text-2xl leading-9">{{ isEditMode ? 'Edit ' + title : title }}</h1>
+
+        <!-- Modal Body -->
+        <div class="bg-gray-100 px-5 py-3 rounded-3xl flex items-center gap-4 w-full">
+            <ng-content></ng-content>
+            <button class="text-white font-medium px-5 py-3 rounded-xl text-lg transition-colors hover:bg-[#FF8C42]"
+                style="background-color: #FF7519;" (click)="onSave()">
+                {{ buttonText }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Invoices\XML\" />
     <Folder Include="Uploads\Attachments\" />
     <Folder Include="Uploads\Questions\" />
   </ItemGroup>

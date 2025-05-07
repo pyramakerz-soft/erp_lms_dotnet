@@ -10,4 +10,5 @@ import { TokenData } from '../../../Models/token-data';
   styleUrl: './employee-home.component.css'
 })
 export class EmployeeHomeComponent {
+
 }

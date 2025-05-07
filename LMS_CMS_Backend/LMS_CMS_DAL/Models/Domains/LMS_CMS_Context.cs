@@ -157,6 +157,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<StudentPerformance> StudentPerformance { get; set; }
         public DbSet<StudentMedal> StudentMedal { get; set; }
         public DbSet<SchoolPCs> SchoolPCs { get; set; }
+        public DbSet<DailyPerformance> DailyPerformance { get; set; }
 
 
 
@@ -1328,23 +1329,28 @@ namespace LMS_CMS_DAL.Models.Domains
                 .OnDelete(DeleteBehavior.Restrict);
             
             modelBuilder.Entity<StudentPerformance>()
-                .HasOne(p => p.Student)
-                .WithMany(p => p.StudentPerformances)
-                .HasForeignKey(p => p.StudentID)
-                .OnDelete(DeleteBehavior.Restrict);
-            
-            modelBuilder.Entity<StudentPerformance>()
                 .HasOne(p => p.PerformanceType)
                 .WithMany(p => p.StudentPerformances)
                 .HasForeignKey(p => p.PerformanceTypeID)
                 .OnDelete(DeleteBehavior.Restrict);
-            
-            modelBuilder.Entity<StudentPerformance>()
+
+            modelBuilder.Entity<DailyPerformance>()
                 .HasOne(p => p.Subject)
-                .WithMany(p => p.StudentPerformances)
+                .WithMany(p => p.DailyPerformance)
                 .HasForeignKey(p => p.SubjectID)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<DailyPerformance>()
+              .HasOne(p => p.Student)
+              .WithMany(p => p.DailyPerformance)
+              .HasForeignKey(p => p.StudentID)
+              .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StudentPerformance>()
+                .HasOne(p => p.DailyPerformance)
+                .WithMany(p => p.StudentPerformance)
+                .HasForeignKey(p => p.DailyPerformanceID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             ///////////////////////// Exception: /////////////////////////
             modelBuilder.Entity<Bus>()
@@ -1445,10 +1451,6 @@ namespace LMS_CMS_DAL.Models.Domains
                .Ignore(r => r.Employee)
                .Ignore(r => r.Student)
                .Ignore(r => r.Save);
-
-            modelBuilder.Entity<SchoolPCs>()
-               .Property(e => e.ID)
-               .ValueGeneratedNever();
         }
     }
 }

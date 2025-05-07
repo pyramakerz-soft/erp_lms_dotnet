@@ -30,8 +30,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Lesson Live" }
+            allowedTypes: new[] { "octa", "employee" }
+            //,
+            //pages: new[] { "Lesson Live" }
         )]
         public async Task<IActionResult> GetAsync()
         {
@@ -58,8 +59,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         [HttpGet("{id}")]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Lesson Live" }
+            allowedTypes: new[] { "octa", "employee" }
+            //,
+            //pages: new[] { "Lesson Live" }
         )]
         public async Task<IActionResult> GetById(long id)
         {
@@ -89,10 +91,57 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        [HttpGet("ByStudentId/{id}")]
+        [Authorize_Endpoint_(
+            allowedTypes: new[] { "octa", "employee" ,"student" }
+            //,
+            //pages: new[] { "Lesson Live" }
+        )]
+        public async Task<IActionResult> GetByStudentId(long id)
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            if (id == 0)
+            {
+                return BadRequest("Enter student ID");
+            }
+            Student student = Unit_Of_Work.student_Repository.First_Or_Default(s=>s.ID== id);
+            if (student == null)
+            {
+                return BadRequest("Enter student ID");
+            }
+
+            StudentAcademicYear studentAcademicYear = Unit_Of_Work.studentAcademicYear_Repository.First_Or_Default(s => s.StudentID == id && s.Classroom.AcademicYear.IsActive==true);
+            if (studentAcademicYear == null)
+            {
+                return BadRequest("this student Has no class");
+            }
+
+
+            List<LessonLive> lessonLives = await Unit_Of_Work.lessonLive_Repository.Select_All_With_IncludesById<LessonLive>(
+                    b => b.IsDeleted != true && b.ClassroomID== studentAcademicYear.ClassID,
+                    query => query.Include(d => d.Classroom),
+                    query => query.Include(d => d.WeekDay),
+                    query => query.Include(d => d.Subject)
+                    );
+
+            if (lessonLives == null || lessonLives.Count == 0)
+            {
+                return NotFound();
+            }
+
+            List<LessonLiveGetDTO> lessonLivesDTO = mapper.Map<List<LessonLiveGetDTO>>(lessonLives);
+
+            return Ok(lessonLivesDTO);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
         [HttpPost]
         [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Lesson Live" }
+            allowedTypes: new[] { "octa", "employee" }
+            //,
+            //pages: new[] { "Lesson Live" }
         )]
         public IActionResult Add(LessonLiveAddDTO NewLessonLive)
         {
@@ -153,8 +202,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpPut]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            allowEdit: 1,
-            pages: new[] { "Lesson Live" }
+            allowEdit: 1
+            //,
+            //pages: new[] { "Lesson Live" }
         )]
         public IActionResult Edit(LessonLivePutDTO EditedLessonLive)
         {
@@ -200,14 +250,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return NotFound("No Lesson Live with this ID");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Lesson Live", roleId, userId, LessonLiveExists);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Lesson Live", roleId, userId, LessonLiveExists);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             mapper.Map(EditedLessonLive, LessonLiveExists);
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
@@ -239,8 +289,9 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         [HttpDelete("{id}")]
         [Authorize_Endpoint_(
             allowedTypes: new[] { "octa", "employee" },
-            allowDelete: 1,
-            pages: new[] { "Lesson Live" }
+            allowDelete: 1
+            //,
+            //pages: new[] { "Lesson Live" }
         )]
         public IActionResult Delete(long id)
         {
@@ -271,14 +322,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return NotFound();
             }
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Lesson Live", roleId, userId, lessonLive);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Lesson Live", roleId, userId, lessonLive);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             lessonLive.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

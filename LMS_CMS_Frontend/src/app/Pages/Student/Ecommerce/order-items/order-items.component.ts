@@ -8,7 +8,12 @@ import { CartService } from '../../../../Services/Student/cart.service';
 import { Cart } from '../../../../Models/Student/ECommerce/cart';
 import { OrderService } from '../../../../Services/Student/order.service';
 import Swal from 'sweetalert2';
-import { Order } from '../../../../Models/Student/ECommerce/order';   
+import { Order } from '../../../../Models/Student/ECommerce/order';  
+// import html2canvas from 'html2canvas';
+// import html2pdf from 'html2pdf.js';
+// import jsPDF from 'jspdf';
+// import { Order } from '../../../../Models/Student/ECommerce/order';   
+// import html2pdf from 'html2pdf.js';
 import html2pdf from 'html2pdf.js';
 import { ReportsService } from '../../../../Services/shared/reports.service';
 
@@ -137,7 +142,39 @@ export class OrderItemsComponent {
     });
   }
   
-  DownloadOrder() { 
-    this.reportsService.DownloadAsPDF(`Order_${this.orderID}`)
-  } 
+  DownloadOrder() {
+    let orderElement = document.getElementById('OrderToDownload');
+  
+    if (!orderElement) {
+      console.error("OrderToDownload element not found!");
+      return;
+    } 
+
+    // html2canvas(orderElement, { scale: 2 }).then(canvas => {
+    //   let imgData = canvas.toDataURL('image/png');
+    //   let pdf = new jsPDF('p', 'mm', 'a4');
+    //   let imgWidth = 210;
+    //   let imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    //   pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    //   pdf.save(`Order_${this.orderID}.pdf`);
+    // }); 
+    // html2pdf().from(orderElement).set({
+    //   margin: 10,
+    //   filename: `Order_${this.orderID}.pdf`,
+    //   image: { type: 'jpeg', quality: 0.98 },
+    //   html2canvas: { scale: 3, useCORS: true, allowTaint: true },
+    //   jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+    // }).save();
+  }
+
+  async convertToDataURL(source: any) {
+    const blob = await fetch(source).then((result) => result.blob());
+    const dataUrl = await new Promise((resolve) => {
+      let reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+    return dataUrl;
+  }
 }

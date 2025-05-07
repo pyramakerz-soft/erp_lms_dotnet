@@ -1,0 +1,24 @@
+<div class="">
+    <div class="flex justify-between items-center">
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Medical History</h1>
+        <div class="flex justify-between items-center">
+            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+            <button (click)="openModal()"
+                class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
+                Create Medical History
+            </button>
+        </div>
+    </div>
+
+<app-table [headers]="headers" [data]="medicalHistories" [keys]="keys" (delete)="deleteMedicalHistory($event)"
+    (edit)="openModal($event)">
+</app-table>
+
+    <!-- Modal Overlay -->
+    <div id="default-modal" tabindex="-1" aria-hidden="true" [ngClass]="{'hidden': !isModalVisible}"
+        class="fixed top-0 left-0 right-0 z-50 flex justify-center items-center w-full h-full bg-black/50">
+        <app-medical-history-modal [isVisible]="isModalVisible" (isVisibleChange)="isModalVisible = $event"
+            (onSave)="loadMedicalHistories()" [medicalHistoryData]="selectedMedicalHistory">
+        </app-medical-history-modal>
+    </div>
+</div>

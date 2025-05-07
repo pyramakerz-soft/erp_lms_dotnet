@@ -1,0 +1,28 @@
+<div class="">
+  <div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-semibold text-2xl leading-9">Diagnoses</h1>
+    <div class="flex justify-between items-center">
+      <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+      <button (click)="openModal()"
+        class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
+        Create Diagnosis
+      </button>
+    </div>
+  </div>
+
+  <app-table [headers]="['ID', 'Diagnosis Name', 'Date', 'Actions']" [data]="diagnoses"
+    [keys]="['id', 'name', 'insertedAt']" (delete)="deleteDiagnosis($event)" (edit)="openModal($event.id)">
+  </app-table>
+
+  <app-modal [title]="editDiagnosis ? 'Diagnosis' : 'Create Diagnosis'" [isEditMode]="editDiagnosis"
+    (save)="saveDiagnosis()" (close)="closeModal()" [ngClass]="{ hidden: !isModalVisible }">
+    
+    <div class="flex flex-col w-full mb-4">
+      <label class="mb-2 primaryTxt" for="name">Diagnosis Name</label>
+      <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+        placeholder="Enter Diagnosis Name" [(ngModel)]="diagnosis.name"
+        (ngModelChange)="onInputValueChange({ field: 'name', value: $event })" />
+      <span *ngIf="validationErrors['name']" class="text-red-500 ml-3 font-normal">{{ validationErrors['name'] }}</span>
+    </div>
+  </app-modal>
+</div>

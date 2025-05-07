@@ -6,7 +6,6 @@ using LMS_CMS_PL.Services.Invoice;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Drawing;
 using System.Text;
 using Zatca.EInvoice.SDK.Contracts;
 using Zatca.EInvoice.SDK.Contracts.Models;
@@ -19,11 +18,13 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
     {
         private readonly ICsrGenerator _csrGenerator;
         private readonly DbContextFactoryService _dbContextFactory;
+        private readonly IConfiguration _configuration;
 
-        public ZatcaController(ICsrGenerator csrGenerator, DbContextFactoryService dbContextFactory)
+        public ZatcaController(ICsrGenerator csrGenerator, DbContextFactoryService dbContextFactory, IConfiguration configuration)
         {
             _csrGenerator = csrGenerator;
             _dbContextFactory = dbContextFactory;
+            _configuration = configuration;
         }
 
         #region Generate PCSID
@@ -85,10 +86,10 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string version = "V2";
 
-            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
+            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version, _configuration);
 
             dynamic csidJson = JsonConvert.DeserializeObject(csid);
-            string formattedCsid = JsonConvert.SerializeObject(csidJson, Newtonsoft.Json.Formatting.Indented);
+            string formattedCsid = JsonConvert.SerializeObject(csidJson, Formatting.Indented);
             await System.IO.File.WriteAllTextAsync(csidPath, formattedCsid);
 
             string user = csidJson.binarySecurityToken;
@@ -100,9 +101,9 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string requestId = csidJson.requestID.ToString();
 
-            string pcsid = await InvoicingServices.GeneratePCSID(tokenBase64, version, requestId);
+            string pcsid = await InvoicingServices.GeneratePCSID(tokenBase64, version, requestId, _configuration);
 
-            string formattedPcsid = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(pcsid), Newtonsoft.Json.Formatting.Indented);
+            string formattedPcsid = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(pcsid), Formatting.Indented);
 
             await System.IO.File.WriteAllTextAsync(pcsidPath, formattedPcsid);
 
@@ -130,7 +131,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             string csidPath = Path.Combine(invoices, "CSID.json");
             string pcsidPath = Path.Combine(invoices, "PCSID.json");
 
-            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version);
+            string csid = await InvoicingServices.GenerateCSID(csrPath, otp, version, _configuration);
 
             dynamic csidJson = JsonConvert.DeserializeObject(csid);
             string formattedCsid = JsonConvert.SerializeObject(csidJson, Newtonsoft.Json.Formatting.Indented);
@@ -151,7 +152,7 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
 
             string csrContentEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(csrContent));
 
-            string pcsid = await InvoicingServices.UpdatePCSID(tokenBase64, csrContentEncoded, version, otp.ToString());
+            string pcsid = await InvoicingServices.UpdatePCSID(tokenBase64, csrContentEncoded, version, otp.ToString(), _configuration);
 
             string formattedPcsid = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(pcsid), Newtonsoft.Json.Formatting.Indented);
 
@@ -174,7 +175,9 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             InventoryMaster master = await Unit_Of_Work.inventoryMaster_Repository.FindByIncludesAsync(
-                d => d.ID == masterId && d.IsDeleted != true,
+                d => d.ID == masterId && 
+                (d.FlagId == 11 || d.FlagId == 12) && 
+                d.IsDeleted != true,
                 query => query.Include(s => s.School)
             );
 
@@ -185,22 +188,30 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             string date = invDate.ToString("yyyy-MM-dd");
             string time = invDate.ToString("HH:mm:ss").Replace(":", "");
 
-            string xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.ID}.xml");
+            string xmlPath = string.Empty;
+            if (master.FlagId == 11)
+                xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XMLInvoices/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.StoreID}_{master.FlagId}_{master.ID}.xml");
+
+            if (master.FlagId == 12)
+                xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XMLCredits/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.StoreID}_{master.FlagId}_{master.ID}.xml");
 
             if (master.IsValid == 0 || master.IsValid == null)
             {
-                HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+                HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId, _configuration);
+
+                string responseContent = await response.Content.ReadAsStringAsync();
+                dynamic responseJson = JsonConvert.DeserializeObject(responseContent);
+                master.Status = responseJson.reportingStatus;
 
                 if (response.IsSuccessStatusCode)
                 {
-                    master.Status = "Reported";
                     master.IsValid = 1;
                 }
                 else
                 {
-                    master.Status = "Not Reported";
                     master.IsValid = 0;
                 }
+
                 Unit_Of_Work.inventoryMaster_Repository.Update(master);
                 Unit_Of_Work.SaveChanges();
             }
@@ -220,7 +231,10 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
             List<InventoryMaster> masters = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById<List<InventoryMaster>>(
-                d => d.SchoolId == schoolId && d.SchoolPCId == schoolPcId && d.IsDeleted != true,
+                d => d.SchoolId == schoolId && 
+                d.SchoolPCId == schoolPcId && 
+                (d.FlagId == 11 || d.FlagId == 12) && 
+                d.IsDeleted != true,
                 query => query.Include(s => s.School)
             );
 
@@ -240,16 +254,18 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
                         string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSR/PC-{master.SchoolPCId}-{master.SchoolId}");
                         string xmlPath = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/XML/{master.School.CRN}_{date.Replace("-", "")}T{time}_{date}-{master.ID}.xml");
 
-                        HttpResponseMessage reportingResponse = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId);
+                        HttpResponseMessage response = await InvoicingServices.InvoiceReporting(xmlPath, master.InvoiceHash, master.uuid, (long)master.SchoolPCId, (long)master.SchoolId, _configuration);
 
-                        if (reportingResponse.IsSuccessStatusCode)
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        dynamic responseJson = JsonConvert.DeserializeObject(responseContent);
+                        master.Status = responseJson.reportingStatus;
+
+                        if (response.IsSuccessStatusCode)
                         {
-                            master.Status = "Reported";
                             master.IsValid = 1;
                         }
                         else
                         {
-                            master.Status = "Not Reported";
                             master.IsValid = 0;
                         }
                         Unit_Of_Work.inventoryMaster_Repository.Update(master);
@@ -276,21 +292,30 @@ namespace LMS_CMS_PL.Controllers.Domains.ZatcaInegration
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
-            DateTime start = DateTime.Parse(startDate);
-            DateTime end = DateTime.Parse(endDate);
+            DateTime start = DateTime.Parse(startDate).Date;
+            DateTime end = DateTime.Parse(endDate).Date;
 
-            List<InventoryMaster> masters = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById_Pagination<InventoryMaster>(
-                d => d.SchoolId == schoolId && DateTime.Parse(d.Date) >= start && DateTime.Parse(d.Date) <= end && d.IsDeleted != true,
-                query => query.Include(s => s.School)
-            )
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            //List<InventoryMaster> masters = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById_Pagination<InventoryMaster>(
+            //    d => d.SchoolId == schoolId && DateTime.Parse(d.Date).Date == start && DateTime.Parse(d.Date) <= end && d.IsDeleted != true,
+            //    query => query.Include(s => s.School)
+            //)
+            //    .Skip((pageNumber - 1) * pageSize)
+            //    .Take(pageSize)
+            //    .ToListAsync();
 
-            if (masters is null || masters.Count == 0)
+            List<InventoryMaster> mastersBySchool = await Unit_Of_Work.inventoryMaster_Repository.Select_All_With_IncludesById_Pagination<InventoryMaster>(
+                d => d.SchoolId == schoolId && d.IsDeleted != true).ToListAsync();
+
+            if (mastersBySchool is null || mastersBySchool.Count == 0)
                 return NotFound("No invoices found.");
 
-            return Ok(masters);
+            List<InventoryMaster> mastersByDate = mastersBySchool
+                .Where(d => DateTime.Parse(d.Date).Date >= start && DateTime.Parse(d.Date).Date <= end)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return Ok(mastersByDate);
         }
         #endregion
     }

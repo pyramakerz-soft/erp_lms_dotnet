@@ -1,0 +1,183 @@
+<div class="flex justify-between">
+    <h1 class="primaryTxt font-bold text-2xl leading-9">
+        {{ reportType | titlecase }} Transaction Report
+    </h1>
+</div>
+
+<div class="my-5 flex flex-wrap justify-between items-center">
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="store">Store</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="store" [(ngModel)]="selectedStoreId">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let store of stores" [ngValue]="store.id">{{ store.name }}</option>
+        <option *ngIf="stores.length === 0" disabled selected>No Data Found</option>
+    </select>
+</div>
+
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2 font-medium" for="dateFrom">Date From</label>
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateFrom"
+            [(ngModel)]="dateFrom">
+    </div>
+
+    <div class="flex flex-col w-[24%] mb-4">
+        <label class="mb-2 font-medium" for="dateTo">Date To</label>
+        <input type="date" class="rounded-lg border border-solid border-gray-300 px-4 py-3" id="dateTo"
+            [(ngModel)]="dateTo">
+    </div>
+
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Transaction Types</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="flags"
+        [(ngModel)]="selectedFlagId" (change)="onFlagSelected()">
+        <option [value]="-1" selected>Select All</option>
+        <option *ngFor="let flag of currentFlags" [value]="flag.id">
+            {{ flag.name }}
+        </option>
+    </select>
+</div>
+<!-- For Category dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Category</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+        [(ngModel)]="selectedCategoryId" (change)="onCategorySelected()">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let category of categories" [ngValue]="category.id">
+            {{ category.name }}
+        </option>
+    </select>
+</div>
+
+<!-- For SubCategory dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags"> Sub Category</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+        [(ngModel)]="selectedSubCategoryId" (change)="onSubCategorySelected()" [disabled]="selectedCategoryId === null">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let subCategory of subCategories" [ngValue]="subCategory.id">
+            {{ subCategory.name }}
+        </option>
+    </select>
+</div>
+
+<!-- For Item dropdown -->
+<div class="flex flex-col w-[24%] mb-4">
+    <label class="mb-2 font-medium" for="flags">Item</label>
+    <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto"
+        [(ngModel)]="selectedItemId" [disabled]="selectedSubCategoryId === null">
+        <option [ngValue]="null">Select All</option>
+        <option *ngFor="let item of items" [ngValue]="item.id">
+            {{ item.enName }}
+        </option>
+    </select>
+</div>
+
+<div class="w-[24%] flex justify-end">
+    <button class="p-4 font-medium text-xl rounded-lg" (click)="viewReport()"
+        [disabled]="!dateFrom || !dateTo || selectedStoreId === undefined || selectedFlagIds.length === 0" [ngClass]="{ 
+            'bg-gray-100 text-gray-300': !dateFrom || !dateTo || selectedStoreId === undefined || selectedFlagIds.length === 0, 
+            'secondaryBg text-white': dateFrom && dateTo && selectedStoreId !== undefined && selectedFlagIds.length > 0
+        }">
+        View Report
+    </button>
+</div>
+</div>
+
+<div *ngIf="showTable" class="mb-5 flex justify-end space-x-4">
+    <img class="w-5 cursor-pointer" src="Icons/Excel.png" (click)="exportExcel()" title="Export to Excel">
+    <img class="w-5 cursor-pointer" src="Icons/PDF.png" (click)="DownloadAsPDF()" title="Export to PDF">
+    <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()" title="Print Report">
+</div>
+
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'Inventory Transactions Report'"
+            [infoRows]="getInfoRows()"
+            [tableHeaders]="['Invoice #', 'Date', 'Store', 'Total Amount', 'Transaction Type']"
+            [tableData]="transactionsForExport" #pdfComponentRef>
+        </app-pdf-print>
+    </div>
+</div>
+
+
+<div *ngIf="showTable" class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+    
+<table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
+    <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+        <tr>
+            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Invoice #
+            </th>
+            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Date
+            </th>
+            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Store
+            </th>
+            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Transaction Type
+            </th>
+            <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                Total Amount
+            </th>
+        </tr>
+    </thead>
+    <tbody>           <tr *ngIf="transactions.length === 0">
+                <td colspan="5"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+<tr *ngFor="let transaction of transactions; let i = index"
+    [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
+    class="border-t border-gray-300 text-xs md:text-sm">
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        {{ transaction.invoiceNumber }}
+    </td>
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        {{ transaction.date | date:'mediumDate' }}
+    </td>
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+        {{ transaction.storeName }}
+    </td>
+    <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+            {{ transaction.flagEnName }}
+    </td>
+        <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ transaction.total | currency }}
+
+        </td>
+
+</tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+<div *ngIf="showTable" class="mt-8 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+        <button class="flex items-center space-x-2 rounded-lg border py-3 px-4" (click)="changePage(currentPage-1)"
+            [disabled]="currentPage === 1 || transactions.length == 0"
+            [ngClass]="{'cursor-not-allowed opacity-50': currentPage === 1 || transactions.length == 0}">
+            <i class="fa-solid fa-arrow-left"></i>
+            <p>Previous</p>
+        </button>
+        <div class="flex">
+            <div *ngFor="let page of [].constructor(totalPages); let i = index" class="rounded-lg py-[10px] w-[40px]"
+                [ngClass]="{'border': i+1 == currentPage || transactions.length == 0}" (click)="changePage(i+1)">
+                <p class="text-center">{{ i + 1 }}</p>
+            </div>
+        </div>
+        <button class="flex items-center space-x-2 rounded-lg border py-3 px-4" (click)="changePage(currentPage+1)"
+            [disabled]="currentPage === totalPages || transactions.length == 0"
+            [ngClass]="{'cursor-not-allowed opacity-50': currentPage === totalPages || transactions.length == 0}">
+            <p>Next</p>
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <div>
+        <p>{{currentPage}} of {{totalPages}} pages ({{totalRecords}} Items)</p>
+    </div>
+</div>

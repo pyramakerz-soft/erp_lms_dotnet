@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Student } from '../Models/student';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -81,16 +82,14 @@ export class StudentService {
     return this.http.get<any>(`${this.baseUrl}/Student/GetStudentByYearID?yearId=${Yearid}&stuId=${StudentId}&schoolId=${SchoolId}`, { headers })
   }
 
-  GetByClassID(id:number,DomainName:string){
-    this.header=DomainName 
-    const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders()
-    .set('Authorization', `Bearer ${token}`)
-    .set('domain-name', this.header)
+GetByClassID(id: number, DomainName: string): Observable<Student[]> {
+  const headers = new HttpHeaders()
+    .set('Domain-Name', DomainName)
+    .set('Authorization', `Bearer ${localStorage.getItem('current_token')}`)
     .set('Content-Type', 'application/json');
 
-    return this.http.get<Student[]>(`${this.baseUrl}/Student/Get_By_ClassID/${id}`, { headers })
-  }
+  return this.http.get<Student[]>(`${this.baseUrl}/Student/Get_By_ClassID/${id}`, { headers });
+}
 
   GetByStudentID(id:number,DomainName:string){
     this.header=DomainName 

@@ -252,6 +252,8 @@ ngOnInit() {
       }
     });
   }
+
+
 viewReport() {
   if (!this.validateFilters()) return;
 
@@ -263,7 +265,7 @@ viewReport() {
 
   this.inventoryMasterService.searchInvoice(
     this.inventoryMasterService.ApiServ.GetHeader(),
-    this.selectedStoreId, // null is passed for "All Stores"
+    this.selectedStoreId,
     formattedDateFrom,
     formattedDateTo,
     this.selectedFlagIds,
@@ -306,13 +308,22 @@ private prepareExportData(): void {
   }));
 }
 
-  private formatDateForAPI(dateString: string): string {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    return `${day}/${month}`;
+private formatDateForAPI(dateString: string): string {
+  if (!dateString) return '';
+  
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    console.error('Invalid date:', dateString);
+    return '';
   }
+
+  // Format as DD/MM/YYYY (what backend expects)
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  console.log(`${day}/${month}/${year}`)
+  return `${day}/${month}/${year}`;
+}
 
 private validateFilters(): boolean {
   return !!this.dateFrom && !!this.dateTo && 

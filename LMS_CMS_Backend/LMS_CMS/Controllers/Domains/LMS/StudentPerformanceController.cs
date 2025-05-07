@@ -54,7 +54,6 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
 
             types =await Unit_Of_Work.studentPerformance_Repository.Select_All_With_IncludesById<StudentPerformance>(
                     b => b.IsDeleted != true,
-                    query => query.Include(emp => emp.Student),
                     query => query.Include(emp => emp.PerformanceType)
                     );
 
@@ -96,11 +95,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             foreach (var type in newType)
             {
 
-                Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.ID == type.StudentID && s.IsDeleted != true);
-                if (stu == null)
-                {
-                    return BadRequest("student id not exist");
-                }
+                //Student stu = Unit_Of_Work.student_Repository.First_Or_Default(s => s.ID == type.StudentID && s.IsDeleted != true);
+                //if (stu == null)
+                //{
+                //    return BadRequest("student id not exist");
+                //}
 
                 PerformanceType p = Unit_Of_Work.performanceType_Repository.First_Or_Default(s => s.ID == type.PerformanceTypeID && s.IsDeleted != true);
                 if (p == null)

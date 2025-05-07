@@ -13,6 +13,7 @@ namespace LMS_CMS_BL.DTO.LMS
     {
         public string? Comment { get; set; }
         public long SubjectID { get; set; }
+        public long StudentID { get; set; }
         public List<StudentPerformanceAddDTO> StudentPerformance { get; set; } 
     }
 }

@@ -16,7 +16,10 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [ForeignKey("Subject")]
         public long SubjectID { get; set; }
         public Subject Subject { get; set; }
-        public ICollection<StudentPerformance> StudentPerformance { get; set; } = new HashSet<StudentPerformance>();
 
+        [ForeignKey("Student")]
+        public long StudentID { get; set; }
+        public Student Student { get; set; }
+        public ICollection<StudentPerformance> StudentPerformance { get; set; } = new HashSet<StudentPerformance>();
     }
 }

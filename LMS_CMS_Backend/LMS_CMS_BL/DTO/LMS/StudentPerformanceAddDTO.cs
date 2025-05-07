@@ -11,8 +11,6 @@ namespace LMS_CMS_BL.DTO.LMS
 {
     public class StudentPerformanceAddDTO
     {
-
-        public long StudentID { get; set; }
         public long PerformanceTypeID { get; set; }
         public int Stars { get; set; }
     }

@@ -1329,12 +1329,6 @@ namespace LMS_CMS_DAL.Models.Domains
                 .OnDelete(DeleteBehavior.Restrict);
             
             modelBuilder.Entity<StudentPerformance>()
-                .HasOne(p => p.Student)
-                .WithMany(p => p.StudentPerformances)
-                .HasForeignKey(p => p.StudentID)
-                .OnDelete(DeleteBehavior.Restrict);
-            
-            modelBuilder.Entity<StudentPerformance>()
                 .HasOne(p => p.PerformanceType)
                 .WithMany(p => p.StudentPerformances)
                 .HasForeignKey(p => p.PerformanceTypeID)
@@ -1345,6 +1339,12 @@ namespace LMS_CMS_DAL.Models.Domains
                 .WithMany(p => p.DailyPerformance)
                 .HasForeignKey(p => p.SubjectID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<DailyPerformance>()
+              .HasOne(p => p.Student)
+              .WithMany(p => p.DailyPerformance)
+              .HasForeignKey(p => p.StudentID)
+              .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<StudentPerformance>()
                 .HasOne(p => p.DailyPerformance)

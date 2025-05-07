@@ -13,9 +13,9 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [Key]
         public long ID { get; set; }
 
-        [ForeignKey("Student")]
-        public long StudentID { get; set; }
-        public Student Student { get; set; }
+        //[ForeignKey("Student")]
+        //public long StudentID { get; set; }
+        //public Student Student { get; set; }
 
         [ForeignKey("PerformanceType")]
         public long PerformanceTypeID { get; set; }

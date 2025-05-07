@@ -59,7 +59,7 @@
 
 
 <div class="mt-5" *ngIf="IsView">
-    <div class="flex justify-between">
+    <div class="flex justify-between" *ngIf="selectedStudentIds.length">
         <div class="flex justify-between items-end">
             <button class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2" (click)="Create()"> 
                 Add Medal
@@ -98,6 +98,7 @@
                         </li>
                     </ul>
                 </div>
+            <span *ngIf="!IsStudentPerformance" class="text-red-500 ml-3 font-normal"> Performance Type is Requiered</span>
             </div>
         </div>
 
@@ -119,9 +120,16 @@
             <button class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center gap-2" (click)="Applay()">
                 Apply
             </button>
-            <button class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2" (click)="submitRatings()">
+            <!-- <button class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2" (click)="submitRatings()">
                 Save
-            </button>
+            </button> -->
+            <button
+            [disabled]="isLoading"
+            class="secondaryBorder secondaryTxt rounded-lg px-4 py-3 flex items-center justify-center gap-2"
+            (click)="submitRatings()">
+            <span *ngIf="!isLoading">Save</span>
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          </button>
         </div>
     </div>
 
@@ -157,7 +165,7 @@
                     </td>
                 </tr>
 
-                <tr *ngFor="let row of students; let i = index"
+                <tr *ngFor="let row of RatedStudent; let i = index"
                     [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
                     class="border-t border-gray-300 text-sm">
 
@@ -165,9 +173,9 @@
                     <td class="py-4 px-4 border border-[#EAECF0]">
                         <div class="flex space-x-2 items-center">
                             <input class="rounded bg-white border border-[#BDBDBD] w-5 h-5" type="checkbox"
-                                [id]="'Student-' + row.id" [checked]="isStudentSelected(row.id)"
-                                (change)="toggleStudentSelection($event, row.id)">
-                            <p>{{ row.en_name }}</p>
+                                [id]="'Student-' + row.studentID" [checked]="isStudentSelected(row.studentID)"
+                                (change)="toggleStudentSelection($event, row.studentID)">
+                            <p>{{ GetStudentName(row.studentID)}}</p>
                         </div>
                     </td>
 
@@ -176,9 +184,9 @@
                         <td class="py-4 px-4 border border-[#EAECF0] text-center">
                             <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
                                 <i class="fa-star cursor-pointer text-xl" [ngClass]="{
-                                  'fa-solid text-yellow-400': star <= getStars(row.id, type.id),
-                                  'fa-regular text-gray-400': star > getStars(row.id, type.id)
-                                }" (click)="setRating(row.id, type.id, star)">
+                                  'fa-solid text-yellow-400': star <= getStars(row.studentID, type.id),
+                                  'fa-regular text-gray-400': star > getStars(row.studentID, type.id)
+                                }" (click)="setRating(row.studentID, type.id, star)">
                                 </i>
                             </ng-container>
                         </td>
@@ -186,7 +194,7 @@
 
                     <!-- Comment -->
                     <td class="py-4 px-4 border border-[#EAECF0]">
-                        <textarea class="w-full h-[100px] rounded-lg border border-gray-300 px-2 py-1 resize-none"
+                        <textarea class="w-full h-[100px] rounded-lg border border-gray-300 px-2 py-1 resize-none" [(ngModel)]="row.comment"
                             placeholder="Enter Note">
                 </textarea>
                     </td>
@@ -216,8 +224,7 @@
                 'cursor-pointer': true}">
               <img *ngIf="row.imageLink" [src]="row.imageLink" class="w-24 h-24 object-cover rounded-xl" />
             </div>
-            <!-- <span *ngIf="IsValid" class="text-red-500 ml-3 font-normal">{{
-                validationErrors['medalID']}}</span> -->
+            <span *ngIf="!IsValid" class="text-red-500 ml-3 font-normal"> Choose Medal </span>
           </div>
           
         <div class="flex justify-end">

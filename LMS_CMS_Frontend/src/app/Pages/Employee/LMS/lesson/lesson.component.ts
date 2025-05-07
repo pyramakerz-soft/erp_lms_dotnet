@@ -604,11 +604,11 @@ export class LessonComponent {
   }
 
   MoveToLessonActivity(lessonId:number) {
-    this.router.navigateByUrl('Employee/Lesson Activity'+ lessonId);
+    this.router.navigateByUrl('Employee/Lesson Activity/'+ lessonId);
   }
 
   MoveToLessonResource(lessonId:number) {
-    this.router.navigateByUrl('Employee/Lesson Resource'+ lessonId);
+    this.router.navigateByUrl('Employee/Lesson Resource/'+ lessonId);
   }
 
   capitalizeField(field: keyof Lesson): string {

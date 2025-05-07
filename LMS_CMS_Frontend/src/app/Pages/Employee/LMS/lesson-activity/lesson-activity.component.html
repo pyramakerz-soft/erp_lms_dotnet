@@ -1,3 +1,58 @@
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-bold text-2xl leading-9">{{lesson.englishTitle}}</h1>
+    <div class="flex justify-between items-center space-x-3">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> 
+        <button (click)="openModal()"
+            class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center">
+            Add Activity
+        </button>
+    </div>
+</div>
+
+<div class="flex flex-wrap mt-5">
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Lesson English Title<p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.englishTitle }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Lesson Arabic Title</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.arabicTitle }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Order</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.order }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject English Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.subjectEnglishName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject Arabic Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.subjectArabicName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Week English Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.semesterWorkingWeekEnglishName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Week Arabic Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.semesterWorkingWeekArabicName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Tags</p>
+        <div class="font-medium text-base text-[#1E1E1E] flex flex-wrap">
+            <span *ngFor="let row of lesson.tags; let i = index" class="p-2 rounded bg-gray-400 text-white m-1">
+                {{ row.name }}
+            </span>  
+        </div>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-full mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Details</p>
+        <div [innerHTML]="safeDetailsHtml"></div>
+    </div>
+</div>
+
+
 <div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
     <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
         <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
@@ -53,7 +108,7 @@
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.lessonActivityTypeEnglishName }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.lessonActivityTypeArabicName }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
                         <button 
                             (click)="Delete(row.id)">
                             <i class="fa-regular fa-trash-can"></i>
@@ -73,4 +128,135 @@
             </tr>
         </tbody>
     </table>
+</div>
+
+<!-- Add-Edit Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px] max-h-[90%] overflow-y-auto">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!editLessonActivity" class="font-semibold text-2xl leading-9">Create Lesson Activity</h1>
+            <h1 *ngIf="editLessonActivity" class="font-semibold text-2xl leading-9">Edit Lesson Activity</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="mt-6 mb-4 flex justify-between flex-wrap">
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="englishTitle">English Title</label>
+                <input id="englishTitle" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter English Title"
+                [(ngModel)]="lessonActivity.englishTitle" 
+                (ngModelChange)="onInputValueChange({ field: 'englishTitle', value: $event })"/>
+                <span *ngIf="validationErrors['englishTitle']" class="text-red-500 ml-3 font-normal">{{ validationErrors['englishTitle'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="arabicTitle">Arabic Title</label>
+                <input id="arabicTitle" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Arabic Title"
+                [(ngModel)]="lessonActivity.arabicTitle" 
+                (ngModelChange)="onInputValueChange({ field: 'arabicTitle', value: $event })"/>
+                <span *ngIf="validationErrors['arabicTitle']" class="text-red-500 ml-3 font-normal">{{ validationErrors['arabicTitle'] }}</span>
+            </div> 
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="order">Order</label>
+                <input id="order" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Order"
+                [(ngModel)]="lessonActivity.order" (input)="validateNumber($event, 'order')"
+                (ngModelChange)="onInputValueChange({ field: 'order', value: $event })"/>
+                <span *ngIf="validationErrors['order']" class="text-red-500 ml-3 font-normal">{{ validationErrors['order'] }}</span>
+            </div> 
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="lessonActivityTypeID">Lesson Activity Types</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="lessonActivityTypeID" 
+                    [(ngModel)]="lessonActivity.lessonActivityTypeID" (ngModelChange)="onInputValueChange({ field: 'lessonActivityTypeID', value: $event })">
+                    <option [value]="0" disabled selected hidden>Choose Activity Type</option>
+                    <option *ngFor="let g of LessonActivityTypes" [value]="g.id">{{ g.englishName }}</option>
+                    <option *ngIf="LessonActivityTypes.length === 0" disabled selected>No Data Found</option>
+                </select>
+                <span *ngIf="validationErrors['lessonActivityTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['lessonActivityTypeID'] }}</span>
+            </div>   
+
+            <div class="w-full mb-4 flex space-x-4">
+                <button
+                  class="px-4 py-2 rounded-lg text-sm font-medium"
+                  [ngClass]="{
+                    'secondaryBorder secondaryTxt': selectedAttachmentType !== 'file',
+                    'secondaryBg text-white': selectedAttachmentType === 'file'
+                  }" 
+                  (click)="handleAttachmentTypeToggle('file')">
+                  Upload File
+                </button>
+              
+                <button
+                  class="px-4 py-2 rounded-lg text-sm font-medium"
+                  [ngClass]="{
+                    'secondaryBorder secondaryTxt': selectedAttachmentType !== 'text',
+                    'secondaryBg text-white': selectedAttachmentType === 'text'
+                  }" 
+                  (click)="handleAttachmentTypeToggle('text')">
+                  Text / Link
+                </button> 
+            </div>
+
+            <div class="w-full mb-4" *ngIf="selectedAttachmentType === 'file'">
+                <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed border-2">
+                    <div class="flex justify-center w-full">
+                        <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                            <img *ngIf="!lessonActivity.attachmentLink && !lessonActivity.attachmentFile" src="Images/Icon frame.png" class="w-1/4">
+                            <img *ngIf="!lessonActivity.attachmentLink && lessonActivity.attachmentFile" src="Images/FileAttached.png" class="w-1/4">
+                            <img *ngIf="lessonActivity.attachmentLink" src="Images/FileAttached.png" class="w-1/3 object-cover">
+                            <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to Upload </span></p>
+                            <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB)</p>
+                        </label>
+                        <input id="file-upload" type="file" class="hidden" (change)="onFileSelected($event)" />
+                    </div>
+                </div>
+                <span *ngIf="validationErrors['attachmentFile']" class="text-red-500  font-normal text-xs md:text-sm">{{ validationErrors['attachmentFile'] }}</span>
+
+                <div *ngIf="lessonActivity.attachmentFile && selectedAttachmentType === 'file'" class="p-4 flex justify-between items-start rounded w-1/2 border mt-2">
+                    <div>
+                        <img src="Images/FileAttached.png" class="w-5">
+                    </div>
+                    <div class="w-3/4">
+                        <p class="text-sm text-gray-800 break-words">{{ lessonActivity.attachmentFile.name }}</p>
+                    </div>
+                    <div>
+                        <i class="fa-regular fa-trash-can" (click)="lessonActivity.attachmentFile = null"></i>
+                    </div>
+                </div>
+
+                <div *ngIf="lessonActivity.attachmentLink && selectedAttachmentType === 'file'" class="p-4 flex justify-between items-start rounded w-1/2 border mt-2">
+                    <div>
+                        <img src="Images/FileAttached.png" class="w-5">
+                    </div>
+                    <div class="w-3/4">
+                        <p class="text-sm text-gray-800 break-words">{{ lessonActivity.attachmentLink.split('/').pop() }}</p>
+                    </div>
+                    <a [href]="lessonActivity.attachmentLink" download target="_blank" class="secondaryTxt hover:text-gray-300">
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+                    <div>
+                        <i class="fa-regular fa-trash-can" (click)="lessonActivity.attachmentLink = ''"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full mb-4" *ngIf="selectedAttachmentType === 'text'">
+                <input type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-full" placeholder="Enter text or Link" [(ngModel)]="lessonActivity.attachmentLink" />
+            </div>
+            <div class="flex flex-col mb-4 w-full">
+                <label class="mb-2 primaryTxt" for="details">Details</label>
+                <textarea id="details" 
+                    class="rounded-lg border border-solid border-gray-300 px-4 py-3 h-40 resize-none" 
+                    placeholder="Enter Details"
+                    [(ngModel)]="lessonActivity.details">
+                </textarea>
+            </div> 
+        </div> 
+
+        <div class="flex justify-end">
+            <button
+            [disabled]="isLoading"
+            class="secondaryBg text-white font-medium px-4 py-2 rounded-lg cursor-pointer"
+            (click)="Save()">
+            <span *ngIf="!isLoading">Save</span>
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          </button>
+        </div>
+    </div>
 </div>

@@ -1,4 +1,4 @@
-<div class="flex justify-between">
+<div class="flex justify-between items-center">
     <h1 class="primaryTxt font-bold text-2xl leading-9">Lessons</h1>
     <div class="flex justify-between items-center space-x-3">
         <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
@@ -135,7 +135,7 @@
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.semesterWorkingWeekEnglishName }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.semesterWorkingWeekArabicName }}</td>
                 <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center  justify-between">
                         <button 
                             (click)="Delete(row.id)">
                             <i class="fa-regular fa-trash-can"></i>

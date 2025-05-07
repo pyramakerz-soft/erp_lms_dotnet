@@ -23,6 +23,6 @@ namespace LMS_CMS_BL.DTO.LMS
         public long LessonResourceTypeID { get; set; }
 
         public List<long>? NewClassRooms { get; set; }
-        public List<long>? Classrooms { get; set; }
+        public List<long>? Classes { get; set; }
     }
 }

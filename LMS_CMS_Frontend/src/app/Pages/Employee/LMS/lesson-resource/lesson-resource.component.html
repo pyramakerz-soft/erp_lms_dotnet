@@ -1,1 +1,283 @@
-<p>lesson-resource works!</p>
+<div class="flex justify-between items-center">
+    <h1 class="primaryTxt font-bold text-2xl leading-9">{{lesson.englishTitle}}</h1>
+    <div class="flex justify-between items-center space-x-3">
+        <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search> 
+        <button (click)="openModal()"
+            class="rounded-lg secondaryBorder secondaryTxt px-4 py-3 flex items-center justify-center">
+            Add Resource
+        </button>
+    </div>
+</div>
+
+<div class="flex flex-wrap mt-5">
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Lesson English Title<p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.englishTitle }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Lesson Arabic Title</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.arabicTitle }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Order</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.order }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject English Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.subjectEnglishName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Subject Arabic Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.subjectArabicName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Week English Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.semesterWorkingWeekEnglishName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Week Arabic Name</p>
+        <p class="font-medium text-base text-[#1E1E1E]">{{ lesson.semesterWorkingWeekArabicName }}</p>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-[30%] mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Tags</p>
+        <div class="font-medium text-base text-[#1E1E1E] flex flex-wrap">
+            <span *ngFor="let row of lesson.tags; let i = index" class="p-2 rounded bg-gray-400 text-white m-1">
+                {{ row.name }}
+            </span>  
+        </div>
+    </div>
+    <div class="bg-[#EBEBEB] m-5 p-3 w-full mb-4">
+        <p class="font-semibold text-sm text-[#6F6F6F] mb-3">Details</p>
+        <div [innerHTML]="safeDetailsHtml"></div>
+    </div>
+</div>
+
+
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD] max-w-full">
+    <table class="overflow-auto w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[##EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    ID
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap  border border-[#EAECF0] border-t-0 border-l-0">
+                    English Title
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Arabic Title
+                </th> 
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Lesson English Title
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Lesson Arabic Title
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Lesson Resource Type English Name 
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Lesson Resource Type Arabic Name
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="LessonResourceData.length === 0">
+                <td colspan="8" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let row of LessonResourceData; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#2E3646]">{{ row.id }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.englishTitle }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.arabicTitle }}</td> 
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.lessonEnglishTitle }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.lessonArabicTitle }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.lessonResourceTypeEnglishName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ row.lessonResourceTypeArabicName }}</td>
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex items-center space-x-4">
+                        <button 
+                            (click)="Delete(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button  (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button> 
+                        <!-- <button *ngIf="AllowDelete && IsAllowDelete(row.insertedByUserId)"
+                            (click)="Delete(row.id)">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                        <button *ngIf="AllowEdit && IsAllowEdit(row.insertedByUserId)" (click)="openModal(row.id)">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button> -->
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Add-Edit Modal -->
+<div id="Add_Modal" class="fixed inset-0 z-50 justify-center items-center w-full h-full bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-12 w-[669px] max-h-[90%] overflow-y-auto">
+        <div class="flex justify-between items-center">
+            <h1 *ngIf="!editLessonResource" class="font-semibold text-2xl leading-9">Create Lesson Resource</h1>
+            <h1 *ngIf="editLessonResource" class="font-semibold text-2xl leading-9">Edit Lesson Resource</h1>
+            <button (click)="closeModal()" type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-lg">X</button>
+        </div>
+        
+        <div class="mt-6 mb-4 flex justify-between flex-wrap">
+            <div class="flex w-full space-x-2 items-center mb-6">
+                <input type="checkbox" id="Available" class="w-5 h-5" (change)="onSpecificClassroomChange($event)" [(ngModel)]="SpecificClassroom">
+                <label for="Available" class="text-sm">Specific Classroom</label>
+            </div>
+
+            <div class="flex flex-col w-full mb-4" *ngIf="SpecificClassroom">  
+                <label class="mb-2">Classrooms</label>
+                <div>
+                    <div class="flex justify-between items-center rounded-lg border border-solid border-gray-300 px-4 py-3 cursor-pointer bg-white text-gray-400" 
+                    (click)="toggleDropdown($event)">
+                        <span *ngIf="AllSelectedClassRooms.length == 0">
+                           Choose Classes
+                        </span>
+                        <div *ngIf="AllSelectedClassRooms.length != 0" class="flex flex-wrap">
+                            <p class="p-2 rounded-md border bg-[#EBEBEB] text-[#6F6F6F] m-1" *ngFor="let classroom of AllSelectedClassRooms">
+                                {{classroom.name}}
+                                <i class="fa-solid fa-xmark text-red-600 ml-3" (click)="removeFromClasses(classroom.id, $event)"></i>
+                            </p>  
+                        </div>
+                        <i class="fa-solid fa-angle-down"></i>
+                    </div>
+                
+                    <div *ngIf="isDropdownOpen" class=" w-full border border-[#E5E5EA] rounded-md bg-white mt-1 max-h-60 overflow-y-auto">
+                        @if(classes.length !==0 ) {
+                            <div *ngFor="let classroom  of classes" class="p-2 hover:bg-gray-100 flex items-center space-x-3">
+                                <input type="checkbox" 
+                                id="class{{classroom .name}}_{{classroom .id}}" 
+                                class="mr-2" 
+                                [value]="classroom .id" 
+                                (change)="onClassChange(classroom , $event)"
+                                [checked]="isClassSelected(classroom.id)"> 
+                                <label for="class{{classroom .name}}_{{classroom .id}}" class="text-xs md:text-sm w-full">{{ classroom .name }}</label>
+                            </div>
+                        }@else {
+                            <div class="p-2">No Data Found</div>
+                        }
+                    </div>
+                </div>
+            </div>   
+
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="englishTitle">English Title</label>
+                <input id="englishTitle" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter English Title"
+                [(ngModel)]="lessonResource.englishTitle" 
+                (ngModelChange)="onInputValueChange({ field: 'englishTitle', value: $event })"/>
+                <span *ngIf="validationErrors['englishTitle']" class="text-red-500 ml-3 font-normal">{{ validationErrors['englishTitle'] }}</span>
+            </div>
+            <div class="flex flex-col mb-4 w-[49%]">
+                <label class="mb-2 primaryTxt" for="arabicTitle">Arabic Title</label>
+                <input id="arabicTitle" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3" placeholder="Enter Arabic Title"
+                [(ngModel)]="lessonResource.arabicTitle" 
+                (ngModelChange)="onInputValueChange({ field: 'arabicTitle', value: $event })"/>
+                <span *ngIf="validationErrors['arabicTitle']" class="text-red-500 ml-3 font-normal">{{ validationErrors['arabicTitle'] }}</span>
+            </div>  
+            <div class="flex flex-col w-[49%] mb-4">
+                <label class="mb-2" for="lessonResourceTypeID">Lesson Resource Types</label>
+                <select class="rounded-lg border border-solid border-gray-300 px-4 py-3 overflow-y-auto" id="lessonResourceTypeID" 
+                    [(ngModel)]="lessonResource.lessonResourceTypeID" (ngModelChange)="onInputValueChange({ field: 'lessonResourceTypeID', value: $event })">
+                    <option [value]="0" disabled selected hidden>Choose Resource Type</option>
+                    <option *ngFor="let g of LessonResourceTypes" [value]="g.id">{{ g.englishName }}</option>
+                    <option *ngIf="LessonResourceTypes.length === 0" disabled selected>No Data Found</option>
+                </select>
+                <span *ngIf="validationErrors['lessonResourceTypeID']" class="text-red-500 ml-3 font-normal">{{ validationErrors['lessonResourceTypeID'] }}</span>
+            </div>   
+
+            <div class="w-full mb-4 flex space-x-4">
+                <button
+                  class="px-4 py-2 rounded-lg text-sm font-medium"
+                  [ngClass]="{
+                    'secondaryBorder secondaryTxt': selectedAttachmentType !== 'file',
+                    'secondaryBg text-white': selectedAttachmentType === 'file'
+                  }" 
+                  (click)="handleAttachmentTypeToggle('file')">
+                  Upload File
+                </button>
+              
+                <button
+                  class="px-4 py-2 rounded-lg text-sm font-medium"
+                  [ngClass]="{
+                    'secondaryBorder secondaryTxt': selectedAttachmentType !== 'text',
+                    'secondaryBg text-white': selectedAttachmentType === 'text'
+                  }" 
+                  (click)="handleAttachmentTypeToggle('text')">
+                  Text / Link
+                </button> 
+            </div>
+
+            <div class="w-full mb-4" *ngIf="selectedAttachmentType === 'file'">
+                <div class="bg-[#F6F6F6] flex items-center space-x-4 w-full rounded-md border-dashed border-2">
+                    <div class="flex justify-center w-full">
+                        <label for="file-upload" class="cursor-pointer flex flex-col items-center rounded-xl px-6 py-3 lg:py-5">
+                            <img *ngIf="!lessonResource.attachmentLink && !lessonResource.attachmentFile" src="Images/Icon frame.png" class="w-1/4">
+                            <img *ngIf="!lessonResource.attachmentLink && lessonResource.attachmentFile" src="Images/FileAttached.png" class="w-1/4">
+                            <img *ngIf="lessonResource.attachmentLink" src="Images/FileAttached.png" class="w-1/3 object-cover">
+                            <p class="font-normal text-xs md:text-sm text-[#8E8E93] mt-3"><span class="secondaryTxt">Click to Upload </span></p>
+                            <p class="font-normal text-xs md:text-sm text-[#8E8E93]"> (Max. File size: 25 MB)</p>
+                        </label>
+                        <input id="file-upload" type="file" class="hidden" (change)="onFileSelected($event)" />
+                    </div>
+                </div>
+                <span *ngIf="validationErrors['attachmentFile']" class="text-red-500  font-normal text-xs md:text-sm">{{ validationErrors['attachmentFile'] }}</span>
+
+                <div *ngIf="lessonResource.attachmentFile && selectedAttachmentType === 'file'" class="p-4 flex justify-between items-start rounded w-1/2 border mt-2">
+                    <div>
+                        <img src="Images/FileAttached.png" class="w-5">
+                    </div>
+                    <div class="w-3/4">
+                        <p class="text-sm text-gray-800 break-words">{{ lessonResource.attachmentFile.name }}</p>
+                    </div>
+                    <div>
+                        <i class="fa-regular fa-trash-can" (click)="lessonResource.attachmentFile = null"></i>
+                    </div>
+                </div>
+
+                <div *ngIf="lessonResource.attachmentLink && selectedAttachmentType === 'file'" class="p-4 flex justify-between items-start rounded w-1/2 border mt-2">
+                    <div>
+                        <img src="Images/FileAttached.png" class="w-5">
+                    </div>
+                    <div class="w-3/4">
+                        <p class="text-sm text-gray-800 break-words">{{ lessonResource.attachmentLink.split('/').pop() }}</p>
+                    </div>
+                    <a [href]="lessonResource.attachmentLink" download target="_blank" class="secondaryTxt hover:text-gray-300">
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+                    <div>
+                        <i class="fa-regular fa-trash-can" (click)="lessonResource.attachmentLink = ''"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full mb-4" *ngIf="selectedAttachmentType === 'text'">
+                <input type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3 w-full" placeholder="Enter text or Link" [(ngModel)]="lessonResource.attachmentLink" />
+            </div> 
+        </div> 
+
+        <div class="flex justify-end">
+            <button
+            [disabled]="isLoading"
+            class="secondaryBg text-white font-medium px-4 py-2 rounded-lg cursor-pointer"
+            (click)="Save()">
+            <span *ngIf="!isLoading">Save</span>
+            <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+          </button>
+        </div>
+    </div>
+</div>

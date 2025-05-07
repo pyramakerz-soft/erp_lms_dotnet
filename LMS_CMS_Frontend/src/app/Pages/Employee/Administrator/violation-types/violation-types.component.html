@@ -32,7 +32,7 @@
       <tbody>
         <!-- No Data Row -->
         <tr *ngIf="Data.length === 0">
-          <td colspan="17" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+          <td colspan="4" class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
             No Data Found
           </td>
         </tr>
@@ -40,7 +40,7 @@
         <!-- Data Rows -->
         <tr *ngFor="let row of Data; let i = index" [ngClass]="{ 'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1 }"
           class="border-t border-gray-300 text-xs md:text-sm">
-          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e] hover:bg-gray-200">
+          <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0 text-[#30462e]">
             {{ row.id }}
           </td>
           <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">

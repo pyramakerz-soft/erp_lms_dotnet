@@ -480,7 +480,7 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             {
                 foreach (var lessonResourceClassroom in lessonResourceClassrooms)
                 {
-                    if (EditLessonResource.Classrooms == null || !EditLessonResource.Classrooms.Contains(lessonResourceClassroom.ClassroomID))
+                    if (EditLessonResource.Classes == null || !EditLessonResource.Classes.Contains(lessonResourceClassroom.ClassroomID))
                     {
                         lessonResourceClassroom.IsDeleted = true;
                         lessonResourceClassroom.DeletedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);

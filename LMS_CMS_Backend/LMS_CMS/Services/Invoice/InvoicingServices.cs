@@ -57,7 +57,7 @@ namespace LMS_CMS_PL.Services.Invoice
             
         }
 
-        public static async Task<string> GenerateCSID(string csrPath, long OTP, string version)
+        public static async Task<string> GenerateCSID(string csrPath, long OTP, string version, IConfiguration configuration)
         {
             string csrContent = await File.ReadAllTextAsync(csrPath);
 
@@ -67,7 +67,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
             using (HttpClient client = new HttpClient())
             {
-                bool isProduction = false;
+                bool isProduction = configuration.GetValue<bool>("IsProduction");
                 HttpRequestMessage request;
 
                 if (isProduction)
@@ -97,13 +97,13 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public static async Task<string> GeneratePCSID(string securityToken, string version, string requestId)
+        public static async Task<string> GeneratePCSID(string securityToken, string version, string requestId, IConfiguration configuration)
         {
             try
             {
                 HttpClient client = new HttpClient();
 
-                bool isProduction = false;
+                bool isProduction = configuration.GetValue<bool>("IsProduction");
                 HttpRequestMessage request;
                 if (isProduction)
                 {
@@ -133,7 +133,7 @@ namespace LMS_CMS_PL.Services.Invoice
             }
         }
 
-        public static async Task<HttpResponseMessage> InvoiceCompliance(string xmlPath, string invoiceHash, string uuid, long pcId, long schoolId)
+        public static async Task<HttpResponseMessage> InvoiceCompliance(string xmlPath, string invoiceHash, string uuid, long pcId, long schoolId, IConfiguration configuration)
         {
             string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSRs/PC-{pcId}-{schoolId}");
             string certPath = Path.Combine(csr, "CSID.json");
@@ -147,7 +147,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
             HttpClient client = new HttpClient();
 
-            bool isProduction = false;
+            bool isProduction = configuration.GetValue<bool>("IsProduction");
             HttpRequestMessage request;
             if (isProduction)
             {
@@ -299,7 +299,7 @@ namespace LMS_CMS_PL.Services.Invoice
                 XmlElement invoiceLine = inv.CreateElement("cac", "InvoiceLine", nsMgr.LookupNamespace("cac"));
 
                 // ID
-                AppendElementWithText(inv, invoiceLine, "cbc", "ID", (counter + 1).ToString(), nsMgr);
+                AppendElementWithText(inv, invoiceLine, "cbc", "ID", (++counter).ToString(), nsMgr);
 
                 // InvoicedQuantity
                 XmlElement quantity = AppendElementWithText(inv, invoiceLine, "cbc", "InvoicedQuantity", itemDetail.Quantity.ToString(), nsMgr);
@@ -401,11 +401,11 @@ namespace LMS_CMS_PL.Services.Invoice
             return true;
         }
 
-        public static async Task<string> UpdatePCSID(string securityToken, string csrContent, string version, string otp)
+        public static async Task<string> UpdatePCSID(string securityToken, string csrContent, string version, string otp, IConfiguration configuration)
         {
             HttpClient client = new HttpClient();
 
-            bool isProduction = false;
+            bool isProduction = configuration.GetValue<bool>("IsProduction");
             HttpRequestMessage request;
             if (isProduction)
             {
@@ -531,7 +531,7 @@ namespace LMS_CMS_PL.Services.Invoice
             return signed;
         }
 
-        public static async Task<HttpResponseMessage> InvoiceReporting(string xmlPath, string invoiceHash, string uuid, long pcId, long schoolId)
+        public static async Task<HttpResponseMessage> InvoiceReporting(string xmlPath, string invoiceHash, string uuid, long pcId, long schoolId, IConfiguration configuration)
         {
             string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSRs/PC-{pcId}-{schoolId}");
             string certPath = Path.Combine(csr, "PCSID.json");
@@ -552,7 +552,7 @@ namespace LMS_CMS_PL.Services.Invoice
 
             HttpClient client = new HttpClient();
 
-            bool isProduction = false;
+            bool isProduction = configuration.GetValue<bool>("IsProduction");
             HttpRequestMessage request;
 
             if (isProduction)

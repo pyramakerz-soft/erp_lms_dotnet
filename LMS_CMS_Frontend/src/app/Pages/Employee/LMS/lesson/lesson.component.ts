@@ -27,6 +27,7 @@ import { SemesterWorkingDays } from '../../../../Models/LMS/semester-working-day
 import { SemesterWorkingWeekService } from '../../../../Services/Employee/LMS/semester-working-week.service';  
 import { QuillModule } from 'ngx-quill';
 import { Tag } from '../../../../Models/LMS/tag';
+import { SemesterWorkingWeek } from '../../../../Models/LMS/semester-working-week';
 
 @Component({
   selector: 'app-lesson',
@@ -106,6 +107,22 @@ export class LessonComponent {
   InsertedTags: string[] = [];
   ExistingTags: number[] = [];
   
+  SelectedLessonImportFrom = 0
+  SelectedWeekImportTo = 0
+  LessonsImportedFrom: Lesson[] = [];
+  SubjectModalId: number = 0
+  
+  SchoolModalImportToId: number = 0 
+  AcademicYearModalImportToId: number = 0
+  AcademicYearsImportToModal: AcademicYear[] = []
+  GradeModalImportToId: number = 0
+  GradesImportToModal: Grade[] = []
+  SemesterModalImportToId: number = 0
+  SemestersImportToModal: Semester[] = []
+  SubjectModalImportToId: number = 0
+  SubjectsImportToModal: Subject[] = []
+  WeeksImportToModal: SemesterWorkingWeek[] = [] 
+
   constructor(
     private router: Router,
     private menuService: MenuService,
@@ -195,11 +212,35 @@ export class LessonComponent {
     this.WeeksModal = [] 
     this.lesson.semesterWorkingWeekID = 0
 
+    this.LessonsImportedFrom = [] 
+    this.SubjectModalId = 0
+    this.SelectedLessonImportFrom = 0
+
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.SchoolModalId = Number(selectedValue)
     if (this.SchoolModalId) {
       this.GetYearModalData();
       this.GetGradeModalData();
+    }
+  }
+
+  onSchoolModalImportToChange(event: Event) {
+    this.AcademicYearModalImportToId = 0
+    this.GradeModalImportToId = 0
+    this.SemesterModalImportToId = 0
+    this.SubjectModalImportToId = 0
+    this.SelectedWeekImportTo = 0
+    this.AcademicYearsImportToModal = []
+    this.GradesImportToModal = []
+    this.SubjectsImportToModal = []
+    this.SemestersImportToModal = [] 
+    this.WeeksImportToModal = [] 
+      
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.SchoolModalImportToId = Number(selectedValue)
+    if (this.SchoolModalImportToId) {
+      this.GetYearModalImportToData();
+      this.GetGradeModalImportToData();
     }
   }
 
@@ -220,11 +261,26 @@ export class LessonComponent {
   onGradeModalChange(event: Event) {  
     this.lesson.subjectID = 0
     this.SubjectsModal = []  
+
+    this.LessonsImportedFrom = [] 
+    this.SubjectModalId = 0
+    this.SelectedLessonImportFrom = 0
   
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.GradeModalId = Number(selectedValue)
     if (this.GradeModalId) { 
       this.GetSubjectModalData();
+    }
+  }
+
+  onGradeModalImportToChange(event: Event) {  
+    this.SubjectModalImportToId = 0
+    this.SubjectsImportToModal = []  
+  
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.GradeModalImportToId = Number(selectedValue)
+    if (this.GradeModalImportToId) { 
+      this.GetSubjectModalImportToData();
     }
   }
 
@@ -247,11 +303,38 @@ export class LessonComponent {
     this.SemestersModal = [] 
     this.WeeksModal = [] 
     this.lesson.semesterWorkingWeekID = 0
+    this.LessonsImportedFrom = [] 
+    this.SelectedLessonImportFrom = 0
 
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.AcademicYearModalId = Number(selectedValue)
     if (this.AcademicYearModalId) { 
       this.GetSemesterModalData();
+    }
+  }
+
+  onYearModalImportToChange(event: Event) {
+    this.SemesterModalImportToId = 0
+    this.SemestersImportToModal = [] 
+    this.WeeksImportToModal = [] 
+    this.SelectedWeekImportTo = 0
+
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.AcademicYearModalImportToId = Number(selectedValue)
+    if (this.AcademicYearModalImportToId) { 
+      this.GetSemesterModalImportToData();
+    }
+  }
+
+  onSemesterAndSubjectModalChange() {
+    this.SelectedLessonImportFrom = 0
+    this.LessonsImportedFrom = []  
+ 
+    if (this.SubjectModalId && this.SemesterModalId) { 
+      this.LessonsImportedFrom = [];
+      this.lessonService.GetBySubjectIDAndSemester(this.SemesterModalId, this.SubjectModalId, this.DomainName).subscribe((data) => {
+        this.LessonsImportedFrom = data;
+      });
     }
   }
 
@@ -263,6 +346,17 @@ export class LessonComponent {
     this.SemesterModalId = Number(selectedValue)
     if (this.SemesterModalId) { 
       this.GetWeekModalData();
+    }
+  }
+
+  onSemesterModalImportToChange(event: Event) {
+    this.WeeksImportToModal = [] 
+    this.SelectedWeekImportTo = 0
+
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.SemesterModalImportToId = Number(selectedValue)
+    if (this.SemesterModalImportToId) { 
+      this.GetWeekModalImportToData();
     }
   }
 
@@ -285,10 +379,24 @@ export class LessonComponent {
     })
   }
 
+  GetYearModalImportToData() {
+    this.AcademicYearsImportToModal = []
+    this.acadimicYearService.GetBySchoolId(this.SchoolModalImportToId, this.DomainName).subscribe((d) => {
+      this.AcademicYearsImportToModal = d
+    })
+  }
+
   GetGradeModalData() {
     this.GradesModal = []
     this.GradeServ.GetBySchoolId(this.SchoolModalId, this.DomainName).subscribe((d) => {
       this.GradesModal = d
+    })
+  }
+
+  GetGradeModalImportToData() {
+    this.GradesImportToModal = []
+    this.GradeServ.GetBySchoolId(this.SchoolModalImportToId, this.DomainName).subscribe((d) => {
+      this.GradesImportToModal = d
     })
   }
 
@@ -313,6 +421,13 @@ export class LessonComponent {
     })
   }
   
+  GetSubjectModalImportToData() {
+    this.SubjectsImportToModal = []
+    this.SubjectServ.GetByGradeId(this.GradeModalImportToId, this.DomainName).subscribe((d) => {
+      this.SubjectsImportToModal = d
+    })
+  }
+  
   GetSemesterModalData() {
     this.SemestersModal = []
     this.SemesterServ.GetByAcademicYearId(this.AcademicYearModalId, this.DomainName).subscribe((d) => {
@@ -327,10 +442,24 @@ export class LessonComponent {
     })
   }
   
+  GetSemesterModalImportToData() {
+    this.SemestersImportToModal = []
+    this.SemesterServ.GetByAcademicYearId(this.AcademicYearModalImportToId, this.DomainName).subscribe((d) => {
+      this.SemestersImportToModal = d
+    })
+  }
+  
   GetWeekModalData() {
     this.WeeksModal = []
     this.SemesterWorkingWeekServ.GetBySemesterID(this.SemesterModalId, this.DomainName).subscribe((d) => {
       this.WeeksModal = d
+    })
+  }
+  
+  GetWeekModalImportToData() {
+    this.WeeksImportToModal = []
+    this.SemesterWorkingWeekServ.GetBySemesterID(this.SemesterModalImportToId, this.DomainName).subscribe((d) => {
+      this.WeeksImportToModal = d
     })
   }
   
@@ -407,6 +536,8 @@ export class LessonComponent {
   }
 
   ImportModal() { 
+    this.getSchoolModal()
+
     document.getElementById('Import_Modal')?.classList.remove('hidden');
     document.getElementById('Import_Modal')?.classList.add('flex');
   }
@@ -414,6 +545,31 @@ export class LessonComponent {
   closeImportModal() {
     document.getElementById('Import_Modal')?.classList.remove('flex');
     document.getElementById('Import_Modal')?.classList.add('hidden'); 
+
+    this.SelectedLessonImportFrom = 0
+    this.SelectedWeekImportTo = 0
+    this.SubjectModalId = 0
+    this.LessonsImportedFrom = []
+    this.AcademicYearModalId = 0
+    this.SchoolModalId = 0
+    this.GradeModalId = 0
+    this.SemesterModalId = 0 
+    this.AcademicYearsModal = []
+    this.SchoolsModal = []
+    this.GradesModal = []
+    this.SubjectsModal = []
+    this.SemestersModal = [] 
+    this.WeeksModal = []   
+    this.AcademicYearsImportToModal = []  
+    this.SchoolModalImportToId = 0 
+    this.AcademicYearModalImportToId = 0 
+    this.GradeModalImportToId = 0 
+    this.GradesImportToModal = []
+    this.SemesterModalImportToId = 0 
+    this.SemestersImportToModal = []
+    this.SubjectModalImportToId = 0 
+    this.SubjectsImportToModal = []
+    this.WeeksImportToModal = [] 
   }
 
   IsAllowDelete(InsertedByID: number) {
@@ -447,9 +603,13 @@ export class LessonComponent {
     this.ExistingTags.splice(index, 1);
   }
 
-  // moveToBuilding() {
-  //   this.router.navigateByUrl('Employee/Building');
-  // }
+  MoveToLessonActivity(lessonId:number) {
+    this.router.navigateByUrl('Employee/Lesson Activity'+ lessonId);
+  }
+
+  MoveToLessonResource(lessonId:number) {
+    this.router.navigateByUrl('Employee/Lesson Resource'+ lessonId);
+  }
 
   capitalizeField(field: keyof Lesson): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
@@ -553,6 +713,31 @@ export class LessonComponent {
         );
       }
     }
+  }
+
+  Import() {  
+    this.isLoading = true; 
+    let lesson = new Lesson()
+    lesson.subjectID = this.SubjectModalImportToId
+    lesson.toSemesterWorkingWeekID = this.SelectedWeekImportTo
+    lesson.fromLessonID = this.SelectedLessonImportFrom
+    this.lessonService.ImportLessonFrom(lesson, this.DomainName).subscribe(
+      (result: any) => {
+        this.closeImportModal();
+        this.GetAllData();
+        this.isLoading = false;
+      },
+      (error) => {
+        this.isLoading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Try Again Later!',
+          confirmButtonText: 'Okay',
+          customClass: { confirmButton: 'secondaryBg' },
+        });
+      }
+    )
   }
 
   Delete(id: number) {

@@ -24,6 +24,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PerformanceType } from '../../../../Models/LMS/performance-type';
 import { PerformanceTypeService } from '../../../../Services/Employee/LMS/performance-type.service';
+import { DailyPerformanceService } from '../../../../Services/Employee/LMS/daily-performance.service';
+import Swal from 'sweetalert2';
+import { StudentPerformance } from '../../../../Models/LMS/student-performance';
 
 @Component({
   selector: 'app-daily-performance',
@@ -33,7 +36,7 @@ import { PerformanceTypeService } from '../../../../Services/Employee/LMS/perfor
   styleUrl: './daily-performance.component.css'
 })
 export class DailyPerformanceComponent {
- User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
+  User_Data_After_Login: TokenData = new TokenData('', 0, 0, 0, 0, '', '', '', '', '');
 
   File: any;
   DomainName: string = '';
@@ -48,9 +51,9 @@ export class DailyPerformanceComponent {
   students: Student[] = []
   Grades: Grade[] = []
   class: Classroom[] = []
-  medals :Medal[]=[]
-  subjects :Subject[]=[]
-  PerformanceTypes :PerformanceType[]=[]
+  medals: Medal[] = []
+  subjects: Subject[] = []
+  PerformanceTypes: PerformanceType[] = []
   isLoading: boolean = false
 
   SelectedSchoolId: number = 0;
@@ -59,16 +62,24 @@ export class DailyPerformanceComponent {
   SelectedClassId: number = 0;
   SelectedSubjectId: number = 0;
 
-  TableData: DailyPerformance[]=[];
+  TableData: DailyPerformance[] = [];
   isModalVisible: boolean = false;
   mode: string = '';
 
   key: string = 'id';
   value: any = '';
-  keysArray: string[] = ['id', 'englishName' ,'arabicName'];
+  keysArray: string[] = ['id', 'englishName', 'arabicName'];
   SelectedMedalId: number | null = null;
-  IsView:boolean=false
+  IsView: boolean = false
   selectedTypeIds: number[] = []; // Array to store selected type IDs
+  dropdownOpen = false;
+  PerformanceTypesSelected: PerformanceType[] = [];
+  selectedRating: number = 0;
+  RatedStudent: DailyPerformance[] = []
+  Data :DailyPerformance =new DailyPerformance()
+  selectedStudentIds: number[] = []
+  allSelected: boolean = false
+  payload: DailyPerformance[] = []
 
   constructor(
     public activeRoute: ActivatedRoute,
@@ -82,10 +93,11 @@ export class DailyPerformanceComponent {
     private studentServ: StudentService,
     private GradeServ: GradeService,
     private ClassroomServ: ClassroomService,
-    public studentMedalServ : StudentMedalService ,
-    public MedalServ : MedalService ,
-    public subjectServ :SubjectService ,
-    public PerformanceTypeServ :PerformanceTypeService
+    public studentMedalServ: StudentMedalService,
+    public MedalServ: MedalService,
+    public subjectServ: SubjectService,
+    public PerformanceTypeServ: PerformanceTypeService,
+    public StudentPerformanceServ: DailyPerformanceService
   ) { }
 
   ngOnInit() {
@@ -108,35 +120,52 @@ export class DailyPerformanceComponent {
   }
 
   getAllSchools() {
-    this.schools=[]
+    this.schools = []
     this.SchoolServ.Get(this.DomainName).subscribe((d) => {
       this.schools = d
     })
   }
 
   View() {
-    this.IsView=true
-    this.getAllPerformanceType()
-    this.students=[]
-    this.studentServ.GetBySchoolGradeClassID(this.SelectedSchoolId,this.SelectedGradeId,this.SelectedClassId, this.DomainName).subscribe((d: any) => {
-      console.log(d)
-      this.students=d.students
-    })
+    this.IsView = true;
+    this.getAllPerformanceType();
+    this.students = [];
+    this.studentServ.GetBySchoolGradeClassID(
+      this.SelectedSchoolId,
+      this.SelectedGradeId,
+      this.SelectedClassId,
+      this.DomainName
+    ).subscribe((d: any) => {
+      this.students = d.students;
+      this.RatedStudent = [];
+      for (let student of this.students) {
+        for (let type of this.PerformanceTypesSelected) {
+          this.RatedStudent.push({
+            id: 0,
+            studentID: student.id,
+            subjectID: this.SelectedSubjectId,
+            studentPerformance: [],
+            comment :"",
+            insertedByUserId: 0
+          });
+        }
+      }
+    });
   }
 
-  getAllSubject(){
-    this.subjects=[]
-    this.SelectedSubjectId=0
-    this.subjectServ.GetByGradeId(this.SelectedGradeId,this.DomainName).subscribe((d)=>{
-      this.subjects=d
+  getAllSubject() {
+    this.subjects = []
+    this.SelectedSubjectId = 0
+    this.subjectServ.GetByGradeId(this.SelectedGradeId, this.DomainName).subscribe((d) => {
+      this.subjects = d
     })
   }
 
   getAllGradesBySchoolId() {
     this.Grades = []
-    this.IsView=false
-    this.SelectedGradeId=0
-    this.SelectedClassId=0
+    this.IsView = false
+    this.SelectedGradeId = 0
+    this.SelectedClassId = 0
     this.GradeServ.GetBySchoolId(this.SelectedSchoolId, this.DomainName).subscribe((d) => {
       this.Grades = d
     })
@@ -148,17 +177,153 @@ export class DailyPerformanceComponent {
 
   getAllClassByGradeId() {
     this.class = []
-    this.SelectedClassId=0
-    this.IsView=false
+    this.SelectedClassId = 0
+    this.IsView = false
     this.ClassroomServ.GetByGradeId(this.SelectedGradeId, this.DomainName).subscribe((d) => {
       this.class = d
     })
   }
 
-  getAllPerformanceType(){
-    this.PerformanceTypes=[]
-    this.PerformanceTypeServ.Get(this.DomainName).subscribe((d)=>{
-      this.PerformanceTypes=d
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  selectType(Type: PerformanceType): void {
+    if (!this.PerformanceTypesSelected.some((e) => e.id === Type.id)) {
+      this.PerformanceTypesSelected.push(Type);
+      for (let student of this.RatedStudent) {
+        student.studentPerformance.push({
+          id: 0,
+          performanceTypeID: Type.id,
+          dailyPerformanceID: 0,
+          stars: 0,
+          insertedByUserId: 0
+        });
+      }
+    }
+    this.dropdownOpen = false;
+  }
+
+  removeSelected(id: number): void {
+    this.PerformanceTypesSelected = this.PerformanceTypesSelected.filter((e) => e.id !== id);
+    this.RatedStudent = this.RatedStudent.filter((e) => e.studentPerformance.filter((s)=>s.performanceTypeID !== id) );
+  }
+
+  getAllPerformanceType() {
+    this.PerformanceTypes = []
+    this.PerformanceTypeServ.Get(this.DomainName).subscribe((d) => {
+      this.PerformanceTypes = d
     })
+  }
+
+  setStar(star: number) {
+    this.selectedRating = star;
+  }
+
+  setRating(studentId: number, performanceTypeId: number, stars: number) {
+    const updatedIds = new Set<number>();
+    const self = this.RatedStudent.find(e => e.studentID === studentId);
+    if (self) {
+      const performance = self.studentPerformance.find(p => p.performanceTypeID === performanceTypeId);
+      if (performance) {
+        performance.stars = stars;
+        updatedIds.add(studentId);
+      }
+    }
+    if (this.selectedStudentIds.length > 0) {
+      this.selectedStudentIds.forEach(id => {
+        if (updatedIds.has(id)) return;
+        const daily = this.RatedStudent.find(e => e.studentID === id);
+        if (daily) {
+          const performance = daily.studentPerformance.find(p => p.performanceTypeID === performanceTypeId);
+          if (performance) {
+            performance.stars = stars;
+          }
+        }
+      });
+    }
+  }
+
+  getStars(studentId: number, typeId: number): number {
+    const daily = this.RatedStudent.find(e => e.studentID === studentId);
+    const perf = daily?.studentPerformance.find(p => p.performanceTypeID === typeId);
+    return perf?.stars ?? 0;
+  }
+
+  toggleSelectAll(event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.allSelected = isChecked;
+    this.selectedStudentIds = isChecked ? this.students.map(s => s.id) : [];
+  }
+
+  submitRatings() {
+    //  this.payload = this.RatedStudent.map(({ id, insertedByUserId, ...rest }) => rest);
+    console.log(this.RatedStudent)
+    this.StudentPerformanceServ.Add(this.RatedStudent, this.DomainName).subscribe((d) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Done',
+        text: 'Saved Succeessfully',
+        confirmButtonColor: '#FF7519',
+      });
+      this.router.navigateByUrl(`Employee/Daily Performance`)
+    })
+  }
+
+  isStudentSelected(id: number): boolean {
+    return this.selectedStudentIds.includes(id);
+  }
+
+  toggleStudentSelection(event: Event, id: number): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    if (isChecked) {
+      this.selectedStudentIds.push(id);
+    } else {
+      this.selectedStudentIds = this.selectedStudentIds.filter(x => x !== id);
+    }
+    this.allSelected = this.selectedStudentIds.length === this.students.length;
+  }
+
+  Applay() {
+    for (let studentId of this.selectedStudentIds) {
+      const daily = this.RatedStudent.find(e => e.studentID === studentId);
+      if (!daily) continue;
+      for (let type of this.PerformanceTypesSelected) {
+        const performance = daily.studentPerformance.find(p => p.performanceTypeID === type.id);
+        if (performance) {
+          performance.stars = this.selectedRating;
+        }
+      }
+    }
+  }
+
+  selectMedal(id: number) {
+    this.SelectedMedalId = id;
+  }
+
+  GetAllMedals() {
+    this.medals = []
+    this.MedalServ.Get(this.DomainName).subscribe((d) => {
+      this.medals = d
+    })
+  }
+
+  Create() {
+    this.mode = 'Create';
+    this.GetAllMedals()
+    this.openModal();
+  }
+
+  
+  closeModal() {
+    this.isModalVisible = false;
+  }
+
+  openModal() {
+    this.isModalVisible = true;
+  }
+  
+  Save(){
+
   }
 }

@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using LMS_CMS_BL.UOW;
 using LMS_CMS_DAL.Models.Octa;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -36,9 +37,13 @@ namespace LMS_CMS_PL.Middleware
 
                 var domain = await dbContext.Domains.FirstOrDefaultAsync(d => d.Name == domainName);
 
+                //SqlConnection con = new SqlConnection(context.Items["ConnectionString"].ToString());
+                //con.Database = "bvksjhgkjsdhgkshg";
+
                 if (domain != null)
                 {
                     context.Items["ConnectionString"] = domain.ConnectionString;
+                    //context.Items["ConnectionString"] = con.ConnectionString;
                 }
                 else
                 {

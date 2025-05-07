@@ -31,10 +31,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("GetByLessonID/{id}")]
-        [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Lesson Activity" }
-        )]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "Lesson Activity" }
+        //)]
         public async Task<IActionResult> GetAsync(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -74,10 +74,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpGet("GetById/{id}")]
-        [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Lesson Activity" }
-        )]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "Lesson Activity" }
+        //)]
         public async Task<IActionResult> GetById(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -108,10 +108,10 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPost]
-        [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            pages: new[] { "Lesson Activity" }
-        )]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    pages: new[] { "Lesson Activity" }
+        //)]
         public async Task<IActionResult> Add([FromForm] LessonActivityAddDTO NewLessonActivity)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -187,11 +187,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpPut]
-        [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            allowEdit: 1,
-            pages: new[] { "Lesson Activity" }
-        )]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    allowEdit: 1,
+        //    pages: new[] { "Lesson Activity" }
+        //)]
         public async Task<IActionResult> Edit([FromForm] LessonActivityPutDTO EditLessonActivity)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -230,14 +230,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return NotFound("No Lesson Activity with this ID");
             }
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Lesson Activity", roleId, userId, lessonActivityExists);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfEditPageAvailable(Unit_Of_Work, "Lesson Activity", roleId, userId, lessonActivityExists);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             string enNameExists = lessonActivityExists.EnglishTitle;
             string AttachmentLinkExists = lessonActivityExists.AttachmentLink;
@@ -425,11 +425,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         [HttpDelete("{id}")]
-        [Authorize_Endpoint_(
-            allowedTypes: new[] { "octa", "employee" },
-            allowDelete: 1,
-            pages: new[] { "Lesson Activity" }
-        )]
+        //[Authorize_Endpoint_(
+        //    allowedTypes: new[] { "octa", "employee" },
+        //    allowDelete: 1,
+        //    pages: new[] { "Lesson Activity" }
+        //)]
         public IActionResult Delete(long id)
         {
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
@@ -458,14 +458,14 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
                 return NotFound();
             }
 
-            if (userTypeClaim == "employee")
-            {
-                IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Lesson Activity", roleId, userId, lessonActivity);
-                if (accessCheck != null)
-                {
-                    return accessCheck;
-                }
-            }
+            //if (userTypeClaim == "employee")
+            //{
+            //    IActionResult? accessCheck = _checkPageAccessService.CheckIfDeletePageAvailable(Unit_Of_Work, "Lesson Activity", roleId, userId, lessonActivity);
+            //    if (accessCheck != null)
+            //    {
+            //        return accessCheck;
+            //    }
+            //}
 
             lessonActivity.IsDeleted = true;
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

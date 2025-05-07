@@ -289,11 +289,11 @@ namespace LMS_CMS_PL.Controllers.Domains.LMS
             }
 
             Lesson lesson = new Lesson();
-            lesson.SubjectID = LessonExists.SubjectID;
             lesson.Order = LessonExists.Order;
             lesson.ArabicTitle = LessonExists.ArabicTitle;
             lesson.EnglishTitle = LessonExists.EnglishTitle;
             lesson.Details = LessonExists.Details;
+            lesson.SubjectID = ImportLesson.SubjectID;
             lesson.SemesterWorkingWeekID = ImportLesson.ToSemesterWorkingWeekID;
              
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");

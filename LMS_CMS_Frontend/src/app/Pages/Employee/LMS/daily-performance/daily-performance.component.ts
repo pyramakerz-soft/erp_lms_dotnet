@@ -26,6 +26,7 @@ import { PerformanceType } from '../../../../Models/LMS/performance-type';
 import { PerformanceTypeService } from '../../../../Services/Employee/LMS/performance-type.service';
 import { DailyPerformanceService } from '../../../../Services/Employee/LMS/daily-performance.service';
 import Swal from 'sweetalert2';
+import { StudentPerformance } from '../../../../Models/LMS/student-performance';
 
 @Component({
   selector: 'app-daily-performance',
@@ -75,6 +76,7 @@ export class DailyPerformanceComponent {
   PerformanceTypesSelected: PerformanceType[] = [];
   selectedRating: number = 0;
   RatedStudent: DailyPerformance[] = []
+  Data :DailyPerformance =new DailyPerformance()
   selectedStudentIds: number[] = []
   allSelected: boolean = false
   payload: DailyPerformance[] = []
@@ -141,9 +143,9 @@ export class DailyPerformanceComponent {
           this.RatedStudent.push({
             id: 0,
             studentID: student.id,
-            performanceTypeID: type.id,
             subjectID: this.SelectedSubjectId,
-            stars: 0,
+            studentPerformance: [],
+            comment :"",
             insertedByUserId: 0
           });
         }
@@ -189,12 +191,11 @@ export class DailyPerformanceComponent {
   selectType(Type: PerformanceType): void {
     if (!this.PerformanceTypesSelected.some((e) => e.id === Type.id)) {
       this.PerformanceTypesSelected.push(Type);
-      for (let student of this.students) {
-        this.RatedStudent.push({
+      for (let student of this.RatedStudent) {
+        student.studentPerformance.push({
           id: 0,
-          studentID: student.id,
           performanceTypeID: Type.id,
-          subjectID: this.SelectedSubjectId,
+          dailyPerformanceID: 0,
           stars: 0,
           insertedByUserId: 0
         });
@@ -205,7 +206,7 @@ export class DailyPerformanceComponent {
 
   removeSelected(id: number): void {
     this.PerformanceTypesSelected = this.PerformanceTypesSelected.filter((e) => e.id !== id);
-    this.RatedStudent = this.RatedStudent.filter((e) => e.performanceTypeID !== id);
+    this.RatedStudent = this.RatedStudent.filter((e) => e.studentPerformance.filter((s)=>s.performanceTypeID !== id) );
   }
 
   getAllPerformanceType() {
@@ -221,30 +222,32 @@ export class DailyPerformanceComponent {
 
   setRating(studentId: number, performanceTypeId: number, stars: number) {
     const updatedIds = new Set<number>();
-    const self = this.RatedStudent.find(e =>
-      e.studentID === studentId && e.performanceTypeID === performanceTypeId
-    );
+    const self = this.RatedStudent.find(e => e.studentID === studentId);
     if (self) {
-      self.stars = stars;
-      updatedIds.add(studentId);
+      const performance = self.studentPerformance.find(p => p.performanceTypeID === performanceTypeId);
+      if (performance) {
+        performance.stars = stars;
+        updatedIds.add(studentId);
+      }
     }
     if (this.selectedStudentIds.length > 0) {
       this.selectedStudentIds.forEach(id => {
         if (updatedIds.has(id)) return;
-        const item = this.RatedStudent.find(e =>
-          e.studentID === id && e.performanceTypeID === performanceTypeId
-        );
-        if (item) item.stars = stars;
+        const daily = this.RatedStudent.find(e => e.studentID === id);
+        if (daily) {
+          const performance = daily.studentPerformance.find(p => p.performanceTypeID === performanceTypeId);
+          if (performance) {
+            performance.stars = stars;
+          }
+        }
       });
     }
   }
 
-
   getStars(studentId: number, typeId: number): number {
-    const item = this.RatedStudent.find(e =>
-      e.studentID === studentId && e.performanceTypeID === typeId
-    );
-    return item?.stars ?? 0;
+    const daily = this.RatedStudent.find(e => e.studentID === studentId);
+    const perf = daily?.studentPerformance.find(p => p.performanceTypeID === typeId);
+    return perf?.stars ?? 0;
   }
 
   toggleSelectAll(event: Event): void {
@@ -283,12 +286,12 @@ export class DailyPerformanceComponent {
 
   Applay() {
     for (let studentId of this.selectedStudentIds) {
+      const daily = this.RatedStudent.find(e => e.studentID === studentId);
+      if (!daily) continue;
       for (let type of this.PerformanceTypesSelected) {
-        const item = this.RatedStudent.find(e =>
-          e.studentID === studentId && e.performanceTypeID === type.id
-        );
-        if (item) {
-          item.stars = this.selectedRating; // Again, replace with actual per-type rating if needed
+        const performance = daily.studentPerformance.find(p => p.performanceTypeID === type.id);
+        if (performance) {
+          performance.stars = this.selectedRating;
         }
       }
     }

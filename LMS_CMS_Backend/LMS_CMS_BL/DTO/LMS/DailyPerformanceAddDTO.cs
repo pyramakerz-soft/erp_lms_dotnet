@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_BL.DTO.LMS
 {
-    public class StudentPerformanceAddDTO
+    public class DailyPerformanceAddDTO
     {
-        public long PerformanceTypeID { get; set; }
-        public int Stars { get; set; }
+        public string? Comment { get; set; }
+        public long SubjectID { get; set; }
+        public long StudentID { get; set; }
+        public List<StudentPerformanceAddDTO> StudentPerformance { get; set; } 
     }
 }

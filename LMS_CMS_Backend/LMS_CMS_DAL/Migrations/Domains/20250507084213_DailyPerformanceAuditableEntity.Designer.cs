@@ -4,6 +4,7 @@ using LMS_CMS_DAL.Models.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS_CMS_DAL.Migrations.Domains
 {
     [DbContext(typeof(LMS_CMS_Context))]
-    partial class LMS_CMS_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250507084213_DailyPerformanceAuditableEntity")]
+    partial class DailyPerformanceAuditableEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4788,9 +4791,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<long>("StudentID")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("SubjectID")
                         .HasColumnType("bigint");
 
@@ -4808,8 +4808,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.HasIndex("DeletedByUserId");
 
                     b.HasIndex("InsertedByUserId");
-
-                    b.HasIndex("StudentID");
 
                     b.HasIndex("SubjectID");
 
@@ -6789,7 +6787,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Property<int>("Stars")
                         .HasColumnType("int");
 
-                    b.Property<long?>("StudentID")
+                    b.Property<long>("StudentID")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("SubjectID")
@@ -8548,10 +8546,7 @@ namespace LMS_CMS_DAL.Migrations.Domains
             modelBuilder.Entity("LMS_CMS_DAL.Models.Domains.Zatca.SchoolPCs", b =>
                 {
                     b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
 
                     b.Property<DateOnly?>("CertificateDate")
                         .HasColumnType("date");
@@ -10926,12 +10921,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .WithMany()
                         .HasForeignKey("InsertedByUserId");
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Student", "Student")
-                        .WithMany("DailyPerformance")
-                        .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Subject", "Subject")
                         .WithMany("DailyPerformance")
                         .HasForeignKey("SubjectID")
@@ -10945,8 +10934,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("DeletedByEmployee");
 
                     b.Navigation("InsertedByEmployee");
-
-                    b.Navigation("Student");
 
                     b.Navigation("Subject");
 
@@ -11866,9 +11853,11 @@ namespace LMS_CMS_DAL.Migrations.Domains
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Student", null)
+                    b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Student", "Student")
                         .WithMany("StudentPerformances")
-                        .HasForeignKey("StudentID");
+                        .HasForeignKey("StudentID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("LMS_CMS_DAL.Models.Domains.LMS.Subject", null)
                         .WithMany("StudentPerformances")
@@ -11885,6 +11874,8 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("InsertedByEmployee");
 
                     b.Navigation("PerformanceType");
+
+                    b.Navigation("Student");
 
                     b.Navigation("UpdatedByEmployee");
                 });
@@ -13183,8 +13174,6 @@ namespace LMS_CMS_DAL.Migrations.Domains
                     b.Navigation("BusStudents");
 
                     b.Navigation("Carts");
-
-                    b.Navigation("DailyPerformance");
 
                     b.Navigation("EmployeeStudents");
 

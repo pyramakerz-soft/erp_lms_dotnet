@@ -15,19 +15,6 @@ export class DailyPerformanceService {
     this.baseUrl = ApiServ.BaseUrl
   }
 
-
-  Get(DomainName:string) {
-    if(DomainName!=null) {
-      this.header=DomainName 
-    }
-    const token = localStorage.getItem("current_token");
-    const headers = new HttpHeaders()
-      .set('domain-name', this.header)
-      .set('Authorization', `Bearer ${token}`)
-      .set('Content-Type', 'application/json');
-    return this.http.get<DailyPerformance[]>(`${this.baseUrl}/StudentPerformance`, { headers })
-  }
-
   Add(StudentPerformance: DailyPerformance[],DomainName:string) {
     if(DomainName!=null) {
       this.header=DomainName 
@@ -38,7 +25,7 @@ export class DailyPerformanceService {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
 
-    return this.http.post(`${this.baseUrl}/StudentPerformance`, StudentPerformance, {
+    return this.http.post(`${this.baseUrl}/DailyPerformance`, StudentPerformance, {
       headers: headers,
       responseType: 'text' as 'json'
     });

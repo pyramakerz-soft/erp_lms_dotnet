@@ -11,7 +11,6 @@ using Zatca.EInvoice.SDK.Contracts.Models;
 using Zatca.EInvoice.SDK;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.IdentityModel.Tokens;
-using System.Net.NetworkInformation;
 using System.Drawing;
 using ZXing.Windows.Compatibility;
 
@@ -187,9 +186,16 @@ namespace LMS_CMS_PL.Services.Invoice
             return response;
         }
 
-        public static bool GenerateXML(InventoryMaster master, string lastInvoiceHash, long pcId)
+        public static bool GenerateInvoiceXML(InventoryMaster master, string lastInvoiceHash)
         {
-            string invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XML");
+            string invoices = string.Empty;
+
+            if (master.FlagId == 11)
+                invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XMLInvoices");
+
+            if (master.FlagId == 12)
+                invoices = Path.Combine(Directory.GetCurrentDirectory(), "Invoices/XMLCredits");
+
             string examplePath = Path.Combine(Directory.GetCurrentDirectory(), "Services/Invoice");
             string csr = Path.Combine(Directory.GetCurrentDirectory(), $"Invoices/CSRs/PC-{master.SchoolPCId}-{master.SchoolId}");
 
@@ -203,10 +209,16 @@ namespace LMS_CMS_PL.Services.Invoice
             string date = invDate.ToString("yyyy-MM-dd");
             string time = invDate.ToString("HH:mm:ss");
 
-            string newXmlPath = Path.Combine(invoices, $"{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{master.ID}.xml");
-            string tempXmlPath = Path.Combine(examplePath, "INV001.xml");
+            string newXmlPath = Path.Combine(invoices, $"{master.School.CRN}_{date.Replace("-", "")}T{time.Replace(":", "")}_{date}-{master.StoreID}_{master.FlagId}_{master.ID}.xml");
             string certPath = Path.Combine(csr, "PCSID.json");
             string privateKeyPath = Path.Combine(csr, "PrivateKey.pem");
+
+            string tempXmlPath = string.Empty;
+            if (master.FlagId == 11)
+                tempXmlPath = Path.Combine(examplePath, "INV001.xml");
+
+            if (master.FlagId == 12)
+                tempXmlPath = Path.Combine(examplePath, "Credit.xml");
 
             File.Copy(tempXmlPath, newXmlPath, true);
 
@@ -242,9 +254,23 @@ namespace LMS_CMS_PL.Services.Invoice
             if (master.IsVisa == true)
                 AddValue(inv, "//cac:PaymentMeans/cbc:PaymentMeansCode", "48", nsMgr);
 
-            AddValue(inv, "//cbc:ID[text()='SME00001']", $"INV{master.ID.ToString()}", nsMgr);
-            AddValue(inv, "//cbc:UUID", master.uuid, nsMgr);
-            AddValue(inv, "//cac:AdditionalDocumentReference/cbc:UUID", master.ID.ToString(), nsMgr);
+            if (master.FlagId == 11)
+            {
+                AddValue(inv, "//cbc:ID[text()='SME00001']", master.InvoiceNumber, nsMgr);
+                AddValue(inv, "//cac:AllowanceCharge/cac:TaxCategory[1]/cbc:Percent", (master.VatPercent * 100).ToString(), nsMgr);
+                AddValue(inv, "//cac:AllowanceCharge/cac:TaxCategory[2]/cbc:Percent", (master.VatPercent * 100).ToString(), nsMgr);
+            }
+
+            if (master.FlagId == 12)
+            {
+                AddValue(inv, "//cbc:ID[text()='123456']", master.InvoiceNumber, nsMgr);
+                AddValue(inv, "//cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID", master.InvoiceNumber, nsMgr);
+                AddValue(inv, "//cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:Percent", (master.VatPercent * 100).ToString(), nsMgr);
+                AddValue(inv, "//cac:PaymentMeans/cbc:InstructionNote[1]", "Return", nsMgr);
+                AddValue(inv, "//cac:PaymentMeans/cbc:InstructionNote[2]", "مرتجع", nsMgr);
+            }
+
+            AddValue(inv, "//cac:AdditionalDocumentReference/cbc:UUID", master.InvoiceNumber, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID", master.School.CRN, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName", master.School.StreetName, nsMgr);
             AddValue(inv, "//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingNumber", "00"+master.School.BuildingNumber, nsMgr);
@@ -257,8 +283,7 @@ namespace LMS_CMS_PL.Services.Invoice
             AddValue(inv, "(//cac:TaxTotal)[2]/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
             AddValue(inv, "//cac:TaxSubtotal/cbc:TaxableAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:TaxSubtotal/cbc:TaxAmount", master.VatAmount.ToString(), nsMgr);
-            AddValue(inv, "//cac:AllowanceCharge/cac:TaxCategory[1]/cbc:Percent", (master.VatPercent * 100).ToString(), nsMgr);
-            AddValue(inv, "//cac:AllowanceCharge/cac:TaxCategory[2]/cbc:Percent", (master.VatPercent * 100).ToString(), nsMgr);
+            
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:LineExtensionAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount", master.Total.ToString(), nsMgr);
             AddValue(inv, "//cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount", master.TotalWithVat.ToString(), nsMgr);
@@ -266,9 +291,10 @@ namespace LMS_CMS_PL.Services.Invoice
 
             XmlElement root = inv.DocumentElement;
 
+            int counter = 0;
+
             foreach (InventoryDetails itemDetail in master.InventoryDetails)
             {
-                int counter = 0;
                 decimal itemTotalPriceWithVat = itemDetail.TotalPrice + (decimal)(itemDetail.TotalPrice * master.VatPercent);
                 XmlElement invoiceLine = inv.CreateElement("cac", "InvoiceLine", nsMgr.LookupNamespace("cac"));
 
@@ -650,7 +676,7 @@ namespace LMS_CMS_PL.Services.Invoice
             }
             else
             {
-                throw new Exception("SignatureValue node not found.");
+                throw new Exception("XML node not found.");
             }
         }
 

@@ -1,0 +1,111 @@
+<div class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
+    <table class="w-full bg-[#EBEBEB] text-left text-[#6F6F6F]">
+        <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">
+            <tr>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Student
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Attendance
+                </th>
+                <!-- Conditionally render the "Select All" column -->
+                <th *ngIf="showSelectAll"
+                    class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Select All
+                </th>
+                <th *ngFor="let hygieneType of hygieneTypes"
+                    class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    {{ hygieneType.type }}
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Comment
+                </th>
+                <th class="py-3 px-4 min-w-[120px] whitespace-nowrap border border-[#EAECF0] border-t-0 border-l-0">
+                    Action Taken
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- No Data Row -->
+            <tr *ngIf="students.length === 0">
+                <td [attr.colspan]="hygieneTypes.length + (showSelectAll ? 5 : 4)"
+                    class="bg-white px-4 py-2 h-[72px] text-center border-t border-gray-300 text-xs md:text-sm">
+                    No Data Found
+                </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let student of students; let i = index"
+                [ngClass]="{'bg-[#F7F7F7]': i % 2 === 1, 'bg-white': i % 2 !== 1}"
+                class="border-t border-gray-300 text-xs md:text-sm">
+                <!-- Student Name -->
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">{{ student.en_name }}</td>
+
+                <!-- Attendance -->
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" [(ngModel)]="student['attendance']" (ngModelChange)="onAttendanceChange(student)"
+                            class="sr-only peer" [disabled]="isViewOnly">
+                        <div
+                            class="relative w-11 h-6 bg-[#EAECF0] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#FF7519]/50 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF7519]">
+                        </div>
+                    </label>
+                </td>
+
+<!-- Select All for Row (Conditionally Rendered) -->
+<td *ngIf="showSelectAll" class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+    <div class="flex gap-2">
+        <!-- Select All True -->
+        <button (click)="setAllHygieneTypesForStudent(student, true)"
+            [disabled]="isViewOnly || student['attendance'] !== true"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-white bg-gray-300" [ngClass]="{
+                    'bg-green-500': !isViewOnly && student['attendance'] === true && student['hygieneTypeSelectAll'] === true,
+                }">
+            <i class="fas fa-check"></i>
+        </button>
+        <!-- Select All False -->
+        <button (click)="setAllHygieneTypesForStudent(student, false)"
+            [disabled]="isViewOnly || student['attendance'] !== true"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-white bg-gray-300" [ngClass]="{
+                    'bg-red-500': !isViewOnly && student['attendance'] === true && student['hygieneTypeSelectAll'] === false,
+                }">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</td>
+
+                <!-- Hygiene Types -->
+                <td *ngFor="let hygieneType of hygieneTypes"
+                    class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <div class="flex gap-2">
+                        <!-- True Button -->
+                        <button (click)="setHygieneType(student, hygieneType.id, true)" [disabled]="isViewOnly"
+                            [ngClass]="{'bg-green-500': student['hygieneType_' + hygieneType.id] === true,
+                             'bg-gray-300': student['hygieneType_' + hygieneType.id] !== true}"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-white">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <!-- False Button -->
+                        <button (click)="setHygieneType(student, hygieneType.id, false)" [disabled]="isViewOnly"
+                            [ngClass]="{'bg-red-500': student['hygieneType_' + hygieneType.id] === false, 'bg-gray-300': student['hygieneType_' + hygieneType.id] !== false}"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </td>
+
+                <!-- Comment -->
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <input type="text" [(ngModel)]="student['comment']" [disabled]="isViewOnly"
+                        class="w-full rounded-md border-gray-300 p-1.5 shadow-sm" />
+                </td>
+
+                <!-- Action Taken -->
+                <td class="py-5 px-4 border border-[#EAECF0] border-t-0 border-l-0">
+                    <input type="text" [(ngModel)]="student['actionTaken']" [disabled]="isViewOnly"
+                        class="w-full rounded-md border-gray-300 p-1.5 shadow-sm" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

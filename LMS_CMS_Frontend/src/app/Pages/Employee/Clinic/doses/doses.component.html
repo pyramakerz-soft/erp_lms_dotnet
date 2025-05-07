@@ -1,0 +1,30 @@
+<div class="">
+    <div class="flex justify-between items-center">
+        <h1 class="primaryTxt font-semibold text-2xl leading-9">Doses</h1>
+        <div class="flex justify-between items-center">
+            <app-search [keysArray]="keysArray" (searchEvent)="onSearchEvent($event)"></app-search>
+            <button (click)="openModal()"
+                class="rounded-lg px-4 py-3 flex items-center justify-center gap-2 secondaryBorder secondaryTxt">
+                Create Doses
+            </button>
+        </div>
+    </div>
+
+    <app-table [headers]="['ID', 'Doses', 'Date', 'Actions']" [data]="doses" [keys]="['id', 'doseTimes', 'insertedAt']"
+        (delete)="deleteDose($event)" (edit)="openModal($event.id)">
+    </app-table>
+
+    <app-modal [title]="editDose ? 'Dose' : 'Create Dose'" [isEditMode]="editDose"
+        [buttonText]="editDose ? 'Save' : 'Create'" (save)="saveDose()" (close)="closeModal()"
+        [ngClass]="{ hidden: !isModalVisible }">
+        <div class="flex flex-col w-full mb-4">
+            <label class="mb-2 primaryTxt" for="name">Dose Name</label>
+            <input id="name" type="text" class="rounded-lg border border-solid border-gray-300 px-4 py-3"
+                placeholder="Enter Dose Times" [(ngModel)]="dose.doseTimes"
+                (ngModelChange)="onInputValueChange({ field: 'doseTimes', value: $event })" />
+            <span *ngIf="validationErrors['doseTimes']" class="text-red-500 ml-3 font-normal">
+                {{ validationErrors['doseTimes'] }}
+            </span>
+        </div>
+    </app-modal>
+</div>

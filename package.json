@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@types/xlsx": "^0.0.36",
+    "exceljs": "^4.4.0",
+    "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.10.3",
+    "xlsx": "^0.18.5"
+  }
+}

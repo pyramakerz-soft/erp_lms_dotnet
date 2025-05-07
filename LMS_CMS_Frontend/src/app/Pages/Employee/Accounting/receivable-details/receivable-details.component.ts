@@ -21,6 +21,7 @@ import { LinkFileService } from '../../../../Services/Employee/Accounting/link-f
 import { DataAccordingToLinkFileService } from '../../../../Services/Employee/Accounting/data-according-to-link-file.service';
 import Swal from 'sweetalert2';
 import html2pdf from 'html2pdf.js';
+
 import { PdfPrintComponent } from '../../../../Component/pdf-print/pdf-print.component';
 import { ReportsService } from '../../../../Services/shared/reports.service';
 
@@ -75,6 +76,7 @@ export class ReceivableDetailsComponent {
     private router: Router, private menuService: MenuService, public activeRoute: ActivatedRoute, public account: AccountService, public receivableDocTypeService: ReceivableDocTypeService,
     public DomainServ: DomainService, public EditDeleteServ: DeleteEditPermissionService, public ApiServ: ApiService, public receivableService: ReceivableService,
     public bankService: BankService, public saveService: SaveService, public receivableDetailsService: ReceivableDetailsService, public linkFileService: LinkFileService,
+
     public dataAccordingToLinkFileService: DataAccordingToLinkFileService, public reportsService: ReportsService) { }
 
   ngOnInit() {
@@ -413,6 +415,7 @@ export class ReceivableDetailsComponent {
       }
     });
   }
+
 
   // DownloadData() {
   //   let orderElement = document.getElementById('DataToDownload');

@@ -27,6 +27,25 @@ namespace LMS_CMS_PL.Controllers.Domains.Inventory
             this.mapper = mapper;
         }
 
+        [HttpGet]
+        [Authorize_Endpoint_(
+           allowedTypes: new[] { "octa", "employee" },
+           pages: new[] { "Inventory" }
+       )]
+        public async Task<IActionResult> GetAll()
+        {
+            UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
+
+            List<InventoryFlags> Data = Unit_Of_Work.inventoryFlags_Repository.Select_All();
+
+            if (Data == null)
+            {
+                return NotFound();
+            }
+
+            List<InventoryFlagGetDTO> DTO = mapper.Map<List<InventoryFlagGetDTO>>(Data);
+            return Ok(DTO);
+        }
 
 
         [HttpGet("{id}")]

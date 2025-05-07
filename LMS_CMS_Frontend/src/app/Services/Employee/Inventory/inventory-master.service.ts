@@ -135,6 +135,8 @@ export class InventoryMasterService {
 
     //   });
     // } 
+
+
     if (master.NewAttachments && master.NewAttachments.length > 0) {
       master.NewAttachments.forEach((file, index) => {
         formData.append('NewAttachments', file);
@@ -162,4 +164,114 @@ export class InventoryMasterService {
     return this.http.delete(`${this.baseUrl}/InventoryMaster/${id}`, { headers })
   }
 
+search(
+  DomainName: string,
+  storeId: number | null,  // Update parameter type to accept null
+  dateFrom: string,
+  dateTo: string,
+  flagIds: number[],
+  categoryId?: number | null,
+  subCategoryId?: number | null,
+  itemId?: number | null,
+  pageNumber: number = 1,
+  pageSize: number = 10
+) {
+  if (DomainName != null) {
+    this.header = DomainName;
+  }
+  const token = localStorage.getItem("current_token");
+  const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+
+  // Build URL with parameters
+  let url = `${this.baseUrl}/InventoryMaster/Search?DateFrom=${dateFrom}&DateTo=${dateTo}`;
+  
+  // Add storeId if provided (or skip if null for "All Stores")
+  if (storeId !== null) {
+    url += `&storeId=${storeId}`;
+  }
+  // Add each flagId as a separate parameter
+  flagIds.forEach(id => {
+    url += `&FlagIds=${id}`;
+  });
+
+  // Add categoryId if provided
+  if (categoryId !== undefined && categoryId !== null) {
+    url += `&CategoryId=${categoryId}`;
+  }
+
+  // Add subCategoryId if provided
+  if (subCategoryId !== undefined && subCategoryId !== null) {
+    url += `&SubCategoryId=${subCategoryId}`;
+  }
+
+  // Add itemId if provided
+  if (itemId !== undefined && itemId !== null) {
+    url += `&ItemId=${itemId}`;
+  }
+
+  // Add pagination parameters
+  url += `&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+
+  return this.http.get<any>(url, { headers });
 }
+ searchInvoice(
+  DomainName: string,
+  storeId: number | null,  // Updated to accept null
+  dateFrom: string,
+  dateTo: string,
+  flagIds: number[],
+  categoryId?: number | null,
+  subCategoryId?: number | null,
+  itemId?: number | null,
+  pageNumber: number = 1,
+  pageSize: number = 10
+) {
+  if (DomainName != null) {
+    this.header = DomainName;
+  }
+  const token = localStorage.getItem("current_token");
+  const headers = new HttpHeaders()
+    .set('domain-name', this.header)
+    .set('Authorization', `Bearer ${token}`)
+    .set('Content-Type', 'application/json');
+
+  // Build URL with parameters
+  let url = `${this.baseUrl}/InventoryMaster/SearchInvoice?DateFrom=${dateFrom}&DateTo=${dateTo}`;
+  
+  // Add storeId if provided (skip if null for "All Stores")
+  if (storeId !== null) {
+    url += `&StoredId=${storeId}`;
+  }
+
+  // Add each flagId as a separate parameter
+  flagIds.forEach(id => {
+    url += `&FlagIds=${id}`;
+  });
+
+  // Add categoryId if provided
+  if (categoryId !== undefined && categoryId !== null) {
+    url += `&CategoryId=${categoryId}`;
+  }
+
+  // Add subCategoryId if provided
+  if (subCategoryId !== undefined && subCategoryId !== null) {
+    url += `&SubCategoryId=${subCategoryId}`;
+  }
+
+  // Add itemId if provided
+  if (itemId !== undefined && itemId !== null) {
+    url += `&ItemId=${itemId}`;
+  }
+
+  // Add pagination parameters
+  url += `&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+
+  return this.http.get<any>(url, { headers });
+}
+ }
+ 
+
+

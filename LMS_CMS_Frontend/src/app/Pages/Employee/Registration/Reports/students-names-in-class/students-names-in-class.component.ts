@@ -190,6 +190,7 @@ export class StudentsNamesInClassComponent {
     return date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
+
   Print() {
     this.showPDF = true;
     setTimeout(() => {

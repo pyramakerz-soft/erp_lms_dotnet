@@ -70,6 +70,7 @@ export class PayableDetailsComponent {
 
   isLoading = false;
 
+
   @ViewChild(PdfPrintComponent) pdfComponentRef!: PdfPrintComponent;
   showPDF = false;
   
@@ -452,6 +453,7 @@ export class PayableDetailsComponent {
       }
     });
   }
+
 
   // DownloadData() {
   //   let orderElement = document.getElementById('DataToDownload');

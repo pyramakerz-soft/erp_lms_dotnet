@@ -62,6 +62,21 @@
     <img class="w-5 cursor-pointer" src="Icons/Print.png" (click)="Print()">
 </div>
 
+<div class="absolute -top-[9999px] -left-[9999px]">
+    <div id="Data" class="hidden">
+        <app-pdf-print *ngIf="showPDF" [school]="school" [fileName]="'List of students names in class'" [infoRows]="[
+                { keyEn: 'Class : ' + this.class.name},
+                { keyEn: 'Number of Students : ' + this.studentsCount.toString()},
+                { keyEn: 'Date : ' + this.date },
+                { keyEn: 'School : ' +  this.school.name },
+                { keyEn: 'Year : ' +this.AcademicYearName },
+                { keyEn: 'Grade : ' +this.GradeName }
+            ]" [tableHeaders]="['id', 'en_name', 'mobile', 'nationalityName', 'genderName']" [tableData]="StudentData"
+            #pdfComponentRef>
+        </app-pdf-print>
+    </div>
+</div>
+
 <div *ngIf="showTable" class="mt-5 overflow-x-auto rounded-2xl border border-[#BDBDBD]">
     <table class="w-full tabe inset-0 bg-[#EBEBEB] text-left text-[#6F6F6F]">
         <thead class="bg-[#EBEBEB] text-sm md:text-base border border-[#BDBDBD] border-t-0 border-l-0">

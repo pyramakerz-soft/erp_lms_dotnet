@@ -157,78 +157,83 @@
             class="bg-white rounded-2xl p-4 hidden absolute top-[55%] left-[30%] shadow-lg flex-col  m-auto h-auto">
             <div class="flex flex-col items-center">
                 <div>
-                    <div *ngFor="let month of calendarMonths">
-                        <div *ngIf="month.month == currentMonth">
-                            <div class="flex justify-between">
-                                <h2 class="text-lg font-bold">
-                                    {{ getMonthDate(month.month, month.year) | date: 'MMM' }} {{ month.year }}
-                                </h2>
-                                <div class="flex space-x-3 text-3xl">
-                                    <p *ngIf="currentMonth!=calendarMonths[0].month" (click)="lastMonth(); showTime()">
-                                        &lt;</p>
-                                    <p *ngIf="currentMonth!=calendarMonths[calendarMonths.length-1].month"
-                                        (click)="nextMonth(); showTime()">&gt;</p>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-7 gap-2">
-                                <div *ngFor="let day of getDaysInMonth(month.month, month.year)">
-                                    <div (click)="showTime(day)" *ngIf="isGreen(day) && (day.interviews.length != 0)"
-                                    [ngClass]="getDayClass(day)" 
-                                    class="text-center py-1 px-[5px] rounded-lg bg-[#96C68D] cursor-pointer">
-                                        {{ day.day }}
-                                    </div>
-                                    <div (click)="showTime()" *ngIf="!isGreen(day) && (day.interviews.length != 0)"
-                                    [ngClass]="getDayClass(day)" 
-                                        class="text-center py-1 px-[5px] rounded-lg bg-[#EA3A3D80]">
-                                        {{ day.day }}
-                                    </div>
-                                    <div (click)="showTime()" class="text-center py-1 px-[5px] rounded-lg"
-                                        *ngIf="day.interviews.length == 0">
-                                        {{ day.day }}
+                    <div *ngIf="calendarMonths.length == 0" class="font-medium">
+                        No Interviews Yet
+                    </div>
+                    <div *ngIf="calendarMonths.length != 0">
+                        <div *ngFor="let month of calendarMonths">
+                            <div *ngIf="month.month == currentMonth">
+                                <div class="flex justify-between">
+                                    <h2 class="text-lg font-bold">
+                                        {{ getMonthDate(month.month, month.year) | date: 'MMM' }} {{ month.year }}
+                                    </h2>
+                                    <div class="flex space-x-3 text-3xl">
+                                        <p *ngIf="currentMonth!=calendarMonths[0].month" (click)="lastMonth(); showTime()">
+                                            &lt;</p>
+                                        <p *ngIf="currentMonth!=calendarMonths[calendarMonths.length-1].month"
+                                            (click)="nextMonth(); showTime()">&gt;</p>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div id="timePart" class="w-full mt-3 hidden">
-                                <table class="w-full mt-3 table-auto">
-                                    <thead>
-                                        <tr>
-                                            <th class="px-2 py-1 font-semibold">From</th>
-                                            <th class="px-2 py-1 font-semibold">To</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let interview of ToChooseFromInterviewTimeTable">
-                                            <td class="px-4 py-2">
-                                                <p *ngIf="interview.capacity != interview.reserved"
-                                                    class="py-1 px-2 bg-[#96C68D] rounded-md">
-                                                    {{ interview.fromTime }}
-                                                </p>
-                                                <p *ngIf="interview.capacity == interview.reserved"
-                                                    class="py-1 px-2 bg-[#EA3A3D80] rounded-md">
-                                                    {{ interview.fromTime }}
-                                                </p>
-                                            </td>
-                                            <td class="px-4 py-2">
-                                                <p *ngIf="interview.capacity != interview.reserved"
-                                                    class="py-1 px-2 bg-[#96C68D] rounded-md">
-                                                    {{ interview.toTime }}
-                                                </p>
-                                                <p *ngIf="interview.capacity == interview.reserved"
-                                                    class="py-1 px-2 bg-[#EA3A3D80] rounded-md">
-                                                    {{ interview.toTime }}
-                                                </p>
-                                            </td>
-                                            <td class="px-4 py-2"> 
-                                                <button (click)="ChooseInterviewTime(interview)" *ngIf="interview.capacity != interview.reserved">
-                                                    <i class="far fa-check-circle text-gray-500 text-xl cursor-pointer"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+    
+                                <div class="grid grid-cols-7 gap-2">
+                                    <div *ngFor="let day of getDaysInMonth(month.month, month.year)">
+                                        <div (click)="showTime(day)" *ngIf="isGreen(day) && (day.interviews.length != 0)"
+                                        [ngClass]="getDayClass(day)" 
+                                        class="text-center py-1 px-[5px] rounded-lg bg-[#96C68D] cursor-pointer">
+                                            {{ day.day }}
+                                        </div>
+                                        <div (click)="showTime()" *ngIf="!isGreen(day) && (day.interviews.length != 0)"
+                                        [ngClass]="getDayClass(day)" 
+                                            class="text-center py-1 px-[5px] rounded-lg bg-[#EA3A3D80]">
+                                            {{ day.day }}
+                                        </div>
+                                        <div (click)="showTime()" class="text-center py-1 px-[5px] rounded-lg"
+                                            *ngIf="day.interviews.length == 0">
+                                            {{ day.day }}
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <div id="timePart" class="w-full mt-3 hidden">
+                                    <table class="w-full mt-3 table-auto">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-2 py-1 font-semibold">From</th>
+                                                <th class="px-2 py-1 font-semibold">To</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let interview of ToChooseFromInterviewTimeTable">
+                                                <td class="px-4 py-2">
+                                                    <p *ngIf="interview.capacity != interview.reserved"
+                                                        class="py-1 px-2 bg-[#96C68D] rounded-md">
+                                                        {{ interview.fromTime }}
+                                                    </p>
+                                                    <p *ngIf="interview.capacity == interview.reserved"
+                                                        class="py-1 px-2 bg-[#EA3A3D80] rounded-md">
+                                                        {{ interview.fromTime }}
+                                                    </p>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <p *ngIf="interview.capacity != interview.reserved"
+                                                        class="py-1 px-2 bg-[#96C68D] rounded-md">
+                                                        {{ interview.toTime }}
+                                                    </p>
+                                                    <p *ngIf="interview.capacity == interview.reserved"
+                                                        class="py-1 px-2 bg-[#EA3A3D80] rounded-md">
+                                                        {{ interview.toTime }}
+                                                    </p>
+                                                </td>
+                                                <td class="px-4 py-2"> 
+                                                    <button (click)="ChooseInterviewTime(interview)" *ngIf="interview.capacity != interview.reserved">
+                                                        <i class="far fa-check-circle text-gray-500 text-xl cursor-pointer"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

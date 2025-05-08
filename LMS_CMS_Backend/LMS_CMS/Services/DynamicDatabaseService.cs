@@ -27,7 +27,8 @@ namespace LMS_CMS_PL.Services
             string connectionString = BuildConnectionString(domainName);
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
-            var domain = new Domain { Name = domainName, ConnectionString = connectionString, InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone), InsertedByUserId =  userId };
+            //var domain = new Domain { Name = domainName, ConnectionString = connectionString, InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone), InsertedByUserId =  userId };
+            var domain = new Domain { Name = domainName, InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone), InsertedByUserId =  userId };
             Unit_Of_Work.domain_Octa_Repository.Add_Octa(domain);
             Unit_Of_Work.SaveOctaChanges();
 

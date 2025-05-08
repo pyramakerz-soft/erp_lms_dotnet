@@ -26,7 +26,7 @@ export class ParentService {
     .set('domain-name', this.header)
     .set('Content-Type', 'application/json')
     
-    return this.http.get(`${this.baseUrl}/Parent/${id}`, { headers })
+    return this.http.get<any>(`${this.baseUrl}/Parent/${id}`, { headers })
   }
 
   AddParent(parent:ParentAdd,DomainName:string){

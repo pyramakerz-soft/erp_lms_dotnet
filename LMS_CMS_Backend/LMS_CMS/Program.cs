@@ -97,6 +97,7 @@ namespace LMS_CMS
                 op => op.UseSqlServer(builder.Configuration.GetConnectionString("con")));
 
 
+            builder.Services.AddSingleton<GetConnectionStringService>(); // singleton as i use it in a middleware also
             builder.Services.AddScoped<DynamicDatabaseService>();
             builder.Services.AddScoped<DbContextFactoryService>();
             builder.Services.AddScoped<GenerateJWTService>();

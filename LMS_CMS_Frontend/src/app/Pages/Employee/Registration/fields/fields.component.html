@@ -173,7 +173,7 @@
                         &times;
                     </button>
                 </span>
-                <input type="text" class="flex-grow outline-none text-sm" [(ngModel)]="inputValue"
+                <input type="text" class="flex-grow outline-none text-sm" [(ngModel)]="inputValue" (ngModelChange)="onInputValueChange({ field: 'options', value: $event })"
                     (keydown.enter)="addOption()" placeholder="Enter option" />
                 <span *ngIf="validationErrors['options']" class="text-red-500 ml-3 font-normal">
                     {{ validationErrors['options'] }}

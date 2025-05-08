@@ -174,19 +174,33 @@ namespace LMS_CMS_PL.Controllers.Domains.Registeration
                     return BadRequest("No Interview Time with this ID");
                 }
 
-                // Make sure that Date and Time aren't passed
-                string dateFormat = "M/d/yyyy";   
-                string timeFormat = "h:mm tt";
-                DateTime NewInterviewDateTimeFrom = DateTime.ParseExact(
-                    interviewTime.Date + " " + interviewTime.FromTime,
-                    $"{dateFormat} {timeFormat}",
-                    CultureInfo.InvariantCulture
+                string[] formats = {
+                    "MM/dd/yyyy HH:mm",  // e.g., 05/15/2025 13:00
+                    "M/d/yyyy HH:mm",    // e.g., 5/5/2025 13:00
+                    "MM/dd/yyyy hh:mm tt", // e.g., 05/15/2025 01:00 PM
+                    "M/d/yyyy hh:mm tt"   // e.g., 5/5/2025 01:00 PM
+                };
+
+                string fromDateTimeStr = interviewTime.Date + " " + interviewTime.FromTime;
+                string toDateTimeStr = interviewTime.Date + " " + interviewTime.ToTime;
+
+                DateTime NewInterviewDateTimeFrom;
+                DateTime NewInterviewDateTimeTo;
+
+                bool fromParsed = DateTime.TryParseExact(
+                    fromDateTimeStr,
+                    formats,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out NewInterviewDateTimeFrom
                 );
 
-                DateTime NewInterviewDateTimeTo = DateTime.ParseExact(
-                    interviewTime.Date + " " + interviewTime.ToTime,
-                    $"{dateFormat} {timeFormat}",
-                    CultureInfo.InvariantCulture
+                bool toParsed = DateTime.TryParseExact(
+                    toDateTimeStr,
+                    formats,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out NewInterviewDateTimeTo
                 );
 
                 if (currentDateTime >= NewInterviewDateTimeFrom && currentDateTime >= NewInterviewDateTimeTo)

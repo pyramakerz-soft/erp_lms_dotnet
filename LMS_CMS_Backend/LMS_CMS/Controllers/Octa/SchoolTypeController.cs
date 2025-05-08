@@ -21,14 +21,16 @@ namespace LMS_CMS_PL.Controllers.Octa
         private readonly UOW _Unit_Of_Work;
         private readonly DynamicDatabaseService _dynamicDatabaseService;
         private readonly DbContextFactoryService _dbContextFactory;
+        private readonly GetConnectionStringService _getConnectionStringService;
         IMapper mapper;
 
-        public SchoolTypeController(DynamicDatabaseService dynamicDatabaseService, UOW Unit_Of_Work, DbContextFactoryService dbContextFactory, IMapper mapper)
+        public SchoolTypeController(DynamicDatabaseService dynamicDatabaseService, UOW Unit_Of_Work, DbContextFactoryService dbContextFactory, IMapper mapper, GetConnectionStringService getConnectionStringService)
         {
             _Unit_Of_Work = Unit_Of_Work;
             _dynamicDatabaseService = dynamicDatabaseService;
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _getConnectionStringService = getConnectionStringService;
         }
 
         [HttpGet]
@@ -121,9 +123,9 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             for (int i = 0; i < domains.Count; i++)
             {
-                var domainConStr = domains[i].ConnectionString;
-                // Make the DB Connection
-                HttpContext.Items["ConnectionString"] = domainConStr;
+                //var domainConStr = domains[i].ConnectionString; 
+                //HttpContext.Items["ConnectionString"] = domainConStr; 
+                HttpContext.Items["ConnectionString"] = _getConnectionStringService.BuildConnectionString(domains[i].Name);
                 UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
                 // Add The school type to the domian
@@ -186,9 +188,9 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             for (int i = 0; i < domains.Count; i++)
             {
-                var domainConStr = domains[i].ConnectionString;
-                // Make the DB Connection
-                HttpContext.Items["ConnectionString"] = domainConStr;
+                //var domainConStr = domains[i].ConnectionString; 
+                //HttpContext.Items["ConnectionString"] = domainConStr; 
+                HttpContext.Items["ConnectionString"] = _getConnectionStringService.BuildConnectionString(domains[i].Name);
                 UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
                 // Update The school type in the domian
@@ -237,9 +239,9 @@ namespace LMS_CMS_PL.Controllers.Octa
 
             for (int i = 0; i < domains.Count; i++)
             {
-                var domainConStr = domains[i].ConnectionString;
-                // Make the DB Connection
-                HttpContext.Items["ConnectionString"] = domainConStr;
+                //var domainConStr = domains[i].ConnectionString; 
+                //HttpContext.Items["ConnectionString"] = domainConStr; 
+                HttpContext.Items["ConnectionString"] = _getConnectionStringService.BuildConnectionString(domains[i].Name);
                 UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
                 // Delete The school type from the domian

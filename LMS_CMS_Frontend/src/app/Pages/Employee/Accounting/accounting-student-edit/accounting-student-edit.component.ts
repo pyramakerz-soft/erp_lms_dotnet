@@ -53,7 +53,7 @@ export class AccountingStudentEditComponent {
   value: any = '';
   keysArray: string[] = ['id', 'name', 'accountNumberName'];
   AccountNumbers: AccountingTreeChart[] = [];
-  StudentId: number = 1;
+  StudentId: number = 0;
   nationalities: Nationality[] = []
   isLoading = false
 
@@ -78,6 +78,8 @@ export class AccountingStudentEditComponent {
     this.activeRoute.url.subscribe((url) => {
       this.path = url[0].path;
     });
+
+    this.StudentId = Number(this.activeRoute.snapshot.paramMap.get('id'))
 
     this.menuService.menuItemsForEmployee$.subscribe((items) => {
       const settingsPage = this.menuService.findByPageName(this.path, items);

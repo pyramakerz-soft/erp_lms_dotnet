@@ -13,6 +13,6 @@ namespace LMS_CMS_DAL.Models.Octa
         public long ID { get; set; }
         [Required]
         public string Name { get; set; }
-        public string ConnectionString { get; set; }
+        //public string ConnectionString { get; set; }
     }
 }

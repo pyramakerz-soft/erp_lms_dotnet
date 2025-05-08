@@ -35,7 +35,7 @@ export class MainLayoutComponent {
   }
 
   async GetInfo(){
-    this.User_Data_After_Login = this.accountService.Get_Data_Form_Token()
+    this.User_Data_After_Login = this.accountService.Get_Data_Form_Token() 
 
     if (this.User_Data_After_Login.type == "employee") {
       await this.Get_Pages_With_RoleID()
@@ -97,20 +97,20 @@ export class MainLayoutComponent {
   Get_Pages_With_RoleID() {
     this.roleDetailsService.Get_Pages_With_RoleID(this.User_Data_After_Login.role).subscribe(
       (data:any) => {
-        this.menuItemsForEmployee = data
+        this.menuItemsForEmployee = data 
         this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
       } ,(error)=>{
         this.menuItemsForEmployee = [];
       });
   }
 
-  Get_All_With_Group_By() {
-    this.roleDetailsService.Get_All_Pages().subscribe(
-      (data:any) => {
-        this.menuItemsForEmployee = data
-        this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
-      } ,(error)=>{
-        this.menuItemsForEmployee = [];
-      });
-  }
+  // Get_All_With_Group_By() {
+  //   this.roleDetailsService.Get_All_Pages().subscribe(
+  //     (data:any) => {
+  //       this.menuItemsForEmployee = data
+  //       this.menuService.updateMenuItemsForEmployee(this.menuItemsForEmployee);
+  //     } ,(error)=>{
+  //       this.menuItemsForEmployee = [];
+  //     });
+  // }
 }

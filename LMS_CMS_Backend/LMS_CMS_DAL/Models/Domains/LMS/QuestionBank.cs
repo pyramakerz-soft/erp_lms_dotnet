@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.LMS
 {
-    public class QuestionBank
+    public class QuestionBank : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
         public string? Description { get; set; }
         public string? Image { get; set; }
-        public string? Video { get; set; }
         public int DifficultyLevel { get; set; }
         public double Mark { get; set; }
         public string? EssayAnswer { get; set; }
@@ -35,13 +34,13 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
 
         [ForeignKey("QuestionType")]
         public long QuestionTypeID { get; set; }
-        public QuestionType QuestionType { get; set; }
+        public QuestionBankType QuestionType { get; set; }
 
         [ForeignKey("QuestionBankOption")]
         public long? CorrectAnswerID { get; set; }
         public QuestionBankOption? QuestionBankOption { get; set; }
-        public ICollection<QuestionBankTags> QuestionBankTags { get; set; } = new HashSet<QuestionBankTags>();
-        public ICollection<QuestionBankOption> QuestionBankOptions { get; set; } = new HashSet<QuestionBankOption>();
-        public ICollection<SubBankQuestion> SubBankQuestions { get; set; } = new HashSet<SubBankQuestion>();
+        public ICollection<QuestionBankTags>? QuestionBankTags { get; set; } = new HashSet<QuestionBankTags>();
+        public ICollection<QuestionBankOption>? QuestionBankOptions { get; set; } = new HashSet<QuestionBankOption>();
+        public ICollection<SubBankQuestion>? SubBankQuestions { get; set; } = new HashSet<SubBankQuestion>();
     }
 }

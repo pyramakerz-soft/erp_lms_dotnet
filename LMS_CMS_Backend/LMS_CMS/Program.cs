@@ -37,6 +37,7 @@ namespace LMS_CMS
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
+                c.EnableAnnotations();
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ERP System API", Version = "v1" });
 
                 // Add JWT authentication
@@ -150,7 +151,10 @@ namespace LMS_CMS
             builder.Services.Configure<KestrelServerOptions>(options =>
             {
                 options.Limits.MaxRequestBodySize = 104857600; // 100 MB
-            }); 
+            });
+
+
+
 
             var app = builder.Build();
 

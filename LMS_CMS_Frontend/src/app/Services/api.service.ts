@@ -9,8 +9,6 @@ export class ApiService {
 
   // BaseUrl="http://localhost:5094/api/with-domain"
   // BaseUrlOcta="http://localhost:5094/api"
-
-
  
  
   // BaseUrl="http://44.210.155.226:5000/api/with-domain"

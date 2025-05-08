@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.LMS
 {
-    public class DragAndDropAnswer
+    public class DragAndDropAnswer : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

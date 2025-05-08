@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.LMS
 {
-    public class QuestionBankTags
+    public class QuestionBankTags : AuditableEntity
     {
         [Key]
         public long ID { get; set; }

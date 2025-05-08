@@ -163,7 +163,7 @@ namespace LMS_CMS_DAL.Models.Domains
         public DbSet<QuestionBankOption> QuestionBankOption { get; set; }
         public DbSet<SubBankQuestion> SubBankQuestion { get; set; }
         public DbSet<DragAndDropAnswer> DragAndDropAnswer { get; set; }
-
+        public DbSet<LMS.QuestionBankType> QuestionBankType { get; set; }
 
 
         public LMS_CMS_Context(DbContextOptions<LMS_CMS_Context> options)
@@ -247,6 +247,10 @@ namespace LMS_CMS_DAL.Models.Domains
                 .ValueGeneratedNever();
             
             modelBuilder.Entity<QuestionType>()
+                .Property(p => p.ID)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<QuestionBankType>()
                 .Property(p => p.ID)
                 .ValueGeneratedNever();
 

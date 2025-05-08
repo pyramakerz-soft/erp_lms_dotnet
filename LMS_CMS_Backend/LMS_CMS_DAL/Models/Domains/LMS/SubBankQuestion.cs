@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LMS_CMS_DAL.Models.Domains.LMS
 {
-    public class SubBankQuestion
+    public class SubBankQuestion : AuditableEntity
     {
         [Key]
         public long ID { get; set; }
@@ -18,7 +18,6 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         public long QuestionBankID { get; set; }
         public QuestionBank QuestionBank { get; set; }
         public ICollection<DragAndDropAnswer> DragAndDropAnswers { get; set; } = new HashSet<DragAndDropAnswer>();
-
 
     }
 }

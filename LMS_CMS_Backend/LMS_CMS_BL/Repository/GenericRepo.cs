@@ -76,6 +76,10 @@ namespace LMS_CMS_BL.Repository
         {
             db.Set<TEntity>().AddRange(entities);
         }
+        public void RemoveRange(IEnumerable<TEntity> entities)
+        {
+            db.Set<TEntity>().RemoveRange(entities);
+        }
         public async Task AddAsync(TEntity entity)
         {
             await db.Set<TEntity>().AddAsync(entity);

@@ -897,6 +897,16 @@ namespace LMS_CMS_BL.Config
 
             CreateMap<DailyPerformanceAddDTO, DailyPerformance>();
 
+            CreateMap<QuestionBank, QuestionBankGetDTO>()
+                 .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.Lesson.EnglishTitle))
+                 .ForMember(dest => dest.BloomLevelName, opt => opt.MapFrom(src => src.BloomLevel.EnglishName))
+                 .ForMember(dest => dest.DokLevelName, opt => opt.MapFrom(src => src.DokLevel.EnglishName))
+                 .ForMember(dest => dest.QuestionTypeName, opt => opt.MapFrom(src => src.QuestionType.Name));
+            CreateMap<QuestionBankEditDTO, QuestionBank>();
+            CreateMap<DTO.LMS.QuestionBankAddDTO, QuestionBank>();
+
+            CreateMap<QuestionBankOptionAddDTO, QuestionBankOption>();
+
         }
     } 
 }

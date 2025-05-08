@@ -17,5 +17,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
         [Required(ErrorMessage = "Arabic Name is required")]
         [StringLength(100, ErrorMessage = "Arabic Name cannot be longer than 100 characters.")]
         public string ArabicName { get; set; }
+        public ICollection<QuestionBank> QuestionBanks { get; set; } = new HashSet<QuestionBank>();
+
     }
 }

@@ -210,8 +210,17 @@ export class EmployeeAddEditComponent {
             this.isLoading = false;
             return true;
           },
-          (error) => {  
+          (error) => {   
             switch(true) {
+              case error.error == 'This User Name Already Exist':
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error || 'An unexpected error occurred',
+                  confirmButtonColor: '#FF7519',
+                });
+                break;
+              
               case error.error.errors?.Password !== undefined:
                 Swal.fire({
                   icon: 'error',
@@ -264,6 +273,15 @@ export class EmployeeAddEditComponent {
           (error) => { 
             this.isLoading = false;
             switch(true) { 
+              case error.error == 'This User Name Already Exist':
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: error.error || 'An unexpected error occurred',
+                  confirmButtonColor: '#FF7519',
+                });
+                break;
+                
               case error.error === "This Email Already Exist":
                 Swal.fire({
                   icon: 'error',

@@ -97,9 +97,13 @@ namespace LMS_CMS_PL.Controllers.Domains.Administration
             }
             AcademicDegree academicDegree = mapper.Map<AcademicDegree>(newAcademicDegree);
 
+            long newId = Unit_Of_Work.academicDegree_Repository
+               .Select_All()
+               .Select(a => (long?)a.ID) // Use nullable to handle empty case
+               .Max() ?? 0;
+
             List<AcademicDegree> AcademicDegrees = Unit_Of_Work.academicDegree_Repository.Select_All();
-            long Count = AcademicDegrees.Count();
-            academicDegree.ID = Count + 1;
+            academicDegree.ID = newId + 1;
 
             TimeZoneInfo cairoZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             academicDegree.InsertedAt = TimeZoneInfo.ConvertTime(DateTime.Now, cairoZone);

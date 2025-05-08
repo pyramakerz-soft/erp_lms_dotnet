@@ -56,7 +56,6 @@ export class LogOutService {
     this.getAllTokens();
     localStorage.setItem("count", this.allTokens.length.toString());
     this.communicationService.sendAction(true);
-    this.router.navigateByUrl("")
-
+    this.router.navigateByUrl("") 
   }
 }

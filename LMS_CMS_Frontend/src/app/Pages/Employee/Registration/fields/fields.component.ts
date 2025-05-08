@@ -255,27 +255,34 @@ export class FieldsComponent {
       )} is required`;
       isValid = false;
     }
-    if (this.field.fieldTypeID == 5 && this.field.options.length == 0) {
+    if ((this.field.fieldTypeID == 5 || this.field.fieldTypeID == 4 || this.field.fieldTypeID == 7) && this.field.options.length == 0) {
       this.validationErrors['options'] = `*${this.capitalizeField(
         'options'
-      )} is required when Field Type is Multi Options`;
+      )} is required`;
       isValid = false;
     }
     return isValid;
   }
+
   capitalizeField(field: keyof FieldAddEdit): string {
     return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
   }
+
   onInputValueChange(event: { field: keyof FieldAddEdit; value: any }) {
     const { field, value } = event;
     (this.field as any)[field] = value;
     if (value) {
       this.validationErrors[field] = '';
     }
+    if(field == 'fieldTypeID'){
+      this.validationErrors['options'] = ''
+    }
   }
 
   closeModal() {
     this.isModalVisible = false;
+    this.inputValue = ''
+    this.validationErrors = {}
   }
 
   openModal() {

@@ -36,13 +36,15 @@ namespace LMS_CMS_PL.Controllers.Octa
         private readonly DbContextFactoryService _dbContextFactory;
         HashSet<long> addedPageIds = new HashSet<long>();
         IMapper mapper;
+        private readonly GetConnectionStringService _getConnectionStringService;
 
-        public DomainController(DynamicDatabaseService dynamicDatabaseService, UOW Unit_Of_Work, DbContextFactoryService dbContextFactory, IMapper mapper)
+        public DomainController(DynamicDatabaseService dynamicDatabaseService, UOW Unit_Of_Work, DbContextFactoryService dbContextFactory, IMapper mapper, GetConnectionStringService getConnectionStringService)
         {
             _Unit_Of_Work = Unit_Of_Work;
             _dynamicDatabaseService = dynamicDatabaseService;
             _dbContextFactory = dbContextFactory;
             this.mapper = mapper;
+            _getConnectionStringService = getConnectionStringService;
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +86,8 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return NotFound();
             }
 
-            HttpContext.Items["ConnectionString"] = Domain.ConnectionString;
+            //HttpContext.Items["ConnectionString"] = Domain.ConnectionString;
+            HttpContext.Items["ConnectionString"] = _getConnectionStringService.BuildConnectionString(Domain.Name);
 
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -226,7 +229,8 @@ namespace LMS_CMS_PL.Controllers.Octa
             // Make the DB Connection
             var domainEx = _Unit_Of_Work.domain_Octa_Repository.First_Or_Default_Octa(d => d.Name == domain.Name);
 
-            HttpContext.Items["ConnectionString"] = domainEx.ConnectionString;
+            //HttpContext.Items["ConnectionString"] = domainEx.ConnectionString;
+            HttpContext.Items["ConnectionString"] = _getConnectionStringService.BuildConnectionString(domainEx.Name);
 
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 
@@ -401,7 +405,8 @@ namespace LMS_CMS_PL.Controllers.Octa
                 return Conflict("Domain doesn't exist.");
             }
 
-            HttpContext.Items["ConnectionString"] = existingDomain.ConnectionString;
+            //HttpContext.Items["ConnectionString"] = existingDomain.ConnectionString;
+            HttpContext.Items["ConnectionString"] = _getConnectionStringService.BuildConnectionString(existingDomain.Name);
 
             UOW Unit_Of_Work = _dbContextFactory.CreateOneDbContext(HttpContext);
 

@@ -31,6 +31,7 @@ namespace LMS_CMS_DAL.Models.Domains.LMS
 
         public ICollection<LessonTag> LessonTags { get; set; } = new HashSet<LessonTag>();
         public ICollection<LessonActivity> LessonActivities { get; set; } = new HashSet<LessonActivity>();
-        public ICollection<LessonResource> LessonResources { get; set; } = new HashSet<LessonResource>(); 
+        public ICollection<LessonResource> LessonResources { get; set; } = new HashSet<LessonResource>();
+        public ICollection<QuestionBank> QuestionBanks { get; set; } = new HashSet<QuestionBank>();
     }
 }
